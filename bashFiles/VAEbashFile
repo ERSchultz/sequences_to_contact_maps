@@ -5,6 +5,5 @@
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
 
-conda init bash
-conda activate seq2contact_pytorch
+source activate seq2contact_pytorch
 python3 seqVAE.py
