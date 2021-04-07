@@ -38,7 +38,7 @@ class Sequences2Contacts(Dataset):
     def __len__(self):
         return len(self.paths)
 
-def getDataloaders(dataset, batchSize = 16):
+def getDataloaders(dataset, batchSize = 8):
     N = len(dataset)
     trainN = math.floor(N * 0.7)
     valN = math.floor(N * 0.2)

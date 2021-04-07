@@ -102,11 +102,43 @@ class VAE(nn.Module):
 
 class DeepC(nn.Module):
     '''Roughly based on https://doi.org/10.1038/s41592-020-0960-3'''
-    def __init__(self, w, k):
-        sequence = [ConvBlock(1, 4, (w, k), padding = w-1)]
+    def __init__(self, n, w, k, y_len):
+        self.n = n
+        self.w = w
+        self.k = k
+        self.y_len = y_len
+        self.y_flat_len = y_len**2 - y_len
 
+        # Convolution
+        self.conv1 = ConvBlock(1, k, (w, k), padding = w-1)
+        self.conv2 = ConvBlock(1, k, (w, k), padding = w-1)
+        self.conv2 = ConvBlock(1, k, (w, k), padding = w-1)
 
-        self.model = nn.Sequential(*sequence)
+        # TODO Dialted convolution
+
+        # Fully donnected
+        self.fc1 = LinearBlock(n, self.y_flat_len)
+
 
     def forward(self, input):
-        return self.model(input)
+        x = self.conv1(input)
+        x = x.view()
+
+class simpleEpiNet(nn.Module):
+    def __init__(self, n, w, k, y_len):
+        self.n = n
+        self.w = w
+        self.k = k
+        self.y_len = y_len
+        self.y_flat_len = y_len**2 - y_len
+
+        # Convolution
+        self.conv1 = ConvBlock(1, k, (w, k), padding = w-1)
+        self.conv2 = ConvBlock(1, k, (w, k), padding = w-1)
+        self.conv2 = ConvBlock(1, k, (w, k), padding = w-1)
+        # Fully donnected
+        self.fc1 = LinearBlock(n, self.y_flat_len)
+
+
+    def forward(self, input):
+        x = self.conv1(input)
