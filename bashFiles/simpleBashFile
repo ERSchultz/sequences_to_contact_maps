@@ -1,5 +1,7 @@
 #! /bin/bash
 
 conda activate seq2contact_pytorch
+source activate seq2contact_pytorch
+activate seq2contact_pytorch
 python3 test.py
 # https://stackoverflow.com/questions/55507519/python-activate-conda-env-through-shell-script
