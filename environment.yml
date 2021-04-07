@@ -15,8 +15,8 @@ dependencies:
   - blas=1.0=mkl
   - bleach=3.3.0=pyh44b312d_0
   - brotlipy=0.7.0=py36he6145b8_1001
-  - ca-certificates=2020.12.5=ha878542_0
-  - certifi=2020.12.5=py36h5fab9bb_1
+  - ca-certificates=2021.1.19=h06a4308_1
+  - certifi=2020.12.5=py36h06a4308_0
   - cffi=1.14.5=py36h261ae71_0
   - chardet=4.0.0=py36h5fab9bb_1
   - contextvars=2.4=py_0
@@ -58,11 +58,13 @@ dependencies:
   - libgfortran-ng=7.5.0=h14aa051_18
   - libgfortran4=7.5.0=h14aa051_18
   - liblapack=3.9.0=3_h893e4fe_netlib
+  - libllvm10=10.0.1=hbcb73fb_5
   - libpng=1.6.37=h21135ba_2
   - libsodium=1.0.18=h36c2ea0_1
   - libstdcxx-ng=9.1.0=hdf63c60_0
   - libtiff=4.1.0=h2733197_1
   - libuv=1.40.0=h7b6447c_0
+  - llvmlite=0.36.0=py36h612dafd_4
   - lz4-c=1.9.2=he1b5a44_3
   - markupsafe=1.1.1=py36he6145b8_2
   - matplotlib=3.2.2=1
@@ -77,6 +79,7 @@ dependencies:
   - nest-asyncio=1.5.1=pyhd8ed1ab_0
   - ninja=1.10.2=py36hff7bd54_0
   - notebook=6.3.0=py36h5fab9bb_0
+  - numba=0.53.1=py36ha9443f7_0
   - numpy=1.18.1=py36h7314795_1
   - olefile=0.46=pyh9f0ad1d_1
   - openssl=1.1.1k=h27cfd23_0
@@ -110,6 +113,7 @@ dependencies:
   - six=1.15.0=pyh9f0ad1d_0
   - sniffio=1.2.0=py36h5fab9bb_1
   - sqlite=3.35.3=hdfb4753_0
+  - tbb=2020.3=hfd86e86_0
   - terminado=0.9.4=py36h5fab9bb_0
   - testpath=0.4.4=py_0
   - tk=8.6.10=hbc83047_0
@@ -126,4 +130,4 @@ dependencies:
   - zipp=3.4.1=pyhd8ed1ab_0
   - zlib=1.2.11=h7b6447c_3
   - zstd=1.4.5=h9ceee32_0
-prefix: /home/erschultz/miniconda3/envs/test2
+prefix: /home/erschultz/miniconda3/envs/seq2contact_pytorch
