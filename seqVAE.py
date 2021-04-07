@@ -64,7 +64,7 @@ def main(dir, epochs = 1000, device = 'cuda:0'):
         print('Warning: falling back to cpu')
         device = 'cpu'
 
-    model = VAE(1024, 200, 2)
+    model = VAE(1024, 200, 10)
     model.to(device)
 
     optimizer = optim.Adam(model.parameters(), lr = 1e-3) # default beta TODO
