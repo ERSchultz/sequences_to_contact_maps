@@ -1,4 +1,4 @@
-# ! /bin/bash
+#! /bin/bash
 #SBATCH --job-name = seqVAE1_4_6_21
 #SBATCH --output = seqVAE1_4_6_21
 #SBATCH --time = 00:04:00
