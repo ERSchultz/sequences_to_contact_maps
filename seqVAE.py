@@ -34,6 +34,7 @@ def trainVAE(train_loader, model, optimizer, device, save_location,
         model.train()
         avg_loss = 0
         for t, y in enumerate(train_loader):
+            print(t)
             y = y.to(device)
             optimizer.zero_grad()
             loss = model.loss(y)
