@@ -34,7 +34,7 @@ def trainVAE(train_loader, model, optimizer, device, save_location,
         model.train()
         avg_loss = 0
         for t, y in enumerate(train_loader):
-            print(t)
+            print()
             y = y.to(device)
             optimizer.zero_grad()
             loss = model.loss(y)
@@ -82,4 +82,4 @@ def main(dir, epochs = 1000, device = 'cuda:0'):
 if __name__ == '__main__':
     clusterdir = '../../../project2/depablo/skyhl/dataset_04_06_21'
     mydir = 'dataset_04_06_21'
-    main(clusterdir, 3)
+    main(clusterdir, 100)
