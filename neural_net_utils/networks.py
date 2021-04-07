@@ -100,3 +100,14 @@ class VAE(nn.Module):
         kl_div = -0.5 * torch.sum(1 + log_var - mu.pow(2) - log_var.exp())
         loss = reconst_loss + kl_div
         return loss
+
+class DeepC(nn.Module):
+    '''Roughly based on https://doi.org/10.1038/s41592-020-0960-3'''
+    def __init__(self, w, k)
+        sequence = [ConvBlock(1, 4, (w, k), padding = w-1)]
+
+
+        self.model = nn.Sequential(*sequence)
+
+    def forward(self, input):
+        return self.model(input)
