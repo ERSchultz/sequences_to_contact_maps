@@ -70,9 +70,7 @@ def train(train_loader, model, optimizer, criterion, device, save_location,
         avg_loss = 0
         for t, (x,y) in enumerate(train_loader):
             x = x.to(device)
-            print(x.shape)
             y = y.to(device)
-            print(y.shape)
             optimizer.zero_grad()
             yhat = model(x)
             loss = criterion(yhat, y)

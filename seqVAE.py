@@ -80,6 +80,6 @@ def main(dir, epochs = 1000, device = 'cuda:0'):
     plt.close()
 
 if __name__ == '__main__':
-    clusterdir = '../../../project2/depablo/erschultz/dataset_04_06_21'
+    clusterdir = '../../../project2/depablo/skyhl/dataset_04_06_21'
     mydir = 'dataset_04_06_21'
-    main(clusterdir, 5)
+    main(mydir, 10)
