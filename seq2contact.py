@@ -33,7 +33,6 @@ class Sequences2Contacts(Dataset):
             x_path = self.paths[index] + '/x.txt'
             x = np.loadtxt(x_path)
 
-
         return torch.Tensor(x), torch.Tensor(y)
 
     def __len__(self):
@@ -131,10 +130,10 @@ def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
 
     plt.plot(np.arange(0, epochs), train_loss_arr, label = 'train_loss')
     plt.legend()
-    plt.savefig('images/train val loss.png')
+    plt.savefig('images/train_val_loss.png')
     plt.close()
 
 if __name__ == '__main__':
-    clusterdir = '../../../project2/depablo/skyhl/dataset_04_06_21'
+    clusterdir = '../../../project2/depablo/erschultz/dataset_04_06_21'
     mydir = 'dataset_04_06_21'
-    main(mydir, 2)
+    main(clusterdir, 5)

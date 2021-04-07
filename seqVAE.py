@@ -64,22 +64,23 @@ def main(dir, epochs = 1000, device = 'cuda:0'):
         print('Warning: falling back to cpu')
         device = 'cpu'
 
-    model = VAE(1024, 200, 10)
+    model = VAE(1024, 200, 25)
     model.to(device)
 
     optimizer = optim.Adam(model.parameters(), lr = 1e-3) # default beta TODO
 
     train_loss = trainVAE(train_dataloader, model, optimizer,
             device, save_location = 'VAE_model1.pt', epochs = epochs)
+    print('Train loss: {}'.format(train_loss))
 
     print('Total time: {}'.format(time.time() - t0))
 
     plt.plot(np.arange(0, epochs), train_loss, label = 'train_loss')
     plt.legend()
-    plt.savefig('images/train loss.png')
+    plt.savefig('images/train_loss.png')
     plt.close()
 
 if __name__ == '__main__':
-    clusterdir = '../../../project2/depablo/skyhl/dataset_04_06_21'
+    clusterdir = '../../../project2/depablo/erschultz/dataset_04_06_21'
     mydir = 'dataset_04_06_21'
     main(clusterdir, 5)
