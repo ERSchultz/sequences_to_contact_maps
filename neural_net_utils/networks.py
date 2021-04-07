@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import sys
-sys.path.insert(1, 'C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding')
 from neural_net_utils.base_networks import *
 
 class UNet(nn.Module):
@@ -103,7 +102,7 @@ class VAE(nn.Module):
 
 class DeepC(nn.Module):
     '''Roughly based on https://doi.org/10.1038/s41592-020-0960-3'''
-    def __init__(self, w, k)
+    def __init__(self, w, k):
         sequence = [ConvBlock(1, 4, (w, k), padding = w-1)]
 
 
