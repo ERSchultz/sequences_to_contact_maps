@@ -71,7 +71,6 @@ def main(dir, epochs = 1000, device = 'cuda:0'):
 
     train_loss = trainVAE(train_dataloader, model, optimizer,
             device, save_location = 'VAE_model1.pt', epochs = epochs)
-    print('Train loss: {}'.format(train_loss))
 
     print('Total time: {}'.format(time.time() - t0))
 

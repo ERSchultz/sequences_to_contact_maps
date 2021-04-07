@@ -127,8 +127,10 @@ def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
     val_loss = test(val_dataloader, model, optimizer, criterion, device)
 
     print('Total time: {}'.format(time.time() - t0))
+    print('Val loss: {}'.format(val_loss))
 
-    plt.plot(np.arange(0, epochs), train_loss_arr, label = 'train_loss')
+    plt.plot(np.arange(0, epochs), train_loss_arr, label = 'train loss')
+    plt.axhline(y = val_loss, color = 'black', linestyle = '--', label = 'final val loss')
     plt.legend()
     plt.savefig('images/train_val_loss.png')
     plt.close()
@@ -136,4 +138,4 @@ def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
 if __name__ == '__main__':
     clusterdir = '../../../project2/depablo/erschultz/dataset_04_06_21'
     mydir = 'dataset_04_06_21'
-    main(clusterdir, 5)
+    main(clusterdir, 10)
