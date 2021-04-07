@@ -125,20 +125,25 @@ class DeepC(nn.Module):
         x = x.view()
 
 class simpleEpiNet(nn.Module):
-    def __init__(self, n, w, k, y_len):
+    def __init__(self, n, w, k):
         self.n = n
         self.w = w
         self.k = k
-        self.y_len = y_len
-        self.y_flat_len = y_len**2 - y_len
 
         # Convolution
-        self.conv1 = ConvBlock(1, k, (w, k), padding = w-1)
-        self.conv2 = ConvBlock(1, k, (w, k), padding = w-1)
-        self.conv2 = ConvBlock(1, k, (w, k), padding = w-1)
-        # Fully donnected
-        self.fc1 = LinearBlock(n, self.y_flat_len)
+        self.conv1 = ConvBlock(1, k*2, (w, k), padding = w-1)
+        self.conv2 = ConvBlock(1, k*2, (w, k*2), padding = w-1)
+        self.conv2 = ConvBlock(1, k, (w, k*2), padding = w-1)
 
 
     def forward(self, input):
         x = self.conv1(input)
+        x = x.view(-1, 1, n, k*2)
+        x = self.conv2(input)
+        x = x.view(-1, 1, n, k*2)
+        x = self.conv3(input)
+        x = x.view(-1, 1, n, k)
+
+        output = F.sigmoid
+
+        return output
