@@ -1,3 +1,4 @@
 *.pt
 *.log
 /dataset_04_06_21/*
+/__pycache__/*
