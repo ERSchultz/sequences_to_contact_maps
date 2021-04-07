@@ -11,6 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import time
+import sys
 from utils import *
 
 class Sequences2Contacts(Dataset):
@@ -127,10 +128,8 @@ def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
 
     plt.plot(np.arange(0, epochs), train_loss_arr, label = 'train_loss')
     plt.legend()
-    plt.savefig('train val loss.png')
+    plt.savefig('images/train val loss.png')
     plt.close()
-
-
 
 if __name__ == '__main__':
     clusterdir = '../../../project2/depablo/skyhl/dataset_04_06_21'
