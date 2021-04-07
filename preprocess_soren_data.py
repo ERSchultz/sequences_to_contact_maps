@@ -14,7 +14,7 @@ def main(dir):
         np.savetxt(path + '/x.txt', x, fmt = '%i')
 
         xx = x2xx(x)
-        np.save('/xx.npy', xx.astype(int))
+        np.save(path + '/xx.npy', xx.astype(np.int8))
 
 if __name__ == '__main__':
     clusterdir = '../../../project2/depablo/skyhl/dataset_04_06_21'

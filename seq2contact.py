@@ -35,7 +35,7 @@ class Sequences2Contacts(Dataset):
     def __len__(self):
         return len(self.paths)
 
-def getDataloaders(dataset, batchSize = 3):
+def getDataloaders(dataset, batchSize = 64):
     N = len(dataset)
     trainN = math.floor(N * 0.7)
     valN = math.floor(N * 0.2)
@@ -45,11 +45,11 @@ def getDataloaders(dataset, batchSize = 3):
                                         generator = torch.Generator().manual_seed(42))
     # TODO may need to shuffle before split
     train_dataloader = DataLoader(train_dataset, batch_size = batchSize,
-                                    shuffle = True, num_workers = 1)
+                                    shuffle = True, num_workers = 0)
     val_dataloader = DataLoader(val_dataset, batch_size = batchSize,
-                                    shuffle = True, num_workers = 1)
+                                    shuffle = True, num_workers = 0)
     test_dataloader = DataLoader(test_dataset, batch_size = batchSize,
-                                    shuffle = True, num_workers = 1)
+                                    shuffle = True, num_workers = 0)
     # TODO batch_size, num_workers
 
     return train_dataloader, val_dataloader, test_dataloader
@@ -76,7 +76,8 @@ def train(train_loader, model, optimizer, criterion, device, save_location,
         if e % save_mod == 0:
             torch.save({'model_state_dict': model.state_dict(),
                         'epoch': e,
-                        'optimizer_state_dict': optimizer.state_dict()},
+                        'optimizer_state_dict': optimizer.state_dict(),
+                        'train_loss': train_loss},
                         save_location)
         if (e + 1) % (epochs / 2) == 0:
             for param_group in optimizer.param_groups:
@@ -119,7 +120,7 @@ def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
     criterion = F.mse_loss
 
     train_loss_arr = train(train_dataloader, model, optimizer,
-            criterion, device, save_location = 'model1', epochs = epochs)
+            criterion, device, save_location = 'model1.pt', epochs = epochs)
     val_loss = test(val_dataloader, model, optimizer, criterion, device)
 
     print('Total time: {}'.format(time.time() - t0))

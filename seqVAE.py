@@ -11,6 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from utils import make_dataset
+import time
 
 class Contacts(Dataset):
     def __init__(self, dir, size_y = 1024):
@@ -19,9 +20,9 @@ class Contacts(Dataset):
         self.paths = sorted(make_dataset(dir))
 
     def __getitem__(self, index):
-        y_path = self.paths[index]
+        y_path = self.paths[index] + '/data_out/contacts.txt'
         y = np.loadtxt(y_path)[:1024, :1024] # TODO delete this later
-        return y.astype(float)
+        return y.astype(np.float32)
 
     def __len__(self):
         return len(self.paths)
@@ -44,7 +45,8 @@ def trainVAE(train_loader, model, optimizer, device, save_location,
         if e % save_mod == 0:
             torch.save({'model_state_dict': model.state_dict(),
                         'epoch': e,
-                        'optimizer_state_dict': optimizer.state_dict()},
+                        'optimizer_state_dict': optimizer.state_dict(),
+                        'train_loss': train_loss},
                         save_location)
         train_loss.append(avg_loss/(t+1))
 
@@ -52,9 +54,10 @@ def trainVAE(train_loader, model, optimizer, device, save_location,
 
 
 def main(dir, epochs = 1000, device = 'cuda:0'):
+    t0 = time.time()
     contactData = Contacts(dir)
     train_dataloader = DataLoader(contactData, batch_size = 64,
-                                    shuffle = True, num_workers = 1)
+                                    shuffle = True, num_workers = 0)
 
     if device == 'cuda:0' and not torch.cuda.is_available():
         print('Warning: falling back to cpu')
@@ -66,7 +69,9 @@ def main(dir, epochs = 1000, device = 'cuda:0'):
     optimizer = optim.Adam(model.parameters(), lr = 1e-3) # default beta TODO
 
     train_loss = trainVAE(train_dataloader, model, optimizer,
-            device, save_location = 'VAE_model1', epochs = epochs)
+            device, save_location = 'VAE_model1.pt', epochs = epochs)
+
+    print('Total time: {}'.format(time.time() - t0))
 
     plt.plot(np.arange(0, epochs), train_loss, label = 'train_loss')
     plt.legend()
@@ -76,4 +81,4 @@ def main(dir, epochs = 1000, device = 'cuda:0'):
 if __name__ == '__main__':
     clusterdir = '../../../project2/depablo/skyhl/dataset_04_06_21'
     mydir = 'dataset_04_06_21'
-    main(mydir, 1)
+    main(clusterdir, 3)
