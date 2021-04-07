@@ -10,34 +10,21 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-
-def make_dataset(dir):
-    contact_maps = []
-    for file in os.listdir(dir):
-        contacts_file = dir + '/' + file + '/data_out/contacts.txt'
-        contact_maps.append(contacts_file)
-        # TODO zero padded??
-    return contact_maps
+from utils import make_dataset
 
 class Contacts(Dataset):
-    def __init__(self, dir_y, size_y = 1024):
+    def __init__(self, dir, size_y = 1024):
         super(Contacts, self).__init__()
-        self.dir_y = dir_y
-        self.y_paths = sorted(make_dataset(dir_y))
-        self.y_transform = transforms.Compose([
-            # TODO resize
-            transforms.ToTensor(),
-            # TODO Normalize
-        ])
+        self.dir = dir
+        self.paths = sorted(make_dataset(dir))
 
     def __getitem__(self, index):
-        y_path = self.y_paths[index]
+        y_path = self.paths[index]
         y = np.loadtxt(y_path)[:1024, :1024] # TODO delete this later
-        y = self.y_transform(y)
-        return y.float()
+        return y.astype(float)
 
     def __len__(self):
-        return len(self.y_paths)
+        return len(self.paths)
 
 def trainVAE(train_loader, model, optimizer, device, save_location,
         epochs, save_mod = 5, print_mod = 100):
@@ -64,22 +51,29 @@ def trainVAE(train_loader, model, optimizer, device, save_location,
     return train_loss
 
 
-def main(epochs = 1000, device = 'cuda:0'):
-    contactData = Contacts('sequences_to_contact_maps/dataset_03_29_21')
+def main(dir, epochs = 1000, device = 'cuda:0'):
+    contactData = Contacts(dir)
     train_dataloader = DataLoader(contactData, batch_size = 64,
                                     shuffle = True, num_workers = 1)
 
-    model = VAE(1024, 200, 2).to(device)
+    if device == 'cuda:0' and not torch.cuda.is_available():
+        print('Warning: falling back to cpu')
+        device = 'cpu'
+
+    model = VAE(1024, 200, 2)
+    model.to(device)
 
     optimizer = optim.Adam(model.parameters(), lr = 1e-3) # default beta TODO
 
     train_loss = trainVAE(train_dataloader, model, optimizer,
-            device, save_location = 'model1', epochs = epochs)
+            device, save_location = 'VAE_model1', epochs = epochs)
 
     plt.plot(np.arange(0, epochs), train_loss, label = 'train_loss')
     plt.legend()
-    plt.savefig('train val loss.png')
+    plt.savefig('train loss.png')
     plt.close()
 
 if __name__ == '__main__':
-    main()
+    clusterdir = '../../../project2/depablo/skyhl/dataset_04_06_21'
+    mydir = 'dataset_04_06_21'
+    main(mydir, 1)

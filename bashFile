@@ -1,0 +1,9 @@
+# ! /bin/bash
+#SBATCH --job-name = seq2contact1_4_6_21
+#SBATCH --output = seq2contact1_4_6_21
+#SBATCH --time = 00:04:00
+#SBATCH --partition = gpu2
+#SBATCH --gres = gpu:1
+
+conda activate seq2contact_pytorch
+python3 seq2contact.py

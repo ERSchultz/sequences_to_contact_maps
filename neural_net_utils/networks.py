@@ -8,7 +8,7 @@ from neural_net_utils.base_networks import *
 class UNet(nn.Module):
     '''U Net adapted from https://github.com/phillipi/pix2pix.'''
     def __init__(self, nf = 64, nf_in = 3, nf_out = 3, num_downs = 7,
-            std_norm = 'batch', std_droop = False, std_drop_p = 0.5):
+            std_norm = 'batch', std_drop = False, std_drop_p = 0.5):
         # nf is the number of filters input to the final layer (and output from the first layer)
         # num_downs is the number of downsamplings
         # max filters = nf * 8

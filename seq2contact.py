@@ -4,65 +4,38 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 import torch.optim as optim
 import torchvision.transforms as transforms
-import sys
-sys.path.insert(1, 'C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding')
 from neural_net_utils.base_networks import *
 from neural_net_utils.networks import *
 import math
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-
-def make_dataset(dir):
-    contact_maps = []
-    for file in os.listdir(dir):
-        contacts_file = dir + '/' + file + '/data_out/contacts.txt'
-        contact_maps.append(contacts_file)
-        # TODO zero padded??
-    return contact_maps
+import time
+from utils import *
 
 class Sequences2Contacts(Dataset):
-    def __init__(self, dir_y, size_y = 1024):
+    def __init__(self, dir, size_y = 1024, toxx = False):
         super(Sequences2Contacts, self).__init__()
-        self.dir_y = dir_y
-        self.y_paths = sorted(make_dataset(dir_y))
-        self.y_transform = transforms.Compose([
-            transforms.Resize(size_y), # TODO check interpolation methods
-            transforms.ToTensor(),
-            # TODO Normalize
-        ])
-
-        # TODO x paths
-        self.x_transform = transforms.Compose([
-            transforms.ToTensor()
-        ])
-
+        self.dir = dir
+        self.toxx = toxx
+        self.paths = sorted(make_dataset(dir))
 
     def __getitem__(self, index):
-        y_path = self.y_paths[index]
-        y = np.loadtxt(y_path)
-        y = self.y_transform(y)
+        y_path = self.paths[index] + '/data_out/contacts.txt'
+        y = np.loadtxt(y_path)[:1024, :1024] # TODO delete this later
+        y = y.reshape(1,1024,1024)
 
-        x_path = self.x_paths[index]
+        x_path = self.paths[index] + '/x.txt'
         x = np.loadtxt(x_path)
-        x = self.x_transform(x)
+        if self.toxx:
+            x = x2xx(x)
 
-        return x, y
+        return torch.Tensor(x), torch.Tensor(y)
 
     def __len__(self):
-        return len(self.y_paths)
+        return len(self.paths)
 
-    def x2xx(self, x):
-        # input x is nxk, output is kxnxn
-        n,k = x.shape
-        xx = np.zeros((k*2, n, n))
-        for i in range(n):
-            for j in range(i+1):
-                xx[:, i, j] = np.append(x[i], x[j])
-                xx[:, j, i] = np.append(x[j], x[i])
-        return xx
-
-def getDataloaders(dataset):
+def getDataloaders(dataset, batchSize = 3):
     N = len(dataset)
     trainN = math.floor(N * 0.7)
     valN = math.floor(N * 0.2)
@@ -71,17 +44,17 @@ def getDataloaders(dataset):
                                         [trainN, valN, testN],
                                         generator = torch.Generator().manual_seed(42))
     # TODO may need to shuffle before split
-    train_dataloader = DataLoader(train_dataset, batch_size = 64,
+    train_dataloader = DataLoader(train_dataset, batch_size = batchSize,
                                     shuffle = True, num_workers = 1)
-    val_dataloader = DataLoader(val_dataset, batch_size = 64,
+    val_dataloader = DataLoader(val_dataset, batch_size = batchSize,
                                     shuffle = True, num_workers = 1)
-    test_dataloader = DataLoader(test_dataset, batch_size = 64,
+    test_dataloader = DataLoader(test_dataset, batch_size = batchSize,
                                     shuffle = True, num_workers = 1)
     # TODO batch_size, num_workers
 
     return train_dataloader, val_dataloader, test_dataloader
 
-def train(train_loader, val_loader, model, optimizer, criterion, device, save_location,
+def train(train_loader, model, optimizer, criterion, device, save_location,
         epochs, save_mod = 5, print_mod = 100):
     train_loss = []
     val_loss = []
@@ -89,6 +62,7 @@ def train(train_loader, val_loader, model, optimizer, criterion, device, save_lo
         model.train()
         avg_loss = 0
         for t, (x,y) in enumerate(train_loader):
+            print(t)
             x = x.to(device)
             y = y.to(device)
             optimizer.zero_grad()
@@ -109,11 +83,9 @@ def train(train_loader, val_loader, model, optimizer, criterion, device, save_lo
                 param_group['lr'] /= 10.0
             print('Learning rate decay: lr={}'.format(optimizer.param_groups[0]['lr']))
 
-        vloss = test(val_loader, model, optimizer, criterion, device)
         train_loss.append(avg_loss/(t+1))
-        val_loss.append(vloss)
 
-    return train_loss, val_loss
+    return train_loss
 
 def test(loader, model, optimizer, criterion, device):
     loss = 0
@@ -131,25 +103,35 @@ def test(loader, model, optimizer, criterion, device):
     print('\nTest set: Avg. loss: {:.4f})\n'.format(loss))
     return loss
 
-
-def main(epochs = 100):
-    seq2ContactData = Sequences2Contacts('sequences_to_contact_maps/dataset_03_29_21')
+def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
+    t0 = time.time()
+    seq2ContactData = Sequences2Contacts(dir, toxx = True)
     train_dataloader, val_dataloader, test_dataloader = getDataloaders(seq2ContactData)
 
-    model = None
+    if device == 'cuda:0' and not torch.cuda.is_available():
+        print('Warning: falling back to cpu')
+        device = 'cpu'
+
+    model = UNet(nf_in = 2*k, nf_out = 1)
+    model.to(device)
 
     optimizer = optim.Adam(model.parameters(), lr = 1e-4) # default beta TODO
+    criterion = F.mse_loss
 
-    train_loss, val_loss = train(train_dataloader, val_dataloader, model, optimizer,
-            criterion = F.nll_loss, device = 'cuda:0', save_location = 'model1',
-            epochs = epochs)
+    train_loss_arr = train(train_dataloader, model, optimizer,
+            criterion, device, save_location = 'model1', epochs = epochs)
+    val_loss = test(val_dataloader, model, optimizer, criterion, device)
 
-    plt.plot(np.arange(0, epochs), train_loss, label = 'train_loss')
-    plt.plot(np.arange(0, epochs), val_loss, label = 'val_loss')
+    print('Total time: {}'.format(time.time() - t0))
+
+    plt.plot(np.arange(0, epochs), train_loss_arr, label = 'train_loss')
     plt.legend()
     plt.savefig('train val loss.png')
     plt.close()
 
 
+
 if __name__ == '__main__':
-    main()
+    clusterdir = '../../../project2/depablo/skyhl/dataset_04_06_21'
+    mydir = 'dataset_04_06_21'
+    main(mydir, 2)
