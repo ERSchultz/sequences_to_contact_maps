@@ -1,7 +1,7 @@
 #! /bin/bash
-#SBATCH --job-name=seqVAE1_4_6_21
-#SBATCH --output=seqVAE1_4_6_21
-#SBATCH --time=00:01:00
+#SBATCH --job-name=seqVAE1_4_7_21
+#SBATCH --output=seqVAE1_4_7_21
+#SBATCH --time=01:00:00
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
 

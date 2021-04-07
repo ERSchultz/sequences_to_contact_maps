@@ -26,10 +26,13 @@ class Sequences2Contacts(Dataset):
         y = np.loadtxt(y_path)[:1024, :1024] # TODO delete this later
         y = y.reshape(1,1024,1024)
 
-        x_path = self.paths[index] + '/x.txt'
-        x = np.loadtxt(x_path)
         if self.toxx:
-            x = x2xx(x)
+            x_path = self.paths[index] + '/xx.npy'
+            x = np.load(x_path)
+        else:
+            x_path = self.paths[index] + '/x.txt'
+            x = np.loadtxt(x_path)
+
 
         return torch.Tensor(x), torch.Tensor(y)
 

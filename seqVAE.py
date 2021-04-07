@@ -28,28 +28,28 @@ class Contacts(Dataset):
         return len(self.paths)
 
 def trainVAE(train_loader, model, optimizer, device, save_location,
-        epochs, save_mod = 5, print_mod = 100):
+        epochs, save_mod = 5, print_mod = 2):
     train_loss = []
     for e in range(epochs):
         model.train()
         avg_loss = 0
         for t, y in enumerate(train_loader):
-            print()
             y = y.to(device)
             optimizer.zero_grad()
             loss = model.loss(y)
             avg_loss += loss.item()
             loss.backward()
             optimizer.step()
-            if t % print_mod == 0:
-                print('Epoch %d, Iteration %d, loss = %.4f' % (e, t, loss.item()))
+        avg_loss = avg_loss/(t+1)
+        if e % print_mod == 0:
+            print('Epoch %d, avg_loss = %.4f' % (e, avg_loss))
         if e % save_mod == 0:
             torch.save({'model_state_dict': model.state_dict(),
                         'epoch': e,
                         'optimizer_state_dict': optimizer.state_dict(),
                         'train_loss': train_loss},
                         save_location)
-        train_loss.append(avg_loss/(t+1))
+        train_loss.append(avg_loss)
 
     return train_loss
 

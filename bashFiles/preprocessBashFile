@@ -1,0 +1,7 @@
+#! /bin/bash
+#SBATCH --job-name=preprocess_4_7_21
+#SBATCH --output=preprocess_4_7_21
+#SBATCH --time=01:00:00
+
+source activate seq2contact_pytorch
+python3 preprocess_soren_data.py

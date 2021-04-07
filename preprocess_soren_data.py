@@ -19,4 +19,4 @@ def main(dir):
 if __name__ == '__main__':
     clusterdir = '../../../project2/depablo/skyhl/dataset_04_06_21'
     mydir = 'dataset_04_06_21'
-    main(mydir)
+    main(clusterdir)
