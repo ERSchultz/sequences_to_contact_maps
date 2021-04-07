@@ -16,7 +16,12 @@ def main(dir):
         xx = x2xx(x)
         np.save(path + '/xx.npy', xx.astype(np.int8))
 
+        # y_path = path + '/data_out/contacts.txt'
+        # y = np.loadtxt(y_path)[:1024, :1024] # TODO delete this later
+        # y = diagonal_normalize(y)
+        # np.savetxt(path + '/y.txt', y)
+
 if __name__ == '__main__':
-    clusterdir = '../../../project2/depablo/erschultz/dataset_04_06_21'
+    clusterdir = '../../../project2/depablo/skyhl/dataset_04_06_21'
     mydir = 'dataset_04_06_21'
     main(clusterdir)

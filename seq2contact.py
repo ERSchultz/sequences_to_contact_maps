@@ -15,16 +15,19 @@ import sys
 from utils import *
 
 class Sequences2Contacts(Dataset):
-    def __init__(self, dir, size_y = 1024, toxx = False):
+    def __init__(self, dir, n = 1024, k = 2, toxx = False):
         super(Sequences2Contacts, self).__init__()
         self.dir = dir
+        self.n = n
+        self.k = k
         self.toxx = toxx
         self.paths = sorted(make_dataset(dir))
 
     def __getitem__(self, index):
         y_path = self.paths[index] + '/data_out/contacts.txt'
-        y = np.loadtxt(y_path)[:1024, :1024] # TODO delete this later
-        y = y.reshape(1,1024,1024)
+        y = np.loadtxt(y_path)[:self.n, :self.n] # TODO delete this later
+        y = y.reshape(1, self.n, self.n)
+        y /= np.max(y)
 
         if self.toxx:
             x_path = self.paths[index] + '/xx.npy'
@@ -32,13 +35,14 @@ class Sequences2Contacts(Dataset):
         else:
             x_path = self.paths[index] + '/x.txt'
             x = np.loadtxt(x_path)
+            x = x.reshape(1, self.n, self.k)
 
         return torch.Tensor(x), torch.Tensor(y)
 
     def __len__(self):
         return len(self.paths)
 
-def getDataloaders(dataset, batchSize = 8):
+def getDataloaders(dataset, batchSize = 64):
     N = len(dataset)
     trainN = math.floor(N * 0.7)
     valN = math.floor(N * 0.2)
@@ -58,25 +62,26 @@ def getDataloaders(dataset, batchSize = 8):
     return train_dataloader, val_dataloader, test_dataloader
 
 def train(train_loader, model, optimizer, criterion, device, save_location,
-        epochs, save_mod = 5, print_mod = 100):
+        epochs, save_mod = 5, print_mod = 2):
     train_loss = []
     val_loss = []
     for e in range(epochs):
         model.train()
         avg_loss = 0
         for t, (x,y) in enumerate(train_loader):
-            print(t)
             x = x.to(device)
+            print(x.shape)
             y = y.to(device)
+            print(y.shape)
             optimizer.zero_grad()
             yhat = model(x)
             loss = criterion(yhat, y)
             avg_loss += loss.item()
             loss.backward()
             optimizer.step()
-            if t % print_mod == 0:
-                print('Epoch %d, Iteration %d, loss = %.4f' % (e, t, loss.item()))
-        if e % save_mod == 0:
+        if e % print_mod == 0:
+            print('Epoch %d, loss = %.4f' % (e, loss.item()))
+        if (e + 1) % save_mod == 0:
             torch.save({'model_state_dict': model.state_dict(),
                         'epoch': e,
                         'optimizer_state_dict': optimizer.state_dict(),
@@ -109,14 +114,15 @@ def test(loader, model, optimizer, criterion, device):
 
 def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
     t0 = time.time()
-    seq2ContactData = Sequences2Contacts(dir, toxx = True)
+    seq2ContactData = Sequences2Contacts(dir, toxx = False)
     train_dataloader, val_dataloader, test_dataloader = getDataloaders(seq2ContactData)
 
     if device == 'cuda:0' and not torch.cuda.is_available():
         print('Warning: falling back to cpu')
         device = 'cpu'
 
-    model = UNet(nf_in = 2*k, nf_out = 1)
+    # model = UNet(nf_in = 2*k, nf_out = 1)
+    model = SimpleEpiNet(1024, 1, 2)
     model.to(device)
 
     optimizer = optim.Adam(model.parameters(), lr = 1e-4) # default beta TODO
@@ -138,4 +144,4 @@ def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
 if __name__ == '__main__':
     clusterdir = '../../../project2/depablo/erschultz/dataset_04_06_21'
     mydir = 'dataset_04_06_21'
-    main(clusterdir, 5)
+    main(clusterdir, 50)

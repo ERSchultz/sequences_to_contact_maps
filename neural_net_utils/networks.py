@@ -103,6 +103,7 @@ class VAE(nn.Module):
 class DeepC(nn.Module):
     '''Roughly based on https://doi.org/10.1038/s41592-020-0960-3'''
     def __init__(self, n, w, k, y_len):
+        super(DeepC, self).__init__()
         self.n = n
         self.w = w
         self.k = k
@@ -124,26 +125,31 @@ class DeepC(nn.Module):
         x = self.conv1(input)
         x = x.view()
 
-class simpleEpiNet(nn.Module):
+class SimpleEpiNet(nn.Module):
     def __init__(self, n, w, k):
+        super(SimpleEpiNet, self).__init__()
         self.n = n
         self.w = w
+        assert w <= n, "w can be at most n"
+        assert w % 2 != 0, "w must be odd"
         self.k = k
 
         # Convolution
-        self.conv1 = ConvBlock(1, k*2, (w, k), padding = w-1)
-        self.conv2 = ConvBlock(1, k*2, (w, k*2), padding = w-1)
-        self.conv2 = ConvBlock(1, k, (w, k*2), padding = w-1)
+        self.conv1 = ConvBlock(1, k*2, (w, k), padding = (w//2, 0))
+        self.conv2 = ConvBlock(1, k*2, (w, k*2), padding = (w//2, 0))
+        self.conv3 = ConvBlock(1, k, (w, k*2), padding = (w//2, 0))
+        self.act = nn.Sigmoid()
 
 
     def forward(self, input):
         x = self.conv1(input)
-        x = x.view(-1, 1, n, k*2)
-        x = self.conv2(input)
-        x = x.view(-1, 1, n, k*2)
-        x = self.conv3(input)
-        x = x.view(-1, 1, n, k)
+        x = x.view(-1, 1, self.n, self.k*2)
+        x = self.conv2(x)
+        x = x.view(-1, 1, self.n, self.k*2)
+        x = self.conv3(x)
+        x = x.view(-1, 1, self.n, self.k)
 
-        output = F.sigmoid
+        output = torch.einsum('...ij, ...kj->...ik', x, x)
+        output = self.act(output)
 
         return output
