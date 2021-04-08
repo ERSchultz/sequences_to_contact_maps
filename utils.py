@@ -1,6 +1,8 @@
 from numba import jit
 import numpy as np
 import os
+import torch
+import matplotlib.pyplot as plt
 
 def make_dataset(dir):
     data_file_arr = []
@@ -56,12 +58,12 @@ def generateProbDist(y, d):
     return prob
 
 def plotModelFromDir(dir, model, ofile):
-    saveDict = torch.load(dir)
-    model.load_state_dict(load_g['model_state_dict'])
+    saveDict = torch.load(dir, map_location=torch.device('cpu'))
+    model.load_state_dict(saveDict['model_state_dict'])
     epochs = saveDict['epoch']
+    print(epochs)
     train_loss_arr = saveDict['train_loss']
     plt.plot(np.arange(0, epochs), train_loss_arr, label = 'train loss')
-    plt.axhline(y = val_loss, color = 'black', linestyle = '--', label = 'final val loss')
     plt.legend()
     plt.savefig('images/' + ofile)
     plt.close()

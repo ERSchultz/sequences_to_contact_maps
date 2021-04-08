@@ -27,7 +27,7 @@ class Sequences2Contacts(Dataset):
         y_path = self.paths[index] + '/data_out/contacts.txt'
         y = np.loadtxt(y_path)[:self.n, :self.n] # TODO delete this later
         y = y.reshape(1, self.n, self.n)
-        y /= np.max(y)cat
+        y /= np.max(y)
 
         if self.toxx:
             x_path = self.paths[index] + '/xx.npy'
@@ -66,17 +66,30 @@ def train(train_loader, model, optimizer, criterion, device, save_location,
     train_loss = []
     val_loss = []
     for e in range(epochs):
+        print('Start epoch')
+        t0 = time.time()
         model.train()
         avg_loss = 0
         for t, (x,y) in enumerate(train_loader):
+            t1 = time.time()
+            print('Start enumerate: {}'.format(t1 - t0))
             x = x.to(device)
             y = y.to(device)
+            t2 = time.time()
+            print('moved x and y: {}'.format(t2 - t1))
             optimizer.zero_grad()
             yhat = model(x)
+            t3 = time.time()
+            print('forward: {}'.format(t3 - t2))
             loss = criterion(yhat, y)
             avg_loss += loss.item()
+            t4 = time.time()
+            print('loss: {}'.format(t4 - t3))
             loss.backward()
             optimizer.step()
+            t5 = time.time()
+            print('backward and optim: {}'.format(t5 - t4))
+        print('finished epoch {}: {}'.format(e, time.time() - t0))
         if e % print_mod == 0:
             print('Epoch %d, loss = %.4f' % (e, loss.item()))
         if (e + 1) % save_mod == 0:
@@ -127,7 +140,7 @@ def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
     criterion = F.mse_loss
 
     train_loss_arr = train(train_dataloader, model, optimizer,
-            criterion, device, save_location = 'model1.pt', epochs = epochs)
+            criterion, device, save_location = 'modeltest.pt', epochs = epochs)
     val_loss = test(val_dataloader, model, optimizer, criterion, device)
 
     print('Total time: {}'.format(time.time() - t0))
@@ -142,4 +155,4 @@ def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
 if __name__ == '__main__':
     clusterdir = '../../../project2/depablo/erschultz/dataset_04_06_21'
     mydir = 'dataset_04_06_21'
-    main(clusterdir, 50)
+    main(clusterdir, 2)
