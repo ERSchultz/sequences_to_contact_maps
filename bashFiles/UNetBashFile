@@ -8,4 +8,4 @@
 #SBATCH --mem-per-gpu=12000
 
 source activate seq2contact_pytorch
-python3 UNET.py
+python3 UNet.py
