@@ -69,30 +69,22 @@ def train(train_loader, model, optimizer, criterion, device, save_location,
     train_loss = []
     val_loss = []
     for e in range(epochs):
-        print('Start epoch')
-        t0 = time.time()
         model.train()
         avg_loss = 0
         for t, (x,y) in enumerate(train_loader):
             t1 = time.time()
-            print('Start enumerate: {}'.format(t1 - t0))
             x = x.to(device)
             y = y.to(device)
             t2 = time.time()
-            print('moved x and y: {}'.format(t2 - t1))
             optimizer.zero_grad()
             yhat = model(x)
             t3 = time.time()
-            print('forward: {}'.format(t3 - t2))
             loss = criterion(yhat, y)
             avg_loss += loss.item()
             t4 = time.time()
-            print('loss: {}'.format(t4 - t3))
             loss.backward()
             optimizer.step()
             t5 = time.time()
-            print('backward and optim: {}'.format(t5 - t4))
-        print('finished epoch {}: {}'.format(e, time.time() - t0))
         if e % print_mod == 0:
             print('Epoch %d, loss = %.4f' % (e, loss.item()))
         if (e + 1) % save_mod == 0:
