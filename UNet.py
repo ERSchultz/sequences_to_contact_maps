@@ -119,7 +119,7 @@ def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
         print('Warning: falling back to cpu')
         device = 'cpu'
 
-    model = UNet(nf_in = 2*k, nf_out = 1, nf = 4, out_act = nn.Sigmoid())
+    model = UNet(nf_in = 2, nf_out = 1, nf = 8, out_act = nn.Sigmoid())
     model.to(device)
 
     optimizer = optim.Adam(model.parameters(), lr = 1e-3) # default beta TODO
