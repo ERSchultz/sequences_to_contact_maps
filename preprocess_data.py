@@ -22,6 +22,6 @@ def main(dir):
         np.save(path + '/y.npy', y.astype(np.int8))
 
 if __name__ == '__main__':
-    clusterdir = '../../../project2/depablo/skyhl/dataset_04_06_21'
+    clusterdir = '../../../project2/depablo/erschultz/dataset_04_06_21'
     mydir = 'dataset_04_06_21'
     main(clusterdir)
