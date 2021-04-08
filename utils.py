@@ -11,15 +11,19 @@ def make_dataset(dir):
     return data_file_arr
 
 @jit
-def x2xx(x):
+def x2xx(x, append = False):
     # input x is nxk, output is 2kxnxn
     # this is slow
     n, k = x.shape
     xx = np.zeros((k*2, n, n))
     for i in range(n):
         for j in range(i+1):
-            xx[:, i, j] = np.append(x[i], x[j])
-            xx[:, j, i] = np.append(x[j], x[i])
+            if append:
+                xx[:, i, j] = np.append(x[i], x[j])
+                xx[:, j, i] = np.append(x[j], x[i])
+            else:
+                xx[:, i, j] = np.add(x[i], x[j])
+                xx[:, j, i] = np.add(x[j], x[i])
     return xx
 
 @jit
