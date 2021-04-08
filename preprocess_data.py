@@ -11,15 +11,15 @@ def main(dir):
         x2_path = path + '/seq2.txt'
         x2 = np.loadtxt(x2_path)
         x = np.vstack((x1, x2)).T.astype(np.int8)
-        np.savetxt(path + '/x.txt', x, fmt = '%i')
+        np.save(path + '/x.npy', x, x.astype(np.int8))
 
         xx = x2xx(x)
         np.save(path + '/xx.npy', xx.astype(np.int8))
 
-        # y_path = path + '/data_out/contacts.txt'
-        # y = np.loadtxt(y_path)[:1024, :1024] # TODO delete this later
-        # y = diagonal_normalize(y)
-        # np.savetxt(path + '/y.txt', y)
+        y_path = path + '/data_out/contacts.txt'
+        y = np.loadtxt(y_path)[:1024, :1024] # TODO delete this later
+        # y /= np.max(y)
+        np.save(path + '/y.npy', y.astype(np.int8))
 
 if __name__ == '__main__':
     clusterdir = '../../../project2/depablo/skyhl/dataset_04_06_21'

@@ -17,7 +17,10 @@ def x2xx(x, append = False):
     # input x is nxk, output is 2kxnxn
     # this is slow
     n, k = x.shape
-    xx = np.zeros((k*2, n, n))
+    if append:
+        xx = np.zeros((k*2, n, n))
+    else:
+        xx = np.zeros((k, n, n))
     for i in range(n):
         for j in range(i+1):
             if append:
