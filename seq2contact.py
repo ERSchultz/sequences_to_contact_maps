@@ -24,17 +24,17 @@ class Sequences2Contacts(Dataset):
         self.paths = sorted(make_dataset(dir))
 
     def __getitem__(self, index):
-        y_path = self.paths[index] + '/data_out/contacts.txt'
-        y = np.loadtxt(y_path)[:self.n, :self.n] # TODO delete this later
+        y_path = self.paths[index] + '/y.npy'
+        y = np.load(y_path)
         y = y.reshape(1, self.n, self.n)
-        y /= np.max(y)
+        y = y / np.max(y)
 
         if self.toxx:
             x_path = self.paths[index] + '/xx.npy'
             x = np.load(x_path)
         else:
-            x_path = self.paths[index] + '/x.txt'
-            x = np.loadtxt(x_path)
+            x_path = self.paths[index] + '/x.npy'
+            x = np.load(x_path)
             x = x.reshape(1, self.n, self.k)
 
         return torch.Tensor(x), torch.Tensor(y)
@@ -42,7 +42,7 @@ class Sequences2Contacts(Dataset):
     def __len__(self):
         return len(self.paths)
 
-def getDataloaders(dataset, batchSize = 64):
+def getDataloaders(dataset, batchSize = 64, num_workers = 0):
     N = len(dataset)
     trainN = math.floor(N * 0.7)
     valN = math.floor(N * 0.2)
@@ -52,11 +52,11 @@ def getDataloaders(dataset, batchSize = 64):
                                         generator = torch.Generator().manual_seed(42))
     # TODO may need to shuffle before split
     train_dataloader = DataLoader(train_dataset, batch_size = batchSize,
-                                    shuffle = True, num_workers = 0)
+                                    shuffle = True, num_workers = num_workers)
     val_dataloader = DataLoader(val_dataset, batch_size = batchSize,
-                                    shuffle = True, num_workers = 0)
+                                    shuffle = True, num_workers = num_workers)
     test_dataloader = DataLoader(test_dataset, batch_size = batchSize,
-                                    shuffle = True, num_workers = 0)
+                                    shuffle = True, num_workers = num_workers)
     # TODO batch_size, num_workers
 
     return train_dataloader, val_dataloader, test_dataloader
@@ -126,7 +126,7 @@ def test(loader, model, optimizer, criterion, device):
 def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
     t0 = time.time()
     seq2ContactData = Sequences2Contacts(dir, toxx = False)
-    train_dataloader, val_dataloader, test_dataloader = getDataloaders(seq2ContactData)
+    train_dataloader, val_dataloader, test_dataloader = getDataloaders(seq2ContactData, num_workers = 0)
 
     if device == 'cuda:0' and not torch.cuda.is_available():
         print('Warning: falling back to cpu')
@@ -155,4 +155,4 @@ def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
 if __name__ == '__main__':
     clusterdir = '../../../project2/depablo/erschultz/dataset_04_06_21'
     mydir = 'dataset_04_06_21'
-    main(clusterdir, 1)
+    main(mydir, 1)
