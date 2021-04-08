@@ -1,7 +1,9 @@
+import torch
+from torch.utils.data import DataLoader
 from numba import jit
 import numpy as np
 import os
-import torch
+import math
 import matplotlib.pyplot as plt
 
 def make_dataset(dir):
@@ -11,6 +13,25 @@ def make_dataset(dir):
         data_file_arr.append(data_file)
         # TODO zero padded??
     return data_file_arr
+
+def getDataLoaders(dataset, batchSize = 64, num_workers = 0, split = [0.7, 0.2, 0.1]):
+    N = len(dataset)
+    assert sum(split) - 1 < 1e-5, sum(split)
+    trainN = math.floor(N * split[0])
+    valN = math.floor(N * split[1])
+    testN = N - trainN - valN
+    train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(dataset,
+                                        [trainN, valN, testN],
+                                        generator = torch.Generator().manual_seed(42))
+    # TODO may need to shuffle before split
+    train_dataloader = DataLoader(train_dataset, batch_size = batchSize,
+                                    shuffle = True, num_workers = num_workers)
+    val_dataloader = DataLoader(val_dataset, batch_size = batchSize,
+                                    shuffle = True, num_workers = num_workers)
+    test_dataloader = DataLoader(test_dataset, batch_size = batchSize,
+                                    shuffle = True, num_workers = num_workers)
+
+    return train_dataloader, val_dataloader, test_dataloader
 
 @jit
 def x2xx(x, append = False):

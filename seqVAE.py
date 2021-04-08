@@ -1,33 +1,14 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 import torch.optim as optim
 import torchvision.transforms as transforms
-from neural_net_utils.base_networks import *
+from neural_net_utils.dataset_classes import *
 from neural_net_utils.networks import *
-import math
+from neural_net_utils.utils import getDataLoaders
 import numpy as np
 import matplotlib.pyplot as plt
-import os
-from utils import make_dataset
 import time
-
-class Contacts(Dataset):
-    def __init__(self, dir, size_y = 1024):
-        super(Contacts, self).__init__()
-        self.dir = dir
-        self.paths = sorted(make_dataset(dir))
-
-    def __getitem__(self, index):
-        y_path = self.paths[index] + '/y.npy'
-        y = np.load(y_path)
-        y = y.reshape(1, self.n, self.n)
-        y = y / np.max(y)
-        return torch.Tensor(y)
-
-    def __len__(self):
-        return len(self.paths)
 
 def trainVAE(train_loader, model, optimizer, device, save_location,
         epochs, save_mod = 5, print_mod = 2):
@@ -59,6 +40,8 @@ def trainVAE(train_loader, model, optimizer, device, save_location,
 def main(dir, epochs = 1000, device = 'cuda:0'):
     t0 = time.time()
     contactData = Contacts(dir)
+    for i in contactData:
+        print(i)
     train_dataloader = DataLoader(contactData, batch_size = 64,
                                     shuffle = True, num_workers = 0)
 
