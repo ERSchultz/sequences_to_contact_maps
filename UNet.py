@@ -122,11 +122,11 @@ def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
     model = UNet(nf_in = 2*k, nf_out = 1, nf = 4, out_act = nn.Sigmoid())
     model.to(device)
 
-    optimizer = optim.Adam(model.parameters(), lr = 1e-4) # default beta TODO
+    optimizer = optim.Adam(model.parameters(), lr = 1e-3) # default beta TODO
     criterion = F.mse_loss
 
     train_loss_arr = train(train_dataloader, model, optimizer,
-            criterion, device, save_location = 'UNET1.pt', epochs = epochs)
+            criterion, device, save_location = 'models/UNET1.pt', epochs = epochs)
     val_loss = test(val_dataloader, model, optimizer, criterion, device)
 
     print('Total time: {}'.format(time.time() - t0))
@@ -141,4 +141,4 @@ def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
 if __name__ == '__main__':
     clusterdir = '../../../project2/depablo/erschultz/dataset_04_06_21'
     mydir = 'dataset_04_06_21'
-    main(mydir, 50)
+    main(clusterdir, 20)

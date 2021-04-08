@@ -1,6 +1,6 @@
 #! /bin/bash
-#SBATCH --job-name=seq2contactUNet2_4_7_21
-#SBATCH --output=seq2contactUNet2_4_7_21
+#SBATCH --job-name=seq2contactUNet_4_8_21
+#SBATCH --output=logFiles/seq2contactUNet_4_8_21
 #SBATCH --time=02:00:00
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1

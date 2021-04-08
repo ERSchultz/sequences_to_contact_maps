@@ -20,9 +20,11 @@ class Contacts(Dataset):
         self.paths = sorted(make_dataset(dir))
 
     def __getitem__(self, index):
-        y_path = self.paths[index] + '/data_out/contacts.txt'
-        y = np.loadtxt(y_path)[:1024, :1024] # TODO delete this later
-        return y.astype(np.float32)
+        y_path = self.paths[index] + '/y.npy'
+        y = np.load(y_path)
+        y = y.reshape(1, self.n, self.n)
+        y = y / np.max(y)
+        return torch.Tensor(y)
 
     def __len__(self):
         return len(self.paths)
@@ -70,7 +72,7 @@ def main(dir, epochs = 1000, device = 'cuda:0'):
     optimizer = optim.Adam(model.parameters(), lr = 1e-3) # default beta TODO
 
     train_loss = trainVAE(train_dataloader, model, optimizer,
-            device, save_location = 'VAE_model1.pt', epochs = epochs)
+            device, save_location = 'models/VAE_model1.pt', epochs = epochs)
 
     print('Total time: {}'.format(time.time() - t0))
 

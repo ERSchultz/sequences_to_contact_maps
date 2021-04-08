@@ -132,15 +132,14 @@ def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
         print('Warning: falling back to cpu')
         device = 'cpu'
 
-    # model = UNet(nf_in = 2*k, nf_out = 1)
     model = SimpleEpiNet(1024, 1, 2)
     model.to(device)
 
-    optimizer = optim.Adam(model.parameters(), lr = 1e-4) # default beta TODO
+    optimizer = optim.Adam(model.parameters(), lr = 1e-3) # default beta TODO
     criterion = F.mse_loss
 
     train_loss_arr = train(train_dataloader, model, optimizer,
-            criterion, device, save_location = 'modeltest.pt', epochs = epochs)
+            criterion, device, save_location = 'models/model_4_8_21.pt', epochs = epochs)
     val_loss = test(val_dataloader, model, optimizer, criterion, device)
 
     print('Total time: {}'.format(time.time() - t0))
@@ -155,4 +154,4 @@ def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
 if __name__ == '__main__':
     clusterdir = '../../../project2/depablo/erschultz/dataset_04_06_21'
     mydir = 'dataset_04_06_21'
-    main(clusterdir, 1)
+    main(clusterdir, 20)
