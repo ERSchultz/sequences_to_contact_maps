@@ -11,7 +11,7 @@ def main(dir):
         x2_path = path + '/seq2.txt'
         x2 = np.loadtxt(x2_path)
         x = np.vstack((x1, x2)).T
-        np.save(path + '/x.npy', x, x.astype(np.int8))
+        np.save(path + '/x.npy', x.astype(np.int8))
 
         xx = x2xx(x)
         np.save(path + '/xx.npy', xx.astype(np.int8))
