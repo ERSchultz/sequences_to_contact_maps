@@ -27,8 +27,7 @@ class Sequences2Contacts(Dataset):
         y_path = self.paths[index] + '/data_out/contacts.txt'
         y = np.loadtxt(y_path)[:self.n, :self.n] # TODO delete this later
         y = y.reshape(1, self.n, self.n)
-        y /= np.max(y)
-        print(y)
+        y /= np.max(y)cat
 
         if self.toxx:
             x_path = self.paths[index] + '/xx.npy'

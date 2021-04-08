@@ -28,7 +28,6 @@ class Sequences2Contacts(Dataset):
         y = np.loadtxt(y_path)[:self.n, :self.n] # TODO delete this later
         y = y.reshape(1, self.n, self.n)
         y /= np.max(y)
-        print(y)
 
         if self.toxx:
             x_path = self.paths[index] + '/xx.npy'
@@ -113,7 +112,7 @@ def test(loader, model, optimizer, criterion, device):
 
 def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
     t0 = time.time()
-    seq2ContactData = Sequences2Contacts(dir, toxx = False)
+    seq2ContactData = Sequences2Contacts(dir, toxx = True)
     train_dataloader, val_dataloader, test_dataloader = getDataloaders(seq2ContactData)
 
     if device == 'cuda:0' and not torch.cuda.is_available():
