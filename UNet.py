@@ -141,4 +141,4 @@ def main(dir, epochs = 1000, device = 'cuda:0', k = 2):
 if __name__ == '__main__':
     clusterdir = '../../../project2/depablo/erschultz/dataset_04_06_21'
     mydir = 'dataset_04_06_21'
-    main(clusterdir, 50)
+    main(mydir, 50)

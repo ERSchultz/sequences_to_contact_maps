@@ -4,4 +4,4 @@
 #SBATCH --time=01:00:00
 
 source activate seq2contact_pytorch
-python3 preprocess_soren_data.py
+python3 preprocess_data.py

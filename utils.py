@@ -55,5 +55,16 @@ def generateProbDist(y, d):
     prob = np.divide(observed, possible)
     return prob
 
+def plotModelFromDir(dir, model, ofile):
+    saveDict = torch.load(dir)
+    model.load_state_dict(load_g['model_state_dict'])
+    epochs = saveDict['epoch']
+    train_loss_arr = saveDict['train_loss']
+    plt.plot(np.arange(0, epochs), train_loss_arr, label = 'train loss')
+    plt.axhline(y = val_loss, color = 'black', linestyle = '--', label = 'final val loss')
+    plt.legend()
+    plt.savefig('images/' + ofile)
+    plt.close()
+
 if __name__ == '__main__':
     main()

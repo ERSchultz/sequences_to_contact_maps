@@ -2,3 +2,4 @@
 *.log
 /dataset_04_06_21/*
 /__pycache__/*
+/neural_net_utils/__pycache__/*
