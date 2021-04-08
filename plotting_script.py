@@ -2,7 +2,7 @@ from neural_net_utils.networks import *
 from utils import *
 
 def main():
-    dir = 'models/model1.pt'
+    dir = 'models/model_4_8_21.pt'
     model = SimpleEpiNet(1024, 1, 2)
     plotModelFromDir(dir, model, 'model1_train_loss.png')
 
