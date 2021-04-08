@@ -8,7 +8,7 @@ def main():
 
     dir = 'models/UNET1.pt'
     k=2
-    model = UNet(nf_in = 2, nf_out = 1, nf = 4, out_act = nn.Sigmoid())
+    model = UNet(nf_in = 2, nf_out = 1, nf = 8, out_act = nn.Sigmoid())
     plotModelFromDir(dir, model, 'UNET_train_loss.png')
 
 if __name__ == '__main__':
