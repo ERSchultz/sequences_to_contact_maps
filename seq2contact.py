@@ -15,17 +15,20 @@ import sys
 from utils import *
 
 class Sequences2Contacts(Dataset):
-    def __init__(self, dir, n = 1024, k = 2, toxx = False):
+    def __init__(self, dir, n = 1024, k = 2, toxx = False, y_diag_norm = True):
         super(Sequences2Contacts, self).__init__()
         self.dir = dir
         self.n = n
         self.k = k
         self.toxx = toxx
+        self.y_diag_norm = y_diag_norm
         self.paths = sorted(make_dataset(dir))
 
     def __getitem__(self, index):
         y_path = self.paths[index] + '/y.npy'
         y = np.load(y_path)
+        if self.y_diag_norm:
+            y = diagonal_normalize(y.astype(np.float64))
         y = y.reshape(1, self.n, self.n)
         y = y / np.max(y)
 
