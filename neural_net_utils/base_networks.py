@@ -8,7 +8,7 @@ class UnetBlock(torch.nn.Module):
                  outermost = False, innermost = False,
                  kernel_size = 4, stride = 2, padding = 2, bias = True,
                  activation1 = 'leaky', activation2 = 'relu', norm = None,
-                 dropout = False, dropout_p = 0.5):
+                 dropout = False, dropout_p = 0.5, out_act = nn.Tanh()):
         super(UnetBlock, self).__init__()
         self.outermost = outermost
         if output_size is None:
@@ -43,7 +43,7 @@ class UnetBlock(torch.nn.Module):
         if outermost:
             conv2 = nn.ConvTranspose2d(inner_size * 2, output_size, kernel_size, stride, padding)
             down = [conv1]
-            up = [act2, conv2, nn.Tanh()]
+            up = [act2, conv2, out_act]
             model = down + [subBlock] + up
         elif innermost:
             conv2 = nn.ConvTranspose2d(inner_size, output_size, kernel_size, stride, padding, bias)

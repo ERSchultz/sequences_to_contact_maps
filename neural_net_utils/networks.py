@@ -7,7 +7,7 @@ from neural_net_utils.base_networks import *
 class UNet(nn.Module):
     '''U Net adapted from https://github.com/phillipi/pix2pix.'''
     def __init__(self, nf = 64, nf_in = 3, nf_out = 3, num_downs = 7,
-            std_norm = 'batch', std_drop = False, std_drop_p = 0.5):
+            std_norm = 'batch', std_drop = False, std_drop_p = 0.5, out_act = nn.Tanh()):
         # nf is the number of filters input to the final layer (and output from the first layer)
         # num_downs is the number of downsamplings
         # max filters = nf * 8
@@ -20,7 +20,7 @@ class UNet(nn.Module):
         ub = UnetBlock(nf * 4, nf * 8, subBlock = ub, norm = std_norm)
         ub = UnetBlock(nf * 2, nf * 4, subBlock = ub, norm = std_norm)
         ub = UnetBlock(nf, nf * 2, subBlock = ub, norm = std_norm,)
-        sequence = [UnetBlock(nf_in, nf, nf_out, subBlock = ub, norm = std_norm, outermost = True)]
+        sequence = [UnetBlock(nf_in, nf, nf_out, subBlock = ub, norm = std_norm, outermost = True, out_act = out_act)]
         self.model = nn.Sequential(*sequence)
 
     def forward(self, input):
