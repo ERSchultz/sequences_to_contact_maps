@@ -5,4 +5,5 @@
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
 
-python3 test.py
+
+python3 ~/sequences_to_contact_maps/test.py
