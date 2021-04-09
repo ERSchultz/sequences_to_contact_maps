@@ -4,4 +4,4 @@
 #SBATCH --time=01:00:00
 
 source activate seq2contact_pytorch
-python3 preprocess_data.py ../../../project2/depablo/erschultz/dataset_04_06_21
+python3 preprocess_data.py "../../../project2/depablo/erschultz/dataset_04_06_21"
