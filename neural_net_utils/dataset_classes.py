@@ -23,7 +23,7 @@ class Sequences2Contacts(Dataset):
             y_path = self.paths[index] + '/y.npy'
             y = np.load(y_path)
         if self.crop is not None:
-            y = y[crop[0]:crop[1], crop[0]:crop[1]]
+            y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
             if self.y_diag_norm:
                 diagonal_normalize(y)
         if self.y_reshape:
