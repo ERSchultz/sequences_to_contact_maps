@@ -150,9 +150,9 @@ def plotContactMap(y, ofile, title = None, vmax = 1):
         assert N == 1 and C == 1
         y = y.reshape(H,W)
     plt.figure(figsize=(10, 10))
-    if vmax = 'mean':
+    if vmax == 'mean':
         vmax = np.mean(y)
-    ax = sns.heatmap(y, linewidth=0, vmin = 0, vmax = 1, cmap = mycmap)
+    ax = sns.heatmap(y, linewidth=0, vmin = 0, vmax = vmax, cmap = mycmap)
     if title is not None:
         plt.title(title)
     plt.savefig(os.path.join('images', ofile))
@@ -163,7 +163,7 @@ def getBaseParser():
 
     #pre-processing args
     parser.add_argument('--y_diag_norm', type=bool, default=True)
-    parser.add_argument('--crop', type=str, default=None, 'size of crop to apply to image - format: <leftcrop-rightcrop>')
+    parser.add_argument('--crop', type=str, default=None, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
 
     # train args
     parser.add_argument('--start_epoch', type=int, default=1, help='Starting epoch')

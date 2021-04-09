@@ -23,7 +23,7 @@ def preprocessing():
 
 
 def main():
-    seq2ContactData = Sequences2Contacts('dataset_04_06_21', n = 1024, k = 2, toxx = True)
+    seq2ContactData = Sequences2Contacts('dataset_04_06_21', n = 1024, k = 2, toxx = True, names = True)
     dataloader, _, _ = getDataLoaders(seq2ContactData, batch_size = 1,
                                             num_workers = 0, seed = 42,
                                             split = [1,0,0], shuffle = False)
@@ -34,13 +34,17 @@ def main():
     save_dict = torch.load(modeldir, map_location = 'cpu')
     model.load_state_dict(save_dict['model_state_dict'])
     model.eval()
+    vmax = 0.1
     for (x, y, name) in dataloader:
         name = name[0].split('/')[1]
         print(name)
         yhat = model(x)
-        plotContactMap(yhat.detach().numpy(), name + '_yhat.png', divide_by_mean = False)
-        plotContactMap(y.numpy(), name + '_y.png', divide_by_mean = False)
+        plotContactMap(yhat.detach().numpy(), name + '_yhat.png', vmax = vmax)
+        plotContactMap(y.numpy(), name + '_y.png', vmax = vmax)
+        ydif = yhat.detach().numpy() - y.numpy()
+        plotContactMap(ydif, name + '_ydif.png', vmax = vmax)
         loss = F.mse_loss(yhat, y)
+        print(loss)
 
 
 if __name__ == '__main__':
