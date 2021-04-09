@@ -20,7 +20,7 @@ def argparseSetup():
     parser.add_argument('--num_workers', type=int, default=1, help='Number of threads for data loader to use')
 
     # model args
-    parser.add_argument('--h', type=int, default=1, help='Height of convolutional kernel')
+    parser.add_argument('--height', type=int, default=1, help='Height of convolutional kernel')
 
     opt = parser.parse_args()
 
@@ -70,7 +70,7 @@ def main():
         torch.cuda.manual_seed(opt.seed)
 
     # Set up model
-    model = SimpleEpiNet(n = 1024, h = opt.h, k = opt.k)
+    model = SimpleEpiNet(n = 1024, h = opt.height, k = opt.k)
     if opt.pretrained:
         model_name = os.path.join(opt.ifile_folder, opt.ifile + '.pt')
         if os.path.exists(model_name):
