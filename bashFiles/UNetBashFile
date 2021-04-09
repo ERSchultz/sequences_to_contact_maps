@@ -22,8 +22,8 @@ crop='128-1024'
 n=896
 
 ofile="UNet_nEpochs${nEpochs}_nf${nf}_lr${lr}_milestones${milestones}_crop${crop}"
-logfile="sequences_to_contact_maps/logFiles/${ofile}.log"
+logfile="logFiles/${ofile}.log"
 
-cd ~
+cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
-python3 ~/sequences_to_contact_maps/UNet.py --data_folder $dirname --n_epochs $nEpochs --nf $nf --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile --crop $crop --n $n >> $logfile
+python3 UNet.py --data_folder $dirname --n_epochs $nEpochs --nf $nf --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile --crop $crop --n $n >> $logfile

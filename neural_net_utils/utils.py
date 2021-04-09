@@ -9,12 +9,16 @@ import matplotlib.colors
 import argparse
 import seaborn as sns
 
-def make_dataset(dir):
+def make_dataset(dir, minSample = True):
     data_file_arr = []
     for file in os.listdir(dir):
         if not file.startswith('sample'):
             print("Skipping {}".format(file))
         else:
+            if minSample is not None:
+                sample_id = file[10:]
+                print(sample_id)
+                pass
             data_file = dir + '/' + file
             data_file_arr.append(data_file)
         # TODO zero padded??
@@ -66,7 +70,7 @@ def x2xx(x, append = False):
                 # TODO mean
     return xx
 
-@jit
+@jit(forceobj = True)
 def diagonal_normalize(y):
     exp = generateExpectedDist(y)
     for i in range(len(y)):
@@ -81,7 +85,7 @@ def diagonal_normalize(y):
 
     return y
 
-@jit
+@jit(forceobj = True)
 def generateExpectedDist(y):
     n = len(y)
     distances = range(0, n, 1)
