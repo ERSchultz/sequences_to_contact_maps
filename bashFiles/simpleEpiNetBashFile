@@ -26,5 +26,6 @@ ofile="simpleEpiNet_nEpochs${nEpochs}_h${h}_hidden${hidden}_latent${latent}_lr${
 logfile="~/sequences_to_contact_maps/logFiles/${ofile}.log"
 
 cd ~
+touch $logfile
 source activate seq2contact_pytorch
 python3 ~/sequences_to_contact_maps/SimpleEpiNet.py --data_folder $dirname --n_epochs $nEpochs --height $h --hidden $hidden --latent $latent --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile --crop $crop >> $logfile
