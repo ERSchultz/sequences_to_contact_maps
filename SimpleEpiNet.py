@@ -64,7 +64,7 @@ def main():
     print(opt)
 
     t0 = time.time()
-    seq2ContactData = Sequences2Contacts(opt.data_folder, n = 1024, k = opt.k,
+    seq2ContactData = Sequences2Contacts(opt.data_folder,
                                         toxx = False, y_diag_norm = opt.y_diag_norm, crop = opt.crop)
     train_dataloader, val_dataloader, test_dataloader = getDataLoaders(seq2ContactData,
                                                                         batch_size = opt.batch_size,
@@ -76,7 +76,7 @@ def main():
         torch.cuda.manual_seed(opt.seed)
 
     # Set up model
-    model = SimpleEpiNet(n = 1024, h = opt.height, k = opt.k,
+    model = SimpleEpiNet(n = opt.n, h = opt.height, k = opt.k,
                         hidden_size = opt.hidden, latent_size = opt.latent)
     if opt.pretrained:
         model_name = os.path.join(opt.ifile_folder, opt.ifile + '.pt')

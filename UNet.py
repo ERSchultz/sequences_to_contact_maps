@@ -63,7 +63,7 @@ def main():
     print(opt)
 
     t0 = time.time()
-    seq2ContactData = Sequences2Contacts(opt.data_folder, n = 1024, k = opt.k, toxx = True,
+    seq2ContactData = Sequences2Contacts(opt.data_folder, toxx = True,
                                         y_diag_norm = opt.y_diag_norm, crop = opt.crop)
     train_dataloader, val_dataloader, test_dataloader = getDataLoaders(seq2ContactData,
                                                                         batch_size = opt.batch_size,

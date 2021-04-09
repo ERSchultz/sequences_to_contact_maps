@@ -3,11 +3,9 @@ from neural_net_utils.utils import *
 import torch
 
 class Sequences2Contacts(Dataset):
-    def __init__(self, dirname, n, k, toxx, y_diag_norm = True, y_reshape = True,
+    def __init__(self, dirname, toxx = False, y_diag_norm = True, y_reshape = True,
                 names = False, crop = None):
         super(Sequences2Contacts, self).__init__()
-        self.n = n
-        self.k = k
         self.toxx = toxx
         self.y_diag_norm = y_diag_norm
         self.y_reshape = y_reshape
@@ -27,7 +25,7 @@ class Sequences2Contacts(Dataset):
             if self.y_diag_norm:
                 diagonal_normalize(y)
         if self.y_reshape:
-            y = y.reshape(1, self.n, self.n)
+            y = np.expand_dims(y, 0)
         y /= np.max(y)
 
         if self.toxx:
@@ -36,7 +34,7 @@ class Sequences2Contacts(Dataset):
         else:
             x_path = self.paths[index] + '/x.npy'
             x = np.load(x_path)
-            x = x.reshape(1, self.n, self.k)
+            x = np.expand_dims(x, 0)
 
         if self.names:
             return torch.Tensor(x), torch.Tensor(y), self.paths[index]

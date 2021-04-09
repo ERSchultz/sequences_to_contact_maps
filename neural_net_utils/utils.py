@@ -188,6 +188,7 @@ def getBaseParser():
     parser.add_argument('--ofile_folder', type=str, default='models/', help='Location to save checkpoint models')
     parser.add_argument('--ofile', type=str, default='model', help='Name of save file')
     parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
+    parser.add_argument('--n', type=int, default=1024, help='Number of particles')
     parser.add_argument('--seed', type=int, default=42, help='random seed to use. Default: 42')
 
     return parser
