@@ -21,4 +21,4 @@ ofile="model"
 logfile="logFiles/${ofile}.log"
 
 source activate seq2contact_pytorch
-python3 ~/sequences_to_contact_maps/UNet.py --data_folder $dirname --n_epochs $nEpochs --nf $nf --batch_size $bathSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile >> $logfile
+python3 ~/sequences_to_contact_maps/UNet.py --data_folder $dirname --n_epochs $nEpochs --nf $nf --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile >> $logfile
