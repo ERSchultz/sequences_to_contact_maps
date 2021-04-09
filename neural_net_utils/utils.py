@@ -12,6 +12,8 @@ import seaborn as sns
 def make_dataset(dir):
     data_file_arr = []
     for file in os.listdir(dir):
+        if not file.startswith('sample'):
+            print("Skipping {}".format(file))
         data_file = dir + '/' + file
         data_file_arr.append(data_file)
         # TODO zero padded??
@@ -78,6 +80,7 @@ def diagonal_normalize(y):
 
     return y
 
+@jit
 def generateExpectedDist(y):
     n = len(y)
     distances = range(0, n, 1)
