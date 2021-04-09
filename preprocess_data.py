@@ -20,7 +20,7 @@ def process_data(dirname):
         y = np.loadtxt(y_path)[:1024, :1024] # TODO delete this later
         np.save(path + '/y.npy', y.astype(np.int16))
 
-        y_diag = diagonal_normalize(y.astype(np.float64))
+        y_diag = diagonal_normalize(y)
         np.save(path + '/y_diag_norm.npy', y_diag)
 
 def test_process_data(dirname):

@@ -59,8 +59,12 @@ def diagonal_normalize(y):
     for i in range(len(y)):
         for j in range(i + 1):
             distance = i - j
-            y[i,j] /= prob[distance]
-            y[j,i] = y[i,j]
+            prob_d = prob[distance]
+            if prob_d == 0:
+                pass
+            else:
+                y[i,j] /= prob_d
+                y[j,i] = y[i,j]
 
     return y
 
@@ -69,7 +73,7 @@ def generateProbDist(y):
     n = len(y)
     distances = range(0, n, 1)
     observed = np.zeros(len(distances))
-    possible = np.zeros(len(distances))
+    possible = np.ones(len(distances))
     for distance in distances:
         possible[distance] = n - distance
     for i in range(n):
