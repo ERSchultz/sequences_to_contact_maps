@@ -12,16 +12,17 @@
 dirname="/../../../project2/depablo/erschultz/dataset_04_06_21"
 nEpochs=15
 nf=8
-lr=0.01
+lr=0.1
 batchSize=16
 numWorkers=2
 milestones='5-10'
 gamma=0.1
 k=2
+crop='128-1024'
 
-ofile="UNet_nEpochs${nEpochs}_nf${nf}_lr${lr}_milestones${milestones}"
+ofile="UNet_nEpochs${nEpochs}_nf${nf}_lr${lr}_milestones${milestones}_crop${crop}"
 logfile="logFiles/${ofile}.log"
 
-
+cd ~
 source activate seq2contact_pytorch
-python3 ~/sequences_to_contact_maps/UNet.py --data_folder $dirname --n_epochs $nEpochs --nf $nf --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile >> $logfile
+python3 ~/sequences_to_contact_maps/UNet.py --data_folder $dirname --n_epochs $nEpochs --nf $nf --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile --crop $crop >> $logfile

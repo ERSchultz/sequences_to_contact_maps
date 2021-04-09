@@ -17,7 +17,8 @@ def make_dataset(dir):
         # TODO zero padded??
     return data_file_arr
 
-def getDataLoaders(dataset, batch_size = 64, num_workers = 0, split = [0.7, 0.2, 0.1], seed = 42):
+def getDataLoaders(dataset, batch_size = 64, num_workers = 0, split = [0.7, 0.2, 0.1],
+                    seed = 42, shuffle = True):
     N = len(dataset)
     assert sum(split) - 1 < 1e-5, sum(split)
     trainN = math.floor(N * split[0])
@@ -28,11 +29,17 @@ def getDataLoaders(dataset, batch_size = 64, num_workers = 0, split = [0.7, 0.2,
                                         generator = torch.Generator().manual_seed(seed))
     # TODO may need to shuffle before split
     train_dataloader = DataLoader(train_dataset, batch_size = batch_size,
-                                    shuffle = True, num_workers = num_workers)
-    val_dataloader = DataLoader(val_dataset, batch_size = batch_size,
-                                    shuffle = True, num_workers = num_workers)
-    test_dataloader = DataLoader(test_dataset, batch_size = batch_size,
-                                    shuffle = True, num_workers = num_workers)
+                                    shuffle = shuffle, num_workers = num_workers)
+    if len(val_dataset) > 0:
+        val_dataloader = DataLoader(val_dataset, batch_size = batch_size,
+                                        shuffle = shuffle, num_workers = num_workers)
+    else:
+        val_dataloader = None
+    if len(val_dataset) > 0:
+        test_dataloader = DataLoader(test_dataset, batch_size = batch_size,
+                                        shuffle = shuffle, num_workers = num_workers)
+    else:
+        test_dataloader = None
 
     return train_dataloader, val_dataloader, test_dataloader
 
@@ -118,6 +125,8 @@ def plotModelFromDir(dir, model, ofile):
     model.load_state_dict(saveDict['model_state_dict'])
     train_loss_arr = saveDict['train_loss']
     plt.plot(np.arange(0, epochs), train_loss_arr, label = 'train loss')
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
     plt.legend()
     plt.savefig(os.path.join('images', ofile))
     plt.close()
@@ -126,17 +135,24 @@ def plotModelFromArrays(train_loss_arr, ofile, val_loss = None):
     plt.plot(np.arange(0, len(train_loss_arr)), train_loss_arr, label = 'train loss')
     if val_loss is not None:
         plt.axhline(y = val_loss, color = 'black', linestyle = '--', label = 'final val loss')
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
     plt.legend()
     plt.savefig(os.path.join('images', ofile))
     plt.close()
 
-def plotContactMap(y, ofile, title = None):
+def plotContactMap(y, ofile, title = None, divide_by_mean = True):
     mycmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                              [(0,    'white'),
                                               (1,    'red')], N=126)
-    y = y / np.mean(y)
+    if len(y.shape) > 2:
+        N, C, H, W = y.shape
+        assert N == 1 and C == 1
+        y = y.reshape(H,W)
+    if divide_by_mean:
+        y = y / np.mean(y)
     plt.figure(figsize=(10, 10))
-    ax = sns.heatmap(ynpy, linewidth=0, vmin = 0, vmax = 1, cmap = mycmap)
+    ax = sns.heatmap(y, linewidth=0, vmin = 0, vmax = 1, cmap = mycmap)
     if title is not None:
         plt.title(title)
     plt.savefig(os.path.join('images', ofile))
@@ -145,6 +161,10 @@ def plotContactMap(y, ofile, title = None):
 def getBaseParser():
     parser = argparse.ArgumentParser(description='Base parser')
 
+    #pre-processing args
+    parser.add_argument('--y_diag_norm', type=bool, default=True)
+    parser.add_argument('--crop', type=str, default=None, 'size of crop to apply to image - format: <leftcrop-rightcrop>')
+
     # train args
     parser.add_argument('--start_epoch', type=int, default=1, help='Starting epoch')
     parser.add_argument('--n_epochs', type=int, default=100, help='Number of epochs to train for')
@@ -152,7 +172,7 @@ def getBaseParser():
     parser.add_argument('--print_mod', type=int, default=2, help='How often to print')
     parser.add_argument('--lr', type=float, default=1e-3, help='Learning eate. Default=0.001')
     parser.add_argument('--gpus', type=int, default=1, help='Number of gpus')
-    parser.add_argument('--milestones', type=str, help='Milestones for lr decay format: <milestone1-milestone2>')
+    parser.add_argument('--milestones', type=str, help='Milestones for lr decay - format: <milestone1-milestone2>')
     parser.add_argument('--gamma', type=float, default=0.1, help='Gamma for lr decay')
 
     # model args

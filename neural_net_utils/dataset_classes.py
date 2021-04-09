@@ -3,22 +3,29 @@ from neural_net_utils.utils import *
 import torch
 
 class Sequences2Contacts(Dataset):
-    def __init__(self, dirname, n, k, toxx, y_diag_norm = True, y_reshape = True):
+    def __init__(self, dirname, n, k, toxx, y_diag_norm = True, y_reshape = True,
+                names = False, crop = None):
         super(Sequences2Contacts, self).__init__()
         self.n = n
         self.k = k
         self.toxx = toxx
         self.y_diag_norm = y_diag_norm
         self.y_reshape = y_reshape
+        self.names = names
+        self.crop = crop
         self.paths = sorted(make_dataset(dirname))
 
     def __getitem__(self, index):
-        if self.y_diag_norm:
+        if self.y_diag_norm and self.crop is None:
             y_path = self.paths[index] + '/y_diag_norm.npy'
             y = np.load(y_path)
         else:
             y_path = self.paths[index] + '/y.npy'
             y = np.load(y_path)
+        if self.crop is not None:
+            y = y[crop[0]:crop[1], crop[0]:crop[1]]
+            if self.y_diag_norm:
+                diagonal_normalize(y)
         if self.y_reshape:
             y = y.reshape(1, self.n, self.n)
         y /= np.max(y)
@@ -31,7 +38,11 @@ class Sequences2Contacts(Dataset):
             x = np.load(x_path)
             x = x.reshape(1, self.n, self.k)
 
-        return torch.Tensor(x), torch.Tensor(y)
+        if self.names:
+            return torch.Tensor(x), torch.Tensor(y), self.paths[index]
+
+        else:
+            return torch.Tensor(x), torch.Tensor(y)
 
     def __len__(self):
         return len(self.paths)

@@ -25,8 +25,11 @@ def argparseSetup():
 
     opt = parser.parse_args()
 
+    # process list args
     if opt.milestones is not None:
         opt.milestones = [int(i) for i in opt.milestones.split('-')]
+    if opt.crop is not None:
+        opt.crop = [int(i) for i in opt.crop.split('-')]
 
     # configure cuda
     if opt.gpus > 1:
@@ -60,7 +63,8 @@ def main():
     print(opt)
 
     t0 = time.time()
-    seq2ContactData = Sequences2Contacts(opt.data_folder, n = 1024, k = opt.k, toxx = True)
+    seq2ContactData = Sequences2Contacts(opt.data_folder, n = 1024, k = opt.k, toxx = True,
+                                        y_diag_norm = opt.y_diag_norm, crop = opt.crop)
     train_dataloader, val_dataloader, test_dataloader = getDataLoaders(seq2ContactData,
                                                                         batch_size = opt.batch_size,
                                                                         num_workers = opt.num_workers,
