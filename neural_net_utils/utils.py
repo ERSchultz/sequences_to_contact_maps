@@ -55,34 +55,32 @@ def x2xx(x, append = False):
 
 @jit
 def diagonal_normalize(y):
-    prob = generateProbDist(y)
+    exp = generateExpectedDist(y)
     for i in range(len(y)):
         for j in range(i + 1):
             distance = i - j
-            prob_d = prob[distance]
-            if prob_d == 0:
+            exp_d = exp[distance]
+            if exp_d == 0:
                 pass
             else:
-                y[i,j] /= prob_d
+                y[i,j] /= exp_d
                 y[j,i] = y[i,j]
 
     return y
 
 @jit
-def generateProbDist(y):
+def generateExpectedDist(y):
     n = len(y)
     distances = range(0, n, 1)
-    observed = np.zeros(len(distances))
-    possible = np.ones(len(distances))
-    for distance in distances:
-        possible[distance] = n - distance
+    denom = [n-distance for distance in distances]
+    num = np.zeros(len(distances))
     for i in range(n):
         for j in range(i + 1):
             distance = i - j
-            observed[distance] += y[i,j] # = y[j,i]
+            num[distance] += y[i,j] # = y[j,i]
 
-    prob = np.divide(observed, possible)
-    return prob
+    exp = np.divide(num, denom)
+    return exp
 
 def plotModelFromDir(dir, model, ofile):
     saveDict = torch.load(dir, map_location=torch.device('cpu'))
