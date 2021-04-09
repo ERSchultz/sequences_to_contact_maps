@@ -99,7 +99,7 @@ def main():
             criterion, device = opt.device, save_location = os.path.join(opt.ofile_folder, opt.ofile + '.pt'),
             n_epochs = opt.n_epochs, start_epoch = opt.start_epoch, use_parallel = opt.use_parallel,
             scheduler = scheduler, save_mod = opt.save_mod, print_mod = opt.print_mod)
-    val_loss = test(val_dataloader, model, optimizer, criterion, device)
+    val_loss = test(val_dataloader, model, optimizer, criterion, opt.device)
 
     print('Total time: {}'.format(time.time() - t0))
     print('Val loss: {}'.format(val_loss))
