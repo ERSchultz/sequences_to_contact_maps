@@ -104,7 +104,7 @@ def main():
             scheduler = scheduler, save_mod = opt.save_mod, print_mod = opt.print_mod)
     val_loss = test(val_dataloader, model, optimizer, criterion, opt.device)
 
-    print('Total time: {}'.format(time.time(o) - t0))
+    print('Total time: {}'.format(time.time() - t0))
     print('Val loss: {}'.format(val_loss))
     plotModelFromArrays(train_loss_arr, os.path.join('images', opt.ofile + '_train_val_loss.png'), val_loss)
 

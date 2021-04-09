@@ -57,6 +57,6 @@ def test(loader, model, optimizer, criterion, device):
             loss = criterion(yhat, y)
             avg_loss += loss.item()
     avg_loss /= (t+1)
-    print('\nMean test loss: {:.4f})'.format(avg_loss))
+    print('\nMean test loss: {:.4f}'.format(avg_loss))
     # TODO quartiles and median loss
     return avg_loss
