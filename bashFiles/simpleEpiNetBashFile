@@ -5,7 +5,7 @@
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
 #SBATCH --mem-per-cpu=4000
-#SBATCH --mem-per-gpu=12000
+#SBATCH --mem-per-gpu=10000
 
 dirname="../../../project2/depablo/erschultz/dataset_04_06_21"
 nEpochs=10

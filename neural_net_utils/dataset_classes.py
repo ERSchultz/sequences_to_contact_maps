@@ -3,20 +3,24 @@ from neural_net_utils.utils import *
 import torch
 
 class Sequences2Contacts(Dataset):
-    def __init__(self, dirname, n, k, toxx, y_diag_norm = True):
+    def __init__(self, dirname, n, k, toxx, y_diag_norm = True, y_reshape = True):
         super(Sequences2Contacts, self).__init__()
         self.n = n
         self.k = k
         self.toxx = toxx
         self.y_diag_norm = y_diag_norm
+        self.y_reshape = y_reshape
         self.paths = sorted(make_dataset(dirname))
 
     def __getitem__(self, index):
-        y_path = self.paths[index] + '/y.npy'
-        y = np.load(y_path)
         if self.y_diag_norm:
-            y = diagonal_normalize(y.astype(np.float64))
-        y = y.reshape(1, self.n, self.n)
+            y_path = self.paths[index] + '/y_diag_norm.npy'
+            y = np.load(y_path)
+        else:
+            y_path = self.paths[index] + '/y.npy'
+            y = np.load(y_path)
+        if self.y_reshape:
+            y = y.reshape(1, self.n, self.n)
         y /= np.max(y)
 
         if self.toxx:
