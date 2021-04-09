@@ -5,7 +5,9 @@ import numpy as np
 import os
 import math
 import matplotlib.pyplot as plt
+import matplotlib.colors
 import argparse
+import seaborn as sns
 
 def make_dataset(dir):
     data_file_arr = []
@@ -82,13 +84,18 @@ def generateExpectedDist(y):
     exp = np.divide(num, denom)
     return exp
 
+def plotExpectedDist(exp, ofile):
+    plt.plot(exp)
+    plt.savefig(os.path.join('images', ofile))
+    plt.close()
+
 def plotModelFromDir(dir, model, ofile):
     saveDict = torch.load(dir, map_location=torch.device('cpu'))
     model.load_state_dict(saveDict['model_state_dict'])
     train_loss_arr = saveDict['train_loss']
     plt.plot(np.arange(0, epochs), train_loss_arr, label = 'train loss')
     plt.legend()
-    plt.savefig('images/' + ofile)
+    plt.savefig(os.path.join('images', ofile))
     plt.close()
 
 def plotModelFromArrays(train_loss_arr, ofile, val_loss = None):
@@ -96,7 +103,19 @@ def plotModelFromArrays(train_loss_arr, ofile, val_loss = None):
     if val_loss is not None:
         plt.axhline(y = val_loss, color = 'black', linestyle = '--', label = 'final val loss')
     plt.legend()
-    plt.savefig(ofile)
+    plt.savefig(os.path.join('images', ofile))
+    plt.close()
+
+def plotContactMap(y, ofile, title = None):
+    mycmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                             [(0,    'white'),
+                                              (1,    'red')], N=126)
+    y = y / np.mean(y)
+    plt.figure(figsize=(10, 10))
+    ax = sns.heatmap(ynpy, linewidth=0, vmin = 0, vmax = 1, cmap = mycmap)
+    if title is not None:
+        plt.title(title)
+    plt.savefig(os.path.join('images', ofile))
     plt.close()
 
 def getBaseParser():

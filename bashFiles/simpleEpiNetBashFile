@@ -1,5 +1,6 @@
 #! /bin/bash
 #SBATCH --job-name=simpleEpiNet
+#SBATCH --output=logFiles/simpleEpiNet.out
 #SBATCH --time=02:00:00
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1

@@ -106,7 +106,7 @@ def main():
 
     print('Total time: {}'.format(time.time() - t0))
     print('Val loss: {}'.format(val_loss))
-    plotModelFromArrays(train_loss_arr, os.path.join(opt.ofile_folder, opt.ofile + ' train_val_loss.png'), val_loss)
+    plotModelFromArrays(train_loss_arr, os.path.join(opt.ofile_folder, opt.ofile + '_train_val_loss.png'), val_loss)
 
 if __name__ == '__main__':
     main()

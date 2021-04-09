@@ -1,6 +1,6 @@
 *.pt
 *.log
-*.slurm
+*.out
 /dataset_04_06_21/
 /dataset_04_07_21/
 /__pycache__/
