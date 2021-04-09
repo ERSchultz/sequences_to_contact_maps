@@ -21,6 +21,8 @@ def argparseSetup():
 
     # model args
     parser.add_argument('--height', type=int, default=1, help='Height of convolutional kernel')
+    parser.add_argument('--hidden', type=int, default=4, help='Number of variables in hidden layers')
+    parser.add_argument('--latent', type=int, default=2, help='Final number of latent variables')
 
     opt = parser.parse_args()
 
@@ -70,7 +72,7 @@ def main():
         torch.cuda.manual_seed(opt.seed)
 
     # Set up model
-    model = SimpleEpiNet(n = 1024, h = opt.height, k = opt.k)
+    model = SimpleEpiNet(n = 1024, h = opt.height, k = opt.k, hidden_size = opt.hidden, latent_size = o)
     if opt.pretrained:
         model_name = os.path.join(opt.ifile_folder, opt.ifile + '.pt')
         if os.path.exists(model_name):

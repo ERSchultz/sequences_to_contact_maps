@@ -126,28 +126,30 @@ class DeepC(nn.Module):
         x = x.view()
 
 class SimpleEpiNet(nn.Module):
-    def __init__(self, n, h, k):
+    def __init__(self, n, h, k, hidden_size, latent_size):
         super(SimpleEpiNet, self).__init__()
         self.n = n
         self.h = h
+        self.hidden_size = hidden_size
+        self.latent_size = latent_size
         assert h <= n, "h can be at most n"
         assert h % 2 != 0, "h must be odd"
         self.k = k
 
         # Convolution
-        self.conv1 = ConvBlock(1, k*2, (h, k), padding = (h//2, 0))
-        self.conv2 = ConvBlock(1, k*2, (h, k*2), padding = (h//2, 0))
-        self.conv3 = ConvBlock(1, k, (h, k*2), padding = (h//2, 0))
+        self.conv1 = ConvBlock(1, hidden_size, (h, k), padding = (h//2, 0))
+        self.conv2 = ConvBlock(1, hidden_size, (h, hidden_size), padding = (h//2, 0))
+        self.conv3 = ConvBlock(1, latent_size, (h, hidden_size), padding = (h//2, 0))
         self.act = nn.Sigmoid()
 
 
     def forward(self, input):
         x = self.conv1(input)
-        x = x.view(-1, 1, self.n, self.k*2)
+        x = x.view(-1, 1, self.n, self.hidden_size)
         x = self.conv2(x)
-        x = x.view(-1, 1, self.n, self.k*2)
+        x = x.view(-1, 1, self.n, self.hidden_size)
         x = self.conv3(x)
-        x = x.view(-1, 1, self.n, self.k)
+        x = x.view(-1, 1, self.n, self.latent_size)
 
         output = torch.einsum('...ij, ...kj->...ik', x, x)
         output = self.act(output)
