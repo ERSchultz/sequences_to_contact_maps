@@ -94,7 +94,6 @@ def main():
 
     if opt.cuda:
         model.to(opt.device)
-        criterion = criterion.to(opt.device)
 
     train_loss_arr = train(train_dataloader, model, optimizer,
             criterion, device = opt.device, save_location = os.path.join(opt.ofile_folder, opt.ofile + '.pt'),

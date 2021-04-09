@@ -1,6 +1,6 @@
 #! /bin/bash
-#SBATCH --job-name=seq2contact_4_8_21
-#SBATCH --output=logFiles/seq2contact_4_8_21
+#SBATCH --job-name=simpleEpiNet
+#SBATCH --output=logFiles/simpleEpiNet.slurm
 #SBATCH --time=02:00:00
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
