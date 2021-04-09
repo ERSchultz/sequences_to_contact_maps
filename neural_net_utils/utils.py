@@ -70,7 +70,6 @@ def diagonal_normalize(y):
 
     return y
 
-@jit
 def generateExpectedDist(y):
     n = len(y)
     distances = range(0, n, 1)
@@ -84,7 +83,8 @@ def generateExpectedDist(y):
     exp = np.divide(num, denom)
     return exp
 
-def plotExpectedDist(exp, ofile):
+def plotExpectedDist(y, ofile):
+    exp = generateExpectedDist(y)
     plt.plot(exp)
     plt.savefig(os.path.join('images', ofile))
     plt.close()

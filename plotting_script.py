@@ -1,15 +1,18 @@
 from neural_net_utils.networks import *
-from utils import *
+from neural_net_utils.utils import *
 
 def main():
-    dir = 'models/model_4_8_21.pt'
-    model = SimpleEpiNet(1024, 1, 2)
-    plotModelFromDir(dir, model, 'model1_train_loss.png')
+    sample = 'sample1000'
+    dataPath = os.path.join('dataset_04_06_21', sample)
+    y = np.load(dataPath + '/y.npy')
+    plotExpectedDist(y, sample + '_y_exp.png')
 
-    dir = 'models/UNET1.pt'
-    k=2
-    model = UNet(nf_in = 2, nf_out = 1, nf = 8, out_act = nn.Sigmoid())
-    plotModelFromDir(dir, model, 'UNET_train_loss.png')
+    y_diag = np.load(dataPath + '/y_diag_norm.npy')
+    plotExpectedDist(y, sample + '_y_diag_exp.png'))
+
+
+    modeldir = 'models/TODO'
+
 
 if __name__ == '__main__':
     main()

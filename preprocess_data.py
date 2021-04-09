@@ -48,7 +48,6 @@ def test_process_data(dirname):
     assert np.array_equal(y, yload)
 
     y_diag = diagonal_normalize(y.astype(np.float64))
-    print(y_diag)
     np.save(path + '/y_diag_norm.npy', y_diag)
     y_diagload = np.load(path + '/y_diag_norm.npy')
     assert np.array_equal(y_diag, y_diagload)
