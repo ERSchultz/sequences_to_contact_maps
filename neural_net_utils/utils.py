@@ -14,8 +14,9 @@ def make_dataset(dir):
     for file in os.listdir(dir):
         if not file.startswith('sample'):
             print("Skipping {}".format(file))
-        data_file = dir + '/' + file
-        data_file_arr.append(data_file)
+        else:
+            data_file = dir + '/' + file
+            data_file_arr.append(data_file)
         # TODO zero padded??
     return data_file_arr
 
