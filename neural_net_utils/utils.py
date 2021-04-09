@@ -53,6 +53,7 @@ def x2xx(x, append = False):
             else:
                 xx[:, i, j] = np.add(x[i], x[j])
                 xx[:, j, i] = np.add(x[j], x[i])
+                # TODO mean
     return xx
 
 @jit
@@ -83,9 +84,24 @@ def generateExpectedDist(y):
     exp = np.divide(num, denom)
     return exp
 
+# Plotting functions
 def plotExpectedDist(y, ofile, title = None, y_scale = None):
     exp = generateExpectedDist(y)
     print(exp)
+    for i in exp:
+        print(i)
+    fig, ax = plt.subplots()
+    ax.plot(exp)
+    if y_scale == 'log':
+        plt.yscale('log')
+    plt.ylabel('expected interaction count')
+    plt.xlabel('distance along chain')
+    if title is not None:
+        plt.title(title)
+    plt.savefig(os.path.join('images', ofile))
+    plt.close()
+
+def plotProbDist(y, x, ofile, title = None):
     fig, ax = plt.subplots()
     ax.plot(exp)
     if y_scale == 'log':
