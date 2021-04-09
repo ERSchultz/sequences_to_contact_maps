@@ -1,5 +1,6 @@
 #! /bin/bash
 
+dirname="../../../project2/depablo/erschultz/dataset_04_06_21"
 nEpochs=2
 nf=8
 lr=0.001
@@ -14,4 +15,4 @@ logfile="logFiles/${ofile}.log"
 
 
 source activate seq2contact_pytorch
-python3 ~/sequences_to_contact_maps/UNet.py --n_epochs $nEpochs --nf $nf --batch_size $bathSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile >> $logfile
+python3 ~/sequences_to_contact_maps/UNet.py --data_folder $dirname --n_epochs $nEpochs --nf $nf --batch_size $bathSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile >> $logfile
