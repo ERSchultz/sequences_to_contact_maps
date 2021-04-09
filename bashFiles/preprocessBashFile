@@ -1,6 +1,10 @@
 #! /bin/bash
-#SBATCH --job-name=preprocess_4_8_21
-#SBATCH --output=logFiles/preprocess_4_8_21
+#SBATCH --job-name=preprocess
+#SBATCH --partition=gpu2
+#SBATCH --gres=gpu:1
+#SBATCH --mem-per-gpu=1000
+#SBATCH --mem-per-cpu=3000
+#SBATCH --output=logFiles/preprocess.log
 #SBATCH --time=01:00:00
 
 source activate seq2contact_pytorch
