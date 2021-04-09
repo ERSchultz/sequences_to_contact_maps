@@ -1,16 +1,16 @@
 #! /bin/bash
 
-nEpochs = 2
-nf = 8
-lr = 0.001
-batchSize = 8
-numWorkers = 1
-milestones = '1'
-gamma = 0.1
-k = 2
+nEpochs=2
+nf=8
+lr=0.001
+batchSize=8
+numWorkers=1
+milestones='1'
+gamma=0.1
+k=2
 
-ofile = "model"
-logfile = "logFiles/${ofile}.log"
+ofile="model"
+logfile="logFiles/${ofile}.log"
 
 
 source activate seq2contact_pytorch
