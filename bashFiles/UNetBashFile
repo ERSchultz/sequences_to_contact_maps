@@ -4,6 +4,8 @@
 #SBATCH --time=02:00:00
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=2
 #SBATCH --mem-per-cpu=5000
 #SBATCH --mem-per-gpu=10000
 
@@ -12,7 +14,7 @@ nEpochs=15
 nf=8
 lr=0.01
 batchSize=8
-numWorkers=1
+numWorkers=2
 milestones='5-10'
 gamma=0.1
 k=2
