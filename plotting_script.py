@@ -11,6 +11,17 @@ def expected_plots():
     y_diag = np.load(dataPath + '/y_diag_norm.npy')
     plotExpectedDist(y_diag, sample + '_y_diag_exp.png', title = 'post normalization')
 
+def preprocessing():
+    sample = 'sample1000'
+    crop = [128,1024]
+    dataPath = os.path.join('dataset_04_06_21', sample)
+    y = np.load(dataPath + '/y.npy')
+    y_diag = diagonal_normalize(y)
+
+    y_crop = y[crop[0]:crop[1], crop[0]:crop[1]]
+    y_diag_crop = diagonal_normalize(y_crop)
+
+
 def main():
     seq2ContactData = Sequences2Contacts('dataset_04_06_21', n = 1024, k = 2, toxx = True)
     dataloader, _, _ = getDataLoaders(seq2ContactData, batch_size = 1,

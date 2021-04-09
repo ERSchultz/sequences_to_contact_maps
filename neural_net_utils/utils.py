@@ -141,7 +141,7 @@ def plotModelFromArrays(train_loss_arr, ofile, val_loss = None):
     plt.savefig(os.path.join('images', ofile))
     plt.close()
 
-def plotContactMap(y, ofile, title = None, divide_by_mean = True):
+def plotContactMap(y, ofile, title = None, vmax = 1):
     mycmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                              [(0,    'white'),
                                               (1,    'red')], N=126)
@@ -149,9 +149,9 @@ def plotContactMap(y, ofile, title = None, divide_by_mean = True):
         N, C, H, W = y.shape
         assert N == 1 and C == 1
         y = y.reshape(H,W)
-    if divide_by_mean:
-        y = y / np.mean(y)
     plt.figure(figsize=(10, 10))
+    if vmax = 'mean':
+        vmax = np.mean(y)
     ax = sns.heatmap(y, linewidth=0, vmin = 0, vmax = 1, cmap = mycmap)
     if title is not None:
         plt.title(title)
