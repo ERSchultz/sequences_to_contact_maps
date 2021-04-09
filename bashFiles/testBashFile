@@ -1,9 +1,5 @@
 #! /bin/bash
-#SBATCH --job-name=Test
-#SBATCH --output=logFiles/test.out
-#SBATCH --time=0:05:00
-#SBATCH --partition=gpu2
-#SBATCH --gres=gpu:1
 
-
+cd ~
+ls -l
 python3 ~/sequences_to_contact_maps/test.py
