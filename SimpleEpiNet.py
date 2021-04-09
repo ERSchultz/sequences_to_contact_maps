@@ -25,7 +25,7 @@ def argparseSetup():
     opt = parser.parse_args()
 
     if opt.milestones is not None:
-        opt.milestons = opt.milestones.split('-')
+        opt.milestones = [int(i) for i in opt.milestones.split('-')]
 
     # configure cuda
     if opt.gpus > 1:

@@ -26,7 +26,7 @@ def argparseSetup():
     opt = parser.parse_args()
 
     if opt.milestones is not None:
-        opt.milestons = opt.milestones.split('-')
+        opt.milestones = [int(i) for i in opt.milestones.split('-')]
 
     # configure cuda
     if opt.gpus > 1:
@@ -57,6 +57,8 @@ def argparseSetup():
 
 def main():
     opt = argparseSetup()
+    print(opt)
+
     t0 = time.time()
     seq2ContactData = Sequences2Contacts(opt.data_folder, n = 1024, k = opt.k, toxx = True)
     train_dataloader, val_dataloader, test_dataloader = getDataLoaders(seq2ContactData,
@@ -64,6 +66,7 @@ def main():
                                                                         num_workers = opt.num_workers,
                                                                         seed = opt.seed)
 
+    # Set random seeds
     torch.manual_seed(opt.seed)
     if opt.cuda:
         torch.cuda.manual_seed(opt.seed)
@@ -80,6 +83,7 @@ def main():
             model.load_state_dict(save_dict['model_state_dict'])
             print('Pre-trained model is loaded.')
 
+    # Set up model and scheduler
     optimizer = optim.Adam(model.parameters(), lr = opt.lr)
     if opt.milestones is not None:
         scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones = opt.milestones,
