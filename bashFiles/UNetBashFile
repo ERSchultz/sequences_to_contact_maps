@@ -1,11 +1,25 @@
 #! /bin/bash
-#SBATCH --job-name=seq2contactUNet_4_8_21
-#SBATCH --output=logFiles/seq2contactUNet_4_8_21
+#SBATCH --job-name=UNet
+#SBATCH --output=logFiles/UNet.slurm
 #SBATCH --time=02:00:00
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
 #SBATCH --mem-per-cpu=5000
 #SBATCH --mem-per-gpu=12000
 
+dirname = "../../../project2/depablo/erschultz/dataset_04_06_21"
+nEpochs = 20
+nf = 8
+lr = 0.001
+batchSize = 8
+numWorkers = 1
+milestones = '10'
+gamma = 0.1
+k = 2
+
+ofile = "UNet_nEpochs${nEpochs}_nf${nf}_lr${lr}"
+logfile = "logFiles/${ofile}.log"
+
+
 source activate seq2contact_pytorch
-python3 UNet.py
+python3 ~/sequences_to_contact_maps/UNet.py --data_folder $dirname --n_epochs $nEpochs --nf $nf --batch_size $bathSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile >> $logfile

@@ -102,18 +102,18 @@ class VAE(nn.Module):
 
 class DeepC(nn.Module):
     '''Roughly based on https://doi.org/10.1038/s41592-020-0960-3'''
-    def __init__(self, n, w, k, y_len):
+    def __init__(self, n, h, k, y_len):
         super(DeepC, self).__init__()
         self.n = n
-        self.w = w
+        self.h = h
         self.k = k
         self.y_len = y_len
         self.y_flat_len = y_len**2 - y_len
 
         # Convolution
-        self.conv1 = ConvBlock(1, k, (w, k), padding = w-1)
-        self.conv2 = ConvBlock(1, k, (w, k), padding = w-1)
-        self.conv2 = ConvBlock(1, k, (w, k), padding = w-1)
+        self.conv1 = ConvBlock(1, k, (h, k), padding = w-1)
+        self.conv2 = ConvBlock(1, k, (h, k), padding = w-1)
+        self.conv2 = ConvBlock(1, k, (h, k), padding = w-1)
 
         # TODO Dialted convolution
 
@@ -126,18 +126,18 @@ class DeepC(nn.Module):
         x = x.view()
 
 class SimpleEpiNet(nn.Module):
-    def __init__(self, n, w, k):
+    def __init__(self, n, h, k):
         super(SimpleEpiNet, self).__init__()
         self.n = n
-        self.w = w
-        assert w <= n, "w can be at most n"
-        assert w % 2 != 0, "w must be odd"
+        self.h = h
+        assert h <= n, "h can be at most n"
+        assert h % 2 != 0, "h must be odd"
         self.k = k
 
         # Convolution
-        self.conv1 = ConvBlock(1, k*2, (w, k), padding = (w//2, 0))
-        self.conv2 = ConvBlock(1, k*2, (w, k*2), padding = (w//2, 0))
-        self.conv3 = ConvBlock(1, k, (w, k*2), padding = (w//2, 0))
+        self.conv1 = ConvBlock(1, k*2, (h, k), padding = (h//2, 0))
+        self.conv2 = ConvBlock(1, k*2, (h, k*2), padding = (h//2, 0))
+        self.conv3 = ConvBlock(1, k, (h, k*2), padding = (h//2, 0))
         self.act = nn.Sigmoid()
 
 

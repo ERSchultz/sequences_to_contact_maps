@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 
 def train(train_loader, model, optimizer, criterion, device, save_location,
-        n_epochs, use_parallel = False, scheduler = None, save_mod = 5, print_mod = 2, start_epoch = 0):
+        n_epochs, start_epoch, use_parallel, scheduler, save_mod, print_mod, ):
     train_loss = []
-    for e in range(start_epoch, n_epochs):
+    for e in range(start_epoch, n_epochs+1):
         model.train()
         avg_loss = 0
         for t, (x,y) in enumerate(train_loader):
@@ -20,10 +20,10 @@ def train(train_loader, model, optimizer, criterion, device, save_location,
         train_loss.append(avg_loss)
 
         if scheduler is not None:
-            scheduler.step(e)
+            scheduler.step()
         if e % print_mod == 0:
             print('Epoch {}, loss = {:.4f}'.format(e, avg_loss))
-        if (e + 1) % save_mod == 0:
+        if e % save_mod == 0:
             if use_parallel:
                 model_state = model.module.state_dict()
             else:

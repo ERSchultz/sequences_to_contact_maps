@@ -1,6 +1,17 @@
 #! /bin/bash
 
-conda activate seq2contact_pytorch # this fails
-source activate seq2contact_pytorch # i think this works
-python3 test.py
-# https://stackoverflow.com/questions/55507519/python-activate-conda-env-through-shell-script
+nEpochs = 2
+nf = 8
+lr = 0.001
+batchSize = 8
+numWorkers = 1
+milestones = '1'
+gamma = 0.1
+k = 2
+
+ofile = "model"
+logfile = "logFiles/${ofile}.log"
+
+
+source activate seq2contact_pytorch
+python3 ~/sequences_to_contact_maps/UNet.py --n_epochs $nEpochs --nf $nf --batch_size $bathSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile >> $logfile
