@@ -166,7 +166,7 @@ def getBaseParser():
     parser = argparse.ArgumentParser(description='Base parser')
 
     #pre-processing args
-    parser.add_argument('--y_diag_norm', type=bool, default=True)
+    parser.add_argument('--y_diag_norm', type=str2bool, default=True)
     parser.add_argument('--crop', type=str, default=None, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
 
     # train args
@@ -192,3 +192,14 @@ def getBaseParser():
     parser.add_argument('--seed', type=int, default=42, help='random seed to use. Default: 42')
 
     return parser
+
+def str2bool(v):
+    # https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
+    if isinstance(v, bool):
+       return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')

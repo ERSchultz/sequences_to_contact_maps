@@ -31,10 +31,14 @@ class Sequences2Contacts(Dataset):
         if self.toxx:
             x_path = self.paths[index] + '/xx.npy'
             x = np.load(x_path)
+            if self.crop is not None:
+                x = x[:, self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
         else:
             x_path = self.paths[index] + '/x.npy'
             x = np.load(x_path)
             x = np.expand_dims(x, 0)
+            if self.crop is not None:
+                x = x[:, self.crop[0]:self.crop[1]]
 
         if self.names:
             return torch.Tensor(x), torch.Tensor(y), self.paths[index]
