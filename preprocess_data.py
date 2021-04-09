@@ -54,6 +54,7 @@ def test_process_data(dirname):
     assert np.array_equal(y_diag, y_diagload)
 
 def main():
+    print('updates worked')
     if len(sys.argv) == 1:
         dirname = 'dataset_04_06_21'
     else:
