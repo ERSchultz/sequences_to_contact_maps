@@ -54,30 +54,28 @@ def x2xx(x, append = False):
     return xx
 
 @jit
-def diagonal_normalize(y, d = 1):
-    prob = generateProbDist(y, d)
+def diagonal_normalize(y):
+    prob = generateProbDist(y)
     for i in range(len(y)):
         for j in range(i + 1):
-            distance = y[i,j] - y[j,i]
-            pos = int(distance / d) # need to guarantee int
-            y[i,j] /= prob[pos]
+            distance = i - j
+            y[i,j] /= prob[distance]
             y[j,i] = y[i,j]
 
     return y
 
 @jit
-def generateProbDist(y, d):
+def generateProbDist(y):
     n = len(y)
-    distances = range(0, n + d, d)
+    distances = range(0, n, 1)
     observed = np.zeros(len(distances))
     possible = np.zeros(len(distances))
-    for pos, distance in enumerate(distances):
-        possible[pos] = (n - distance + d) * d
+    for distance in distances:
+        possible[distance] = n - distance
     for i in range(n):
         for j in range(i + 1):
-            distance = y[i,j] - y[j,i]
-            pos = int(distance / d) # need to guarantee int
-            observed[pos] += y[i,j] # = y[j,i]
+            distance = i - j
+            observed[distance] += y[i,j] # = y[j,i]
 
     prob = np.divide(observed, possible)
     return prob

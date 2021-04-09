@@ -17,7 +17,6 @@ class Sequences2Contacts(Dataset):
         if self.y_diag_norm:
             y = diagonal_normalize(y.astype(np.float64))
         y = y.reshape(1, self.n, self.n)
-        y = y / np.max(y)
 
         if self.toxx:
             x_path = self.paths[index] + '/xx.npy'
@@ -45,7 +44,6 @@ class Contacts(Dataset):
         if self.y_diag_norm:
             y = diagonal_normalize(y.astype(np.float64))
         y = y.reshape(1, self.n, self.n)
-        y = y / np.max(y)
         return y
 
     def __len__(self):
