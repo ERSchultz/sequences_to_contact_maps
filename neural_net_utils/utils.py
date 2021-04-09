@@ -83,9 +83,17 @@ def generateExpectedDist(y):
     exp = np.divide(num, denom)
     return exp
 
-def plotExpectedDist(y, ofile):
+def plotExpectedDist(y, ofile, title = None, y_scale = None):
     exp = generateExpectedDist(y)
-    plt.plot(exp)
+    print(exp)
+    fig, ax = plt.subplots()
+    ax.plot(exp)
+    if y_scale == 'log':
+        plt.yscale('log')
+    plt.ylabel('expected interaction count')
+    plt.xlabel('distance along chain')
+    if title is not None:
+        plt.title(title)
     plt.savefig(os.path.join('images', ofile))
     plt.close()
 
