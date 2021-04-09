@@ -82,7 +82,7 @@ def main():
 
     optimizer = optim.Adam(model.parameters(), lr = opt.lr)
     if opt.milestones is not None:
-        scheduler = optim.lr_scheduler.MultiSepLR(optimizer, milestones = opt.milestones,
+        scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones = opt.milestones,
                                                     gamma = opt.gamma, verbose = True)
     else:
         scheduler = None
