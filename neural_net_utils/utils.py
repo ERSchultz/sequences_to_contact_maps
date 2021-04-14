@@ -9,18 +9,18 @@ import matplotlib.colors
 import argparse
 import seaborn as sns
 
-def make_dataset(dir, minSample = True):
+def make_dataset(dir, minSample = 0):
     data_file_arr = []
     for file in os.listdir(dir):
         if not file.startswith('sample'):
             print("Skipping {}".format(file))
         else:
-            if minSample is not None:
-                sample_id = file[10:]
-                print(sample_id)
-                pass
-            data_file = dir + '/' + file
-            data_file_arr.append(data_file)
+            sample_id = int(file[6:])
+            if sample_id < minSample:
+                print("Skipping {}".format(file))
+            else:
+                data_file = dir + '/' + file
+                data_file_arr.append(data_file)
         # TODO zero padded??
     return data_file_arr
 
@@ -149,7 +149,7 @@ def plotModelFromArrays(train_loss_arr, ofile, val_loss = None):
     plt.savefig(os.path.join('images', ofile))
     plt.close()
 
-def plotContactMap(y, ofile, title = None, vmax = 1):
+def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 10):
     mycmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                              [(0,    'white'),
                                               (1,    'red')], N=126)
@@ -157,13 +157,14 @@ def plotContactMap(y, ofile, title = None, vmax = 1):
         N, C, H, W = y.shape
         assert N == 1 and C == 1
         y = y.reshape(H,W)
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(size_in, size_in))
     if vmax == 'mean':
         vmax = np.mean(y)
     ax = sns.heatmap(y, linewidth=0, vmin = 0, vmax = vmax, cmap = mycmap)
     if title is not None:
         plt.title(title)
-    plt.savefig(os.path.join('images', ofile))
+    plt.tight_layout()
+    plt.savefig(os.path.join('example_images', ofile))
     plt.close()
 
 def getBaseParser():

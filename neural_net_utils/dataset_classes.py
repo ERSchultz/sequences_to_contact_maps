@@ -4,14 +4,14 @@ import torch
 
 class Sequences2Contacts(Dataset):
     def __init__(self, dirname, toxx = False, y_diag_norm = True, y_reshape = True,
-                names = False, crop = None):
+                names = False, crop = None, min_sample = 0):
         super(Sequences2Contacts, self).__init__()
         self.toxx = toxx
         self.y_diag_norm = y_diag_norm
         self.y_reshape = y_reshape
         self.names = names
         self.crop = crop
-        self.paths = sorted(make_dataset(dirname))
+        self.paths = sorted(make_dataset(dirname, minSample = min_sample))
 
     def __getitem__(self, index):
         if self.y_diag_norm and self.crop is None:

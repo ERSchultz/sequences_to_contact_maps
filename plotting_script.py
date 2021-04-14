@@ -12,18 +12,33 @@ def expected_plots():
     plotExpectedDist(y_diag, sample + '_y_diag_exp.png', title = 'post normalization')
 
 def preprocessing():
-    sample = 'sample1000'
+    name = 'sample1000'
     crop = [128,1024]
-    dataPath = os.path.join('dataset_04_06_21', sample)
+    dataPath = os.path.join('dataset_04_07_21', name)
     y = np.load(dataPath + '/y.npy')
     y_diag = diagonal_normalize(y)
+    vmax = 1
+    plotContactMap(y, name + '_y.png', vmax = vmax)
+    plotContactMap(y_diag, name + '_y_diag.png', vmax = vmax)
 
     y_crop = y[crop[0]:crop[1], crop[0]:crop[1]]
     y_diag_crop = diagonal_normalize(y_crop)
+    plotContactMap(y_crop, name + '_y_crop.png', vmax = vmax)
+    plotContactMap(y_diag_crop, name + '_y_diag_crop.png', vmax = vmax)
+
+def preprocessing2():
+    name = 'sample1000'
+    dataPath = os.path.join('dataset_04_06_21', name)
+    y = np.load(dataPath + '/y.npy')
+    y_diag = np.load(dataPath + '/y_diag_norm.npy')
+    vmax = 'mean'
+    plotContactMap(y, name + '_yp.png', vmax = vmax)
+    plotContactMap(y_diag, name + '_yp_diag.png', vmax = vmax)
 
 
-def main():
-    seq2ContactData = Sequences2Contacts('dataset_04_06_21', n = 1024, k = 2, toxx = True, names = True)
+def results():
+    seq2ContactData = Sequences2Contacts('dataset_04_06_21', toxx = True,
+                                        names = True, min_sample = 995)
     dataloader, _, _ = getDataLoaders(seq2ContactData, batch_size = 1,
                                             num_workers = 0, seed = 42,
                                             split = [1,0,0], shuffle = False)
@@ -39,13 +54,16 @@ def main():
         name = name[0].split('/')[1]
         print(name)
         yhat = model(x)
-        plotContactMap(yhat.detach().numpy(), name + '_yhat.png', vmax = vmax)
-        plotContactMap(y.numpy(), name + '_y.png', vmax = vmax)
+        plotContactMap(y, name + '_y.png', vmax = vmax, title = 'Y')
+        plotContactMap(yhat.detach().numpy(), name + '_yhat.png', vmax = vmax, title = 'Y hat')
         ydif = yhat.detach().numpy() - y.numpy()
-        plotContactMap(ydif, name + '_ydif.png', vmax = vmax)
+        plotContactMap(ydif, name + '_ydif.png', vmax = vmax, title = 'difference')
         loss = F.mse_loss(yhat, y)
         print(loss)
 
+def main():
+    # preprocessing2()
+    results()
 
 if __name__ == '__main__':
     main()
