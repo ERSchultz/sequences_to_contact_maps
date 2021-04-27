@@ -1,6 +1,8 @@
 import multiprocessing
 import numpy as np
+import torch
 from neural_net_utils.utils import *
+from dataset_classes import Names
 import time
 import argparse
 import os
@@ -13,6 +15,7 @@ def setupParser():
     parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
     parser.add_argument('--n', type=int, default=1024, help='Number of particles')
     parser.add_argument('--sample_size', type=int, default=10, help='size of sample for diagonal normalization')
+    parser.add_argument('--seed', type=int, default=42, help='random seed to use. Default: 42')
 
     return parser
 
@@ -42,6 +45,13 @@ def process_data(opt):
     # determine mean_dist for diagonal normaliztion
     meanDist_path = os.path.join(opt.input_folder, 'meanDist.npy')
     if not os.path.exists(meanDist_path):
+        split = [0.8, 0.1, 0.1]
+        trainN = math.floor(N * split[0])
+        valN = math.floor(N * split[1])
+        testN = N - trainN - valN
+        train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(Names(opt.input_folder),
+                                            [trainN, valN, testN],
+                                            generator = torch.Generator().manual_seed(opt.seed))
         in_paths_sample = np.random.choice(in_paths, opt.sample_size, replace = False)
         meanDist = np.zeros(opt.n)
         for path in in_paths_sample:
@@ -89,6 +99,10 @@ def process_sample_diag_norm(in_path, out_path, meanDist):
     y_diag = diagonal_normalize(y, meanDist)
     np.save(os.path.join(out_path, 'y_diag_norm.npy'), y_diag)
 
+def process_sample_percentile_norm(in_path, out_path, prcntDist):
+    y_diag = np.load(os.path.join(in_path, 'y_diag_norm.npy')).astype(np.float64)
+    y_prcnt = percentile_normalize(y, prcntDist)
+    np.save(os.path.join(out_path, 'y_prcnt_norm.npy'), y_diag)
 
 
 def test_process_data(dirname):

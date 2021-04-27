@@ -27,8 +27,7 @@ def make_dataset(dir, minSample = 0):
                 data_file_arr.append(data_file)
     return data_file_arr
 
-def getDataLoaders(dataset, batch_size = 64, num_workers = 0, split = [0.8, 0.1, 0.1],
-                    seed = 42, shuffle = True):
+def getDataLoaders(dataset, batch_size, num_workers, seed, split = [0.8, 0.1, 0.1], shuffle = True):
     N = len(dataset)
     assert sum(split) - 1 < 1e-5, sum(split)
     trainN = math.floor(N * split[0])
@@ -425,6 +424,7 @@ def getBaseParser():
 
     #pre-processing args
     parser.add_argument('--y_diag_norm', type=str2bool, default=True)
+    parser.add_argument('--y_prcnt_norm', type=str2bool, default=False)
     parser.add_argument('--crop', type=str, default=None, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
 
     # train args
