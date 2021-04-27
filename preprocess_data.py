@@ -10,7 +10,7 @@ import os
 def setupParser():
     parser = argparse.ArgumentParser(description='Base parser')
     parser.add_argument('--input_folder', type=str, default='dataset_04_18_21', help='Location of input data')
-    parser.add_argument('--output_folder', type=str, default='dataset_04_18_21', help='Location to write data to')
+    parser.add_argument('--output_folder', type=str, default='test', help='Location to write data to')
     parser.add_argument('--num_workers', type=int, default=5, help='Number of processes to use')
     parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
     parser.add_argument('--n', type=int, default=1024, help='Number of particles')
@@ -25,6 +25,7 @@ def process_data(opt):
     # ensure output files exist
     if not os.path.exists(opt.output_folder):
         os.mkdir(opt.output_folder, mode = 0o755)
+        os.mkdir(os.path.join(opt.output_folder, 'samples'), mode = 0o755)
     for in_path in in_paths:
         sample = os.path.split(in_path)[-1]
         out_path = os.path.join(opt.output_folder, 'samples', sample)
