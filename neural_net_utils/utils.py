@@ -379,12 +379,14 @@ def plotModelFromDir(dir, model, ofile):
     plt.savefig(os.path.join('images', ofile))
     plt.close()
 
-def plotModelFromArrays(train_loss_arr, val_loss_arr, ofile):
-    plt.plot(np.arange(0, len(train_loss_arr)), train_loss_arr, label = 'train loss')
-    plt.plot(np.arange(0, len(val_loss_arr)), val_loss_arr, label = 'val loss')
+def plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, title = None):
+    plt.plot(np.arange(1, len(train_loss_arr)+1), train_loss_arr, label = 'train loss')
+    plt.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr, label = 'val loss')
     plt.xlabel('epoch', fontsize = 16)
     plt.ylabel('loss', fontsize = 16)
     plt.legend()
+    if title is not None:
+        plt.title(title, fontsize = 16)
     plt.savefig(os.path.join('images', ofile))
     plt.close()
 

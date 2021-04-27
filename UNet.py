@@ -25,7 +25,6 @@ def argparseSetup():
 
     opt = parser.parse_args()
 
-    opt.y_norm = 'prcnt'
     # add arg for reshape
     if opt.y_norm == 'prcnt':
         opt.y_reshape = False
@@ -122,7 +121,7 @@ def main():
 
     print('Total time: {}'.format(time.time() - t0))
     print('Final val loss: {}'.format(val_loss_arr[-1]))
-    plotModelFromArrays(train_loss_arr, val_loss_arr, opt.ofile + '_train_val_loss.png') # TODO
+    plotModelFromArrays(train_loss_arr, val_loss_arr, opt.ofile + '_train_val_loss.png', title = opt.y_norm)
 
 if __name__ == '__main__':
     main()

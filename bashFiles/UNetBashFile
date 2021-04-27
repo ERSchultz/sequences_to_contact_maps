@@ -7,7 +7,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
 #SBATCH --mem-per-cpu=2000
-#SBATCH --mem-per-gpu=10000
+#SBATCH --mem-per-gpu=5000
 
 dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
 nEpochs=2
