@@ -19,7 +19,7 @@ milestones='5-10'
 gamma=0.1
 k=2
 n=1024
-yNorm='diag'
+yNorm='prcnt'
 
 ofile="UNet_nEpochs${nEpochs}_nf${nf}_lr${lr}_milestones${milestones}_yNorm${yNorm}"
 logfile="logFiles/${ofile}.log"
