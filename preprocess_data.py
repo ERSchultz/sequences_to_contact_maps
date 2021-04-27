@@ -63,8 +63,8 @@ def process_data(opt):
 
     # set up for multiprocessing
     mapping = []
-    for in_path, out_path in zip(in_paths, out_paths):
-        mapping.append((in_path, out_path, meanDist.copy()))
+    for out_path in out_paths:
+        mapping.append((out_path, meanDist.copy()))
 
     with multiprocessing.Pool(opt.num_workers) as p:
         p.starmap(process_sample_diag_norm, mapping)
@@ -89,9 +89,9 @@ def process_data(opt):
 
     # set up for multiprocessing
     mapping = []
-    for in_path, out_path in zip(in_paths, out_paths):
-        mapping.append((in_path, out_path, prcntDist.copy()))
-
+    for out_path in out_paths:
+        mapping.append((out_path, prcntDist.copy()))
+        
     with multiprocessing.Pool(opt.num_workers) as p:
         p.starmap(process_sample_percentile_norm, mapping)
 
@@ -118,23 +118,23 @@ def process_sample_save(in_path, out_path, k, n):
     y = np.loadtxt(y_path)[:n, :n] # TODO delete this later
     np.save(os.path.join(out_path, 'y.npy'), y.astype(np.int16))
 
-def process_sample_diag_norm(in_path, out_path, meanDist):
+def process_sample_diag_norm(path, meanDist):
     # check if sample needs to be processed
-    if os.path.exists(os.path.join(out_path, 'y_diag_norm.npy')):
+    if os.path.exists(os.path.join(path, 'y_diag_norm.npy')):
         return
 
-    y = np.load(os.path.join(in_path, 'y.npy')).astype(np.float64)
+    y = np.load(os.path.join(path, 'y.npy')).astype(np.float64)
     y_diag = diagonal_normalize(y, meanDist)
-    np.save(os.path.join(out_path, 'y_diag_norm.npy'), y_diag)
+    np.save(os.path.join(path, 'y_diag_norm.npy'), y_diag)
 
-def process_sample_percentile_norm(in_path, out_path, prcntDist):
+def process_sample_percentile_norm(path, prcntDist):
     # check if sample needs to be processed
     # if os.path.exists(os.path.join(out_path, 'y_prcnt_norm.npy')):
     #     return
 
-    y_diag = np.load(os.path.join(in_path, 'y_diag_norm.npy')).astype(np.float64)
+    y_diag = np.load(os.path.join(path, 'y_diag_norm.npy')).astype(np.float64)
     y_prcnt = percentile_normalize(y_diag, prcntDist)
-    np.save(os.path.join(out_path, 'y_prcnt_norm.npy'), y_prcnt)
+    np.save(os.path.join(path, 'y_prcnt_norm.npy'), y_prcnt)
 
 
 def test_process_data(dirname):
