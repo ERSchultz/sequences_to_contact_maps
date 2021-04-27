@@ -28,14 +28,7 @@ def make_dataset(dir, minSample = 0):
     return data_file_arr
 
 def getDataLoaders(dataset, batch_size, num_workers, seed, split = [0.8, 0.1, 0.1], shuffle = True):
-    N = len(dataset)
-    assert sum(split) - 1 < 1e-5, sum(split)
-    trainN = math.floor(N * split[0])
-    valN = math.floor(N * split[1])
-    testN = N - trainN - valN
-    train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(dataset,
-                                        [trainN, valN, testN],
-                                        generator = torch.Generator().manual_seed(seed))
+    train_dataset, val_dataset, test_dataset = splitDataset(dataset, split, seed)
     train_dataloader = DataLoader(train_dataset, batch_size = batch_size,
                                     shuffle = shuffle, num_workers = num_workers)
     if len(val_dataset) > 0:
@@ -50,6 +43,17 @@ def getDataLoaders(dataset, batch_size, num_workers, seed, split = [0.8, 0.1, 0.
         test_dataloader = None
 
     return train_dataloader, val_dataloader, test_dataloader
+
+def splitDataset(dataset, split, seed):
+    """Splits input dataset into proportions specified by split."""
+    N = len(dataset)
+    assert sum(split) - 1 < 1e-5, "split doesn't sum to 1: {}".format(split)
+    trainN = math.floor(N * split[0])
+    valN = math.floor(N * split[1])
+    testN = N - trainN - valN
+    return torch.utils.data.random_split(dataset,
+                                        [trainN, valN, testN],
+                                        generator = torch.Generator().manual_seed(seed))
 
 # data processing functions
 @njit
@@ -164,6 +168,12 @@ def getFrequencies(dataFolder, diag, n, k, chi):
                 ind += 1
 
     return freq_arr
+
+def getPercentiles(arr, prcnt_arr):
+    """Helper function to get multiple percentiles at once.""""
+    result = np.zeros_like(prcnt_arr)
+    for i, p in enumerate(prcnt_arr):
+        resultp[i] = np.percentile(arr, p)
 
 def generateDistStats(y, mode = 'freq', stat = 'mean'):
     '''

@@ -45,14 +45,8 @@ def process_data(opt):
     # determine mean_dist for diagonal normaliztion
     meanDist_path = os.path.join(opt.input_folder, 'meanDist.npy')
     if not os.path.exists(meanDist_path):
-        split = [0.8, 0.1, 0.1]
-        trainN = math.floor(N * split[0])
-        valN = math.floor(N * split[1])
-        testN = N - trainN - valN
-        train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(Names(opt.input_folder),
-                                            [trainN, valN, testN],
-                                            generator = torch.Generator().manual_seed(opt.seed))
-        in_paths_sample = np.random.choice(in_paths, opt.sample_size, replace = False)
+        train_dataset, val_dataset, test_dataset = splitDataset(Names(opt.input_folder), [0.8, 0.1, 0.1], opt.seed)
+        in_paths_sample = np.random.choice(train_dataset.paths, opt.sample_size, replace = False)
         meanDist = np.zeros(opt.n)
         for path in in_paths_sample:
             y = np.load(os.path.join(path, 'y.npy'))
@@ -70,6 +64,22 @@ def process_data(opt):
 
     with multiprocessing.Pool(opt.num_workers) as p:
         p.starmap(process_sample_diag_norm, mapping)
+
+    # determine prcnt_dist for percentile normalization
+    # prcntDist_path = os.path.join(opt.input_folder, 'prcntDist.npy')
+    # if not os.path.exists(prcntDist_path):
+    #     train_dataset, val_dataset, test_dataset = splitDataset(Names(opt.input_folder), [0.8, 0.1, 0.1], opt.seed)
+    #     in_paths_sample = np.random.choice(train_dataset.paths, opt.sample_size, replace = False)
+    #     prcntDist = np.zeros(opt.n)
+    #     for path in in_paths_sample:
+    #         y = np.load(os.path.join(path, 'y.npy'))
+    #         prcntDist
+    #
+    #     print(prcntDist)
+    #     np.save(prcntDist_path, prcntDist)
+    # else:
+    #     prcntDist = np.load(prcntDist_path)
+
 
     # copy over chi
     chi = np.loadtxt(os.path.join(opt.input_folder, 'chis.txt'))
@@ -95,11 +105,19 @@ def process_sample_save(in_path, out_path, k, n):
     np.save(os.path.join(out_path, 'y.npy'), y.astype(np.int16))
 
 def process_sample_diag_norm(in_path, out_path, meanDist):
+    # check if sample needs to be processed
+    if os.path.exists(os.path.join(out_path, 'y_diag_norm.npy')):
+        return
+
     y = np.load(os.path.join(in_path, 'y.npy')).astype(np.float64)
     y_diag = diagonal_normalize(y, meanDist)
     np.save(os.path.join(out_path, 'y_diag_norm.npy'), y_diag)
 
 def process_sample_percentile_norm(in_path, out_path, prcntDist):
+    # check if sample needs to be processed
+    if os.path.exists(os.path.join(out_path, 'y_prcnt_norm.npy')):
+        return
+
     y_diag = np.load(os.path.join(in_path, 'y_diag_norm.npy')).astype(np.float64)
     y_prcnt = percentile_normalize(y, prcntDist)
     np.save(os.path.join(out_path, 'y_prcnt_norm.npy'), y_diag)

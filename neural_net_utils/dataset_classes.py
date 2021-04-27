@@ -14,6 +14,8 @@ class Names(Dataset):
     def __len__(self):
         return len(self.paths)
 
+    # TODO make this directly iterable
+
 
 class Sequences2Contacts(Dataset):
     def __init__(self, dirname, toxx = False, y_diag_norm = True, y_prcnt_norm = False,
