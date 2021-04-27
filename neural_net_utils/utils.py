@@ -444,8 +444,7 @@ def getBaseParser():
     parser = argparse.ArgumentParser(description='Base parser')
 
     #pre-processing args
-    parser.add_argument('--y_diag_norm', type=str2bool, default=True)
-    parser.add_argument('--y_prcnt_norm', type=str2bool, default=False)
+    parser.add_argument('--y_norm', type=str, default=None)
     parser.add_argument('--crop', type=str, default=None, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
 
     # train args

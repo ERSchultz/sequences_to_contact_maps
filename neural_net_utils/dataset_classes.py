@@ -18,26 +18,29 @@ class Names(Dataset):
 
 
 class Sequences2Contacts(Dataset):
-    def __init__(self, dirname, toxx = False, y_diag_norm = True, y_prcnt_norm = False,
+    def __init__(self, dirname, toxx, y_norm,
                 y_reshape = True, names = False, crop = None, min_sample = 0):
         super(Sequences2Contacts, self).__init__()
         assert not y_diag_norm and y_prcnt_norm
         self.toxx = toxx
-        self.y_diag_norm = y_diag_norm
-        self.y_prcnt_norm = y_prcnt_norm
+        self.y__norm = y_norm
         self.y_reshape = y_reshape
         self.names = names
         self.crop = crop
         self.paths = sorted(make_dataset(dirname, minSample = min_sample))
 
     def __getitem__(self, index):
-        if self.y_diag_norm:
+        if self.y_norm is None:
+            y_path = os.path.join(self.paths[index], 'y.npy')
+            y = np.load(y_path)
+        if self.y_norm == 'diag':
             y_path = os.path.join(self.paths[index], 'y_diag_norm.npy')
             y = np.load(y_path)
-        elif self.y_prcnt_norm:
+        elif self.y_norm == 'prcnt':
             y_path = os.path.join(self.paths[index], 'y_prcnt_norm.npy')
             y = np.load(y_path)
         else:
+            print("Warning: Unknown norm: {}".format(self.y_norm))
             y_path = os.path.join(self.paths[index], 'y.npy')
             y = np.load(y_path)
 
@@ -46,7 +49,8 @@ class Sequences2Contacts(Dataset):
 
         if self.y_reshape:
             y = np.expand_dims(y, 0)
-        y = y / np.max(y)
+        if self.y_norm != 'prcnt':
+            y = y / np.max(y)
 
         if self.toxx:
             x_path = os.path.join(self.paths[index], 'xx.npy')

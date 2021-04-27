@@ -43,7 +43,10 @@ class UnetBlock(torch.nn.Module):
         if outermost:
             conv2 = nn.ConvTranspose2d(inner_size * 2, output_size, kernel_size, stride, padding)
             down = [conv1]
-            up = [act2, conv2, out_act]
+            if out_act is not None:
+                up = [act2, conv2, out_act]
+            else:
+                up = [act2, conv2]
             model = down + [subBlock] + up
         elif innermost:
             conv2 = nn.ConvTranspose2d(inner_size, output_size, kernel_size, stride, padding, bias)

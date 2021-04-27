@@ -64,8 +64,7 @@ def main():
 
     t0 = time.time()
     seq2ContactData = Sequences2Contacts(opt.data_folder, toxx = True,
-                                        y_diag_norm = opt.y_diag_norm, 
-                                        y_prcnt_norm = opt.y_prcnt_norm, crop = opt.crop)
+                                        y_norm = opt.y_norm, crop = opt.crop)
     train_dataloader, val_dataloader, test_dataloader = getDataLoaders(seq2ContactData,
                                                                         batch_size = opt.batch_size,
                                                                         num_workers = opt.num_workers,
@@ -77,7 +76,12 @@ def main():
         torch.cuda.manual_seed(opt.seed)
 
     # Set up model
-    model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = nn.Sigmoid())
+    if opt.y_norm == 'diag':
+        model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = nn.Sigmoid())
+        criterion = F.mse_loss
+    elif opt.y_norm == 'prcnt':
+        model = UNet(nf_in = 2, nf_out = 10, nf = opt.nf, out_act = None)
+        criterion = F.binary_cross_entropy_with_logits
     if opt.pretrained:
         model_name = os.path.join(opt.ifile_folder, opt.ifile + '.pt')
         if os.path.exists(model_name):
@@ -95,7 +99,6 @@ def main():
                                                     gamma = opt.gamma, verbose = True)
     else:
         scheduler = None
-    criterion = F.mse_loss
 
     if opt.use_parallel:
         model = torch.nn.DataParallel(model, device_ids = opt.gpu_ids)

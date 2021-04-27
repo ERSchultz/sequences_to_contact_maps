@@ -1,29 +1,29 @@
 #! /bin/bash
 #SBATCH --job-name=UNet
 #SBATCH --output=logFiles/UNet.out
-#SBATCH --time=02:00:00
-#SBATCH --partition=gpu2
+#SBATCH --time=03:00:00
+#SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=2
-#SBATCH --mem-per-cpu=5000
+#SBATCH --ntasks-per-node=4
+#SBATCH --mem-per-cpu=2000
 #SBATCH --mem-per-gpu=10000
 
-dirname="/../../../project2/depablo/skyhl/dataset_04_07_21"
+dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
 nEpochs=15
 nf=8
 lr=0.1
-batchSize=16
-numWorkers=2
+batchSize=32
+numWorkers=4
 milestones='5-10'
 gamma=0.1
 k=2
-crop='128-1024'
-n=896
+n=1024
+yNorm='diag'
 
-ofile="UNet_nEpochs${nEpochs}_nf${nf}_lr${lr}_milestones${milestones}_crop${crop}"
+ofile="UNet_nEpochs${nEpochs}_nf${nf}_lr${lr}_milestones${milestones}_yNorm${yNorm}"
 logfile="logFiles/${ofile}.log"
 
 cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
-python3 UNet.py --data_folder $dirname --n_epochs $nEpochs --nf $nf --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile --crop $crop --n $n >> $logfile
+python3 UNet.py --data_folder $dirname --n_epochs $nEpochs --nf $nf --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile --n $n --y_norm $yNorm >> $logfile
