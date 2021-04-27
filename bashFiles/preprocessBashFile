@@ -16,4 +16,4 @@ sampleSize=100
 
 cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
-python3 preprocess_data.py --data_folder $input --num_workers $numWorkers --k $k --n $n --sample_size $sampleSize
+python3 preprocess_data.py --input_folder $input --output_folder $output --num_workers $numWorkers --k $k --n $n --sample_size $sampleSize

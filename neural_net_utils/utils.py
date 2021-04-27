@@ -112,8 +112,7 @@ def diagonal_normalize(y, meanDist):
 
     return result
 
-
-def percentileNormalize(y, percentiles):
+def percentile_normalize(y, percentiles):
     """
     Performs percentile normalization on contact map y.
 
@@ -126,14 +125,13 @@ def percentileNormalize(y, percentiles):
     Outputs:
         result: new contact map
     """
-    assert np.max(y) <= percentiles[-1], "max val ({}) > max percentile {{})".format(np.max(y), perentiles[-1])
 
     result = np.zeros_like(y)
     for i in range(len(y)):
         for j in range(i + 1):
             val = y[i,j]
             p = 0
-            while val < percentiles[p]:
+            while p < len(percentiles)-1 and percentiles[p] < val:
                 p += 1
             result[i,j] = p
             result[j,i] = p
@@ -171,9 +169,11 @@ def getFrequencies(dataFolder, diag, n, k, chi):
 
 def getPercentiles(arr, prcnt_arr):
     """Helper function to get multiple percentiles at once."""
-    result = np.zeros_like(prcnt_arr)
+    result = np.zeros_like(prcnt_arr).astype(np.float64)
+    arr_sort = np.sort(arr.flatten())
     for i, p in enumerate(prcnt_arr):
-        resultp[i] = np.percentile(arr, p)
+        result[i] = np.percentile(arr, p)
+    return result
 
 def generateDistStats(y, mode = 'freq', stat = 'mean'):
     '''

@@ -14,7 +14,7 @@ def setupParser():
     parser.add_argument('--num_workers', type=int, default=5, help='Number of processes to use')
     parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
     parser.add_argument('--n', type=int, default=1024, help='Number of particles')
-    parser.add_argument('--sample_size', type=int, default=10, help='size of sample for diagonal normalization')
+    parser.add_argument('--sample_size', type=int, default=5, help='size of sample for diagonal normalization')
     parser.add_argument('--seed', type=int, default=42, help='random seed to use. Default: 42')
 
     return parser
@@ -44,12 +44,14 @@ def process_data(opt):
     # determine mean_dist for diagonal normaliztion
     meanDist_path = os.path.join(opt.input_folder, 'meanDist.npy')
     if not os.path.exists(meanDist_path):
-        train_dataset, val_dataset, test_dataset = splitDataset(Names(opt.input_folder), [0.8, 0.1, 0.1], opt.seed)
-        in_paths_sample = np.random.choice(train_dataset.paths, opt.sample_size, replace = False)
+        train_dataloader, _, _ = getDataLoaders(Names(opt.input_folder), 1,
+                                                opt.num_workers, opt.seed, [0.8, 0.1, 0.1])
         meanDist = np.zeros(opt.n)
-        for path in in_paths_sample:
-            y = np.load(os.path.join(path, 'y.npy'))
-            meanDist += generateDistStats(y)
+        for i, path in enumerate(train_dataloader):
+            if i < opt.sample_size: # dataloader shuffles so this is a random sample
+                path = path[0]
+                y = np.load(os.path.join(path, 'y.npy'))
+                meanDist += generateDistStats(y)
         meanDist = meanDist / opt.sample_size
         print(meanDist)
         np.save(meanDist_path, meanDist)
@@ -65,20 +67,30 @@ def process_data(opt):
         p.starmap(process_sample_diag_norm, mapping)
 
     # determine prcnt_dist for percentile normalization
-    # prcntDist_path = os.path.join(opt.input_folder, 'prcntDist.npy')
-    # if not os.path.exists(prcntDist_path):
-    #     train_dataset, val_dataset, test_dataset = splitDataset(Names(opt.input_folder), [0.8, 0.1, 0.1], opt.seed)
-    #     in_paths_sample = np.random.choice(train_dataset.paths, opt.sample_size, replace = False)
-    #     prcntDist = np.zeros(opt.n)
-    #     for path in in_paths_sample:
-    #         y = np.load(os.path.join(path, 'y.npy'))
-    #         prcntDist
-    #
-    #     print(prcntDist)
-    #     np.save(prcntDist_path, prcntDist)
-    # else:
-    #     prcntDist = np.load(prcntDist_path)
+    prcntDist_path = os.path.join(opt.input_folder, 'prcntDist.npy')
+    if not os.path.exists(prcntDist_path):
+        train_dataloader, _, _ = getDataLoaders(Names(opt.input_folder), 1,
+                                                opt.num_workers, opt.seed, [0.8, 0.1, 0.1])
+        y_arr = np.zeros((opt.sample_size, opt.n, opt.n))
+        for i, path in enumerate(train_dataloader):
+            if i < opt.sample_size: # dataloader shuffles so this is a random sample
+                path = path[0]
+                y_arr[i,:,:] = np.load(os.path.join(path, 'y_diag_norm.npy'))
+                # This should be ok from a RAM standpoint
 
+        prcntDist = getPercentiles(y_arr, [20, 40, 50, 60, 70, 80, 85, 90, 95, 100]) # flattens array to do computation
+        print(prcntDist)
+        np.save(prcntDist_path, prcntDist)
+    else:
+        prcntDist = np.load(prcntDist_path)
+
+    # set up for multiprocessing
+    mapping = []
+    for in_path, out_path in zip(in_paths, out_paths):
+        mapping.append((in_path, out_path, prcntDist.copy()))
+
+    with multiprocessing.Pool(opt.num_workers) as p:
+        p.starmap(process_sample_percentile_norm, mapping)
 
     # copy over chi
     chi = np.loadtxt(os.path.join(opt.input_folder, 'chis.txt'))
@@ -114,12 +126,12 @@ def process_sample_diag_norm(in_path, out_path, meanDist):
 
 def process_sample_percentile_norm(in_path, out_path, prcntDist):
     # check if sample needs to be processed
-    if os.path.exists(os.path.join(out_path, 'y_prcnt_norm.npy')):
-        return
+    # if os.path.exists(os.path.join(out_path, 'y_prcnt_norm.npy')):
+    #     return
 
     y_diag = np.load(os.path.join(in_path, 'y_diag_norm.npy')).astype(np.float64)
-    y_prcnt = percentile_normalize(y, prcntDist)
-    np.save(os.path.join(out_path, 'y_prcnt_norm.npy'), y_diag)
+    y_prcnt = percentile_normalize(y_diag, prcntDist)
+    np.save(os.path.join(out_path, 'y_prcnt_norm.npy'), y_prcnt)
 
 
 def test_process_data(dirname):

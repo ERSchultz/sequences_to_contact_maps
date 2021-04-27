@@ -26,11 +26,14 @@ def freqStatisticsPlots(dataFolder):
 def contactPlots(dataFolder):
     in_paths = sorted(make_dataset(dataFolder))
     for path in in_paths:
-        y = np.load(os.path.join(path, 'y.npy'))
-        plotContactMap(y, os.path.join(path, 'y.png'), title = 'pre normalization', vmax = 'mean')
+        # y = np.load(os.path.join(path, 'y.npy'))
+        # plotContactMap(y, os.path.join(path, 'y.png'), title = 'pre normalization', vmax = 'mean')
+        #
+        # y_diag_norm = np.load(os.path.join(path, 'y_diag_norm.npy'))
+        # plotContactMap(y_diag_norm, os.path.join(path, 'y_diag_norm.png'), title = 'diag normalization', vmax = 'mean')
 
-        y_diag_norm = np.load(os.path.join(path, 'y_diag_norm.npy'))
-        plotContactMap(y_diag_norm, os.path.join(path, 'y_diag_norm.png'), title = 'post normalization', vmax = 'mean')
+        y_prcnt_norm = np.load(os.path.join(path, 'y_prcnt_norm.npy'))
+        plotContactMap(y_prcnt_norm, os.path.join(path, 'y_prcnt_norm.png'), title = 'prcnt normalization', vmax = 'mean')
 
 def plot_predictions(dataFolder, modelName):
     seq2ContactData = Sequences2Contacts(dataFolder, toxx = True,
@@ -59,8 +62,8 @@ def plot_predictions(dataFolder, modelName):
         print(loss)
 
 def main():
-    freqDistributionPlots('dataset_04_18_21')
-    freqStatisticsPlots('dataset_04_18_21')
+    # freqDistributionPlots('dataset_04_18_21')
+    # freqStatisticsPlots('dataset_04_18_21')
     contactPlots('dataset_04_18_21')
     # plot_predictions('dataset_04_18_21', None)
 

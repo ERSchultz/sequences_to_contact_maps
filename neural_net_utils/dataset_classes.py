@@ -5,7 +5,7 @@ import torch
 class Names(Dataset):
     "Dataset that only returns names of paths"
     def __init__(self, dirname, min_sample = 0):
-        super(Sequences2Contacts, self).__init__()
+        super(Names, self).__init__()
         self.paths = sorted(make_dataset(dirname, minSample = min_sample))
 
     def __getitem__(self, index):
