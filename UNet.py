@@ -81,7 +81,7 @@ def main():
         criterion = F.mse_loss
     elif opt.y_norm == 'prcnt':
         model = UNet(nf_in = 2, nf_out = 10, nf = opt.nf, out_act = None)
-        criterion = F.binary_cross_entropy_with_logits
+        criterion = F.cross_entropy
     if opt.pretrained:
         model_name = os.path.join(opt.ifile_folder, opt.ifile + '.pt')
         if os.path.exists(model_name):
