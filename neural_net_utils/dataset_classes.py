@@ -29,7 +29,7 @@ class Sequences2Contacts(Dataset):
         self.paths = sorted(make_dataset(dirname, minSample = min_sample))
 
     def __getitem__(self, index):
-
+        ydtype = torch.float32
         if self.y_norm is None:
             y_path = os.path.join(self.paths[index], 'y.npy')
             y = np.load(y_path)
@@ -39,6 +39,7 @@ class Sequences2Contacts(Dataset):
         elif self.y_norm == 'prcnt':
             y_path = os.path.join(self.paths[index], 'y_prcnt_norm.npy')
             y = np.load(y_path)
+            ydtype = torch.int64
         else:
             print("Warning: Unknown norm: {}".format(self.y_norm))
             y_path = os.path.join(self.paths[index], 'y.npy')
@@ -69,7 +70,7 @@ class Sequences2Contacts(Dataset):
 
         else:
             x = torch.Tensor(x)
-            y = torch.Tensor(y)
+            y = torch.Tensor(y).type(ydtype)
             return x, y
 
     def __len__(self):

@@ -115,15 +115,14 @@ def main():
     if opt.cuda:
         model.to(opt.device)
 
-    train_loss_arr = train(train_dataloader, model, optimizer,
+    train_loss_arr, val_loss_arr = train(train_dataloader, val_dataloader, model, optimizer,
             criterion, device = opt.device, save_location = os.path.join(opt.ofile_folder, opt.ofile + '.pt'),
             n_epochs = opt.n_epochs, start_epoch = opt.start_epoch, use_parallel = opt.use_parallel,
             scheduler = scheduler, save_mod = opt.save_mod, print_mod = opt.print_mod)
-    val_loss = test(val_dataloader, model, optimizer, criterion, opt.device)
 
     print('Total time: {}'.format(time.time() - t0))
-    print('Val loss: {}'.format(val_loss))
-    plotModelFromArrays(train_loss_arr, opt.ofile + '_train_val_loss.png', val_loss)
+    print('Final val loss: {}'.format(val_loss_arr[-1]))
+    plotModelFromArrays(train_loss_arr, val_loss_arr, opt.ofile + '_train_val_loss.png') # TODO
 
 if __name__ == '__main__':
     main()

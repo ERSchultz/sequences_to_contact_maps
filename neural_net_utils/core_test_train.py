@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 
-def train(train_loader, model, optimizer, criterion, device, save_location,
+def train(train_loader, val_dataloader, model, optimizer, criterion, device, save_location,
         n_epochs, start_epoch, use_parallel, scheduler, save_mod, print_mod, ):
     train_loss = []
+    val_loss = []
     for e in range(start_epoch, n_epochs+1):
         model.train()
         avg_loss = 0
@@ -12,14 +13,14 @@ def train(train_loader, model, optimizer, criterion, device, save_location,
             y = y.to(device)
             optimizer.zero_grad()
             yhat = model(x)
-            print(yhat.shape, yhat.dtype)
-            print(y.shape, y.dtype)
             loss = criterion(yhat, y)
             avg_loss += loss.item()
             loss.backward()
             optimizer.step()
         avg_loss /= (t+1)
         train_loss.append(avg_loss)
+
+        val_loss.append(test(val_dataloader, model, optimizer, criterion, device))
 
         if scheduler is not None:
             scheduler.step()
@@ -35,17 +36,19 @@ def train(train_loader, model, optimizer, criterion, device, save_location,
                             'epoch': e,
                             'optimizer_state_dict': optimizer.state_dict(),
                             'scheduler_state_dict': scheduler.state_dict(),
-                            'train_loss': train_loss},
+                            'train_loss': train_loss,
+                            'val_loss': val_loss},
                             save_location)
             else:
                 torch.save({'model_state_dict': model_state,
                             'epoch': e,
                             'optimizer_state_dict': optimizer.state_dict(),
                             'scheduler_state_dict': None,
-                            'train_loss': train_loss},
+                            'train_loss': train_loss,
+                            'val_loss': val_loss},
                             save_location)
 
-    return train_loss
+    return train_loss, val_loss
 
 def test(loader, model, optimizer, criterion, device):
     model.eval()
