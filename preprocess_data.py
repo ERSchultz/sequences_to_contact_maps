@@ -1,27 +1,95 @@
+import multiprocessing
 import numpy as np
 from neural_net_utils.utils import *
-import sys
+import time
+import argparse
+import os
 
-def process_data(dirname):
-    paths = sorted(make_dataset(dirname))
-    for path in paths:
-        print(path)
-        x1_path = path + '/seq1.txt'
-        x1 = np.loadtxt(x1_path)
-        x2_path = path + '/seq2.txt'
-        x2 = np.loadtxt(x2_path)
-        x = np.vstack((x1, x2)).T
-        np.save(path + '/x.npy', x.astype(np.int8))
+def setupParser():
+    parser = argparse.ArgumentParser(description='Base parser')
+    parser.add_argument('--input_folder', type=str, default='dataset_04_18_21', help='Location of input data')
+    parser.add_argument('--output_folder', type=str, default='dataset_04_18_21', help='Location to write data to')
+    parser.add_argument('--num_workers', type=int, default=5, help='Number of processes to use')
+    parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
+    parser.add_argument('--n', type=int, default=1024, help='Number of particles')
+    parser.add_argument('--sample_size', type=int, default=10, help='size of sample for diagonal normalization')
 
-        xx = x2xx(x)
-        np.save(path + '/xx.npy', xx.astype(np.int8))
+    return parser
 
-        y_path = path + '/data_out/contacts.txt'
-        y = np.loadtxt(y_path)[:1024, :1024] # TODO delete this later
-        np.save(path + '/y.npy', y.astype(np.int16))
+def process_data(opt):
+    in_paths = sorted(make_dataset(opt.input_folder))
+    print(in_paths)
 
-        y_diag = diagonal_normalize(y)
-        np.save(path + '/y_diag_norm.npy', y_diag)
+    # ensure output files exist
+    if not os.path.exists(opt.output_folder):
+        os.mkdir(opt.output_folder, mode = 0o755)
+    for in_path in in_paths:
+        sample = os.path.split(in_path)[-1]
+        out_path = os.path.join(opt.output_folder, 'samples', sample)
+        if not os.path.exists(out_path):
+            os.mkdir(out_path, mode = 0o755)
+
+    out_paths = sorted(make_dataset(opt.output_folder))
+
+    # set up for multiprocessing
+    mapping = []
+    for in_path, out_path in zip(in_paths, out_paths):
+        mapping.append((in_path, out_path, opt.k, opt.n))
+
+    with multiprocessing.Pool(opt.num_workers) as p:
+        p.starmap(process_sample_save, mapping)
+
+    # determine mean_dist for diagonal normaliztion
+    meanDist_path = os.path.join(opt.input_folder, 'meanDist.npy')
+    if not os.path.exists(meanDist_path):
+        in_paths_sample = np.random.choice(in_paths, opt.sample_size, replace = False)
+        meanDist = np.zeros(opt.n)
+        for path in in_paths_sample:
+            y = np.load(os.path.join(path, 'y.npy'))
+            meanDist += generateDistStats(y)
+        meanDist = meanDist / opt.sample_size
+        print(meanDist)
+        np.save(meanDist_path, meanDist)
+    else:
+        meanDist = np.load(meanDist_path)
+
+    # set up for multiprocessing
+    mapping = []
+    for in_path, out_path in zip(in_paths, out_paths):
+        mapping.append((in_path, out_path, meanDist.copy()))
+
+    with multiprocessing.Pool(opt.num_workers) as p:
+        p.starmap(process_sample_diag_norm, mapping)
+
+    # copy over chi
+    chi = np.loadtxt(os.path.join(opt.input_folder, 'chis.txt'))
+    np.save(os.path.join(opt.output_folder, 'chis.npy'), chi)
+
+def process_sample_save(in_path, out_path, k, n):
+    # check if sample needs to be processed
+    if os.path.exists(os.path.join(out_path, 'x.npy')):
+        return
+
+    x = np.zeros((n, k))
+    for i in range(1, k + 1):
+        xi_path = os.path.join(in_path, 'seq{}.txt'.format(i))
+        xi = np.loadtxt(xi_path)
+        x[:, i-1] = xi
+    np.save(os.path.join(out_path, 'x.npy'), x.astype(np.int8))
+
+    xx = x2xx(x)
+    np.save(os.path.join(out_path, 'xx.npy'), xx.astype(np.int8))
+
+    y_path = os.path.join(in_path, 'data_out/contacts.txt')
+    y = np.loadtxt(y_path)[:n, :n] # TODO delete this later
+    np.save(os.path.join(out_path, 'y.npy'), y.astype(np.int16))
+
+def process_sample_diag_norm(in_path, out_path, meanDist):
+    y = np.load(os.path.join(in_path, 'y.npy')).astype(np.float64)
+    y_diag = diagonal_normalize(y, meanDist)
+    np.save(os.path.join(out_path, 'y_diag_norm.npy'), y_diag)
+
+
 
 def test_process_data(dirname):
     paths = sorted(make_dataset(dirname))
@@ -53,13 +121,12 @@ def test_process_data(dirname):
     assert np.array_equal(y_diag, y_diagload)
 
 def main():
-    if len(sys.argv) == 1:
-        dirname = 'dataset_04_06_21'
-    else:
-        dirname = sys.argv[1]
-    print(dirname)
-    process_data(dirname)
-    # test_process_data(dirname)
+    t0 = time.time()
+    parser = setupParser()
+    opt = parser.parse_args()
+    print(opt.input_folder)
+    process_data(opt)
+    print('Total time: {}'.format(time.time() - t0))
 
 
 if __name__ == '__main__':

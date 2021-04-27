@@ -3,6 +3,6 @@
 *.out
 /dataset_04_06_21/
 /dataset_04_07_21/
+/dataset_04_08_21/
 /__pycache__/
 /neural_net_utils/__pycache__/
-/example_images/
