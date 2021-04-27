@@ -25,6 +25,13 @@ def argparseSetup():
 
     opt = parser.parse_args()
 
+    opt.y_norm = 'prcnt'
+    # add arg for reshape
+    if opt.y_norm == 'prcnt':
+        opt.y_reshape = False
+    else:
+        opt.y_reshape = True
+
     # process list args
     if opt.milestones is not None:
         opt.milestones = [int(i) for i in opt.milestones.split('-')]
@@ -63,8 +70,9 @@ def main():
     print(opt)
 
     t0 = time.time()
+
     seq2ContactData = Sequences2Contacts(opt.data_folder, toxx = True,
-                                        y_norm = opt.y_norm, crop = opt.crop)
+                                        y_norm = opt.y_norm, y_reshape = opt.y_reshape, crop = opt.crop)
     train_dataloader, val_dataloader, test_dataloader = getDataLoaders(seq2ContactData,
                                                                         batch_size = opt.batch_size,
                                                                         num_workers = opt.num_workers,
@@ -76,6 +84,7 @@ def main():
         torch.cuda.manual_seed(opt.seed)
 
     # Set up model
+
     if opt.y_norm == 'diag':
         model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = nn.Sigmoid())
         criterion = F.mse_loss

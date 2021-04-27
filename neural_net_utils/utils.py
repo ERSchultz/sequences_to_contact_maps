@@ -449,7 +449,7 @@ def getBaseParser():
 
     # train args
     parser.add_argument('--start_epoch', type=int, default=1, help='Starting epoch')
-    parser.add_argument('--n_epochs', type=int, default=100, help='Number of epochs to train for')
+    parser.add_argument('--n_epochs', type=int, default=1, help='Number of epochs to train for')
     parser.add_argument('--save_mod', type=int, default=5, help='How often to save')
     parser.add_argument('--print_mod', type=int, default=2, help='How often to print')
     parser.add_argument('--lr', type=float, default=1e-3, help='Learning eate. Default=0.001')
@@ -458,7 +458,7 @@ def getBaseParser():
     parser.add_argument('--gamma', type=float, default=0.1, help='Gamma for lr decay')
 
     # model args
-    parser.add_argument('--data_folder', type=str, default='dataset_04_06_21', help='Location of data')
+    parser.add_argument('--data_folder', type=str, default='dataset_04_18_21', help='Location of data')
     parser.add_argument('--pretrained', type=bool, default=False)
     parser.add_argument('--resume_training', type=bool, default=False)
     parser.add_argument('--ifile_folder', type=str, default='models/', help='Location of input file for pretrained model')

@@ -91,7 +91,7 @@ def process_data(opt):
     mapping = []
     for out_path in out_paths:
         mapping.append((out_path, prcntDist.copy()))
-        
+
     with multiprocessing.Pool(opt.num_workers) as p:
         p.starmap(process_sample_percentile_norm, mapping)
 
@@ -134,7 +134,7 @@ def process_sample_percentile_norm(path, prcntDist):
 
     y_diag = np.load(os.path.join(path, 'y_diag_norm.npy')).astype(np.float64)
     y_prcnt = percentile_normalize(y_diag, prcntDist)
-    np.save(os.path.join(path, 'y_prcnt_norm.npy'), y_prcnt)
+    np.save(os.path.join(path, 'y_prcnt_norm.npy'), y_prcnt.astype(np.int16))
 
 
 def test_process_data(dirname):

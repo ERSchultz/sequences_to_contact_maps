@@ -12,6 +12,8 @@ def train(train_loader, model, optimizer, criterion, device, save_location,
             y = y.to(device)
             optimizer.zero_grad()
             yhat = model(x)
+            print(yhat.shape, yhat.dtype)
+            print(y.shape, y.dtype)
             loss = criterion(yhat, y)
             avg_loss += loss.item()
             loss.backward()
