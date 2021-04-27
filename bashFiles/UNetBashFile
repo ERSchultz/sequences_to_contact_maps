@@ -10,7 +10,7 @@
 #SBATCH --mem-per-gpu=5000
 
 dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
-nEpochs=2
+nEpochs=15
 nf=8
 lr=0.1
 batchSize=32
