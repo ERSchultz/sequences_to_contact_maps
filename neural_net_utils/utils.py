@@ -389,7 +389,7 @@ def plotModelFromArrays(train_loss_arr, ofile, val_loss = None):
     plt.savefig(os.path.join('images', ofile))
     plt.close()
 
-def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 10, minVal = None, maxVal = None):
+def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 10, minVal = None, maxVal = None, prcnt = False):
     """
     Plotting function for contact maps.
 
@@ -402,9 +402,17 @@ def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 10, minVal = None
         minVal: values in y less than minVal are set to 0
         maxVal: values in y greater than maxVal are set to 0
     """
-    mycmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                             [(0,    'white'),
-                                              (1,    'red')], N=126)
+    if prcnt:
+        mycmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                 [(0,       'white'),
+                                                  (0.25,    'orange'),
+                                                  (0.5,     'red'),
+                                                  (0.74,    'purple'),
+                                                  (1,       'blue')], N=10)
+    else:
+        mycmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                 [(0,    'white'),
+                                                  (1,    'red')], N=126)
     if len(y.shape) > 2:
         N, C, H, W = y.shape
         assert N == 1 and C == 1
@@ -421,12 +429,15 @@ def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 10, minVal = None
     plt.figure(figsize = (size_in, size_in))
     if vmax == 'mean':
         vmax = np.mean(y)
+    elif vmax == 'max':
+        vmax = np.max(y)
     ax = sns.heatmap(y, linewidth=0, vmin = 0, vmax = vmax, cmap = mycmap)
     if title is not None:
         plt.title(title)
     plt.tight_layout()
     plt.savefig(ofile)
     plt.close()
+
 
 def getBaseParser():
     """Helper function to get default command line argument parser."""
