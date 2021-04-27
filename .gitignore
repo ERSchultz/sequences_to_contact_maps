@@ -2,6 +2,6 @@
 *.log
 *.out
 /dataset_04_08_21/
-/dataset_04_18_21/
+/dataset_04_18_21/*
 /__pycache__/
 /neural_net_utils/__pycache__/
