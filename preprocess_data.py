@@ -47,7 +47,7 @@ def process_data(opt):
     # determine mean_dist for diagonal normaliztion
     meanDist_path = os.path.join(opt.input_folder, 'meanDist.npy')
     if not os.path.exists(meanDist_path):
-        train_dataloader, _, _ = getDataLoaders(Names(opt.input_folder), 1,
+        train_dataloader, _, _ = getDataLoaders(Names(opt.output_folder), 1,
                                                 opt.num_workers, opt.seed, [0.8, 0.1, 0.1])
         meanDist = np.zeros(opt.n)
         for i, path in enumerate(train_dataloader):
@@ -72,7 +72,7 @@ def process_data(opt):
     # determine prcnt_dist for percentile normalization
     prcntDist_path = os.path.join(opt.input_folder, 'prcntDist.npy')
     if not os.path.exists(prcntDist_path):
-        train_dataloader, _, _ = getDataLoaders(Names(opt.input_folder), 1,
+        train_dataloader, _, _ = getDataLoaders(Names(opt.output_folder), 1,
                                                 opt.num_workers, opt.seed, [0.8, 0.1, 0.1])
         y_arr = np.zeros((opt.sample_size, opt.n, opt.n))
         for i, path in enumerate(train_dataloader):
