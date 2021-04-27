@@ -24,8 +24,10 @@ def process_data(opt):
 
     # ensure output files exist
     if not os.path.exists(opt.output_folder):
-        os.mkdir(opt.output_folder, mode = 0o755)
-        os.mkdir(os.path.join(opt.output_folder, 'samples'), mode = 0o755)
+        os.mkdir(opt.cd , mode = 0o755)
+    samples_path = os.path.join(opt.output_folder, 'samples')
+    if not os.path.exists(samples_path):
+        os.mkdir(samples_path, mode = 0o755)
     for in_path in in_paths:
         sample = os.path.split(in_path)[-1]
         out_path = os.path.join(opt.output_folder, 'samples', sample)
