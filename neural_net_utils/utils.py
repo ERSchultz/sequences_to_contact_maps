@@ -170,7 +170,7 @@ def getFrequencies(dataFolder, diag, n, k, chi):
     return freq_arr
 
 def getPercentiles(arr, prcnt_arr):
-    """Helper function to get multiple percentiles at once.""""
+    """Helper function to get multiple percentiles at once."""
     result = np.zeros_like(prcnt_arr)
     for i, p in enumerate(prcnt_arr):
         resultp[i] = np.percentile(arr, p)

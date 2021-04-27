@@ -2,7 +2,7 @@ import multiprocessing
 import numpy as np
 import torch
 from neural_net_utils.utils import *
-from dataset_classes import Names
+from neural_net_utils.dataset_classes import Names
 import time
 import argparse
 import os
@@ -21,7 +21,6 @@ def setupParser():
 
 def process_data(opt):
     in_paths = sorted(make_dataset(opt.input_folder))
-    print(in_paths)
 
     # ensure output files exist
     if not os.path.exists(opt.output_folder):
