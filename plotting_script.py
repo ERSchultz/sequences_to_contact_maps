@@ -41,9 +41,9 @@ def contactPlots(dataFolder):
 def setupParser():
     parser = argparse.ArgumentParser(description='Base parser')
     parser.add_argument('--data_folder', type=str, default='dataset_04_18_21', help='Location of input data')
-    parser.add_argument('--model_name', type='str', default=None, help='name of model to load')
-    parser.add_argument('--model_type', type='str', default=None, help='type of model')
-    parser.add_argument('--y_norm', type='str', default=None, help='type of y normalization')
+    parser.add_argument('--model_name', type=str, default=None, help='name of model to load')
+    parser.add_argument('--model_type', type=str, default=None, help='type of model')
+    parser.add_argument('--y_norm', type=str, default=None, help='type of y normalization')
     parser.add_argument('--batch_size', type=int, default=1, help='Training batch size')
     parser.add_argument('--num_workers', type=int, default=5, help='Number of processes to use')
     parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
