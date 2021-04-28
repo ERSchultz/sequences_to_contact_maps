@@ -1,8 +1,8 @@
 #! /bin/bash
 #SBATCH --job-name=UNet
 #SBATCH --output=logFiles/UNet.out
-#SBATCH --time=03:00:00
-#SBATCH --partition=depablo-gpu
+#SBATCH --time=01:00:00
+#SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
