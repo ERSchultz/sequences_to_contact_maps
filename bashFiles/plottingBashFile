@@ -12,7 +12,7 @@ numWorkers=0
 k=2
 n=1024
 plot='False'
-modelType='Unet'
+modelType='UNet'
 
 
 cd ~/sequences_to_contact_maps
