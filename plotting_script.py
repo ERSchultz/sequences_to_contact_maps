@@ -1,7 +1,6 @@
 from neural_net_utils.networks import *
 from neural_net_utils.utils import *
 from neural_net_utils.dataset_classes import Sequences2Contacts
-from sklearn.metrics import accuracy_score
 
 
 def freqDistributionPlots(dataFolder, n = 1024):
