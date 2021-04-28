@@ -1,0 +1,28 @@
+#! /bin/bash
+#SBATCH --job-name=preprocess
+#SBATCH --partition=depablo-ivyb
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=20
+#SBATCH --mem-per-cpu=2000
+#SBATCH --output=logFiles/preprocess.log
+#SBATCH --time=01:00:00
+
+data="../../../project2/depablo/erschultz/dataset_04_18_21"
+numWorkers=5
+k=2
+n=1024
+plot='False'
+modelType='Unet'
+
+
+cd ~/sequences_to_contact_maps
+source activate seq2contact_pytorch
+
+modelName='UNet_nEpochs15_nf8_lr0.1_milestones5-10_yNormdiag.pt'
+yNorm='diag'
+python3 plotting_script.py --data_folder $data --num_workers $numWorkers --k $k --n $n --model_name $modelName --model_type $modelType --y_norm $yNorm --plot $plot
+
+
+modelName='UNet_nEpochs15_nf8_lr0.1_milestones5-10_yNormprcnt.pt'
+yNorm='prcnt'
+python3 plotting_script.py --data_folder $data --num_workers $numWorkers --k $k --n $n --model_name $modelName --model_type $modelType --y_norm $yNorm --plot $plot

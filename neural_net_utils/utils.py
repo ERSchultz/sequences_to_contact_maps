@@ -119,12 +119,17 @@ def percentile_normalize(y, percentiles):
     The maximum value in y must at most percentiles[-1].
 
     Inputs:
-        y: contact map numpy array
+        y: contact map numpy array (2 dimensional)
         percentiles: list of percentiles (frequencies)
 
     Outputs:
         result: new contact map
     """
+
+    if len(y.shape) > 2:
+        N, C, H, W = y.shape
+        assert N == 1 and C == 1
+        y = y.reshape(H,W)
 
     result = np.zeros_like(y)
     for i in range(len(y)):
@@ -414,9 +419,13 @@ def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 10, minVal = None
         mycmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                  [(0,    'white'),
                                                   (1,    'red')], N=126)
-    if len(y.shape) > 2:
+    if len(y.shape) == 4:
         N, C, H, W = y.shape
         assert N == 1 and C == 1
+        y = y.reshape(H,W)
+    elif len(y.shape) == 3:
+        N, H, W = y.shape
+        assert N == 1
         y = y.reshape(H,W)
 
     if minVal is not None or maxVal is not None:
@@ -439,6 +448,38 @@ def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 10, minVal = None
     plt.savefig(ofile)
     plt.close()
 
+def plotPerClassAccuracy(acc_arr, freq_arr, title = None, ofile = None):
+    N, C = acc_arr.shape
+    width = 0.35
+    x = np.arange(C)
+    acc_arr_mu = np.mean(acc_arr, axis = 0)
+    acc_arr_std = np.std(acc_arr, axis = 0)
+    freq_arr_mu = np.mean(freq_arr, axis = 0)
+    freq_arr_std = np.std(freq_arr, axis = 0)
+
+    fig, ax1 = plt.subplots()
+    color = 'tab:red'
+
+    ax1.bar(x, acc_arr_mu, color = color, width = width, yerr = acc_arr_std)
+    ax1.set_xlabel("Class", fontsize = 16)
+    ax1.set_ylabel("Accuracy", fontsize = 16, color = color)
+    ax1.tick_params(axis = 'y', labelcolor = color)
+    ax1.set_xticks(x + width / 2)
+    ax1.set_xticklabels(x)
+
+
+    ax2 = ax1.twinx()
+
+    color = 'tab:blue'
+    ax2.bar(x + width, freq_arr_mu, color = color, width = width, yerr = freq_arr_std)
+    ax2.tick_params(axis = 'y', labelcolor = color)
+    ax2.set_ylabel("Class Frequency", fontsize = 16, color = color)
+
+    if title is not None:
+        plt.title(title)
+    if ofile is not None:
+        plt.savefig(ofile)
+    plt.show()
 
 def getBaseParser():
     """Helper function to get default command line argument parser."""
@@ -577,8 +618,7 @@ class InteractionConverter():
         return np_arr
 
 def main():
-    freq_counts_dict = getInteractionFrequencyCounts('dataset_04_08_21', diag = False)
-    freq_arr = freqCountsDictToArray(freq_counts_dict)
+    plotPerClassAccuracy(None, None, 5)
 
 if __name__ == '__main__':
     main()

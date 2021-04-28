@@ -24,7 +24,7 @@ def process_data(opt):
 
     # ensure output files exist
     if not os.path.exists(opt.output_folder):
-        os.mkdir(opt.cd , mode = 0o755)
+        os.mkdir(opt.output_folder, mode = 0o755)
     samples_path = os.path.join(opt.output_folder, 'samples')
     if not os.path.exists(samples_path):
         os.mkdir(samples_path, mode = 0o755)

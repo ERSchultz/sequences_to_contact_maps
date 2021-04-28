@@ -50,8 +50,9 @@ class Sequences2Contacts(Dataset):
 
         if self.y_reshape:
             y = np.expand_dims(y, 0)
+        max = np.max(y)
         if self.y_norm != 'prcnt':
-            y = y / np.max(y)
+            y = y / max
 
         if self.toxx:
             x_path = os.path.join(self.paths[index], 'xx.npy')
@@ -65,12 +66,11 @@ class Sequences2Contacts(Dataset):
             if self.crop is not None:
                 x = x[:, self.crop[0]:self.crop[1]]
 
+        x = torch.Tensor(x)
+        y = torch.Tensor(y).type(ydtype)
         if self.names:
-            return torch.Tensor(x), torch.Tensor(y), self.paths[index]
-
+            return x, y, self.paths[index], max
         else:
-            x = torch.Tensor(x)
-            y = torch.Tensor(y).type(ydtype)
             return x, y
 
     def __len__(self):
