@@ -8,7 +8,7 @@
 #SBATCH --time=01:00:00
 
 data="../../../project2/depablo/erschultz/dataset_04_18_21"
-numWorkers=5
+numWorkers=0
 k=2
 n=1024
 plot='False'

@@ -41,15 +41,16 @@ def contactPlots(dataFolder):
 def setupParser():
     parser = argparse.ArgumentParser(description='Base parser')
     parser.add_argument('--data_folder', type=str, default='dataset_04_18_21', help='Location of input data')
-    parser.add_argument('--model_name', type=str, default=None, help='name of model to load')
-    parser.add_argument('--model_type', type=str, default=None, help='type of model')
-    parser.add_argument('--y_norm', type=str, default=None, help='type of y normalization')
+    parser.add_argument('--model_name', type=str, default='UNet_nEpochs15_nf8_lr0.1_milestones5-10_yNormdiag.pt', help='name of model to load')
+    parser.add_argument('--model_type', type=str, default='UNet', help='type of model')
+    parser.add_argument('--y_norm', type=str, default='diag', help='type of y normalization')
     parser.add_argument('--batch_size', type=int, default=1, help='Training batch size')
-    parser.add_argument('--num_workers', type=int, default=5, help='Number of processes to use')
+    parser.add_argument('--num_workers', type=int, default=0, help='Number of processes to use')
     parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
     parser.add_argument('--n', type=int, default=1024, help='Number of particles')
     parser.add_argument('--seed', type=int, default=42, help='random seed to use. Default: 42')
     parser.add_argument('--plot', type=str2bool, default=False, help='whether or not to plot')
+    parser.add_argument('--classes', type=int, default=10, help='number of classes in percentile normalization')
 
     opt = parser.parse_args()
     return opt
@@ -79,7 +80,7 @@ def plot_predictions():
     model.load_state_dict(save_dict['model_state_dict'])
     model.eval()
 
-    seq2ContactData = Sequences2Contacts(dataFolder, toxx = opt.toxx, y_norm = opt.y_norm,
+    seq2ContactData = Sequences2Contacts(opt.data_folder, toxx = opt.toxx, y_norm = opt.y_norm,
                                         names = True, y_reshape = opt.reshape)
     _, val_dataloader, _ = getDataLoaders(seq2ContactData, batch_size = opt.batch_size,
                                             num_workers = opt.num_workers, seed = opt.seed)
@@ -87,13 +88,13 @@ def plot_predictions():
     subFolder = opt.model_name[:-3]
     imagePath = os.path.join('images', subFolder)
     if not os.path.exists(imagePath):
-        os.mkdir(subpath, mode = 0o755)
+        os.mkdir(imagePath, mode = 0o755)
 
     val_n = len(val_dataloader)
     loss_arr = np.zeros(val_n)
     acc_arr = np.zeros(val_n)
-    acc_c_arr = np.zeros((val_n, classes))
-    freq_c_arr = np.zeros((val_n, classes))
+    acc_c_arr = np.zeros((val_n, opt.classes))
+    freq_c_arr = np.zeros((val_n, opt.classes))
     for i, (x, y, path, max) in enumerate(val_dataloader):
         path = path[0]
         print(path)
@@ -104,7 +105,7 @@ def plot_predictions():
 
         yhat = model(x)
         loss = criterion(yhat, y).item()
-        loss_arr.append(loss)
+        loss_arr[i] = loss
         y = y.numpy()
         yhat = yhat.detach().numpy()
 
@@ -113,8 +114,8 @@ def plot_predictions():
             if opt.plot:
                 plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = True, title = 'Y hat')
             acc = np.sum((yhat == y)) / y.size
-            acc_arr.append(acc)
-            for c in range(classes):
+            acc_arr[i] = acc
+            for c in range(opt.classes):
                 denom = np.sum(y == c)
                 freq_c_arr[i, c] = denom / y.size
                 num = np.sum(np.logical_and((y == c), (yhat == y)))
@@ -126,7 +127,7 @@ def plot_predictions():
                 plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = 'Y hat')
 
             # plot prcnt
-            prcntDist_path = os.path.join(dataFolder, 'prcntDist.npy')
+            prcntDist_path = os.path.join(opt.data_folder, 'prcntDist.npy')
             prcntDist = np.load(prcntDist_path)
             yhat_prcnt = percentile_normalize(yhat, prcntDist)
 
@@ -135,11 +136,11 @@ def plot_predictions():
 
             ytrue = np.load(os.path.join(path, 'y_prcnt_norm.npy'))
             acc = np.sum(yhat_prcnt == ytrue) / yhat.size
-            acc_arr.append(acc)
-            for c in range(classes):
-                denom = np.sum(y == c)
+            acc_arr[i] = acc
+            for c in range(opt.classes):
+                denom = np.sum(ytrue == c)
                 freq_c_arr[i, c] = denom / ytrue.size
-                num = np.sum(np.logical_and((ytrue == c), (yhat == ytrue)))
+                num = np.sum(np.logical_and((ytrue == c), (yhat_prcnt == ytrue)))
                 acc = num / denom
                 acc_c_arr[i, c] = acc
 
@@ -150,7 +151,9 @@ def plot_predictions():
 
     print('Accuracy: {} +- {}'.format(np.mean(acc_arr), np.std(acc_arr)))
     print('Loss: {} +- {}'.format(np.mean(loss_arr), np.std(loss_arr)))
-    plotPerClassAccuracy(acc_c_arr, freq__c_arr, ofile = os.path.join(imagePath, 'per_class_acc.png'))
+    print(acc_c_arr)
+    print(freq_c_arr)
+    plotPerClassAccuracy(acc_c_arr, freq_c_arr, ofile = os.path.join(imagePath, 'per_class_acc.png'))
 
 def main():
     # freqDistributionPlots('dataset_04_18_21')
