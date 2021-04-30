@@ -175,8 +175,12 @@ def comparePCA(opt):
         max = float(max)
 
         yhat = opt.model(x)
-        y = y.numpy().reshape((opt.n,opt.n))
-        yhat = yhat.detach().numpy().reshape((opt.n,opt.n))
+        y = y.numpy()
+        # .reshape((opt.n,opt.n))
+        yhat = yhat.detach().numpy()
+        # .reshape((opt.n,opt.n))
+        print(y.shape)
+        pritn(yhat.shape)
 
         if opt.prcnt:
             yhat = np.argmax(yhat, axis = 1)
