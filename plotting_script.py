@@ -1,6 +1,8 @@
 from neural_net_utils.networks import *
 from neural_net_utils.utils import *
 from neural_net_utils.dataset_classes import Sequences2Contacts
+from scipy.stats import spearmanr, pearsonr
+from sklearn.decomposition import PCA
 
 
 def freqDistributionPlots(dataFolder, n = 1024):
@@ -22,7 +24,6 @@ def freqStatisticsPlots(dataFolder):
         for stat in ['mean', 'var']:
             ofile = os.path.join(dataFolder, "freq_stat_{}_diag_{}.png".format(stat, diag))
             plotDistStats(dataFolder, diag, ofile, stat = stat)
-
 
 def contactPlots(dataFolder):
     in_paths = sorted(make_dataset(dataFolder))
@@ -53,19 +54,16 @@ def setupParser():
     parser.add_argument('--classes', type=int, default=10, help='number of classes in percentile normalization')
 
     opt = parser.parse_args()
-    return opt
 
-def plot_predictions():
-    opt = setupParser()
     if opt.model_type == 'UNet':
         opt.toxx = True
         if opt.y_norm == 'diag':
-            model = UNet(nf_in = 2, nf_out = 1, nf = 8, out_act = nn.Sigmoid())
+            opt.model = UNet(nf_in = 2, nf_out = 1, nf = 8, out_act = nn.Sigmoid())
             opt.prcnt = False
             opt.reshape = True
             criterion = F.mse_loss
         elif opt.y_norm == 'prcnt':
-            model = UNet(nf_in = 2, nf_out = 10, nf = 8, out_act = None)
+            opt.model = UNet(nf_in = 2, nf_out = 10, nf = 8, out_act = None)
             opt.prcnt = True
             opt.reshape = False
             criterion = F.cross_entropy
@@ -77,9 +75,12 @@ def plot_predictions():
 
     modeldir = os.path.join('models', opt.model_name)
     save_dict = torch.load(modeldir, map_location = 'cpu')
-    model.load_state_dict(save_dict['model_state_dict'])
-    model.eval()
+    opt.model.load_state_dict(save_dict['model_state_dict'])
+    opt.model.eval()
 
+    return opt
+
+def plot_predictions(opt):
     seq2ContactData = Sequences2Contacts(opt.data_folder, toxx = opt.toxx, y_norm = opt.y_norm,
                                         names = True, y_reshape = opt.reshape)
     _, val_dataloader, _ = getDataLoaders(seq2ContactData, batch_size = opt.batch_size,
@@ -103,10 +104,11 @@ def plot_predictions():
         if not os.path.exists(subpath):
             os.mkdir(subpath, mode = 0o755)
 
-        yhat = model(x)
+        yhat = opt.model(x)
         loss = criterion(yhat, y).item()
         loss_arr[i] = loss
         y = y.numpy()
+
         yhat = yhat.detach().numpy()
 
         if opt.prcnt:
@@ -155,11 +157,59 @@ def plot_predictions():
     print(freq_c_arr)
     plotPerClassAccuracy(acc_c_arr, freq_c_arr, ofile = os.path.join(imagePath, 'per_class_acc.png'))
 
+
+def comparePCA(opt):
+    seq2ContactData = Sequences2Contacts(opt.data_folder, toxx = opt.toxx, y_norm = opt.y_norm,
+                                        names = True, y_reshape = opt.reshape)
+    _, val_dataloader, _ = getDataLoaders(seq2ContactData, batch_size = opt.batch_size,
+                                            num_workers = opt.num_workers, seed = opt.seed)
+
+
+    val_n = len(val_dataloader)
+    acc_arr = np.zeros(val_n)
+    rho_arr = np.zeros(val_n)
+    p_arr = np.zeros(val_n)
+    pca = PCA()
+    for i, (x, y, path, max) in enumerate(val_dataloader):
+        path = path[0]
+        max = float(max)
+
+        yhat = opt.model(x)
+        y = y.numpy().reshape((opt.n,opt.n))
+        yhat = yhat.detach().numpy().reshape((opt.n,opt.n))
+
+        if opt.prcnt:
+            yhat = np.argmax(yhat, axis = 1)
+        result_y = pca.fit(y)
+        comp1_y = pca.components_[0]
+        sign1_y = np.sign(comp1_y)
+
+        result_yhat = pca.fit(yhat)
+        comp1_yhat = pca.components_[0]
+        sign1_yhat = np.sign(comp1_yhat)
+        acc = np.sum((sign1_yhat == sign1_y)) / sign1_y.size
+        acc_arr[i] = acc
+
+        corr, pval = spearmanr(comp1_yhat, comp1_y)
+        rho_arr[i] = corr
+
+        corr, pval = pearsonr(comp1_yhat, comp1_y)
+        p_arr[i] = corr
+
+    print(opt.model_name)
+    print('Accuracy: {} +- {}'.format(np.mean(acc_arr), np.std(acc_arr)))
+    print('Spearman R: {} +- {}'.format(np.mean(rho_arr), np.std(rho_arr)))
+    print('Pearson R: {} +- {}'.format(np.mean(p_arr), np.std(p_arr)))
+
+
+
 def main():
+    opt = setupParser()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')
     # contactPlots('dataset_04_18_21')
-    plot_predictions()
+    # plot_predictions(opt)
+    comparePCA(opt)
     # plot_predictions('dataset_04_18_21', 'UNet_nEpochs15_nf8_lr0.1_milestones5-10_yNormprcnt.pt', 'UNet', 'prcnt')
 
 

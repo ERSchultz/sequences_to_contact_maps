@@ -111,7 +111,10 @@ def main():
 
     print('Total time: {}'.format(time.time() - t0))
     print('Val loss: {}'.format(val_loss))
-    plotModelFromArrays(train_loss_arr, opt.ofile + '_train_val_loss.png', val_loss)
+    imagePath = os.path.join('images', opt.ofile, 'train_val_loss.png')
+    if not os.path.exists(imagePath):
+        os.mkdir(imagePath, mode = 0o755)
+    plotModelFromArrays(train_loss_arr, imagePath, val_loss)
 
 
 if __name__ == '__main__':

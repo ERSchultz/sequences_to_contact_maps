@@ -381,7 +381,7 @@ def plotModelFromDir(dir, model, ofile):
     plt.xlabel('epoch', fontsize = 16)
     plt.ylabel('loss', fontsize = 16)
     plt.legend()
-    plt.savefig(os.path.join('images', ofile))
+    plt.savefig(ofile)
     plt.close()
 
 def plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, title = None):
@@ -392,7 +392,7 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, title = None):
     plt.legend()
     if title is not None:
         plt.title(title, fontsize = 16)
-    plt.savefig(os.path.join('images', ofile))
+    plt.savefig('images')
     plt.close()
 
 def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 10, minVal = None, maxVal = None, prcnt = False):
