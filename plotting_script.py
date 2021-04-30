@@ -175,15 +175,12 @@ def comparePCA(opt):
         max = float(max)
 
         yhat = opt.model(x)
-        y = y.numpy()
-        # .reshape((opt.n,opt.n))
+        y = y.numpy().reshape((opt.n,opt.n))
         yhat = yhat.detach().numpy()
-        # .reshape((opt.n,opt.n))
-        print(y.shape)
-        pritn(yhat.shape)
 
         if opt.prcnt:
             yhat = np.argmax(yhat, axis = 1)
+            yhat = yhat.reshape((opt.n,opt.n))
         result_y = pca.fit(y)
         comp1_y = pca.components_[0]
         sign1_y = np.sign(comp1_y)
