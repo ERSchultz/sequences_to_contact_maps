@@ -180,7 +180,8 @@ def comparePCA(opt):
 
         if opt.prcnt:
             yhat = np.argmax(yhat, axis = 1)
-            yhat = yhat.reshape((opt.n,opt.n))
+        yhat = yhat.reshape((opt.n,opt.n))
+
         result_y = pca.fit(y)
         comp1_y = pca.components_[0]
         sign1_y = np.sign(comp1_y)
