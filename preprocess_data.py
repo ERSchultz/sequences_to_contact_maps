@@ -120,22 +120,16 @@ def process_sample_save(in_path, out_path, k, n):
 
 def process_sample_diag_norm(path, meanDist):
     # check if sample needs to be processed
-    if os.path.exists(os.path.join(path, 'y_diag_norm.npy')):
-        return
-
-    y = np.load(os.path.join(path, 'y.npy')).astype(np.float64)
-    y_diag = diagonal_normalize(y, meanDist)
-    np.save(os.path.join(path, 'y_diag_norm.npy'), y_diag)
+    if not os.path.exists(os.path.join(path, 'y_diag_norm.npy')):
+        y = np.load(os.path.join(path, 'y.npy')).astype(np.float64)
+        y_diag = diagonal_normalize(y, meanDist)
+        np.save(os.path.join(path, 'y_diag_norm.npy'), y_diag)
 
 def process_sample_percentile_norm(path, prcntDist):
-    # check if sample needs to be processed
-    # if os.path.exists(os.path.join(out_path, 'y_prcnt_norm.npy')):
-    #     return
-
-    y_diag = np.load(os.path.join(path, 'y_diag_norm.npy')).astype(np.float64)
-    y_prcnt = percentile_normalize(y_diag, prcntDist)
-    np.save(os.path.join(path, 'y_prcnt_norm.npy'), y_prcnt.astype(np.int16))
-
+    if not os.path.exists(os.path.join(path, 'y_prcnt_norm.npy')):
+        y_diag = np.load(os.path.join(path, 'y_diag_norm.npy')).astype(np.float64)
+        y_prcnt = percentile_normalize(y_diag, prcntDist)
+        np.save(os.path.join(path, 'y_prcnt_norm.npy'), y_prcnt.astype(np.int16))
 
 def test_process_data(dirname):
     paths = sorted(make_dataset(dirname))

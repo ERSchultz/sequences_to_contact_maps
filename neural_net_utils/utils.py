@@ -510,8 +510,11 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
     """Plots Pearson correlation as a function of genomic distance"""
 
     p_arr = np.zeros((opt.valN, opt.n-1))
+    model.eval()
     i = 0
     for x, y in val_dataloader:
+        x = x.to(opt.device)
+        y = y.to(opt.device)
         for j in range(y.shape[0]):
             # manually using batchsize of 1
             xj = x[j, :, :].unsqueeze(0)
@@ -548,8 +551,11 @@ def comparePCA(val_dataloader, model, opt):
     rho_arr = np.zeros(opt.valN)
     p_arr = np.zeros(opt.valN)
     pca = PCA()
+    model.eval()
     i = 0
     for x, y in val_dataloader:
+        x = x.to(opt.device)
+        y = y.to(opt.device)
         for j in range(y.shape[0]):
             # manually using batchsize of 1
             x = x[j, :, :].unsqueeze(0)
