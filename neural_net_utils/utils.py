@@ -521,7 +521,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
             yj = y[j, :, :, :].unsqueeze(0)
             yhat = model(xj)
             yj = yj.cpu().numpy().reshape((opt.n, opt.n))
-            yhat = yhat.detach().numpy()
+            yhat = yhat.cpu().detach().numpy()
 
             if opt.y_norm == 'prcnt':
                 yhat = np.argmax(yhat, axis = 1)
@@ -562,7 +562,7 @@ def comparePCA(val_dataloader, model, opt):
             y = y[j, :, :, :].unsqueeze(0)
             yhat = model(x)
             y = y.cpu().numpy().reshape((opt.n, opt.n))
-            yhat = yhat.detach().numpy()
+            yhat = yhat.cpu().detach().numpy()
 
             if opt.y_norm == 'prcnt':
                 yhat = np.argmax(yhat, axis = 1)

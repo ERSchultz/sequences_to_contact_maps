@@ -30,7 +30,7 @@ class Sequences2Contacts(Dataset):
         self.paths = sorted(make_dataset(dirname, minSample = min_sample))
 
     def __getitem__(self, index):
-        ydtype = torch.float32
+        ydtype = torch.float32 # default dtype
         if self.y_norm is None:
             y_path = os.path.join(self.paths[index], 'y.npy')
             y = np.load(y_path)
@@ -51,9 +51,6 @@ class Sequences2Contacts(Dataset):
 
         if self.y_reshape:
             y = np.expand_dims(y, 0)
-        max = np.max(y)
-        if self.y_norm != 'prcnt':
-            y = y / max
 
         if self.toxx:
             x_path = os.path.join(self.paths[index], 'xx.npy')
@@ -69,10 +66,11 @@ class Sequences2Contacts(Dataset):
                 # treat x as 1d image with k channels
                 x = x.T
 
-        x = torch.Tensor(x)
-        y = torch.Tensor(y).type(ydtype)
+        x = torch.tensor(x)
+        y = torch.tensor(y).type(ydtype)
+        print(y)
         if self.names:
-            return x, y, self.paths[index], max
+            return x, y, self.paths[index]
         else:
             return x, y
 
@@ -109,7 +107,6 @@ class Contacts(Dataset):
 
         if self.y_reshape:
             y = np.expand_dims(y, 0)
-        y = y / np.max(y)
 
         return y
 
