@@ -59,10 +59,18 @@ def splitDataset(dataset, opt):
 
 # data processing functions
 @njit
-def x2xx(x, mode = 'add'):
+def x2xx(x, mode = 'mean'):
     # TODO better explanation here
     """
-    Function for converting x to an image.
+    Function for converting x to an image xx.
+
+    For add:
+        xx[k, i, j] = x[i, :] + x[j, :] (element-wise)
+    For mean:
+        xx[k, i, j] = (x[i, :] + x[j, :]) / 2 (element-wise)
+    For append:
+        xx[2k, i, j] = [x[i, :] ... x[j, :]]
+
 
     Inputs:
         x: (n x k) array
@@ -331,7 +339,7 @@ def plotFrequenciesSampleSubplot(freq_arr, dataFolder, diag, k, split = 'type'):
     plt.savefig(os.path.join(dataFolder, 'freq_count_multisample_diag_{}_split_{}.png'.format(diag, split)))
     plt.close()
 
-def plotDistStats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
+def Stats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
     """
     Function to plot expected interaction frequency as a function of distance for all samples in dataFolder.
 
@@ -517,9 +525,11 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
         y = y.to(opt.device)
         for j in range(y.shape[0]):
             # manually using batchsize of 1
-            xj = x[j, :, :].unsqueeze(0)
-            yj = y[j, :, :, :].unsqueeze(0)
+            xj = x[j].unsqueeze(0)
+            yj = y[j].unsqueeze(0)
+            print(yj)
             yhat = model(xj)
+            print(yhat)
             yj = yj.cpu().numpy().reshape((opt.n, opt.n))
             yhat = yhat.cpu().detach().numpy()
 
@@ -536,7 +546,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
     p_mean = np.mean(p_arr, axis = 0)
     p_std = np.std(p_arr, axis = 0)
 
-    plt.plot(np.arange(opt.n-1), p_mean, color = 'red')
+    plt.plot(np.arange(opt.n-1), p_mean, color = 'black')
     plt.fill_between(np.arange(opt.n-1), p_mean + p_std, p_mean - p_std, color = 'red', alpha = 0.5)
     plt.xlabel('Distance', fontsize = 16)
     plt.ylabel('Pearson Correlation Coefficient', fontsize = 16)
@@ -558,8 +568,8 @@ def comparePCA(val_dataloader, model, opt):
         y = y.to(opt.device)
         for j in range(y.shape[0]):
             # manually using batchsize of 1
-            x = x[j, :, :].unsqueeze(0)
-            y = y[j, :, :, :].unsqueeze(0)
+            x = x[j].unsqueeze(0)
+            y = y[j].unsqueeze(0)
             yhat = model(x)
             y = y.cpu().numpy().reshape((opt.n, opt.n))
             yhat = yhat.cpu().detach().numpy()

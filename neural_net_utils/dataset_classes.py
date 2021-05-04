@@ -18,19 +18,19 @@ class Names(Dataset):
 
 
 class Sequences2Contacts(Dataset):
-    def __init__(self, dirname, toxx, y_norm, x_reshape = False,
+    def __init__(self, dirname, toxx, y_norm, x_reshape = False, ydtype = torch.float32,
                 y_reshape = True, names = False, crop = None, min_sample = 0):
         super(Sequences2Contacts, self).__init__()
         self.toxx = toxx
         self.y_norm = y_norm
         self.x_reshape = x_reshape
+        self.ydtype = ydtype
         self.y_reshape = y_reshape
         self.names = names
         self.crop = crop
         self.paths = sorted(make_dataset(dirname, minSample = min_sample))
 
     def __getitem__(self, index):
-        ydtype = torch.float32 # default dtype
         if self.y_norm is None:
             y_path = os.path.join(self.paths[index], 'y.npy')
             y = np.load(y_path)
@@ -40,7 +40,6 @@ class Sequences2Contacts(Dataset):
         elif self.y_norm == 'prcnt':
             y_path = os.path.join(self.paths[index], 'y_prcnt_norm.npy')
             y = np.load(y_path)
-            ydtype = torch.int64
         else:
             print("Warning: Unknown norm: {}".format(self.y_norm))
             y_path = os.path.join(self.paths[index], 'y.npy')
@@ -66,9 +65,8 @@ class Sequences2Contacts(Dataset):
                 # treat x as 1d image with k channels
                 x = x.T
 
-        x = torch.tensor(x)
-        y = torch.tensor(y).type(ydtype)
-        print(y)
+        x = torch.tensor(x, dtype = torch.float32)
+        y = torch.tensor(y, dtype = self.ydtype)
         if self.names:
             return x, y, self.paths[index]
         else:

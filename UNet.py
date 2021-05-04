@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from neural_net_utils.networks import UNet
@@ -27,19 +28,23 @@ def main():
     opt = argparseSetup()
     print(opt)
 
+    opt.loss = 'mse'
+    opt.y_norm = 'diag'
     if opt.loss == 'cross_entropy':
         assert opt.y_norm == 'prcnt', 'must use percentile normalization with cross entropy'
         opt.y_reshape = False
         opt.criterion = F.cross_entropy
+        opt.ydtype = torch.int64
         model = UNet(nf_in = 2, nf_out = 10, nf = opt.nf, out_act = None)
     else:
         opt.criterion = F.mse_loss
-        model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = nn.Sigmoid())
+        model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = None)
         opt.y_reshape = True
+        opt.ydtype = torch.float32
 
 
     seq2ContactData = Sequences2Contacts(opt.data_folder, toxx = True,
-                                        y_norm = opt.y_norm,
+                                        y_norm = opt.y_norm, ydtype = opt.ydtype,
                                         y_reshape = opt.y_reshape, crop = opt.crop)
 
     core_test_train(seq2ContactData, model, opt)
