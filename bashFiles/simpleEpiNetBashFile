@@ -31,4 +31,4 @@ logfile="logFiles/${ofile}.log"
 
 cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
-python3 SimpleEpiNet.py --data_folder $dirname --n_epochs $nEpochs --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile --crop $crop --n $n >> $logfile
+python3 SimpleEpiNet.py --data_folder $dirname --n_epochs $nEpochs --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile --n $n >> $logfile
