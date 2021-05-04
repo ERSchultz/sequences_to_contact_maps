@@ -1,8 +1,7 @@
 from neural_net_utils.networks import *
 from neural_net_utils.utils import *
 from neural_net_utils.dataset_classes import Sequences2Contacts
-from scipy.stats import spearmanr, pearsonr
-from sklearn.decomposition import PCA
+
 
 
 def freqDistributionPlots(dataFolder, n = 1024):
@@ -37,7 +36,6 @@ def contactPlots(dataFolder):
 
         y_prcnt_norm = np.load(os.path.join(path, 'y_prcnt_norm.npy'))
         plotContactMap(y_prcnt_norm, os.path.join(path, 'y_prcnt_norm.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
-
 
 def setupParser():
     parser = argparse.ArgumentParser(description='Base parser')
@@ -157,61 +155,12 @@ def plot_predictions(opt):
     print(freq_c_arr)
     plotPerClassAccuracy(acc_c_arr, freq_c_arr, ofile = os.path.join(imagePath, 'per_class_acc.png'))
 
-
-def comparePCA(opt):
-    seq2ContactData = Sequences2Contacts(opt.data_folder, toxx = opt.toxx, y_norm = opt.y_norm,
-                                        names = True, y_reshape = opt.reshape)
-    _, val_dataloader, _ = getDataLoaders(seq2ContactData, batch_size = opt.batch_size,
-                                            num_workers = opt.num_workers, seed = opt.seed)
-
-
-    val_n = len(val_dataloader)
-    acc_arr = np.zeros(val_n)
-    rho_arr = np.zeros(val_n)
-    p_arr = np.zeros(val_n)
-    pca = PCA()
-    for i, (x, y, path, max) in enumerate(val_dataloader):
-        path = path[0]
-        max = float(max)
-
-        yhat = opt.model(x)
-        y = y.numpy().reshape((opt.n,opt.n))
-        yhat = yhat.detach().numpy()
-
-        if opt.prcnt:
-            yhat = np.argmax(yhat, axis = 1)
-        yhat = yhat.reshape((opt.n,opt.n))
-
-        result_y = pca.fit(y)
-        comp1_y = pca.components_[0]
-        sign1_y = np.sign(comp1_y)
-
-        result_yhat = pca.fit(yhat)
-        comp1_yhat = pca.components_[0]
-        sign1_yhat = np.sign(comp1_yhat)
-        acc = np.sum((sign1_yhat == sign1_y)) / sign1_y.size
-        acc_arr[i] = acc
-
-        corr, pval = spearmanr(comp1_yhat, comp1_y)
-        rho_arr[i] = corr
-
-        corr, pval = pearsonr(comp1_yhat, comp1_y)
-        p_arr[i] = corr
-
-    print(opt.model_name)
-    print('Accuracy: {} +- {}'.format(np.mean(acc_arr), np.std(acc_arr)))
-    print('Spearman R: {} +- {}'.format(np.mean(rho_arr), np.std(rho_arr)))
-    print('Pearson R: {} +- {}'.format(np.mean(p_arr), np.std(p_arr)))
-
-
-
 def main():
     opt = setupParser()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')
     # contactPlots('dataset_04_18_21')
     # plot_predictions(opt)
-    comparePCA(opt)
     # plot_predictions('dataset_04_18_21', 'UNet_nEpochs15_nf8_lr0.1_milestones5-10_yNormprcnt.pt', 'UNet', 'prcnt')
 
 

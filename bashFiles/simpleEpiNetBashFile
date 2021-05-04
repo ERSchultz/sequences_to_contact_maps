@@ -1,29 +1,32 @@
 #! /bin/bash
 #SBATCH --job-name=simpleEpiNet
 #SBATCH --output=logFiles/simpleEpiNet.out
-#SBATCH --time=02:00:00
+#SBATCH --time=01:00:00
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=2
-#SBATCH --mem-per-cpu=4000
-#SBATCH --mem-per-gpu=8000
+#SBATCH --ntasks-per-node=4
+#SBATCH --mem-per-cpu=2000
+#SBATCH --mem-per-gpu=4000
 
-dirname="/../../../project2/depablo/skyhl/dataset_04_07_21"
-nEpochs=15
-h=1
-hidden=10
-latent=5
+dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
+
+# architecture
+k=2
+n=1024
+yNorm='diag'
+kernelWList='3-5-5'
+hiddenSizesList='10-20-30'
+
+# hyperparameters
+nEpochs=2
 lr=0.1
-batchSize=16
-numWorkers=2
+batchSize=32
+numWorkers=4
 milestones='5-10'
 gamma=0.1
-k=2
-crop='128-1024'
-n=896
 
-ofile="simpleEpiNet_nEpochs${nEpochs}_h${h}_hidden${hidden}_latent${latent}_lr${lr}_milestones${milestones}_crop${crop}"
+ofile="simpleEpiNet_nEpochs${nEpochs}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_latent${latent}_lr${lr}_milestones${milestones}"
 logfile="logFiles/${ofile}.log"
 
 cd ~/sequences_to_contact_maps

@@ -32,9 +32,9 @@ def main():
     # Set up model
     model = DeepC(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                         opt.dilation_list, opt.hidden_size_dilation)
-    criterion = F.mse_loss
+    opt.criterion = F.mse_loss
 
-    core_test_train(seq2ContactData, model, criterion, opt)
+    core_test_train(seq2ContactData, model, opt)
 
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from neural_net_utils.networks import UNet
 from neural_net_utils.dataset_classes import Sequences2Contacts
-from neural_net_utils.utils import getBaseParser
+from neural_net_utils.utils import getBaseParser, configureOptForCuda
 from neural_net_utils.core_test_train import core_test_train
 import numpy as np
 import matplotlib.pyplot as plt
@@ -41,12 +41,12 @@ def main():
     # Set up model
     if opt.y_norm == 'diag':
         model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = nn.Sigmoid())
-        criterion = F.mse_loss
+        opt.criterion = F.mse_loss
     elif opt.y_norm == 'prcnt':
         model = UNet(nf_in = 2, nf_out = 10, nf = opt.nf, out_act = None)
-        criterion = F.cross_entropy
+        opt.criterion = F.cross_entropy
 
-    core_test_train(seq2ContactData, model, criterion, opt)
+    core_test_train(seq2ContactData, model, opt)
 
 
 if __name__ == '__main__':

@@ -138,9 +138,6 @@ class DeepC(nn.Module):
         y_flat_len = n**2 - n
         self.fc = LinearBlock(hidden_size_dilation, n, activation = 'sigmoid')
 
-
-
-
     def forward(self, input):
         out = self.model(input)
         out = out.view(-1, self.n, self.hidden_size_dilation)
@@ -149,33 +146,25 @@ class DeepC(nn.Module):
         return out
 
 class SimpleEpiNet(nn.Module):
-    # TODO use conv1d and x_reshape
-    def __init__(self, n, h, k, hidden_size, latent_size):
+    def __init__(self, n, k, kernel_w_list, hidden_sizes_list):
         super(SimpleEpiNet, self).__init__()
-        self.n = n
-        self.h = h
-        self.hidden_size = hidden_size
-        self.latent_size = latent_size
-        assert h <= n, "h can be at most n"
-        assert h % 2 != 0, "h must be odd"
-        self.k = k
+        model = []
 
         # Convolution
-        self.conv1 = ConvBlock(1, hidden_size, (h, k), padding = (h//2, 0))
-        self.conv2 = ConvBlock(1, hidden_size, (h, hidden_size), padding = (h//2, 0))
-        self.conv3 = ConvBlock(1, latent_size, (h, hidden_size), padding = (h//2, 0))
+        assert len(kernel_w_list) == len(hidden_sizes_list), "length of kernel_w_list ({}) and hidden_sizes_list ({}) must match".format(len(kernel_w_list), len(hidden_sizes_list))
+        input_size = k
+        for kernel_w, output_size in zip(kernel_w_list, hidden_sizes_list):
+            model.append(ConvBlock(input_size, output_size, kernel_w, padding = kernel_w//2, conv1d = True))
+            input_size = output_size
+
+        self.model = nn.Sequential(*model)
+
         self.act = nn.Sigmoid()
 
-
     def forward(self, input):
-        x = self.conv1(input)
-        x = x.view(-1, 1, self.n, self.hidden_size)
-        x = self.conv2(x)
-        x = x.view(-1, 1, self.n, self.hidden_size)
-        x = self.conv3(x)
-        x = x.view(-1, 1, self.n, self.latent_size)
+        out = self.model(input)
 
-        output = torch.einsum('...ij, ...kj->...ik', x, x)
-        output = self.act(output)
-
-        return output
+        out = torch.einsum('...kn, ...km->...nm', out, out)
+        out = self.act(out)
+        out = torch.unsqueeze(out, 1)
+        return out

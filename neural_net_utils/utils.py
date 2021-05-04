@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from numba import jit, njit
 import numpy as np
@@ -8,7 +9,8 @@ import matplotlib.pyplot as plt
 import matplotlib.colors
 import argparse
 import seaborn as sns
-from collections import defaultdict
+from sklearn.decomposition import PCA
+from scipy.stats import spearmanr, pearsonr
 import pandas as pd
 
 # dataset functions
@@ -27,33 +29,33 @@ def make_dataset(dir, minSample = 0):
                 data_file_arr.append(data_file)
     return data_file_arr
 
-def getDataLoaders(dataset, batch_size, num_workers, seed, split = [0.8, 0.1, 0.1], shuffle = True):
-    train_dataset, val_dataset, test_dataset = splitDataset(dataset, split, seed)
-    train_dataloader = DataLoader(train_dataset, batch_size = batch_size,
-                                    shuffle = shuffle, num_workers = num_workers)
+def getDataLoaders(dataset, opt):
+    train_dataset, val_dataset, test_dataset = splitDataset(dataset, opt)
+    train_dataloader = DataLoader(train_dataset, batch_size = opt.batch_size,
+                                    shuffle = opt.shuffle, num_workers = opt.num_workers)
     if len(val_dataset) > 0:
-        val_dataloader = DataLoader(val_dataset, batch_size = batch_size,
-                                        shuffle = shuffle, num_workers = num_workers)
+        val_dataloader = DataLoader(val_dataset, batch_size = opt.batch_size,
+                                        shuffle = opt.shuffle, num_workers = opt.num_workers)
     else:
         val_dataloader = None
     if len(val_dataset) > 0:
-        test_dataloader = DataLoader(test_dataset, batch_size = batch_size,
-                                        shuffle = shuffle, num_workers = num_workers)
+        test_dataloader = DataLoader(test_dataset, batch_size = opt.batch_size,
+                                        shuffle = opt.shuffle, num_workers = opt.num_workers)
     else:
         test_dataloader = None
 
     return train_dataloader, val_dataloader, test_dataloader
 
-def splitDataset(dataset, split, seed):
+def splitDataset(dataset, opt):
     """Splits input dataset into proportions specified by split."""
-    N = len(dataset)
-    assert sum(split) - 1 < 1e-5, "split doesn't sum to 1: {}".format(split)
-    trainN = math.floor(N * split[0])
-    valN = math.floor(N * split[1])
-    testN = N - trainN - valN
+    opt.N = len(dataset)
+    assert sum(opt.split) - 1 < 1e-5, "split doesn't sum to 1: {}".format(opt.split)
+    opt.trainN = math.floor(opt.N * opt.split[0])
+    opt.valN = math.floor(opt.N * opt.split[1])
+    opt.testN = opt.N - opt.trainN - opt.valN
     return torch.utils.data.random_split(dataset,
-                                        [trainN, valN, testN],
-                                        generator = torch.Generator().manual_seed(seed))
+                                        [opt.trainN, opt.valN, opt.testN],
+                                        generator = torch.Generator().manual_seed(opt.seed))
 
 # data processing functions
 @njit
@@ -373,25 +375,48 @@ def plotDistStats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
     plt.savefig(ofile)
     plt.close()
 
-def plotModelFromDir(dir, model, ofile):
+def plotModelFromDir(dir, ofile):
+    """Wrapper function for plotModelFromArrays given saved model."""
     saveDict = torch.load(dir, map_location=torch.device('cpu'))
-    model.load_state_dict(saveDict['model_state_dict'])
     train_loss_arr = saveDict['train_loss']
-    plt.plot(np.arange(0, epochs), train_loss_arr, label = 'train loss')
-    plt.xlabel('epoch', fontsize = 16)
-    plt.ylabel('loss', fontsize = 16)
-    plt.legend()
-    plt.savefig(ofile)
-    plt.close()
+    val_loss_arr = saveDict['val_loss']
+    plotModelFromArrays(train_loss_arr, val_loss_arr, ofile)
 
-def plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, title = None):
-    plt.plot(np.arange(1, len(train_loss_arr)+1), train_loss_arr, label = 'train loss')
-    plt.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr, label = 'val loss')
-    plt.xlabel('epoch', fontsize = 16)
-    plt.ylabel('loss', fontsize = 16)
+def plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, opt = None):
+    """Plots loss as function of epoch."""
+    plt.plot(np.arange(1, len(train_loss_arr)+1), train_loss_arr, label = 'Training')
+    plt.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr, label = 'Validation')
+    plt.xlabel('Epoch', fontsize = 16)
+    plt.ylabel('Loss', fontsize = 16)
+
+    if opt is not None:
+        if opt.criterion == F.mse_loss:
+            plt.ylabel('MSE Loss', fontsize = 16)
+        elif opt.criterion == F.cross_entropy:
+            plt.ylabel('Cross Entropy Loss', fontsize = 16)
+
+        if opt.y_norm is not None:
+            norm = opt.y_norm.capitalize()
+        else:
+            norm = 'None'
+        plt.title('Y Normalization: {}'.format(norm), fontsize = 16)
+
+        if opt.milestones is not None:
+            lr = opt.lr
+            max_y = np.max(np.maximum(train_loss_arr, val_loss_arr))
+            min_y = np.min(np.minimum(train_loss_arr, val_loss_arr))
+            new_max_y = max_y + (max_y - min_y) * 0.1
+            annotate_y = max_y + (max_y - min_y) * 0.05
+            x_offset = (opt.milestones[0] - 1) * 0.05
+            plt.ylim(top = new_max_y)
+            plt.axvline(1, linestyle = 'dashed', color = 'green')
+            plt.annotate('lr: {}'.format(lr), (1 + x_offset, annotate_y))
+            for m in opt.milestones:
+                lr = lr * opt.gamma
+                plt.axvline(m, linestyle = 'dashed', color = 'green')
+                plt.annotate('lr: {:.1e}'.format(lr), (m + x_offset, annotate_y))
     plt.legend()
-    if title is not None:
-        plt.title(title, fontsize = 16)
+    plt.tight_layout()
     plt.savefig(ofile)
     plt.close()
 
@@ -481,6 +506,86 @@ def plotPerClassAccuracy(acc_arr, freq_arr, title = None, ofile = None):
         plt.savefig(ofile)
     plt.show()
 
+def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
+    """Plots Pearson correlation as a function of genomic distance"""
+
+    p_arr = np.zeros((opt.valN, opt.n-1))
+    i = 0
+    for x, y in val_dataloader:
+        for j in range(y.shape[0]):
+            # manually using batchsize of 1
+            xj = x[j, :, :].unsqueeze(0)
+            yj = y[j, :, :, :].unsqueeze(0)
+            yhat = model(xj)
+            yj = yj.numpy().reshape((opt.n, opt.n))
+            yhat = yhat.detach().numpy()
+
+            if opt.y_norm == 'prcnt':
+                yhat = np.argmax(yhat, axis = 1)
+            yhat = yhat.reshape((opt.n,opt.n))
+
+            for d in range(opt.n-1):
+                y_diag = np.diagonal(yj, offset = d)
+                yhat_diag = np.diagonal(yhat, offset = d)
+                corr, pval = pearsonr(y_diag, yhat_diag)
+                p_arr[i, d] = corr
+
+    p_mean = np.mean(p_arr, axis = 0)
+    p_std = np.std(p_arr, axis = 0)
+
+    plt.plot(np.arange(opt.n-1), p_mean, color = 'red')
+    plt.fill_between(np.arange(opt.n-1), p_mean + p_std, p_mean - p_std, color = 'red', alpha = 0.5)
+    plt.xlabel('Distance', fontsize = 16)
+    plt.ylabel('Pearson Correlation Coefficient', fontsize = 16)
+    plt.tight_layout()
+    plt.savefig(ofile)
+    plt.close()
+
+# other functions
+def comparePCA(val_dataloader, model, opt):
+    """Computes statistics of 1st PC of contact map"""
+    acc_arr = np.zeros(opt.valN)
+    rho_arr = np.zeros(opt.valN)
+    p_arr = np.zeros(opt.valN)
+    pca = PCA()
+    i = 0
+    for x, y in val_dataloader:
+        for j in range(y.shape[0]):
+            # manually using batchsize of 1
+            x = x[j, :, :].unsqueeze(0)
+            y = y[j, :, :, :].unsqueeze(0)
+            yhat = model(x)
+            y = y.numpy().reshape((opt.n, opt.n))
+            yhat = yhat.detach().numpy()
+
+            if opt.y_norm == 'prcnt':
+                yhat = np.argmax(yhat, axis = 1)
+            yhat = yhat.reshape((opt.n, opt.n))
+
+            result_y = pca.fit(y)
+            comp1_y = pca.components_[0]
+            sign1_y = np.sign(comp1_y)
+
+            result_yhat = pca.fit(yhat)
+            comp1_yhat = pca.components_[0]
+            sign1_yhat = np.sign(comp1_yhat)
+            acc = np.sum((sign1_yhat == sign1_y)) / sign1_y.size
+            acc_arr[i] = acc
+
+            corr, pval = spearmanr(comp1_yhat, comp1_y)
+            rho_arr[i] = corr
+
+            corr, pval = pearsonr(comp1_yhat, comp1_y)
+            p_arr[i] = corr
+            i += 1
+
+    print('PCA results:')
+    print('Accuracy: {} +- {}'.format(np.mean(acc_arr), np.std(acc_arr)))
+    print('Spearman R: {} +- {}'.format(np.mean(rho_arr), np.std(rho_arr)))
+    print('Pearson R: {} +- {}'.format(np.mean(p_arr), np.std(p_arr)))
+    print()
+
+
 def getBaseParser():
     """Helper function to get default command line argument parser."""
     parser = argparse.ArgumentParser(description='Base parser')
@@ -489,6 +594,10 @@ def getBaseParser():
     parser.add_argument('--y_norm', type=str, help='type of normalization for y')
     parser.add_argument('--crop', type=str2list, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
 
+    # dataloader args
+    parser.add_argument('--split', type=str2list, default=[0.8, 0.1, 0.1], help='Train, val, test split for dataset')
+    parser.add_argument('--shuffle', type=str2bool, default=True, help='Whether or not to shuffle dataset')
+
     # train args
     parser.add_argument('--start_epoch', type=int, default=1, help='Starting epoch')
     parser.add_argument('--n_epochs', type=int, default=2, help='Number of epochs to train for')
@@ -496,7 +605,7 @@ def getBaseParser():
     parser.add_argument('--print_mod', type=int, default=2, help='How often to print')
     parser.add_argument('--lr', type=float, default=1e-3, help='Learning eate. Default=0.001')
     parser.add_argument('--gpus', type=int, default=1, help='Number of gpus')
-    parser.add_argument('--milestones', type=str2list, help='Milestones for lr decay - format: <milestone1-milestone2>')
+    parser.add_argument('--milestones', type=str2list, default = [2], help='Milestones for lr decay - format: <milestone1-milestone2>')
     parser.add_argument('--gamma', type=float, default=0.1, help='Gamma for lr decay')
 
     # model args
