@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from neural_net_utils.networks import SimpleEpiNet
 from neural_net_utils.dataset_classes import Sequences2Contacts
-from neural_net_utils.utils import getBaseParser, configureOptForCuda, str2list
+from neural_net_utils.utils import getBaseParser, finalizeParser, str2list
 from neural_net_utils.core_test_train import core_test_train
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,9 +23,7 @@ def argparseSetup():
     parser.add_argument('--kernel_w_list', type=str2list, default=[5,5], help='List of kernel widths of convolutional layers')
     parser.add_argument('--hidden_sizes_list', type=str2list, default=[10,10], help='List of hidden sizes for convolutional layers')
 
-
-    opt = parser.parse_args()
-    return configureOptForCuda(opt)
+    return finalizeParser(parser)
 
 def main():
     opt = argparseSetup()

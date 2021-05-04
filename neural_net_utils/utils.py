@@ -520,7 +520,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
             xj = x[j, :, :].unsqueeze(0)
             yj = y[j, :, :, :].unsqueeze(0)
             yhat = model(xj)
-            yj = yj.numpy().reshape((opt.n, opt.n))
+            yj = yj.cpu().numpy().reshape((opt.n, opt.n))
             yhat = yhat.detach().numpy()
 
             if opt.y_norm == 'prcnt':
@@ -561,7 +561,7 @@ def comparePCA(val_dataloader, model, opt):
             x = x[j, :, :].unsqueeze(0)
             y = y[j, :, :, :].unsqueeze(0)
             yhat = model(x)
-            y = y.numpy().reshape((opt.n, opt.n))
+            y = y.cpu().numpy().reshape((opt.n, opt.n))
             yhat = yhat.detach().numpy()
 
             if opt.y_norm == 'prcnt':
@@ -628,7 +628,9 @@ def getBaseParser():
 
     return parser
 
-def configureOptForCuda(opt):
+def finalizeParser(parser):
+    opt = parser.parse_args()
+
     # configure cuda
     if opt.gpus > 1:
         opt.cuda = True

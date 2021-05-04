@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from neural_net_utils.networks import UNet
 from neural_net_utils.dataset_classes import Sequences2Contacts
-from neural_net_utils.utils import getBaseParser, configureOptForCuda
+from neural_net_utils.utils import getBaseParser, finalizeParser
 from neural_net_utils.core_test_train import core_test_train
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,32 +19,28 @@ def argparseSetup():
 
     # model args
     parser.add_argument('--nf', type=int, default=8, help='Number of filters')
+    parser.add_argument('--loss', type=str, default='mse', help='Type of loss to use: options: {"mse", "cross_entropy"}')
 
-    opt = parser.parse_args()
-
-    # add arg for reshape
-    if opt.y_norm == 'prcnt':
-        opt.y_reshape = False
-    else:
-        opt.y_reshape = True
-
-    return configureOptForCuda(opt)
+    return finalizeParser(parser)
 
 def main():
     opt = argparseSetup()
     print(opt)
 
+    if opt.loss == 'cross_entropy':
+        assert opt.y_norm == 'prcnt', 'must use percentile normalization with cross entropy'
+        opt.y_reshape = False
+        opt.criterion = F.cross_entropy
+        model = UNet(nf_in = 2, nf_out = 10, nf = opt.nf, out_act = None)
+    else:
+        opt.criterion = F.mse_loss
+        model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = nn.Sigmoid())
+        opt.y_reshape = True
+
+
     seq2ContactData = Sequences2Contacts(opt.data_folder, toxx = True,
                                         y_norm = opt.y_norm,
                                         y_reshape = opt.y_reshape, crop = opt.crop)
-
-    # Set up model
-    if opt.y_norm == 'diag':
-        model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = nn.Sigmoid())
-        opt.criterion = F.mse_loss
-    elif opt.y_norm == 'prcnt':
-        model = UNet(nf_in = 2, nf_out = 10, nf = opt.nf, out_act = None)
-        opt.criterion = F.cross_entropy
 
     core_test_train(seq2ContactData, model, opt)
 
