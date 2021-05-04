@@ -1,8 +1,8 @@
 #! /bin/bash
-#SBATCH --job-name=DeepC
-#SBATCH --output=logFiles/DeepC.out
-#SBATCH --time=01:00:00
-#SBATCH --partition=gpu2
+#SBATCH --job-name=deepC
+#SBATCH --output=logFiles/deepC.out
+#SBATCH --time=02:00:00
+#SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
@@ -21,11 +21,11 @@ dilationList='2-4-8-16-32-64-128-256-512'
 hiddenSizeDilation=128
 
 # hyperparameters
-nEpochs=2
+nEpochs=75
 lr=0.1
 batchSize=32
 numWorkers=4
-milestones='5-10'
+milestones='25-50'
 gamma=0.1
 
 ofile="DeepC_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yNorm${yNorm}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilation${dilationList}_hiddenSize_${hiddenSizeDilation}"

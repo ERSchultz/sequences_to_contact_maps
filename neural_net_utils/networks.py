@@ -145,6 +145,7 @@ class DeepC(nn.Module):
         out = self.model(input)
         out = out.view(-1, self.n, self.hidden_size_dilation)
         out = self.fc(out)
+        out = torch.unsqueeze(out, 1)
         return out
 
 class SimpleEpiNet(nn.Module):
