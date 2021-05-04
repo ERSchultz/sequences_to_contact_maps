@@ -18,11 +18,12 @@ class Names(Dataset):
 
 
 class Sequences2Contacts(Dataset):
-    def __init__(self, dirname, toxx, y_norm,
+    def __init__(self, dirname, toxx, y_norm, x_reshape = False,
                 y_reshape = True, names = False, crop = None, min_sample = 0):
         super(Sequences2Contacts, self).__init__()
         self.toxx = toxx
         self.y_norm = y_norm
+        self.x_reshape = x_reshape
         self.y_reshape = y_reshape
         self.names = names
         self.crop = crop
@@ -33,7 +34,7 @@ class Sequences2Contacts(Dataset):
         if self.y_norm is None:
             y_path = os.path.join(self.paths[index], 'y.npy')
             y = np.load(y_path)
-        if self.y_norm == 'diag':
+        elif self.y_norm == 'diag':
             y_path = os.path.join(self.paths[index], 'y_diag_norm.npy')
             y = np.load(y_path)
         elif self.y_norm == 'prcnt':
@@ -62,9 +63,11 @@ class Sequences2Contacts(Dataset):
         else:
             x_path = os.path.join(self.paths[index], 'x.npy')
             x = np.load(x_path)
-            x = np.expand_dims(x, 0)
             if self.crop is not None:
                 x = x[:, self.crop[0]:self.crop[1]]
+            if self.x_reshape:
+                # treat x as 1d image with k channels
+                x = x.T
 
         x = torch.Tensor(x)
         y = torch.Tensor(y).type(ydtype)

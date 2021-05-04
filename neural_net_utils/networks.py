@@ -102,30 +102,53 @@ class VAE(nn.Module):
 
 class DeepC(nn.Module):
     '''Roughly based on https://doi.org/10.1038/s41592-020-0960-3'''
-    def __init__(self, n, h, k, y_len):
+    def __init__(self, n, k, kernel_w_list, hidden_sizes_list,
+                dilation_list, hidden_size_dilation):
+        """
+        Inputs:
+            n: number of particles
+            k: number of epigenetic marks
+            kernel_w_list: list of kernel widths of convolutional layers
+            hidden_sizes_list: list of hidden sizes for convolutional layers
+            dilation_list: list of dilations for dilated convolutional layers
+            hidden_size_dilation: hidden size of dilated convolutional layers
+        """
         super(DeepC, self).__init__()
         self.n = n
-        self.h = h
-        self.k = k
-        self.y_len = y_len
-        self.y_flat_len = y_len**2 - y_len
+        self.hidden_size_dilation = hidden_size_dilation
+        model = []
 
         # Convolution
-        self.conv1 = ConvBlock(1, k, (h, k), padding = w-1)
-        self.conv2 = ConvBlock(1, k, (h, k), padding = w-1)
-        self.conv2 = ConvBlock(1, k, (h, k), padding = w-1)
+        input_size = k
+        assert len(kernel_w_list) == len(hidden_sizes_list), "length of kernel_w_list ({}) and hidden_sizes_list ({}) must match".format(len(kernel_w_list), len(hidden_sizes_list))
+        for kernel_w, output_size in zip(kernel_w_list, hidden_sizes_list):
+            model.append(ConvBlock(input_size, output_size, kernel_w, padding = kernel_w//2,
+                                    activation = 'relu', dropout = 'drop', dropout_p = 0.2, conv1d = True))
+            input_size = output_size
 
-        # TODO Dialted convolution
+        # Dialted Convolution
+        for dilation in dilation_list:
+            model.append(ConvBlock(input_size, hidden_size_dilation, 3, padding = dilation,
+                                    activation = 'gated', dilation = dilation, residual = True, conv1d = True))
+            input_size = hidden_size_dilation
 
-        # Fully donnected
-        self.fc1 = LinearBlock(n, self.y_flat_len)
+        self.model = nn.Sequential(*model)
+
+        # Fully Connected
+        y_flat_len = n**2 - n
+        self.fc = LinearBlock(hidden_size_dilation, n, activation = 'sigmoid')
+
+
 
 
     def forward(self, input):
-        x = self.conv1(input)
-        x = x.view()
+        out = self.model(input)
+        out = out.view(-1, self.n, self.hidden_size_dilation)
+        out = self.fc(out)
+        return out
 
 class SimpleEpiNet(nn.Module):
+    # TODO use conv1d and x_reshape
     def __init__(self, n, h, k, hidden_size, latent_size):
         super(SimpleEpiNet, self).__init__()
         self.n = n

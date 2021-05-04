@@ -1,5 +1,59 @@
 import torch
 import torch.nn as nn
+import torch.optim as optim
+import time
+import os
+from neural_net_utils.utils import getDataLoaders, plotModelFromArrays
+
+def core_test_train(dataset, model, criterion, opt):
+    # Set random seeds
+    torch.manual_seed(opt.seed)
+    if opt.cuda:
+        torch.cuda.manual_seed(opt.seed)
+
+    # split dataset
+    train_dataloader, val_dataloader, test_dataloader = getDataLoaders(dataset,
+                                                                        batch_size = opt.batch_size,
+                                                                        num_workers = opt.num_workers,
+                                                                        seed = opt.seed)
+
+    if opt.pretrained:
+        model_name = os.path.join(opt.ifile_folder, opt.ifile + '.pt')
+        if os.path.exists(model_name):
+            if opt.cuda:
+                save_dict = torch.load(model_name)
+            else:
+                save_dict = torch.load(model_name, map_location = 'cpu')
+            model.load_state_dict(save_dict['model_state_dict'])
+            print('Pre-trained model is loaded.')
+
+    # Set up model and scheduler
+    optimizer = optim.Adam(model.parameters(), lr = opt.lr)
+    if opt.milestones is not None:
+        scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones = opt.milestones,
+                                                    gamma = opt.gamma, verbose = True)
+    else:
+        scheduler = None
+
+    if opt.use_parallel:
+        model = torch.nn.DataParallel(model, device_ids = opt.gpu_ids)
+
+    if opt.cuda:
+        model.to(opt.device)
+
+    t0 = time.time()
+    train_loss_arr, val_loss_arr = train(train_dataloader, val_dataloader, model, optimizer,
+            criterion, device = opt.device, save_location = os.path.join(opt.ofile_folder, opt.ofile + '.pt'),
+            n_epochs = opt.n_epochs, start_epoch = opt.start_epoch, use_parallel = opt.use_parallel,
+            scheduler = scheduler, save_mod = opt.save_mod, print_mod = opt.print_mod)
+
+    print('Total time: {}'.format(time.time() - t0))
+    print('Final val loss: {}'.format(val_loss_arr[-1]))
+    imagePath = os.path.join('images', opt.ofile)
+    if not os.path.exists(imagePath):
+        os.mkdir(imagePath, mode = 0o755)
+    imagePath = os.path.join(imagePath, 'train_val_loss.png')
+    plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, title = opt.y_norm)
 
 def train(train_loader, val_dataloader, model, optimizer, criterion, device, save_location,
         n_epochs, start_epoch, use_parallel, scheduler, save_mod, print_mod, ):

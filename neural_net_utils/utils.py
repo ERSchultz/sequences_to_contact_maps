@@ -392,7 +392,7 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, title = None):
     plt.legend()
     if title is not None:
         plt.title(title, fontsize = 16)
-    plt.savefig('images')
+    plt.savefig(ofile)
     plt.close()
 
 def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 10, minVal = None, maxVal = None, prcnt = False):
@@ -486,8 +486,8 @@ def getBaseParser():
     parser = argparse.ArgumentParser(description='Base parser')
 
     #pre-processing args
-    parser.add_argument('--y_norm', type=str, default=None)
-    parser.add_argument('--crop', type=str, default=None, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
+    parser.add_argument('--y_norm', type=str, help='type of normalization for y')
+    parser.add_argument('--crop', type=str2list, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
 
     # train args
     parser.add_argument('--start_epoch', type=int, default=1, help='Starting epoch')
@@ -496,13 +496,13 @@ def getBaseParser():
     parser.add_argument('--print_mod', type=int, default=2, help='How often to print')
     parser.add_argument('--lr', type=float, default=1e-3, help='Learning eate. Default=0.001')
     parser.add_argument('--gpus', type=int, default=1, help='Number of gpus')
-    parser.add_argument('--milestones', type=str, help='Milestones for lr decay - format: <milestone1-milestone2>')
+    parser.add_argument('--milestones', type=str2list, help='Milestones for lr decay - format: <milestone1-milestone2>')
     parser.add_argument('--gamma', type=float, default=0.1, help='Gamma for lr decay')
 
     # model args
     parser.add_argument('--data_folder', type=str, default='test', help='Location of data')
-    parser.add_argument('--pretrained', type=bool, default=False)
-    parser.add_argument('--resume_training', type=bool, default=False)
+    parser.add_argument('--pretrained', type=bool, default=False, help='True if using a pretrained model')
+    parser.add_argument('--resume_training', type=bool, default=False, help='True if resuming traning of a partially trained model')
     parser.add_argument('--ifile_folder', type=str, default='models/', help='Location of input file for pretrained model')
     parser.add_argument('--ifile', type=str, help='Name of input file for pretrained model')
     parser.add_argument('--ofile_folder', type=str, default='models/', help='Location to save checkpoint models')
@@ -512,6 +512,34 @@ def getBaseParser():
     parser.add_argument('--seed', type=int, default=42, help='random seed to use. Default: 42')
 
     return parser
+
+def configureOptForCuda(opt):
+    # configure cuda
+    if opt.gpus > 1:
+        opt.cuda = True
+        opt.use_parallel = True
+        opt.gpu_ids = []
+        for ii in range(6):
+            try:
+                torch.cuda.get_device_properties(ii)
+                print(str(ii))
+                opt.gpu_ids.append(ii)
+            except AssertionError:
+                print('Not ' + str(ii) + "!")
+    elif opt.gpus == 1:
+        opt.cuda = True
+        opt.use_parallel = False
+    else:
+        opt.cuda = False
+        opt.use_parallel = False
+
+    if opt.cuda and not torch.cuda.is_available():
+        print('Warning: falling back to cpu')
+        opt.cuda = False
+        opt.use_parallel = False
+
+    opt.device = torch.device('cuda' if opt.cuda else 'cpu')
+    return opt
 
 def roundUpBy10(val):
     """Rounds value up to the nearst multiple of 10."""
@@ -538,6 +566,20 @@ def str2bool(v):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
+
+def str2list(v):
+    """
+    Helper function for argparser, converts str to list by splitting on '-': "i-j-k" -> [i,j,k].
+
+    Inputs:
+        v: string
+    """
+    if v is None:
+        return None
+    if isinstance(v, str):
+       return [int(i) for i in v.split('-')]
+    else:
+        raise argparse.ArgumentTypeError('str value expected.')
 
 class InteractionConverter():
     """Class that allows conversion between epigenetic mark bit string pairs and integer type id"""
@@ -618,7 +660,10 @@ class InteractionConverter():
         return np_arr
 
 def main():
-    plotPerClassAccuracy(None, None, 5)
+    parser = getBaseParser()
+    opt = parser.parse_args()
+    print(opt)
+    # plotPerClassAccuracy(None, None, 5)
 
 if __name__ == '__main__':
     main()

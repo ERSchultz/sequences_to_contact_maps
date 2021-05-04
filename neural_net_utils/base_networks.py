@@ -26,18 +26,18 @@ class UnetBlock(torch.nn.Module):
 
         conv1 = nn.Conv2d(input_size, inner_size, kernel_size, stride, padding, bias)
 
-        if activation1 == 'relu':
+        if activation1.lower() == 'relu':
             act1 = nn.ReLU(True)
-        elif activation1 == 'prelu':
+        elif activation1.lower() == 'prelu':
             act1 = nn.PReLU()
-        elif activation1 == 'leaky':
+        elif activation1.lower() == 'leaky':
             act1 = nn.LeakyReLU(0.2, True)
 
-        if activation2 == 'relu':
+        if activation2.lower() == 'relu':
             act2 = nn.ReLU(True)
-        elif activation2 == 'prelu':
+        elif activation2.lower() == 'prelu':
             act2 = nn.PReLU()
-        elif activation2 == 'leaky':
+        elif activation2.lower() == 'leaky':
             act2 = nn.LeakyReLU(0.2, True)
 
         if outermost:
@@ -91,16 +91,14 @@ class ResnetBlock(torch.nn.Module):
         elif self.drop == 'drop':
             self.drop = nn.Dropout(dropout_p)
 
-        self.act = activation
-        if self.act == 'relu':
+        if self.act.lower() == 'relu':
             self.act = torch.nn.ReLU(True)
-        elif self.act == 'prelu':
+        elif self.act.lower() == 'prelu':
             self.act = torch.nn.PReLU()
-        elif self.act == 'leaky':
+        elif self.act.lower() == 'leaky':
             self.act = nn.LeakyReLU(0.2, True)
 
     def forward(self, x):
-        xcopy = x
         if self.norm is not None:
             out = self.norm(self.conv1(x))
         else:
@@ -114,44 +112,74 @@ class ResnetBlock(torch.nn.Module):
         else:
             out = self.conv2(out)
 
-        out = torch.add(out, xcopy)
+        out = torch.add(out, x)
 
         if self.drop is not None:
             out = self.drop(out)
 
         if self.act is not None:
             out = self.act(out)
-
         return out
 
 class ConvBlock(nn.Module):
     def __init__(self, input_size, output_size, kernel_size = 3, stride = 1, padding = 1, bias = True,
                  activation = 'prelu', norm = None, pool = None, pool_kernel_size = 2, dropout = None,
-                 dropout_p = 0.5):
+                 dropout_p = 0.5, dilation = 1, residual = False, conv1d = False):
         super(ConvBlock, self).__init__()
-        model = [nn.Conv2d(input_size, output_size, kernel_size,
-                                    stride, padding, bias = bias)]
+
+        self.residual = residual
+        if activation == 'gated':
+            self.gated = True
+        else:
+            self.gated = False
+
+        if conv1d:
+            model = [nn.Conv1d(input_size, output_size, kernel_size,
+                                        stride, padding, dilation, bias = bias)]
+            model2 = [nn.Conv1d(input_size, output_size, kernel_size,
+                                        stride, padding, dilation, bias = bias)] # only used if self.gated
+        else:
+            model = [nn.Conv2d(input_size, output_size, kernel_size,
+                                        stride, padding, dilation, bias = bias)]
+            model2 = [nn.Conv2d(input_size, output_size, kernel_size,
+                                        stride, padding, dilation, bias = bias)] # only used if self.gated
 
         if norm == 'batch':
             model.append(nn.BatchNorm2d(output_size))
+            model2.append(nn.BatchNorm2d(output_size))
         elif norm == 'instance':
             model.append(nn.InstanceNorm2d(output_size))
+            model2.append(nn.InstanceNorm2d(output_size))
 
         if pool == 'maxpool':
             model.append(nn.MaxPool2d(pool_kernel_size))
+            model2.append(nn.MaxPool2d(pool_kernel_size))
 
         if dropout == 'drop':
             model.append(nn.Dropout2d(dropout_p))
+            model2.append(nn.Dropout2d(dropout_p))
 
-        if activation == 'relu':
+        if activation.lower() == 'relu':
             model.append(nn.ReLU(True))
-        elif activation == 'prelu':
+        elif activation.lower() == 'prelu':
             model.append(nn.PReLU())
+        elif activation.lower() == 'gated':
+            model.append(nn.Tanh())
+            model2.append(nn.Sigmoid())
+            self.model2 = nn.Sequential(*model2)
+
 
         self.model = nn.Sequential(*model)
 
     def forward(self, x):
-        return self.model(x)
+        out = self.model(x)
+        if self.gated:
+            out = torch.mul(out, self.model2(x))
+
+        if self.residual:
+            return torch.add(out, x)
+        else:
+            return out
 
 class DeconvBlock(nn.Module):
     def __init__(self, input_size, output_size, kernel_size = 3, stride = 1, padding = 1,
@@ -169,9 +197,9 @@ class DeconvBlock(nn.Module):
         if dropout == 'drop':
             model.append(nn.Dropout2d(dropout_p))
 
-        if activation == 'relu':
+        if activation.lower() == 'relu':
             model.append(nn.ReLU(True))
-        elif activation == 'prelu':
+        elif activation.lower() == 'prelu':
             model.append(nn.PReLU())
 
         self.model = nn.Sequential(*model)
@@ -193,10 +221,12 @@ class LinearBlock(nn.Module):
         if dropout == 'drop':
             model.append(nn.Dropout(dropout_p))
 
-        if activation == 'relu':
+        if activation.lower() == 'relu':
             model.append(torch.nn.ReLU(True))
-        elif activation == 'prelu':
+        elif activation.lower() == 'prelu':
             model.append(torch.nn.PReLU())
+        elif activation.lower() == 'sigmoid':
+            model.append(torch.nn.Sigmoid())
 
         self.model = nn.Sequential(*model)
 

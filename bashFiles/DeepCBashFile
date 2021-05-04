@@ -1,0 +1,36 @@
+#! /bin/bash
+#SBATCH --job-name=DeepC
+#SBATCH --output=logFiles/DeepC.out
+#SBATCH --time=01:00:00
+#SBATCH --partition=gpu2
+#SBATCH --gres=gpu:1
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=4
+#SBATCH --mem-per-cpu=2000
+#SBATCH --mem-per-gpu=5000
+
+dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
+
+# architecture
+k=2
+n=1024
+yNorm='diag'
+kernelWList='5-5-5'
+hiddenSizesList='32-64-128'
+dilationList='2-4-8-16-32-64-128-256-512'
+hiddenSizeDilation=128
+
+# hyperparameters
+nEpochs=2
+lr=0.1
+batchSize=32
+numWorkers=4
+milestones='5-10'
+gamma=0.1
+
+ofile="DeepC_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yNorm${yNorm}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilation${dilationList}_hiddenSize_${hiddenSizeDilation}"
+logfile="logFiles/${ofile}.log"
+
+cd ~/sequences_to_contact_maps
+source activate seq2contact_pytorch
+python3 DeepC.py --data_folder $dirname --n_epochs $nEpochs --nf $nf --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile --n $n --y_norm $yNorm --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list $dilationList --hidden_size_dilation $hiddenSizeDilation >> $logfile
