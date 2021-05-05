@@ -528,9 +528,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
             # manually using batchsize of 1
             xj = x[j].unsqueeze(0)
             yj = y[j].unsqueeze(0)
-            print(yj)
             yhat = model(xj)
-            print('yhat', yhat)
             yj = yj.cpu().numpy().reshape((opt.n, opt.n))
             yhat = yhat.cpu().detach().numpy()
 
