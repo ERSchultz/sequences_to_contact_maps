@@ -10,20 +10,25 @@
 #SBATCH --mem-per-gpu=5000
 
 dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
-nEpochs=15
+
+# architecture
+k=2
+n=1024
+yPreprocessing='prcnt'
+yNorm='batch'
 nf=8
+
+# hyperparameters
+nEpochs=15
 lr=0.1
 batchSize=32
 numWorkers=4
 milestones='5-10'
 gamma=0.1
-k=2
-n=1024
-yNorm='prcnt'
 
 ofile="UNet_nEpochs${nEpochs}_nf${nf}_lr${lr}_milestones${milestones}_yNorm${yNorm}"
 logfile="logFiles/${ofile}.log"
 
 cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
-python3 UNet.py --data_folder $dirname --n_epochs $nEpochs --nf $nf --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile --n $n --y_norm $yNorm >> $logfile
+python3 UNet.py --data_folder $dirname  --k $k --n $n --yPreprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --ofile $ofile >> $logfile

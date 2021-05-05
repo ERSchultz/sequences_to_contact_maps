@@ -18,11 +18,17 @@ class Names(Dataset):
 
 
 class Sequences2Contacts(Dataset):
-    def __init__(self, dirname, toxx, y_norm, x_reshape = False, ydtype = torch.float32,
+    def __init__(self, dirname, toxx, y_preprocessing, y_norm, x_reshape = False, ydtype = torch.float32,
                 y_reshape = True, names = False, crop = None, min_sample = 0):
         super(Sequences2Contacts, self).__init__()
         self.toxx = toxx
         self.y_norm = y_norm
+        if self.y_norm == 'batch':
+            assert y_preprocessing is not None, "use instance normalization instead"
+            min_max = np.load(os.path.join(dirname, "y_{}_min_max.npy".format(y_preprocessing)))
+            self.min = min_max[0]
+            self.max = min_max[1]
+        self.y_preprocessing = y_preprocessing
         self.x_reshape = x_reshape
         self.ydtype = ydtype
         self.y_reshape = y_reshape
@@ -31,17 +37,17 @@ class Sequences2Contacts(Dataset):
         self.paths = sorted(make_dataset(dirname, minSample = min_sample))
 
     def __getitem__(self, index):
-        if self.y_norm is None:
+        if self.y_preprocessing is None:
             y_path = os.path.join(self.paths[index], 'y.npy')
             y = np.load(y_path)
-        elif self.y_norm == 'diag':
-            y_path = os.path.join(self.paths[index], 'y_diag_norm.npy')
+        elif self.y_preprocessing == 'diag':
+            y_path = os.path.join(self.paths[index], 'y_diag.npy')
             y = np.load(y_path)
-        elif self.y_norm == 'prcnt':
-            y_path = os.path.join(self.paths[index], 'y_prcnt_norm.npy')
+        elif self.y_preprocessing == 'prcnt':
+            y_path = os.path.join(self.paths[index], 'y_prcnt.npy')
             y = np.load(y_path)
         else:
-            print("Warning: Unknown norm: {}".format(self.y_norm))
+            print("Warning: Unknown preprocessing: {}".format(self.y_preprocessing))
             y_path = os.path.join(self.paths[index], 'y.npy')
             y = np.load(y_path)
 
@@ -50,6 +56,11 @@ class Sequences2Contacts(Dataset):
 
         if self.y_reshape:
             y = np.expand_dims(y, 0)
+
+        if self.y_norm == 'instance':
+            y = y / np.max(y)
+        elif self.y_norm == 'batch':
+            y = (y - self.min) / (self.max - self.min)
 
         if self.toxx:
             x_path = os.path.join(self.paths[index], 'xx.npy')
@@ -71,42 +82,6 @@ class Sequences2Contacts(Dataset):
             return x, y, self.paths[index]
         else:
             return x, y
-
-    def __len__(self):
-        return len(self.paths)
-
-class Contacts(Dataset):
-    def __init__(self, dirname, n, y_norm = None, y_reshape = True, crop = None):
-        super(Contacts, self).__init__()
-        self.n = n
-        self.y_norm = y_norm
-        self.y_reshape = y_reshape
-        self.crop = crop
-        self.paths = sorted(make_dataset(dirname))
-
-    def __getitem__(self, index):
-        if self.y_norm is None:
-            y_path = os.path.join(self.paths[index], 'y.npy')
-            y = np.load(y_path)
-        elif self.y_norm == 'diag':
-            y_path = os.path.join(self.paths[index], 'y_diag_norm.npy')
-            y = np.load(y_path)
-        elif self.y_norm == 'prcnt':
-            y_path = os.path.join(self.paths[index], 'y_prcnt_norm.npy')
-            y = np.load(y_path)
-        else:
-            print("Warning: Unknown norm: {}".format(self.y_norm))
-            y_path = os.path.join(self.paths[index], 'y.npy')
-            y = np.load(y_path)
-
-
-        if self.crop is not None:
-            y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
-
-        if self.y_reshape:
-            y = np.expand_dims(y, 0)
-
-        return y
 
     def __len__(self):
         return len(self.paths)

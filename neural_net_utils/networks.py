@@ -103,7 +103,7 @@ class VAE(nn.Module):
 class DeepC(nn.Module):
     '''Roughly based on https://doi.org/10.1038/s41592-020-0960-3'''
     def __init__(self, n, k, kernel_w_list, hidden_sizes_list,
-                dilation_list, hidden_size_dilation):
+                dilation_list, hidden_size_dilation, out_act = 'sigmoid'):
         """
         Inputs:
             n: number of particles
@@ -112,6 +112,7 @@ class DeepC(nn.Module):
             hidden_sizes_list: list of hidden sizes for convolutional layers
             dilation_list: list of dilations for dilated convolutional layers
             hidden_size_dilation: hidden size of dilated convolutional layers
+            out_Act: activation of finally fully connected layer (str)
         """
         super(DeepC, self).__init__()
         self.n = n
@@ -136,7 +137,7 @@ class DeepC(nn.Module):
 
         # Fully Connected
         y_flat_len = n**2 - n
-        self.fc = LinearBlock(hidden_size_dilation, n, activation = 'sigmoid')
+        self.fc = LinearBlock(hidden_size_dilation, n, activation = out_act)
 
     def forward(self, input):
         out = self.model(input)
@@ -146,7 +147,7 @@ class DeepC(nn.Module):
         return out
 
 class SimpleEpiNet(nn.Module):
-    def __init__(self, n, k, kernel_w_list, hidden_sizes_list):
+    def __init__(self, n, k, kernel_w_list, hidden_sizes_list, out_act = nn.Sigmoid()):
         super(SimpleEpiNet, self).__init__()
         model = []
 
@@ -159,7 +160,7 @@ class SimpleEpiNet(nn.Module):
 
         self.model = nn.Sequential(*model)
 
-        self.act = nn.Sigmoid()
+        self.act = out_act
 
     def forward(self, input):
         out = self.model(input)

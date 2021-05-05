@@ -14,7 +14,8 @@ dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
 # architecture
 k=2
 n=1024
-yNorm='diag'
+yPreprocessing='diag'
+yNorm='batch'
 kernelWList='5-5-5'
 hiddenSizesList='32-64-128'
 dilationList='2-4-8-16-32-64-128-256-512'
@@ -28,9 +29,9 @@ numWorkers=4
 milestones='25-50'
 gamma=0.1
 
-ofile="DeepC_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yNorm${yNorm}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilation${dilationList}_hiddenSize_${hiddenSizeDilation}"
+ofile="DeepC_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yPreprocessing${yPreprocessing}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilation${dilationList}_hiddenSize_${hiddenSizeDilation}"
 logfile="logFiles/${ofile}.log"
 
 cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
-python3 DeepC.py --data_folder $dirname --n_epochs $nEpochs --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --k $k --ofile $ofile --n $n --y_norm $yNorm --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list $dilationList --hidden_size_dilation $hiddenSizeDilation >> $logfile
+python3 DeepC.py --data_folder $dirname --k $k --n $n --yPreprocessing ${yPreprocessing} --y_norm $yNorm --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list $dilationList --hidden_size_dilation $hiddenSizeDilation --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --ofile $ofile >> $logfile

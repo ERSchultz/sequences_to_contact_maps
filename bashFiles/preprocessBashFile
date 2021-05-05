@@ -12,8 +12,9 @@ output="../../../project2/depablo/erschultz/dataset_04_18_21"
 numWorkers=20
 k=2
 n=1024
-sampleSize=100
+sampleSize=2000
+overwrite="True"
 
 cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
-python3 preprocess_data.py --input_folder $input --output_folder $output --num_workers $numWorkers --k $k --n $n --sample_size $sampleSize
+python3 preprocess_data.py --input_folder $input --output_folder $output --num_workers $numWorkers --k $k --n $n --sample_size $sampleSize --overwrite ${overwrite}

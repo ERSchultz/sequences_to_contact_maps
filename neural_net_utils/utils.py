@@ -97,13 +97,14 @@ def x2xx(x, mode = 'mean'):
                 xx[:, j, i] = np.add(x[j], x[i]) / 2
     return xx
 
-def diagonal_normalize(y, meanDist):
+def diagonal_preprocessing(y, meanDist):
     """
-    Removes diagonal effect from contact map y
+    Removes diagonal effect from contact map y.
 
     Inputs:
         y: contact map numpy array
         mean: mean contact frequency where mean[dist] is the mean at a given distance
+        max: maximum value of
 
     Outputs:
         result: new contact map
@@ -122,9 +123,9 @@ def diagonal_normalize(y, meanDist):
 
     return result
 
-def percentile_normalize(y, percentiles):
+def percentile_preprocessing(y, percentiles):
     """
-    Performs percentile normalization on contact map y.
+    Performs percentile preprocessing on contact map y.
 
     The maximum value in y must at most percentiles[-1].
 
@@ -167,7 +168,7 @@ def getFrequencies(dataFolder, diag, n, k, chi):
 
         x = np.load(os.path.join(sample, 'x.npy'))
         if diag:
-            y = np.load(os.path.join(sample, 'y_diag_norm.npy'))
+            y = np.load(os.path.join(sample, 'y_diag.npy'))
         else:
             y = np.load(os.path.join(sample, 'y.npy'))
         for i in range(n):
@@ -223,7 +224,7 @@ def plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid, split = 'typ
     Inputs:
         freq_arr: numpy array with 4 columns (freq, sampleid, interaction_type, psi)
         dataFolder: location of data, used for saving image
-        diag: whether diagonal was normalized
+        diag: whether diagonal preprocessing was performed
         sampleid: int, which sample id to plot
         k: number of epigentic marks, used for InteractionConverter
         split: how to split data into subplots: None for no subplots, type for subplot on interaction type, psi for sublot on interation psi
@@ -274,9 +275,9 @@ def plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid, split = 'typ
 
     fig.tight_layout()
     if diag:
-        fig.suptitle('sample{} post normalization'.format(sampleid), fontsize = 16, y = 1)
+        fig.suptitle('sample{} diag preprocessing'.format(sampleid), fontsize = 16, y = 1)
     else:
-        fig.suptitle('sample{} pre normalization'.format(sampleid), fontsize = 16, y = 1)
+        fig.suptitle('sample{}'.format(sampleid), fontsize = 16, y = 1)
 
     if xmax is not None:
         plt.xlim(right = xmax)
@@ -291,7 +292,7 @@ def plotFrequenciesSampleSubplot(freq_arr, dataFolder, diag, k, split = 'type'):
     Inputs:
         freq_arr: numpy array with 4 columns (freq, sampleid, interaction_type, psi)
         dataFolder: location of data, used for saving image
-        diag: whether diagonal was normalized
+        diag: whether diagonal preprocessing was performed
         k: number of epigentic marks, used for InteractionConverter
         split: how to split data within each subplot: None for no split, type for split on interaction type, psi for split on interation psi
     """
@@ -332,9 +333,9 @@ def plotFrequenciesSampleSubplot(freq_arr, dataFolder, diag, k, split = 'type'):
 
     fig.tight_layout()
     if diag:
-        fig.suptitle('post normalization', fontsize = 16, y = 1)
+        fig.suptitle('diag preprocessing', fontsize = 16, y = 1)
     else:
-        fig.suptitle('pre normalization', fontsize = 16, y = 1)
+        fig.suptitle('no preprocessing', fontsize = 16, y = 1)
 
     plt.savefig(os.path.join(dataFolder, 'freq_count_multisample_diag_{}_split_{}.png'.format(diag, split)))
     plt.close()
@@ -354,7 +355,7 @@ def Stats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
     samples = make_dataset(datafolder)
     for sample in samples:
         if diag:
-            y = np.load(os.path.join(sample, 'y_diag_norm.npy'))
+            y = np.load(os.path.join(sample, 'y_diag.npy'))
         else:
             y = np.load(os.path.join(sample, 'y.npy'))
         result = generateDistStats(y, mode = mode, stat = stat)
@@ -376,9 +377,9 @@ def Stats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
     plt.ylabel('{} contact {}'.format(stat_string, mode_string), fontsize = 16)
     plt.xlabel('distance', fontsize = 16)
     if diag:
-        plt.title('post normalization', fontsize = 16)
+        plt.title('diag preprocessing', fontsize = 16)
     else:
-        plt.title('pre normalization', fontsize = 16)
+        plt.title('no preprocessing', fontsize = 16)
     plt.legend()
     plt.savefig(ofile)
     plt.close()
@@ -403,11 +404,11 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, opt = None):
         elif opt.criterion == F.cross_entropy:
             plt.ylabel('Cross Entropy Loss', fontsize = 16)
 
-        if opt.y_norm is not None:
-            norm = opt.y_norm.capitalize()
+        if opt.y_preprocessing is not None:
+            preprocessing = opt.y_preprocessing.capitalize()
         else:
-            norm = 'None'
-        plt.title('Y Normalization: {}'.format(norm), fontsize = 16)
+            preprocessing = 'None'
+        plt.title('Y Preprocessing: {}'.format(preprocessing), fontsize = 16)
 
         if opt.milestones is not None:
             lr = opt.lr
@@ -529,11 +530,11 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
             yj = y[j].unsqueeze(0)
             print(yj)
             yhat = model(xj)
-            print(yhat)
+            print('yhat', yhat)
             yj = yj.cpu().numpy().reshape((opt.n, opt.n))
             yhat = yhat.cpu().detach().numpy()
 
-            if opt.y_norm == 'prcnt':
+            if opt.y_preprocessing == 'prcnt':
                 yhat = np.argmax(yhat, axis = 1)
             yhat = yhat.reshape((opt.n,opt.n))
 
@@ -574,7 +575,7 @@ def comparePCA(val_dataloader, model, opt):
             y = y.cpu().numpy().reshape((opt.n, opt.n))
             yhat = yhat.cpu().detach().numpy()
 
-            if opt.y_norm == 'prcnt':
+            if opt.y_preprocessing == 'prcnt':
                 yhat = np.argmax(yhat, axis = 1)
             yhat = yhat.reshape((opt.n, opt.n))
 
@@ -607,7 +608,8 @@ def getBaseParser():
     parser = argparse.ArgumentParser(description='Base parser')
 
     #pre-processing args
-    parser.add_argument('--y_norm', type=str, help='type of normalization for y')
+    parser.add_argument('--y_preprocessing', type=str, default='diag', help='type of pre-processing for y')
+    parser.add_argument('--y_norm', type=str, default='batch', help='type of [0,1] normalization for y')
     parser.add_argument('--crop', type=str2list, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
 
     # dataloader args
