@@ -140,7 +140,7 @@ def main():
     else:
         print('Invalid model type: {}'.format(opt.model_type))
         # TODO
-    model_name = os.path.join(opt.ofile_folder, opt.ofile, ''.pt')
+    model_name = os.path.join(opt.ofile_folder, opt.ofile, '.pt')
     if os.path.exists(model_name):
         saveDict = torch.load(model_name, map_location=torch.device('cpu'))
         model.load_state_dict(save_dict['model_state_dict'])
