@@ -117,7 +117,7 @@ def plot_predictions(opt):
 
 def main():
     opt = argparseSetup()
-
+    opt.model_type = 'UNet'
     if opt.model_type == 'UNet':
         opt.ofile = "UNet_nEpochs{}_nf{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}".format(opt.n_epochs, opt.nf, opt.lr, list2str(opt.milestones), opt.y_preprocessing, opt.y_norm)
         if opt.loss == 'cross_entropy':
@@ -140,7 +140,7 @@ def main():
     else:
         print('Invalid model type: {}'.format(opt.model_type))
         # TODO
-    model_name = os.path.join(opt.ofile_folder, opt.ofile, '.pt')
+    model_name = os.path.join(opt.ofile_folder, opt.ofile + '.pt')
     if os.path.exists(model_name):
         saveDict = torch.load(model_name, map_location=torch.device('cpu'))
         model.load_state_dict(save_dict['model_state_dict'])
@@ -149,7 +149,7 @@ def main():
         print('Model does not exist: {}'.format(model_name))
 
 
-    train_dataloader, val_dataloader, test_dataloader = getDataLoaders(dataset, opt)
+    train_dataloader, val_dataloader, test_dataloader = getDataLoaders(seq2ContactData, opt)
 
     comparePCA(val_dataloader, model, opt)
     imageSubPath = os.path.join('images', opt.ofile)
