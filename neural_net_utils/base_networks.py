@@ -232,3 +232,49 @@ class LinearBlock(nn.Module):
 
     def forward(self, x):
         return self.model(x)
+
+class Symmetrize2D(nn.Module):
+    '''
+    https://github.com/calico/basenji/blob/master/basenji/layers.py
+
+    Symmetrises input by computing (x + x.T) / 2'''
+    def __init__(self):
+        super(Symmetrize2D, self).__init__()
+
+    def forward(self, x):
+        # assume x is of shape N x C x H x W
+        return  (x + torch.transpose(x, 2, 3)) / 2
+
+class AverageTo2d(nn.Module):
+    '''https://github.com/calico/basenji/blob/master/basenji/layers.py'''
+    def __init__(self, concat_d = False, n = None):
+        super(AverageTo2d, self).__init__()
+        self.concat_d = concat_d
+        if concat_d:
+            assert n is not None
+            d = torch.zeros((n, n))
+            for i in range(1, n):
+                y = torch.diagonal(d, offset = i)
+                y[:] = torch.ones(n-i) * i
+            d = d + torch.transpose(d, 0, 1)
+            d = torch.unsqueeze(d, 0)
+            d = torch.unsqueeze(d, 0)
+            self.d = d
+
+    def forward(self, x):
+        # assume x is of shape N x C x n
+        assert len(x.shape) == 3, "shape must be 3D"
+        N, C, n = x.shape
+        x1 = torch.tile(x, (1, 1, n))
+        x1 = torch.reshape(x1, (-1, C, n, n))
+        x2 = torch.transpose(x1, 2, 3)
+
+        x1 = torch.unsqueeze(x1, 0)
+        x2 = torch.unsqueeze(x2, 0)
+
+        out = torch.cat((x1, x2), dim = 0)
+        out = torch.mean(out, dim = 0, keepdim = False)
+        if self.concat_d:
+            # append abs(i - j)
+            out = torch.cat((out, torch.tile(self.d, (N, 1, 1, 1))), dim = 1)
+        return out

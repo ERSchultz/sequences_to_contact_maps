@@ -101,7 +101,7 @@ class VAE(nn.Module):
         return loss
 
 class DeepC(nn.Module):
-    '''Roughly based on https://doi.org/10.1038/s41592-020-0960-3'''
+    '''Roughly based on https://doi.org/10.1038/s41592-020-0960-3 (Deepc).'''
     def __init__(self, n, k, kernel_w_list, hidden_sizes_list,
                 dilation_list, hidden_size_dilation, out_act = 'sigmoid'):
         """
@@ -127,7 +127,7 @@ class DeepC(nn.Module):
                                     activation = 'relu', dropout = 'drop', dropout_p = 0.2, conv1d = True))
             input_size = output_size
 
-        # Dialted Convolution
+        # Diaated Convolution
         for dilation in dilation_list:
             model.append(ConvBlock(input_size, hidden_size_dilation, 3, padding = dilation,
                                     activation = 'gated', dilation = dilation, residual = True, conv1d = True))
@@ -136,7 +136,7 @@ class DeepC(nn.Module):
         self.model = nn.Sequential(*model)
 
         # Fully Connected
-        y_flat_len = n**2 - n
+        # y_flat_len = (n**2 + n) / 2
         self.fc = LinearBlock(hidden_size_dilation, n, activation = out_act)
 
     def forward(self, input):
@@ -144,6 +144,72 @@ class DeepC(nn.Module):
         out = out.view(-1, self.n, self.hidden_size_dilation)
         out = self.fc(out)
         out = torch.unsqueeze(out, 1)
+        return out
+
+class Akita(nn.Module):
+    '''Roughly based on https://doi.org/10.1038/s41592-020-0958-x (Akita).'''
+    def __init__(self, n, k, kernel_w_list, hidden_sizes_list,
+                dilation_list_trunk,
+                bottleneck_size,
+                dilation_list_head,
+                out_act = 'sigmoid'):
+        """
+        Inputs:
+            n: number of particles
+            k: number of epigenetic marks
+            kernel_w_list: list of kernel widths of convolutional layers
+            hidden_sizes_list: list of hidden sizes for convolutional layers
+            dilation_list_trunk: list of dilations for dilated convolutional layers of trunk
+            bottleneck_size: size of bottleneck layer
+            dilation_list_head: list of dilations for dilated convolutional layers of head
+            out_Act: activation of finally layer (str)
+        """
+        super(Akita, self).__init__()
+        self.n = n
+        model = []
+
+        ## Trunk ##
+        # Convolution
+        input_size = k
+        assert len(kernel_w_list) == len(hidden_sizes_list), "length of kernel_w_list ({}) and hidden_sizes_list ({}) must match".format(len(kernel_w_list), len(hidden_sizes_list))
+        for kernel_w, output_size in zip(kernel_w_list, hidden_sizes_list):
+            model.append(ConvBlock(input_size, output_size, kernel_w, padding = kernel_w//2,
+                                    activation = 'relu', dropout = 'drop', dropout_p = 0.2, conv1d = True))
+            input_size = output_size
+
+
+        # Diaated Convolution
+        for dilation in dilation_list_trunk:
+            model.append(ConvBlock(input_size, input_size, 3, padding = dilation,
+                                    activation = 'gated', dilation = dilation, residual = True, conv1d = True))
+
+        # Bottleneck
+        model.append(ConvBlock(input_size, bottleneck_size, 1, padding = 0, conv1d = True))
+
+        ## Head ##
+        model.append(AverageTo2d(concat_d = True, n = self.n))
+        input_size = bottleneck_size + 1
+        model.append(ConvBlock(input_size, input_size, 1, padding = 0))
+
+        # Dilated Convolution
+        for dilation in dilation_list_head:
+            model.append(ConvBlock(input_size, input_size, 3, padding = dilation,
+                                    activation = 'gated', dilation = dilation, residual = True))
+            model.append(Symmetrize2D())
+
+        self.model = nn.Sequential(*model)
+
+        # Linear Transformation
+        # TODO use triu
+        self.linear_block_filters = input_size
+        self.fc = LinearBlock(input_size, 1, activation = out_act)
+
+
+    def forward(self, input):
+        out = self.model(input)
+        out = out.view(-1, self.n, self.n, self.linear_block_filters)
+        out = self.fc(out)
+        out = out.view(-1, 1, self.n, self.n)
         return out
 
 class SimpleEpiNet(nn.Module):
