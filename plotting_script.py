@@ -119,7 +119,7 @@ def main():
     opt = argparseSetup()
 
     if opt.model_type == 'UNet':
-        opt.ofile = "UNet_nEpochs{}_nf{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}".format(opt.n_epochs, opt.nf, opt.lr, list2str(opt.milestones), opt.yPreprocessing, opt.yNorm)
+        opt.ofile = "UNet_nEpochs{}_nf{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}".format(opt.n_epochs, opt.nf, opt.lr, list2str(opt.milestones), opt.y_preprocessing, opt.yNorm)
         if opt.loss == 'cross_entropy':
             assert opt.y_preprocessing == 'prcnt', 'must use percentile normalization with cross entropy'
             opt.y_reshape = False
