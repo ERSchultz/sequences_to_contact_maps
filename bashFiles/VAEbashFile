@@ -1,9 +1,0 @@
-#! /bin/bash
-#SBATCH --job-name=seqVAE_4_8_21
-#SBATCH --output=logFiles/seqVAE_4_8_21
-#SBATCH --time=01:00:00
-#SBATCH --partition=gpu2
-#SBATCH --gres=gpu:1
-
-source activate seq2contact_pytorch
-python3 seqVAE.py
