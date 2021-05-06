@@ -119,7 +119,7 @@ def main():
     opt = argparseSetup()
 
     if opt.model_type == 'UNet':
-        ofile = "UNet_nEpochs{}_nf{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}".format(opt.n_epochs, opt.nf, opt.lr, list2str(opt.milestones), opt.yPreprocessing, opt.yNorm)
+        opt.ofile = "UNet_nEpochs{}_nf{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}".format(opt.n_epochs, opt.nf, opt.lr, list2str(opt.milestones), opt.yPreprocessing, opt.yNorm)
         if opt.loss == 'cross_entropy':
             assert opt.y_preprocessing == 'prcnt', 'must use percentile normalization with cross entropy'
             opt.y_reshape = False
@@ -140,7 +140,7 @@ def main():
     else:
         print('Invalid model type: {}'.format(opt.model_type))
         # TODO
-    model_name = os.path.join(opt.ofile_folder, ofile, ''.pt')
+    model_name = os.path.join(opt.ofile_folder, opt.ofile, ''.pt')
     if os.path.exists(model_name):
         saveDict = torch.load(model_name, map_location=torch.device('cpu'))
         model.load_state_dict(save_dict['model_state_dict'])
@@ -152,6 +152,11 @@ def main():
     train_dataloader, val_dataloader, test_dataloader = getDataLoaders(dataset, opt)
 
     comparePCA(val_dataloader, model, opt)
+    imageSubPath = os.path.join('images', opt.ofile)
+    if not os.path.exists(imageSubPath):
+        os.mkdir(imageSubPath, mode = 0o755)
+    imagePath = os.path.join(imageSubPath, 'distance_pearson.png')
+    plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, imagePath, opt)
 
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')
