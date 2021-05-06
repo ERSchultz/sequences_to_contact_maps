@@ -384,12 +384,12 @@ def Stats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
     plt.savefig(ofile)
     plt.close()
 
-def plotModelFromDir(dir, ofile):
+def plotModelFromDir(dir, ofile, opt = None):
     """Wrapper function for plotModelFromArrays given saved model."""
     saveDict = torch.load(dir, map_location=torch.device('cpu'))
     train_loss_arr = saveDict['train_loss']
     val_loss_arr = saveDict['val_loss']
-    plotModelFromArrays(train_loss_arr, val_loss_arr, ofile)
+    plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, opt)
 
 def plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, opt = None):
     """Plots loss as function of epoch."""
@@ -600,19 +600,23 @@ def comparePCA(val_dataloader, model, opt):
     print('Pearson R: {} +- {}'.format(np.mean(p_arr), np.std(p_arr)))
     print()
 
-
-def getBaseParser():
+def argparseSetup():
     """Helper function to get default command line argument parser."""
     parser = argparse.ArgumentParser(description='Base parser')
 
-    #pre-processing args
+    # pre-processing args
     parser.add_argument('--y_preprocessing', type=str, default='diag', help='type of pre-processing for y')
+    parser.add_argument('--classes', type=int, default=10, help='number of classes in percentile normalization')
     parser.add_argument('--y_norm', type=str, default='batch', help='type of [0,1] normalization for y')
     parser.add_argument('--crop', type=str2list, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
+    parser.add_argument('--toxx', type=str2bool, default=False, help='True if x should be converted to 2D image')
+    parser.add_argument('--x_reshape', type=str2bool, default=True, help='True if x should be considered a 1D image')
 
     # dataloader args
     parser.add_argument('--split', type=str2list, default=[0.8, 0.1, 0.1], help='Train, val, test split for dataset')
     parser.add_argument('--shuffle', type=str2bool, default=True, help='Whether or not to shuffle dataset')
+    parser.add_argument('--batch_size', type=int, default=16, help='Training batch size')
+    parser.add_argument('--num_workers', type=int, default=1, help='Number of threads for data loader to use')
 
     # train args
     parser.add_argument('--start_epoch', type=int, default=1, help='Starting epoch')
@@ -623,11 +627,13 @@ def getBaseParser():
     parser.add_argument('--gpus', type=int, default=1, help='Number of gpus')
     parser.add_argument('--milestones', type=str2list, default = [2], help='Milestones for lr decay - format: <milestone1-milestone2>')
     parser.add_argument('--gamma', type=float, default=0.1, help='Gamma for lr decay')
+    parser.add_argument('--loss', type=str, default='mse', help='Type of loss to use: options: {"mse", "cross_entropy"}')
 
     # model args
+    parser.add_argument('--model_type', type=str, help='Type of model')
     parser.add_argument('--data_folder', type=str, default='test', help='Location of data')
-    parser.add_argument('--pretrained', type=bool, default=False, help='True if using a pretrained model')
-    parser.add_argument('--resume_training', type=bool, default=False, help='True if resuming traning of a partially trained model')
+    parser.add_argument('--pretrained', type=str2bool, default=False, help='True if using a pretrained model')
+    parser.add_argument('--resume_training', type=str2bool, default=False, help='True if resuming traning of a partially trained model')
     parser.add_argument('--ifile_folder', type=str, default='models/', help='Location of input file for pretrained model')
     parser.add_argument('--ifile', type=str, help='Name of input file for pretrained model')
     parser.add_argument('--ofile_folder', type=str, default='models/', help='Location to save checkpoint models')
@@ -636,11 +642,27 @@ def getBaseParser():
     parser.add_argument('--n', type=int, default=1024, help='Number of particles')
     parser.add_argument('--seed', type=int, default=42, help='random seed to use. Default: 42')
 
-    return parser
+    # post-processing args
+    parser.add_argument('--plot', type=str2bool, default=False, help='True to plot predictions') # TODO use this
 
-def finalizeParser(parser):
+    # SimpleEpiNet args
+    parser.add_argument('--kernel_w_list', type=str2list, default=[5,5], help='List of kernel widths of convolutional layers')
+    parser.add_argument('--hidden_sizes_list', type=str2list, default=[10,10], help='List of hidden sizes for convolutional layers')
+
+    # UNet args
+    parser.add_argument('--nf', type=int, default=8, help='Number of filters')
+
+    # DeepC args
+    parser.add_argument('--dilation_list', type=str2list, default=[1,2,4], help='List of dilations for dilated convolutional layers')
+    parser.add_argument('--hidden_size_dilation', type=int, default=10, help='Hidden size of dilated convolutional layers')
+
+    # Akita args
+    parser.add_argument('--dilation_list_trunk', type=str2list, default=[1,2,4], help='List of dilations for dilated convolutional layers of trunk')
+    parser.add_argument('--bottleneck', type=int, default=10, help='Number of filters in bottleneck (must be <= hidden_size_dilation_trunk)')
+    parser.add_argument('--dilation_list_head', type=str2list, default=[1,2,4], help='List of dilations for dilated convolutional layers of head')
+
+
     opt = parser.parse_args()
-
     # configure cuda
     if opt.gpus > 1:
         opt.cuda = True
@@ -667,6 +689,7 @@ def finalizeParser(parser):
 
     opt.device = torch.device('cuda' if opt.cuda else 'cpu')
     return opt
+
 
 def roundUpBy10(val):
     """Rounds value up to the nearst multiple of 10."""
@@ -707,6 +730,17 @@ def str2list(v):
        return [int(i) for i in v.split('-')]
     else:
         raise argparse.ArgumentTypeError('str value expected.')
+
+def list2str(v):
+    """
+    Helper function to undo str2list.
+
+    Inputs:
+        v: list
+    """
+    assert type(v) == list
+    return '-'.join([str(i) for i in v])
+
 
 class InteractionConverter():
     """Class that allows conversion between epigenetic mark bit string pairs and integer type id"""

@@ -37,50 +37,9 @@ def contactPlots(dataFolder):
         y_prcnt_norm = np.load(os.path.join(path, 'y_prcnt_norm.npy'))
         plotContactMap(y_prcnt_norm, os.path.join(path, 'y_prcnt_norm.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
-def setupParser():
-    parser = argparse.ArgumentParser(description='Base parser')
-    parser.add_argument('--data_folder', type=str, default='dataset_04_18_21', help='Location of input data')
-    parser.add_argument('--model_name', type=str, default='UNet_nEpochs15_nf8_lr0.1_milestones5-10_yNormdiag.pt', help='name of model to load')
-    parser.add_argument('--model_type', type=str, default='UNet', help='type of model')
-    parser.add_argument('--y_norm', type=str, default='diag', help='type of y normalization')
-    parser.add_argument('--batch_size', type=int, default=1, help='Training batch size')
-    parser.add_argument('--num_workers', type=int, default=0, help='Number of processes to use')
-    parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
-    parser.add_argument('--n', type=int, default=1024, help='Number of particles')
-    parser.add_argument('--seed', type=int, default=42, help='random seed to use. Default: 42')
-    parser.add_argument('--plot', type=str2bool, default=False, help='whether or not to plot')
-    parser.add_argument('--classes', type=int, default=10, help='number of classes in percentile normalization')
-
-    opt = parser.parse_args()
-
-    if opt.model_type == 'UNet':
-        opt.toxx = True
-        if opt.y_norm == 'diag':
-            opt.model = UNet(nf_in = 2, nf_out = 1, nf = 8, out_act = nn.Sigmoid())
-            opt.prcnt = False
-            opt.reshape = True
-            criterion = F.mse_loss
-        elif opt.y_norm == 'prcnt':
-            opt.model = UNet(nf_in = 2, nf_out = 10, nf = 8, out_act = None)
-            opt.prcnt = True
-            opt.reshape = False
-            criterion = F.cross_entropy
-        else:
-            print('Invalid y_norm ({}) for model_type UNet'.format(opt.y_norm))
-    else:
-        opt.toxx = False
-        # TODO
-
-    modeldir = os.path.join('models', opt.model_name)
-    save_dict = torch.load(modeldir, map_location = 'cpu')
-    opt.model.load_state_dict(save_dict['model_state_dict'])
-    opt.model.eval()
-
-    return opt
-
 def plot_predictions(opt):
-    seq2ContactData = Sequences2Contacts(opt.data_folder, toxx = opt.toxx, y_norm = opt.y_norm,
-                                        names = True, y_reshape = opt.reshape)
+    seq2ContactData = Sequences2Contacts(opt.data_folder, toxx = opt.toxx, y_preprocessing = opt.y_preprocessing,
+                                        y_norm = opt.y_norm, names = True, y_reshape = opt.reshape)
     _, val_dataloader, _ = getDataLoaders(seq2ContactData, batch_size = opt.batch_size,
                                             num_workers = opt.num_workers, seed = opt.seed)
 
@@ -155,8 +114,45 @@ def plot_predictions(opt):
     print(freq_c_arr)
     plotPerClassAccuracy(acc_c_arr, freq_c_arr, ofile = os.path.join(imagePath, 'per_class_acc.png'))
 
+
 def main():
-    opt = setupParser()
+    opt = argparseSetup()
+
+    if opt.model_type == 'UNet':
+        ofile = "UNet_nEpochs{}_nf{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}".format(opt.n_epochs, opt.nf, opt.lr, list2str(opt.milestones), opt.yPreprocessing, opt.yNorm)
+        if opt.loss == 'cross_entropy':
+            assert opt.y_preprocessing == 'prcnt', 'must use percentile normalization with cross entropy'
+            opt.y_reshape = False
+            opt.criterion = F.cross_entropy
+            opt.ydtype = torch.int64
+            model = UNet(nf_in = 2, nf_out = 10, nf = opt.nf, out_act = None) # activation combined into loss
+        elif opt.loss == 'mse':
+            opt.criterion = F.mse_loss
+            model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = nn.Sigmoid())
+            opt.y_reshape = True
+            opt.ydtype = torch.float32
+        else:
+            print('Invalid loss: {}'.format(opt.loss))
+
+        seq2ContactData = Sequences2Contacts(opt.data_folder, toxx = opt.toxx, y_preprocessing = opt.y_preprocessing,
+                                            y_norm = opt.y_norm, x_reshape = opt.x_reshape, ydtype = opt.ydtype,
+                                            y_reshape = opt.y_reshape, crop = opt.crop)
+    else:
+        print('Invalid model type: {}'.format(opt.model_type))
+        # TODO
+    model_name = os.path.join(opt.ofile_folder, ofile, ''.pt')
+    if os.path.exists(model_name):
+        saveDict = torch.load(model_name, map_location=torch.device('cpu'))
+        model.load_state_dict(save_dict['model_state_dict'])
+        print('Model is loaded.')
+    else:
+        print('Model does not exist: {}'.format(model_name))
+
+
+    train_dataloader, val_dataloader, test_dataloader = getDataLoaders(dataset, opt)
+
+    comparePCA(val_dataloader, model, opt)
+
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')
     # contactPlots('dataset_04_18_21')
