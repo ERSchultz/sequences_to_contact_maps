@@ -1,5 +1,5 @@
 #! /bin/bash
-#SBATCH --job-name=preprocess
+#SBATCH --job-name=plotting
 #SBATCH --partition=depablo-ivyb
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=20
