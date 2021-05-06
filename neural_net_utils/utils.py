@@ -519,6 +519,8 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
     """Plots Pearson correlation as a function of genomic distance"""
 
     p_arr = np.zeros((opt.valN, opt.n-1))
+    P_arr_overall = np.zeros(opt.valN)
+    triu_ind = np.triu_indices(opt.n)
     model.eval()
     i = 0
     for x, y in val_dataloader:
@@ -536,6 +538,10 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
                 yhat = np.argmax(yhat, axis = 1)
             yhat = yhat.reshape((opt.n,opt.n))
 
+
+            corr, pval = pearsonr(yj[triu_ind], yhat[triu_ind])
+            P_arr_overall[i] = corr
+
             for d in range(opt.n-1):
                 y_diag = np.diagonal(yj, offset = d)
                 yhat_diag = np.diagonal(yhat, offset = d)
@@ -544,6 +550,8 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
 
     p_mean = np.mean(p_arr, axis = 0)
     p_std = np.std(p_arr, axis = 0)
+
+    print('Pearson R: {} +- {}'.format(np.mean(P_arr_overall), np.std(P_arr_overall)))
 
     plt.plot(np.arange(opt.n-1), p_mean, color = 'black')
     plt.fill_between(np.arange(opt.n-1), p_mean + p_std, p_mean - p_std, color = 'red', alpha = 0.5)
@@ -595,6 +603,7 @@ def comparePCA(val_dataloader, model, opt):
             i += 1
 
     print('PCA results:')
+    print(p_arr)
     print('Accuracy: {} +- {}'.format(np.mean(acc_arr), np.std(acc_arr)))
     print('Spearman R: {} +- {}'.format(np.mean(rho_arr), np.std(rho_arr)))
     print('Pearson R: {} +- {}'.format(np.mean(p_arr), np.std(p_arr)))
