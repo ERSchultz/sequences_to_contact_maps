@@ -5,13 +5,10 @@ from numba import jit, njit
 import numpy as np
 import os
 import math
-import matplotlib.pyplot as plt
-import matplotlib.colors
 import argparse
-import seaborn as sns
 from sklearn.decomposition import PCA
 from scipy.stats import spearmanr, pearsonr
-import pandas as pd
+
 
 # dataset functions
 def make_dataset(dir, minSample = 0):
@@ -216,350 +213,86 @@ def generateDistStats(y, mode = 'freq', stat = 'mean'):
 
     return result
 
-# Plotting functions
-def plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid, split = 'type', xmax = None):
+def calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson'):
     """
-    Plotting function for frequency distributions corresponding to only one sample.
+    Helper function to calculate correlation stratified by distance.
 
     Inputs:
-        freq_arr: numpy array with 4 columns (freq, sampleid, interaction_type, psi)
-        dataFolder: location of data, used for saving image
-        diag: whether diagonal preprocessing was performed
-        sampleid: int, which sample id to plot
-        k: number of epigentic marks, used for InteractionConverter
-        split: how to split data into subplots: None for no subplots, type for subplot on interaction type, psi for sublot on interation psi
-        xmax: x axis limit
+        y: target
+        yhat: prediction
+        mode: pearson or spearman (str)
+
+    Outpus:
+        overall_corr: overall correlation
+        corr_arr: array of distance stratified correlations
     """
-    freq_pd = pd.DataFrame(freq_arr, columns = ['freq', 'sampleID', 'type', 'psi']) # cols = freq, sampleid, interaction_type
-    converter = InteractionConverter(k)
+    if mode.lower() == 'pearson':
+        stat = pearsonr
+    elif mode.lower() == 'spearman':
+        stat = spearmanr
 
-    if split is None:
-        fig = plt.figure(figsize=(10, 5))
-    elif split == 'type':
-        fig = plt.figure(figsize=(12, 12))
-    elif split == 'psi':
-        fig = plt.figure(figsize=(10, 5))
-    bigax = fig.add_subplot(111, label = 'bigax')
-    indplt = 1
-    for g_name, g_df in freq_pd.groupby(['sampleID']):
-        if g_name == sampleid:
-            if split is None:
-                ax = fig.add_subplot(1, 1, indplt)
-                ax.hist(g_df['freq'], bins = 100)
-                ax.set_yscale('log')
-                indplt += 1
-            elif split == 'type':
-                for g_name_2, g_df_2 in g_df.groupby(['type']):
-                    ax = fig.add_subplot(5, 2, indplt)
-                    ax.hist(g_df_2['freq'], bins = 100)
-                    ax.set_title(converter.comb2str(converter.type2Comb(g_name_2)))
-                    ax.set_yscale('log')
-                    indplt += 1
-            elif split == 'psi':
-                for g_name_2, g_df_2 in g_df.groupby(['psi']):
-                    ax = fig.add_subplot(1, 3, indplt)
-                    ax.hist(g_df_2['freq'], bins = 100)
-                    ax.set_title(g_name_2)
-                    ax.set_yscale('log')
-                    indplt += 1
+    assert len(y.shape) == 2
+    n, n = y.shape
+    triu_ind = np.triu_indices(n)
 
-    # Turn off axis lines and ticks of the big subplot
-    bigax.spines['top'].set_color('none')
-    bigax.spines['bottom'].set_color('none')
-    bigax.spines['left'].set_color('none')
-    bigax.spines['right'].set_color('none')
-    bigax.tick_params(labelcolor = 'w', top = False, bottom = False, left = False, right = False)
-    # set axis labels
-    bigax.set_xlabel('contact frequency', fontsize = 16)
-    bigax.set_ylabel('count of contact frequency', fontsize = 16)
+    overall_corr, pval = pearsonr(y[triu_ind], yhat[triu_ind])
 
-    fig.tight_layout()
-    if diag:
-        fig.suptitle('sample{} diag preprocessing'.format(sampleid), fontsize = 16, y = 1)
-    else:
-        fig.suptitle('sample{}'.format(sampleid), fontsize = 16, y = 1)
+    corr_arr = np.zeros(n-1)
+    for d in range(n-1):
+        y_diag = np.diagonal(y, offset = d)
+        yhat_diag = np.diagonal(yhat, offset = d)
+        corr, pval = stat(y_diag, yhat_diag)
+        corr_arr[d] = corr
 
-    if xmax is not None:
-        plt.xlim(right = xmax)
+    return overall_corr, corr_arr
 
-    plt.savefig(os.path.join(dataFolder, 'samples', "sample{}".format(sampleid), 'freq_count_sample{}_diag_{}_split_{}.png'.format(sampleid, diag, split)))
-    plt.close()
+def calculatePerClassAccuracy(model, opt):
+    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
+                                        opt.y_norm, opt.x_reshape, opt.ydtype,
+                                        opt.y_reshape, opt.crop, names = True)
+    _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
 
-def plotFrequenciesSampleSubplot(freq_arr, dataFolder, diag, k, split = 'type'):
-    """
-    Plotting function for frequency distributions where each subplot corresponds to one sample.
+    assert opt.y_preprocessing == 'diag' or opt.y_preprocessing == 'prct', "invalid preprocesing: {}".format(opt.y_preprocessing)
+    if opt.y_preprocessing != 'prcnt':
+        prcntDist_path = os.path.join(opt.data_folder, 'prcntDist.npy')
+        prcntDist = np.load(prcntDist_path)
 
-    Inputs:
-        freq_arr: numpy array with 4 columns (freq, sampleid, interaction_type, psi)
-        dataFolder: location of data, used for saving image
-        diag: whether diagonal preprocessing was performed
-        k: number of epigentic marks, used for InteractionConverter
-        split: how to split data within each subplot: None for no split, type for split on interaction type, psi for split on interation psi
-    """
-    freq_pd = pd.DataFrame(freq_arr, columns = ['freq', 'sampleID', 'type', 'psi']) # cols = freq, sampleid, interaction_type, psi
-    converter = InteractionConverter(k)
+    loss_arr = np.zeros(opt.valN)
+    acc_arr = np.zeros(opt.valN)
+    acc_c_arr = np.zeros((opt.valN, opt.classes))
+    freq_c_arr = np.zeros((opt.valN, opt.classes))
 
-    fig = plt.figure(figsize=(12, 12))
-    bigax = fig.add_subplot(111, label = 'bigax') # use bigax to set overall axis labels
-    indplt = 1
-    for g_name, g_df in freq_pd.groupby(['sampleID']):
-        if indplt < 10: # only plot first 9 samples, design choice for convenient implemenation
-            ax = fig.add_subplot(3, 3, indplt)
-            if split is None:
-                ax.hist(g_df['freq'], bins = 100)
-            elif split.lower() == 'type':
-                for g_name_2, g_df_2 in g_df.groupby(['type']):
-                    ax.hist(g_df_2['freq'], label = converter.comb2str(converter.type2Comb(g_name_2)), bins = 100)
-            elif split.lower() == 'psi':
-                for g_name_2, g_df_2 in g_df.groupby(['psi']):
-                    ax.hist(g_df_2['freq'], label = g_name_2, bins = 100)
-            ax.set_title('sample{}'.format(int(g_name)))
-            ax.set_yscale('log')
-            indplt += 1
+    for i, (x, y, path) in enumerate(val_dataloader):
+        path = path[0]
+        print(path)
+        yhat = model(x)
+        y = y.cpu().numpy().reshape((opt.n, opt.n))
+        yhat = yhat.cpu().detach().numpy()
+        loss = opt.criterion(yhat, y).item()
+        loss_arr[i] = loss
 
-    # Turn off axis lines and ticks on bigax
-    bigax.spines['top'].set_color('none')
-    bigax.spines['bottom'].set_color('none')
-    bigax.spines['left'].set_color('none')
-    bigax.spines['right'].set_color('none')
-    bigax.tick_params(labelcolor = 'w', top = False, bottom = False, left = False, right = False)
-    # set axis labels on bigax
-    bigax.set_xlabel('contact frequency', fontsize = 16)
-    bigax.set_ylabel('count of contact frequency', fontsize = 16)
+        if opt.y_preprocessing == 'prcnt':
+            ytrue = y
+            yhat = np.argmax(yhat, axis = 1)
+        if opt.y_preprocessing == 'diag':
+            ytrue = np.load(os.path.join(path, 'y_prcnt.npy'))
+            yhat = percentile_normalize(yhat, prcntDist)
+        yhat = yhat.reshape((opt.n,opt.n))
+        acc = np.sum(yhat_prcnt == ytrue) / yhat.size
+        acc_arr[i] = acc
 
-    if split is not None:
-        handles, labels = ax.get_legend_handles_labels()
-        fig.legend(handles, labels, loc = 'upper right', title = split)
+        for c in range(opt.classes):
+            denom = np.sum(ytrue == c)
+            freq_c_arr[i, c] = denom / ytrue.size
+            num = np.sum(np.logical_and((ytrue == c), (yhat == ytrue)))
+            acc = num / denom
+            acc_c_arr[i, c] = acc
 
-    fig.tight_layout()
-    if diag:
-        fig.suptitle('diag preprocessing', fontsize = 16, y = 1)
-    else:
-        fig.suptitle('no preprocessing', fontsize = 16, y = 1)
-
-    plt.savefig(os.path.join(dataFolder, 'freq_count_multisample_diag_{}_split_{}.png'.format(diag, split)))
-    plt.close()
-
-def Stats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
-    """
-    Function to plot expected interaction frequency as a function of distance for all samples in dataFolder.
-
-    Inputs:
-        dataFolder: location of data to plot
-        ofile: save location
-        title: plot title, None for no title
-        mode: freq for frequencies, prob for probabilities
-        stat: mean to calculate mean, var for variance
-    """
-    fig, ax = plt.subplots()
-    samples = make_dataset(datafolder)
-    for sample in samples:
-        if diag:
-            y = np.load(os.path.join(sample, 'y_diag.npy'))
-        else:
-            y = np.load(os.path.join(sample, 'y.npy'))
-        result = generateDistStats(y, mode = mode, stat = stat)
-        ax.plot(result, label = os.path.split(sample)[1])
-    if not diag:
-        plt.yscale('log')
-
-    mode_string = ''
-    if mode == 'freq':
-        mode_string = 'frequency'
-    elif mode == 'prob':
-        mode_string = 'probability'
-
-    stat_string = ''
-    if stat == 'mean':
-        stat_string = 'mean'
-    elif stat == 'var':
-        stat_string = 'variance of'
-    plt.ylabel('{} contact {}'.format(stat_string, mode_string), fontsize = 16)
-    plt.xlabel('distance', fontsize = 16)
-    if diag:
-        plt.title('diag preprocessing', fontsize = 16)
-    else:
-        plt.title('no preprocessing', fontsize = 16)
-    plt.legend()
-    plt.savefig(ofile)
-    plt.close()
-
-def plotModelFromDir(dir, ofile, opt = None):
-    """Wrapper function for plotModelFromArrays given saved model."""
-    saveDict = torch.load(dir, map_location=torch.device('cpu'))
-    train_loss_arr = saveDict['train_loss']
-    val_loss_arr = saveDict['val_loss']
-    plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, opt)
-
-def plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, opt = None):
-    """Plots loss as function of epoch."""
-    plt.plot(np.arange(1, len(train_loss_arr)+1), train_loss_arr, label = 'Training')
-    plt.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr, label = 'Validation')
-    plt.xlabel('Epoch', fontsize = 16)
-    plt.ylabel('Loss', fontsize = 16)
-
-    if opt is not None:
-        if opt.criterion == F.mse_loss:
-            plt.ylabel('MSE Loss', fontsize = 16)
-        elif opt.criterion == F.cross_entropy:
-            plt.ylabel('Cross Entropy Loss', fontsize = 16)
-
-        if opt.y_preprocessing is not None:
-            preprocessing = opt.y_preprocessing.capitalize()
-        else:
-            preprocessing = 'None'
-        plt.title('Y Preprocessing: {}'.format(preprocessing), fontsize = 16)
-
-        if opt.milestones is not None:
-            lr = opt.lr
-            max_y = np.max(np.maximum(train_loss_arr, val_loss_arr))
-            min_y = np.min(np.minimum(train_loss_arr, val_loss_arr))
-            new_max_y = max_y + (max_y - min_y) * 0.1
-            annotate_y = max_y + (max_y - min_y) * 0.05
-            x_offset = (opt.milestones[0] - 1) * 0.05
-            plt.ylim(top = new_max_y)
-            plt.axvline(1, linestyle = 'dashed', color = 'green')
-            plt.annotate('lr: {}'.format(lr), (1 + x_offset, annotate_y))
-            for m in opt.milestones:
-                lr = lr * opt.gamma
-                plt.axvline(m, linestyle = 'dashed', color = 'green')
-                plt.annotate('lr: {:.1e}'.format(lr), (m + x_offset, annotate_y))
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(ofile)
-    plt.close()
-
-def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 10, minVal = None, maxVal = None, prcnt = False):
-    """
-    Plotting function for contact maps.
-
-    Inputs:
-        y: contact map numpy array
-        ofile: save location
-        title: plot title
-        vmax: maximum value for color bar, 'mean' to set as mean value
-        size_in: size of figure x,y in inches
-        minVal: values in y less than minVal are set to 0
-        maxVal: values in y greater than maxVal are set to 0
-    """
-    if prcnt:
-        mycmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                 [(0,       'white'),
-                                                  (0.25,    'orange'),
-                                                  (0.5,     'red'),
-                                                  (0.74,    'purple'),
-                                                  (1,       'blue')], N=10)
-    else:
-        mycmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                 [(0,    'white'),
-                                                  (1,    'red')], N=126)
-    if len(y.shape) == 4:
-        N, C, H, W = y.shape
-        assert N == 1 and C == 1
-        y = y.reshape(H,W)
-    elif len(y.shape) == 3:
-        N, H, W = y.shape
-        assert N == 1
-        y = y.reshape(H,W)
-
-    if minVal is not None or maxVal is not None:
-        y = y.copy() # prevent issues from reference type
-    if minVal is not None:
-        ind = y < minVal
-        y[ind] = 0
-    if maxVal is not None:
-        ind = y > maxVal
-        y[ind] = 0
-    plt.figure(figsize = (size_in, size_in))
-    if vmax == 'mean':
-        vmax = np.mean(y)
-    elif vmax == 'max':
-        vmax = np.max(y)
-    ax = sns.heatmap(y, linewidth=0, vmin = 0, vmax = vmax, cmap = mycmap)
-    if title is not None:
-        plt.title(title)
-    plt.tight_layout()
-    plt.savefig(ofile)
-    plt.close()
-
-def plotPerClassAccuracy(acc_arr, freq_arr, title = None, ofile = None):
-    N, C = acc_arr.shape
-    width = 0.35
-    x = np.arange(C)
-    acc_arr_mu = np.mean(acc_arr, axis = 0)
-    acc_arr_std = np.std(acc_arr, axis = 0)
-    freq_arr_mu = np.mean(freq_arr, axis = 0)
-    freq_arr_std = np.std(freq_arr, axis = 0)
-
-    fig, ax1 = plt.subplots()
-    color = 'tab:red'
-
-    ax1.bar(x, acc_arr_mu, color = color, width = width, yerr = acc_arr_std)
-    ax1.set_xlabel("Class", fontsize = 16)
-    ax1.set_ylabel("Accuracy", fontsize = 16, color = color)
-    ax1.tick_params(axis = 'y', labelcolor = color)
-    ax1.set_xticks(x + width / 2)
-    ax1.set_xticklabels(x)
-
-
-    ax2 = ax1.twinx()
-
-    color = 'tab:blue'
-    ax2.bar(x + width, freq_arr_mu, color = color, width = width, yerr = freq_arr_std)
-    ax2.tick_params(axis = 'y', labelcolor = color)
-    ax2.set_ylabel("Class Frequency", fontsize = 16, color = color)
-
-    if title is not None:
-        plt.title(title)
-    if ofile is not None:
-        plt.savefig(ofile)
-    plt.show()
-
-def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
-    """Plots Pearson correlation as a function of genomic distance"""
-
-    p_arr = np.zeros((opt.valN, opt.n-1))
-    P_arr_overall = np.zeros(opt.valN)
-    triu_ind = np.triu_indices(opt.n)
-    model.eval()
-    i = 0
-    for x, y in val_dataloader:
-        x = x.to(opt.device)
-        y = y.to(opt.device)
-        for j in range(y.shape[0]):
-            # manually using batchsize of 1
-            xj = x[j].unsqueeze(0)
-            yj = y[j].unsqueeze(0)
-            yhat = model(xj)
-            yj = yj.cpu().numpy().reshape((opt.n, opt.n))
-            yhat = yhat.cpu().detach().numpy()
-
-            if opt.y_preprocessing == 'prcnt':
-                yhat = np.argmax(yhat, axis = 1)
-            yhat = yhat.reshape((opt.n,opt.n))
-
-
-            corr, pval = pearsonr(yj[triu_ind], yhat[triu_ind])
-            P_arr_overall[i] = corr
-
-            for d in range(opt.n-1):
-                y_diag = np.diagonal(yj, offset = d)
-                yhat_diag = np.diagonal(yhat, offset = d)
-                corr, pval = pearsonr(y_diag, yhat_diag)
-                p_arr[i, d] = corr
-
-    p_mean = np.mean(p_arr, axis = 0)
-    p_std = np.std(p_arr, axis = 0)
-
-    print('Pearson R: {} +- {}'.format(np.mean(P_arr_overall), np.std(P_arr_overall)))
-
-    plt.plot(np.arange(opt.n-1), p_mean, color = 'black')
-    plt.fill_between(np.arange(opt.n-1), p_mean + p_std, p_mean - p_std, color = 'red', alpha = 0.5)
-    plt.xlabel('Distance', fontsize = 16)
-    plt.ylabel('Pearson Correlation Coefficient', fontsize = 16)
-    plt.tight_layout()
-    plt.savefig(ofile)
-    plt.close()
+    print('Accuracy: {} +- {}'.format(np.mean(acc_arr), np.std(acc_arr)))
+    print('Loss: {} +- {}'.format(np.mean(loss_arr), np.std(loss_arr)))
+    print(acc_c_arr)
+    print(freq_c_arr)
+    return acc_c_arr, freq_c_arr
 
 # other functions
 def comparePCA(val_dataloader, model, opt):
@@ -571,36 +304,33 @@ def comparePCA(val_dataloader, model, opt):
     model.eval()
     i = 0
     for x, y in val_dataloader:
+        assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
         x = x.to(opt.device)
         y = y.to(opt.device)
-        for j in range(y.shape[0]):
-            # manually using batchsize of 1
-            xj = x[j].unsqueeze(0)
-            yj = y[j].unsqueeze(0)
-            yhat = model(xj)
-            yj = yj.cpu().numpy().reshape((opt.n, opt.n))
-            yhat = yhat.cpu().detach().numpy()
+        yhat = model(x)
+        y = y.cpu().numpy().reshape((opt.n, opt.n))
+        yhat = yhat.cpu().detach().numpy()
 
-            if opt.y_preprocessing == 'prcnt':
-                yhat = np.argmax(yhat, axis = 1)
-            yhat = yhat.reshape((opt.n, opt.n))
+        if opt.y_preprocessing == 'prcnt':
+            yhat = np.argmax(yhat, axis = 1)
+        yhat = yhat.reshape((opt.n, opt.n))
 
-            result_y = pca.fit(yj)
-            comp1_y = pca.components_[0]
-            sign1_y = np.sign(comp1_y)
+        result_y = pca.fit(y)
+        comp1_y = pca.components_[0]
+        sign1_y = np.sign(comp1_y)
 
-            result_yhat = pca.fit(yhat)
-            comp1_yhat = pca.components_[0]
-            sign1_yhat = np.sign(comp1_yhat)
-            acc = np.sum((sign1_yhat == sign1_y)) / sign1_y.size
-            acc_arr[i] = max(acc, 1 - acc)
+        result_yhat = pca.fit(yhat)
+        comp1_yhat = pca.components_[0]
+        sign1_yhat = np.sign(comp1_yhat)
+        acc = np.sum((sign1_yhat == sign1_y)) / sign1_y.size
+        acc_arr[i] = max(acc, 1 - acc)
 
-            corr, pval = spearmanr(comp1_yhat, comp1_y)
-            rho_arr[i] = abs(corr)
+        corr, pval = spearmanr(comp1_yhat, comp1_y)
+        rho_arr[i] = abs(corr)
 
-            corr, pval = pearsonr(comp1_yhat, comp1_y)
-            p_arr[i] = abs(corr)
-            i += 1
+        corr, pval = pearsonr(comp1_yhat, comp1_y)
+        p_arr[i] = abs(corr)
+        i += 1
 
     print('PCA results:')
     print('Accuracy: {} +- {}'.format(np.mean(acc_arr), np.std(acc_arr)))
@@ -613,12 +343,16 @@ def argparseSetup():
     parser = argparse.ArgumentParser(description='Base parser')
 
     # pre-processing args
-    parser.add_argument('--y_preprocessing', type=str, default='diag', help='type of pre-processing for y')
-    parser.add_argument('--classes', type=int, default=10, help='number of classes in percentile normalization')
-    parser.add_argument('--y_norm', type=str, default='batch', help='type of [0,1] normalization for y')
-    parser.add_argument('--crop', type=str2list, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
+    parser.add_argument('--data_folder', type=str, default='test', help='Location of data')
     parser.add_argument('--toxx', type=str2bool, default=False, help='True if x should be converted to 2D image')
+    parser.add_argument('--y_preprocessing', type=str, default='diag', help='type of pre-processing for y')
+    parser.add_argument('--y_norm', type=str, default='batch', help='type of [0,1] normalization for y')
     parser.add_argument('--x_reshape', type=str2bool, default=True, help='True if x should be considered a 1D image')
+    parser.add_argument('--y_dtype', type=str2dtype, default='float32', help='torch data type for y')
+    parser.add_argument('--y_reshape', type=str2bool, default=True, help='True if y should be considered a 2D image')
+    parser.add_argument('--crop', type=str2list, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
+
+    parser.add_argument('--classes', type=int, default=10, help='number of classes in percentile normalization')
 
     # dataloader args
     parser.add_argument('--split', type=str2list, default=[0.8, 0.1, 0.1], help='Train, val, test split for dataset')
@@ -639,7 +373,6 @@ def argparseSetup():
 
     # model args
     parser.add_argument('--model_type', type=str, help='Type of model')
-    parser.add_argument('--data_folder', type=str, default='test', help='Location of data')
     parser.add_argument('--pretrained', type=str2bool, default=False, help='True if using a pretrained model')
     parser.add_argument('--resume_training', type=str2bool, default=False, help='True if resuming traning of a partially trained model')
     parser.add_argument('--ifile_folder', type=str, default='models/', help='Location of input file for pretrained model')
@@ -698,7 +431,6 @@ def argparseSetup():
     opt.device = torch.device('cuda' if opt.cuda else 'cpu')
     return opt
 
-
 def roundUpBy10(val):
     """Rounds value up to the nearst multiple of 10."""
     assert val > 0, "val too small"
@@ -739,6 +471,27 @@ def str2list(v):
     else:
         raise argparse.ArgumentTypeError('str value expected.')
 
+def str2list(v):
+    """
+    Helper function for argparser, converts str to torch dtype.
+
+    Inputs:
+        v: string
+    """
+    if isinstance(v, str):
+        if v == 'float32':
+            return torch.float32
+        elif v == 'float64':
+            return torch.float64
+        elif v == 'int32':
+            return torch.int32
+        elif v == 'int64':
+            return torch.int64
+        else:
+            print('Unkown str: {}'.format(v))
+    else:
+        raise argparse.ArgumentTypeError('str value expected.')
+
 def list2str(v):
     """
     Helper function to undo str2list.
@@ -748,7 +501,6 @@ def list2str(v):
     """
     assert type(v) == list
     return '-'.join([str(i) for i in v])
-
 
 class InteractionConverter():
     """Class that allows conversion between epigenetic mark bit string pairs and integer type id"""
@@ -829,8 +581,7 @@ class InteractionConverter():
         return np_arr
 
 def main():
-    parser = getBaseParser()
-    opt = parser.parse_args()
+    opt = argparseSetup()
     print(opt)
     # plotPerClassAccuracy(None, None, 5)
 

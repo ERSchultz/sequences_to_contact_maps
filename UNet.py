@@ -30,9 +30,9 @@ def main():
         print('Invalid loss: {}'.format(opt.loss))
 
 
-    seq2ContactData = Sequences2Contacts(opt.data_folder, toxx = opt.toxx, y_preprocessing = opt.y_preprocessing,
-                                        y_norm = opt.y_norm, x_reshape = opt.x_reshape, ydtype = opt.ydtype,
-                                        y_reshape = opt.y_reshape, crop = opt.crop)
+    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
+                                        opt.y_norm, opt.x_reshape, opt.ydtype,
+                                        opt.y_reshape, opt.crop)
 
     core_test_train(seq2ContactData, model, opt)
 

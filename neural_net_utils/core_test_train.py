@@ -3,8 +3,8 @@ import torch.nn as nn
 import torch.optim as optim
 import time
 import os
-from neural_net_utils.utils import getDataLoaders, plotModelFromArrays, comparePCA, plotDistanceStratifiedPearsonCorrelation
-
+from neural_net_utils.utils import getDataLoaders, comparePCA
+from neural_net_utils.plotting_functions import plotModelFromArrays, plotDistanceStratifiedPearsonCorrelation
 
 def core_test_train(dataset, model, opt):
     # Set random seeds

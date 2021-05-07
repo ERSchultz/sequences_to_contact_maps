@@ -29,7 +29,7 @@ nf=8
 # hyperparameters
 nEpochs=15
 lr=0.1
-batchSize=32
+batchSize=1
 numWorkers=20
 milestones='5-10'
 gamma=0.1

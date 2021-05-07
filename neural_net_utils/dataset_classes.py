@@ -18,8 +18,8 @@ class Names(Dataset):
 
 
 class Sequences2Contacts(Dataset):
-    def __init__(self, dirname, toxx, y_preprocessing, y_norm, x_reshape, ydtype = torch.float32,
-                y_reshape = True, names = False, crop = None, min_sample = 0):
+    def __init__(self, dirname, toxx, y_preprocessing, y_norm, x_reshape, ydtype,
+                y_reshape, crop, names = False, min_sample = 0):
         super(Sequences2Contacts, self).__init__()
         self.toxx = toxx
         self.y_norm = y_norm

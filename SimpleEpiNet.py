@@ -17,9 +17,9 @@ def main():
     opt = argparseSetup()
     print(opt)
 
-    seq2ContactData = Sequences2Contacts(opt.data_folder, toxx = opt.toxx, y_preprocessing = opt.y_preprocessing,
-                                        y_norm = opt.y_norm, x_reshape = opt.x_reshape,
-                                        crop = opt.crop)
+    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
+                                        opt.y_norm, opt.x_reshape, opt.ydtype,
+                                        opt.y_reshape, opt.crop)
 
 
     # Set up model
