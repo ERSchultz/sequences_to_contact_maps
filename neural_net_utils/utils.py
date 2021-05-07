@@ -50,9 +50,7 @@ def splitDataset(dataset, opt):
     opt.trainN = math.floor(opt.N * opt.split[0])
     opt.valN = math.floor(opt.N * opt.split[1])
     opt.testN = opt.N - opt.trainN - opt.valN
-    return torch.utils.data.random_split(dataset,
-                                        [opt.trainN, opt.valN, opt.testN],
-                                        torch.Generator().manual_seed(opt.seed))
+    return torch.utils.data.random_split(dataset, [opt.trainN, opt.valN, opt.testN], torch.Generator().manual_seed(opt.seed))
 
 # data processing functions
 @njit
