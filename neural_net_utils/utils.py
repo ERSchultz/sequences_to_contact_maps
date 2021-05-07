@@ -578,17 +578,17 @@ def comparePCA(val_dataloader, model, opt):
         for j in range(y.shape[0]):
             print(j)
             # manually using batchsize of 1
-            x = x[j].unsqueeze(0)
-            y = y[j].unsqueeze(0)
-            yhat = model(x)
-            y = y.cpu().numpy().reshape((opt.n, opt.n))
+            xj = x[j].unsqueeze(0)
+            yj = y[j].unsqueeze(0)
+            yhat = model(xj)
+            yj = yj.cpu().numpy().reshape((opt.n, opt.n))
             yhat = yhat.cpu().detach().numpy()
 
             if opt.y_preprocessing == 'prcnt':
                 yhat = np.argmax(yhat, axis = 1)
             yhat = yhat.reshape((opt.n, opt.n))
 
-            result_y = pca.fit(y)
+            result_y = pca.fit(yj)
             comp1_y = pca.components_[0]
             sign1_y = np.sign(comp1_y)
 
