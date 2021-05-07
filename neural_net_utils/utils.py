@@ -268,9 +268,9 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
             yhat = np.argmax(yhat, axis = 1)
         if opt.y_preprocessing == 'diag':
             ytrue = np.load(os.path.join(path, 'y_prcnt.npy'))
-            yhat = percentile_normalize(yhat, prcntDist)
+            yhat = percentile_preprocessing(yhat, prcntDist)
         yhat = yhat.reshape((opt.n,opt.n))
-        acc = np.sum(yhat_prcnt == ytrue) / yhat.size
+        acc = np.sum(yhat == ytrue) / yhat.size
         acc_arr[i] = acc
 
         for c in range(opt.classes):

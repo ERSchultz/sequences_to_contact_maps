@@ -385,7 +385,7 @@ def plotPredictions(model, opt):
             plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = 'Y hat')
 
             # plot prcnt
-            yhat_prcnt = percentile_normalize(yhat, prcntDist)
+            yhat_prcnt = percentile_preprocessing(yhat, prcntDist)
             plotContactMap(yhat_prcnt, os.path.join(subpath, 'yhat_prcnt.png'), vmax = 'max', prcnt = True, title = 'Y hat prcnt')
 
             # plot dif
