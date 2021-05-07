@@ -24,6 +24,7 @@ k=2
 n=1024
 yNorm='instance'
 nf=8
+loss='cross_entropy'
 
 # hyperparameters
 nEpochs=15
@@ -38,8 +39,8 @@ cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
 
 yPreprocessing='diag'
-python3 plotting_script.py  --data_folder $dirname --gpus $gpus --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
+python3 plotting_script.py  --data_folder $dirname --gpus $gpus --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --loss $loss --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
 
 
 yPreprocessing='prcnt'
-python3 plotting_script.py  --data_folder $dirname  --gpus $gpus --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
+python3 plotting_script.py  --data_folder $dirname  --gpus $gpus --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --loss $loss --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma

@@ -21,6 +21,7 @@ n=1024
 yPreprocessing='prcnt'
 yNorm='batch'
 nf=8
+loss='cross_entropy'
 
 # hyperparameters
 nEpochs=15
@@ -35,4 +36,4 @@ logfile="logFiles/${ofile}.log"
 
 cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
-python3 UNet.py --data_folder $dirname --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --ofile $ofile >> $logfile
+python3 UNet.py --data_folder $dirname --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --loss $loss --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --ofile $ofile >> $logfile
