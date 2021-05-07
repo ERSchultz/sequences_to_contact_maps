@@ -8,6 +8,8 @@ import math
 import argparse
 from sklearn.decomposition import PCA
 from scipy.stats import spearmanr, pearsonr
+from neural_net_utils.dataset_classes import Sequences2Contacts
+
 
 
 # dataset functions
