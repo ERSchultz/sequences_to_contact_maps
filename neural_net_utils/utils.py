@@ -52,7 +52,7 @@ def splitDataset(dataset, opt):
     opt.testN = opt.N - opt.trainN - opt.valN
     return torch.utils.data.random_split(dataset,
                                         [opt.trainN, opt.valN, opt.testN],
-                                        generator = torch.Generator().manual_seed(opt.seed))
+                                        torch.Generator().manual_seed(opt.seed))
 
 # data processing functions
 @njit
@@ -348,7 +348,7 @@ def argparseSetup():
     parser.add_argument('--y_preprocessing', type=str, default='diag', help='type of pre-processing for y')
     parser.add_argument('--y_norm', type=str, default='batch', help='type of [0,1] normalization for y')
     parser.add_argument('--x_reshape', type=str2bool, default=True, help='True if x should be considered a 1D image')
-    parser.add_argument('--y_dtype', type=str2dtype, default='float32', help='torch data type for y')
+    parser.add_argument('--ydtype', type=str2dtype, default='float32', help='torch data type for y')
     parser.add_argument('--y_reshape', type=str2bool, default=True, help='True if y should be considered a 2D image')
     parser.add_argument('--crop', type=str2list, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
 
