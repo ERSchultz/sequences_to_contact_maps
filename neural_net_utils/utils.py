@@ -471,7 +471,7 @@ def str2list(v):
     else:
         raise argparse.ArgumentTypeError('str value expected.')
 
-def str2list(v):
+def str2dtype(v):
     """
     Helper function for argparser, converts str to torch dtype.
 
