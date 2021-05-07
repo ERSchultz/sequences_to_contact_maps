@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors
 import seaborn as sns
 import pandas as pd
-from neural_net_utils.utils import calculateDistanceStratifiedCorrelation, calculatePerClassAccuracy
+from neural_net_utils.utils import calculateDistanceStratifiedCorrelation, calculatePerClassAccuracy, make_dataset
 
 def plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid, split = 'type', xmax = None):
     """
