@@ -142,7 +142,7 @@ def main():
         # TODO
     model_name = os.path.join(opt.ofile_folder, opt.ofile + '.pt')
     if os.path.exists(model_name):
-        saveDict = torch.load(model_name, map_location=torch.device('cpu'))
+        save_dict = torch.load(model_name, map_location=torch.device('cpu'))
         model.load_state_dict(save_dict['model_state_dict'])
         print('Model is loaded.')
     else:
