@@ -603,7 +603,6 @@ def comparePCA(val_dataloader, model, opt):
             i += 1
 
     print('PCA results:')
-    print(p_arr)
     print('Accuracy: {} +- {}'.format(np.mean(acc_arr), np.std(acc_arr)))
     print('Spearman R: {} +- {}'.format(np.mean(rho_arr), np.std(rho_arr)))
     print('Pearson R: {} +- {}'.format(np.mean(p_arr), np.std(p_arr)))
