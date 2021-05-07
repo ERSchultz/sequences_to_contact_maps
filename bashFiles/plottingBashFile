@@ -19,7 +19,7 @@ xReshape='false'
 # architecture
 k=2
 n=1024
-yNorm='batch'
+yNorm='instance'
 nf=8
 
 # hyperparameters

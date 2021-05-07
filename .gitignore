@@ -1,6 +1,7 @@
 *.pt
 *.log
 *.out
+*.txt
 /dataset_04_08_21/
 /dataset_04_18_21/
 /test/
