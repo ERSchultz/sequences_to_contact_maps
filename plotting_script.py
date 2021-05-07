@@ -117,6 +117,7 @@ def plot_predictions(opt):
 
 def main():
     opt = argparseSetup()
+    print(opt)
     opt.model_type = 'UNet'
     if opt.model_type == 'UNet':
         opt.ofile = "UNet_nEpochs{}_nf{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}".format(opt.n_epochs, opt.nf, opt.lr, list2str(opt.milestones), opt.y_preprocessing, opt.y_norm)
@@ -144,7 +145,7 @@ def main():
     if os.path.exists(model_name):
         save_dict = torch.load(model_name, map_location=torch.device('cpu'))
         model.load_state_dict(save_dict['model_state_dict'])
-        print('Model is loaded.')
+        print('Model is loaded: {}'.format(model_name))
     else:
         print('Model does not exist: {}'.format(model_name))
 
