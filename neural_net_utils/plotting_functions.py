@@ -367,7 +367,7 @@ def plotPredictions(model, opt):
         yhat = model(x)
         loss = opt.criterion(yhat, y).item()
         loss_arr[i] = loss
-        y = y.cpu()numpy()
+        y = y.cpu().numpy()
         yhat = yhat.cpu().detach().numpy()
 
         if opt.y_preprocessing == 'prcnt':
