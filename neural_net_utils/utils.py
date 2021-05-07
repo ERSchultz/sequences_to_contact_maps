@@ -244,7 +244,7 @@ def calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson'):
     return overall_corr, corr_arr
 
 def calculatePerClassAccuracy(val_dataloader, model, opt):
-    assert opt.y_preprocessing == 'diag' or opt.y_preprocessing == 'prct', "invalid preprocesing: {}".format(opt.y_preprocessing)
+    assert opt.y_preprocessing == 'diag' or opt.y_preprocessing == 'prcnt', "invalid preprocessing: {}".format(opt.y_preprocessing)
     if opt.y_preprocessing != 'prcnt':
         prcntDist_path = os.path.join(opt.data_folder, 'prcntDist.npy')
         prcntDist = np.load(prcntDist_path)
@@ -258,10 +258,10 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
         path = path[0]
         print(path)
         yhat = model(x)
-        y = y.cpu().numpy().reshape((opt.n, opt.n))
-        yhat = yhat.cpu().detach().numpy()
         loss = opt.criterion(yhat, y).item()
         loss_arr[i] = loss
+        y = y.cpu().numpy().reshape((opt.n, opt.n))
+        yhat = yhat.cpu().detach().numpy()
 
         if opt.y_preprocessing == 'prcnt':
             ytrue = y
