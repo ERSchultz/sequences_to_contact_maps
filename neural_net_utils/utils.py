@@ -572,11 +572,8 @@ def comparePCA(val_dataloader, model, opt):
     i = 0
     for x, y in val_dataloader:
         x = x.to(opt.device)
-        print(x.shape)
         y = y.to(opt.device)
-        print(y.shape)
         for j in range(y.shape[0]):
-            print(j)
             # manually using batchsize of 1
             xj = x[j].unsqueeze(0)
             yj = y[j].unsqueeze(0)
@@ -596,13 +593,13 @@ def comparePCA(val_dataloader, model, opt):
             comp1_yhat = pca.components_[0]
             sign1_yhat = np.sign(comp1_yhat)
             acc = np.sum((sign1_yhat == sign1_y)) / sign1_y.size
-            acc_arr[i] = acc
+            acc_arr[i] = max(acc, 1 - acc)
 
             corr, pval = spearmanr(comp1_yhat, comp1_y)
-            rho_arr[i] = corr
+            rho_arr[i] = abs(corr)
 
             corr, pval = pearsonr(comp1_yhat, comp1_y)
-            p_arr[i] = corr
+            p_arr[i] = abs(corr)
             i += 1
 
     print('PCA results:')
