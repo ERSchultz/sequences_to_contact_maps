@@ -276,7 +276,11 @@ def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 10, minVal = None
 
 def plotPerClassAccuracy(model, opt, ofile = None, title = None):
     """Plots accuracy for each class in percentile normalized contact map."""
-    acc_arr, freq_arr = calculatePerClassAccuracy(model, opt)
+    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
+                                        opt.y_norm, opt.x_reshape, opt.ydtype,
+                                        opt.y_reshape, opt.crop, names = True)
+    _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
+    acc_arr, freq_arr = calculatePerClassAccuracy(val_dataloader, model, opt)
 
     N, C = acc_arr.shape
     width = 0.35

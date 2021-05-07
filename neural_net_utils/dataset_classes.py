@@ -1,6 +1,9 @@
-from torch.utils.data import Dataset, DataLoader
-from neural_net_utils.utils import *
 import torch
+from torch.utils.data import Dataset, DataLoader
+from neural_net_utils.utils import make_dataset
+import torch
+import numpy as np
+import os
 
 class Names(Dataset):
     "Dataset that only returns names of paths"

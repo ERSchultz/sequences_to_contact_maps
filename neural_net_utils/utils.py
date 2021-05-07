@@ -8,9 +8,6 @@ import math
 import argparse
 from sklearn.decomposition import PCA
 from scipy.stats import spearmanr, pearsonr
-from neural_net_utils.dataset_classes import Sequences2Contacts
-
-
 
 # dataset functions
 def make_dataset(dir, minSample = 0):
@@ -246,12 +243,7 @@ def calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson'):
 
     return overall_corr, corr_arr
 
-def calculatePerClassAccuracy(model, opt):
-    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
-                                        opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop, names = True)
-    _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
-
+def calculatePerClassAccuracy(val_dataloader, model, opt):
     assert opt.y_preprocessing == 'diag' or opt.y_preprocessing == 'prct', "invalid preprocesing: {}".format(opt.y_preprocessing)
     if opt.y_preprocessing != 'prcnt':
         prcntDist_path = os.path.join(opt.data_folder, 'prcntDist.npy')
