@@ -572,8 +572,11 @@ def comparePCA(val_dataloader, model, opt):
     i = 0
     for x, y in val_dataloader:
         x = x.to(opt.device)
+        print(x.shape)
         y = y.to(opt.device)
+        print(y.shape)
         for j in range(y.shape[0]):
+            print(j)
             # manually using batchsize of 1
             x = x[j].unsqueeze(0)
             y = y[j].unsqueeze(0)
