@@ -62,13 +62,13 @@ class Sequences2Contacts(Dataset):
             y = np.expand_dims(y, 0)
 
         if self.y_norm == 'instance':
-            y_max =  np.max(y)
+            y_max = np.max(y)
             y = y / y_max
         elif self.y_norm == 'batch':
             y_max = self.max
             y = (y - self.min) / (self.max - self.min)
         else:
-            y_max = None
+            y_max = -1
 
         if self.toxx:
             x_path = os.path.join(self.paths[index], 'xx.npy')
