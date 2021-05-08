@@ -38,11 +38,12 @@ def contactPlots(dataFolder):
 
 def main():
     opt = argparseSetup()
-    opt.y_norm = 'instance'
-    opt.n_epochs = 15
-    opt.milestones = [5,10]
-    opt.lr = 0.1
-    opt.toxx = True
+    # overwrites if testing locally
+    # opt.y_norm = 'instance'
+    # opt.n_epochs = 15
+    # opt.milestones = [5,10]
+    # opt.lr = 0.1
+    # opt.toxx = True
 
     print(opt)
     opt.model_type = 'UNet'
