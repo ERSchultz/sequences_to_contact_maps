@@ -313,7 +313,6 @@ def plotPerClassAccuracy(model, opt, ofile = None, title = None):
         plt.title(title)
     if ofile is not None:
         plt.savefig(ofile)
-    plt.show()
 
 def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
     """Plots Pearson correlation as a function of genomic distance"""
