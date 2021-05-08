@@ -69,6 +69,7 @@ class Sequences2Contacts(Dataset):
             y = (y - self.min) / (self.max - self.min)
         else:
             y_max = -1
+            # TODO, explain this
 
         if self.toxx:
             x_path = os.path.join(self.paths[index], 'xx.npy')

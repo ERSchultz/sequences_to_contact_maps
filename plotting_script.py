@@ -83,7 +83,7 @@ def main():
     else:
         print('Model does not exist: {}'.format(model_name))
 
-    # comparePCA(val_dataloader, model, opt)
+    comparePCA(val_dataloader, model, opt)
     imageSubPath = os.path.join('images', opt.ofile)
     if not os.path.exists(imageSubPath):
         os.mkdir(imageSubPath, mode = 0o755)
@@ -95,7 +95,7 @@ def main():
     plotPerClassAccuracy(model, opt, imagePath)
     print()
 
-    # plotPredictions(model, opt)
+    plotPredictions(model, opt)
     print('\n'*3)
 
     # freqDistributionPlots('dataset_04_18_21')
