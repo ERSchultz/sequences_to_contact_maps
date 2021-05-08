@@ -275,12 +275,9 @@ def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 6, minVal = None,
     plt.savefig(ofile)
     plt.close()
 
-def plotPerClassAccuracy(model, opt, ofile = None, title = None):
+def plotPerClassAccuracy(val_dataloader, opt, ofile = None, title = None):
     """Plots accuracy for each class in percentile normalized contact map."""
-    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
-                                        opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop, names = True, max = True)
-    _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
+
     acc_arr, freq_arr = calculatePerClassAccuracy(val_dataloader, model, opt)
 
     N, C = acc_arr.shape
@@ -320,10 +317,13 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
     p_arr = np.zeros((opt.valN, opt.n-1))
     P_arr_overall = np.zeros(opt.valN)
     model.eval()
-    for i, (x, y) in enumerate(val_dataloader):
+    for i, (x, y, path, max) in enumerate(val_dataloader):
+        path = path[0]
+        ymax = max.item()
         assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
         x = x.to(opt.device)
         y = y.to(opt.device)
+        print(y)
         yhat = model(x)
         y = y.cpu().numpy().reshape((opt.n, opt.n))
         yhat = yhat.cpu().detach().numpy()
@@ -350,12 +350,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
     plt.savefig(ofile)
     plt.close()
 
-def plotPredictions(model, opt):
-    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
-                                        opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop, names = True, max = True)
-    _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
-
+def plotPredictions(val_dataloader, opt):
     if opt.y_preprocessing != 'prcnt':
         prcntDist_path = os.path.join(opt.data_folder, 'prcntDist.npy')
         prcntDist = np.load(prcntDist_path)
@@ -373,6 +368,7 @@ def plotPredictions(model, opt):
         loss = opt.criterion(yhat, y).item()
         loss_arr[i] = loss
         y = y.cpu().numpy()
+        print(y)
         yhat = yhat.cpu().detach().numpy()
 
         if opt.y_preprocessing == 'prcnt':

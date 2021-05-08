@@ -28,6 +28,7 @@ def make_dataset(dir, minSample = 0):
 
 def getDataLoaders(dataset, opt):
     train_dataset, val_dataset, test_dataset = splitDataset(dataset, opt)
+    print()
     train_dataloader = DataLoader(train_dataset, batch_size = opt.batch_size,
                                     shuffle = opt.shuffle, num_workers = opt.num_workers)
     if len(val_dataset) > 0:
@@ -298,12 +299,15 @@ def comparePCA(val_dataloader, model, opt):
     p_arr = np.zeros(opt.valN)
     pca = PCA()
     model.eval()
-    for i, (x, y) in enumerate(val_dataloader):
+    for i, (x, y, path, max) in enumerate(val_dataloader):
+        path = path[0]
+        ymax = max.item()
         assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
         x = x.to(opt.device)
         y = y.to(opt.device)
         yhat = model(x)
         y = y.cpu().numpy().reshape((opt.n, opt.n))
+        y = np.load(os.path.join(path, 'y.npy')) # TODO
         yhat = yhat.cpu().detach().numpy()
 
         if opt.y_preprocessing == 'prcnt':

@@ -38,15 +38,18 @@ def contactPlots(dataFolder):
 
 def main():
     opt = argparseSetup()
+    opt.mode = None
+    # opt.mode = 'debugging'
     # overwrites if testing locally
-    # opt.data_folder = 'dataset_04_18_21'
-    # opt.loss = 'cross_entropy'
-    # opt.y_preprocessing = 'prcnt'
-    # opt.y_norm = 'instance'
-    # opt.n_epochs = 15
-    # opt.milestones = [5,10]
-    # opt.lr = 0.1
-    # opt.toxx = True
+    if opt.mode == 'debugging':
+        opt.data_folder = 'dataset_04_18_21'
+        opt.loss = 'cross_entropy'
+        opt.y_preprocessing = 'prcnt'
+        opt.y_norm = None
+        opt.n_epochs = 15
+        opt.milestones = [5,10]
+        opt.lr = 0.1
+        opt.toxx = True
 
     print(opt)
     opt.model_type = 'UNet'
@@ -73,7 +76,7 @@ def main():
     seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
                                         opt.y_reshape, opt.crop)
-    train_dataloader, val_dataloader, test_dataloader = getDataLoaders(seq2ContactData, opt)
+    train_dataloader, val_dataloader, test_dataloader = getDataLoaders(seq2ContactData, opt, names = True, max = True)
 
     model_name = os.path.join(opt.ofile_folder, opt.ofile + '.pt')
     if os.path.exists(model_name):
@@ -83,8 +86,11 @@ def main():
     else:
         print('Model does not exist: {}'.format(model_name))
 
-    comparePCA(val_dataloader, model, opt)
-    imageSubPath = os.path.join('images', opt.ofile)
+    # comparePCA(val_dataloader, model, opt)
+    if opt.mode == 'debugging':
+        imageSubPath = os.path.join('images', 'test')
+    else:
+        imageSubPath = os.path.join('images', opt.ofile)
     if not os.path.exists(imageSubPath):
         os.mkdir(imageSubPath, mode = 0o755)
     imagePath = os.path.join(imageSubPath, 'distance_pearson.png')
@@ -92,10 +98,10 @@ def main():
     print()
 
     imagePath = os.path.join(imageSubPath, 'per_class_acc.png')
-    plotPerClassAccuracy(model, opt, imagePath)
+    # plotPerClassAccuracy(val_dataloader, opt, imagePath)
     print()
 
-    plotPredictions(model, opt)
+    # plotPredictions(val_dataloader, opt)
     print('\n'*3)
 
     # freqDistributionPlots('dataset_04_18_21')

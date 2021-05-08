@@ -69,7 +69,8 @@ class Sequences2Contacts(Dataset):
             y = (y - self.min) / (self.max - self.min)
         else:
             y_max = -1
-            # TODO, explain this
+            # y_max is unneeded for other y_norms
+            # this prevents errors if it is requested (Dataloader doesn't accept Nonetypes)
 
         if self.toxx:
             x_path = os.path.join(self.paths[index], 'xx.npy')
