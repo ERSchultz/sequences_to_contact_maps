@@ -38,9 +38,9 @@ gamma=0.1
 cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
 
-# yPreprocessing='diag'
-# loss='mse'
-# python3 plotting_script.py  --data_folder $dirname --gpus $gpus --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --loss $loss --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
+yPreprocessing='diag'
+loss='mse'
+python3 plotting_script.py  --data_folder $dirname --gpus $gpus --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --loss $loss --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
 
 
 yPreprocessing='prcnt'

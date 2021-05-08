@@ -222,7 +222,7 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, opt = None):
     plt.savefig(ofile)
     plt.close()
 
-def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 10, minVal = None, maxVal = None, prcnt = False):
+def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False):
     """
     Plotting function for contact maps.
 

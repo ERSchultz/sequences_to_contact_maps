@@ -111,7 +111,7 @@ def process_sample_save(in_path, out_path, k, n, overwrite):
 def diag_processing(opt, out_paths):
     # determine mean_dist for diagonal preprocessing
     meanDist_path = os.path.join(opt.output_folder, 'meanDist.npy')
-    if not os.path.exists(meanDist_path):
+    if not os.path.exists(meanDist_path) or opt.overwrite:
         train_dataloader, _, _ = getDataLoaders(Names(opt.output_folder), opt)
         assert opt.sample_size <= opt.trainN, "Sample size too large - max {}".format(opt.trainN)
         meanDist = np.zeros(opt.n)
@@ -144,7 +144,7 @@ def process_sample_diag(path, meanDist, overwrite):
 def percentile_processing(opt, out_paths):
     # determine prcnt_dist for percentile preprocessing
     prcntDist_path = os.path.join(opt.output_folder, 'prcntDist.npy')
-    if not os.path.exists(prcntDist_path):
+    if not os.path.exists(prcntDist_path) or opt.overwrite:
         train_dataloader, _, _ = getDataLoaders(Names(opt.output_folder), opt)
         assert opt.sample_size <= opt.trainN, "Sample size too large - max {}".format(opt.trainN)
         y_arr = np.zeros((opt.sample_size, opt.n, opt.n))
