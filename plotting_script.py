@@ -39,14 +39,14 @@ def contactPlots(dataFolder):
 def main():
     opt = argparseSetup()
     # overwrites if testing locally
-    # opt.data_folder = 'dataset_04_18_21'
-    # opt.loss = 'cross_entropy'
-    # opt.y_preprocessing = 'prcnt'
-    # opt.y_norm = 'instance'
-    # opt.n_epochs = 15
-    # opt.milestones = [5,10]
-    # opt.lr = 0.1
-    # opt.toxx = True
+    opt.data_folder = 'dataset_04_18_21'
+    opt.loss = 'cross_entropy'
+    opt.y_preprocessing = 'prcnt'
+    opt.y_norm = 'instance'
+    opt.n_epochs = 15
+    opt.milestones = [5,10]
+    opt.lr = 0.1
+    opt.toxx = True
 
     print(opt)
     opt.model_type = 'UNet'
