@@ -39,6 +39,7 @@ def contactPlots(dataFolder):
 def main():
     opt = argparseSetup()
     # overwrites if testing locally
+    opt.data_folder = 'dataset_04_18_21'
     opt.y_norm = 'instance'
     opt.n_epochs = 15
     opt.milestones = [5,10]
@@ -89,10 +90,10 @@ def main():
     print()
 
     imagePath = os.path.join(imageSubPath, 'per_class_acc.png')
-    plotPerClassAccuracy(model, opt, imagePath)
+    # plotPerClassAccuracy(model, opt, imagePath)
     print()
 
-    # plotPredictions(model, opt)
+    plotPredictions(model, opt)
     print('\n'*3)
 
     # freqDistributionPlots('dataset_04_18_21')
