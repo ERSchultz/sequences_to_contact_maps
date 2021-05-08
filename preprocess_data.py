@@ -59,7 +59,7 @@ def process_data(opt):
 
     percentile_processing(opt, out_paths)
 
-    find min,max of y_diag and y_prcnt
+    # find min,max of y_diag and y_prcnt
     y_diag_min_max = np.array([float('inf'), -float('inf')])
     y_prcnt_min_max = np.array([float('inf'), -float('inf')])
     train_dataloader, _, _ = getDataLoaders(Names(opt.output_folder), opt)
