@@ -8,6 +8,7 @@ import math
 import argparse
 from sklearn.decomposition import PCA
 from scipy.stats import spearmanr, pearsonr
+import matplotlib.pyplot as plt
 
 # dataset functions
 def make_dataset(dir, minSample = 0):
@@ -180,7 +181,8 @@ def getFrequencies(dataFolder, diag, n, k, chi):
 def getPercentiles(arr, prcnt_arr):
     """Helper function to get multiple percentiles at once."""
     result = np.zeros_like(prcnt_arr).astype(np.float64)
-    arr_sort = np.sort(arr.flatten())
+    plt.hist(arr.flatten())
+    plt.show()
     for i, p in enumerate(prcnt_arr):
         result[i] = np.percentile(arr, p)
     return result

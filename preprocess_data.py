@@ -16,16 +16,16 @@ def setupParser():
     parser.add_argument('--split', type=str2list, default=[0.8, 0.1, 0.1], help='Train, val, test split for dataset')
     parser.add_argument('--shuffle', type=str2bool, default=True, help='Whether or not to shuffle dataset')
     parser.add_argument('--batch_size', type=int, default=1, help='Training batch size')
-    parser.add_argument('--num_workers', type=int, default=5, help='Number of processes to use')
+    parser.add_argument('--num_workers', type=int, default=4, help='Number of processes to use')
 
     # model args
     parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
     parser.add_argument('--n', type=int, default=1024, help='Number of particles')
 
     # preprocessing args
-    parser.add_argument('--sample_size', type=int, default=200, help='Size of sample for preprocessing statistics')
+    parser.add_argument('--sample_size', type=int, default=2, help='Size of sample for preprocessing statistics')
     parser.add_argument('--seed', type=int, default=42, help='Random seed to use. Default: 42')
-    parser.add_argument('--overwrite', type=str2bool, default=False, help='Whether or not to overwrite existing preprocessing files')
+    parser.add_argument('--overwrite', type=str2bool, default=True, help='Whether or not to overwrite existing preprocessing files')
     parser.add_argument('--percentiles', type=str2list, default=[20, 40, 50, 60, 70, 80, 85, 90, 95, 100], help='Percentiles to use for percentile preprocessing')
 
     return parser
@@ -59,7 +59,7 @@ def process_data(opt):
 
     percentile_processing(opt, out_paths)
 
-    # find min,max of y_diag and y_prcnt
+    find min,max of y_diag and y_prcnt
     y_diag_min_max = np.array([float('inf'), -float('inf')])
     y_prcnt_min_max = np.array([float('inf'), -float('inf')])
     train_dataloader, _, _ = getDataLoaders(Names(opt.output_folder), opt)
@@ -113,6 +113,7 @@ def diag_processing(opt, out_paths):
     meanDist_path = os.path.join(opt.output_folder, 'meanDist.npy')
     if not os.path.exists(meanDist_path):
         train_dataloader, _, _ = getDataLoaders(Names(opt.output_folder), opt)
+        assert opt.sample_size <= opt.trainN, "Sample size too large - max {}".format(opt.trainN)
         meanDist = np.zeros(opt.n)
         for i, path in enumerate(train_dataloader):
             if i < opt.sample_size: # dataloader shuffles so this is a random sample
@@ -145,11 +146,14 @@ def percentile_processing(opt, out_paths):
     prcntDist_path = os.path.join(opt.output_folder, 'prcntDist.npy')
     if not os.path.exists(prcntDist_path):
         train_dataloader, _, _ = getDataLoaders(Names(opt.output_folder), opt)
+        assert opt.sample_size <= opt.trainN, "Sample size too large - max {}".format(opt.trainN)
         y_arr = np.zeros((opt.sample_size, opt.n, opt.n))
         for i, path in enumerate(train_dataloader):
             if i < opt.sample_size: # dataloader shuffles so this is a random sample
                 path = path[0]
-                y_arr[i,:,:] = np.load(os.path.join(path, 'y_diag.npy'))
+                y_diag = np.load(os.path.join(path, 'y_diag.npy'))
+                y_arr[i,:,:] = y_diag
+                print(y_diag)
                 # This should be ok from a RAM standpoint
 
         prcntDist = getPercentiles(y_arr, opt.percentiles) # flattens array to do computation

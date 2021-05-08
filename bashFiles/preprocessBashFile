@@ -12,7 +12,7 @@ output="../../../project2/depablo/erschultz/dataset_04_18_21"
 numWorkers=20
 k=2
 n=1024
-sampleSize=500
+sampleSize=200
 overwrite="True"
 
 cd ~/sequences_to_contact_maps
