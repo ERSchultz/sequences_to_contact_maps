@@ -38,6 +38,12 @@ def contactPlots(dataFolder):
 
 def main():
     opt = argparseSetup()
+    opt.y_norm = 'instance'
+    opt.n_epochs = 15
+    opt.milestones = [5,10]
+    opt.lr = 0.1
+    opt.toxx = True
+
     print(opt)
     opt.model_type = 'UNet'
     if opt.model_type == 'UNet':
@@ -79,10 +85,14 @@ def main():
         os.mkdir(imageSubPath, mode = 0o755)
     imagePath = os.path.join(imageSubPath, 'distance_pearson.png')
     plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, imagePath, opt)
+    print()
+
     imagePath = os.path.join(imageSubPath, 'per_class_acc.png')
     plotPerClassAccuracy(model, opt, imagePath)
+    print()
 
-    plot_predictions(model, opt)
+    # plotPredictions(model, opt)
+    print('\n'*3)
 
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')

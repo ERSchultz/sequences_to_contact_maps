@@ -254,9 +254,9 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
     acc_c_arr = np.zeros((opt.valN, opt.classes))
     freq_c_arr = np.zeros((opt.valN, opt.classes))
 
-    for i, (x, y, path) in enumerate(val_dataloader):
+    for i, (x, y, path, max) in enumerate(val_dataloader):
         path = path[0]
-        print(path)
+        ymax = max.item()
         yhat = model(x)
         loss = opt.criterion(yhat, y).item()
         loss_arr[i] = loss
@@ -268,6 +268,8 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
             yhat = np.argmax(yhat, axis = 1)
         if opt.y_preprocessing == 'diag':
             ytrue = np.load(os.path.join(path, 'y_prcnt.npy'))
+            if opt.y_norm == 'instance':
+                yhat = yhat * ymax
             yhat = percentile_preprocessing(yhat, prcntDist)
         yhat = yhat.reshape((opt.n,opt.n))
         acc = np.sum(yhat == ytrue) / yhat.size
@@ -282,8 +284,8 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
 
     print('Accuracy: {} +- {}'.format(np.mean(acc_arr), np.std(acc_arr)))
     print('Loss: {} +- {}'.format(np.mean(loss_arr), np.std(loss_arr)))
-    print(acc_c_arr)
-    print(freq_c_arr)
+    print('acc arr', acc_c_arr)
+    print('freq arr', freq_c_arr)
     return acc_c_arr, freq_c_arr
 
 # other functions
@@ -294,8 +296,7 @@ def comparePCA(val_dataloader, model, opt):
     p_arr = np.zeros(opt.valN)
     pca = PCA()
     model.eval()
-    i = 0
-    for x, y in val_dataloader:
+    for i, (x, y) in enumerate(val_dataloader):
         assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
         x = x.to(opt.device)
         y = y.to(opt.device)
@@ -322,7 +323,6 @@ def comparePCA(val_dataloader, model, opt):
 
         corr, pval = pearsonr(comp1_yhat, comp1_y)
         p_arr[i] = abs(corr)
-        i += 1
 
     print('PCA results:')
     print('Accuracy: {} +- {}'.format(np.mean(acc_arr), np.std(acc_arr)))

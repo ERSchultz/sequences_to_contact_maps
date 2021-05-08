@@ -22,7 +22,7 @@ class Names(Dataset):
 
 class Sequences2Contacts(Dataset):
     def __init__(self, dirname, toxx, y_preprocessing, y_norm, x_reshape, ydtype,
-                y_reshape, crop, names = False, min_sample = 0):
+                y_reshape, crop, names = False, max = False, min_sample = 0):
         super(Sequences2Contacts, self).__init__()
         self.toxx = toxx
         self.y_norm = y_norm
@@ -35,8 +35,9 @@ class Sequences2Contacts(Dataset):
         self.x_reshape = x_reshape
         self.ydtype = ydtype
         self.y_reshape = y_reshape
-        self.names = names
         self.crop = crop
+        self.names = names
+        self.max = max
         self.paths = sorted(make_dataset(dirname, minSample = min_sample))
 
     def __getitem__(self, index):
@@ -61,7 +62,8 @@ class Sequences2Contacts(Dataset):
             y = np.expand_dims(y, 0)
 
         if self.y_norm == 'instance':
-            y = y / np.max(y)
+            y_max =  np.max(y)
+            y = y / y_max
         elif self.y_norm == 'batch':
             y = (y - self.min) / (self.max - self.min)
 
@@ -81,10 +83,13 @@ class Sequences2Contacts(Dataset):
 
         x = torch.tensor(x, dtype = torch.float32)
         y = torch.tensor(y, dtype = self.ydtype)
+        result = [x, y]
         if self.names:
-            return x, y, self.paths[index]
-        else:
-            return x, y
+            result.append(self.paths[index])
+        if self.max:
+            result.append(y_max)
+
+        return result
 
     def __len__(self):
         return len(self.paths)

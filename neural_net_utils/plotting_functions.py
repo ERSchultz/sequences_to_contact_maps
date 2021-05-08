@@ -279,7 +279,7 @@ def plotPerClassAccuracy(model, opt, ofile = None, title = None):
     """Plots accuracy for each class in percentile normalized contact map."""
     seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop, names = True)
+                                        opt.y_reshape, opt.crop, names = True, max = True)
     _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
     acc_arr, freq_arr = calculatePerClassAccuracy(val_dataloader, model, opt)
 
@@ -321,8 +321,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
     p_arr = np.zeros((opt.valN, opt.n-1))
     P_arr_overall = np.zeros(opt.valN)
     model.eval()
-    i = 0
-    for x, y in val_dataloader:
+    for i, (x, y) in enumerate(val_dataloader):
         assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
         x = x.to(opt.device)
         y = y.to(opt.device)
@@ -355,7 +354,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
 def plotPredictions(model, opt):
     seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop, names = True)
+                                        opt.y_reshape, opt.crop, names = True, max = True)
     _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
 
     if opt.y_preprocessing != 'prcnt':
@@ -363,8 +362,9 @@ def plotPredictions(model, opt):
         prcntDist = np.load(prcntDist_path)
 
     loss_arr = np.zeros(opt.valN)
-    for i, (x, y, path) in enumerate(val_dataloader):
+    for i, (x, y, path, max) in enumerate(val_dataloader):
         path = path[0]
+        ymax = max.item()
         print(path)
         subpath = os.path.join(path, opt.ofile)
         if not os.path.exists(subpath):
@@ -385,7 +385,7 @@ def plotPredictions(model, opt):
             plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = 'Y hat')
 
             # plot prcnt
-            yhat_prcnt = percentile_preprocessing(yhat, prcntDist)
+            yhat_prcnt = percentile_preprocessing(yhat.copy() * ymax, prcntDist)
             plotContactMap(yhat_prcnt, os.path.join(subpath, 'yhat_prcnt.png'), vmax = 'max', prcnt = True, title = 'Y hat prcnt')
 
             # plot dif

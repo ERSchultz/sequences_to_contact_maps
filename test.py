@@ -10,7 +10,14 @@ input = torch.tensor(np.arange(0, 1024*2, 1).reshape((1, 2, 1024))).type(torch.f
 print(input)
 print('---')
 
-# net.forward(input)
 
-for x in [2, 4, 8, 16, 32, 64, 128, 256, 512]:
-    print(str(x) + '-', end = '')
+def v1():
+    return 1, 2
+
+def v2():
+    return [1,2]
+
+x, y = v1()
+print(x,y)
+x, y = v2()
+print('here2', x, y)
