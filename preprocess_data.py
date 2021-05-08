@@ -153,7 +153,6 @@ def percentile_processing(opt, out_paths):
                 path = path[0]
                 y_diag = np.load(os.path.join(path, 'y_diag.npy'))
                 y_arr[i,:,:] = y_diag
-                print(y_diag)
                 # This should be ok from a RAM standpoint
 
         prcntDist = getPercentiles(y_arr, opt.percentiles) # flattens array to do computation
