@@ -94,14 +94,14 @@ def main():
     if not os.path.exists(imageSubPath):
         os.mkdir(imageSubPath, mode = 0o755)
     imagePath = os.path.join(imageSubPath, 'distance_pearson.png')
-    plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, imagePath, opt)
+    # plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, imagePath, opt)
     print()
 
     imagePath = os.path.join(imageSubPath, 'per_class_acc.png')
     # plotPerClassAccuracy(val_dataloader, opt, imagePath)
     print()
 
-    # plotPredictions(val_dataloader, opt)
+    plotPredictions(val_dataloader, opt)
     print('\n'*3)
 
     # freqDistributionPlots('dataset_04_18_21')
