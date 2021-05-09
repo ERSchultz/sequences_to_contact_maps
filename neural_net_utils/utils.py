@@ -307,7 +307,7 @@ def comparePCA(val_dataloader, model, opt):
         y = y.to(opt.device)
         yhat = model(x)
         y = y.cpu().numpy().reshape((opt.n, opt.n))
-        y = np.load(os.path.join(path, 'y.npy')) # TODO
+        # y = np.load(os.path.join(path, 'y.npy')) # TODO
         yhat = yhat.cpu().detach().numpy()
 
         if opt.y_preprocessing == 'prcnt':

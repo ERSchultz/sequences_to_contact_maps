@@ -2,7 +2,7 @@
 #SBATCH --job-name=akita
 #SBATCH --output=logFiles/akita.out
 #SBATCH --time=04:00:00
-#SBATCH --partition=depablo-gpu
+#SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
@@ -23,7 +23,7 @@ bottleneck=64
 dilationListHead='2-4-8-16-32-64-128-256-512'
 
 # hyperparameters
-nEpochs=75
+nEpochs=2
 lr=0.1
 batchSize=32
 numWorkers=4
