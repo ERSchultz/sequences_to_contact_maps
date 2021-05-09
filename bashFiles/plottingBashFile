@@ -15,22 +15,22 @@ gpus=0
 # model type
 modelType='DeepC'
 
-# preprocessing
-toxx='true'
-xReshape='false'
-
 # architecture
 k=2
 n=1024
-nf=8
-
+yPreprocessing='diag'
+yNorm='batch'
+kernelWList='5-5-5'
+hiddenSizesList='32-64-128'
+dilationList='2-4-8-16-32-64-128-256-512'
+hiddenSizeDilation=128
 
 # hyperparameters
-nEpochs=15
+nEpochs=75
 lr=0.1
-batchSize=1
-numWorkers=20
-milestones='5-10'
+batchSize=32
+numWorkers=4
+milestones='25-50'
 gamma=0.1
 
 
