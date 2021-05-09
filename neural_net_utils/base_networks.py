@@ -248,6 +248,11 @@ class Symmetrize2D(nn.Module):
 class AverageTo2d(nn.Module):
     '''https://github.com/calico/basenji/blob/master/basenji/layers.py'''
     def __init__(self, concat_d = False, n = None):
+        """
+        Inputs:
+            concat_d: True if positional encoding should be appended
+            n: spatial dimension
+        """
         super(AverageTo2d, self).__init__()
         self.concat_d = concat_d
         if concat_d:
@@ -263,6 +268,7 @@ class AverageTo2d(nn.Module):
 
     def forward(self, x):
         # assume x is of shape N x C x n
+        # memory expensive
         assert len(x.shape) == 3, "shape must be 3D"
         N, C, n = x.shape
         x1 = torch.tile(x, (1, 1, n))
