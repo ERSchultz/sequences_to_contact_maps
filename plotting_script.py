@@ -69,6 +69,12 @@ def main():
             model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = nn.Sigmoid())
         else:
             print('Invalid loss: {}'.format(opt.loss))
+    elif opt.model_type == 'DeepC':
+        opt.ofile = "DeepC_nEpochs{}_nf{}_lr{}_milestones{}_yPreprocessing{}_kernelW{}_hiddenSize{}_dilation{}_hiddenSize_{}".format(opt.n_epochs, opt.nf, opt.lr, list2str(opt.milestones), opt.y_preprocessing, list2str(opt.kernel_w_list), list2str(opt.hidden_sizes_list), list2str(opt.dilation_list), opt.hidden_size_dilation)
+        if opt.loss == 'mse':
+            opt.criterion = F.mse_loss
+        else:
+            print('Invalid loss: {}'.format(opt.loss))
     else:
         print('Invalid model type: {}'.format(opt.model_type))
         # TODO
@@ -77,7 +83,6 @@ def main():
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
                                         opt.y_reshape, opt.crop)
     train_dataloader, val_dataloader, test_dataloader = getDataLoaders(seq2ContactData, opt, names = True, max = True)
-
     model_name = os.path.join(opt.ofile_folder, opt.ofile + '.pt')
     if os.path.exists(model_name):
         save_dict = torch.load(model_name, map_location=torch.device('cpu'))

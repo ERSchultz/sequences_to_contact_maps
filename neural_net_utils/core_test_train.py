@@ -57,10 +57,22 @@ def core_test_train(dataset, model, opt):
     imagePath = os.path.join(imageSubPath, 'train_val_loss.png')
     plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
 
+    # get new val_dataloader
+    opt.batchsize = 1
+    _, val_dataloader, _ = getDataLoaders(dataset, opt, names = True, max = True)
+
     comparePCA(val_dataloader, model, opt)
 
     imagePath = os.path.join(imageSubPath, 'distance_pearson.png')
     plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, imagePath, opt)
+    print()
+
+    imagePath = os.path.join(imageSubPath, 'per_class_acc.png')
+    plotPerClassAccuracy(val_dataloader, opt, imagePath)
+    print()
+
+    plotPredictions(val_dataloader, opt)
+    print('\n'*3)
 
 def train(train_loader, val_dataloader, model, optimizer, criterion, device, save_location,
         n_epochs, start_epoch, use_parallel, scheduler, save_mod, print_mod):
