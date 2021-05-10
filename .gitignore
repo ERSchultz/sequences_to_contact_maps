@@ -5,5 +5,5 @@
 /dataset_04_08_21/
 /dataset_04_18_21/
 /test/
-/__pycache__/
-/neural_net_utils/__pycache__/
+/__pycache__/*
+/neural_net_utils/__pycache__/*
