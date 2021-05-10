@@ -6,7 +6,7 @@ import os
 from neural_net_utils.utils import getDataLoaders, comparePCA
 from neural_net_utils.plotting_functions import plotModelFromArrays, plotDistanceStratifiedPearsonCorrelation
 
-def core_test_train(dataset, model, opt):
+def core_test_train(model, opt):
     # Set random seeds
     torch.manual_seed(opt.seed)
     if opt.cuda:
@@ -14,6 +14,9 @@ def core_test_train(dataset, model, opt):
 
     # split dataset
     t0 = time.time()
+    dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
+                                        opt.y_norm, opt.x_reshape, opt.ydtype,
+                                        opt.y_reshape, opt.crop)
     train_dataloader, val_dataloader, test_dataloader = getDataLoaders(dataset, opt)
     print('getDataLoader time: ', time.time() -t0)
 
@@ -58,8 +61,12 @@ def core_test_train(dataset, model, opt):
     plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
 
     # get new val_dataloader
+    dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
+                                        opt.y_norm, opt.x_reshape, opt.ydtype,
+                                        opt.y_reshape, opt.crop)
+                                         # TODO make this unnecessary
     opt.batchsize = 1
-    _, val_dataloader, _ = getDataLoaders(dataset, opt, names = True, max = True)
+    _, val_dataloader, _ = getDataLoaders(dataset, opt)
 
     comparePCA(val_dataloader, model, opt)
 

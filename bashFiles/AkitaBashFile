@@ -25,7 +25,7 @@ dilationListHead='2-4-8-16-32-64-128-256-512'
 # hyperparameters
 nEpochs=2
 lr=0.1
-batchSize=10 # 16 was too large with mem-per-gpu = 4000
+batchSize=12 # 16 was too large with mem-per-gpu = 4000
 numWorkers=4
 milestones='25-50'
 gamma=0.1

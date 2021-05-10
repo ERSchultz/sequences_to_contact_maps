@@ -17,11 +17,6 @@ def main():
     opt = argparseSetup()
     print(opt)
 
-    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
-                                        opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop)
-
-
     # Set up model
     model = SimpleEpiNet(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
     if opt.loss == 'mse':
@@ -29,7 +24,7 @@ def main():
     else:
         print('Invalid loss: {}'.format(opt.loss))
 
-    core_test_train(seq2ContactData, model, opt)
+    core_test_train(model, opt)
 
 
 if __name__ == '__main__':

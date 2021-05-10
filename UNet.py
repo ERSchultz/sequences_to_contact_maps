@@ -29,12 +29,7 @@ def main():
     else:
         print('Invalid loss: {}'.format(opt.loss))
 
-
-    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
-                                        opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop)
-
-    core_test_train(seq2ContactData, model, opt)
+    core_test_train(model, opt)
 
 
 if __name__ == '__main__':

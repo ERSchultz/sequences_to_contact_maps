@@ -277,8 +277,8 @@ class AverageTo2d(nn.Module):
 
         x1 = torch.unsqueeze(x1, 0)
         x2 = torch.unsqueeze(x2, 0)
-        del x1, x2
         out = torch.cat((x1, x2), dim = 0)
+        del x1, x2
         out = torch.mean(out, dim = 0, keepdim = False)
         if self.concat_d:
             # append abs(i - j)

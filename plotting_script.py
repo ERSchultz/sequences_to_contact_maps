@@ -81,8 +81,8 @@ def main():
 
     seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop)
-    train_dataloader, val_dataloader, test_dataloader = getDataLoaders(seq2ContactData, opt, names = True, max = True)
+                                        opt.y_reshape, opt.crop, names = True, max = True)
+    train_dataloader, val_dataloader, test_dataloader = getDataLoaders(seq2ContactData, opt)
     model_name = os.path.join(opt.ofile_folder, opt.ofile + '.pt')
     if os.path.exists(model_name):
         save_dict = torch.load(model_name, map_location=torch.device('cpu'))
