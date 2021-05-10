@@ -357,6 +357,8 @@ def plotPredictions(val_dataloader, opt):
 
     loss_arr = np.zeros(opt.valN)
     for i, (x, y, path, max) in enumerate(val_dataloader):
+        assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
+
         path = path[0]
         print(max, 'max')
         ymax = max.item()
