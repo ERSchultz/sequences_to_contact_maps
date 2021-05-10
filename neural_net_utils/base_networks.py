@@ -282,5 +282,7 @@ class AverageTo2d(nn.Module):
         out = torch.mean(out, dim = 0, keepdim = False)
         if self.concat_d:
             # append abs(i - j)
+            if out.is_cuda:
+                self.d.to(out.get_device())
             out = torch.cat((out, torch.tile(self.d, (N, 1, 1, 1))), dim = 1)
         return out
