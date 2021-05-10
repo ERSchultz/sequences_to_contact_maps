@@ -181,20 +181,20 @@ class Akita(nn.Module):
         # Diaated Convolution
         for dilation in dilation_list_trunk:
             model.append(ConvBlock(input_size, input_size, 3, padding = dilation,
-                                    activation = 'gated', dilation = dilation, residual = True, conv1d = True))
+                                    activation = 'relu', dilation = dilation, residual = True, conv1d = True))
 
         # Bottleneck
-        model.append(ConvBlock(input_size, bottleneck_size, 1, padding = 0, conv1d = True))
+        model.append(ConvBlock(input_size, bottleneck_size, 1, padding = 0, activation = 'relu', conv1d = True))
 
         ## Head ##
         model.append(AverageTo2d(concat_d = True, n = self.n))
         input_size = bottleneck_size + 1
-        model.append(ConvBlock(input_size, input_size, 1, padding = 0))
+        model.append(ConvBlock(input_size, input_size, 1, padding = 0, activation = 'relu'))
 
         # Dilated Convolution
         for dilation in dilation_list_head:
             model.append(ConvBlock(input_size, input_size, 3, padding = dilation,
-                                    activation = 'gated', dilation = dilation, residual = True))
+                                    activation = 'relu', dilation = dilation, residual = True))
             model.append(Symmetrize2D())
 
         self.model = nn.Sequential(*model)
