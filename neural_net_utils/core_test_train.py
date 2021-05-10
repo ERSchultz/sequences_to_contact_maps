@@ -14,12 +14,10 @@ def core_test_train(model, opt):
         torch.cuda.manual_seed(opt.seed)
 
     # split dataset
-    t0 = time.time()
     dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
                                         opt.y_reshape, opt.crop)
     train_dataloader, val_dataloader, test_dataloader = getDataLoaders(dataset, opt)
-    print('getDataLoader time: ', time.time() -t0)
 
     if opt.pretrained:
         model_name = os.path.join(opt.ifile_folder, opt.ifile + '.pt')
