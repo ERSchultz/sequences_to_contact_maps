@@ -358,6 +358,7 @@ def plotPredictions(val_dataloader, opt):
     loss_arr = np.zeros(opt.valN)
     for i, (x, y, path, max) in enumerate(val_dataloader):
         path = path[0]
+        print(max, 'max')
         ymax = max.item()
         print(path)
         subpath = os.path.join(path, opt.ofile)
