@@ -79,7 +79,7 @@ def core_test_train(model, opt):
     plotPerClassAccuracy(val_dataloader, opt, imagePath)
     print()
 
-    plotPredictions(val_dataloader, opt)
+    plotPredictions(val_dataloader, model, opt)
     print('\n'*3)
 
 def train(train_loader, val_dataloader, model, optimizer, criterion, device, save_location,

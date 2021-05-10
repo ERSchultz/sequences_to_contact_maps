@@ -106,7 +106,7 @@ def main():
     # plotPerClassAccuracy(val_dataloader, opt, imagePath)
     print()
 
-    plotPredictions(val_dataloader, opt)
+    plotPredictions(val_dataloader, model, opt)
     print('\n'*3)
 
     # freqDistributionPlots('dataset_04_18_21')

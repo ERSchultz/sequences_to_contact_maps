@@ -350,7 +350,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
     plt.savefig(ofile)
     plt.close()
 
-def plotPredictions(val_dataloader, opt):
+def plotPredictions(val_dataloader, model, opt):
     if opt.y_preprocessing != 'prcnt':
         prcntDist_path = os.path.join(opt.data_folder, 'prcntDist.npy')
         prcntDist = np.load(prcntDist_path)
@@ -360,7 +360,6 @@ def plotPredictions(val_dataloader, opt):
         assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
 
         path = path[0]
-        print(max, 'max')
         ymax = max.item()
         print(path)
         subpath = os.path.join(path, opt.ofile)
