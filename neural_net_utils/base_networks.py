@@ -285,7 +285,7 @@ class AverageTo2d(nn.Module):
             print(out.is_cuda)
             if out.is_cuda:
                 print(out.get_device())
-                self.d.to(out.get_device())
+                self.d = self.d.to(out.get_device())
                 print(self.d.is_cuda)
             out = torch.cat((out, torch.tile(self.d, (N, 1, 1, 1))), dim = 1)
         return out

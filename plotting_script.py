@@ -42,6 +42,7 @@ def main():
     # opt.mode = 'debugging'
     # overwrites if testing locally
     if opt.mode == 'debugging':
+        opt.model_type = 'UNet'
         opt.data_folder = 'dataset_04_18_21'
         opt.loss = 'cross_entropy'
         opt.y_preprocessing = 'prcnt'
@@ -52,7 +53,6 @@ def main():
         opt.toxx = True
 
     print(opt)
-    opt.model_type = 'UNet'
     if opt.model_type == 'UNet':
         opt.ofile = "UNet_nEpochs{}_nf{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}".format(opt.n_epochs, opt.nf, opt.lr, list2str(opt.milestones), opt.y_preprocessing, opt.y_norm)
         if opt.loss == 'cross_entropy':
