@@ -5,6 +5,7 @@ import time
 import os
 from neural_net_utils.utils import getDataLoaders, comparePCA
 from neural_net_utils.plotting_functions import plotModelFromArrays, plotDistanceStratifiedPearsonCorrelation
+from neural_net_utils.dataset_classes import Sequences2Contacts
 
 def core_test_train(model, opt):
     # Set random seeds
