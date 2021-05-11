@@ -16,7 +16,8 @@ def main():
     print(opt)
 
     if opt.loss == 'cross_entropy':
-        assert opt.y_preprocessing == 'prcnt', 'must use percentile normalization with cross entropy'
+        assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'
+        assert opt.y_norm == None, 'Cannot normalize with cross entropy'
         opt.y_reshape = False
         opt.criterion = F.cross_entropy
         opt.ydtype = torch.int64

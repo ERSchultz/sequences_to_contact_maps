@@ -100,7 +100,6 @@ def diagonal_preprocessing(y, meanDist):
     Inputs:
         y: contact map numpy array
         mean: mean contact frequency where mean[dist] is the mean at a given distance
-        max: maximum value of
 
     Outputs:
         result: new contact map
@@ -151,6 +150,11 @@ def percentile_preprocessing(y, percentiles):
     return result
 
 # plotting helper functions
+def un_normalize(y, minmax):
+    ymin = minmax[0].item()
+    ymax = minmax[1].item()
+    return y.copy() * (ymax - ymin) + ymin
+
 def getFrequencies(dataFolder, diag, n, k, chi):
     # calculates number of times each interaction frequency
     # was observed
@@ -257,13 +261,14 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
     acc_c_arr = np.zeros((opt.valN, opt.classes))
     freq_c_arr = np.zeros((opt.valN, opt.classes))
 
-    for i, (x, y, path, max) in enumerate(val_dataloader):
+    for i, (x, y, path, minmax) in enumerate(val_dataloader):
+        assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
         path = path[0]
-        ymax = max.item()
         yhat = model(x)
         loss = opt.criterion(yhat, y).item()
         loss_arr[i] = loss
         y = y.cpu().numpy().reshape((opt.n, opt.n))
+        y = un_normalize(y, minmax)
         yhat = yhat.cpu().detach().numpy()
 
         if opt.y_preprocessing == 'prcnt':
@@ -271,8 +276,7 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
             yhat = np.argmax(yhat, axis = 1)
         if opt.y_preprocessing == 'diag':
             ytrue = np.load(os.path.join(path, 'y_prcnt.npy'))
-            if opt.y_norm == 'instance':
-                yhat = yhat * ymax
+            yhat = un_normalize(yhat, minmax)
             yhat = percentile_preprocessing(yhat, prcntDist)
         yhat = yhat.reshape((opt.n,opt.n))
         acc = np.sum(yhat == ytrue) / yhat.size
@@ -299,20 +303,21 @@ def comparePCA(val_dataloader, model, opt):
     p_arr = np.zeros(opt.valN)
     pca = PCA()
     model.eval()
-    for i, (x, y, path, max) in enumerate(val_dataloader):
-        path = path[0]
-        ymax = max.item()
+    for i, (x, y, path, minmax) in enumerate(val_dataloader):
         assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
+        path = path[0]
+        minmax = minmax
         x = x.to(opt.device)
         y = y.to(opt.device)
         yhat = model(x)
         y = y.cpu().numpy().reshape((opt.n, opt.n))
-        # y = np.load(os.path.join(path, 'y.npy')) # TODO
+        y = un_normalize(y, minmax)
         yhat = yhat.cpu().detach().numpy()
 
         if opt.y_preprocessing == 'prcnt':
             yhat = np.argmax(yhat, axis = 1)
         yhat = yhat.reshape((opt.n, opt.n))
+        yhat = un_normalize(yhat, minmax)
 
         result_y = pca.fit(y)
         comp1_y = pca.components_[0]

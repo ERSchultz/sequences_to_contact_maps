@@ -275,8 +275,11 @@ def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 6, minVal = None,
     plt.savefig(ofile)
     plt.close()
 
-def plotPerClassAccuracy(val_dataloader, opt, ofile = None, title = None):
+def plotPerClassAccuracy(val_dataloader, model, opt, ofile = None, title = None):
     """Plots accuracy for each class in percentile normalized contact map."""
+    if opt.y_preprocessing == 'prcnt' and opt.loss == 'mse':
+        return
+        # when training on percentile preprocessed data using MSE loss it is impossible to convert back to classes
 
     acc_arr, freq_arr = calculatePerClassAccuracy(val_dataloader, model, opt)
 
@@ -306,6 +309,7 @@ def plotPerClassAccuracy(val_dataloader, opt, ofile = None, title = None):
     ax2.tick_params(axis = 'y', labelcolor = color)
     ax2.set_ylabel("Class Frequency", fontsize = 16, color = color)
 
+    plt.tight_layout()
     if title is not None:
         plt.title(title)
     if ofile is not None:
@@ -317,23 +321,24 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
     p_arr = np.zeros((opt.valN, opt.n-1))
     P_arr_overall = np.zeros(opt.valN)
     model.eval()
-    for i, (x, y, path, max) in enumerate(val_dataloader):
+    for i, (x, y, path, minmax) in enumerate(val_dataloader):
         path = path[0]
-        ymax = max.item()
+        minmax = minmax
         assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
         x = x.to(opt.device)
         y = y.to(opt.device)
-        print(y)
         yhat = model(x)
         y = y.cpu().numpy().reshape((opt.n, opt.n))
+        y = un_normalize(y, minmax)
         yhat = yhat.cpu().detach().numpy()
 
         if opt.y_preprocessing == 'prcnt':
             yhat = np.argmax(yhat, axis = 1)
         yhat = yhat.reshape((opt.n,opt.n))
-
+        yhat = un_normalize(yhat, minmax)
 
         overall_corr, corr_arr = calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson')
+        print(overall_corr, corr_arr)
         P_arr_overall[i] = overall_corr
         p_arr[i, :] = corr_arr
 
@@ -356,11 +361,9 @@ def plotPredictions(val_dataloader, model, opt):
         prcntDist = np.load(prcntDist_path)
 
     loss_arr = np.zeros(opt.valN)
-    for i, (x, y, path, max) in enumerate(val_dataloader):
+    for i, (x, y, path, minmax) in enumerate(val_dataloader):
         assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
-
         path = path[0]
-        ymax = max.item()
         print(path)
         subpath = os.path.join(path, opt.ofile)
         if not os.path.exists(subpath):
@@ -369,24 +372,27 @@ def plotPredictions(val_dataloader, model, opt):
         yhat = model(x)
         loss = opt.criterion(yhat, y).item()
         loss_arr[i] = loss
-        y = y.cpu().numpy()
+        y = un_normalize(y.cpu().numpy(), minmax)
         yhat = yhat.cpu().detach().numpy()
 
         if opt.y_preprocessing == 'prcnt':
             plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = 'max', prcnt = True, title = 'Y')
             yhat = np.argmax(yhat, axis = 1)
+            yhat = un_normalize(yhat, minmax)
             plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = True, title = 'Y hat')
 
         elif opt.y_preprocessing == 'diag':
+            plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = 'max', prcnt = False, title = 'Y')
+            yhat = un_normalize(yhat, minmax)
             plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = 'Y hat')
 
             # plot prcnt
-            yhat_prcnt = percentile_preprocessing(yhat.copy() * ymax, prcntDist)
+            yhat_prcnt = percentile_preprocessing(yhat, prcntDist)
             plotContactMap(yhat_prcnt, os.path.join(subpath, 'yhat_prcnt.png'), vmax = 'max', prcnt = True, title = 'Y hat prcnt')
 
             # plot dif
             ydif = yhat - y
-            plotContactMap(ydif, os.path.join(subpath, 'ydif.png'), vmax = 'mean', title = 'difference')
+            plotContactMap(ydif, os.path.join(subpath, 'ydif.png'), vmax = 'max', title = 'difference')
         else:
             print("Unsupported preprocessing: {}".format(y_preprocessing))
 

@@ -83,7 +83,7 @@ def main():
 
     seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop, names = True, max = True)
+                                        opt.y_reshape, opt.crop, names = True, minmax = True)
     train_dataloader, val_dataloader, test_dataloader = getDataLoaders(seq2ContactData, opt)
     model_name = os.path.join(opt.ofile_folder, opt.ofile + '.pt')
     if os.path.exists(model_name):
@@ -105,7 +105,7 @@ def main():
     print()
 
     imagePath = os.path.join(imageSubPath, 'per_class_acc.png')
-    # plotPerClassAccuracy(val_dataloader, opt, imagePath)
+    # plotPerClassAccuracy(val_dataloader, model, opt, imagePath)
     print()
 
     plotPredictions(val_dataloader, model, opt)

@@ -138,12 +138,13 @@ class DeepC(nn.Module):
         # Fully Connected
         # y_flat_len = (n**2 + n) / 2
         self.fc = LinearBlock(hidden_size_dilation, n, activation = out_act)
+        self.sym = Symmetrize2D()
 
     def forward(self, input):
         out = self.model(input)
         out = out.view(-1, self.n, self.hidden_size_dilation)
-        out = self.fc(out)
         out = torch.unsqueeze(out, 1)
+        out = self.sym(self.fc(out))
         return out
 
 class Akita(nn.Module):

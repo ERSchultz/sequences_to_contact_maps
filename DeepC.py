@@ -9,8 +9,7 @@ from neural_net_utils.core_test_train import core_test_train
 def main():
     opt = argparseSetup()
     # architecture
-    opt.mode = 'testing'
-    if opt.mode == 'testing':
+    if opt.mode == 'debugging':
         opt.k=2
         opt.n=1024
         opt.y_preprocessing='diag'
@@ -21,12 +20,17 @@ def main():
         opt.hidden_size_dilation=96
 
         # hyperparameters
-        opt.n_epochs=2
+        opt.n_epochs=1
         opt.lr=0.1
         opt.batch_size=4
         opt.numWorkers=4
-        opt.milestones='1'
+        opt.milestones=str2list('1')
         opt.gamma=0.1
+
+        # other
+        opt.plot = True
+        opt.data_folder = 'dataset_04_18_21'
+        opt.ofile = 'model'
 
     print(opt)
 

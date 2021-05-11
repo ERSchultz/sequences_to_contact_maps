@@ -22,7 +22,7 @@ class Names(Dataset):
 
 class Sequences2Contacts(Dataset):
     def __init__(self, dirname, toxx, y_preprocessing, y_norm, x_reshape, ydtype,
-                y_reshape, crop, names = False, max = False, min_sample = 0):
+                y_reshape, crop, names = False, minmax = False, min_sample = 0):
         super(Sequences2Contacts, self).__init__()
         self.toxx = toxx
         self.y_norm = y_norm
@@ -32,13 +32,16 @@ class Sequences2Contacts(Dataset):
             print("min, max: ", min_max)
             self.ymin = min_max[0]
             self.ymax = min_max[1]
+        else:
+            self.ymin = 0
+            self.ymax = 1
         self.y_preprocessing = y_preprocessing
         self.x_reshape = x_reshape
         self.ydtype = ydtype
         self.y_reshape = y_reshape
         self.crop = crop
         self.names = names
-        self.max = max
+        self.minmax = minmax
         self.paths = sorted(make_dataset(dirname, minSample = min_sample))
 
     def __getitem__(self, index):
@@ -63,15 +66,10 @@ class Sequences2Contacts(Dataset):
             y = np.expand_dims(y, 0)
 
         if self.y_norm == 'instance':
-            y_max = np.max(y)
-            y = y / y_max
+            self.ymax = np.max(y)
+            y = y / self.ymax
         elif self.y_norm == 'batch':
-            y_max = self.ymax
             y = (y - self.ymin) / (self.ymax - self.ymin)
-        else:
-            y_max = -1
-            # y_max is unneeded for other y_norms
-            # this prevents errors if it is requested (Dataloader doesn't accept Nonetypes)
 
         if self.toxx:
             x_path = os.path.join(self.paths[index], 'xx.npy')
@@ -92,8 +90,8 @@ class Sequences2Contacts(Dataset):
         result = [x, y]
         if self.names:
             result.append(self.paths[index])
-        if self.max:
-            result.append(y_max)
+        if self.minmax:
+            result.append([self.ymin, self.ymax])
 
         return result
 
