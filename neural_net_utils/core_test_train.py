@@ -6,6 +6,7 @@ import os
 from neural_net_utils.utils import getDataLoaders, comparePCA
 from neural_net_utils.plotting_functions import plotModelFromArrays, plotDistanceStratifiedPearsonCorrelation
 from neural_net_utils.dataset_classes import Sequences2Contacts
+import gc
 
 def core_test_train(model, opt):
     # Set random seeds
@@ -93,6 +94,12 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
             x = x.to(device)
             optimizer.zero_grad()
             yhat = model(x)
+            for obj in gc.get_objects():
+                try:
+                    if torch.is_tensor(obj) or (hasattr(obj, 'data') and torch.is_tensor(obj.data)):
+                        print(type(obj), obj.size())
+                except:
+                    pass
 
             y = y.to(device)
             loss = criterion(yhat, y)

@@ -25,7 +25,7 @@ dilationListHead='2-4-8-16-32-64-128-256-512'
 # hyperparameters
 nEpochs=2
 lr=0.1
-batchSize=4 # 12 too large
+batchSize=1 # 12 too large
 numWorkers=4
 milestones='25-50'
 gamma=0.1
