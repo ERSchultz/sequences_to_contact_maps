@@ -91,9 +91,10 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
         for t, (x,y) in enumerate(train_loader):
             print('\t', t)
             x = x.to(device)
-            y = y.to(device)
             optimizer.zero_grad()
             yhat = model(x)
+
+            y = y.to(device)
             loss = criterion(yhat, y)
             avg_loss += loss.item()
             loss.backward()
