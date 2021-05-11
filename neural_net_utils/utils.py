@@ -344,6 +344,7 @@ def comparePCA(val_dataloader, model, opt):
 def argparseSetup():
     """Helper function to get default command line argument parser."""
     parser = argparse.ArgumentParser(description='Base parser')
+    parser.add_argument('--mode', type=str)
 
     # pre-processing args
     parser.add_argument('--data_folder', type=str, default='test', help='Location of data')
@@ -354,7 +355,6 @@ def argparseSetup():
     parser.add_argument('--ydtype', type=str2dtype, default='float32', help='torch data type for y')
     parser.add_argument('--y_reshape', type=str2bool, default=True, help='True if y should be considered a 2D image')
     parser.add_argument('--crop', type=str2list, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
-
     parser.add_argument('--classes', type=int, default=10, help='number of classes in percentile normalization')
 
     # dataloader args
@@ -370,7 +370,7 @@ def argparseSetup():
     parser.add_argument('--print_mod', type=int, default=2, help='How often to print')
     parser.add_argument('--lr', type=float, default=1e-3, help='Learning eate. Default=0.001')
     parser.add_argument('--gpus', type=int, default=1, help='Number of gpus')
-    parser.add_argument('--milestones', type=str2list, default = [2], help='Milestones for lr decay - format: <milestone1-milestone2>')
+    parser.add_argument('--milestones', type=str2list, default=[2], help='Milestones for lr decay - format: <milestone1-milestone2>')
     parser.add_argument('--gamma', type=float, default=0.1, help='Gamma for lr decay')
     parser.add_argument('--loss', type=str, default='mse', help='Type of loss to use: options: {"mse", "cross_entropy"}')
 
