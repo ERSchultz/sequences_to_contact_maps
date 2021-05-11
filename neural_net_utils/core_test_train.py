@@ -85,9 +85,11 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
     train_loss = []
     val_loss = []
     for e in range(start_epoch, n_epochs+1):
+        print(e)
         model.train()
         avg_loss = 0
         for t, (x,y) in enumerate(train_loader):
+            print('\t', t)
             x = x.to(device)
             y = y.to(device)
             optimizer.zero_grad()
