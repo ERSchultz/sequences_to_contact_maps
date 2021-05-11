@@ -166,38 +166,41 @@ class Akita(nn.Module):
         """
         super(Akita, self).__init__()
         self.n = n
-        model = []
 
         ## Trunk ##
+        trunk = []
         # Convolution
         input_size = k
         assert len(kernel_w_list) == len(hidden_sizes_list), "length of kernel_w_list ({}) and hidden_sizes_list ({}) must match".format(len(kernel_w_list), len(hidden_sizes_list))
         for kernel_w, output_size in zip(kernel_w_list, hidden_sizes_list):
-            model.append(ConvBlock(input_size, output_size, kernel_w, padding = kernel_w//2,
+            trunk.append(ConvBlock(input_size, output_size, kernel_w, padding = kernel_w//2,
                                     activation = 'relu', dropout = 'drop', dropout_p = 0.2, conv1d = True))
             input_size = output_size
 
 
         # Diaated Convolution
         for dilation in dilation_list_trunk:
-            model.append(ConvBlock(input_size, input_size, 3, padding = dilation,
+            trunk.append(ConvBlock(input_size, input_size, 3, padding = dilation,
                                     activation = 'relu', dilation = dilation, residual = True, conv1d = True))
 
         # Bottleneck
-        model.append(ConvBlock(input_size, bottleneck_size, 1, padding = 0, activation = 'relu', conv1d = True))
+        trunk.append(ConvBlock(input_size, bottleneck_size, 1, padding = 0, activation = 'relu', conv1d = True))
+
+        self.trunk = nn.Sequential(*trunk)
 
         ## Head ##
-        model.append(AverageTo2d(concat_d = True, n = self.n))
+        head = []
+        head.append(AverageTo2d(concat_d = True, n = self.n))
         input_size = bottleneck_size + 1
-        model.append(ConvBlock(input_size, input_size, 1, padding = 0, activation = 'relu'))
+        head.append(ConvBlock(input_size, input_size, 1, padding = 0, activation = 'relu'))
 
         # Dilated Convolution
         for dilation in dilation_list_head:
-            model.append(ConvBlock(input_size, input_size, 3, padding = dilation,
+            head.append(ConvBlock(input_size, input_size, 3, padding = dilation,
                                     activation = 'relu', dilation = dilation, residual = True))
-            model.append(Symmetrize2D())
+            head.append(Symmetrize2D())
 
-        self.model = nn.Sequential(*model)
+        self.head = nn.Sequential(*head)
 
         # Linear Transformation
         # TODO use triu
@@ -206,7 +209,10 @@ class Akita(nn.Module):
 
 
     def forward(self, input):
-        out = self.model(input)
+        out = self.trunk(input)
+        print('trunk', out.shape)
+        out = self.head(out)
+        print('head', out.shape)
         out = out.view(-1, self.n, self.n, self.linear_block_filters)
         out = self.fc(out)
         out = out.view(-1, 1, self.n, self.n)

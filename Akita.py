@@ -3,7 +3,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from neural_net_utils.networks import Akita
 from neural_net_utils.dataset_classes import Sequences2Contacts
-from neural_net_utils.utils import argparseSetup
+from neural_net_utils.utils import argparseSetup, str2list
 from neural_net_utils.core_test_train import core_test_train
 
 def main():

@@ -28,7 +28,7 @@ def make_dataset(dir, minSample = 0):
 
 def getDataLoaders(dataset, opt):
     train_dataset, val_dataset, test_dataset = splitDataset(dataset, opt)
-    print()
+
     train_dataloader = DataLoader(train_dataset, batch_size = opt.batch_size,
                                     shuffle = opt.shuffle, num_workers = opt.num_workers)
     if len(val_dataset) > 0:

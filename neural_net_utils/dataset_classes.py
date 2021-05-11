@@ -29,9 +29,9 @@ class Sequences2Contacts(Dataset):
         if self.y_norm == 'batch':
             assert y_preprocessing is not None, "use instance normalization instead"
             min_max = np.load(os.path.join(dirname, "y_{}_min_max.npy".format(y_preprocessing)))
-            print(min_max)
+            print("min, max: ", min_max)
             self.ymin = min_max[0]
-            self.ymax = min_max[1]; print(self.ymax)
+            self.ymax = min_max[1]
         self.y_preprocessing = y_preprocessing
         self.x_reshape = x_reshape
         self.ydtype = ydtype

@@ -63,7 +63,7 @@ def core_test_train(model, opt):
     # get new val_dataloader
     dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop)
+                                        opt.y_reshape, opt.crop, names = True, max = True)
                                          # TODO make this unnecessary
     opt.batchsize = 1
     _, val_dataloader, _ = getDataLoaders(dataset, opt)
@@ -93,14 +93,8 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
             print('\t', t)
             x = x.to(device)
             optimizer.zero_grad()
+            print('yhat')
             yhat = model(x)
-            for obj in gc.get_objects():
-                try:
-                    if torch.is_tensor(obj) or (hasattr(obj, 'data') and torch.is_tensor(obj.data)):
-                        print(type(obj), obj.size())
-                except:
-                    pass
-
             y = y.to(device)
             loss = criterion(yhat, y)
             avg_loss += loss.item()
