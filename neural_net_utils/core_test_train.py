@@ -47,7 +47,7 @@ def core_test_train(model, opt):
     train_loss_arr, val_loss_arr = train(train_dataloader, val_dataloader, model, optimizer,
             opt.criterion, device = opt.device, save_location = os.path.join(opt.ofile_folder, opt.ofile + '.pt'),
             n_epochs = opt.n_epochs, start_epoch = opt.start_epoch, use_parallel = opt.use_parallel,
-            scheduler = scheduler, save_mod = opt.save_mod, print_mod = opt.print_mod)
+            scheduler = scheduler, save_mod = opt.save_mod, print_mod = opt.print_mod, verbose = opt.verbose)
 
     print('Total time: {}'.format(time.time() - t0))
     print('Final val loss: {}'.format(val_loss_arr[-1]))
@@ -82,16 +82,16 @@ def core_test_train(model, opt):
     print('\n'*3)
 
 def train(train_loader, val_dataloader, model, optimizer, criterion, device, save_location,
-        n_epochs, start_epoch, use_parallel, scheduler, save_mod, print_mod):
+        n_epochs, start_epoch, use_parallel, scheduler, save_mod, print_mod, verbose):
     train_loss = []
     val_loss = []
     for e in range(start_epoch, n_epochs+1):
-        if opt.verbose:
+        if verbose:
             print(e)
         model.train()
         avg_loss = 0
         for t, (x,y) in enumerate(train_loader):
-            if opt.verbose:
+            if verbose:
                 print('\t', t)
             x = x.to(device)
             optimizer.zero_grad()

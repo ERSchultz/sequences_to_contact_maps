@@ -8,8 +8,8 @@ from neural_net_utils.core_test_train import core_test_train
 
 def main():
     opt = argparseSetup()
-    # architecture
     if opt.mode == 'debugging':
+        # architecture
         opt.k=2
         opt.n=1024
         opt.y_preprocessing='diag'
