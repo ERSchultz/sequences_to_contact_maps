@@ -345,6 +345,7 @@ def argparseSetup():
     """Helper function to get default command line argument parser."""
     parser = argparse.ArgumentParser(description='Base parser')
     parser.add_argument('--mode', type=str)
+    parser.add_argument('--verbose', type=str2bool, default=False)
 
     # pre-processing args
     parser.add_argument('--data_folder', type=str, default='test', help='Location of data')

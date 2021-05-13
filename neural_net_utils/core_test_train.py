@@ -64,10 +64,10 @@ def core_test_train(model, opt):
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
                                         opt.y_reshape, opt.crop, names = True, minmax = True)
                                          # TODO make this unnecessary
-    opt.batchsize = 1
+    opt.batch_size = 1
     _, val_dataloader, _ = getDataLoaders(dataset, opt)
 
-    # comparePCA(val_dataloader, model, opt)
+    comparePCA(val_dataloader, model, opt)
 
     imagePath = os.path.join(imageSubPath, 'distance_pearson.png')
     plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, imagePath, opt)
@@ -86,11 +86,13 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
     train_loss = []
     val_loss = []
     for e in range(start_epoch, n_epochs+1):
-        print(e)
+        if opt.verbose:
+            print(e)
         model.train()
         avg_loss = 0
         for t, (x,y) in enumerate(train_loader):
-            print('\t', t)
+            if opt.verbose:
+                print('\t', t)
             x = x.to(device)
             optimizer.zero_grad()
             yhat = model(x)

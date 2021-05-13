@@ -19,7 +19,7 @@ class UNet(nn.Module):
                            dropout = std_drop, dropout_p = std_drop_p)
         ub = UnetBlock(nf * 4, nf * 8, subBlock = ub, norm = std_norm)
         ub = UnetBlock(nf * 2, nf * 4, subBlock = ub, norm = std_norm)
-        ub = UnetBlock(nf, nf * 2, subBlock = ub, norm = std_norm,)
+        ub = UnetBlock(nf, nf * 2, subBlock = ub, norm = std_norm)
         sequence = [UnetBlock(nf_in, nf, nf_out, subBlock = ub, norm = std_norm, outermost = True, out_act = out_act)]
         self.model = nn.Sequential(*sequence)
 
