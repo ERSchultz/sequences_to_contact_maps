@@ -183,4 +183,6 @@ dependencies:
   - zipp=3.4.1=pyhd8ed1ab_0
   - zlib=1.2.11=h516909a_1010
   - zstd=1.4.9=ha95c52a_0
+  - pip:
+    - pynvml==8.0.4
 prefix: /home/erschultz/miniconda3/envs/seq2contact_pytorch
