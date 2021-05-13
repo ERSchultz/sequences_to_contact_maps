@@ -31,8 +31,8 @@ gamma=0.1
 # ofile="DeepC_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yPreprocessing${yPreprocessing}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilation${dilationList}_hiddenSize_${hiddenSizeDilation}"
 # logfile="logFiles/${ofile}.log"
 #
-# cd ~/sequences_to_contact_maps
-# source activate seq2contact_pytorch
+cd ~/sequences_to_contact_maps
+source activate seq2contact_pytorch
 # python3 DeepC.py --data_folder $dirname --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list $dilationList --hidden_size_dilation $hiddenSizeDilation --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --ofile $ofile >> $logfile
 
 yPreprocessing='prcnt'
