@@ -8,7 +8,7 @@ from neural_net_utils.core_test_train import core_test_train
 
 def main():
     opt = argparseSetup()
-    opt.mode = 'debugging'
+    # opt.mode = 'debugging'
     if opt.mode == 'debugging':
         # architecture
         opt.k=2
@@ -16,9 +16,11 @@ def main():
         opt.y_preprocessing='diag'
         opt.y_norm='batch'
         opt.kernel_w_list=str2list('5-5-5')
-        opt.hidden_sizes_list=str2list('32-64-96')
-        opt.dilation_list=str2list('2-4-8-16-32-64-128')
-        opt.out_act=nn.ReLU(True)
+        opt.hidden_sizes_list=str2list('32-64-128')
+        opt.dilation_list=str2list('2-4-8-16-32-64-128-256-512')
+        # opt.out_act=nn.ReLU(True)
+        opt.out_act=nn.Sigmoid()
+
 
         # hyperparameters
         opt.n_epochs=2
@@ -29,7 +31,7 @@ def main():
         opt.gamma=0.1
 
         # other
-        opt.verbose = True
+        opt.verbose = False
         opt.plot = True
         opt.data_folder = 'dataset_04_18_21'
         opt.ofile = 'model'

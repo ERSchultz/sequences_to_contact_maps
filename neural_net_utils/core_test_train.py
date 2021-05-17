@@ -72,27 +72,28 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
     val_loss = []
     for e in range(start_epoch, n_epochs+1):
         if verbose:
-            print(e)
+            print('Epoch:', e)
         model.train()
         avg_loss = 0
         for t, (x,y) in enumerate(train_loader):
             if verbose:
-                print('\t', t)
+                print('Iteration: ', t)
             x = x.to(device)
             optimizer.zero_grad()
             yhat = model(x)
             if verbose:
-                print('yhat', yhat)
                 print('y', y)
+                print('yhat', yhat)
             y = y.to(device)
             loss = criterion(yhat, y)
             avg_loss += loss.item()
             loss.backward()
             optimizer.step()
-            if verbose:
-                for k,p in model.named_parameters():
-                    print(k, ',', p.shape)
-                    print(p.grad)
+            # if verbose:
+            #     for k,p in model.named_parameters():
+            #         print(k, ',', p.shape)
+            #         print(p.grad)
+            #     print()
         avg_loss /= (t+1)
         train_loss.append(avg_loss)
 

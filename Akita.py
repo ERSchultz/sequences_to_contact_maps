@@ -16,14 +16,15 @@ def main():
         opt.y_preprocessing='diag'
         opt.y_norm='batch'
         opt.kernel_w_list=str2list('5-5-5')
-        opt.hidden_sizes_list=str2list('32-64-64')
-        opt.dilation_list=str2list('2-4-8-16-32-64-128')
+        opt.hidden_sizes_list=str2list('32-32-32')
+        opt.dilation_list=str2list('2-4-8-16')
         opt.bottleneck=32
-        opt.dilation_list_head=str2list('2-4-8-16-32-64-128')
+        opt.dilation_list_head=str2list('2-4-8-16')
+        opt.out_act=nn.ReLU(True)
 
         # hyperparameters
         opt.n_epochs=1
-        opt.lr=0.1
+        opt.lr=1e-2
         opt.batch_size=4
         opt.numWorkers=4
         opt.milestones=str2list('1')
@@ -31,6 +32,7 @@ def main():
 
         # other
         opt.plot = True
+        opt.verbose = True
         opt.data_folder = 'dataset_04_18_21'
         opt.ofile = 'model'
     print(opt)
@@ -39,7 +41,8 @@ def main():
     model = Akita(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                         opt.dilation_list_trunk,
                         opt.bottleneck,
-                        opt.dilation_list_head)
+                        opt.dilation_list_head,
+                        opt.out_act)
     if opt.loss == 'mse':
         opt.criterion = F.mse_loss
     else:

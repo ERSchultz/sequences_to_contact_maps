@@ -255,6 +255,7 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
     if opt.y_preprocessing != 'prcnt':
         prcntDist_path = os.path.join(opt.data_folder, 'prcntDist.npy')
         prcntDist = np.load(prcntDist_path)
+        print('prcntDist', prcntDist)
 
     loss_arr = np.zeros(opt.valN)
     acc_arr = np.zeros(opt.valN)
@@ -265,6 +266,7 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
         assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
         path = path[0]
         yhat = model(x)
+        print('yhat', yhat)
         loss = opt.criterion(yhat, y).item()
         loss_arr[i] = loss
         y = y.cpu().numpy().reshape((opt.n, opt.n))

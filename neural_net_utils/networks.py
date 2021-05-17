@@ -125,10 +125,10 @@ class DeepC(nn.Module):
                                     activation = 'prelu', dropout = 'drop', dropout_p = 0.2, conv1d = True))
             input_size = output_size
 
-        # Diaated Convolution
-        # for dilation in dilation_list:
-        #     model.append(ConvBlock(input_size, input_size, 3, padding = dilation,
-        #                             activation = 'gated', dilation = dilation, residual = True, conv1d = True))
+        # Dilated Convolution
+        for dilation in dilation_list:
+            model.append(ConvBlock(input_size, input_size, 3, padding = dilation,
+                                    activation = 'gated', dilation = dilation, residual = True, conv1d = True))
 
         self.model = nn.Sequential(*model)
 
@@ -162,7 +162,7 @@ class Akita(nn.Module):
             dilation_list_trunk: list of dilations for dilated convolutional layers of trunk
             bottleneck_size: size of bottleneck layer
             dilation_list_head: list of dilations for dilated convolutional layers of head
-            out_Act: activation of finally layer (str)
+            out_act: activation of finally layer (str)
         """
         super(Akita, self).__init__()
         self.n = n
@@ -174,17 +174,17 @@ class Akita(nn.Module):
         assert len(kernel_w_list) == len(hidden_sizes_list), "length of kernel_w_list ({}) and hidden_sizes_list ({}) must match".format(len(kernel_w_list), len(hidden_sizes_list))
         for kernel_w, output_size in zip(kernel_w_list, hidden_sizes_list):
             trunk.append(ConvBlock(input_size, output_size, kernel_w, padding = kernel_w//2,
-                                    activation = 'relu', dropout = 'drop', dropout_p = 0.2, conv1d = True))
+                                    activation = 'prelu', dropout = 'drop', dropout_p = 0.2, conv1d = True))
             input_size = output_size
 
 
         # Diaated Convolution
         for dilation in dilation_list_trunk:
             trunk.append(ConvBlock(input_size, input_size, 3, padding = dilation,
-                                    activation = 'relu', dilation = dilation, residual = True, conv1d = True))
+                                    activation = 'prelu', dilation = dilation, residual = True, conv1d = True))
 
         # Bottleneck
-        trunk.append(ConvBlock(input_size, bottleneck_size, 1, padding = 0, activation = 'relu', conv1d = True))
+        trunk.append(ConvBlock(input_size, bottleneck_size, 1, padding = 0, activation = 'prelu', conv1d = True))
 
         self.trunk = nn.Sequential(*trunk)
 
@@ -192,12 +192,12 @@ class Akita(nn.Module):
         head = []
         head.append(AverageTo2d(concat_d = True, n = self.n))
         input_size = bottleneck_size + 1
-        head.append(ConvBlock(input_size, input_size, 1, padding = 0, activation = 'relu'))
+        head.append(ConvBlock(input_size, input_size, 1, padding = 0, activation = 'prelu'))
 
         # Dilated Convolution
         for dilation in dilation_list_head:
             head.append(ConvBlock(input_size, input_size, 3, padding = dilation,
-                                    activation = 'relu', dilation = dilation, residual = True))
+                                    activation = 'prelu', dilation = dilation, residual = True))
             head.append(Symmetrize2D())
 
         self.head = nn.Sequential(*head)
