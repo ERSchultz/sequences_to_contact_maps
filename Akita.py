@@ -33,7 +33,7 @@ def main():
         # other
         opt.plot = True
         opt.verbose = True
-        opt.data_folder = 'dataset_04_18_21'
+        opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
         opt.ofile = 'model'
     print(opt)
 
