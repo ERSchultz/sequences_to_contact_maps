@@ -16,7 +16,7 @@ def main():
         opt.y_preprocessing='diag'
         opt.y_norm='batch'
         opt.kernel_w_list=str2list('5-5-5')
-        opt.hidden_sizes_list=str2list('32-32-32')
+        opt.hidden_sizes_list=str2list('32-64-96')
         opt.dilation_list=str2list('2-4-8-16')
         opt.bottleneck=32
         opt.dilation_list_head=str2list('2-4-8-16')

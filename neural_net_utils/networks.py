@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import sys
 from neural_net_utils.base_networks import *
+import time
 
 class UNet(nn.Module):
     '''U Net adapted from https://github.com/phillipi/pix2pix.'''
@@ -213,8 +214,10 @@ class Akita(nn.Module):
         print('trunk', out.shape)
         print(torch.cuda.list_gpu_processes(device=None))
         print()
+        t0 = time.time()
         out = self.head(out)
         print('head', out.shape)
+        print('time: {}'.format(time.time() - t0)
         print(torch.cuda.list_gpu_processes(device=None))
         out = out.view(-1, self.n, self.n, self.linear_block_filters)
         out = self.fc(out)
