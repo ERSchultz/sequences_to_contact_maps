@@ -70,6 +70,10 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
         n_epochs, start_epoch, use_parallel, scheduler, save_mod, print_mod, verbose):
     train_loss = []
     val_loss = []
+    to_device_time = 0
+    test_time = 0
+    forward_time = 0
+    backward_time = 0
     for e in range(start_epoch, n_epochs+1):
         if verbose:
             print('Epoch:', e)
@@ -78,26 +82,71 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
         for t, (x,y) in enumerate(train_loader):
             if verbose:
                 print('Iteration: ', t)
-            x = x.to(device)
+            if device == 'cuda':
+                start = torch.cuda.Event(enable_timing=True)
+                end = torch.cuda.Event(enable_timing=True)
+                start.record()
+                x = x.to(device)
+                y = y.to(device)
+                torch.cuda.synchronize()
+                end.record()
+                to_device_time += start.elapsed_time(end)
+            else:
+                t0 = time.time()
+                x = x.to(device)
+                y = y.to(device)
+                to_device_time += time.time() - t0
             optimizer.zero_grad()
-            yhat = model(x)
+
+            if device == 'cuda':
+                start = torch.cuda.Event(enable_timing=True)
+                end = torch.cuda.Event(enable_timing=True)
+                start.record()
+                yhat = model(x)
+                torch.cuda.synchronize()
+                end.record()
+                forward_time += start.elapsed_time(end)
+            else:
+                t0 = time.time()
+                yhat = model(x)
+                forward_time += time.time() - t0
+
+
             if verbose:
                 print('y', y)
                 print('yhat', yhat)
-            y = y.to(device)
             loss = criterion(yhat, y)
             avg_loss += loss.item()
-            loss.backward()
+
+            if device == 'cuda':
+                start = torch.cuda.Event(enable_timing=True)
+                end = torch.cuda.Event(enable_timing=True)
+                start.record()
+                loss.backward()
+                torch.cuda.synchronize()
+                end.record()
+                backward_time += start.elapsed_time(end)
+            else:
+                t0 = time.time()
+                loss.backward()
+                backward_time += time.time() - t0
+
             optimizer.step()
-            # if verbose:
-            #     for k,p in model.named_parameters():
-            #         print(k, ',', p.shape)
-            #         print(p.grad)
-            #     print()
         avg_loss /= (t+1)
         train_loss.append(avg_loss)
 
-        val_loss.append(test(val_dataloader, model, optimizer, criterion, device))
+        if device == 'cuda':
+            start = torch.cuda.Event(enable_timing=True)
+            end = torch.cuda.Event(enable_timing=True)
+            start.record()
+            val_loss.append(test(val_dataloader, model, optimizer, criterion, device))
+            torch.cuda.synchronize()
+            end.record()
+            test_time += start.elapsed_time(end)
+        else:
+            t0 = time.time()
+            val_loss.append(test(val_dataloader, model, optimizer, criterion, device))
+            test_time += time.time() - t0
 
         if scheduler is not None:
             scheduler.step()
@@ -117,6 +166,11 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
             if scheduler is not None:
                 save_dict['scheduler_state_dict'] = scheduler.state_dict()
             torch.save(save_dict, save_location)
+
+    print('to_device_time: ', to_device_time)
+    print('test_time: ', test_time)
+    print('forward_time: ', forward_time)
+    print('backward_time: ', backward_time)
 
     return train_loss, val_loss
 

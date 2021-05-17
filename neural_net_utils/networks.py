@@ -211,16 +211,7 @@ class Akita(nn.Module):
 
     def forward(self, input):
         out = self.trunk(input)
-        print('trunk', out.shape)
-        print(torch.cuda.list_gpu_processes())
-        print(torch.cuda.memory_summary())
-        print()
-        t0 = time.time()
         out = self.head(out)
-        print('head', out.shape)
-        print('time: {}'.format(time.time() - t0))
-        print(torch.cuda.list_gpu_processes())
-        print(torch.cuda.memory_summary())
         out = out.view(-1, self.n, self.n, self.linear_block_filters)
         out = self.fc(out)
         out = out.view(-1, 1, self.n, self.n)
