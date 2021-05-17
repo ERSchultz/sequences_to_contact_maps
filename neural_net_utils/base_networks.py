@@ -223,7 +223,7 @@ class LinearBlock(nn.Module):
 
         if issubclass(type(activation), nn.Module):
             model.append(activation)
-        if activation.lower() == 'relu':
+        elif activation.lower() == 'relu':
             model.append(nn.ReLU(True))
         elif activation.lower() == 'prelu':
             model.append(nn.PReLU())
