@@ -82,7 +82,7 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
         for t, (x,y) in enumerate(train_loader):
             if verbose:
                 print('Iteration: ', t)
-            if device == 'cuda':
+            if torch.cuda.is_available():
                 start = torch.cuda.Event(enable_timing=True)
                 end = torch.cuda.Event(enable_timing=True)
                 start.record()
@@ -98,7 +98,7 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
                 to_device_time += time.time() - t0
             optimizer.zero_grad()
 
-            if device == 'cuda':
+            if torch.cuda.is_available():
                 start = torch.cuda.Event(enable_timing=True)
                 end = torch.cuda.Event(enable_timing=True)
                 start.record()
@@ -118,7 +118,7 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
             loss = criterion(yhat, y)
             avg_loss += loss.item()
 
-            if device == 'cuda':
+            if torch.cuda.is_available():
                 start = torch.cuda.Event(enable_timing=True)
                 end = torch.cuda.Event(enable_timing=True)
                 start.record()
@@ -135,7 +135,7 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
         avg_loss /= (t+1)
         train_loss.append(avg_loss)
 
-        if device == 'cuda':
+        if torch.cuda.is_available():
             start = torch.cuda.Event(enable_timing=True)
             end = torch.cuda.Event(enable_timing=True)
             start.record()
