@@ -266,7 +266,6 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
         assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
         path = path[0]
         yhat = model(x)
-        print('yhat', yhat)
         loss = opt.criterion(yhat, y).item()
         loss_arr[i] = loss
         y = y.cpu().numpy().reshape((opt.n, opt.n))

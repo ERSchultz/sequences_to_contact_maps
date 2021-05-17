@@ -372,9 +372,10 @@ def plotPredictions(val_dataloader, model, opt):
         if not os.path.exists(subpath):
             os.mkdir(subpath, mode = 0o755)
 
-        print('y', y)
         yhat = model(x)
-        print('yhat', yhat)
+        if opt.verbose:
+            print('y', y)
+            print('yhat', yhat)
         loss = opt.criterion(yhat, y).item()
         loss_arr[i] = loss
         y = un_normalize(y.cpu().numpy(), minmax)
