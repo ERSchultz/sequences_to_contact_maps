@@ -386,6 +386,7 @@ def argparseSetup():
     parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
     parser.add_argument('--n', type=int, default=1024, help='Number of particles')
     parser.add_argument('--seed', type=int, default=42, help='random seed to use. Default: 42')
+    parser.add_argument('--out_act', type=str, default='sigmoid', help='activation of final layer')
 
     # post-processing args
     parser.add_argument('--plot', type=str2bool, default=False, help='True to plot predictions') # TODO use this
@@ -399,7 +400,6 @@ def argparseSetup():
 
     # DeepC args
     parser.add_argument('--dilation_list', type=str2list, default=[1,2,4], help='List of dilations for dilated convolutional layers')
-    parser.add_argument('--hidden_size_dilation', type=int, default=10, help='Hidden size of dilated convolutional layers')
 
     # Akita args
     parser.add_argument('--dilation_list_trunk', type=str2list, default=[1,2,4], help='List of dilations for dilated convolutional layers of trunk')

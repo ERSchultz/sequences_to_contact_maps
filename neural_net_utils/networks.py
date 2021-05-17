@@ -103,7 +103,7 @@ class VAE(nn.Module):
 class DeepC(nn.Module):
     '''Roughly based on https://doi.org/10.1038/s41592-020-0960-3 (Deepc).'''
     def __init__(self, n, k, kernel_w_list, hidden_sizes_list,
-                dilation_list, hidden_size_dilation, out_act = 'sigmoid'):
+                dilation_list, out_act = nn.Sigmoid()):
         """
         Inputs:
             n: number of particles
@@ -111,12 +111,10 @@ class DeepC(nn.Module):
             kernel_w_list: list of kernel widths of convolutional layers
             hidden_sizes_list: list of hidden sizes for convolutional layers
             dilation_list: list of dilations for dilated convolutional layers
-            hidden_size_dilation: hidden size of dilated convolutional layers
             out_Act: activation of finally fully connected layer (str)
         """
         super(DeepC, self).__init__()
         self.n = n
-        self.hidden_size_dilation = hidden_size_dilation
         model = []
 
         # Convolution
@@ -129,22 +127,23 @@ class DeepC(nn.Module):
 
         # Diaated Convolution
         for dilation in dilation_list:
-            model.append(ConvBlock(input_size, hidden_size_dilation, 3, padding = dilation,
+            model.append(ConvBlock(input_size, input_size, 3, padding = dilation,
                                     activation = 'gated', dilation = dilation, residual = True, conv1d = True))
-            input_size = hidden_size_dilation
 
         self.model = nn.Sequential(*model)
 
-        # Fully Connected
-        # y_flat_len = (n**2 + n) / 2
-        self.fc = LinearBlock(hidden_size_dilation, n, activation = out_act)
-        self.sym = Symmetrize2D()
+        if issubclass(type(out_act), nn.Module):
+            self.out_act = out_act
+        elif out_act.lower() == 'sigmoid':
+            self.out_act = nn.Sigmoid()
+        elif out_act.lower() == 'relu':
+            self.out_act = nn.ReLU()
 
     def forward(self, input):
         out = self.model(input)
-        out = out.view(-1, self.n, self.hidden_size_dilation)
+        out = torch.einsum('bkn, bkm->bnm', out, out)
         out = torch.unsqueeze(out, 1)
-        out = self.sym(self.fc(out))
+        out = self.out_act(out)
         return out
 
 class Akita(nn.Module):
@@ -212,8 +211,11 @@ class Akita(nn.Module):
     def forward(self, input):
         out = self.trunk(input)
         print('trunk', out.shape)
+        print(torch.cuda.list_gpu_processes(device=None))
+        print()
         out = self.head(out)
         print('head', out.shape)
+        print(torch.cuda.list_gpu_processes(device=None))
         out = out.view(-1, self.n, self.n, self.linear_block_filters)
         out = self.fc(out)
         out = out.view(-1, 1, self.n, self.n)

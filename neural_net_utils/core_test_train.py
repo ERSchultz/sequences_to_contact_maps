@@ -4,7 +4,7 @@ import torch.optim as optim
 import time
 import os
 from neural_net_utils.utils import getDataLoaders, comparePCA
-from neural_net_utils.plotting_functions import *
+from neural_net_utils.plotting_functions import plotting_script, plotModelFromArrays
 from neural_net_utils.dataset_classes import Sequences2Contacts
 
 def core_test_train(model, opt):
@@ -59,27 +59,7 @@ def core_test_train(model, opt):
     imagePath = os.path.join(imageSubPath, 'train_val_loss.png')
     plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
 
-    # get new val_dataloader
-    dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
-                                        opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop, names = True, minmax = True)
-                                         # TODO make this unnecessary
-    opt.batch_size = 1
-    _, val_dataloader, _ = getDataLoaders(dataset, opt)
-
-    comparePCA(val_dataloader, model, opt)
-
-    imagePath = os.path.join(imageSubPath, 'distance_pearson.png')
-    plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, imagePath, opt)
-    print()
-
-    imagePath = os.path.join(imageSubPath, 'per_class_acc.png')
-    plotPerClassAccuracy(val_dataloader, model, opt, imagePath)
-    print()
-
-    if opt.plot:
-        plotPredictions(val_dataloader, model, opt)
-    print('\n'*3)
+    plotting_script(model, opt)
 
 def train(train_loader, val_dataloader, model, optimizer, criterion, device, save_location,
         n_epochs, start_epoch, use_parallel, scheduler, save_mod, print_mod, verbose):

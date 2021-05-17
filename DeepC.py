@@ -17,7 +17,6 @@ def main():
         opt.kernel_w_list=str2list('5-5-5')
         opt.hidden_sizes_list=str2list('32-64-96')
         opt.dilation_list=str2list('2-4-8-16-32-64-128')
-        opt.hidden_size_dilation=96
 
         # hyperparameters
         opt.n_epochs=1
@@ -36,7 +35,7 @@ def main():
 
     # Set up model
     model = DeepC(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
-                        opt.dilation_list, opt.hidden_size_dilation)
+                        opt.dilation_list, out_act = opt.out_act)
     if opt.loss == 'mse':
         opt.criterion = F.mse_loss
     else:

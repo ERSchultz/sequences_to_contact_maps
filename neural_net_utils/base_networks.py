@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import math
 
-class UnetBlock(torch.nn.Module):
+class UnetBlock(nn.Module):
     '''U Net Block adapted from https://github.com/phillipi/pix2pix.'''
     def __init__(self, input_size, inner_size, output_size = None, subBlock = None,
                  outermost = False, innermost = False,
@@ -70,20 +70,20 @@ class UnetBlock(torch.nn.Module):
             # skip connection
             return torch.cat([x, self.model(x)], 1)
 
-class ResnetBlock(torch.nn.Module):
+class ResnetBlock(nn.Module):
     def __init__(self, num_channels, kernel_size = 3, stride = 1, padding = 1, bias = True,
                  activation = 'prelu', norm = None, dropout = None, dropout_p = 0.5):
         super(ResnetBlock, self).__init__()
-        self.conv1 = torch.nn.Conv2d(num_channels, num_channels, kernel_size,
+        self.conv1 = nn.Conv2d(num_channels, num_channels, kernel_size,
                                      stride, padding, bias = bias)
-        self.conv2 = torch.nn.Conv2d(num_channels, num_channels, kernel_size,
+        self.conv2 = nn.Conv2d(num_channels, num_channels, kernel_size,
                                      stride, padding, bias = bias)
 
         self.norm = norm
         if self.norm == 'batch':
-            self.norm = torch.nn.BatchNorm2d(num_channels)
+            self.norm = nn.BatchNorm2d(num_channels)
         elif self.norm == 'instance':
-            self.norm = torch.nn.InstanceNorm2d(num_channels)
+            self.norm = nn.InstanceNorm2d(num_channels)
 
         self.drop = dropout
         if self.drop == 'drop2d':
@@ -92,9 +92,9 @@ class ResnetBlock(torch.nn.Module):
             self.drop = nn.Dropout(dropout_p)
 
         if self.act.lower() == 'relu':
-            self.act = torch.nn.ReLU(True)
+            self.act = nn.ReLU(True)
         elif self.act.lower() == 'prelu':
-            self.act = torch.nn.PReLU()
+            self.act = nn.PReLU()
         elif self.act.lower() == 'leaky':
             self.act = nn.LeakyReLU(0.2, True)
 
@@ -211,7 +211,7 @@ class LinearBlock(nn.Module):
     def __init__(self, input_size, output_size, bias = True, activation = 'prelu',
                  norm = None, dropout = None, dropout_p = 0.5):
         super(LinearBlock, self).__init__()
-        model =  [torch.nn.Linear(input_size, output_size, bias = bias)]
+        model =  [nn.Linear(input_size, output_size, bias = bias)]
 
         if norm == 'batch':
             model.append(nn.BatchNorm1d(output_size))
@@ -221,12 +221,14 @@ class LinearBlock(nn.Module):
         if dropout == 'drop':
             model.append(nn.Dropout(dropout_p))
 
+        if issubclass(type(activation), nn.Module):
+            model.append(activation)
         if activation.lower() == 'relu':
-            model.append(torch.nn.ReLU(True))
+            model.append(nn.ReLU(True))
         elif activation.lower() == 'prelu':
-            model.append(torch.nn.PReLU())
+            model.append(nn.PReLU())
         elif activation.lower() == 'sigmoid':
-            model.append(torch.nn.Sigmoid())
+            model.append(nn.Sigmoid())
 
         self.model = nn.Sequential(*model)
 
