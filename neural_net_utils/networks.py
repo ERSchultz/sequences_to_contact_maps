@@ -210,11 +210,17 @@ class Akita(nn.Module):
 
 
     def forward(self, input):
+        t0 = time.time()
         out = self.trunk(input)
+        print(time.time() - t0)
+        t0 = time.time()
         out = self.head(out)
         out = out.view(-1, self.n, self.n, self.linear_block_filters)
+        print(time.time() - t0)
+        t0 = time.time()
         out = self.fc(out)
         out = out.view(-1, 1, self.n, self.n)
+        print(time.time() - t0)
         return out
 
 class SimpleEpiNet(nn.Module):

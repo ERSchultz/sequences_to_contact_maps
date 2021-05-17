@@ -30,7 +30,7 @@ def main():
         opt.gamma=0.1
 
         # other
-        opt.plot = True
+        opt.plot = False
         opt.verbose = False
         if opt.device == 'cuda':
             opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
