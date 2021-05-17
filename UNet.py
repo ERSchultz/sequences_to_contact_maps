@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from neural_net_utils.networks import UNet
 from neural_net_utils.dataset_classes import Sequences2Contacts
-from neural_net_utils.utils import argparseSetup
+from neural_net_utils.utils import argparseSetup, str2list
 from neural_net_utils.core_test_train import core_test_train
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,7 +13,34 @@ import argparse
 
 def main():
     opt = argparseSetup()
+    opt.mode = 'debugging'
+    if opt.mode == 'debugging':
+        # Preprocessing
+        opt.toxx = True
+        opt.x_reshape = False
+
+        # architecture
+        opt.k=2
+        opt.n=1024
+        opt.y_preprocessing='diag'
+        opt.y_norm='batch'
+        opt.nf = 8
+
+        # hyperparameters
+        opt.n_epochs=3
+        opt.lr=0.1
+        opt.batch_size=4
+        opt.numWorkers=4
+        opt.milestones=str2list('1')
+        opt.gamma=0.1
+
+        # other
+        opt.verbose = True
+        opt.plot = True
+        opt.data_folder = 'dataset_04_18_21'
+        opt.ofile = 'model'
     print(opt)
+
 
     if opt.loss == 'cross_entropy':
         assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'

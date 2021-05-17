@@ -474,8 +474,7 @@ def plotting_script(model, opt, load = False):
     plotPerClassAccuracy(val_dataloader, model, opt, imagePath)
     print()
 
-    if opt.plot:
-        plotPredictions(val_dataloader, model, opt)
+    plotPredictions(val_dataloader, model, opt)
     print('\n'*3)
 
 def main():

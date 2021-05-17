@@ -22,10 +22,10 @@ outAct='sigmoid'
 
 # hyperparameters
 nEpochs=60
-lr=0.1
+lr=1e-2
 batchSize=32
 numWorkers=4
-milestones='20-40'
+milestones='10-20-30-40-50'
 gamma=0.1
 
 ofile="DeepC_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yPreprocessing${yPreprocessing}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilation${dilationList}_hiddenSize_${hiddenSizeDilation}"

@@ -49,17 +49,22 @@ def core_test_train(model, opt):
             n_epochs = opt.n_epochs, start_epoch = opt.start_epoch, use_parallel = opt.use_parallel,
             scheduler = scheduler, save_mod = opt.save_mod, print_mod = opt.print_mod, verbose = opt.verbose)
 
+    tot_pars = 0
+    for k,p in model.named_parameters():
+        tot_pars += p.numel()
+    print('Total parameters: {}'.format(tot_pars))
     print('Total time: {}'.format(time.time() - t0))
-    print('Final val loss: {}'.format(val_loss_arr[-1]))
+    print('Final val loss: {}\n'.format(val_loss_arr[-1]))
 
-    imageSubPath = os.path.join('images', opt.ofile)
-    if not os.path.exists(imageSubPath):
-        os.mkdir(imageSubPath, mode = 0o755)
+    if opt.plot:
+        imageSubPath = os.path.join('images', opt.ofile)
+        if not os.path.exists(imageSubPath):
+            os.mkdir(imageSubPath, mode = 0o755)
 
-    imagePath = os.path.join(imageSubPath, 'train_val_loss.png')
-    plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
+        imagePath = os.path.join(imageSubPath, 'train_val_loss.png')
+        plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
 
-    plotting_script(model, opt)
+        plotting_script(model, opt)
 
 def train(train_loader, val_dataloader, model, optimizer, criterion, device, save_location,
         n_epochs, start_epoch, use_parallel, scheduler, save_mod, print_mod, verbose):
@@ -76,11 +81,18 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
             x = x.to(device)
             optimizer.zero_grad()
             yhat = model(x)
+            if verbose:
+                print('yhat', yhat)
+                print('y', y)
             y = y.to(device)
             loss = criterion(yhat, y)
             avg_loss += loss.item()
             loss.backward()
             optimizer.step()
+            if verbose:
+                for k,p in model.named_parameters():
+                    print(k, ',', p.shape)
+                    print(p.grad)
         avg_loss /= (t+1)
         train_loss.append(avg_loss)
 

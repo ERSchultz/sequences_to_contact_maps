@@ -122,13 +122,13 @@ class DeepC(nn.Module):
         assert len(kernel_w_list) == len(hidden_sizes_list), "length of kernel_w_list ({}) and hidden_sizes_list ({}) must match".format(len(kernel_w_list), len(hidden_sizes_list))
         for kernel_w, output_size in zip(kernel_w_list, hidden_sizes_list):
             model.append(ConvBlock(input_size, output_size, kernel_w, padding = kernel_w//2,
-                                    activation = 'relu', dropout = 'drop', dropout_p = 0.2, conv1d = True))
+                                    activation = 'prelu', dropout = 'drop', dropout_p = 0.2, conv1d = True))
             input_size = output_size
 
         # Diaated Convolution
-        for dilation in dilation_list:
-            model.append(ConvBlock(input_size, input_size, 3, padding = dilation,
-                                    activation = 'gated', dilation = dilation, residual = True, conv1d = True))
+        # for dilation in dilation_list:
+        #     model.append(ConvBlock(input_size, input_size, 3, padding = dilation,
+        #                             activation = 'gated', dilation = dilation, residual = True, conv1d = True))
 
         self.model = nn.Sequential(*model)
 
