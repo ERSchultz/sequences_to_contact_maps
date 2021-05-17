@@ -2,7 +2,7 @@
 #SBATCH --job-name=akita
 #SBATCH --output=logFiles/akita.out
 #SBATCH --time=01:00:00
-#SBATCH --partition=depablo-gpu
+#SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=8
