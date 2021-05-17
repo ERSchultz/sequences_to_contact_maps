@@ -32,7 +32,10 @@ def main():
         # other
         opt.verbose = False
         opt.plot = True
-        opt.data_folder = 'dataset_04_18_21'
+        if opt.cuda:
+            opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
+        else:
+            opt.data_folder = "dataset_04_18_21"
         opt.ofile = 'model'
 
     print(opt)

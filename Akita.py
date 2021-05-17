@@ -32,7 +32,7 @@ def main():
         # other
         opt.plot = False
         opt.verbose = False
-        if opt.device == 'cuda':
+        if opt.cuda:
             opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
         else:
             opt.data_folder = "dataset_04_18_21"
