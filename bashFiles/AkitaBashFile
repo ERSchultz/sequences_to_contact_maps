@@ -5,7 +5,7 @@
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=4
+#SBATCH --ntasks-per-node=8
 #SBATCH --mem-per-cpu=2000
 
 dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
@@ -30,7 +30,7 @@ outAct='sigmoid'
 nEpochs=1
 lr=0.1
 batchSize=4
-numWorkers=4
+numWorkers=8
 milestones='25-50'
 gamma=0.1
 

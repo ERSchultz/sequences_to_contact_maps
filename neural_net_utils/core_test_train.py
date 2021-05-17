@@ -89,7 +89,6 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
             avg_loss += loss.item()
             loss.backward()
             optimizer.step()
-            return train_loss, val_loss
             # if verbose:
             #     for k,p in model.named_parameters():
             #         print(k, ',', p.shape)

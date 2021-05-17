@@ -26,7 +26,6 @@ def main():
         opt.n_epochs=2
         opt.lr=1e-6
         opt.batch_size=4
-        opt.numWorkers=4
         opt.milestones=str2list('1')
         opt.gamma=0.1
 
