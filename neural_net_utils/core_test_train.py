@@ -82,55 +82,17 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
         for t, (x,y) in enumerate(train_loader):
             if verbose:
                 print('Iteration: ', t)
-            if torch.cuda.is_available():
-                start = torch.cuda.Event(enable_timing=True)
-                end = torch.cuda.Event(enable_timing=True)
-                start.record()
-                x = x.to(device)
-                y = y.to(device)
-                torch.cuda.synchronize()
-                end.record()
-                to_device_time += start.elapsed_time(end)
-            else:
-                t0 = time.time()
-                x = x.to(device)
-                y = y.to(device)
-                to_device_time += time.time() - t0
+            x = x.to(device)
+            y = y.to(device)
             optimizer.zero_grad()
 
-            if torch.cuda.is_available():
-                start = torch.cuda.Event(enable_timing=True)
-                end = torch.cuda.Event(enable_timing=True)
-                start.record()
-                yhat = model(x)
-                torch.cuda.synchronize()
-                end.record()
-                forward_time += start.elapsed_time(end)
-            else:
-                t0 = time.time()
-                yhat = model(x)
-                forward_time += time.time() - t0
-
-
+            yhat = model(x)
             if verbose:
                 print('y', y)
                 print('yhat', yhat)
             loss = criterion(yhat, y)
             avg_loss += loss.item()
-
-            if torch.cuda.is_available():
-                start = torch.cuda.Event(enable_timing=True)
-                end = torch.cuda.Event(enable_timing=True)
-                start.record()
-                loss.backward()
-                torch.cuda.synchronize()
-                end.record()
-                backward_time += start.elapsed_time(end)
-            else:
-                t0 = time.time()
-                loss.backward()
-                backward_time += time.time() - t0
-
+            loss.backward()
             optimizer.step()
         avg_loss /= (t+1)
         train_loss.append(avg_loss)
