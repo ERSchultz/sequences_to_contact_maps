@@ -408,7 +408,6 @@ def plotPredictions(val_dataloader, model, opt):
 
     print('Loss: {} +- {}'.format(np.mean(loss_arr), np.std(loss_arr)))
 
-
 def freqDistributionPlots(dataFolder, n = 1024):
     chi = np.load(os.path.join(dataFolder, 'chis.npy'))
     k = len(chi)
@@ -442,7 +441,7 @@ def contactPlots(dataFolder):
         y_prcnt_norm = np.load(os.path.join(path, 'y_prcnt.npy'))
         plotContactMap(y_prcnt_norm, os.path.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
-def plotting_script(model, opt, load = False):
+def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, load = False):
     opt.batch_size = 1 # batch size must be 1
     seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
@@ -453,9 +452,13 @@ def plotting_script(model, opt, load = False):
         if os.path.exists(model_name):
             save_dict = torch.load(model_name, map_location=torch.device('cpu'))
             model.load_state_dict(save_dict['model_state_dict'])
+            train_loss_arr = save_dict['train_loss']
+            val_loss_arr = save_dict['val_loss']
             print('Model is loaded: {}'.format(model_name))
         else:
             print('Model does not exist: {}'.format(model_name))
+    else:
+        assert train_loss_arr is not None and val_loss_arr is not None
 
 
     if opt.mode == 'debugging':
@@ -464,6 +467,9 @@ def plotting_script(model, opt, load = False):
         imageSubPath = os.path.join('images', opt.ofile)
     if not os.path.exists(imageSubPath):
         os.mkdir(imageSubPath, mode = 0o755)
+
+    imagePath = os.path.join(imageSubPath, 'train_val_loss.png')
+    plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
 
     comparePCA(val_dataloader, model, opt)
 
@@ -475,7 +481,8 @@ def plotting_script(model, opt, load = False):
     plotPerClassAccuracy(val_dataloader, model, opt, imagePath)
     print()
 
-    plotPredictions(val_dataloader, model, opt)
+    if opt.plot_predictions = False
+        plotPredictions(val_dataloader, model, opt)
     print('\n'*3)
 
 def main():
@@ -514,7 +521,7 @@ def main():
     elif opt.model_type == 'DeepC':
         model = DeepC(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list, opt.hidden_size_dilation)
-        opt.ofile = "DeepC_nEpochs{}_lr{}_milestones{}_yPreprocessing{}_kernelW{}_hiddenSize{}_dilation{}_hiddenSize_{}".format(opt.n_epochs, opt.nf, opt.lr, list2str(opt.milestones), opt.y_preprocessing, list2str(opt.kernel_w_list), list2str(opt.hidden_sizes_list), list2str(opt.dilation_list), opt.hidden_size_dilation)
+        opt.ofile = "DeepC_nEpochs{}_lr{}_milestones{}_yPreprocessing{}_kernelW{}_hiddenSize{}_dilation{}".format(opt.n_epochs, opt.nf, opt.lr, list2str(opt.milestones), opt.y_preprocessing, list2str(opt.kernel_w_list), list2str(opt.hidden_sizes_list), list2str(opt.dilation_list), opt.hidden_size_dilation)
         if opt.loss == 'mse':
             opt.criterion = F.mse_loss
         else:

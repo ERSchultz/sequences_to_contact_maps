@@ -390,7 +390,8 @@ def argparseSetup():
     parser.add_argument('--out_act', type=str, default='sigmoid', help='activation of final layer')
 
     # post-processing args
-    parser.add_argument('--plot', type=str2bool, default=False, help='True to plot predictions') # TODO use this
+    parser.add_argument('--plot', type=str2bool, default=True, help='True to run plotting script')
+    parser.add_argument('--plot_predictions', type=str2bool, default=False, help='True to plot predictions')
 
     # SimpleEpiNet args
     parser.add_argument('--kernel_w_list', type=str2list, default=[5,5], help='List of kernel widths of convolutional layers')

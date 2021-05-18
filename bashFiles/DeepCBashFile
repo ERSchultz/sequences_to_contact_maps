@@ -28,7 +28,7 @@ numWorkers=4
 milestones='10-20-30-40-50'
 gamma=0.1
 
-ofile="DeepC_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yPreprocessing${yPreprocessing}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilation${dilationList}_hiddenSize_${hiddenSizeDilation}"
+ofile="DeepC_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yPreprocessing${yPreprocessing}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilation${dilationList}"
 logfile="logFiles/${ofile}.log"
 
 cd ~/sequences_to_contact_maps
@@ -37,7 +37,7 @@ python3 DeepC.py --data_folder $dirname --k $k --n $n --y_preprocessing ${yPrepr
 
 yPreprocessing='prcnt'
 
-ofile="DeepC_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yPreprocessing${yPreprocessing}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilation${dilationList}_hiddenSize_${hiddenSizeDilation}"
+ofile="DeepC_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yPreprocessing${yPreprocessing}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilation${dilationList}"
 logfile="logFiles/${ofile}.log"
 
 python3 DeepC.py --data_folder $dirname --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list $dilationList --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --ofile $ofile >> $logfile

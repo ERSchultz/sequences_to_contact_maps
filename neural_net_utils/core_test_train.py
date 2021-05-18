@@ -57,14 +57,7 @@ def core_test_train(model, opt):
     print('Final val loss: {}\n'.format(val_loss_arr[-1]))
 
     if opt.plot:
-        imageSubPath = os.path.join('images', opt.ofile)
-        if not os.path.exists(imageSubPath):
-            os.mkdir(imageSubPath, mode = 0o755)
-
-        imagePath = os.path.join(imageSubPath, 'train_val_loss.png')
-        plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
-
-        plotting_script(model, opt)
+        plotting_script(model, opt, train_loss_arr, val_loss_arr)
 
 def train(train_loader, val_dataloader, model, optimizer, criterion, device, save_location,
         n_epochs, start_epoch, use_parallel, scheduler, save_mod, print_mod, verbose):

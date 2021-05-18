@@ -31,6 +31,7 @@ def main():
 
         # other
         opt.verbose = False
+        opt.plot_predictions = False
         opt.plot = True
         if opt.cuda:
             opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
