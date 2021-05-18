@@ -481,7 +481,7 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, load
     plotPerClassAccuracy(val_dataloader, model, opt, imagePath)
     print()
 
-    if opt.plot_predictions == False
+    if opt.plot_predictions:
         plotPredictions(val_dataloader, model, opt)
     print('\n'*3)
 
