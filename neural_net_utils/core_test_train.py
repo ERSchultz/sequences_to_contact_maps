@@ -97,18 +97,8 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
         avg_loss /= (t+1)
         train_loss.append(avg_loss)
 
-        if torch.cuda.is_available():
-            start = torch.cuda.Event(enable_timing=True)
-            end = torch.cuda.Event(enable_timing=True)
-            start.record()
-            val_loss.append(test(val_dataloader, model, optimizer, criterion, device))
-            torch.cuda.synchronize()
-            end.record()
-            test_time += start.elapsed_time(end)
-        else:
-            t0 = time.time()
-            val_loss.append(test(val_dataloader, model, optimizer, criterion, device))
-            test_time += time.time() - t0
+
+        val_loss.append(test(val_dataloader, model, optimizer, criterion, device))
 
         if scheduler is not None:
             scheduler.step()
