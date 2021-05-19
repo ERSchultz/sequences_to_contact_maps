@@ -15,23 +15,23 @@ k=2
 n=1024
 yPreprocessing='diag'
 yNorm='batch'
-kernelWList='5-5-5'
-# hiddenSizesList='32-64-128'
-# dilationListTrunk='2-4-8-16-32-64-128-256-512'
-# bottleneck=64
-# dilationListHead='2-4-8-16-32-64-128-256-512'
-hiddenSizesList='32-64-64'
-dilationListTrunk='2-4-8-16-32-64-128'
+kernelWList='5-5-5-5'
+hiddenSizesList='32-64-128-128'
+dilationListTrunk='2-4-8-16-32-64-128-256-512'
 bottleneck=32
-dilationListHead='2-4-8-16-32-64-128'
+dilationListHead='2-4-8-16-32-64-128-256-512'
+# hiddenSizesList='32-64-64'
+# dilationListTrunk='2-4-8-16-32-64-128'
+# bottleneck=32
+# dilationListHead='2-4-8-16-32-64-128'
 outAct='sigmoid'
 
 # hyperparameters
-nEpochs=1
-lr=0.1
+nEpochs=4
+lr=1e-4
 batchSize=2
-numWorkers=6
-milestones='25-50'
+numWorkers=4
+milestones='2'
 gamma=0.1
 
 ofile="DeepC_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yPreprocessing${yPreprocessing}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilationTrunk${dilationListTrunk}_bottleneck${bottleneck}_dilationHead${dilationListHead}"

@@ -8,7 +8,7 @@ from neural_net_utils.core_test_train import core_test_train
 
 def main():
     opt = argparseSetup()
-    opt.mode = 'debugging'
+    # opt.mode = 'debugging'
     if opt.mode == 'debugging':
         # architecture
         opt.k=2
