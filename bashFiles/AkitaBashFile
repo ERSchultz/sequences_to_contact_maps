@@ -2,7 +2,7 @@
 #SBATCH --job-name=akita
 #SBATCH --output=logFiles/akita.out
 #SBATCH --time=01:00:00
-#SBATCH --partition=gpu2
+#SBATCH --partition=depabo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=8
@@ -29,7 +29,7 @@ outAct='sigmoid'
 # hyperparameters
 nEpochs=1
 lr=0.1
-batchSize=4
+batchSize=2
 numWorkers=8
 milestones='25-50'
 gamma=0.1
