@@ -264,8 +264,8 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
 
     for i, (x, y, path, minmax) in enumerate(val_dataloader):
         assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
-        x = x.to(device)
-        y = y.to(device)
+        x = x.to(opt.device)
+        y = y.to(opt.device)
         path = path[0]
         yhat = model(x)
         loss = opt.criterion(yhat, y).item()
