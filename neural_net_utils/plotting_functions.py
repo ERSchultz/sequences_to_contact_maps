@@ -354,9 +354,9 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
         p_arr[i, :] = corr_arr
 
     p_mean = np.mean(p_arr, axis = 0)
-    np.save(os.path.join(imagePath, 'mean_distance_stratified_pearson.npy'), p_mean)
+    np.save(os.path.join(imagePath, 'distance_pearson_mean.npy'), p_mean)
     p_std = np.std(p_arr, axis = 0)
-    np.save(os.path.join(imagePath, 'std_distance_stratified_pearson.npy'), p_std)
+    np.save(os.path.join(imagePath, 'distance_pearson_std.npy'), p_std)
 
     title = r'Overall Pearson R: {} $\pm$ {}'.format(np.round(np.mean(P_arr_overall), 3), np.round(np.std(P_arr_overall),3))
     print(title)
@@ -522,8 +522,8 @@ def main():
         opt.milestones = str2list('10-20-30-40-50')
 
         # other
-        opt.plot_predictions = True
-        opt.verbose = True
+        opt.plot_predictions = False
+        opt.verbose = False
 
     print(opt)
     if opt.model_type == 'UNet':
