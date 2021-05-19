@@ -526,7 +526,7 @@ def main():
     elif opt.model_type == 'DeepC':
         model = DeepC(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list, out_act = opt.out_act)
-        opt.ofile = "DeepC_nEpochs{}_lr{}_milestones{}_yPreprocessing{}_kernelW{}_hiddenSize{}_dilation{}".format(opt.n_epochs, opt.nf, opt.lr, list2str(opt.milestones), opt.y_preprocessing, list2str(opt.kernel_w_list), list2str(opt.hidden_sizes_list), list2str(opt.dilation_list))
+        opt.ofile = "DeepC_nEpochs{}_lr{}_milestones{}_yPreprocessing{}_kernelW{}_hiddenSize{}_dilation{}".format(opt.n_epochs, opt.lr, list2str(opt.milestones), opt.y_preprocessing, list2str(opt.kernel_w_list), list2str(opt.hidden_sizes_list), list2str(opt.dilation_list))
         if opt.loss == 'mse':
             opt.criterion = F.mse_loss
         else:
