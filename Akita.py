@@ -30,7 +30,7 @@ def main():
         opt.gamma=0.1
 
         # other
-        opt.plot = False
+        opt.plot = True
         opt.plot_predictions = False
         opt.verbose = False
         if opt.cuda:
