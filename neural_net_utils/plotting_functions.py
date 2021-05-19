@@ -468,10 +468,8 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, load
         assert train_loss_arr is not None and val_loss_arr is not None
 
 
-    if opt.mode == 'debugging':
-        imageSubPath = os.path.join('images', 'test')
-    else:
-        imageSubPath = os.path.join('images', opt.ofile)
+
+    imageSubPath = os.path.join('images', opt.ofile)
     if not os.path.exists(imageSubPath):
         os.mkdir(imageSubPath, mode = 0o755)
 
@@ -494,19 +492,29 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, load
 
 def main():
     opt = argparseSetup()
-    opt.mode = None
-    # opt.mode = 'debugging'
+    opt.mode = 'debugging'
     # overwrites if testing locally
     if opt.mode == 'debugging':
-        opt.model_type = 'UNet'
+        opt.model_type = 'DeepC'
         opt.data_folder = 'dataset_04_18_21'
-        opt.loss = 'cross_entropy'
+
+        # architecture
         opt.y_preprocessing = 'prcnt'
-        opt.y_norm = None
-        opt.n_epochs = 15
-        opt.milestones = [5,10]
-        opt.lr = 0.1
-        opt.toxx = True
+        opt.y_norm = 'batch'
+        opt.kernel_w_list=str2list('5-5-5')
+        opt.hidden_sizes_list=str2list('32-64-128')
+        opt.dilation_list=str2list('2-4-8-16-32-64-128-256-512')
+        # opt.out_act=nn.ReLU(True)
+        opt.out_act='sigmoid'
+
+        # hyperparameters
+        opt.n_epochs = 60
+        opt.lr = '1e-2'
+        opt.num_workers = 4
+        opt.milestones = str2list('10-20-30-40-50')
+
+        # other
+        opt.plot_predictions = True
 
     print(opt)
     if opt.model_type == 'UNet':
@@ -529,6 +537,7 @@ def main():
         model = DeepC(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list, out_act = opt.out_act)
         opt.ofile = "DeepC_nEpochs{}_lr{}_milestones{}_yPreprocessing{}_kernelW{}_hiddenSize{}_dilation{}".format(opt.n_epochs, opt.lr, list2str(opt.milestones), opt.y_preprocessing, list2str(opt.kernel_w_list), list2str(opt.hidden_sizes_list), list2str(opt.dilation_list))
+        opt.lr = float(opt.lr)
         if opt.loss == 'mse':
             opt.criterion = F.mse_loss
         else:

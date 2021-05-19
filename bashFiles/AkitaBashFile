@@ -1,11 +1,11 @@
 #! /bin/bash
 #SBATCH --job-name=akita
 #SBATCH --output=logFiles/akita.out
-#SBATCH --time=01:00:00
+#SBATCH --time=24:00:00
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=8
+#SBATCH --ntasks-per-node=4
 #SBATCH --mem-per-cpu=2000
 
 dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
@@ -27,11 +27,11 @@ dilationListHead='2-4-8-16-32-64-128-256-512'
 outAct='sigmoid'
 
 # hyperparameters
-nEpochs=4
-lr=1e-4
+nEpochs=20
+lr=1e-2
 batchSize=2
 numWorkers=4
-milestones='2'
+milestones='5-10-15'
 gamma=0.1
 
 ofile="DeepC_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yPreprocessing${yPreprocessing}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilationTrunk${dilationListTrunk}_bottleneck${bottleneck}_dilationHead${dilationListHead}"
@@ -39,11 +39,11 @@ logfile="logFiles/${ofile}.log"
 
 cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
-python3 Akita.py --data_folder $dirname --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list_trunk $dilationListTrunk --bottleneck $bottleneck --dilation_list_head $dilationListHead --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --ofile $ofile
+python3 Akita.py --data_folder $dirname --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list_trunk $dilationListTrunk --bottleneck $bottleneck --dilation_list_head $dilationListHead --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --ofile $ofile >> $logfile
 
 # yPreprocessing='prcnt'
 #
 # ofile="DeepC_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yPreprocessing${yPreprocessing}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilation${dilationList}_hiddenSize_${hiddenSizeDilation}"
 # logfile="logFiles/${ofile}.log"
 #
-# python3 Akita.py --data_folder $dirname --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list_trunk $dilationListTrunk --bottleneck $bottleneck --dilation_list_head $dilationListHead  --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --ofile $ofile
+# python3 Akita.py --data_folder $dirname --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list_trunk $dilationListTrunk --bottleneck $bottleneck --dilation_list_head $dilationListHead  --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --ofile $ofile >> $logfile
