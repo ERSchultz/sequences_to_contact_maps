@@ -1,17 +1,22 @@
+import os
+import sys
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+sys.path.insert(0, dname)
+
 import torch
 import torch.nn.functional as F
 import numpy as np
-import os
 import math
 import matplotlib.pyplot as plt
 import matplotlib.colors
 import seaborn as sns
 import pandas as pd
-from neural_net_utils.utils import *
-from neural_net_utils.networks import *
-from neural_net_utils.utils import *
-from neural_net_utils.plotting_functions import *
-from neural_net_utils.dataset_classes import Sequences2Contacts
+from utils import *
+from networks import *
+from utils import *
+from plotting_functions import *
+from dataset_classes import Sequences2Contacts
 
 def plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid, split = 'type', xmax = None):
     """

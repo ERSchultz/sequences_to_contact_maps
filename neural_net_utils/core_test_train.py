@@ -1,11 +1,16 @@
+import os
+import sys
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+sys.path.insert(0, dname)
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import time
-import os
-from neural_net_utils.utils import getDataLoaders, comparePCA
-from neural_net_utils.plotting_functions import plotting_script, plotModelFromArrays
-from neural_net_utils.dataset_classes import Sequences2Contacts
+from utils import getDataLoaders, comparePCA
+from plotting_functions import plotting_script, plotModelFromArrays
+from dataset_classes import Sequences2Contacts
 
 def core_test_train(model, opt):
     # Set random seeds

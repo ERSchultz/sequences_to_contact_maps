@@ -1,9 +1,14 @@
+import os
+import sys
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+sys.path.insert(0, dname)
+
 import torch
 from torch.utils.data import Dataset, DataLoader
-from neural_net_utils.utils import make_dataset
+from utils import make_dataset
 import torch
 import numpy as np
-import os
 
 class Names(Dataset):
     "Dataset that only returns names of paths"

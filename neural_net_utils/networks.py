@@ -1,8 +1,13 @@
+import os
+import sys
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+sys.path.insert(0, dname)
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import sys
-from neural_net_utils.base_networks import *
+from base_networks import *
 import time
 
 class UNet(nn.Module):

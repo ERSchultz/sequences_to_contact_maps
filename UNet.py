@@ -27,15 +27,15 @@ def main():
         opt.nf = 8
 
         # hyperparameters
-        opt.n_epochs=3
+        opt.n_epochs=2
         opt.lr=0.1
         opt.batch_size=4
         opt.milestones=str2list('1')
         opt.gamma=0.1
 
         # other
-        opt.verbose = True
-        opt.plot = True
+        opt.verbose = False
+        opt.plot = False
         opt.data_folder = 'dataset_04_18_21'
         opt.ofile = 'model'
     print(opt)
