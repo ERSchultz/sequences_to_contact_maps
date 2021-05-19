@@ -1,30 +1,45 @@
 import numpy as np
 import torch
 import torch.nn as nn
+import time
+import csv
 from neural_net_utils.base_networks import *
 from neural_net_utils.networks import *
+from neural_net_utils.utils import *
+from neural_net_utils.dataset_classes import *
 
-net = DeepC(1024, 2, [5, 5, 5], [32, 64, 128], [2, 4, 8, 16, 32, 64, 128, 256, 512], 128)
+def test_num_workers():
+    opt = argparseSetup() # get default args
+    opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
+    opt.cuda = True
+    opt.device = torch.device('cuda')
+    opt.y_preprocessing = 'diag'
+    opt.y_norm = 'batch'
+    dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
+                                        opt.y_norm, opt.x_reshape, opt.ydtype,
+                                        opt.y_reshape, opt.crop)
 
-input = torch.tensor(np.arange(0, 1024*2, 1).reshape((1, 2, 1024))).type(torch.float32)
+    b_arr = np.array([1, 2, 4, 8, 16, 32])
+    w_arr = np.array([0,1,2,3,4,5,6,7,8])
+    results = np.zeros((len(b_arr), len(w_arr)))
+    for i, b in enumerate(b_arr):
+        print(b)
+        for j, w in enumerate(w_arr):
+            t0 = time.time()
+            opt.batch_size = int(b)
+            opt.num_workers = w
+            _, val_dataloader, _ = getDataLoaders(dataset, opt)
+            for x, y in val_dataloader:
+                x = x.to(opt.device)
+                y = y.to(opt.device)
+            results[i, j] = time.time() - t0
 
-print(input)
-print('---')
+    print(np.round(results, 1))
 
 
-def v1():
-    return 1, 2
+def main():
+    test_num_workers()
 
-def v2():
-    return [1,2]
 
-x, y = v1()
-print(x,y)
-x, y = v2()
-print('here2', x, y)
-
-out_act = nn.Sigmoid()
-type_out_act = type(out_act)
-print(type_out_act)
-print(type(nn.Module()))
-print(issubclass(type_out_act, nn.Module))
+if __name__ == '__main__':
+    main()
