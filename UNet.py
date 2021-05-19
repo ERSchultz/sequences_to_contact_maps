@@ -13,7 +13,7 @@ import argparse
 
 def main():
     opt = argparseSetup()
-    opt.mode = 'debugging'
+    # opt.mode = 'debugging'
     if opt.mode == 'debugging':
         # Preprocessing
         opt.toxx = True
