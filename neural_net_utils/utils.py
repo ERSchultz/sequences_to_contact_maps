@@ -296,10 +296,11 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
     print('Loss: {} +- {}'.format(np.mean(loss_arr), np.std(loss_arr)))
     print('acc arr', acc_c_arr)
     print('freq arr', freq_c_arr)
+    print()
     return acc_c_arr, freq_c_arr
 
 # other functions
-def comparePCA(val_dataloader, model, opt):
+def comparePCA(val_dataloader, imagePath, model, opt):
     """Computes statistics of 1st PC of contact map"""
     acc_arr = np.zeros(opt.valN)
     rho_arr = np.zeros(opt.valN)
@@ -318,9 +319,13 @@ def comparePCA(val_dataloader, model, opt):
         yhat = yhat.cpu().detach().numpy()
 
         if opt.y_preprocessing == 'prcnt':
-            yhat = np.argmax(yhat, axis = 1)
+            if opt.loss == 'cross_entropy':
+                yhat = np.argmax(yhat, axis = 1)
+            else:
+                yhat = un_normalize(yhat, minmax)
+        else:
+            yhat = un_normalize(yhat, minmax)
         yhat = yhat.reshape((opt.n, opt.n))
-        yhat = un_normalize(yhat, minmax)
 
         result_y = pca.fit(y)
         comp1_y = pca.components_[0]
@@ -338,11 +343,14 @@ def comparePCA(val_dataloader, model, opt):
         corr, pval = pearsonr(comp1_yhat, comp1_y)
         p_arr[i] = abs(corr)
 
-    print('PCA results:')
-    print('Accuracy: {} +- {}'.format(np.mean(acc_arr), np.std(acc_arr)))
-    print('Spearman R: {} +- {}'.format(np.mean(rho_arr), np.std(rho_arr)))
-    print('Pearson R: {} +- {}'.format(np.mean(p_arr), np.std(p_arr)))
+    results = 'PCA results:\n' +\
+            'Accuracy: {} +- {}\n'.format(np.round(np.mean(acc_arr), 3), np.round(np.std(acc_arr), 3)) +\
+            'Spearman R: {} +- {}\n'.format(np.round(np.mean(rho_arr), 3), np.round(np.std(rho_arr), 3))+\
+            'Pearson R: {} +- {}'.format(np.round(np.mean(p_arr), 3), np.round(np.std(p_arr), 3))
+    print(results)
     print()
+    with open(os.path.join(imagePath, 'PCA_results.txt'), 'w') as f:
+        f.write(results)
 
 def argparseSetup():
     """Helper function to get default command line argument parser."""

@@ -1,0 +1,25 @@
+def averageTo2D(input):
+  # Using 1-based indexing
+  N, C, X = input.shape # assume input is 3D tensor
+  # N is batch size, C is number of channels, X is spatial dimension
+  output = initialize new array of shape N, C, X, X
+  for n = 1 to N:
+    for i = 1 to X:
+      for j = 1 to X:
+        output[n, :, i, j] = (input[n, :, i] + input[n, :, j]) / 2
+        # where : indicates that all entries along that dimension are selected (e.g. input[n, :, i] is a vector of length C)
+        # where + indicates element-wise addition
+        # so output[n, :, i, j] equals the element-wise mean of input[n, :, i] and input[n, :, j]
+
+  return output
+
+def concat_distance(input):
+  # Using 1-based indexing
+  N, C, X, X = input.shape # assume input is 4D tensor
+  output = initialize new array of shape N, C+1, X, X
+  for n = 1 to N:
+    for i = 1 to X:
+      for j = 1 to X:
+        output[n, C+1, i, j] = |i - j|
+
+  return output

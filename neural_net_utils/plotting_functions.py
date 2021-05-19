@@ -185,14 +185,14 @@ def plotDistStats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
     plt.savefig(ofile)
     plt.close()
 
-def plotModelFromDir(dir, ofile, opt = None):
+def plotModelFromDir(dir, imagePath, opt = None):
     """Wrapper function for plotModelFromArrays given saved model."""
     saveDict = torch.load(dir, map_location=torch.device('cpu'))
     train_loss_arr = saveDict['train_loss']
     val_loss_arr = saveDict['val_loss']
-    plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, opt)
+    plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
 
-def plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, opt = None):
+def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None):
     """Plots loss as function of epoch."""
     plt.plot(np.arange(1, len(train_loss_arr)+1), train_loss_arr, label = 'Training')
     plt.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr, label = 'Validation')
@@ -212,7 +212,7 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, opt = None):
         plt.title('Y Preprocessing: {}'.format(preprocessing), fontsize = 16)
 
         if opt.milestones is not None:
-            lr = opt.lr
+            lr = float(opt.lr)
             max_y = np.max(np.maximum(train_loss_arr, val_loss_arr))
             min_y = np.min(np.minimum(train_loss_arr, val_loss_arr))
             new_max_y = max_y + (max_y - min_y) * 0.1
@@ -227,7 +227,7 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, ofile, opt = None):
                 plt.annotate('lr: {:.1e}'.format(lr), (m + x_offset, annotate_y))
     plt.legend()
     plt.tight_layout()
-    plt.savefig(ofile)
+    plt.savefig(os.path.join(imagePath, 'train_val_loss.png'))
     plt.close()
 
 def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False):
@@ -283,7 +283,7 @@ def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 6, minVal = None,
     plt.savefig(ofile)
     plt.close()
 
-def plotPerClassAccuracy(val_dataloader, model, opt, ofile = None, title = None):
+def plotPerClassAccuracy(val_dataloader, imagePath, model, opt, title = None):
     """Plots accuracy for each class in percentile normalized contact map."""
     if opt.y_preprocessing == 'prcnt' and opt.loss == 'mse':
         return
@@ -317,13 +317,12 @@ def plotPerClassAccuracy(val_dataloader, model, opt, ofile = None, title = None)
     ax2.tick_params(axis = 'y', labelcolor = color)
     ax2.set_ylabel("Class Frequency", fontsize = 16, color = color)
 
-    plt.tight_layout()
     if title is not None:
         plt.title(title)
-    if ofile is not None:
-        plt.savefig(ofile)
+    plt.tight_layout()
+    plt.savefig(os.path.join(imagePath, 'per_class_acc.png'))
 
-def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
+def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt):
     """Plots Pearson correlation as a function of genomic distance"""
 
     p_arr = np.zeros((opt.valN, opt.n-1))
@@ -341,9 +340,13 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
         yhat = yhat.cpu().detach().numpy()
 
         if opt.y_preprocessing == 'prcnt':
-            yhat = np.argmax(yhat, axis = 1)
+            if opt.loss == 'cross_entropy':
+                yhat = np.argmax(yhat, axis = 1)
+            else:
+                yhat = un_normalize(yhat, minmax)
+        else:
+            yhat = un_normalize(yhat, minmax)
         yhat = yhat.reshape((opt.n,opt.n))
-        yhat = un_normalize(yhat, minmax)
 
         overall_corr, corr_arr = calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson')
         print(overall_corr, corr_arr)
@@ -351,16 +354,22 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, ofile, opt):
         p_arr[i, :] = corr_arr
 
     p_mean = np.mean(p_arr, axis = 0)
+    np.save(os.path.join(imagePath, 'mean_distance_stratified_pearson.npy'), p_mean)
     p_std = np.std(p_arr, axis = 0)
+    np.save(os.path.join(imagePath, 'std_distance_stratified_pearson.npy'), p_std)
 
-    print('Pearson R: {} +- {}'.format(np.mean(P_arr_overall), np.std(P_arr_overall)))
+    title = r'Overall Pearson R: {} $\pm$ {}'.format(np.round(np.mean(P_arr_overall), 3), np.round(np.std(P_arr_overall),3))
+    print(title)
+    print()
 
-    plt.plot(np.arange(opt.n-1), p_mean, color = 'black')
-    plt.fill_between(np.arange(opt.n-1), p_mean + p_std, p_mean - p_std, color = 'red', alpha = 0.5)
+    plt.plot(np.arange(opt.n-1), p_mean, color = 'black', label = 'mean')
+    plt.fill_between(np.arange(opt.n-1), p_mean + p_std, p_mean - p_std, color = 'red', alpha = 0.5, label = 'std')
     plt.xlabel('Distance', fontsize = 16)
     plt.ylabel('Pearson Correlation Coefficient', fontsize = 16)
+    plt.legend(loc = 'lower left')
+    plt.title(title)
     plt.tight_layout()
-    plt.savefig(ofile)
+    plt.savefig(os.path.join(imagePath, 'distance_pearson.png'))
     plt.close()
 
 def plotPredictions(val_dataloader, model, opt):
@@ -380,14 +389,15 @@ def plotPredictions(val_dataloader, model, opt):
             os.mkdir(subpath, mode = 0o755)
 
         yhat = model(x)
-        if opt.verbose:
-            print('y', y)
-            print('yhat', yhat)
         loss = opt.criterion(yhat, y).item()
         loss_arr[i] = loss
-        y = un_normalize(y.cpu().numpy(), minmax)
+        y = y.cpu().numpy()
         yhat = yhat.cpu().detach().numpy()
+        if opt.verbose:
+            print('y', y, np.max(y))
+            print('yhat', yhat, np.max(yhat))
 
+        y = un_normalize(y, minmax)
         if opt.y_preprocessing == 'prcnt':
             plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = 'max', prcnt = True, title = 'Y')
             if opt.loss == 'cross_entropy':
@@ -396,8 +406,6 @@ def plotPredictions(val_dataloader, model, opt):
             else:
                 yhat = un_normalize(yhat, minmax)
                 plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = 'Y hat')
-
-
         elif opt.y_preprocessing == 'diag':
             plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = 'max', prcnt = False, title = 'Y')
             yhat = un_normalize(yhat, minmax)
@@ -413,7 +421,12 @@ def plotPredictions(val_dataloader, model, opt):
         else:
             print("Unsupported preprocessing: {}".format(y_preprocessing))
 
+    if opt.verbose:
+        print('y', y, np.max(y))
+        print('yhat', yhat, np.max(yhat))
+
     print('Loss: {} +- {}'.format(np.mean(loss_arr), np.std(loss_arr)))
+    print()
 
 def freqDistributionPlots(dataFolder, n = 1024):
     chi = np.load(os.path.join(dataFolder, 'chis.npy'))
@@ -469,22 +482,17 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, load
 
 
 
-    imageSubPath = os.path.join('images', opt.ofile)
-    if not os.path.exists(imageSubPath):
-        os.mkdir(imageSubPath, mode = 0o755)
+    imagePath = os.path.join('images', opt.ofile)
+    if not os.path.exists(imagePath):
+        os.mkdir(imagePath, mode = 0o755)
 
-    imagePath = os.path.join(imageSubPath, 'train_val_loss.png')
     plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
 
-    comparePCA(val_dataloader, model, opt)
+    comparePCA(val_dataloader, imagePath, model, opt)
 
-    imagePath = os.path.join(imageSubPath, 'distance_pearson.png')
-    plotDistanceStratifiedPearsonCorrelation(val_dataloader, model, imagePath, opt)
-    print()
+    plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt)
 
-    imagePath = os.path.join(imageSubPath, 'per_class_acc.png')
-    plotPerClassAccuracy(val_dataloader, model, opt, imagePath)
-    print()
+    plotPerClassAccuracy(val_dataloader, imagePath, model, opt)
 
     if opt.plot_predictions:
         plotPredictions(val_dataloader, model, opt)
@@ -499,7 +507,7 @@ def main():
         opt.data_folder = 'dataset_04_18_21'
 
         # architecture
-        opt.y_preprocessing = 'prcnt'
+        opt.y_preprocessing = 'diag'
         opt.y_norm = 'batch'
         opt.kernel_w_list=str2list('5-5-5')
         opt.hidden_sizes_list=str2list('32-64-128')
@@ -515,6 +523,7 @@ def main():
 
         # other
         opt.plot_predictions = True
+        opt.verbose = True
 
     print(opt)
     if opt.model_type == 'UNet':
@@ -537,7 +546,7 @@ def main():
         model = DeepC(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list, out_act = opt.out_act)
         opt.ofile = "DeepC_nEpochs{}_lr{}_milestones{}_yPreprocessing{}_kernelW{}_hiddenSize{}_dilation{}".format(opt.n_epochs, opt.lr, list2str(opt.milestones), opt.y_preprocessing, list2str(opt.kernel_w_list), list2str(opt.hidden_sizes_list), list2str(opt.dilation_list))
-        opt.lr = float(opt.lr)
+
         if opt.loss == 'mse':
             opt.criterion = F.mse_loss
         else:
