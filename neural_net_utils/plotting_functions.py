@@ -185,14 +185,14 @@ def plotDistStats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
     plt.savefig(ofile)
     plt.close()
 
-def plotModelFromDir(dir, imagePath, opt = None):
+def plotModelFromDir(dir, imagePath, opt = None, log_y = False):
     """Wrapper function for plotModelFromArrays given saved model."""
     saveDict = torch.load(dir, map_location=torch.device('cpu'))
     train_loss_arr = saveDict['train_loss']
     val_loss_arr = saveDict['val_loss']
-    plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
+    plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt, log_y)
 
-def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None):
+def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log_y = False):
     """Plots loss as function of epoch."""
     plt.plot(np.arange(1, len(train_loss_arr)+1), train_loss_arr, label = 'Training')
     plt.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr, label = 'Validation')
@@ -225,9 +225,14 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None):
                 lr = lr * opt.gamma
                 plt.axvline(m, linestyle = 'dashed', color = 'green')
                 plt.annotate('lr: {:.1e}'.format(lr), (m + x_offset, annotate_y))
+    if log_y:
+        plt.yscale('log')
     plt.legend()
     plt.tight_layout()
-    plt.savefig(os.path.join(imagePath, 'train_val_loss.png'))
+    if log_y:
+        plt.savefig(os.path.join(imagePath, 'train_val_loss_log.png'))
+    else:
+        plt.savefig(os.path.join(imagePath, 'train_val_loss.png'))
     plt.close()
 
 def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False):
@@ -477,16 +482,20 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, load
             print('Model is loaded: {}'.format(model_name))
         else:
             print('Model does not exist: {}'.format(model_name))
+            return
     else:
         assert train_loss_arr is not None and val_loss_arr is not None
 
 
-
-    imagePath = os.path.join('images', opt.ofile)
+    if opt.mode =='debugging':
+        imagePath = os.path.join('images', 'test')
+    else:
+        imagePath = os.path.join('images', opt.ofile)
     if not os.path.exists(imagePath):
         os.mkdir(imagePath, mode = 0o755)
 
     plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
+    plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt, True)
 
     comparePCA(val_dataloader, imagePath, model, opt)
 
@@ -500,29 +509,37 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, load
 
 def main():
     opt = argparseSetup()
-    # opt.mode = 'debugging'
+    opt.mode = 'debugging'
     # overwrites if testing locally
     if opt.mode == 'debugging':
-        opt.model_type = 'DeepC'
+        opt.model_type = 'UNet'
         opt.data_folder = 'dataset_04_18_21'
 
+        # Preprocessing
+        opt.toxx = True
+        opt.x_reshape = False
+
         # architecture
-        opt.y_preprocessing = 'diag'
-        opt.y_norm = 'batch'
-        opt.kernel_w_list=str2list('5-5-5')
-        opt.hidden_sizes_list=str2list('32-64-128')
-        opt.dilation_list=str2list('2-4-8-16-32-64-128-256-512')
-        # opt.out_act=nn.ReLU(True)
-        opt.out_act='sigmoid'
+        opt.nf = 8
+        opt.y_preprocessing = 'prcnt'
+        opt.y_norm = None
+        opt.loss = 'cross_entropy'
+        # opt.kernel_w_list = str2list('5-5-5-5')
+        # opt.hidden_sizes_list = str2list('32-64-128-128')
+        # opt.dilation_list_trunk = str2list('2-4-8-16-32-64-128-256-512')
+        # opt.bottleneck = 32
+        # opt.dilation_list_head = str2list('2-4-8-16-32-64-128-256-512')
+        # # opt.out_act=nn.ReLU(True)
+        # opt.out_act = 'sigmoid'
 
         # hyperparameters
-        opt.n_epochs = 60
-        opt.lr = 1e-2
+        opt.n_epochs = 15
+        opt.lr = 0.1
         opt.num_workers = 4
-        opt.milestones = str2list('10-20-30-40-50')
+        opt.milestones = str2list('5-10')
 
         # other
-        opt.plot_predictions = False
+        opt.plot_predictions = True
         opt.verbose = False
 
     print(opt)
@@ -547,6 +564,17 @@ def main():
                             opt.dilation_list, out_act = opt.out_act)
         opt.ofile = "DeepC_nEpochs{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}_kernelW{}_hiddenSize{}_dilation{}".format(opt.n_epochs, float2str(opt.lr), list2str(opt.milestones), opt.y_preprocessing, opt.y_norm, list2str(opt.kernel_w_list), list2str(opt.hidden_sizes_list), list2str(opt.dilation_list))
 
+        if opt.loss == 'mse':
+            opt.criterion = F.mse_loss
+        else:
+            print('Invalid loss: {}'.format(opt.loss))
+    elif opt.model_type == 'Akita':
+        model = Akita(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
+                            opt.dilation_list_trunk,
+                            opt.bottleneck,
+                            opt.dilation_list_head,
+                            opt.out_act)
+        opt.ofile = "Akita_nEpochs{}_lr{}_milestones{}_yPreprocessing{}_kernelW{}_hiddenSize{}_bottleneck{}".format(opt.n_epochs, float2str(opt.lr), list2str(opt.milestones), opt.y_preprocessing, list2str(opt.kernel_w_list), list2str(opt.hidden_sizes_list), opt.bottleneck)
         if opt.loss == 'mse':
             opt.criterion = F.mse_loss
         else:

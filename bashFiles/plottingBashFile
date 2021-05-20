@@ -14,24 +14,30 @@ dirname="../../../project2/depablo/erschultz/dataset_04_18_21"
 gpus=1
 
 # model type
-modelType='DeepC'
+modelType='UNet'
+
+# preprocessing
+toxx='true'
+xReshape='false'
 
 # architecture
 k=2
 n=1024
 yPreprocessing='diag'
-yNorm='batch'
+yNorm='instance'
+loss='mse'
+nf=8
 kernelWList='5-5-5'
 hiddenSizesList='32-64-128'
 dilationList='2-4-8-16-32-64-128-256-512'
 outAct='sigmoid'
 
 # hyperparameters
-nEpochs=60
-lr=1e-2
+nEpochs=15
+lr=0.1
 batchSize=32
 numWorkers=4
-milestones='10-20-30-40-50'
+milestones='5-10'
 gamma=0.1
 
 # other
@@ -40,8 +46,10 @@ plotPredictions=False
 
 cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
-python3 neural_net_utils/plotting_functions.py  --data_folder $dirname  --gpus $gpus --model_type $modelType --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list $dilationList --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --plot_predictions $plotPredictions
+python3 neural_net_utils/plotting_functions.py  --data_folder $dirname  --gpus $gpus --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --loss $loss --nf $nf --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list $dilationList --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --plot_predictions $plotPredictions
 
 yPreprocessing='prcnt'
+yNorm=None
+loss='cross_entropy'
 
-python3 neural_net_utils/plotting_functions.py  --data_folder $dirname  --gpus $gpus --model_type $modelType --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list $dilationList --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --plot_predictions $plotPredictions
+python3 neural_net_utils/plotting_functions.py  --data_folder $dirname  --gpus $gpus --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --loss $loss --nf $nf --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list $dilationList --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --plot_predictions $plotPredictions

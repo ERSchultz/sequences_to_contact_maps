@@ -209,19 +209,25 @@ class Akita(nn.Module):
         self.head = nn.Sequential(*head)
 
         # Linear Transformation
-        # TODO use triu
-        self.linear_block_filters = input_size
-        self.fc = LinearBlock(input_size, 1, activation = out_act)
+        # self.linear_block_filters = input_size
+        # self.fc = LinearBlock(input_size, 1, activation = out_act)
+
+        # Conversion to 1 channel image
+        self.conv = ConvBlock(input_size, 1, 1, padding = 0,
+                                activation = out_act)
 
 
     def forward(self, input):
         out = self.trunk(input)
 
         out = self.head(out)
-        out = out.view(-1, self.n, self.n, self.linear_block_filters)
 
-        out = self.fc(out)
-        out = out.view(-1, 1, self.n, self.n)
+        # out = out.view(-1, self.n, self.n, self.linear_block_filters)
+        #
+        # out = self.fc(out)
+        # out = out.view(-1, 1, self.n, self.n)
+        out = self.conv(out)
+
         return out
 
 class SimpleEpiNet(nn.Module):

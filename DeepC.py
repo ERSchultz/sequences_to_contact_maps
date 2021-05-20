@@ -8,7 +8,7 @@ from neural_net_utils.core_test_train import core_test_train
 
 def main():
     opt = argparseSetup()
-    # opt.mode = 'debugging'
+    opt.mode = 'debugging'
     if opt.mode == 'debugging':
         # architecture
         opt.k=2
@@ -31,7 +31,7 @@ def main():
 
         # other
         opt.verbose = False
-        opt.plot_predictions = False
+        opt.plot_predictions = True
         opt.plot = True
         if opt.cuda:
             opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
