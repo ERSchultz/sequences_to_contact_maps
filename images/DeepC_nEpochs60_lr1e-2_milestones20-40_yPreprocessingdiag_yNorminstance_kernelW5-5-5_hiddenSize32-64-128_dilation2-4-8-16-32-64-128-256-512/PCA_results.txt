@@ -1,0 +1,4 @@
+PCA results:
+Accuracy: 0.924 +- 0.041
+Spearman R: 0.952 +- 0.026
+Pearson R: 0.807 +- 0.07
