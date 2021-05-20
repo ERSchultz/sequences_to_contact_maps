@@ -555,6 +555,7 @@ def main():
         print('Invalid model type: {}'.format(opt.model_type))
         # TODO
 
+    model.to(opt.device)
     plotting_script(model, opt, load = True)
 
     # freqDistributionPlots('dataset_04_18_21')
