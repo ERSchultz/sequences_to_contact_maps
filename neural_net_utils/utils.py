@@ -618,6 +618,8 @@ class InteractionConverter():
 def main():
     opt = argparseSetup()
     print(opt)
+    vstr = float2str(0.01)
+    print(vstr)
     # plotPerClassAccuracy(None, None, 5)
 
 if __name__ == '__main__':

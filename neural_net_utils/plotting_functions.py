@@ -527,7 +527,7 @@ def main():
 
     print(opt)
     if opt.model_type == 'UNet':
-        opt.ofile = "UNet_nEpochs{}_nf{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}".format(opt.n_epochs, opt.nf, opt.lr, list2str(opt.milestones), opt.y_preprocessing, opt.y_norm)
+        opt.ofile = "UNet_nEpochs{}_nf{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}".format(opt.n_epochs, opt.nf, float2str(opt.lr), list2str(opt.milestones), opt.y_preprocessing, opt.y_norm)
         if opt.loss == 'cross_entropy':
             assert opt.y_preprocessing == 'prcnt', 'must use percentile normalization with cross entropy'
 
