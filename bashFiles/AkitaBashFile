@@ -34,7 +34,7 @@ numWorkers=4
 milestones='5-10-15'
 gamma=0.1
 
-ofile="DeepC_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yPreprocessing${yPreprocessing}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilationTrunk${dilationListTrunk}_bottleneck${bottleneck}_dilationHead${dilationListHead}"
+ofile="Akita_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yPreprocessing${yPreprocessing}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilationTrunk${dilationListTrunk}_bottleneck${bottleneck}_dilationHead${dilationListHead}"
 logfile="logFiles/${ofile}.log"
 
 cd ~/sequences_to_contact_maps

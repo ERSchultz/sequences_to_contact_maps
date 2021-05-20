@@ -500,7 +500,7 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, load
 
 def main():
     opt = argparseSetup()
-    opt.mode = 'debugging'
+    # opt.mode = 'debugging'
     # overwrites if testing locally
     if opt.mode == 'debugging':
         opt.model_type = 'DeepC'
