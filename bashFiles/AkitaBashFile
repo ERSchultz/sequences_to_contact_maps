@@ -27,11 +27,11 @@ dilationListHead='2-4-8-16-32-64-128-256-512'
 outAct='sigmoid'
 
 # hyperparameters
-nEpochs=20
+nEpochs=16
 lr=1e-4
 batchSize=2
 numWorkers=4
-milestones='5-10-15'
+milestones='4-8-12'
 gamma=0.1
 
 ofile="Akita_nEpochs${nEpochs}_lr${lr}_milestones${milestones}_yPreprocessing${yPreprocessing}_kernelW${kernelWList}_hiddenSize${hiddenSizesList}_dilationTrunk${dilationListTrunk}_bottleneck${bottleneck}_dilationHead${dilationListHead}"
