@@ -518,6 +518,25 @@ def list2str(v):
     assert type(v) == list
     return '-'.join([str(i) for i in v])
 
+def float2str(v):
+    """
+    Helper function to convert float to str in si notation.
+
+    Inputs:
+        v: float
+    """
+    # TODO make this more robust
+    assert type(v) == float
+    vstr = "{:.1e}".format(v)
+    if vstr[2] == '0':
+        # converts 1.0e-04 to 1e-04
+        vstr = vstr[0:1] + vstr[3:]
+    if vstr[-2] == '0':
+        # converts 1e-04 to 1e-4
+        vstr = vstr[0:-2] + vstr[-1]
+    return vstr
+
+
 class InteractionConverter():
     """Class that allows conversion between epigenetic mark bit string pairs and integer type id"""
     def __init__(self, k, chi = None):

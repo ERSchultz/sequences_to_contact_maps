@@ -517,7 +517,7 @@ def main():
 
         # hyperparameters
         opt.n_epochs = 60
-        opt.lr = '1e-2'
+        opt.lr = 1e-2
         opt.num_workers = 4
         opt.milestones = str2list('10-20-30-40-50')
 
@@ -545,7 +545,7 @@ def main():
     elif opt.model_type == 'DeepC':
         model = DeepC(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list, out_act = opt.out_act)
-        opt.ofile = "DeepC_nEpochs{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}_kernelW{}_hiddenSize{}_dilation{}".format(opt.n_epochs, opt.lr, list2str(opt.milestones), opt.y_preprocessing, opt.y_norm, list2str(opt.kernel_w_list), list2str(opt.hidden_sizes_list), list2str(opt.dilation_list))
+        opt.ofile = "DeepC_nEpochs{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}_kernelW{}_hiddenSize{}_dilation{}".format(opt.n_epochs, float2str(opt.lr), list2str(opt.milestones), opt.y_preprocessing, opt.y_norm, list2str(opt.kernel_w_list), list2str(opt.hidden_sizes_list), list2str(opt.dilation_list))
 
         if opt.loss == 'mse':
             opt.criterion = F.mse_loss
