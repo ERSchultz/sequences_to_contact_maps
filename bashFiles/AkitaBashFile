@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=akita
 #SBATCH --output=logFiles/akita.out
-#SBATCH --time=24:00:00
+#SBATCH --time=20:00:00
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
@@ -28,7 +28,7 @@ outAct='sigmoid'
 
 # hyperparameters
 nEpochs=20
-lr=1e-2
+lr=1e-4
 batchSize=2
 numWorkers=4
 milestones='5-10-15'
