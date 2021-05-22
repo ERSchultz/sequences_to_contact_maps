@@ -226,7 +226,7 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
                 plt.axvline(m, linestyle = 'dashed', color = 'green')
                 plt.annotate('lr: {:.1e}'.format(lr), (m + x_offset, annotate_y))
     if log_y:
-        plt.yscale('log')
+        plt.yscale('log', )
     plt.legend()
     plt.tight_layout()
     if log_y:
@@ -344,17 +344,14 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
         y = un_normalize(y, minmax)
         yhat = yhat.cpu().detach().numpy()
 
-        if opt.y_preprocessing == 'prcnt':
-            if opt.loss == 'cross_entropy':
-                yhat = np.argmax(yhat, axis = 1)
-            else:
-                yhat = un_normalize(yhat, minmax)
-        else:
-            yhat = un_normalize(yhat, minmax)
+        if opt.y_preprocessing == 'prcnt' and opt.loss == 'cross_entropy':
+            yhat = np.argmax(yhat, axis = 1)
+        yhat = un_normalize(yhat, minmax)
         yhat = yhat.reshape((opt.n,opt.n))
 
         overall_corr, corr_arr = calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson')
-        print(overall_corr, corr_arr)
+        if opt.verbose:
+            print(overall_corr, corr_arr)
         P_arr_overall[i] = overall_corr
         p_arr[i, :] = corr_arr
 
@@ -412,9 +409,10 @@ def plotPredictions(val_dataloader, model, opt):
                 yhat = un_normalize(yhat, minmax)
                 plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = 'Y hat')
         elif opt.y_preprocessing == 'diag':
-            plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = 'max', prcnt = False, title = 'Y')
+            v_max = np.max(y)
+            plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = v_max, prcnt = False, title = 'Y')
             yhat = un_normalize(yhat, minmax)
-            plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = 'Y hat')
+            plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = v_max, prcnt = False, title = 'Y hat')
 
             # plot prcnt
             yhat_prcnt = percentile_preprocessing(yhat, prcntDist)
@@ -422,7 +420,7 @@ def plotPredictions(val_dataloader, model, opt):
 
             # plot dif
             ydif = yhat - y
-            plotContactMap(ydif, os.path.join(subpath, 'ydif.png'), vmax = 'max', title = 'difference')
+            plotContactMap(ydif, os.path.join(subpath, 'ydif.png'), vmax = v_max, title = 'difference')
         else:
             print("Unsupported preprocessing: {}".format(y_preprocessing))
 
@@ -509,7 +507,7 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, load
 
 def main():
     opt = argparseSetup()
-    # opt.mode = 'debugging'
+    opt.mode = 'debugging'
     # overwrites if testing locally
     if opt.mode == 'debugging':
         opt.model_type = 'UNet'
@@ -524,23 +522,24 @@ def main():
         opt.y_preprocessing = 'prcnt'
         opt.y_norm = None
         opt.loss = 'cross_entropy'
-        # opt.kernel_w_list = str2list('5-5-5-5')
-        # opt.hidden_sizes_list = str2list('32-64-128-128')
-        # opt.dilation_list_trunk = str2list('2-4-8-16-32-64-128-256-512')
-        # opt.bottleneck = 32
-        # opt.dilation_list_head = str2list('2-4-8-16-32-64-128-256-512')
-        # # opt.out_act=nn.ReLU(True)
-        # opt.out_act = 'sigmoid'
+        opt.dilation_list = str2list('2-4-8-16-32-64-128-256-512')
+        opt.kernel_w_list = str2list('5-5-5')
+        opt.hidden_sizes_list = str2list('32-64-128')
+        opt.dilation_list_trunk = str2list('2-4-8-16-32-64-128-256-512')
+        opt.bottleneck = 32
+        opt.dilation_list_head = str2list('2-4-8-16-32-64-128-256-512')
+        # opt.out_act=nn.ReLU(True)
+        opt.out_act = 'sigmoid'
 
         # hyperparameters
         opt.n_epochs = 15
-        opt.lr = 0.1
+        opt.lr = 1e-1
         opt.num_workers = 4
         opt.milestones = str2list('5-10')
 
         # other
         opt.plot_predictions = True
-        opt.verbose = False
+        opt.verbose = True
 
     print(opt)
     if opt.model_type == 'UNet':

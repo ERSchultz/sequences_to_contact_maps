@@ -18,7 +18,7 @@ xReshape='false'
 k=2
 n=1024
 yPreprocessing='diag'
-yNorm='batch'
+yNorm='instance'
 nf=8
 loss='mse'
 
@@ -35,4 +35,14 @@ logfile="logFiles/${ofile}.log"
 
 cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
+python3 UNet.py --data_folder $dirname --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --loss $loss --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --ofile $ofile >> $logfile
+
+
+yPreprocessing='prcnt'
+yNorm=None
+loss='cross_entropy'
+
+ofile="UNet_nEpochs${nEpochs}_nf${nf}_lr${lr}_milestones${milestones}_yPreprocessing${yPreprocessing}_yNorm${yNorm}"
+logfile="logFiles/${ofile}.log"
+
 python3 UNet.py --data_folder $dirname --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --loss $loss --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --ofile $ofile >> $logfile

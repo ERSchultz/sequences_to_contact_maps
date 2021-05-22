@@ -11,6 +11,7 @@ import torch
 import numpy as np
 
 class Names(Dataset):
+    # TODO make this directly iterable
     "Dataset that only returns names of paths"
     def __init__(self, dirname, min_sample = 0):
         super(Names, self).__init__()
@@ -21,9 +22,6 @@ class Names(Dataset):
 
     def __len__(self):
         return len(self.paths)
-
-    # TODO make this directly iterable
-
 
 class Sequences2Contacts(Dataset):
     def __init__(self, dirname, toxx, y_preprocessing, y_norm, x_reshape, ydtype,
