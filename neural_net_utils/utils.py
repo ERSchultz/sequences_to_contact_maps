@@ -9,6 +9,7 @@ import argparse
 from sklearn.decomposition import PCA
 from scipy.stats import spearmanr, pearsonr
 import matplotlib.pyplot as plt
+import csv
 
 # dataset functions
 def make_dataset(dir, minSample = 0):
@@ -361,6 +362,7 @@ def argparseSetup():
     # pre-processing args
     parser.add_argument('--data_folder', type=str, default='test', help='Location of data')
     parser.add_argument('--toxx', type=str2bool, default=False, help='True if x should be converted to 2D image')
+    parser.add_argument('--toxx_mode', type=str, default='mean', help='mode for toxx (default mean)')
     parser.add_argument('--y_preprocessing', type=str, default='diag', help='type of pre-processing for y')
     parser.add_argument('--y_norm', type=str, default='batch', help='type of [0,1] normalization for y')
     parser.add_argument('--x_reshape', type=str2bool, default=True, help='True if x should be considered a 1D image')
@@ -387,36 +389,34 @@ def argparseSetup():
     parser.add_argument('--loss', type=str, default='mse', help='Type of loss to use: options: {"mse", "cross_entropy"}')
 
     # model args
-    parser.add_argument('--model_type', type=str, help='Type of model')
+    parser.add_argument('--model_type', type=str, default='test', help='Type of model')
     parser.add_argument('--pretrained', type=str2bool, default=False, help='True if using a pretrained model')
     parser.add_argument('--resume_training', type=str2bool, default=False, help='True if resuming traning of a partially trained model')
-    parser.add_argument('--ifile_folder', type=str, default='models/', help='Location of input file for pretrained model')
+    parser.add_argument('--ifile_folder', type=str, help='Location of input file for pretrained model')
     parser.add_argument('--ifile', type=str, help='Name of input file for pretrained model')
-    parser.add_argument('--ofile_folder', type=str, default='models/', help='Location to save checkpoint models')
-    parser.add_argument('--ofile', type=str, default='model', help='Name of save file')
     parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
     parser.add_argument('--n', type=int, default=1024, help='Number of particles')
     parser.add_argument('--seed', type=int, default=42, help='random seed to use. Default: 42')
-    parser.add_argument('--out_act', type=str, default='sigmoid', help='activation of final layer')
+    parser.add_argument('--out_act', type=str, help='activation of final layer')
 
     # post-processing args
     parser.add_argument('--plot', type=str2bool, default=True, help='True to run plotting script')
     parser.add_argument('--plot_predictions', type=str2bool, default=False, help='True to plot predictions')
 
     # SimpleEpiNet args
-    parser.add_argument('--kernel_w_list', type=str2list, default=[5,5], help='List of kernel widths of convolutional layers')
-    parser.add_argument('--hidden_sizes_list', type=str2list, default=[10,10], help='List of hidden sizes for convolutional layers')
+    parser.add_argument('--kernel_w_list', type=str2list, help='List of kernel widths of convolutional layers')
+    parser.add_argument('--hidden_sizes_list', type=str2list, help='List of hidden sizes for convolutional layers')
 
     # UNet args
-    parser.add_argument('--nf', type=int, default=8, help='Number of filters')
+    parser.add_argument('--nf', type=int, help='Number of filters')
 
     # DeepC args
-    parser.add_argument('--dilation_list', type=str2list, default=[1,2,4], help='List of dilations for dilated convolutional layers')
+    parser.add_argument('--dilation_list', type=str2list, help='List of dilations for dilated convolutional layers')
 
     # Akita args
-    parser.add_argument('--dilation_list_trunk', type=str2list, default=[1,2,4], help='List of dilations for dilated convolutional layers of trunk')
-    parser.add_argument('--bottleneck', type=int, default=10, help='Number of filters in bottleneck (must be <= hidden_size_dilation_trunk)')
-    parser.add_argument('--dilation_list_head', type=str2list, default=[1,2,4], help='List of dilations for dilated convolutional layers of head')
+    parser.add_argument('--dilation_list_trunk', type=str2list, help='List of dilations for dilated convolutional layers of trunk')
+    parser.add_argument('--bottleneck', type=int, help='Number of filters in bottleneck (must be <= hidden_size_dilation_trunk)')
+    parser.add_argument('--dilation_list_head', type=str2list, help='List of dilations for dilated convolutional layers of head')
 
 
     opt = parser.parse_args()
@@ -445,7 +445,70 @@ def argparseSetup():
         opt.use_parallel = False
 
     opt.device = torch.device('cuda' if opt.cuda else 'cpu')
+
+    model_type_folder =  os.path.join('results', opt.model_type)
+    if not os.path.exists(model_type_folder):
+        os.mkdir(model_type_folder, mode = 0o755)
+        opt.id = 1
+    else:
+        max_id = 0
+        for filename in os.listdir(model_type_folder):
+            if filename.isnumeric():
+                id = int(filename)
+                if id > max_id:
+                    max_id = id
+        opt.id = max_id + 1
+
+    opt.ofile_folder = os.path.join(model_type_folder, str(opt.id))
+    if not os.path.exists(opt.ofile_folder):
+        os.mkdir(opt.ofile_folder, mode = 0o755)
+
     return opt
+
+def print_opt(opt, ofile):
+    if not os.path.exists(ofile):
+        with open(ofile, 'w', newline = '') as f:
+            wr = csv.writer(f)
+            opt_list = ['model_type', 'id',  'data_folder','toxx', 'toxx_mode', 'y_preprocessing',
+                'y_norm', 'x_reshape', 'ydtype', 'y_reshape', 'crop', 'classes', 'split', 'shuffle',
+                'batch_size', 'num_workers', 'start_epoch', 'n_epochs', 'lr', 'gpus', 'milestones',
+                'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'n',
+                'seed', 'out_act', 'plot', 'plot_predictions']
+            if opt.model_type == 'simpleEpiNet':
+                opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])
+            elif opt.model_type == 'UNet':
+                opt_list.append('nf')
+            elif opt.model_type == 'Akita':
+                opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head'])
+            elif opt.model_type == 'DeepC':
+                opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list'])
+            elif opt.model_type == 'test':
+                opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'nf'])
+            else:
+                print("Unknown model type: {}".format(opt.model_type))
+            wr.writerow(opt_list)
+    with open(ofile, 'a') as f:
+        wr = csv.writer(f)
+        opt_list = [opt.model_type, opt.id, opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
+            opt.y_norm, opt.x_reshape, opt.ydtype, opt.y_reshape, opt.crop, opt.classes, opt.split,
+            opt.shuffle, opt.batch_size, opt.num_workers, opt.start_epoch, opt.n_epochs, opt.lr,
+            opt.gpus, opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
+            opt.ifile_folder, opt.ifile, opt.k, opt.n, opt.seed, opt.out_act, opt.plot, opt.plot_predictions]
+        if opt.model_type == 'simpleEpiNet':
+            opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list])
+        elif opt.model_type == 'UNet':
+            opt_list.append(opt.nf)
+        elif opt.model_type == 'Akita':
+            opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head])
+        elif opt.model_type == 'DeepC':
+            opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list])
+        elif opt.model_type == 'test':
+            opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.nf])
+        else:
+            print("Unknown model type: {}".format(opt.model_type))
+
+        wr.writerow(opt_list)
+
 
 def roundUpBy10(val):
     """Rounds value up to the nearst multiple of 10."""

@@ -23,7 +23,7 @@ def main():
 
 
         # hyperparameters
-        opt.n_epochs=2
+        opt.n_epochs=1
         opt.lr=1e-6
         opt.batch_size=4
         opt.milestones=str2list('1')
@@ -31,8 +31,8 @@ def main():
 
         # other
         opt.verbose = False
-        opt.plot_predictions = True
-        opt.plot = True
+        opt.plot_predictions = False
+        opt.plot = False
         if opt.cuda:
             opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
         else:

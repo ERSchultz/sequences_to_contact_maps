@@ -18,6 +18,7 @@ def main():
     print(opt)
 
     # Set up model
+    opt.out_act = 'sigmoid'
     model = SimpleEpiNet(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
     if opt.loss == 'mse':
         opt.criterion = F.mse_loss

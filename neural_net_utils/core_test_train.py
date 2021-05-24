@@ -8,18 +8,20 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import time
-from utils import getDataLoaders, comparePCA
+from utils import getDataLoaders, comparePCA, print_opt
 from plotting_functions import plotting_script, plotModelFromArrays
 from dataset_classes import Sequences2Contacts
 
 def core_test_train(model, opt):
+    print_opt(opt, os.path.join('results', opt.model_type, 'experiments.csv'))
+
     # Set random seeds
     torch.manual_seed(opt.seed)
     if opt.cuda:
         torch.cuda.manual_seed(opt.seed)
 
     # split dataset
-    dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
+    dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
                                         opt.y_reshape, opt.crop)
     train_dataloader, val_dataloader, test_dataloader = getDataLoaders(dataset, opt)
@@ -48,9 +50,10 @@ def core_test_train(model, opt):
     if opt.cuda:
         model.to(opt.device)
 
+
     t0 = time.time()
     train_loss_arr, val_loss_arr = train(train_dataloader, val_dataloader, model, optimizer,
-            opt.criterion, device = opt.device, save_location = os.path.join(opt.ofile_folder, opt.ofile + '.pt'),
+            opt.criterion, device = opt.device, save_location = os.path.join(opt.ofile_folder, 'model.pt'),
             n_epochs = opt.n_epochs, start_epoch = opt.start_epoch, use_parallel = opt.use_parallel,
             scheduler = scheduler, save_mod = opt.save_mod, print_mod = opt.print_mod, verbose = opt.verbose)
 

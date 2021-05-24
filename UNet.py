@@ -13,21 +13,24 @@ import argparse
 
 def main():
     opt = argparseSetup()
-    # opt.mode = 'debugging'
+    opt.mode = 'debugging'
     if opt.mode == 'debugging':
+        opt.mode = 'real'
         # Preprocessing
         opt.toxx = True
+        opt.toxx_mode = 'mean'
         opt.x_reshape = False
 
         # architecture
         opt.k=2
+
         opt.n=1024
         opt.y_preprocessing='diag'
-        opt.y_norm='batch'
+        opt.y_norm='instance'
         opt.nf = 8
 
         # hyperparameters
-        opt.n_epochs=2
+        opt.n_epochs=1
         opt.lr=0.1
         opt.batch_size=4
         opt.milestones=str2list('1')
@@ -36,8 +39,9 @@ def main():
         # other
         opt.verbose = False
         opt.plot = False
+        opt.plot_predictions = False
         opt.data_folder = 'dataset_04_18_21'
-        opt.ofile = 'model'
+        opt.save_mod = 1
     print(opt)
 
 
@@ -47,15 +51,16 @@ def main():
         opt.y_reshape = False
         opt.criterion = F.cross_entropy
         opt.ydtype = torch.int64
+        opt.out_act = None
         model = UNet(nf_in = 2, nf_out = 10, nf = opt.nf, out_act = None) # activation combined into loss
     elif opt.loss == 'mse':
         opt.criterion = F.mse_loss
+        opt.out_act = 'sigmoid'
         model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = nn.Sigmoid())
         opt.y_reshape = True
         opt.ydtype = torch.float32
     else:
         print('Invalid loss: {}'.format(opt.loss))
-
     core_test_train(model, opt)
 
 

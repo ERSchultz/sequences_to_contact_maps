@@ -386,12 +386,22 @@ def plotPredictions(val_dataloader, model, opt):
         y = y.to(opt.device)
         path = path[0]
         print(path)
-        subpath = os.path.join(path, opt.ofile)
+        if opt.mode == 'debugging':
+            subpath = os.path.join(path, 'test')
+        else:
+
+            subpath = os.path.join(path, os.path.join(opt.model_type, str(opt.id)))
         if not os.path.exists(subpath):
             os.mkdir(subpath, mode = 0o755)
 
         yhat = model(x)
         loss = opt.criterion(yhat, y).item()
+        if opt.loss == 'mse':
+            yhat_title = 'Y hat (MSE Loss: {})'.format(np.round(loss, 3))
+        elif opt.loss == 'cross_entropy':
+            yhat_title = 'Y hat (Cross Entropy Loss: {})'.format(np.round(loss, 3))
+        else:
+            yhat_title = 'Y hat (Loss: {})'.format(np.round(loss, 3))
         loss_arr[i] = loss
         y = y.cpu().numpy()
         yhat = yhat.cpu().detach().numpy()
@@ -404,15 +414,15 @@ def plotPredictions(val_dataloader, model, opt):
             plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = 'max', prcnt = True, title = 'Y')
             if opt.loss == 'cross_entropy':
                 yhat = np.argmax(yhat, axis = 1)
-                plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = True, title = 'Y hat')
+                plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = True, title = yhat_title)
             else:
                 yhat = un_normalize(yhat, minmax)
-                plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = 'Y hat')
+                plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = yhat_title)
         elif opt.y_preprocessing == 'diag':
             v_max = np.max(y)
             plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = v_max, prcnt = False, title = 'Y')
             yhat = un_normalize(yhat, minmax)
-            plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = v_max, prcnt = False, title = 'Y hat')
+            plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = v_max, prcnt = False, title =yhat_title)
 
             # plot prcnt
             yhat_prcnt = percentile_preprocessing(yhat, prcntDist)
@@ -466,12 +476,12 @@ def contactPlots(dataFolder):
 
 def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, load = False):
     opt.batch_size = 1 # batch size must be 1
-    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
+    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
                                         opt.y_reshape, opt.crop, names = True, minmax = True)
     _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
     if load:
-        model_name = os.path.join(opt.ofile_folder, opt.ofile + '.pt')
+        model_name = os.path.join(opt.ofile_folder, 'model.pt')
         if os.path.exists(model_name):
             save_dict = torch.load(model_name, map_location=torch.device('cpu'))
             model.load_state_dict(save_dict['model_state_dict'])
@@ -485,13 +495,9 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, load
         assert train_loss_arr is not None and val_loss_arr is not None
 
 
-    if opt.mode =='debugging':
-        imagePath = os.path.join('images', 'test')
-    else:
-        imagePath = os.path.join('images', opt.ofile)
-    if not os.path.exists(imagePath):
-        os.mkdir(imagePath, mode = 0o755)
 
+    imagePath = opt.ofile_folder
+    print()
     plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
     plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt, True)
 
@@ -515,6 +521,7 @@ def main():
 
         # Preprocessing
         opt.toxx = True
+        opt.toxx_mode = 'add'
         opt.x_reshape = False
 
         # architecture
@@ -538,7 +545,7 @@ def main():
         opt.milestones = str2list('5-10')
 
         # other
-        opt.plot_predictions = True
+        opt.plot_predictions = False
         opt.verbose = True
 
     print(opt)

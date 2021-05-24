@@ -24,10 +24,11 @@ class Names(Dataset):
         return len(self.paths)
 
 class Sequences2Contacts(Dataset):
-    def __init__(self, dirname, toxx, y_preprocessing, y_norm, x_reshape, ydtype,
+    def __init__(self, dirname, toxx, toxx_mode, y_preprocessing, y_norm, x_reshape, ydtype,
                 y_reshape, crop, names = False, minmax = False, min_sample = 0):
         super(Sequences2Contacts, self).__init__()
         self.toxx = toxx
+        self.toxx_mode = toxx_mode
         self.y_norm = y_norm
         if self.y_norm == 'batch':
             assert y_preprocessing is not None, "use instance normalization instead"
@@ -70,13 +71,21 @@ class Sequences2Contacts(Dataset):
 
         if self.y_norm == 'instance':
             self.ymax = np.max(y)
-            y = y / self.ymax
+            self.ymin = np.min(y)
+            y = (y - self.ymin) / (self.ymax - self.ymin)
         elif self.y_norm == 'batch':
             y = (y - self.ymin) / (self.ymax - self.ymin)
 
         if self.toxx:
-            x_path = os.path.join(self.paths[index], 'xx.npy')
-            x = np.load(x_path)
+            if self.toxx_mode == 'concat':
+                # not implemented yet
+                # TODO
+                return
+            else:
+                x_path = os.path.join(self.paths[index], 'xx.npy')
+                x = np.load(x_path)
+                if self.toxx_mode == 'add':
+                    x = x * 2 # default is mean, so undo it
             if self.crop is not None:
                 x = x[:, self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
         else:

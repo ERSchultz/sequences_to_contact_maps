@@ -38,7 +38,11 @@ def test_num_workers():
 
 
 def main():
-    test_num_workers()
+    # test_num_workers()
+    print('0.1'.isnumeric())
+
+
+
 
 
 if __name__ == '__main__':
