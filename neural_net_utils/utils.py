@@ -545,8 +545,11 @@ def str2list(v):
     """
     if v is None:
         return None
-    if isinstance(v, str):
-       return [int(i) for i in v.split('-')]
+    elif isinstance(v, str):
+        if v.lower() == 'none':
+            return None
+        else:
+            return [int(i) for i in v.split('-')]
     else:
         raise argparse.ArgumentTypeError('str value expected.')
 
