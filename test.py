@@ -40,7 +40,14 @@ def test_num_workers():
 def main():
     # test_num_workers()
     print('0.1'.isnumeric())
-    raise Exception('test')
+    # raise Exception('test')
+    L = 5
+    M = 3
+    N = 12
+    empty_list = [[[None]*N]*M]*L
+    print(empty_list)
+    print(empty_list[2][2 ][4])
+
 
 
 
