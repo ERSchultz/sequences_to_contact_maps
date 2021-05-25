@@ -1,0 +1,14 @@
+Namespace(mode='debugging', verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=False, toxx_mode='mean', y_preprocessing='diag', y_norm='batch', x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=4, num_workers=4, start_epoch=1, n_epochs=1, save_mod=5, print_mod=2, lr=1e-06, gpus=1, milestones=[1], gamma=0.1, loss='mse', model_type='DeepC', pretrained=False, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act=Sigmoid(), plot=False, plot_predictions=False, kernel_w_list=[5, 5, 5], hidden_sizes_list=[32, 64, 128], nf=None, dilation_list=[2, 4, 8, 16, 32, 64, 128, 256, 512], dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, id=2, ofile_folder='results/DeepC/2', log_file=<_io.TextIOWrapper name='results/DeepC/2/out.log' mode='w' encoding='UTF-8'>, cuda=True, use_parallel=False, device=device(type='cuda'), ofile='model', criterion=<function mse_loss at 0x7f31d394a0d0>)
+
+Epoch 1, loss = 0.2497
+Mean test/val loss: 0.1665
+
+to_device_time:  0
+test_time:  0
+forward_time:  0
+backward_time: 0
+
+Total parameters: 938787
+Total time: 238.05516982078552
+Final val loss: 0.16652349412441253
+
