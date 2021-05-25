@@ -19,7 +19,7 @@ xReshape='false'
 k=2
 n=1024
 yPreprocessing='diag'
-yNorm='instance'
+yNorm='batch'
 nf=8
 loss='mse'
 
