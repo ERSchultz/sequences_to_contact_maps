@@ -38,11 +38,10 @@ def main():
 
         # other
         opt.verbose = False
-        opt.plot = False
-        opt.plot_predictions = False
+        opt.plot = True
+        opt.plot_predictions = True
         opt.data_folder = 'dataset_04_18_21'
         opt.save_mod = 1
-    print(opt)
 
 
     if opt.loss == 'cross_entropy':

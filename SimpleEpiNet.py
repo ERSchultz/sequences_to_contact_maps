@@ -15,7 +15,6 @@ import argparse
 
 def main():
     opt = argparseSetup()
-    print(opt)
 
     # Set up model
     opt.out_act = 'sigmoid'

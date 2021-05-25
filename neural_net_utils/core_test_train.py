@@ -8,12 +8,13 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import time
-from utils import getDataLoaders, comparePCA, print_opt
+from utils import getDataLoaders, comparePCA, save_opt
 from plotting_functions import plotting_script, plotModelFromArrays
 from dataset_classes import Sequences2Contacts
 
 def core_test_train(model, opt):
-    print_opt(opt, os.path.join('results', opt.model_type, 'experiments.csv'))
+    print(opt, end = '\n\n', file = opt.log_file)
+    save_opt(opt, os.path.join('results', opt.model_type, 'experiments.csv'))
 
     # Set random seeds
     torch.manual_seed(opt.seed)
@@ -34,7 +35,7 @@ def core_test_train(model, opt):
             else:
                 save_dict = torch.load(model_name, map_location = 'cpu')
             model.load_state_dict(save_dict['model_state_dict'])
-            print('Pre-trained model is loaded.')
+            print('Pre-trained model is loaded.', file = opt.log_file)
 
     # Set up model and scheduler
     optimizer = optim.Adam(model.parameters(), lr = opt.lr)
@@ -55,20 +56,23 @@ def core_test_train(model, opt):
     train_loss_arr, val_loss_arr = train(train_dataloader, val_dataloader, model, optimizer,
             opt.criterion, device = opt.device, save_location = os.path.join(opt.ofile_folder, 'model.pt'),
             n_epochs = opt.n_epochs, start_epoch = opt.start_epoch, use_parallel = opt.use_parallel,
-            scheduler = scheduler, save_mod = opt.save_mod, print_mod = opt.print_mod, verbose = opt.verbose)
+            scheduler = scheduler, save_mod = opt.save_mod, print_mod = opt.print_mod, verbose = opt.verbose,
+            ofile = opt.log_file)
 
     tot_pars = 0
     for k,p in model.named_parameters():
         tot_pars += p.numel()
-    print('Total parameters: {}'.format(tot_pars))
-    print('Total time: {}'.format(time.time() - t0))
-    print('Final val loss: {}\n'.format(val_loss_arr[-1]))
+    print('Total parameters: {}'.format(tot_pars), file = opt.log_file)
+    print('Total time: {}'.format(time.time() - t0), file = opt.log_file)
+    print('Final val loss: {}\n'.format(val_loss_arr[-1]), file = opt.log_file)
 
     if opt.plot:
         plotting_script(model, opt, train_loss_arr, val_loss_arr)
 
+    opt.log_file.close()
+
 def train(train_loader, val_dataloader, model, optimizer, criterion, device, save_location,
-        n_epochs, start_epoch, use_parallel, scheduler, save_mod, print_mod, verbose):
+        n_epochs, start_epoch, use_parallel, scheduler, save_mod, print_mod, verbose, ofile = sys.stdout):
     train_loss = []
     val_loss = []
     to_device_time = 0
@@ -98,13 +102,15 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
         avg_loss /= (t+1)
         train_loss.append(avg_loss)
 
-
-        val_loss.append(test(val_dataloader, model, optimizer, criterion, device))
-
         if scheduler is not None:
             scheduler.step()
         if e % print_mod == 0 or e == n_epochs:
-            print('Epoch {}, loss = {:.4f}'.format(e, avg_loss))
+            print('Epoch {}, loss = {:.4f}'.format(e, avg_loss), file = ofile)
+            print_val_loss = True
+        else:
+            print_val_loss = False
+        val_loss.append(test(val_dataloader, model, optimizer, criterion, device, print_val_loss, ofile))
+
         if e % save_mod == 0:
             if use_parallel:
                 model_state = model.module.state_dict()
@@ -120,14 +126,14 @@ def train(train_loader, val_dataloader, model, optimizer, criterion, device, sav
                 save_dict['scheduler_state_dict'] = scheduler.state_dict()
             torch.save(save_dict, save_location)
 
-    print('to_device_time: ', to_device_time)
-    print('test_time: ', test_time)
-    print('forward_time: ', forward_time)
-    print('backward_time: ', backward_time)
+    print('\nto_device_time: ', to_device_time, file = ofile)
+    print('test_time: ', test_time, file = ofile)
+    print('forward_time: ', forward_time, file = ofile)
+    print('backward_time: {}\n'.format(backward_time), file = ofile)
 
     return train_loss, val_loss
 
-def test(loader, model, optimizer, criterion, device):
+def test(loader, model, optimizer, criterion, device, toprint, ofile = sys.stdout):
     model.eval()
     avg_loss = 0
     with torch.no_grad():
@@ -139,6 +145,7 @@ def test(loader, model, optimizer, criterion, device):
             loss = criterion(yhat, y)
             avg_loss += loss.item()
     avg_loss /= (t+1)
-    print('\nMean test loss: {:.4f}'.format(avg_loss))
+    if toprint:
+        print('Mean test/val loss: {:.4f}'.format(avg_loss), file = ofile)
     # TODO quartiles and median loss
     return avg_loss

@@ -40,6 +40,7 @@ def test_num_workers():
 def main():
     # test_num_workers()
     print('0.1'.isnumeric())
+    raise Exception('test')
 
 
 

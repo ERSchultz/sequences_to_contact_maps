@@ -38,7 +38,6 @@ def main():
         else:
             opt.data_folder = "dataset_04_18_21"
         opt.ofile = 'model'
-    print(opt)
 
     # Set up model
     model = Akita(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,

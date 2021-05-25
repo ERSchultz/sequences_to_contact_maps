@@ -252,11 +252,12 @@ def calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson'):
     return overall_corr, corr_arr
 
 def calculatePerClassAccuracy(val_dataloader, model, opt):
+    print('Class Accuracy Results:', file = opt.log_file)
     assert opt.y_preprocessing == 'diag' or opt.y_preprocessing == 'prcnt', "invalid preprocessing: {}".format(opt.y_preprocessing)
     if opt.y_preprocessing != 'prcnt':
         prcntDist_path = os.path.join(opt.data_folder, 'prcntDist.npy')
         prcntDist = np.load(prcntDist_path)
-        print('prcntDist', prcntDist)
+        print('prcntDist', prcntDist, file = opt.log_file)
 
     loss_arr = np.zeros(opt.valN)
     acc_arr = np.zeros(opt.valN)
@@ -293,11 +294,10 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
             acc = num / denom
             acc_c_arr[i, c] = acc
 
-    print('Accuracy: {} +- {}'.format(np.mean(acc_arr), np.std(acc_arr)))
-    print('Loss: {} +- {}'.format(np.mean(loss_arr), np.std(loss_arr)))
-    print('acc arr', acc_c_arr)
-    print('freq arr', freq_c_arr)
-    print()
+    print('Accuracy: {} +- {}'.format(np.mean(acc_arr), np.std(acc_arr)), file = opt.log_file)
+    print('Loss: {} +- {}'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
+    print('acc arr', acc_c_arr, file = opt.log_file)
+    print('freq arr {}\n'.format(freq_c_arr), file = opt.log_file)
     return acc_c_arr, freq_c_arr
 
 # other functions
@@ -344,12 +344,11 @@ def comparePCA(val_dataloader, imagePath, model, opt):
         corr, pval = pearsonr(comp1_yhat, comp1_y)
         p_arr[i] = abs(corr)
 
-    results = 'PCA results:\n' +\
+    results = 'PCA Results:\n' +\
             'Accuracy: {} +- {}\n'.format(np.round(np.mean(acc_arr), 3), np.round(np.std(acc_arr), 3)) +\
             'Spearman R: {} +- {}\n'.format(np.round(np.mean(rho_arr), 3), np.round(np.std(rho_arr), 3))+\
-            'Pearson R: {} +- {}'.format(np.round(np.mean(p_arr), 3), np.round(np.std(p_arr), 3))
-    print(results)
-    print()
+            'Pearson R: {} +- {}\n'.format(np.round(np.mean(p_arr), 3), np.round(np.std(p_arr), 3))
+    print(results, file = opt.log_file)
     with open(os.path.join(imagePath, 'PCA_results.txt'), 'w') as f:
         f.write(results)
 
@@ -418,34 +417,9 @@ def argparseSetup():
     parser.add_argument('--bottleneck', type=int, help='Number of filters in bottleneck (must be <= hidden_size_dilation_trunk)')
     parser.add_argument('--dilation_list_head', type=str2list, help='List of dilations for dilated convolutional layers of head')
 
-
     opt = parser.parse_args()
-    # configure cuda
-    if opt.gpus > 1:
-        opt.cuda = True
-        opt.use_parallel = True
-        opt.gpu_ids = []
-        for ii in range(6):
-            try:
-                torch.cuda.get_device_properties(ii)
-                print(str(ii))
-                opt.gpu_ids.append(ii)
-            except AssertionError:
-                print('Not ' + str(ii) + "!")
-    elif opt.gpus == 1:
-        opt.cuda = True
-        opt.use_parallel = False
-    else:
-        opt.cuda = False
-        opt.use_parallel = False
 
-    if opt.cuda and not torch.cuda.is_available():
-        print('Warning: falling back to cpu')
-        opt.cuda = False
-        opt.use_parallel = False
-
-    opt.device = torch.device('cuda' if opt.cuda else 'cpu')
-
+    # set up output folders/files
     model_type_folder =  os.path.join('results', opt.model_type)
     if not os.path.exists(model_type_folder):
         os.mkdir(model_type_folder, mode = 0o755)
@@ -460,12 +434,41 @@ def argparseSetup():
         opt.id = max_id + 1
 
     opt.ofile_folder = os.path.join(model_type_folder, str(opt.id))
+
     if not os.path.exists(opt.ofile_folder):
         os.mkdir(opt.ofile_folder, mode = 0o755)
+    log_file_path = os.path.join(opt.ofile_folder, 'out.log')
+    opt.log_file = open(log_file_path, 'w')
+
+    # configure cuda
+    if opt.gpus > 1:
+        opt.cuda = True
+        opt.use_parallel = True
+        opt.gpu_ids = []
+        for ii in range(6):
+            try:
+                torch.cuda.get_device_properties(ii)
+                print(str(ii), file = opt.log_file)
+                opt.gpu_ids.append(ii)
+            except AssertionError:
+                print('Not ' + str(ii) + "!", file = opt.log_file)
+    elif opt.gpus == 1:
+        opt.cuda = True
+        opt.use_parallel = False
+    else:
+        opt.cuda = False
+        opt.use_parallel = False
+
+    if opt.cuda and not torch.cuda.is_available():
+        print('Warning: falling back to cpu', file = opt.log_file)
+        opt.cuda = False
+        opt.use_parallel = False
+
+    opt.device = torch.device('cuda' if opt.cuda else 'cpu')
 
     return opt
 
-def print_opt(opt, ofile):
+def save_opt(opt, ofile):
     if not os.path.exists(ofile):
         with open(ofile, 'w', newline = '') as f:
             wr = csv.writer(f)
@@ -485,7 +488,7 @@ def print_opt(opt, ofile):
             elif opt.model_type == 'test':
                 opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'nf'])
             else:
-                print("Unknown model type: {}".format(opt.model_type))
+                raise Exception("Unknown model type: {}".format(opt.model_type))
             wr.writerow(opt_list)
     with open(ofile, 'a') as f:
         wr = csv.writer(f)
@@ -505,7 +508,7 @@ def print_opt(opt, ofile):
         elif opt.model_type == 'test':
             opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.nf])
         else:
-            print("Unknown model type: {}".format(opt.model_type))
+            raise Exception("Unknown model type: {}".format(opt.model_type))
 
         wr.writerow(opt_list)
 
@@ -570,7 +573,7 @@ def str2dtype(v):
         elif v == 'int64':
             return torch.int64
         else:
-            print('Unkown str: {}'.format(v))
+            raise Exception('Unkown str: {}'.format(v))
     else:
         raise argparse.ArgumentTypeError('str value expected.')
 
@@ -581,8 +584,10 @@ def list2str(v):
     Inputs:
         v: list
     """
-    assert type(v) == list
-    return '-'.join([str(i) for i in v])
+    if isinstance(v, list):
+        return '-'.join([str(i) for i in v])
+    else:
+        raise Exception('list value expected.')
 
 def float2str(v):
     """
@@ -592,14 +597,16 @@ def float2str(v):
         v: float
     """
     # TODO make this more robust
-    assert type(v) == float
-    vstr = "{:.1e}".format(v)
-    if vstr[2] == '0':
-        # converts 1.0e-04 to 1e-04
-        vstr = vstr[0:1] + vstr[3:]
-    if vstr[-2] == '0':
-        # converts 1e-04 to 1e-4
-        vstr = vstr[0:-2] + vstr[-1]
+    if isinstance(v, float):
+        vstr = "{:.1e}".format(v)
+        if vstr[2] == '0':
+            # converts 1.0e-04 to 1e-04
+            vstr = vstr[0:1] + vstr[3:]
+        if vstr[-2] == '0':
+            # converts 1e-04 to 1e-4
+            vstr = vstr[0:-2] + vstr[-1]
+    else:
+        raise Exception('float value expected.')
     return vstr
 
 

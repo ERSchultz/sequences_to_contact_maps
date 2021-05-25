@@ -361,8 +361,8 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
     np.save(os.path.join(imagePath, 'distance_pearson_std.npy'), p_std)
 
     title = r'Overall Pearson R: {} $\pm$ {}'.format(np.round(np.mean(P_arr_overall), 3), np.round(np.std(P_arr_overall),3))
-    print(title)
-    print()
+    print('Distance Stratified Pearson Correlation Results:', file = opt.log_file)
+    print(title, end = '\n\n', file = opt.log_file)
 
     plt.plot(np.arange(opt.n-1), p_mean, color = 'black', label = 'mean')
     plt.fill_between(np.arange(opt.n-1), p_mean + p_std, p_mean - p_std, color = 'red', alpha = 0.5, label = 'std')
@@ -375,6 +375,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
     plt.close()
 
 def plotPredictions(val_dataloader, model, opt):
+    print('Prediction Results:', file = opt.log_file)
     if opt.y_preprocessing != 'prcnt':
         prcntDist_path = os.path.join(opt.data_folder, 'prcntDist.npy')
         prcntDist = np.load(prcntDist_path)
@@ -385,7 +386,7 @@ def plotPredictions(val_dataloader, model, opt):
         x = x.to(opt.device)
         y = y.to(opt.device)
         path = path[0]
-        print(path)
+        print(path, file = opt.log_file)
         if opt.mode == 'debugging':
             subpath = os.path.join(path, 'test')
         else:
@@ -432,14 +433,13 @@ def plotPredictions(val_dataloader, model, opt):
             ydif = yhat - y
             plotContactMap(ydif, os.path.join(subpath, 'ydif.png'), vmax = v_max, title = 'difference')
         else:
-            print("Unsupported preprocessing: {}".format(y_preprocessing))
+            raise Exception("Unsupported preprocessing: {}".format(y_preprocessing))
 
     if opt.verbose:
         print('y', y, np.max(y))
         print('yhat', yhat, np.max(yhat))
 
-    print('Loss: {} +- {}'.format(np.mean(loss_arr), np.std(loss_arr)))
-    print()
+    print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
 
 def freqDistributionPlots(dataFolder, n = 1024):
     chi = np.load(os.path.join(dataFolder, 'chis.npy'))
@@ -487,17 +487,16 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, load
             model.load_state_dict(save_dict['model_state_dict'])
             train_loss_arr = save_dict['train_loss']
             val_loss_arr = save_dict['val_loss']
-            print('Model is loaded: {}'.format(model_name))
+            print('Model is loaded: {}'.format(model_name), file = opt.log_file)
         else:
-            print('Model does not exist: {}'.format(model_name))
-            return
+            raise Exception('Model does not exist: {}'.format(model_name))
     else:
         assert train_loss_arr is not None and val_loss_arr is not None
 
 
 
     imagePath = opt.ofile_folder
-    print()
+    print('#### Plotting Script ####', file = opt.log_file)
     plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
     plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt, True)
 
@@ -509,7 +508,6 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, load
 
     if opt.plot_predictions:
         plotPredictions(val_dataloader, model, opt)
-    print('\n'*3)
 
 def main():
     opt = argparseSetup()
@@ -548,7 +546,6 @@ def main():
         opt.plot_predictions = False
         opt.verbose = True
 
-    print(opt)
     if opt.model_type == 'UNet':
         opt.ofile = "UNet_nEpochs{}_nf{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}".format(opt.n_epochs, opt.nf, float2str(opt.lr), list2str(opt.milestones), opt.y_preprocessing, opt.y_norm)
         if opt.loss == 'cross_entropy':
@@ -564,7 +561,7 @@ def main():
             opt.criterion = F.mse_loss
             model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = nn.Sigmoid())
         else:
-            print('Invalid loss: {}'.format(opt.loss))
+            raise Exception('Invalid loss: {}'.format(opt.loss))
     elif opt.model_type == 'DeepC':
         model = DeepC(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list, out_act = opt.out_act)
@@ -573,7 +570,7 @@ def main():
         if opt.loss == 'mse':
             opt.criterion = F.mse_loss
         else:
-            print('Invalid loss: {}'.format(opt.loss))
+            raise Exception('Invalid loss: {}'.format(opt.loss))
     elif opt.model_type == 'Akita':
         model = Akita(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list_trunk,
@@ -584,11 +581,12 @@ def main():
         if opt.loss == 'mse':
             opt.criterion = F.mse_loss
         else:
-            print('Invalid loss: {}'.format(opt.loss))
+            raise Exception('Invalid loss: {}'.format(opt.loss))
     else:
         print('Invalid model type: {}'.format(opt.model_type))
         # TODO
 
+    print(opt, file = opt.log_file)
     model.to(opt.device)
     plotting_script(model, opt, load = True)
 
