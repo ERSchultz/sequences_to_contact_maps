@@ -1,0 +1,61 @@
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=True, toxx_mode='mean', y_preprocessing='diag', y_norm='batch', x_reshape=False, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=32, num_workers=4, start_epoch=1, n_epochs=20, save_mod=5, print_mod=2, lr=0.01, gpus=1, milestones=None, gamma=0.1, loss='mse', model_type='UNet', pretrained=False, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act='sigmoid', plot=True, plot_predictions=False, kernel_w_list=None, hidden_sizes_list=None, nf=8, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, id=5, ofile_folder='results/UNet/5', log_file=<_io.TextIOWrapper name='results/UNet/5/out.log' mode='w' encoding='UTF-8'>, cuda=True, use_parallel=False, device=device(type='cuda'), criterion=<function mse_loss at 0x7f67c293b0d0>)
+
+Epoch 2, loss = 0.0025
+Mean test/val loss: 0.0026
+Epoch 4, loss = 0.0020
+Mean test/val loss: 0.0021
+Epoch 6, loss = 0.0020
+Mean test/val loss: 0.0020
+Epoch 8, loss = 0.0017
+Mean test/val loss: 0.0018
+Epoch 10, loss = 0.0016
+Mean test/val loss: 0.0019
+Epoch 12, loss = 0.0015
+Mean test/val loss: 0.0016
+Epoch 14, loss = 0.0015
+Mean test/val loss: 0.0015
+Epoch 16, loss = 0.0014
+Mean test/val loss: 0.0015
+Epoch 18, loss = 0.0013
+Mean test/val loss: 0.0014
+Epoch 20, loss = 0.0013
+Mean test/val loss: 0.0014
+
+to_device_time:  0
+test_time:  0
+forward_time:  0
+backward_time: 0
+
+Total parameters: 655361
+Total time: 3442.3019297122955
+Final val loss: 0.0014321643227179135
+
+#### Plotting Script ####
+PCA Results:
+Accuracy: 0.919 +- 0.034
+Spearman R: 0.951 +- 0.015
+Pearson R: 0.956 +- 0.013
+
+Distance Stratified Pearson Correlation Results:
+Overall Pearson R: 0.803 $\pm$ 0.115
+
+Class Accuracy Results:
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+Accuracy: 0.3096154594421387 +- 0.0497981206409803
+Loss: 0.0014446367908385583 +- 0.0007507382461582337
+acc arr [[0.3460947  0.50703502 0.16504629 ... 0.21920955 0.3474878  0.80681202]
+ [0.36216916 0.43854405 0.16607231 ... 0.22573971 0.37536545 0.71766443]
+ [0.3320859  0.49665846 0.17635609 ... 0.26997401 0.39236195 0.5574637 ]
+ ...
+ [0.24480194 0.55370204 0.17325966 ... 0.38873807 0.43879044 0.51281071]
+ [0.23196952 0.54152335 0.20231617 ... 0.11533395 0.15828804 0.82381521]
+ [0.16827593 0.61220453 0.16535361 ... 0.29140722 0.48234662 0.22376238]]
+freq arr [[0.20217323 0.18937874 0.09024429 ... 0.06394386 0.06643295 0.04575157]
+ [0.22844315 0.155056   0.06953049 ... 0.05808067 0.08024406 0.12661362]
+ [0.19316673 0.15268898 0.07447433 ... 0.07412529 0.08735085 0.07974434]
+ ...
+ [0.2030983  0.21827126 0.1108017  ... 0.04637146 0.0351963  0.00997543]
+ [0.19826698 0.19963074 0.09848976 ... 0.05791473 0.04772949 0.02237701]
+ [0.22440338 0.25749016 0.12540817 ... 0.02756882 0.01420784 0.00096321]]
+
