@@ -40,7 +40,7 @@ def main():
 
     if opt.loss == 'cross_entropy':
         assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'
-        assert opt.y_norm is None, 'Cannot normalize with cross entropy'
+        assert opt.y_norm is None, 'Cannot normalize ({}) with cross entropy'.format(opt.y_norm)
         assert opt.out_act is None, "Cannot use out_act with cross entropy" # activation combined into loss
         opt.y_reshape = False
         opt.criterion = F.cross_entropy
