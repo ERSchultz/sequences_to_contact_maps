@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import math
+import numpy as np
 
 class UnetBlock(nn.Module):
     '''U Net Block adapted from https://github.com/phillipi/pix2pix.'''
@@ -153,19 +154,35 @@ class ConvBlock(nn.Module):
                                     stride, padding, dilation, bias = bias)] # only used if self.gated
 
         if norm == 'batch':
-            model.append(nn.BatchNorm2d(output_size))
-            model2.append(nn.BatchNorm2d(output_size))
+            if conv1d:
+                batch_fn = nn.BatchNorm1d
+            else:
+                batch_fn = nn.BatchNorm2d
         elif norm == 'instance':
-            model.append(nn.InstanceNorm2d(output_size))
-            model2.append(nn.InstanceNorm2d(output_size))
+            if conv1d:
+                batch_fn = nn.InstanceNorm1d
+            else:
+                batch_fn = nn.InstanceNorm2d
+        else:
+            batch_fn = nn.Identity
+        model.append(batch_fn(output_size))
+        model2.append(batch_fn(output_size))
 
         if pool == 'maxpool':
-            model.append(nn.MaxPool2d(pool_kernel_size))
-            model2.append(nn.MaxPool2d(pool_kernel_size))
+            if conv1d:
+                maxpool_fn = nn.MaxPool1d
+            else:
+                maxpool_fn = nn.MaxPool2d
+            model.append(maxpool_fn(pool_kernel_size))
+            model2.append(maxpool_fn(pool_kernel_size))
 
         if dropout == 'drop':
-            model.append(nn.Dropout2d(dropout_p))
-            model2.append(nn.Dropout2d(dropout_p))
+            if conv1d:
+                dropout_fn = nn.Dropout
+            else:
+                dropout_fn = nn.Dropout2d
+            model.append(dropout_fn(dropout_p))
+            model2.append(dropout_fn(dropout_p))
 
         if activation is None:
             pass
@@ -314,5 +331,19 @@ class AverageTo2d(nn.Module):
             if out.is_cuda:
                 self.d = self.d.to(out.get_device())
             out = torch.cat((out, torch.tile(self.d, (N, 1, 1, 1))), dim = 1)
-            self.d = self.d.cpu()
+        print('avg', out)
         return out
+
+
+def main():
+    sym = Symmetrize2D()
+    x = np.array([[[5,6,7],[3,9,12],[0, 7, 8]], [[5,3,1],[4,5,12],[0, 13, 7]]])
+    x = np.reshape(x, (1, 2, 3, 3))
+    x = torch.tensor(x, dtype = torch.int16)
+    print(x)
+    x = sym(x)
+    print(x)
+
+
+if __name__ == '__main__':
+    main()

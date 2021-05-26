@@ -397,6 +397,7 @@ def argparseSetup():
     parser.add_argument('--n', type=int, default=1024, help='Number of particles')
     parser.add_argument('--seed', type=int, default=42, help='random seed to use. Default: 42')
     parser.add_argument('--out_act', type=str2None, help='activation of final layer')
+    parser.add_argument('--training_norm', type=str2None, help='norm during training (batch, instance, or None)')
 
     # post-processing args
     parser.add_argument('--plot', type=str2bool, default=True, help='True to run plotting script')
@@ -476,7 +477,7 @@ def save_opt(opt, ofile):
                 'y_norm', 'x_reshape', 'ydtype', 'y_reshape', 'crop', 'classes', 'split', 'shuffle',
                 'batch_size', 'num_workers', 'start_epoch', 'n_epochs', 'lr', 'gpus', 'milestones',
                 'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'n',
-                'seed', 'out_act', 'plot', 'plot_predictions']
+                'seed', 'out_act', 'training_norm', 'plot', 'plot_predictions']
             if opt.model_type == 'simpleEpiNet':
                 opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])
             elif opt.model_type == 'UNet':
@@ -496,7 +497,7 @@ def save_opt(opt, ofile):
             opt.y_norm, opt.x_reshape, opt.ydtype, opt.y_reshape, opt.crop, opt.classes, opt.split,
             opt.shuffle, opt.batch_size, opt.num_workers, opt.start_epoch, opt.n_epochs, opt.lr,
             opt.gpus, opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
-            opt.ifile_folder, opt.ifile, opt.k, opt.n, opt.seed, opt.out_act, opt.plot, opt.plot_predictions]
+            opt.ifile_folder, opt.ifile, opt.k, opt.n, opt.seed, opt.out_act, opt.training_norm, opt.plot, opt.plot_predictions]
         if opt.model_type == 'simpleEpiNet':
             opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list])
         elif opt.model_type == 'UNet':

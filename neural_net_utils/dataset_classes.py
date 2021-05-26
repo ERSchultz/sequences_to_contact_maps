@@ -92,11 +92,10 @@ class Sequences2Contacts(Dataset):
             x_path = os.path.join(self.paths[index], 'x.npy')
             x = np.load(x_path)
             if self.crop is not None:
-                x = x[:, self.crop[0]:self.crop[1]]
+                x = x[self.crop[0]:self.crop[1], :]
             if self.x_reshape:
                 # treat x as 1d image with k channels
                 x = x.T
-
         x = torch.tensor(x, dtype = torch.float32)
         y = torch.tensor(y, dtype = self.ydtype)
         result = [x, y]
