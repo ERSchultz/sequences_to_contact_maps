@@ -362,8 +362,8 @@ def argparseSetup():
     parser.add_argument('--data_folder', type=str, default='test', help='Location of data')
     parser.add_argument('--toxx', type=str2bool, default=False, help='True if x should be converted to 2D image')
     parser.add_argument('--toxx_mode', type=str, default='mean', help='mode for toxx (default mean)')
-    parser.add_argument('--y_preprocessing', type=str, default='diag', help='type of pre-processing for y')
-    parser.add_argument('--y_norm', type=str, default='batch', help='type of [0,1] normalization for y')
+    parser.add_argument('--y_preprocessing', type=str2None, default='diag', help='type of pre-processing for y')
+    parser.add_argument('--y_norm', type=str2None, default='batch', help='type of [0,1] normalization for y')
     parser.add_argument('--x_reshape', type=str2bool, default=True, help='True if x should be considered a 1D image')
     parser.add_argument('--ydtype', type=str2dtype, default='float32', help='torch data type for y')
     parser.add_argument('--y_reshape', type=str2bool, default=True, help='True if y should be considered a 2D image')
@@ -396,7 +396,7 @@ def argparseSetup():
     parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
     parser.add_argument('--n', type=int, default=1024, help='Number of particles')
     parser.add_argument('--seed', type=int, default=42, help='random seed to use. Default: 42')
-    parser.add_argument('--out_act', type=str, help='activation of final layer')
+    parser.add_argument('--out_act', type=str2None, help='activation of final layer')
 
     # post-processing args
     parser.add_argument('--plot', type=str2bool, default=True, help='True to run plotting script')
@@ -521,6 +521,23 @@ def roundUpBy10(val):
     while val > mult:
         mult *= 10
     return mult
+
+def str2None(v):
+    """
+    Helper function for argparser, converts str to None if str == 'none'
+
+    Inputs:
+        v: string
+    """
+    if v is None:
+        return v
+    elif isinstance(v, str):
+        if v.lower == 'none':
+            return None
+        else:
+            return v
+    else:
+        raise argparse.ArgumentTypeError('String value expected.')
 
 def str2bool(v):
     """

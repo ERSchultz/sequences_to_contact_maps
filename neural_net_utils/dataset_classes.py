@@ -72,9 +72,9 @@ class Sequences2Contacts(Dataset):
         if self.y_norm == 'instance':
             self.ymax = np.max(y)
             self.ymin = np.min(y)
-            y = (y - self.ymin) / (self.ymax - self.ymin)
-        elif self.y_norm == 'batch':
-            y = (y - self.ymin) / (self.ymax - self.ymin)
+
+        # if y_norm is batch this uses batch parameters from init, if y_norm is None, this does nothing
+        y = (y - self.ymin) / (self.ymax - self.ymin)
 
         if self.toxx:
             if self.toxx_mode == 'concat':

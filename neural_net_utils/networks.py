@@ -138,12 +138,19 @@ class DeepC(nn.Module):
 
         self.model = nn.Sequential(*model)
 
-        if issubclass(type(out_act), nn.Module):
+        if out_act is None:
+            self.out_act = nn.Identity
+        elif issubclass(type(out_act), nn.Module):
             self.out_act = out_act
-        elif out_act.lower() == 'sigmoid':
-            self.out_act = nn.Sigmoid()
-        elif out_act.lower() == 'relu':
-            self.out_act = nn.ReLU()
+        elif isinstance(out_act, str):
+            if out_act.lower() == 'sigmoid':
+                self.out_act = nn.Sigmoid()
+            elif out_act.lower() == 'relu':
+                self.out_act = nn.ReLU(True)
+            else:
+                raise Exception("Unkown activation {}".format(out_act))
+        else:
+            raise Exception("Unknown out_act {}".format(out_act))
 
     def forward(self, input):
         out = self.model(input)
@@ -158,7 +165,8 @@ class Akita(nn.Module):
                 dilation_list_trunk,
                 bottleneck_size,
                 dilation_list_head,
-                out_act = 'sigmoid'):
+                out_act,
+                out_channels):
         """
         Inputs:
             n: number of particles
@@ -208,24 +216,14 @@ class Akita(nn.Module):
 
         self.head = nn.Sequential(*head)
 
-        # Linear Transformation
-        # self.linear_block_filters = input_size
-        # self.fc = LinearBlock(input_size, 1, activation = out_act)
-
-        # Conversion to 1 channel image
-        self.conv = ConvBlock(input_size, 1, 1, padding = 0,
+        # Conversion to out_channels
+        self.conv = ConvBlock(input_size, out_channels, 1, padding = 0,
                                 activation = out_act)
 
 
     def forward(self, input):
         out = self.trunk(input)
-
         out = self.head(out)
-
-        # out = out.view(-1, self.n, self.n, self.linear_block_filters)
-        #
-        # out = self.fc(out)
-        # out = out.view(-1, 1, self.n, self.n)
         out = self.conv(out)
 
         return out

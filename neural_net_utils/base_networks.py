@@ -44,6 +44,15 @@ class UnetBlock(nn.Module):
             conv2 = nn.ConvTranspose2d(inner_size * 2, output_size, kernel_size, stride, padding)
             down = [conv1]
             if out_act is not None:
+                if issubclass(out_act, nn.Module):
+                    pass
+                elif isinstance(out_act, str):
+                    if out_act.lower() == 'sigmoid':
+                        out_act == nn.Sigmoid()
+                    elif out_act.lower() == 'tanh':
+                        out_act == nn.Tanh()
+                    else:
+                        raise Exception("Unknown out_act {}".format(out_act))
                 up = [act2, conv2, out_act]
             else:
                 up = [act2, conv2]
@@ -128,21 +137,20 @@ class ConvBlock(nn.Module):
         super(ConvBlock, self).__init__()
 
         self.residual = residual
-        if activation == 'gated':
+        if isinstance(activation, str) and activation.lower() == 'gated':
             self.gated = True
         else:
             self.gated = False
 
         if conv1d:
-            model = [nn.Conv1d(input_size, output_size, kernel_size,
-                                        stride, padding, dilation, bias = bias)]
-            model2 = [nn.Conv1d(input_size, output_size, kernel_size,
-                                        stride, padding, dilation, bias = bias)] # only used if self.gated
+            conv_fn = nn.Conv1d
         else:
-            model = [nn.Conv2d(input_size, output_size, kernel_size,
-                                        stride, padding, dilation, bias = bias)]
-            model2 = [nn.Conv2d(input_size, output_size, kernel_size,
-                                        stride, padding, dilation, bias = bias)] # only used if self.gated
+            conv_fn = nn.Conv2d
+
+        model = [conv_fn(input_size, output_size, kernel_size,
+                                    stride, padding, dilation, bias = bias)]
+        model2 = [conv_fn(input_size, output_size, kernel_size,
+                                    stride, padding, dilation, bias = bias)] # only used if self.gated
 
         if norm == 'batch':
             model.append(nn.BatchNorm2d(output_size))
@@ -159,15 +167,25 @@ class ConvBlock(nn.Module):
             model.append(nn.Dropout2d(dropout_p))
             model2.append(nn.Dropout2d(dropout_p))
 
-        if activation.lower() == 'relu':
-            model.append(nn.ReLU(True))
-        elif activation.lower() == 'prelu':
-            model.append(nn.PReLU())
-        elif activation.lower() == 'gated':
-            model.append(nn.Tanh())
-            model2.append(nn.Sigmoid())
-            self.model2 = nn.Sequential(*model2)
-
+        if activation is None:
+            pass
+        elif issubclass(type(activation), nn.Module):
+            model.append(activation)
+        elif isinstance(activation, str):
+            if activation.lower() == 'relu':
+                model.append(nn.ReLU(True))
+            elif activation.lower() == 'prelu':
+                model.append(nn.PReLU())
+            elif activation.lower() == 'gated':
+                model.append(nn.Tanh())
+                model2.append(nn.Sigmoid())
+                self.model2 = nn.Sequential(*model2)
+            elif activation.lower() == 'sigmoid':
+                model.append(nn.Sigmoid())
+            else:
+                raise Exception("Unkown activation {}".format(activation))
+        else:
+            raise Exception("Unkown activation {}".format(activation))
 
         self.model = nn.Sequential(*model)
 
@@ -221,14 +239,23 @@ class LinearBlock(nn.Module):
         if dropout == 'drop':
             model.append(nn.Dropout(dropout_p))
 
-        if issubclass(type(activation), nn.Module):
+        if activation is None:
+            pass
+        elif issubclass(type(activation), nn.Module):
             model.append(activation)
-        elif activation.lower() == 'relu':
-            model.append(nn.ReLU(True))
-        elif activation.lower() == 'prelu':
-            model.append(nn.PReLU())
-        elif activation.lower() == 'sigmoid':
-            model.append(nn.Sigmoid())
+        if isinstance(activation, str):
+            if activation.lower() == 'relu':
+                model.append(nn.ReLU(True))
+            elif activation.lower() == 'prelu':
+                model.append(nn.PReLU())
+            elif activation.lower() == 'sigmoid':
+                model.append(nn.Sigmoid())
+            elif activation.lower() == 'sigmoid':
+                model.append(nn.Sigmoid())
+            else:
+                raise Exception("Unkown activation {}".format(activation))
+        else:
+            raise Exception("Unkown activation {}".format(activation))
 
         self.model = nn.Sequential(*model)
 

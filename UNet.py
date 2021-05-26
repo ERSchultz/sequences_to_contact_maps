@@ -5,17 +5,11 @@ from neural_net_utils.networks import UNet
 from neural_net_utils.dataset_classes import Sequences2Contacts
 from neural_net_utils.utils import argparseSetup, str2list
 from neural_net_utils.core_test_train import core_test_train
-import numpy as np
-import matplotlib.pyplot as plt
-import time
-import os
-import argparse
 
 def main():
     opt = argparseSetup()
     # opt.mode = 'debugging'
     if opt.mode == 'debugging':
-        opt.mode = 'real'
         # Preprocessing
         opt.toxx = True
         opt.toxx_mode = 'mean'
@@ -46,18 +40,15 @@ def main():
 
     if opt.loss == 'cross_entropy':
         assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'
-        assert opt.y_norm == None, 'Cannot normalize with cross entropy'
+        assert opt.y_norm is None, 'Cannot normalize with cross entropy'
+        assert opt.out_act is None, "Cannot use out_act with cross entropy" # activation combined into loss
         opt.y_reshape = False
         opt.criterion = F.cross_entropy
         opt.ydtype = torch.int64
-        opt.out_act = None
-        model = UNet(nf_in = 2, nf_out = 10, nf = opt.nf, out_act = None) # activation combined into loss
+        model = UNet(nf_in = 2, nf_out = 10, nf = opt.nf, out_act = opt.out_act)
     elif opt.loss == 'mse':
         opt.criterion = F.mse_loss
-        opt.out_act = 'sigmoid'
-        model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = nn.Sigmoid())
-        opt.y_reshape = True
-        opt.ydtype = torch.float32
+        model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = opt.out_act)
     else:
         print('Invalid loss: {}'.format(opt.loss))
     core_test_train(model, opt)

@@ -8,7 +8,7 @@ from neural_net_utils.core_test_train import core_test_train
 
 def main():
     opt = argparseSetup()
-    # opt.mode = 'debugging'
+    opt.mode = 'debugging'
     if opt.mode == 'debugging':
         # architecture
         opt.k=2
@@ -17,7 +17,7 @@ def main():
         opt.y_norm='batch'
         opt.kernel_w_list=str2list('5-5-5')
         opt.hidden_sizes_list=str2list('32-64-96')
-        opt.dilation_list=str2list('2-4-8-16')
+        opt.dilation_list_trunk=str2list('2-4-8-16')
         opt.bottleneck=32
         opt.dilation_list_head=str2list('2-4-8-16')
         opt.out_act=nn.ReLU(True)
@@ -31,8 +31,8 @@ def main():
 
         # other
         opt.plot = True
-        opt.plot_predictions = False
-        opt.verbose = False
+        opt.plot_predictions = True
+        opt.verbose = True
         if opt.cuda:
             opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
         else:
@@ -40,15 +40,26 @@ def main():
         opt.ofile = 'model'
 
     # Set up model
+    if opt.loss == 'mse':
+        opt.criterion = F.mse_loss
+        opt.channels = 1
+    elif opt.loss == 'cross_entropy':
+        assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'
+        assert opt.y_norm is None, 'Cannot normalize with cross entropy'
+        assert opt.out_act is None, "Cannot use output activation with cross entropy"
+        opt.y_reshape = False
+        opt.criterion = F.cross_entropy
+        opt.ydtype = torch.int64
+        opt.channels = opt.classes
+    else:
+        print('Invalid loss: {}'.format(opt.loss))
+
     model = Akita(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                         opt.dilation_list_trunk,
                         opt.bottleneck,
                         opt.dilation_list_head,
-                        opt.out_act)
-    if opt.loss == 'mse':
-        opt.criterion = F.mse_loss
-    else:
-        print('Invalid loss: {}'.format(opt.loss))
+                        opt.out_act,
+                        opt.channels)
 
     core_test_train(model, opt)
 

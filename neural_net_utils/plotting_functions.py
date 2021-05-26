@@ -390,7 +390,6 @@ def plotPredictions(val_dataloader, model, opt):
         if opt.mode == 'debugging':
             subpath = os.path.join(path, 'test')
         else:
-
             subpath = os.path.join(path, os.path.join(opt.model_type, str(opt.id)))
         if not os.path.exists(subpath):
             os.mkdir(subpath, mode = 0o755)
