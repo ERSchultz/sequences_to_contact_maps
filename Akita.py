@@ -60,7 +60,7 @@ def main():
                         opt.dilation_list_head,
                         opt.out_act,
                         opt.channels,
-                        norm = 'batch')
+                        norm = opt.training_norm)
 
     core_test_train(model, opt)
 
