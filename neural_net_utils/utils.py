@@ -532,7 +532,7 @@ def str2None(v):
     if v is None:
         return v
     elif isinstance(v, str):
-        if v.lower == 'none':
+        if v.lower() == 'none':
             return None
         else:
             return v
@@ -708,8 +708,6 @@ class InteractionConverter():
 def main():
     opt = argparseSetup()
     print(opt)
-    vstr = float2str(0.01)
-    print(vstr)
     # plotPerClassAccuracy(None, None, 5)
 
 if __name__ == '__main__':
