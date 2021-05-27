@@ -39,10 +39,15 @@ def test_num_workers():
 
 def cleanup():
     dir = "/../../../project2/depablo/erschultz/dataset_04_18_21"
-    for file in os.listdir(dir):
-        fpath = os.path.join(dir, file)
-        if os.isdir(fpath):
-            print(fpath)
+    for sample in os.listdir(dir):
+        sample_path = os.path.join(dir, file)
+        if os.path.isdir(sample_path):
+            for file in os.listdir(sample_path):
+                f_path = os.path.join(sample_path, file)
+                if os.path.isdir(f_path):
+                    print('Delete', f_path)
+        else:
+            print('Skipping', sample_path)
 
 
 
