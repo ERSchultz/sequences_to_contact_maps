@@ -38,7 +38,7 @@ def test_num_workers():
     print(np.round(results, 1))
 
 def cleanup():
-    dir = "/../../../project2/depablo/erschultz/dataset_04_18_21"
+    dir = "/../../../project2/depablo/erschultz/dataset_04_18_21/samples"
     for sample in os.listdir(dir):
         sample_path = os.path.join(dir, sample)
         if os.path.isdir(sample_path):
