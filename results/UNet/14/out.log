@@ -67,3 +67,13 @@ results/UNet/14/sample1033
 results/UNet/14/sample406
 Loss: 0.038013375401496886 +- 0.23754530805928586
 
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=True, toxx_mode='mean', y_preprocessing='prcnt', y_norm=None, x_reshape=False, ydtype=torch.int64, y_reshape=False, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=16, num_workers=4, start_epoch=1, n_epochs=20, save_mod=5, print_mod=2, lr=0.01, gpus=1, milestones=None, gamma=0.1, loss='cross_entropy', model_type='UNet', id=14, pretrained=True, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act=None, training_norm=None, plot=True, plot_predictions=True, kernel_w_list=None, hidden_sizes_list=None, nf=8, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, ofile_folder='results/UNet/14', log_file=<_io.TextIOWrapper name='results/UNet/14/out.log' mode='a' encoding='UTF-8'>, criterion=<function cross_entropy at 0x7f05c4794280>, channels=10, cuda=True, use_parallel=False, device=device(type='cuda'))
+Model is loaded: results/UNet/14/model.pt
+Prediction Results:
+results/UNet/14/sample189
+results/UNet/14/sample662
+results/UNet/14/sample997
+results/UNet/14/sample1950
+results/UNet/14/sample898
+Loss: 0.041917300820350646 +- 0.2623008884948874
+

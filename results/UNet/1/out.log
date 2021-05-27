@@ -68,3 +68,13 @@ results/UNet/1/sample20
 results/UNet/1/sample635
 Loss: 0.00028768639545887707 +- 0.0020999117126774443
 
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=True, toxx_mode='mean', y_preprocessing='diag', y_norm='instance', x_reshape=False, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=16, num_workers=4, start_epoch=1, n_epochs=20, save_mod=5, print_mod=2, lr=0.1, gpus=1, milestones=None, gamma=0.1, loss='mse', model_type='UNet', id=1, pretrained=True, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act='sigmoid', training_norm=None, plot=True, plot_predictions=True, kernel_w_list=None, hidden_sizes_list=None, nf=8, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, ofile_folder='results/UNet/1', log_file=<_io.TextIOWrapper name='results/UNet/1/out.log' mode='a' encoding='UTF-8'>, criterion=<function mse_loss at 0x7f9dc0657550>, channels=1, cuda=True, use_parallel=False, device=device(type='cuda'))
+Model is loaded: results/UNet/1/model.pt
+Prediction Results:
+results/UNet/1/sample189
+results/UNet/1/sample662
+results/UNet/1/sample997
+results/UNet/1/sample1950
+results/UNet/1/sample898
+Loss: 0.0001942575885914266 +- 0.0013244077875008353
+
