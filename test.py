@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import time
 import csv
+import os
 from neural_net_utils.base_networks import *
 from neural_net_utils.networks import *
 from neural_net_utils.utils import *
@@ -36,17 +37,17 @@ def test_num_workers():
 
     print(np.round(results, 1))
 
+def cleanup():
+    dir = "/../../../project2/depablo/erschultz/dataset_04_18_21"
+    for file in os.listdir(dir):
+        fpath = os.path.join(dir, file)
+        if os.isdir(fpath):
+            print(fpath)
+
+
 
 def main():
-    # test_num_workers()
-    print('0.1'.isnumeric())
-    # raise Exception('test')
-    L = 5
-    M = 3
-    N = 12
-    empty_list = [[[None]*N]*M]*L
-    print(empty_list)
-    print(empty_list[2][2 ][4])
+    cleanup()
 
 
 
