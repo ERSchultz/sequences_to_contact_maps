@@ -39,21 +39,6 @@ def main():
             opt.data_folder = "dataset_04_18_21"
         opt.ofile = 'model'
 
-    # Set up model
-    if opt.loss == 'mse':
-        opt.criterion = F.mse_loss
-        opt.channels = 1
-    elif opt.loss == 'cross_entropy':
-        assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'
-        assert opt.y_norm is None, 'Cannot normalize with cross entropy'
-        assert opt.out_act is None, "Cannot use output activation with cross entropy"
-        opt.y_reshape = False
-        opt.criterion = F.cross_entropy
-        opt.ydtype = torch.int64
-        opt.channels = opt.classes
-    else:
-        print('Invalid loss: {}'.format(opt.loss))
-
     model = Akita(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                         opt.dilation_list_trunk,
                         opt.bottleneck,

@@ -45,13 +45,13 @@ class UnetBlock(nn.Module):
             conv2 = nn.ConvTranspose2d(inner_size * 2, output_size, kernel_size, stride, padding)
             down = [conv1]
             if out_act is not None:
-                if issubclass(out_act, nn.Module):
+                if issubclass(type(out_act), nn.Module):
                     pass
                 elif isinstance(out_act, str):
                     if out_act.lower() == 'sigmoid':
-                        out_act == nn.Sigmoid()
+                        out_act = nn.Sigmoid()
                     elif out_act.lower() == 'tanh':
-                        out_act == nn.Tanh()
+                        out_act = nn.Tanh()
                     else:
                         raise Exception("Unknown out_act {}".format(out_act))
                 up = [act2, conv2, out_act]

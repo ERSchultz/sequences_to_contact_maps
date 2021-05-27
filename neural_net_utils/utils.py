@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader
 from numba import jit, njit
 import numpy as np
 import os
+import sys
 import math
 import argparse
 from sklearn.decomposition import PCA
@@ -354,7 +355,7 @@ def comparePCA(val_dataloader, imagePath, model, opt):
 
 def argparseSetup():
     """Helper function to get default command line argument parser."""
-    parser = argparse.ArgumentParser(description='Base parser')
+    parser = argparse.ArgumentParser(description='Base parser', fromfile_prefix_chars='@')
     parser.add_argument('--mode', type=str)
     parser.add_argument('--verbose', type=str2bool, default=False)
 
@@ -389,6 +390,7 @@ def argparseSetup():
 
     # model args
     parser.add_argument('--model_type', type=str, default='test', help='Type of model')
+    parser.add_argument('--id', type=int, help='id of model')
     parser.add_argument('--pretrained', type=str2bool, default=False, help='True if using a pretrained model')
     parser.add_argument('--resume_training', type=str2bool, default=False, help='True if resuming traning of a partially trained model')
     parser.add_argument('--ifile_folder', type=str, help='Location of input file for pretrained model')
@@ -422,24 +424,46 @@ def argparseSetup():
 
     # set up output folders/files
     model_type_folder =  os.path.join('results', opt.model_type)
-    if not os.path.exists(model_type_folder):
-        os.mkdir(model_type_folder, mode = 0o755)
-        opt.id = 1
+    if opt.id is None:
+        if not os.path.exists(model_type_folder):
+            os.mkdir(model_type_folder, mode = 0o755)
+            opt.id = 1
+        else:
+            max_id = 0
+            for filename in os.listdir(model_type_folder):
+                if filename.isnumeric():
+                    id = int(filename)
+                    if id > max_id:
+                        max_id = id
+            opt.id = max_id + 1
     else:
-        max_id = 0
-        for filename in os.listdir(model_type_folder):
-            if filename.isnumeric():
-                id = int(filename)
-                if id > max_id:
-                    max_id = id
-        opt.id = max_id + 1
+        txt_file = os.path.join(model_type_folder, str(opt.id), 'argparse.txt')
+        assert os.path.exists(txt_file), "{} does not exist".format(txt_file)
+        print(sys.argv)
+        print(sys.argv[0])
+        opt = parser.parse_args(sys.argv.append('@{}'.format(txt_file))) # parse again
+        print(opt.id, opt.model_type)
 
     opt.ofile_folder = os.path.join(model_type_folder, str(opt.id))
-
     if not os.path.exists(opt.ofile_folder):
         os.mkdir(opt.ofile_folder, mode = 0o755)
     log_file_path = os.path.join(opt.ofile_folder, 'out.log')
-    opt.log_file = open(log_file_path, 'w')
+    opt.log_file = open(log_file_path, 'a')
+
+    # configure other model params
+    if opt.loss == 'mse':
+        opt.criterion = F.mse_loss
+        opt.channels = 1
+    elif opt.loss == 'cross_entropy':
+        assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'
+        assert opt.y_norm is None, 'Cannot normalize with cross entropy'
+        assert opt.out_act is None, "Cannot use output activation with cross entropy"
+        opt.y_reshape = False
+        opt.criterion = F.cross_entropy
+        opt.ydtype = torch.int64
+        opt.channels = opt.classes
+    else:
+        raise Exception('Invalid loss: {}'.format(repr(opt.loss)))
 
     # configure cuda
     if opt.gpus > 1:
@@ -512,7 +536,6 @@ def save_opt(opt, ofile):
             raise Exception("Unknown model type: {}".format(opt.model_type))
 
         wr.writerow(opt_list)
-
 
 def roundUpBy10(val):
     """Rounds value up to the nearst multiple of 10."""
