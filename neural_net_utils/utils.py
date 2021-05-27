@@ -353,7 +353,6 @@ def comparePCA(val_dataloader, imagePath, model, opt):
     with open(os.path.join(imagePath, 'PCA_results.txt'), 'w') as f:
         f.write(results)
 
-
 def getBaseParser():
     '''Helper function that returns base parser'''
     parser = argparse.ArgumentParser(description='Base parser', fromfile_prefix_chars='@')
@@ -498,6 +497,11 @@ def argparseSetup():
     opt.device = torch.device('cuda' if opt.cuda else 'cpu')
 
     return opt
+
+def save_args(opt):
+    with open(os.path.join(opt.ofile_folder, 'argparse.txt'), 'w') as f:
+        for arg in sys.argv[1:]: # skip the program file
+            f.write(arg + '\n')
 
 def save_opt(opt, ofile):
     if not os.path.exists(ofile):
@@ -658,7 +662,6 @@ def float2str(v):
     else:
         raise Exception('float value expected.')
     return vstr
-
 
 class InteractionConverter():
     """Class that allows conversion between epigenetic mark bit string pairs and integer type id"""

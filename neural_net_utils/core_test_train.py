@@ -8,7 +8,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import time
-from utils import getDataLoaders, comparePCA, save_opt
+from utils import getDataLoaders, comparePCA, save_opt, save_args
 from plotting_functions import plotting_script, plotModelFromArrays
 from dataset_classes import Sequences2Contacts
 
@@ -17,6 +17,7 @@ def core_test_train(model, opt):
     print(opt)
     print(opt.ofile_folder, end = '\n\n')
     save_opt(opt, os.path.join('results', opt.model_type, 'experiments.csv'))
+    save_args(opt)
 
     # Set random seeds
     torch.manual_seed(opt.seed)

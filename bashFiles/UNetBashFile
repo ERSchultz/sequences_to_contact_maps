@@ -18,10 +18,10 @@ xReshape='false'
 # architecture
 k=2
 n=1024
-yPreprocessing='prcnt'
+yPreprocessing='diag'
 yNorm='none'
 nf=8
-loss='cross_entropy'
+loss='mse'
 outAct='none'
 
 # hyperparameters
@@ -34,12 +34,16 @@ gamma=0.1
 cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
 
-lr=1e-1
-python3 UNet.py --data_folder $dirname --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --loss $loss --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
+for lr in 1e-1 1e-2 1e-3
+do
+  python3 UNet.py --data_folder $dirname --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --loss $loss --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
+done
 
-lr=1e-2
-python3 UNet.py --data_folder $dirname --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --loss $loss --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
 
-
-lr=1e-3
-python3 UNet.py --data_folder $dirname --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --loss $loss --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
+yPreprocessing='prcnt'
+yNorm='instance'
+outAct='sigmoid'
+for lr in 1e-1 1e-2 1e-3
+do
+  python3 UNet.py --data_folder $dirname --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --loss $loss --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
+done
