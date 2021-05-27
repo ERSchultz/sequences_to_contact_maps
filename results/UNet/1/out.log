@@ -58,3 +58,13 @@ freq arr [[0.20217323 0.18937874 0.09024429 ... 0.06394386 0.06643295 0.04575157
  [0.2030983  0.21827126 0.1108017  ... 0.04637146 0.0351963  0.00997543]
  [0.19826698 0.19963074 0.09848976 ... 0.05791473 0.04772949 0.02237701]
  [0.22440338 0.25749016 0.12540817 ... 0.02756882 0.01420784 0.00096321]]
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=True, toxx_mode='mean', y_preprocessing='diag', y_norm='instance', x_reshape=False, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=16, num_workers=4, start_epoch=1, n_epochs=20, save_mod=5, print_mod=2, lr=0.1, gpus=1, milestones=None, gamma=0.1, loss='mse', model_type='UNet', id=1, pretrained=True, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act='sigmoid', training_norm=None, plot=True, plot_predictions=False, kernel_w_list=None, hidden_sizes_list=None, nf=8, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, ofile_folder='results/UNet/1', log_file=<_io.TextIOWrapper name='results/UNet/1/out.log' mode='a' encoding='UTF-8'>, criterion=<function mse_loss at 0x7f5fb5c5c430>, channels=1, cuda=True, use_parallel=False, device=device(type='cuda'))
+Model is loaded: results/UNet/1/model.pt
+Prediction Results:
+results/UNet/1/sample713
+results/UNet/1/sample256
+results/UNet/1/sample1612
+results/UNet/1/sample20
+results/UNet/1/sample635
+Loss: 0.00028768639545887707 +- 0.0020999117126774443
+
