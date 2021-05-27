@@ -1,0 +1,59 @@
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=True, toxx_mode='mean', y_preprocessing='prcnt', y_norm=None, x_reshape=False, ydtype=torch.int64, y_reshape=False, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=16, num_workers=4, start_epoch=1, n_epochs=20, save_mod=5, print_mod=2, lr=0.001, gpus=1, milestones=None, gamma=0.1, loss='cross_entropy', model_type='UNet', pretrained=False, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act=None, plot=True, plot_predictions=False, kernel_w_list=None, hidden_sizes_list=None, nf=8, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, id=15, ofile_folder='results/UNet/15', log_file=<_io.TextIOWrapper name='results/UNet/15/out.log' mode='w' encoding='UTF-8'>, cuda=True, use_parallel=False, device=device(type='cuda'), criterion=<function cross_entropy at 0x7f8247079e50>)
+
+Epoch 2, loss = 1.6809
+Mean test/val loss: 1.6462
+Epoch 4, loss = 1.6023
+Mean test/val loss: 1.5923
+Epoch 6, loss = 1.5839
+Mean test/val loss: 1.5752
+Epoch 8, loss = 1.5729
+Mean test/val loss: 1.5817
+Epoch 10, loss = 1.5641
+Mean test/val loss: 1.5745
+Epoch 12, loss = 1.5604
+Mean test/val loss: 1.5666
+Epoch 14, loss = 1.5557
+Mean test/val loss: 1.5690
+Epoch 16, loss = 1.5442
+Mean test/val loss: 1.5640
+Epoch 18, loss = 1.5426
+Mean test/val loss: 1.5697
+Epoch 20, loss = 1.5365
+Mean test/val loss: 1.5658
+
+to_device_time:  0
+test_time:  0
+forward_time:  0
+backward_time: 0
+
+Total parameters: 657674
+Total time: 1845.596064567566
+Final val loss: 1.5657658210167518
+
+#### Plotting Script ####
+PCA Results:
+Accuracy: 0.944 +- 0.032
+Spearman R: 0.947 +- 0.036
+Pearson R: 0.971 +- 0.014
+
+Distance Stratified Pearson Correlation Results:
+Overall Pearson R: 0.785 $\pm$ 0.118
+
+Class Accuracy Results:
+Accuracy: 0.3675783014297485 +- 0.06466701584057184
+Loss: 1.565550457239151 +- 0.14197419525130972
+acc arr [[0.76964442 0.35251639 0.         ... 0.25085757 0.49949756 0.85821487]
+ [0.79075311 0.36320639 0.         ... 0.25358773 0.47769247 0.63367328]
+ [0.78268082 0.39659975 0.         ... 0.29003165 0.52017599 0.64691813]
+ ...
+ [0.68445841 0.40262765 0.         ... 0.3213845  0.36216333 0.8417782 ]
+ [0.66361389 0.45985248 0.         ... 0.17438414 0.2310382  0.84103307]
+ [0.67487591 0.38799547 0.         ... 0.19562059 0.25882669 0.76138614]]
+freq arr [[0.20217323 0.18937874 0.09024429 ... 0.06394386 0.06643295 0.04575157]
+ [0.22844315 0.155056   0.06953049 ... 0.05808067 0.08024406 0.12661362]
+ [0.19316673 0.15268898 0.07447433 ... 0.07412529 0.08735085 0.07974434]
+ ...
+ [0.2030983  0.21827126 0.1108017  ... 0.04637146 0.0351963  0.00997543]
+ [0.19826698 0.19963074 0.09848976 ... 0.05791473 0.04772949 0.02237701]
+ [0.22440338 0.25749016 0.12540817 ... 0.02756882 0.01420784 0.00096321]]
+

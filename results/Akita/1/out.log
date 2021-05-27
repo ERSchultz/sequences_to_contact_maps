@@ -1,0 +1,252 @@
+Namespace(mode='debugging', verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=False, toxx_mode='mean', y_preprocessing='diag', y_norm='batch', x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=[0, 100], classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=1, num_workers=4, start_epoch=1, n_epochs=1, save_mod=5, print_mod=2, lr=0.001, gpus=1, milestones=[1], gamma=0.1, loss='mse', model_type='Akita', pretrained=False, resume_training=False, ifile_folder=None, ifile=None, k=2, n=100, seed=42, out_act=ReLU(inplace=True), training_norm='batch', plot=True, plot_predictions=True, kernel_w_list=[5, 5, 5], hidden_sizes_list=[4, 6, 8], nf=None, dilation_list=None, dilation_list_trunk=[2, 4, 8, 16], bottleneck=4, dilation_list_head=[2, 4, 8, 16], id=1, ofile_folder='results/Akita/1', log_file=<_io.TextIOWrapper name='results/Akita/1/out.log' mode='w' encoding='UTF-8'>, cuda=True, use_parallel=False, device=device(type='cuda'), ofile='model', criterion=<function mse_loss at 0x7fa05df41160>, channels=1)
+
+Epoch 1, loss = 0.0093
+Mean test/val loss: 0.0043
+
+to_device_time:  0
+test_time:  0
+forward_time:  0
+backward_time: 0
+
+Total parameters: 2350
+Total time: 198.8510673046112
+Final val loss: 0.00426064595929347
+
+#### Plotting Script ####
+PCA Results:
+Accuracy: 0.809 +- 0.129
+Spearman R: 0.373 +- 0.229
+Pearson R: 0.392 +- 0.23
+
+Distance Stratified Pearson Correlation Results:
+Overall Pearson R: 0.409 $\pm$ 0.149
+
+Class Accuracy Results:
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+Accuracy: 0.0 +- 0.0
+Loss: 0.00426064595929347 +- 0.005931852640494489
+acc arr [[0. 0. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]
+ ...
+ [0. 0. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]]
+freq arr [[1.82308197e-01 1.52200699e-01 7.41024017e-02 ... 7.70378113e-02
+  9.41162109e-02 8.34560394e-02]
+ [1.89884186e-01 1.65878296e-01 8.07685852e-02 ... 6.83536530e-02
+  7.96394348e-02 7.79800415e-02]
+ [2.16474533e-01 1.03311539e-01 4.56733704e-02 ... 6.24046326e-02
+  1.01728439e-01 2.43833542e-01]
+ ...
+ [2.33118057e-01 2.65207291e-01 1.28667831e-01 ... 2.24876404e-02
+  9.34028625e-03 4.13894653e-04]
+ [1.60770416e-01 1.77574158e-01 9.43489075e-02 ... 5.69248199e-02
+  6.52580261e-02 7.30571747e-02]
+ [2.17924118e-01 3.01073074e-01 1.54037476e-01 ... 5.07164001e-03
+  6.77108765e-04 1.90734863e-06]]
+
+Prediction Results:
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample779
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample412
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample385
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1075
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1666
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample630
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample553
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample85
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample193
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample997
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample406
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample645
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1718
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample519
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1311
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample521
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample965
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1833
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample30
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1254
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample174
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1116
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample54
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1934
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample411
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1126
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample717
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample341
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample846
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample354
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1634
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample472
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1497
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample845
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1103
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1410
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample121
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample981
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample207
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample765
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample119
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1219
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample136
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1523
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1775
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1865
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1451
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample416
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample819
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1588
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample662
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample19
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample566
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample926
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample349
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample115
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample973
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample441
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample635
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1340
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample155
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample418
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample892
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1691
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample184
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample549
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1515
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample436
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1647
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample535
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample898
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1141
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1829
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample151
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1318
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample413
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample327
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample598
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1950
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample14
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample246
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample423
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample94
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1900
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample713
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample291
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample371
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample260
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample664
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample628
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1161
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample20
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1697
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1936
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1009
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1571
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample179
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1896
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample256
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample711
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample414
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample125
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1797
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1928
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1446
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1152
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1618
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1848
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample374
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1972
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample820
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample305
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1260
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample982
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1782
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample624
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1083
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample734
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1199
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1967
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1495
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample484
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample403
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1859
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1524
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1740
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1605
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1398
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample911
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1360
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1615
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1286
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1914
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1621
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1705
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample51
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample607
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1196
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample998
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1562
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample600
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample328
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample468
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample196
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample523
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample756
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1342
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample580
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1888
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1035
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1612
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample503
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample26
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1843
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1512
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample149
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1262
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample688
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1055
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample855
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1461
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1856
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1631
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1033
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample994
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample365
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample955
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1047
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample159
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1424
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample43
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1872
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1651
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1610
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample667
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1879
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample723
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample616
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1106
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample452
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1706
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample10
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1236
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1170
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample887
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1662
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1921
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample594
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample122
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1669
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1528
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample189
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample794
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1887
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample332
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1713
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1595
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample153
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample1338
+/../../../project2/depablo/erschultz/dataset_04_18_21/samples/sample104
+Loss: 0.00426064595929347 +- 0.005931852640494489
+
