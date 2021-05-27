@@ -241,7 +241,6 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
         plt.savefig(os.path.join(imagePath, 'train_val_loss.png'))
     plt.close()
 
-
 def plotModelFromDir(dir, imagePath, opt = None, log_y = False):
     """Wrapper function for plotModelFromArrays given saved model."""
     saveDict = torch.load(dir, map_location=torch.device('cpu'))
@@ -629,4 +628,4 @@ def main2():
 
 
 if __name__ == '__main__':
-    main2()
+    main()
