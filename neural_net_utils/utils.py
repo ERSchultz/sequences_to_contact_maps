@@ -443,9 +443,10 @@ def argparseSetup():
             opt.id = max_id + 1
     else:
         txt_file = os.path.join(model_type_folder, str(opt.id), 'argparse.txt')
+        print(os.getcwd())
         assert os.path.exists(txt_file), "{} does not exist".format(txt_file)
         opt = parser.parse_args(sys.argv.append('@{}'.format(txt_file))) # parse again
-        print(opt.id, opt.model_type)
+        return
 
     opt.ofile_folder = os.path.join(model_type_folder, str(opt.id))
     if not os.path.exists(opt.ofile_folder):
