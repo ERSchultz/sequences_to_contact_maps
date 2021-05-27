@@ -2,7 +2,7 @@
 #SBATCH --job-name=test
 #SBATCH --output=logFiles/test.out
 #SBATCH --time=01:00:00
-#SBATCH --partition=depablo-gpu
+#SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
@@ -34,7 +34,7 @@ trainingNorm='batch'
 
 # hyperparameters
 nEpochs=1
-batchSize=16
+batchSize=64
 numWorkers=4
 milestones='4-8-12'
 gamma=0.1
