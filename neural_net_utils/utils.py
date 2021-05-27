@@ -428,7 +428,7 @@ def argparseSetup():
     opt = parser.parse_args()
 
     # set up output folders/files
-    model_type_folder =  os.path.join('results', opt.model_type)
+    model_type_folder =  os.path.join('..\results', opt.model_type)
     if opt.id is None:
         if not os.path.exists(model_type_folder):
             os.mkdir(model_type_folder, mode = 0o755)
