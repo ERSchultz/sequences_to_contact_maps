@@ -1,0 +1,224 @@
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=False, y_preprocessing='diag', y_norm='batch', x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=32, num_workers=4, start_epoch=1, n_epochs=60, save_mod=5, print_mod=2, lr=0.01, gpus=1, milestones=[10, 20, 30, 40, 50], gamma=0.1, loss='mse', model_type=None, pretrained=False, resume_training=False, ifile_folder='models/', ifile=None, ofile_folder='models/', ofile='DeepC_nEpochs60_lr1e-2_milestones10-20-30-40-50_yPreprocessingdiag_kernelW5-5-5_hiddenSize32-64-128_dilation2-4-8-16-32-64-128-256-512_hiddenSize_', k=2, n=1024, seed=42, out_act='sigmoid', plot=False, kernel_w_list=[5, 5, 5], hidden_sizes_list=[32, 64, 128], nf=8, dilation_list=[2, 4, 8, 16, 32, 64, 128, 256, 512], dilation_list_trunk=[1, 2, 4], bottleneck=10, dilation_list_head=[1, 2, 4], cuda=True, use_parallel=False, device=device(type='cuda'))
+min, max:  [0.08738011 4.85832823]
+Adjusting learning rate of group 0 to 1.0000e-02.
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=False, y_preprocessing='diag', y_norm='batch', x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=32, num_workers=4, start_epoch=1, n_epochs=60, save_mod=5, print_mod=2, lr=0.01, gpus=1, milestones=[10, 20, 30, 40, 50], gamma=0.1, loss='mse', model_type=None, pretrained=False, resume_training=False, ifile_folder='models/', ifile=None, ofile_folder='models/', ofile='DeepC_nEpochs60_lr1e-2_milestones10-20-30-40-50_yPreprocessingdiag_kernelW5-5-5_hiddenSize32-64-128_dilation2-4-8-16-32-64-128-256-512_hiddenSize_', k=2, n=1024, seed=42, out_act='sigmoid', plot=False, kernel_w_list=[5, 5, 5], hidden_sizes_list=[32, 64, 128], nf=8, dilation_list=[2, 4, 8, 16, 32, 64, 128, 256, 512], dilation_list_trunk=[1, 2, 4], bottleneck=10, dilation_list_head=[1, 2, 4], cuda=True, use_parallel=False, device=device(type='cuda'))
+min, max:  [0.08738011 4.85832823]
+Adjusting learning rate of group 0 to 1.0000e-02.
+
+Mean test loss: 0.2540
+Adjusting learning rate of group 0 to 1.0000e-02.
+
+Mean test loss: 0.2358
+Adjusting learning rate of group 0 to 1.0000e-02.
+Epoch 2, loss = 0.2469
+
+Mean test loss: 0.1880
+Adjusting learning rate of group 0 to 1.0000e-02.
+
+Mean test loss: 0.1848
+Adjusting learning rate of group 0 to 1.0000e-02.
+Epoch 4, loss = 0.1893
+
+Mean test loss: 0.1629
+Adjusting learning rate of group 0 to 1.0000e-02.
+
+Mean test loss: 0.1596
+Adjusting learning rate of group 0 to 1.0000e-02.
+Epoch 6, loss = 0.1645
+
+Mean test loss: 0.1585
+Adjusting learning rate of group 0 to 1.0000e-02.
+
+Mean test loss: 0.1609
+Adjusting learning rate of group 0 to 1.0000e-02.
+Epoch 8, loss = 0.1626
+
+Mean test loss: 0.1577
+Adjusting learning rate of group 0 to 1.0000e-02.
+
+Mean test loss: 0.1587
+Adjusting learning rate of group 0 to 1.0000e-03.
+Epoch 10, loss = 0.1627
+
+Mean test loss: 0.1554
+Adjusting learning rate of group 0 to 1.0000e-03.
+
+Mean test loss: 0.1552
+Adjusting learning rate of group 0 to 1.0000e-03.
+Epoch 12, loss = 0.1570
+
+Mean test loss: 0.1551
+Adjusting learning rate of group 0 to 1.0000e-03.
+
+Mean test loss: 0.1557
+Adjusting learning rate of group 0 to 1.0000e-03.
+Epoch 14, loss = 0.1564
+
+Mean test loss: 0.1550
+Adjusting learning rate of group 0 to 1.0000e-03.
+
+Mean test loss: 0.1547
+Adjusting learning rate of group 0 to 1.0000e-03.
+Epoch 16, loss = 0.1561
+
+Mean test loss: 0.1552
+Adjusting learning rate of group 0 to 1.0000e-03.
+
+Mean test loss: 0.1557
+Adjusting learning rate of group 0 to 1.0000e-03.
+Epoch 18, loss = 0.1566
+
+Mean test loss: 0.1551
+Adjusting learning rate of group 0 to 1.0000e-03.
+
+Mean test loss: 0.1547
+Adjusting learning rate of group 0 to 1.0000e-04.
+Epoch 20, loss = 0.1563
+
+Mean test loss: 0.1550
+Adjusting learning rate of group 0 to 1.0000e-04.
+
+Mean test loss: 0.1544
+Adjusting learning rate of group 0 to 1.0000e-04.
+Epoch 22, loss = 0.1556
+
+Mean test loss: 0.1540
+Adjusting learning rate of group 0 to 1.0000e-04.
+
+Mean test loss: 0.1547
+Adjusting learning rate of group 0 to 1.0000e-04.
+Epoch 24, loss = 0.1555
+
+Mean test loss: 0.1547
+Adjusting learning rate of group 0 to 1.0000e-04.
+
+Mean test loss: 0.1545
+Adjusting learning rate of group 0 to 1.0000e-04.
+Epoch 26, loss = 0.1554
+
+Mean test loss: 0.1542
+Adjusting learning rate of group 0 to 1.0000e-04.
+
+Mean test loss: 0.1546
+Adjusting learning rate of group 0 to 1.0000e-04.
+Epoch 28, loss = 0.1553
+
+Mean test loss: 0.1539
+Adjusting learning rate of group 0 to 1.0000e-04.
+
+Mean test loss: 0.1543
+Adjusting learning rate of group 0 to 1.0000e-05.
+Epoch 30, loss = 0.1552
+
+Mean test loss: 0.1542
+Adjusting learning rate of group 0 to 1.0000e-05.
+
+Mean test loss: 0.1544
+Adjusting learning rate of group 0 to 1.0000e-05.
+Epoch 32, loss = 0.1551
+
+Mean test loss: 0.1543
+Adjusting learning rate of group 0 to 1.0000e-05.
+
+Mean test loss: 0.1536
+Adjusting learning rate of group 0 to 1.0000e-05.
+Epoch 34, loss = 0.1551
+
+Mean test loss: 0.1540
+Adjusting learning rate of group 0 to 1.0000e-05.
+
+Mean test loss: 0.1540
+Adjusting learning rate of group 0 to 1.0000e-05.
+Epoch 36, loss = 0.1551
+
+Mean test loss: 0.1546
+Adjusting learning rate of group 0 to 1.0000e-05.
+
+Mean test loss: 0.1540
+Adjusting learning rate of group 0 to 1.0000e-05.
+Epoch 38, loss = 0.1551
+
+Mean test loss: 0.1539
+Adjusting learning rate of group 0 to 1.0000e-05.
+
+Mean test loss: 0.1543
+Adjusting learning rate of group 0 to 1.0000e-06.
+Epoch 40, loss = 0.1551
+
+Mean test loss: 0.1540
+Adjusting learning rate of group 0 to 1.0000e-06.
+
+Mean test loss: 0.1540
+Adjusting learning rate of group 0 to 1.0000e-06.
+Epoch 42, loss = 0.1551
+
+Mean test loss: 0.1542
+Adjusting learning rate of group 0 to 1.0000e-06.
+
+Mean test loss: 0.1544
+Adjusting learning rate of group 0 to 1.0000e-06.
+Epoch 44, loss = 0.1551
+
+Mean test loss: 0.1540
+Adjusting learning rate of group 0 to 1.0000e-06.
+
+Mean test loss: 0.1544
+Adjusting learning rate of group 0 to 1.0000e-06.
+Epoch 46, loss = 0.1551
+
+Mean test loss: 0.1542
+Adjusting learning rate of group 0 to 1.0000e-06.
+
+Mean test loss: 0.1541
+Adjusting learning rate of group 0 to 1.0000e-06.
+Epoch 48, loss = 0.1551
+
+Mean test loss: 0.1542
+Adjusting learning rate of group 0 to 1.0000e-06.
+
+Mean test loss: 0.1545
+Adjusting learning rate of group 0 to 1.0000e-07.
+Epoch 50, loss = 0.1551
+
+Mean test loss: 0.1536
+Adjusting learning rate of group 0 to 1.0000e-07.
+
+Mean test loss: 0.1543
+Adjusting learning rate of group 0 to 1.0000e-07.
+Epoch 52, loss = 0.1551
+
+Mean test loss: 0.1548
+Adjusting learning rate of group 0 to 1.0000e-07.
+
+Mean test loss: 0.1543
+Adjusting learning rate of group 0 to 1.0000e-07.
+Epoch 54, loss = 0.1550
+
+Mean test loss: 0.1542
+Adjusting learning rate of group 0 to 1.0000e-07.
+
+Mean test loss: 0.1538
+Adjusting learning rate of group 0 to 1.0000e-07.
+Epoch 56, loss = 0.1551
+
+Mean test loss: 0.1543
+Adjusting learning rate of group 0 to 1.0000e-07.
+
+Mean test loss: 0.1541
+Adjusting learning rate of group 0 to 1.0000e-07.
+Epoch 58, loss = 0.1551
+
+Mean test loss: 0.1540
+Adjusting learning rate of group 0 to 1.0000e-07.
+
+Mean test loss: 0.1547
+Adjusting learning rate of group 0 to 1.0000e-07.
+Epoch 60, loss = 0.1551
+to_device_time:  187.4517467021942
+test_time:  1089.8764939308167
+forward_time:  14.804062366485596
+backward_time:  1271.5378744602203
+Total parameters: 938787
+Total time: 8865.820600509644
+Final val loss: 0.15465555446488516
+

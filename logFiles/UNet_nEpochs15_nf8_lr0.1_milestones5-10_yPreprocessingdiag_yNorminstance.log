@@ -1,0 +1,105 @@
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=True, y_preprocessing='diag', y_norm='instance', x_reshape=False, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=32, num_workers=4, start_epoch=1, n_epochs=15, save_mod=5, print_mod=2, lr=0.1, gpus=1, milestones=[5, 10], gamma=0.1, loss='mse', model_type=None, pretrained=False, resume_training=False, ifile_folder='models/', ifile=None, ofile_folder='models/', ofile='UNet_nEpochs15_nf8_lr0.1_milestones5-10_yPreprocessingdiag_yNorminstance', k=2, n=1024, seed=42, out_act='sigmoid', plot=True, plot_predictions=False, kernel_w_list=[5, 5], hidden_sizes_list=[10, 10], nf=8, dilation_list=[1, 2, 4], dilation_list_trunk=[1, 2, 4], bottleneck=10, dilation_list_head=[1, 2, 4], cuda=True, use_parallel=False, device=device(type='cuda'))
+Adjusting learning rate of group 0 to 1.0000e-01.
+
+Mean test loss: 0.0105
+Adjusting learning rate of group 0 to 1.0000e-01.
+
+Mean test loss: 0.0121
+Adjusting learning rate of group 0 to 1.0000e-01.
+Epoch 2, loss = 0.0099
+
+Mean test loss: 0.0104
+Adjusting learning rate of group 0 to 1.0000e-01.
+
+Mean test loss: 0.0069
+Adjusting learning rate of group 0 to 1.0000e-01.
+Epoch 4, loss = 0.0071
+
+Mean test loss: 0.0067
+Adjusting learning rate of group 0 to 1.0000e-02.
+
+Mean test loss: 0.0066
+Adjusting learning rate of group 0 to 1.0000e-02.
+Epoch 6, loss = 0.0065
+
+Mean test loss: 0.0066
+Adjusting learning rate of group 0 to 1.0000e-02.
+
+Mean test loss: 0.0065
+Adjusting learning rate of group 0 to 1.0000e-02.
+Epoch 8, loss = 0.0064
+
+Mean test loss: 0.0063
+Adjusting learning rate of group 0 to 1.0000e-02.
+
+Mean test loss: 0.0065
+Adjusting learning rate of group 0 to 1.0000e-03.
+Epoch 10, loss = 0.0063
+
+Mean test loss: 0.0063
+Adjusting learning rate of group 0 to 1.0000e-03.
+
+Mean test loss: 0.0063
+Adjusting learning rate of group 0 to 1.0000e-03.
+Epoch 12, loss = 0.0062
+
+Mean test loss: 0.0063
+Adjusting learning rate of group 0 to 1.0000e-03.
+
+Mean test loss: 0.0061
+Adjusting learning rate of group 0 to 1.0000e-03.
+Epoch 14, loss = 0.0063
+
+Mean test loss: 0.0063
+Adjusting learning rate of group 0 to 1.0000e-03.
+Epoch 15, loss = 0.0062
+to_device_time:  0
+test_time:  0
+forward_time:  0
+backward_time:  0
+Total parameters: 655361
+Total time: 2740.470551252365
+Final val loss: 0.006291024187313659
+
+PCA results:
+Accuracy: 0.905 +- 0.04
+Spearman R: 0.854 +- 0.071
+Pearson R: 0.884 +- 0.031
+
+Overall Pearson R: 0.721 $\pm$ 0.116
+
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+Accuracy: 0.25185553073883055 +- 0.02764586064500388
+Loss: 0.006226648101583123 +- 0.0016333055045118633
+acc arr [[5.84453536e-04 5.26115088e-02 5.80183245e-02 ... 1.79370136e-01
+  2.58776830e-01 9.23277394e-01]
+ [3.84507327e-01 5.81817418e-01 1.38266885e-01 ... 0.00000000e+00
+  0.00000000e+00 0.00000000e+00]
+ [1.44814007e-01 3.59417720e-01 2.16668044e-01 ... 2.52258574e-01
+  6.12462804e-01 3.85886651e-01]
+ ...
+ [6.63253249e-01 3.89992968e-01 2.25111441e-02 ... 0.00000000e+00
+  0.00000000e+00 0.00000000e+00]
+ [3.95467489e-01 3.69373680e-01 1.48617144e-01 ... 3.04876370e-01
+  2.96405504e-01 0.00000000e+00]
+ [6.40148684e-01 4.26877928e-01 5.58081908e-02 ... 0.00000000e+00
+  0.00000000e+00 0.00000000e+00]]
+freq arr [[2.28443146e-01 1.55056000e-01 6.95304871e-02 ... 5.80806732e-02
+  8.02440643e-02 1.26613617e-01]
+ [1.69723511e-01 2.26898193e-01 1.25724792e-01 ... 3.48663330e-02
+  1.88903809e-02 1.59454346e-03]
+ [1.79204941e-01 1.80685043e-01 9.23004150e-02 ... 6.52370453e-02
+  6.53800964e-02 4.48951721e-02]
+ ...
+ [2.17924118e-01 3.01073074e-01 1.54037476e-01 ... 5.07164001e-03
+  6.77108765e-04 1.90734863e-06]
+ [2.08976746e-01 2.31201172e-01 1.13721848e-01 ... 4.15782928e-02
+  4.07524109e-02 1.61628723e-02]
+ [1.93962097e-01 2.63387680e-01 1.40090942e-01 ... 1.50985718e-02
+  3.71551514e-03 8.39233398e-05]]
+
+
+
+
+

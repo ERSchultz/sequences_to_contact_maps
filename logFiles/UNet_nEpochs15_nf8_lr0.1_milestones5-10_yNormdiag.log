@@ -1,0 +1,56 @@
+Namespace(batch_size=32, crop=None, cuda=True, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', device=device(type='cuda'), gamma=0.1, gpus=1, ifile=None, ifile_folder='models/', k=2, lr=0.001, milestones=[5, 10], n=1024, n_epochs=15, nf=8, num_workers=4, ofile='UNet_nEpochs15_nf8_lr0.1_milestones5-10_yNormdiag', ofile_folder='models/', pretrained=False, print_mod=2, resume_training=False, save_mod=5, seed=42, start_epoch=1, use_parallel=False, y_norm='diag', y_reshape=True)
+Adjusting learning rate of group 0 to 1.0000e-03.
+
+Mean test loss: 0.0103
+Adjusting learning rate of group 0 to 1.0000e-03.
+
+Mean test loss: 0.0067
+Adjusting learning rate of group 0 to 1.0000e-03.
+Epoch 2, loss = 0.0079
+
+Mean test loss: 0.0058
+Adjusting learning rate of group 0 to 1.0000e-03.
+
+Mean test loss: 0.0056
+Adjusting learning rate of group 0 to 1.0000e-03.
+Epoch 4, loss = 0.0056
+
+Mean test loss: 0.0053
+Adjusting learning rate of group 0 to 1.0000e-04.
+
+Mean test loss: 0.0053
+Adjusting learning rate of group 0 to 1.0000e-04.
+Epoch 6, loss = 0.0052
+
+Mean test loss: 0.0052
+Adjusting learning rate of group 0 to 1.0000e-04.
+
+Mean test loss: 0.0051
+Adjusting learning rate of group 0 to 1.0000e-04.
+Epoch 8, loss = 0.0052
+
+Mean test loss: 0.0051
+Adjusting learning rate of group 0 to 1.0000e-04.
+
+Mean test loss: 0.0051
+Adjusting learning rate of group 0 to 1.0000e-05.
+Epoch 10, loss = 0.0051
+
+Mean test loss: 0.0050
+Adjusting learning rate of group 0 to 1.0000e-05.
+
+Mean test loss: 0.0050
+Adjusting learning rate of group 0 to 1.0000e-05.
+Epoch 12, loss = 0.0050
+
+Mean test loss: 0.0051
+Adjusting learning rate of group 0 to 1.0000e-05.
+
+Mean test loss: 0.0051
+Adjusting learning rate of group 0 to 1.0000e-05.
+Epoch 14, loss = 0.0051
+
+Mean test loss: 0.0051
+Adjusting learning rate of group 0 to 1.0000e-05.
+Total time: 2822.0689177513123
+Final val loss: 0.005100093582378966
