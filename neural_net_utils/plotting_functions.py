@@ -374,7 +374,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
     plt.savefig(os.path.join(imagePath, 'distance_pearson.png'))
     plt.close()
 
-def plotPredictions(val_dataloader, model, opt):
+def plotPredictions(val_dataloader, model, opt, count = 5):
     print('Prediction Results:', file = opt.log_file)
     if opt.y_preprocessing != 'prcnt':
         prcntDist_path = os.path.join(opt.data_folder, 'prcntDist.npy')
@@ -382,61 +382,56 @@ def plotPredictions(val_dataloader, model, opt):
 
     loss_arr = np.zeros(opt.valN)
     for i, (x, y, path, minmax) in enumerate(val_dataloader):
-        assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
-        x = x.to(opt.device)
-        y = y.to(opt.device)
-        path = path[0]
-        print(path, file = opt.log_file)
-        if opt.mode == 'debugging':
-            subpath = os.path.join(path, 'test')
-        else:
-            subpath = os.path.join(path, os.path.join(opt.model_type, str(opt.id)))
-        if not os.path.exists(subpath):
-            os.mkdir(subpath, mode = 0o755)
+        if i < count:
+            assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
+            x = x.to(opt.device)
+            y = y.to(opt.device)
+            path = path[0]
+            sample = os.path.split(path)[-1]
+            subpath = os.path.join(opt.ofile_folder, sample)
+            print(subpath, file = opt.log_file)
+            if not os.path.exists(subpath):
+                os.mkdir(subpath, mode = 0o755)
 
-        yhat = model(x)
-        loss = opt.criterion(yhat, y).item()
-        if opt.loss == 'mse':
-            yhat_title = 'Y hat (MSE Loss: {})'.format(np.round(loss, 3))
-        elif opt.loss == 'cross_entropy':
-            yhat_title = 'Y hat (Cross Entropy Loss: {})'.format(np.round(loss, 3))
-        else:
-            yhat_title = 'Y hat (Loss: {})'.format(np.round(loss, 3))
-        loss_arr[i] = loss
-        y = y.cpu().numpy()
-        yhat = yhat.cpu().detach().numpy()
-        if opt.verbose:
-            print('y', y, np.max(y))
-            print('yhat', yhat, np.max(yhat))
-
-        y = un_normalize(y, minmax)
-        if opt.y_preprocessing == 'prcnt':
-            plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = 'max', prcnt = True, title = 'Y')
-            if opt.loss == 'cross_entropy':
-                yhat = np.argmax(yhat, axis = 1)
-                plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = True, title = yhat_title)
+            yhat = model(x)
+            loss = opt.criterion(yhat, y).item()
+            if opt.loss == 'mse':
+                yhat_title = 'Y hat (MSE Loss: {})'.format(np.round(loss, 3))
+            elif opt.loss == 'cross_entropy':
+                yhat_title = 'Y hat (Cross Entropy Loss: {})'.format(np.round(loss, 3))
             else:
+                yhat_title = 'Y hat (Loss: {})'.format(np.round(loss, 3))
+            loss_arr[i] = loss
+            y = y.cpu().numpy()
+            yhat = yhat.cpu().detach().numpy()
+            if opt.verbose:
+                print('y', y, np.max(y))
+                print('yhat', yhat, np.max(yhat))
+
+            y = un_normalize(y, minmax)
+            if opt.y_preprocessing == 'prcnt':
+                plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = 'max', prcnt = True, title = 'Y')
+                if opt.loss == 'cross_entropy':
+                    yhat = np.argmax(yhat, axis = 1)
+                    plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = True, title = yhat_title)
+                else:
+                    yhat = un_normalize(yhat, minmax)
+                    plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = yhat_title)
+            elif opt.y_preprocessing == 'diag':
+                v_max = np.max(y)
+                plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = v_max, prcnt = False, title = 'Y')
                 yhat = un_normalize(yhat, minmax)
-                plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = yhat_title)
-        elif opt.y_preprocessing == 'diag':
-            v_max = np.max(y)
-            plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = v_max, prcnt = False, title = 'Y')
-            yhat = un_normalize(yhat, minmax)
-            plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = v_max, prcnt = False, title =yhat_title)
+                plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = v_max, prcnt = False, title =yhat_title)
 
-            # plot prcnt
-            yhat_prcnt = percentile_preprocessing(yhat, prcntDist)
-            plotContactMap(yhat_prcnt, os.path.join(subpath, 'yhat_prcnt.png'), vmax = 'max', prcnt = True, title = 'Y hat prcnt')
+                # plot prcnt
+                yhat_prcnt = percentile_preprocessing(yhat, prcntDist)
+                plotContactMap(yhat_prcnt, os.path.join(subpath, 'yhat_prcnt.png'), vmax = 'max', prcnt = True, title = 'Y hat prcnt')
 
-            # plot dif
-            ydif = yhat - y
-            plotContactMap(ydif, os.path.join(subpath, 'ydif.png'), vmax = v_max, title = 'difference')
-        else:
-            raise Exception("Unsupported preprocessing: {}".format(y_preprocessing))
-
-    if opt.verbose:
-        print('y', y, np.max(y))
-        print('yhat', yhat, np.max(yhat))
+                # plot dif
+                ydif = yhat - y
+                plotContactMap(ydif, os.path.join(subpath, 'ydif.png'), vmax = v_max, title = 'difference')
+            else:
+                raise Exception("Unsupported preprocessing: {}".format(y_preprocessing))
 
     print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
 
@@ -510,84 +505,44 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, load
 
 def main():
     opt = argparseSetup()
-    opt.mode = 'debugging'
-    # overwrites if testing locally
-    if opt.mode == 'debugging':
-        opt.model_type = 'UNet'
-        opt.data_folder = 'dataset_04_18_21'
-
-        # Preprocessing
-        opt.toxx = True
-        opt.toxx_mode = 'add'
-        opt.x_reshape = False
-
-        # architecture
-        opt.nf = 8
-        opt.y_preprocessing = 'prcnt'
-        opt.y_norm = None
-        opt.loss = 'cross_entropy'
-        opt.dilation_list = str2list('2-4-8-16-32-64-128-256-512')
-        opt.kernel_w_list = str2list('5-5-5')
-        opt.hidden_sizes_list = str2list('32-64-128')
-        opt.dilation_list_trunk = str2list('2-4-8-16-32-64-128-256-512')
-        opt.bottleneck = 32
-        opt.dilation_list_head = str2list('2-4-8-16-32-64-128-256-512')
-        # opt.out_act=nn.ReLU(True)
-        opt.out_act = 'sigmoid'
-
-        # hyperparameters
-        opt.n_epochs = 15
-        opt.lr = 1e-1
-        opt.num_workers = 4
-        opt.milestones = str2list('5-10')
-
-        # other
-        opt.plot_predictions = False
-        opt.verbose = True
 
     if opt.model_type == 'UNet':
-        opt.ofile = "UNet_nEpochs{}_nf{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}".format(opt.n_epochs, opt.nf, float2str(opt.lr), list2str(opt.milestones), opt.y_preprocessing, opt.y_norm)
-        if opt.loss == 'cross_entropy':
-            assert opt.y_preprocessing == 'prcnt', 'must use percentile normalization with cross entropy'
-
-            opt.criterion = F.cross_entropy
-
-            # change default params
-            opt.y_reshape = False
-            opt.ydtype = torch.int64
-            model = UNet(nf_in = 2, nf_out = 10, nf = opt.nf, out_act = None) # activation combined into loss
-        elif opt.loss == 'mse':
-            opt.criterion = F.mse_loss
-            model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = nn.Sigmoid())
-        else:
-            raise Exception('Invalid loss: {}'.format(opt.loss))
+        model = UNet(nf_in = opt.k, nf_out = opt.channels, nf = opt.nf, out_act = opt.out_act)
     elif opt.model_type == 'DeepC':
         model = DeepC(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list, out_act = opt.out_act)
-        opt.ofile = "DeepC_nEpochs{}_lr{}_milestones{}_yPreprocessing{}_yNorm{}_kernelW{}_hiddenSize{}_dilation{}".format(opt.n_epochs, float2str(opt.lr), list2str(opt.milestones), opt.y_preprocessing, opt.y_norm, list2str(opt.kernel_w_list), list2str(opt.hidden_sizes_list), list2str(opt.dilation_list))
-
-        if opt.loss == 'mse':
-            opt.criterion = F.mse_loss
-        else:
-            raise Exception('Invalid loss: {}'.format(opt.loss))
     elif opt.model_type == 'Akita':
         model = Akita(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list_trunk,
                             opt.bottleneck,
                             opt.dilation_list_head,
-                            opt.out_act)
-        opt.ofile = "Akita_nEpochs{}_lr{}_milestones{}_yPreprocessing{}_kernelW{}_hiddenSize{}_bottleneck{}".format(opt.n_epochs, float2str(opt.lr), list2str(opt.milestones), opt.y_preprocessing, list2str(opt.kernel_w_list), list2str(opt.hidden_sizes_list), opt.bottleneck)
-        if opt.loss == 'mse':
-            opt.criterion = F.mse_loss
-        else:
-            raise Exception('Invalid loss: {}'.format(opt.loss))
+                            opt.out_act,
+                            opt.channels,
+                            norm = opt.training_norm)
     else:
         print('Invalid model type: {}'.format(opt.model_type))
         # TODO
 
     print(opt, file = opt.log_file)
+    print(opt)
     model.to(opt.device)
-    plotting_script(model, opt, load = True)
+
+    opt.batch_size = 1 # batch size must be 1
+    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
+                                        opt.y_norm, opt.x_reshape, opt.ydtype,
+                                        opt.y_reshape, opt.crop, names = True, minmax = True)
+    _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
+
+    model_name = os.path.join(opt.ofile_folder, 'model.pt')
+    if os.path.exists(model_name):
+        save_dict = torch.load(model_name, map_location=torch.device('cpu'))
+        model.load_state_dict(save_dict['model_state_dict'])
+        train_loss_arr = save_dict['train_loss']
+        val_loss_arr = save_dict['val_loss']
+        print('Model is loaded: {}'.format(model_name), file = opt.log_file)
+    else:
+        raise Exception('Model does not exist: {}'.format(model_name))
+    plotPredictions(val_dataloader, model, opt)
 
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')

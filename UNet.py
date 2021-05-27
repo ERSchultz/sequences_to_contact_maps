@@ -8,7 +8,7 @@ from neural_net_utils.core_test_train import core_test_train
 
 def main():
     opt = argparseSetup()
-    # opt.mode = 'debugging'
+    opt.mode = 'debugging'
     if opt.mode == 'debugging':
         # Preprocessing
         opt.toxx = True
@@ -37,20 +37,8 @@ def main():
         opt.data_folder = 'dataset_04_18_21'
         opt.save_mod = 1
 
+    model = UNet(nf_in = opt.k, nf_out = opt.channels, nf = opt.nf, out_act = opt.out_act)
 
-    if opt.loss == 'cross_entropy':
-        assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'
-        assert opt.y_norm is None, 'Cannot normalize ({}) with cross entropy'.format(opt.y_norm)
-        assert opt.out_act is None, "Cannot use out_act with cross entropy" # activation combined into loss
-        opt.y_reshape = False
-        opt.criterion = F.cross_entropy
-        opt.ydtype = torch.int64
-        model = UNet(nf_in = 2, nf_out = 10, nf = opt.nf, out_act = opt.out_act)
-    elif opt.loss == 'mse':
-        opt.criterion = F.mse_loss
-        model = UNet(nf_in = 2, nf_out = 1, nf = opt.nf, out_act = opt.out_act)
-    else:
-        print('Invalid loss: {}'.format(opt.loss))
     core_test_train(model, opt)
 
 
