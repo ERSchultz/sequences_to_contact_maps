@@ -139,7 +139,7 @@ class DeepC(nn.Module):
         self.model = nn.Sequential(*model)
 
         if out_act is None:
-            self.out_act = nn.Identity
+            self.out_act = nn.Identity()
         elif issubclass(type(out_act), nn.Module):
             self.out_act = out_act
         elif isinstance(out_act, str):
