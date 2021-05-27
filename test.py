@@ -56,16 +56,12 @@ def cleanup():
         else:
             pass
 
-def makeargeparefiles():
-    with open('results\\UNet\\experiments.csv', newline = '') as f:
-        reader = csv.reader(f)
-        for line in f:
-            print(line.strip().split(','))
 
 
 
 def main():
-    makeargeparefiles()
+    x = os.path.join('..', 'test', 'file')
+    print(x)
 
 
 
