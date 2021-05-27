@@ -45,11 +45,16 @@ def cleanup():
             for file in os.listdir(sample_path):
                 f_path = os.path.join(sample_path, file)
                 if os.path.isdir(f_path):
+                    for file2 in os.listdir(f_path):
+                        f2_path = os.path.join(f_path, file2)
+                        os.remove(f2_path)
+                        print('Delete', f2_path)
+                    os.rmdir(f_path)
                     print('Delete', f_path)
                 else:
-                    print('Keep', f_path)
+                    pass
         else:
-            print('Skipping', sample_path)
+            pass
 
 
 
