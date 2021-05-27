@@ -7,6 +7,7 @@ sys.path.insert(0, dname)
 import torch
 import torch.nn.functional as F
 import numpy as np
+import itertools
 import math
 import matplotlib.pyplot as plt
 import matplotlib.colors
@@ -185,6 +186,62 @@ def plotDistStats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
     plt.savefig(ofile)
     plt.close()
 
+def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
+    # assume only difference in opts is lr
+    fig, ax = plt.subplots()
+    colors = ['b', 'r', 'g', 'c']
+    styles = ['-', '--']
+    colors = colors[:len(dirs)]
+    types = ['training', 'validation']
+    lrs = []
+    for dir, opt, c in zip(dirs, opts, colors):
+        saveDict = torch.load(dir, map_location=torch.device('cpu'))
+        train_loss_arr = saveDict['train_loss']
+        val_loss_arr = saveDict['val_loss']
+        l1 = ax.plot(np.arange(1, len(train_loss_arr)+1), train_loss_arr, ls = styles[0], color = c)
+        l2 = ax.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr, ls = styles[1], color = c)
+        lrs.append(opt.lr)
+
+    for c, lr in zip(colors, lrs):
+        ax.plot(np.NaN, np.NaN, color = c, label = lr)
+
+    ax2 = ax.twinx()
+    for type, style in zip(types, styles):
+        ax2.plot(np.NaN, np.NaN, ls = style, label = type, c = 'k')
+    ax2.get_yaxis().set_visible(False)
+
+    ax.legend(loc = 1, title = 'lr')
+    ax2.legend(loc = 3)
+
+    ax.set_xlabel('Epoch', fontsize = 16)
+    opt = opts[0]
+    if opt.loss == 'mse':
+        ax.set_ylabel('MSE Loss', fontsize = 16)
+    elif opt.loss == 'cross_entropy':
+        ax.set_ylabel('Cross Entropy Loss', fontsize = 16)
+    else:
+        ax.set_ylabel('Loss', fontsize = 16)
+
+    if opt.y_preprocessing is not None:
+        preprocessing = opt.y_preprocessing.capitalize()
+    else:
+        preprocessing = 'None'
+    if opt.y_norm is not None:
+        y_norm = opt.y_norm.capitalize()
+    else:
+         y_norm = 'None'
+    plt.title('Y Preprocessing: {}, Y Norm: {}'.format(preprocessing, y_norm), fontsize = 16)
+
+    if log_y:
+        ax.set_yscale('log')
+    plt.tight_layout()
+    if log_y:
+        plt.savefig(os.path.join(imagePath, 'train_val_loss_log.png'))
+    else:
+        plt.savefig(os.path.join(imagePath, 'train_val_loss.png'))
+    plt.close()
+
+
 def plotModelFromDir(dir, imagePath, opt = None, log_y = False):
     """Wrapper function for plotModelFromArrays given saved model."""
     saveDict = torch.load(dir, map_location=torch.device('cpu'))
@@ -226,7 +283,7 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
                 plt.axvline(m, linestyle = 'dashed', color = 'green')
                 plt.annotate('lr: {:.1e}'.format(lr), (m + x_offset, annotate_y))
     if log_y:
-        plt.yscale('log', )
+        plt.yscale('log')
     plt.legend()
     plt.tight_layout()
     if log_y:
@@ -528,6 +585,7 @@ def main():
     model.to(opt.device)
 
     opt.batch_size = 1 # batch size must be 1
+    opt.shuffle = False # for reproducibility
     seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
                                         opt.y_reshape, opt.crop, names = True, minmax = True)
@@ -548,6 +606,27 @@ def main():
     # freqStatisticsPlots('dataset_04_18_21')
     # contactPlots('dataset_04_18_21')
 
+def main2():
+    path = 'results\\UNet'
+    ids = [13, 14, 15]
+
+    dirs = []
+    opts = []
+    parser = getBaseParser()
+    for id in ids:
+        id_path = os.path.join(path, str(id))
+        dirs.append(os.path.join(id_path, 'model.pt'))
+        txt_file = os.path.join(id_path, 'argparse.txt')
+        opt = parser.parse_args(['@{}'.format(txt_file)])
+        opts.append(opt)
+    imagePath = os.path.join(path, '{} combined'.format(list2str(ids)))
+    if not os.path.exists(imagePath):
+        os.mkdir(imagePath, mode = 0o755)
+
+    for log in [True, False]:
+        plotModelsFromDirs(dirs, imagePath, opts, log_y = log)
+
+
 
 if __name__ == '__main__':
-    main()
+    main2()

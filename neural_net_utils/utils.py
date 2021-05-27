@@ -353,8 +353,9 @@ def comparePCA(val_dataloader, imagePath, model, opt):
     with open(os.path.join(imagePath, 'PCA_results.txt'), 'w') as f:
         f.write(results)
 
-def argparseSetup():
-    """Helper function to get default command line argument parser."""
+
+def getBaseParser():
+    '''Helper function that returns base parser'''
     parser = argparse.ArgumentParser(description='Base parser', fromfile_prefix_chars='@')
     parser.add_argument('--mode', type=str)
     parser.add_argument('--verbose', type=str2bool, default=False)
@@ -420,6 +421,11 @@ def argparseSetup():
     parser.add_argument('--bottleneck', type=int, help='Number of filters in bottleneck (must be <= hidden_size_dilation_trunk)')
     parser.add_argument('--dilation_list_head', type=str2list, help='List of dilations for dilated convolutional layers of head')
 
+    return parser
+
+def argparseSetup():
+    """Helper function set up parser."""
+    parser = getBaseParser()
     opt = parser.parse_args()
 
     # set up output folders/files
@@ -580,12 +586,15 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
-def str2list(v):
+def str2list(v, sep = '-'):
     """
-    Helper function for argparser, converts str to list by splitting on '-': "i-j-k" -> [i,j,k].
+    Helper function for argparser, converts str to list by splitting on sep.
+
+    Exmaple for sep = '-': "i-j-k" -> [i,j,k]
 
     Inputs:
         v: string
+        sep: separartor
     """
     if v is None:
         return None
@@ -593,7 +602,7 @@ def str2list(v):
         if v.lower() == 'none':
             return None
         else:
-            return [int(i) for i in v.split('-')]
+            return [int(i) for i in v.split(sep)]
     else:
         raise argparse.ArgumentTypeError('str value expected.')
 
@@ -618,15 +627,15 @@ def str2dtype(v):
     else:
         raise argparse.ArgumentTypeError('str value expected.')
 
-def list2str(v):
+def list2str(v, sep = '-'):
     """
-    Helper function to undo str2list.
+    Helper function to convert list to string.
 
     Inputs:
         v: list
     """
     if isinstance(v, list):
-        return '-'.join([str(i) for i in v])
+        return sep.join([str(i) for i in v])
     else:
         raise Exception('list value expected.')
 
