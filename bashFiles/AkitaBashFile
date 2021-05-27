@@ -30,7 +30,7 @@ trainingNorm='batch'
 
 # hyperparameters
 nEpochs=20
-batchSize=2
+batchSize=1
 numWorkers=4
 milestones='4-8-12'
 gamma=0.1
