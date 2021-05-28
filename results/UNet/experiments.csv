@@ -15,3 +15,8 @@ UNet,19,dataset_04_18_21,True,mean,prcnt,instance,False,torch.float32,True,,10,"
 UNet,20,dataset_04_18_21,True,mean,prcnt,instance,False,torch.float32,True,,10,"[0.8, 0.1, 0.1]",True,4,4,1,1,0.1,1,[1],0.1,mse,False,False,,,2,1024,42,sigmoid,,True,True,8
 UNet,21,dataset_04_18_21,True,mean,prcnt,instance,False,torch.float32,True,,10,"[0.8, 0.1, 0.1]",True,4,4,1,1,0.1,1,[1],0.1,mse,False,False,,,2,1024,42,sigmoid,,True,True,8
 UNet,22,/../../../project2/depablo/erschultz/dataset_04_18_21,True,mean,diag,,False,torch.float32,True,,10,"[0.8, 0.1, 0.1]",True,16,4,1,20,0.1,1,,0.1,mse,False,False,,,2,1024,42,,,True,True,8
+UNet,23,/../../../project2/depablo/erschultz/dataset_04_18_21,True,mean,diag,,False,torch.float32,True,,10,"[0.8, 0.1, 0.1]",True,16,4,1,20,0.01,1,,0.1,mse,False,False,,,2,1024,42,,,True,True,8
+UNet,24,/../../../project2/depablo/erschultz/dataset_04_18_21,True,mean,diag,,False,torch.float32,True,,10,"[0.8, 0.1, 0.1]",True,16,4,1,20,0.001,1,,0.1,mse,False,False,,,2,1024,42,,,True,True,8
+UNet,25,/../../../project2/depablo/erschultz/dataset_04_18_21,True,mean,prcnt,instance,False,torch.float32,True,,10,"[0.8, 0.1, 0.1]",True,16,4,1,20,0.1,1,,0.1,mse,False,False,,,2,1024,42,sigmoid,,True,True,8
+UNet,26,/../../../project2/depablo/erschultz/dataset_04_18_21,True,mean,prcnt,instance,False,torch.float32,True,,10,"[0.8, 0.1, 0.1]",True,16,4,1,20,0.01,1,,0.1,mse,False,False,,,2,1024,42,sigmoid,,True,True,8
+UNet,27,/../../../project2/depablo/erschultz/dataset_04_18_21,True,mean,prcnt,instance,False,torch.float32,True,,10,"[0.8, 0.1, 0.1]",True,16,4,1,20,0.001,1,,0.1,mse,False,False,,,2,1024,42,sigmoid,,True,True,8

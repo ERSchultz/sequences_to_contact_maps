@@ -1,0 +1,49 @@
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=True, toxx_mode='mean', y_preprocessing='prcnt', y_norm='instance', x_reshape=False, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=16, num_workers=4, start_epoch=1, n_epochs=20, save_mod=5, print_mod=2, lr=0.1, gpus=1, milestones=None, gamma=0.1, loss='mse', model_type='UNet', id=25, pretrained=False, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act='sigmoid', training_norm=None, plot=True, plot_predictions=True, kernel_w_list=None, hidden_sizes_list=None, nf=8, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, ofile_folder='results/UNet/25', log_file=<_io.TextIOWrapper name='results/UNet/25/out.log' mode='a' encoding='UTF-8'>, criterion=<function mse_loss at 0x7f485ab870d0>, channels=1, cuda=True, use_parallel=False, device=device(type='cuda'))
+
+Epoch 2, loss = 0.0382
+Mean test/val loss: 0.0365
+Epoch 4, loss = 0.0318
+Mean test/val loss: 0.0306
+Epoch 6, loss = 0.0291
+Mean test/val loss: 0.0280
+Epoch 8, loss = 0.0280
+Mean test/val loss: 0.0327
+Epoch 10, loss = 0.0274
+Mean test/val loss: 0.0269
+Epoch 12, loss = 0.0277
+Mean test/val loss: 0.0291
+Epoch 14, loss = 0.0280
+Mean test/val loss: 0.0288
+Epoch 16, loss = 0.0271
+Mean test/val loss: 0.0265
+Epoch 18, loss = 0.0264
+Mean test/val loss: 0.0258
+Epoch 20, loss = 0.0257
+Mean test/val loss: 0.0259
+
+to_device_time:  0
+test_time:  0
+forward_time:  0
+backward_time: 0
+
+Total parameters: 655361
+Total time: 1519.4176256656647
+Final val loss: 0.025896883068176415
+
+#### Plotting Script ####
+PCA Results:
+Accuracy: 0.947 +- 0.028
+Spearman R: 0.953 +- 0.026
+Pearson R: 0.978 +- 0.009
+
+Distance Stratified Pearson Correlation Results:
+Overall Pearson R: 0.808 $\pm$ 0.11
+
+Prediction Results:
+results/UNet/25/sample998
+results/UNet/25/sample628
+results/UNet/25/sample327
+results/UNet/25/sample553
+results/UNet/25/sample1833
+Loss: 0.0005942731443792582 +- 0.0037134692456790093
+

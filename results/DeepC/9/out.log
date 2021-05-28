@@ -1,0 +1,69 @@
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=False, toxx_mode='mean', y_preprocessing='diag', y_norm=None, x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=32, num_workers=4, start_epoch=1, n_epochs=20, save_mod=5, print_mod=2, lr=0.0001, gpus=1, milestones=None, gamma=0.1, loss='mse', model_type='DeepC', id=9, pretrained=False, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act=None, training_norm=None, plot=True, plot_predictions=True, kernel_w_list=[5, 5, 5], hidden_sizes_list=[32, 64, 128], nf=None, dilation_list=[2, 4, 8, 16, 32, 64, 128, 256, 512], dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, ofile_folder='results/DeepC/9', log_file=<_io.TextIOWrapper name='results/DeepC/9/out.log' mode='a' encoding='UTF-8'>, criterion=<function mse_loss at 0x7fd3a068f0d0>, channels=1, cuda=True, use_parallel=False, device=device(type='cuda'))
+
+Epoch 2, loss = 0.0586
+Mean test/val loss: 0.0461
+Epoch 4, loss = 0.0462
+Mean test/val loss: 0.0447
+Epoch 6, loss = 0.0419
+Mean test/val loss: 0.0455
+Epoch 8, loss = 0.0388
+Mean test/val loss: 0.0478
+Epoch 10, loss = 0.0370
+Mean test/val loss: 0.0434
+Epoch 12, loss = 0.0359
+Mean test/val loss: 0.0403
+Epoch 14, loss = 0.0351
+Mean test/val loss: 0.0352
+Epoch 16, loss = 0.0346
+Mean test/val loss: 0.0399
+Epoch 18, loss = 0.0330
+Mean test/val loss: 0.0386
+Epoch 20, loss = 0.0323
+Mean test/val loss: 0.0378
+
+to_device_time:  0
+test_time:  0
+forward_time:  0
+backward_time: 0
+
+Total parameters: 938787
+Total time: 2905.7739901542664
+Final val loss: 0.03775922102587564
+
+#### Plotting Script ####
+PCA Results:
+Accuracy: 0.855 +- 0.089
+Spearman R: 0.969 +- 0.01
+Pearson R: 0.975 +- 0.012
+
+Distance Stratified Pearson Correlation Results:
+Overall Pearson R: 0.807 $\pm$ 0.135
+
+Class Accuracy Results:
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+Accuracy: 0.26671756744384767 +- 0.028851756378952285
+Loss: 0.037862732373178005 +- 0.03346570870645244
+acc arr [[0.05699218 0.70592916 0.22251342 ... 0.18425056 0.30189492 0.58335765]
+ [0.10368206 0.61427658 0.22719043 ... 0.15250731 0.11014713 0.44911271]
+ [0.12399901 0.64572221 0.27984941 ... 0.10359468 0.12079394 0.35884618]
+ ...
+ [0.07469807 0.65385321 0.22999725 ... 0.14433202 0.3977673  0.50038241]
+ [0.14316636 0.55637086 0.27317621 ... 0.1059149  0.26050991 0.52292874]
+ [0.13780471 0.46032934 0.31113308 ... 0.15172271 0.67901732 0.02376238]]
+freq arr [[0.20217323 0.18937874 0.09024429 ... 0.06394386 0.06643295 0.04575157]
+ [0.22844315 0.155056   0.06953049 ... 0.05808067 0.08024406 0.12661362]
+ [0.19316673 0.15268898 0.07447433 ... 0.07412529 0.08735085 0.07974434]
+ ...
+ [0.2030983  0.21827126 0.1108017  ... 0.04637146 0.0351963  0.00997543]
+ [0.19826698 0.19963074 0.09848976 ... 0.05791473 0.04772949 0.02237701]
+ [0.22440338 0.25749016 0.12540817 ... 0.02756882 0.01420784 0.00096321]]
+
+Prediction Results:
+results/DeepC/9/sample1934
+results/DeepC/9/sample441
+results/DeepC/9/sample1461
+results/DeepC/9/sample184
+results/DeepC/9/sample1424
+Loss: 0.0010621661972254515 +- 0.007506323948054451
+
