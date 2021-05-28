@@ -402,10 +402,6 @@ def getBaseParser():
     parser.add_argument('--out_act', type=str2None, help='activation of final layer')
     parser.add_argument('--training_norm', type=str2None, help='norm during training (batch, instance, or None)')
 
-    # post-processing args
-    parser.add_argument('--plot', type=str2bool, default=True, help='True to run plotting script')
-    parser.add_argument('--plot_predictions', type=str2bool, default=True, help='True to plot predictions')
-
     # SimpleEpiNet args
     parser.add_argument('--kernel_w_list', type=str2list, help='List of kernel widths of convolutional layers')
     parser.add_argument('--hidden_sizes_list', type=str2list, help='List of hidden sizes for convolutional layers')
@@ -420,6 +416,11 @@ def getBaseParser():
     parser.add_argument('--dilation_list_trunk', type=str2list, help='List of dilations for dilated convolutional layers of trunk')
     parser.add_argument('--bottleneck', type=int, help='Number of filters in bottleneck (must be <= hidden_size_dilation_trunk)')
     parser.add_argument('--dilation_list_head', type=str2list, help='List of dilations for dilated convolutional layers of head')
+    parser.add_argument('--down_sampling', type=str2None, help='type of down sampling to use')
+
+    # post-processing args
+    parser.add_argument('--plot', type=str2bool, default=True, help='True to run plotting script')
+    parser.add_argument('--plot_predictions', type=str2bool, default=True, help='True to plot predictions')
 
     return parser
 
@@ -520,7 +521,7 @@ def save_opt(opt, ofile):
             elif opt.model_type == 'UNet':
                 opt_list.append('nf')
             elif opt.model_type == 'Akita':
-                opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head'])
+                opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'down_sampling'])
             elif opt.model_type == 'DeepC':
                 opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list'])
             elif opt.model_type == 'test':
@@ -534,13 +535,14 @@ def save_opt(opt, ofile):
             opt.y_norm, opt.x_reshape, opt.ydtype, opt.y_reshape, opt.crop, opt.classes, opt.split,
             opt.shuffle, opt.batch_size, opt.num_workers, opt.start_epoch, opt.n_epochs, opt.lr,
             opt.gpus, opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
-            opt.ifile_folder, opt.ifile, opt.k, opt.n, opt.seed, opt.out_act, opt.training_norm, opt.plot, opt.plot_predictions]
+            opt.ifile_folder, opt.ifile, opt.k, opt.n, opt.seed, opt.out_act, opt.training_norm,
+            opt.plot, opt.plot_predictions]
         if opt.model_type == 'simpleEpiNet':
             opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list])
         elif opt.model_type == 'UNet':
             opt_list.append(opt.nf)
         elif opt.model_type == 'Akita':
-            opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head])
+            opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.down_sampling])
         elif opt.model_type == 'DeepC':
             opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list])
         elif opt.model_type == 'test':

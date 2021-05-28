@@ -20,6 +20,8 @@ batch
 mse
 --out_act
 sigmoid
+--training_norm
+batch
 --n_epochs
 20
 --lr

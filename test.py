@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import time
 import csv
 import os
@@ -8,6 +9,7 @@ from neural_net_utils.base_networks import *
 from neural_net_utils.networks import *
 from neural_net_utils.utils import *
 from neural_net_utils.dataset_classes import *
+from core_test_train import core_test_train, getModel
 
 def test_num_workers():
     opt = argparseSetup() # get default args
@@ -59,11 +61,71 @@ def cleanup():
         else:
             pass
 
+def debugModel(model_type):
+    opt = argparseSetup()
+    opt.mode = 'debugging'
+    opt.model_type = model_type
+
+    # Preprocessing
+    if model_type == 'UNet':
+        opt.toxx = True
+        opt.toxx_mode = 'mean'
+        opt.x_reshape = False
+
+    # architecture
+    opt.k = 2
+    opt.crop = None
+    opt.n = 1024
+    opt.y_preprocessing = 'diag'
+    opt.y_norm = 'batch'
+    opt.loss = 'mse'
+
+    if model_type == 'Akita':
+        opt.kernel_w_list=str2list('5-5-5')
+        opt.hidden_sizes_list=str2list('4-6-8')
+        opt.dilation_list_trunk=str2list('2-4-8-16')
+        opt.bottleneck=4
+        opt.dilation_list_head=str2list('2-4-8-16')
+        opt.out_act=nn.ReLU(True)
+        opt.training_norm='batch'
+        opt.down_sampling='conv'
+    elif model_type == 'UNet':
+        opt.nf = 8
+        opt.out_act = 'sigmoid'
+        opt.training_norm = 'batch'
+    elif model_type == 'DeepC':
+        opt.kernel_w_list=str2list('5-5-5')
+        opt.hidden_sizes_list=str2list('32-64-128')
+        opt.dilation_list=str2list('2-4-8-16-32-64-128-256-512')
+
+
+
+    # hyperparameters
+    opt.n_epochs = 1
+    opt.lr = 1e-3
+    opt.batch_size = 1
+    opt.milestones = str2list('1')
+    opt.gamma = 0.1
+
+    # other
+    opt.plot = True
+    opt.plot_predictions = True
+    opt.verbose = False
+    if opt.cuda:
+        opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
+    else:
+        opt.data_folder = "dataset_04_18_21"
+
+    model = getModel(opt)
+    opt.model_type = 'test'
+    core_test_train(model, opt)
+
 
 
 
 def main():
-    cleanup()
+    # cleanup()
+    debugModel('Akita')
 
 
 

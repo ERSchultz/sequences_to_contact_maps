@@ -1,11 +1,7 @@
-import os
-import sys
-abspath = os.path.abspath(__file__)
-dname = os.path.dirname(abspath)
-sys.path.insert(0, dname)
-
 import torch
 import torch.nn.functional as F
+import os
+import sys
 import numpy as np
 import itertools
 import math
@@ -13,11 +9,9 @@ import matplotlib.pyplot as plt
 import matplotlib.colors
 import seaborn as sns
 import pandas as pd
-from utils import *
-from networks import *
-from utils import *
-from plotting_functions import *
-from dataset_classes import Sequences2Contacts
+from neural_net_utils.utils import *
+from neural_net_utils.networks import *
+from neural_net_utils.dataset_classes import Sequences2Contacts
 
 def plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid, split = 'type', xmax = None):
     """
@@ -586,11 +580,13 @@ def plotting_script(model, opt, train_loss_arr, val_loss_arr):
 def main():
     opt = argparseSetup()
 
+    if opt.model_type == 'SimpleEpiNet':
+        model = SimpleEpiNet(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
     if opt.model_type == 'UNet':
-        model = UNet(nf_in = opt.k, nf_out = opt.channels, nf = opt.nf, out_act = opt.out_act)
+        model = UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm, out_act = opt.out_act)
     elif opt.model_type == 'DeepC':
         model = DeepC(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
-                            opt.dilation_list, out_act = opt.out_act)
+                            opt.dilation_list, opt.training_norm, opt.out_act)
     elif opt.model_type == 'Akita':
         model = Akita(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list_trunk,
@@ -598,10 +594,10 @@ def main():
                             opt.dilation_list_head,
                             opt.out_act,
                             opt.channels,
-                            norm = opt.training_norm)
+                            opt.training_norm,
+                            opt.down_sampling)
     else:
-        print('Invalid model type: {}'.format(opt.model_type))
-        # TODO
+        raise Exception('Invalid model type: {}'.format(opt.model_type))
 
     print(opt, file = opt.log_file)
     print(opt)

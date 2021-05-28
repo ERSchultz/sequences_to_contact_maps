@@ -20,6 +20,8 @@ none
 cross_entropy
 --out_act
 none
+--training_norm
+batch
 --n_epochs
 20
 --lr

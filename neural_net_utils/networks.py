@@ -109,7 +109,7 @@ class VAE(nn.Module):
 class DeepC(nn.Module):
     '''Roughly based on https://doi.org/10.1038/s41592-020-0960-3 (Deepc).'''
     def __init__(self, n, k, kernel_w_list, hidden_sizes_list,
-                dilation_list, out_act = nn.Sigmoid()):
+                dilation_list, std_norm, out_act):
         """
         Inputs:
             n: number of particles
@@ -117,10 +117,10 @@ class DeepC(nn.Module):
             kernel_w_list: list of kernel widths of convolutional layers
             hidden_sizes_list: list of hidden sizes for convolutional layers
             dilation_list: list of dilations for dilated convolutional layers
-            out_Act: activation of finally fully connected layer (str)
+            std_norm: default normalization method during training (str)
+            out_Act: activation of finally fully connected layer (str or nn.Module)
         """
         super(DeepC, self).__init__()
-        self.n = n
         model = []
 
         # Convolution
@@ -128,13 +128,13 @@ class DeepC(nn.Module):
         assert len(kernel_w_list) == len(hidden_sizes_list), "length of kernel_w_list ({}) and hidden_sizes_list ({}) must match".format(len(kernel_w_list), len(hidden_sizes_list))
         for kernel_w, output_size in zip(kernel_w_list, hidden_sizes_list):
             model.append(ConvBlock(input_size, output_size, kernel_w, padding = kernel_w//2,
-                                    activation = 'prelu', dropout = 'drop', dropout_p = 0.2, conv1d = True))
+                                    activation = 'prelu', norm = std_norm, dropout = 'drop', dropout_p = 0.2, conv1d = True))
             input_size = output_size
 
         # Dilated Convolution
         for dilation in dilation_list:
             model.append(ConvBlock(input_size, input_size, 3, padding = dilation,
-                                    activation = 'gated', dilation = dilation, residual = True, conv1d = True))
+                                    activation = 'gated', norm = std_norm, dilation = dilation, residual = True, conv1d = True))
 
         self.model = nn.Sequential(*model)
 
@@ -167,7 +167,8 @@ class Akita(nn.Module):
                 dilation_list_head,
                 out_act,
                 out_channels,
-                norm):
+                std_norm,
+                downsample_method, pool_kernel_size = 2, stride_size = 2):
         """
         Inputs:
             n: number of particles
@@ -178,9 +179,11 @@ class Akita(nn.Module):
             bottleneck_size: size of bottleneck layer
             dilation_list_head: list of dilations for dilated convolutional layers of head
             out_act: activation of finally layer (str)
+            out_channels: number of channels in output
+            std_norm: default normalization method during training (str)
+            downsample_method: method for downsampling prior to AverageTo2d (str)
         """
         super(Akita, self).__init__()
-        self.n = n
 
         ## Trunk ##
         trunk = []
@@ -189,31 +192,49 @@ class Akita(nn.Module):
         assert len(kernel_w_list) == len(hidden_sizes_list), "length of kernel_w_list ({}) and hidden_sizes_list ({}) must match".format(len(kernel_w_list), len(hidden_sizes_list))
         for kernel_w, output_size in zip(kernel_w_list, hidden_sizes_list):
             trunk.append(ConvBlock(input_size, output_size, kernel_w, padding = kernel_w//2,
-                                    activation = 'relu', norm = norm, conv1d = True))
+                                    activation = 'relu', norm = std_norm, conv1d = True))
             input_size = output_size
 
 
         # Diaated Convolution
         for dilation in dilation_list_trunk:
             trunk.append(ConvBlock(input_size, input_size, 3, padding = dilation,
-                                    activation = 'relu', norm = norm, dilation = dilation, residual = True, conv1d = True))
+                                    activation = 'relu', norm = std_norm, dilation = dilation, residual = True, conv1d = True))
 
         # Bottleneck
         trunk.append(ConvBlock(input_size, bottleneck_size, 1, padding = 0, activation = 'relu', conv1d = True))
+
+        # Downsampling
+        downsampling_factor = 2
+        if downsample_method == 'maxpool':
+            trunk.append(nn.MaxPool1d(pool_kernel_size))
+        elif downsample_method == 'avgpool':
+            trunk.append(nn.AvgPool1d(pool_kernel_size))
+        elif downsample_method == 'conv':
+            trunk.append(ConvBlock(bottleneck_size, bottleneck_size, stride = stride_size,
+                                    activation = 'relu', norm = std_norm, conv1d = True))
+        else:
+            downsampling_factor = 1
+            assert downsample_method is None, "{}".format(downsample_method)
 
         self.trunk = nn.Sequential(*trunk)
 
         ## Head ##
         head = []
-        head.append(AverageTo2d(concat_d = True, n = self.n))
+        head.append(AverageTo2d(True, n // downsampling_factor))
         input_size = bottleneck_size + 1
         head.append(ConvBlock(input_size, input_size, 1, padding = 0, activation = 'relu'))
 
         # Dilated Convolution
         for dilation in dilation_list_head:
             head.append(ConvBlock(input_size, input_size, 3, padding = dilation,
-                                    activation = 'relu', norm = norm, dilation = dilation, residual = True))
+                                    activation = 'relu', norm = std_norm, dilation = dilation, residual = True))
             head.append(Symmetrize2D())
+
+        # UpSampling
+        if downsample_method is not None:
+            head.append(DeconvBlock(input_size, input_size, stride = stride_size,
+                                        activation = 'relu', norm = std_norm, output_padding = 1))
 
         self.head = nn.Sequential(*head)
 
@@ -223,13 +244,13 @@ class Akita(nn.Module):
 
 
     def forward(self, input):
-        print('input', input, input.shape)
+        print('input', input.shape)
         out = self.trunk(input)
-        print('trunk', out, out.shape)
+        print('trunk', out.shape)
         out = self.head(out)
-        print('head', out, out.shape)
+        print('head', out.shape)
         out = self.conv(out)
-        print('yhat', out, out.shape)
+        print('yhat', out.shape)
 
         return out
 

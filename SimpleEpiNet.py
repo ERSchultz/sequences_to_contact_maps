@@ -17,12 +17,7 @@ def main():
     opt = argparseSetup()
 
     # Set up model
-    opt.out_act = 'sigmoid'
     model = SimpleEpiNet(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
-    if opt.loss == 'mse':
-        opt.criterion = F.mse_loss
-    else:
-        print('Invalid loss: {}'.format(opt.loss))
 
     core_test_train(model, opt)
 
