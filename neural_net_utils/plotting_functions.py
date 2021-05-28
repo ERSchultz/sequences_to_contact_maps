@@ -265,7 +265,14 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
             preprocessing = opt.y_preprocessing.capitalize()
         else:
             preprocessing = 'None'
-        plt.title('Y Preprocessing: {}'.format(preprocessing), fontsize = 16)
+        if opt.y_norm is not None:
+            y_norm = opt.y_norm.capitalize()
+        else:
+             y_norm = 'None'
+        upper_title = 'Y Preprocessing: {}, Y Norm: {}'.format(preprocessing, y_norm)
+        lower_title = 'Final Validation Loss: {}'.format(np.round(val_loss_arr[-1], 3))
+        plt.title('{}\n{}'.format(upper_title, lower_title), fontsize = 16)
+
 
         if opt.milestones is not None:
             lr = float(opt.lr)
@@ -337,9 +344,9 @@ def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 6, minVal = None,
         vmax = np.mean(y)
     elif vmax == 'max':
         vmax = np.max(y)
-    ax = sns.heatmap(y, linewidth=0, vmin = 0, vmax = vmax, cmap = mycmap)
+    ax = sns.heatmap(y, linewidth = 0, vmin = 0, vmax = vmax, cmap = mycmap)
     if title is not None:
-        plt.title(title)
+        plt.title(title, fontsize = 16)
     plt.tight_layout()
     plt.savefig(ofile)
     plt.close()
@@ -350,7 +357,7 @@ def plotPerClassAccuracy(val_dataloader, imagePath, model, opt, title = None):
         return
         # when training on percentile preprocessed data using MSE loss it is impossible to convert back to classes
 
-    acc_arr, freq_arr = calculatePerClassAccuracy(val_dataloader, model, opt)
+    acc_arr, freq_arr, acc_result = calculatePerClassAccuracy(val_dataloader, model, opt)
 
     N, C = acc_arr.shape
     width = 0.35
@@ -378,8 +385,17 @@ def plotPerClassAccuracy(val_dataloader, imagePath, model, opt, title = None):
     ax2.tick_params(axis = 'y', labelcolor = color)
     ax2.set_ylabel("Class Frequency", fontsize = 16, color = color)
 
-    if title is not None:
-        plt.title(title)
+
+    if opt.y_preprocessing is not None:
+        preprocessing = opt.y_preprocessing.capitalize()
+    else:
+        preprocessing = 'None'
+    if opt.y_norm is not None:
+        y_norm = opt.y_norm.capitalize()
+    else:
+         y_norm = 'None'
+    plt.title('Y Preprocessing: {}, Y Norm: {}\n{}'.format(preprocessing, y_norm, acc_result), fontsize = 16)
+
     plt.tight_layout()
     plt.savefig(os.path.join(imagePath, 'per_class_acc.png'))
 
@@ -425,7 +441,17 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
     plt.xlabel('Distance', fontsize = 16)
     plt.ylabel('Pearson Correlation Coefficient', fontsize = 16)
     plt.legend(loc = 'lower left')
-    plt.title(title)
+
+    if opt.y_preprocessing is not None:
+        preprocessing = opt.y_preprocessing.capitalize()
+    else:
+        preprocessing = 'None'
+    if opt.y_norm is not None:
+        y_norm = opt.y_norm.capitalize()
+    else:
+         y_norm = 'None'
+    plt.title('Y Preprocessing: {}, Y Norm: {}\n{}'.format(preprocessing, y_norm, title), fontsize = 16)
+
     plt.tight_layout()
     plt.savefig(os.path.join(imagePath, 'distance_pearson.png'))
     plt.close()
@@ -435,6 +461,17 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
     if opt.y_preprocessing != 'prcnt':
         prcntDist_path = os.path.join(opt.data_folder, 'prcntDist.npy')
         prcntDist = np.load(prcntDist_path)
+
+    if opt.y_preprocessing is not None:
+        preprocessing = opt.y_preprocessing.capitalize()
+    else:
+        preprocessing = 'None'
+    if opt.y_norm is not None:
+        y_norm = opt.y_norm.capitalize()
+    else:
+         y_norm = 'None'
+    upper_title = 'Y Preprocessing: {}, Y Norm: {}'.format(preprocessing, y_norm)
+
 
     loss_arr = np.zeros(opt.valN)
     for i, (x, y, path, minmax) in enumerate(val_dataloader):
@@ -452,11 +489,11 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
             yhat = model(x)
             loss = opt.criterion(yhat, y).item()
             if opt.loss == 'mse':
-                yhat_title = 'Y hat (MSE Loss: {})'.format(np.round(loss, 3))
+                yhat_title = '{}\nY hat (MSE Loss: {})'.format(upper_title, np.round(loss, 3))
             elif opt.loss == 'cross_entropy':
-                yhat_title = 'Y hat (Cross Entropy Loss: {})'.format(np.round(loss, 3))
+                yhat_title = '{}\Y hat (Cross Entropy Loss: {})'.format(upper_title, np.round(loss, 3))
             else:
-                yhat_title = 'Y hat (Loss: {})'.format(np.round(loss, 3))
+                yhat_title = '{}\Y hat (Loss: {})'.format(np.round(upper_title, loss, 3))
             loss_arr[i] = loss
             y = y.cpu().numpy()
             yhat = yhat.cpu().detach().numpy()
@@ -524,26 +561,13 @@ def contactPlots(dataFolder):
         y_prcnt_norm = np.load(os.path.join(path, 'y_prcnt.npy'))
         plotContactMap(y_prcnt_norm, os.path.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
-def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, load = False):
+def plotting_script(model, opt, train_loss_arr, val_loss_arr):
     opt.batch_size = 1 # batch size must be 1
+    opt.shuffle = False # for reproducibility
     seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
                                         opt.y_reshape, opt.crop, names = True, minmax = True)
     _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
-    if load:
-        model_name = os.path.join(opt.ofile_folder, 'model.pt')
-        if os.path.exists(model_name):
-            save_dict = torch.load(model_name, map_location=torch.device('cpu'))
-            model.load_state_dict(save_dict['model_state_dict'])
-            train_loss_arr = save_dict['train_loss']
-            val_loss_arr = save_dict['val_loss']
-            print('Model is loaded: {}'.format(model_name), file = opt.log_file)
-        else:
-            raise Exception('Model does not exist: {}'.format(model_name))
-    else:
-        assert train_loss_arr is not None and val_loss_arr is not None
-
-
 
     imagePath = opt.ofile_folder
     print('#### Plotting Script ####', file = opt.log_file)
@@ -599,7 +623,8 @@ def main():
         print('Model is loaded: {}'.format(model_name), file = opt.log_file)
     else:
         raise Exception('Model does not exist: {}'.format(model_name))
-    plotPredictions(val_dataloader, model, opt)
+    plotting_script(model, opt, train_loss_arr, val_loss_arr)
+    # plotPredictions(val_dataloader, model, opt)
 
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')
@@ -607,7 +632,7 @@ def main():
 
 def main2():
     path = 'results\\UNet'
-    ids = [13, 14, 15]
+    ids = [25, 26, 27]
 
     dirs = []
     opts = []

@@ -295,11 +295,12 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
             acc = num / denom
             acc_c_arr[i, c] = acc
 
-    print('Accuracy: {} +- {}'.format(np.mean(acc_arr), np.std(acc_arr)), file = opt.log_file)
-    print('Loss: {} +- {}'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
+    acc_result = 'Accuracy: {} +- {}'.format(np.round(np.mean(acc_arr), 3) * 100, np.round(np.std(acc_arr), 3) * 100)
+    print(acc_result, file = opt.log_file)
+    print('Loss: {} +- {}'.format(np.round(np.mean(loss_arr), 3), np.round( np.std(loss_arr), 3)), file = opt.log_file)
     print('acc arr', acc_c_arr, file = opt.log_file)
     print('freq arr {}\n'.format(freq_c_arr), file = opt.log_file)
-    return acc_c_arr, freq_c_arr
+    return acc_c_arr, freq_c_arr, acc_result
 
 # other functions
 def comparePCA(val_dataloader, imagePath, model, opt):
@@ -492,6 +493,11 @@ def argparseSetup():
         opt.use_parallel = False
 
     opt.device = torch.device('cuda' if opt.cuda else 'cpu')
+
+    # Set random seeds
+    torch.manual_seed(opt.seed)
+    if opt.cuda:
+        torch.cuda.manual_seed(opt.seed)
 
     return opt
 

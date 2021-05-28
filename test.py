@@ -38,19 +38,22 @@ def test_num_workers():
     print(np.round(results, 1))
 
 def cleanup():
-    dir = "/../../../project2/depablo/erschultz/dataset_04_18_21/samples"
-    for sample in os.listdir(dir):
-        sample_path = os.path.join(dir, sample)
-        if os.path.isdir(sample_path):
-            for file in os.listdir(sample_path):
-                f_path = os.path.join(sample_path, file)
-                if os.path.isdir(f_path):
-                    for file2 in os.listdir(f_path):
-                        f2_path = os.path.join(f_path, file2)
-                        os.remove(f2_path)
-                        print('Delete', f2_path)
-                    os.rmdir(f_path)
-                    print('Delete', f_path)
+    dir = "results"
+    for type in os.listdir(dir):
+        type_path = os.path.join(dir, type)
+        if os.path.isdir(type_path):
+            for id in os.listdir(type_path):
+                id_path = os.path.join(type_path, id)
+                if os.path.isdir(id_path):
+                    for file in os.listdir(id_path):
+                        f_path = os.path.join(id_path, file)
+                        if os.path.isdir(f_path) and file.startswith('sample'):
+                            for file2 in os.listdir(f_path):
+                                f2_path = os.path.join(f_path, file2)
+                                os.remove(f2_path)
+                                print('Delete', f2_path)
+                            os.rmdir(f_path)
+                            print('Delete', f_path)
                 else:
                     pass
         else:
@@ -60,11 +63,7 @@ def cleanup():
 
 
 def main():
-    x = os.path.join('..', 'test', 'file')
-    print(x)
-
-
-
+    cleanup()
 
 
 

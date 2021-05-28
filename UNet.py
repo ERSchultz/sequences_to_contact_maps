@@ -19,7 +19,7 @@ def main():
         opt.k=2
 
         opt.n=1024
-        opt.y_preprocessing='prcnt'
+        opt.y_preprocessing='diag'
         opt.y_norm='instance'
         opt.nf = 8
         opt.out_act = 'sigmoid'

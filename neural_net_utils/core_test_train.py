@@ -19,11 +19,6 @@ def core_test_train(model, opt):
     save_opt(opt, os.path.join('results', opt.model_type, 'experiments.csv'))
     save_args(opt)
 
-    # Set random seeds
-    torch.manual_seed(opt.seed)
-    if opt.cuda:
-        torch.cuda.manual_seed(opt.seed)
-
     # split dataset
     dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
