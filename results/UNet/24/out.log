@@ -67,3 +67,42 @@ results/UNet/24/sample184
 results/UNet/24/sample1424
 Loss: 0.0009455359354615211 +- 0.006011130378988256
 
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=True, toxx_mode='mean', y_preprocessing='diag', y_norm=None, x_reshape=False, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=16, num_workers=4, start_epoch=1, n_epochs=20, save_mod=5, print_mod=2, lr=0.001, gpus=1, milestones=None, gamma=0.1, loss='mse', model_type='UNet', id=24, pretrained=True, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act=None, training_norm='batch', kernel_w_list=None, hidden_sizes_list=None, nf=8, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, down_sampling=None, plot=True, plot_predictions=True, ofile_folder='results/UNet/24', log_file=<_io.TextIOWrapper name='results/UNet/24/out.log' mode='a' encoding='UTF-8'>, criterion=<function mse_loss at 0x7ff7810173a0>, channels=1, cuda=True, use_parallel=False, device=device(type='cuda'))
+Model is loaded: results/UNet/24/model.pt
+#### Plotting Script ####
+PCA Results:
+Accuracy: 0.941 +- 0.028
+Spearman R: 0.965 +- 0.011
+Pearson R: 0.969 +- 0.012
+
+Distance Stratified Pearson Correlation Results:
+Overall Pearson R: 0.816 $\pm$ 0.114
+
+Class Accuracy Results:
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+Accuracy: 32.9 +- 6.4
+Loss: 0.031 +- 0.012
+acc arr [[0.56592629 0.37143202 0.16729754 ... 0.19528631 0.45096496 0.86328564]
+ [0.45023801 0.41248708 0.15871653 ... 0.27424284 0.39101062 0.85080901]
+ [0.37214688 0.41477856 0.18379079 ... 0.21385116 0.33451167 0.87163233]
+ ...
+ [0.19932266 0.52951223 0.20127962 ... 0.21093804 0.49848897 0.41061453]
+ [0.28078415 0.49964586 0.21755383 ... 0.26298834 0.26265462 0.78775168]
+ [0.25955266 0.45097082 0.22380802 ... 0.2826065  0.35061653 0.61002179]]
+freq arr [[0.20214462 0.17380333 0.08163071 ... 0.05575943 0.07511139 0.10530472]
+ [0.18992233 0.19010735 0.09552574 ... 0.06303978 0.055336   0.02404785]
+ [0.13094521 0.17653084 0.10451508 ... 0.06207657 0.05665398 0.02527428]
+ ...
+ [0.20105743 0.24681854 0.12848663 ... 0.02755165 0.01262283 0.00068283]
+ [0.21482658 0.23159409 0.11480713 ... 0.03730011 0.02174187 0.00227356]
+ [0.14999962 0.19145775 0.10865021 ... 0.05672646 0.04377556 0.01400757]]
+
+Prediction Results:
+results/UNet/24/sample189
+results/UNet/24/sample662
+results/UNet/24/sample997
+results/UNet/24/sample1950
+results/UNet/24/sample898
+Loss: 0.0007860780693590641 +- 0.0050245925905525336
+

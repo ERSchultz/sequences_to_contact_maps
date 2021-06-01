@@ -77,3 +77,40 @@ results/UNet/14/sample1950
 results/UNet/14/sample898
 Loss: 0.041917300820350646 +- 0.2623008884948874
 
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=True, toxx_mode='mean', y_preprocessing='prcnt', y_norm=None, x_reshape=False, ydtype=torch.int64, y_reshape=False, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=16, num_workers=4, start_epoch=1, n_epochs=20, save_mod=5, print_mod=2, lr=0.01, gpus=1, milestones=None, gamma=0.1, loss='cross_entropy', model_type='UNet', id=14, pretrained=True, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act=None, training_norm='batch', kernel_w_list=None, hidden_sizes_list=None, nf=8, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, down_sampling=None, plot=True, plot_predictions=True, ofile_folder='results/UNet/14', log_file=<_io.TextIOWrapper name='results/UNet/14/out.log' mode='a' encoding='UTF-8'>, criterion=<function cross_entropy at 0x7fe7a00cf0d0>, channels=10, cuda=True, use_parallel=False, device=device(type='cuda'))
+Model is loaded: results/UNet/14/model.pt
+#### Plotting Script ####
+PCA Results:
+Accuracy: 0.945 +- 0.029
+Spearman R: 0.95 +- 0.035
+Pearson R: 0.973 +- 0.012
+
+Distance Stratified Pearson Correlation Results:
+Overall Pearson R: 0.785 $\pm$ 0.118
+
+Class Accuracy Results:
+Accuracy: 36.6 +- 6.7
+Loss: 1.567 +- 0.147
+acc arr [[0.79738069 0.34511046 0.         ... 0.22761169 0.39539106 0.92072994]
+ [0.78227248 0.32607278 0.         ... 0.33254667 0.38899421 0.83415292]
+ [0.65480023 0.45077415 0.         ... 0.23371536 0.31193819 0.91559128]
+ ...
+ [0.63057811 0.4505309  0.         ... 0.264036   0.37979752 0.62709497]
+ [0.65825572 0.45305628 0.         ... 0.27799652 0.24949557 0.81627517]
+ [0.61259108 0.499472   0.         ... 0.36205911 0.3343863  0.72167756]]
+freq arr [[0.20214462 0.17380333 0.08163071 ... 0.05575943 0.07511139 0.10530472]
+ [0.18992233 0.19010735 0.09552574 ... 0.06303978 0.055336   0.02404785]
+ [0.13094521 0.17653084 0.10451508 ... 0.06207657 0.05665398 0.02527428]
+ ...
+ [0.20105743 0.24681854 0.12848663 ... 0.02755165 0.01262283 0.00068283]
+ [0.21482658 0.23159409 0.11480713 ... 0.03730011 0.02174187 0.00227356]
+ [0.14999962 0.19145775 0.10865021 ... 0.05672646 0.04377556 0.01400757]]
+
+Prediction Results:
+results/UNet/14/sample189
+results/UNet/14/sample662
+results/UNet/14/sample997
+results/UNet/14/sample1950
+results/UNet/14/sample898
+Loss: 0.039621784687042236 +- 0.24788712037309246
+

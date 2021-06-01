@@ -67,3 +67,42 @@ results/DeepC/9/sample184
 results/DeepC/9/sample1424
 Loss: 0.0010621661972254515 +- 0.007506323948054451
 
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=False, toxx_mode='mean', y_preprocessing='diag', y_norm=None, x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=32, num_workers=4, start_epoch=1, n_epochs=20, save_mod=5, print_mod=2, lr=0.0001, gpus=1, milestones=None, gamma=0.1, loss='mse', model_type='DeepC', id=9, pretrained=True, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act=None, training_norm=None, kernel_w_list=[5, 5, 5], hidden_sizes_list=[32, 64, 128], nf=None, dilation_list=[2, 4, 8, 16, 32, 64, 128, 256, 512], dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, down_sampling=None, plot=True, plot_predictions=True, ofile_folder='results/DeepC/9', log_file=<_io.TextIOWrapper name='results/DeepC/9/out.log' mode='a' encoding='UTF-8'>, criterion=<function mse_loss at 0x7f892cc913a0>, channels=1, cuda=True, use_parallel=False, device=device(type='cuda'))
+Model is loaded: results/DeepC/9/model.pt
+#### Plotting Script ####
+PCA Results:
+Accuracy: 0.855 +- 0.089
+Spearman R: 0.969 +- 0.01
+Pearson R: 0.975 +- 0.012
+
+Distance Stratified Pearson Correlation Results:
+Overall Pearson R: 0.807 $\pm$ 0.135
+
+Class Accuracy Results:
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+Accuracy: 26.700000000000003 +- 2.9000000000000004
+Loss: 0.038 +- 0.033
+acc arr [[0.10179087 0.57948048 0.223188   ... 0.24242321 0.1801422  0.57764898]
+ [0.08864764 0.63134713 0.25503664 ... 0.13143324 0.30128912 0.36500635]
+ [0.0286222  0.57248279 0.26250091 ... 0.21959688 0.40305693 0.61851936]
+ ...
+ [0.08087315 0.4611604  0.35345288 ... 0.16746279 0.60093684 0.05027933]
+ [0.07687049 0.39473077 0.32148791 ... 0.13878094 0.53636284 0.        ]
+ [0.04604351 0.5568595  0.30113756 ... 0.1106217  0.33427737 0.43232571]]
+freq arr [[0.20214462 0.17380333 0.08163071 ... 0.05575943 0.07511139 0.10530472]
+ [0.18992233 0.19010735 0.09552574 ... 0.06303978 0.055336   0.02404785]
+ [0.13094521 0.17653084 0.10451508 ... 0.06207657 0.05665398 0.02527428]
+ ...
+ [0.20105743 0.24681854 0.12848663 ... 0.02755165 0.01262283 0.00068283]
+ [0.21482658 0.23159409 0.11480713 ... 0.03730011 0.02174187 0.00227356]
+ [0.14999962 0.19145775 0.10865021 ... 0.05672646 0.04377556 0.01400757]]
+
+Prediction Results:
+results/DeepC/9/sample189
+results/DeepC/9/sample662
+results/DeepC/9/sample997
+results/DeepC/9/sample1950
+results/DeepC/9/sample898
+Loss: 0.0007957956474274396 +- 0.0053352107153918134
+
