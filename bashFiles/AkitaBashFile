@@ -33,7 +33,7 @@ downSampling='conv'
 
 # hyperparameters
 nEpochs=20
-batchSize=8
+batchSize=6
 numWorkers=4
 milestones='none'
 gamma=0.1
