@@ -556,10 +556,14 @@ def contactPlots(dataFolder):
         y_prcnt_norm = np.load(os.path.join(path, 'y_prcnt.npy'))
         plotContactMap(y_prcnt_norm, os.path.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
+def updatePCATables():
+    for model_type in ['Akita', 'DeepC', 'UNet']:
+        updatePCATable(model_type)
+
 def updatePCATable(model_type):
     parser = getBaseParser()
     model_path = os.path.join('results', model_type)
-    results = [['Model type', 'ID', 'Preprocessing', 'Norm', 'Loss', 'Output Activation', 'initial lr', 'epochs', 'Accuracy', 'Spearman', 'Pearson']]
+    results = [['Model type', 'ID', 'Preprocessing', 'Norm', 'Loss', 'Output Activation', 'Initial LR', 'Epochs', 'Accuracy Mean', 'Accuracy Std', 'Spearman Mean', 'Spearman Std', 'Pearson Mean', 'Pearson Std']]
     for id in os.listdir(model_path):
         id_path = os.path.join(model_path, id)
         if os.path.isdir(id_path) and id.isdigit():
@@ -567,10 +571,10 @@ def updatePCATable(model_type):
             opt = parser.parse_args(['@{}'.format(txt_file)])
             with open(os.path.join(id_path, 'PCA_results.txt'), 'r') as f:
                 f.readline()
-                acc = f.readline().split(':')[1].strip()
-                spearman = f.readline().split(':')[1].strip()
-                pearson = f.readline().split(':')[1].strip()
-            row_list = [model_type, id, opt.y_preprocessing, opt.y_norm, opt.loss, opt.out_act, opt.lr, opt.n_epochs, acc, spearman, pearson]
+                acc = f.readline().split(':')[1].strip().split(' +- ')
+                spearman = f.readline().split(':')[1].strip().split(' +- ')
+                pearson = f.readline().split(':')[1].strip().split(' +- ')
+            row_list = [model_type, id, opt.y_preprocessing, opt.y_norm, opt.loss, opt.out_act, opt.lr, opt.n_epochs, acc[0], acc[1], spearman[0], spearman[1], pearson[0], pearson[1]]
             results.append(row_list)
 
     ofile = os.path.join(model_path, 'PCA_table.csv')
@@ -649,7 +653,7 @@ def main():
     # freqStatisticsPlots('dataset_04_18_21')
     # contactPlots('dataset_04_18_21')
 
-def main2():
+def main_plotCombinedModels():
     path = 'results\\UNet'
     ids = [28, 29, 30]
 
@@ -672,4 +676,4 @@ def main2():
 
 
 if __name__ == '__main__':
-    updatePCATable('DeepC')
+    updatePCATables()

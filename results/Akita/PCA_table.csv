@@ -1,0 +1,5 @@
+Model type,ID,Preprocessing,Norm,Loss,Output Activation,Initial LR,Epochs,Accuracy Mean,Accuracy Std,Spearman Mean,Spearman Std,Pearson Mean,Pearson Std
+Akita,3,diag,batch,mse,sigmoid,0.1,20,0.907,0.038,0.969,0.021,0.98,0.015
+Akita,4,diag,batch,mse,sigmoid,0.01,20,0.95,0.029,0.981,0.009,0.989,0.006
+Akita,5,diag,batch,mse,sigmoid,0.001,20,0.951,0.028,0.981,0.01,0.989,0.007
+Akita,6,diag,batch,mse,sigmoid,0.0001,20,0.947,0.029,0.979,0.01,0.988,0.007

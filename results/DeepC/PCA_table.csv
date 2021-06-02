@@ -1,10 +1,10 @@
-Model type,ID,Preprocessing,Norm,Loss,Output Activation,initial lr,epochs,Accuracy,Spearman,Pearson
-DeepC,10,diag,instance,mse,sigmoid,0.01,20,0.902 +- 0.046,0.709 +- 0.264,0.547 +- 0.167
-DeepC,11,diag,instance,mse,sigmoid,0.001,20,0.601 +- 0.06,0.979 +- 0.009,0.983 +- 0.009
-DeepC,12,diag,instance,mse,sigmoid,0.0001,20,0.6 +- 0.065,0.972 +- 0.01,0.979 +- 0.011
-DeepC,13,diag,instance,mse,sigmoid,0.01,20,0.864 +- 0.051,0.881 +- 0.138,0.737 +- 0.131
-DeepC,14,diag,instance,mse,sigmoid,0.001,20,0.895 +- 0.044,0.863 +- 0.167,0.701 +- 0.112
-DeepC,15,diag,instance,mse,sigmoid,0.0001,20,0.624 +- 0.064,0.739 +- 0.131,0.708 +- 0.181
-DeepC,7,diag,,mse,,0.01,20,0.707 +- 0.065,0.635 +- 0.106,0.731 +- 0.09
-DeepC,8,diag,,mse,,0.001,20,0.91 +- 0.032,0.97 +- 0.01,0.978 +- 0.011
-DeepC,9,diag,,mse,,0.0001,20,0.855 +- 0.089,0.969 +- 0.01,0.975 +- 0.012
+Model type,ID,Preprocessing,Norm,Loss,Output Activation,Initial LR,Epochs,Accuracy Mean,Accuracy Std,Spearman Mean,Spearman Std,Pearson Mean,Pearson Std
+DeepC,10,diag,instance,mse,sigmoid,0.01,20,0.902,0.046,0.709,0.264,0.547,0.167
+DeepC,11,diag,instance,mse,sigmoid,0.001,20,0.601,0.06,0.979,0.009,0.983,0.009
+DeepC,12,diag,instance,mse,sigmoid,0.0001,20,0.6,0.065,0.972,0.01,0.979,0.011
+DeepC,13,diag,instance,mse,sigmoid,0.01,20,0.864,0.051,0.881,0.138,0.737,0.131
+DeepC,14,diag,instance,mse,sigmoid,0.001,20,0.895,0.044,0.863,0.167,0.701,0.112
+DeepC,15,diag,instance,mse,sigmoid,0.0001,20,0.624,0.064,0.739,0.131,0.708,0.181
+DeepC,7,diag,,mse,,0.01,20,0.707,0.065,0.635,0.106,0.731,0.09
+DeepC,8,diag,,mse,,0.001,20,0.91,0.032,0.97,0.01,0.978,0.011
+DeepC,9,diag,,mse,,0.0001,20,0.855,0.089,0.969,0.01,0.975,0.012
