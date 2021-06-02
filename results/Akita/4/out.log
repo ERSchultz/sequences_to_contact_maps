@@ -1,0 +1,69 @@
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=False, toxx_mode='mean', y_preprocessing='diag', y_norm='batch', x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=4, num_workers=4, start_epoch=1, n_epochs=20, save_mod=5, print_mod=2, lr=0.01, gpus=1, milestones=None, gamma=0.1, loss='mse', model_type='Akita', id=4, pretrained=False, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act='sigmoid', training_norm='batch', kernel_w_list=[5, 5, 5], hidden_sizes_list=[32, 64, 128], nf=None, dilation_list=None, dilation_list_trunk=[2, 4, 8, 16, 32, 64, 128, 256, 512], bottleneck=32, dilation_list_head=[2, 4, 8, 16, 32, 64, 128, 256, 512], down_sampling='conv', plot=True, plot_predictions=True, ofile_folder='results/Akita/4', log_file=<_io.TextIOWrapper name='results/Akita/4/out.log' mode='a' encoding='UTF-8'>, criterion=<function mse_loss at 0x7fc26805a550>, channels=1, cuda=True, use_parallel=False, device=device(type='cuda'))
+
+Epoch 2, loss = 0.0015
+Mean test/val loss: 0.0011
+Epoch 4, loss = 0.0011
+Mean test/val loss: 0.0009
+Epoch 6, loss = 0.0009
+Mean test/val loss: 0.0009
+Epoch 8, loss = 0.0009
+Mean test/val loss: 0.0010
+Epoch 10, loss = 0.0009
+Mean test/val loss: 0.0010
+Epoch 12, loss = 0.0009
+Mean test/val loss: 0.0010
+Epoch 14, loss = 0.0009
+Mean test/val loss: 0.0009
+Epoch 16, loss = 0.0009
+Mean test/val loss: 0.0009
+Epoch 18, loss = 0.0009
+Mean test/val loss: 0.0009
+Epoch 20, loss = 0.0009
+Mean test/val loss: 0.0009
+
+to_device_time:  0
+test_time:  0
+forward_time:  0
+backward_time: 0
+
+Total parameters: 605468
+Total time: 12331.421803712845
+Final val loss: 0.0008623730333056301
+
+#### Plotting Script ####
+PCA Results:
+Accuracy: 0.95 +- 0.029
+Spearman R: 0.981 +- 0.009
+Pearson R: 0.989 +- 0.006
+
+Distance Stratified Pearson Correlation Results:
+Overall Pearson R: 0.844 $\pm$ 0.114
+
+Class Accuracy Results:
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+Accuracy: 36.1 +- 7.5
+Loss: 0.001 +- 0.0
+acc arr [[0.66817007 0.34807897 0.15949343 ... 0.23773688 0.6408837  0.79523637]
+ [0.45391367 0.45559892 0.21067029 ... 0.3235303  0.38521991 0.4294099 ]
+ [0.36183415 0.45970417 0.222133   ... 0.31681313 0.41601858 0.6699117 ]
+ ...
+ [0.27123098 0.5640243  0.23359658 ... 0.18982347 0.40843155 0.        ]
+ [0.33543163 0.54374825 0.20949628 ... 0.16721211 0.62619528 0.00167785]
+ [0.35180499 0.46165035 0.23743066 ... 0.31868464 0.38163914 0.54833878]]
+freq arr [[0.20214462 0.17380333 0.08163071 ... 0.05575943 0.07511139 0.10530472]
+ [0.18992233 0.19010735 0.09552574 ... 0.06303978 0.055336   0.02404785]
+ [0.13094521 0.17653084 0.10451508 ... 0.06207657 0.05665398 0.02527428]
+ ...
+ [0.20105743 0.24681854 0.12848663 ... 0.02755165 0.01262283 0.00068283]
+ [0.21482658 0.23159409 0.11480713 ... 0.03730011 0.02174187 0.00227356]
+ [0.14999962 0.19145775 0.10865021 ... 0.05672646 0.04377556 0.01400757]]
+
+Prediction Results:
+results/Akita/4/sample189
+results/Akita/4/sample662
+results/Akita/4/sample997
+results/Akita/4/sample1950
+results/Akita/4/sample898
+Loss: 2.1564030612353234e-05 +- 0.0001354360661272384
+
