@@ -629,7 +629,7 @@ def main():
 
 def main2():
     path = 'results\\UNet'
-    ids = [25, 26, 27]
+    ids = [28, 29, 30]
 
     dirs = []
     opts = []
@@ -650,4 +650,4 @@ def main2():
 
 
 if __name__ == '__main__':
-    main()
+    main2()

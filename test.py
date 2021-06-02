@@ -109,7 +109,7 @@ def debugModel(model_type):
 
     # other
     opt.plot = True
-    opt.plot_predictions = True
+    opt.plot_predictions = False
     opt.verbose = False
     if opt.cuda:
         opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
@@ -122,7 +122,7 @@ def debugModel(model_type):
 
 def main():
     # cleanup()
-    debugModel('Akita')
+    debugModel('UNet')
 
 
 if __name__ == '__main__':

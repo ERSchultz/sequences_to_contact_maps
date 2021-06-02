@@ -295,11 +295,9 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
             acc = num / denom
             acc_c_arr[i, c] = acc
 
-    acc_result = 'Accuracy: {} +- {}'.format(np.round(np.mean(acc_arr), 3) * 100, np.round(np.std(acc_arr), 3) * 100)
+    acc_result = 'Accuracy: {}% +- {}'.format(round(np.mean(acc_arr), 3) * 100, round(np.std(acc_arr), 3) * 100)
     print(acc_result, file = opt.log_file)
     print('Loss: {} +- {}'.format(np.round(np.mean(loss_arr), 3), np.round( np.std(loss_arr), 3)), file = opt.log_file)
-    print('acc arr', acc_c_arr, file = opt.log_file)
-    print('freq arr {}\n'.format(freq_c_arr), file = opt.log_file)
     return acc_c_arr, freq_c_arr, acc_result
 
 # other functions

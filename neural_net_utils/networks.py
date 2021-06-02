@@ -244,13 +244,9 @@ class Akita(nn.Module):
 
 
     def forward(self, input):
-        print('input', input.shape)
         out = self.trunk(input)
-        print('trunk', out.shape)
         out = self.head(out)
-        print('head', out.shape)
         out = self.conv(out)
-        print('yhat', out.shape)
 
         return out
 
