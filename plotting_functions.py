@@ -432,6 +432,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
 
     plt.plot(np.arange(opt.n-1), p_mean, color = 'black', label = 'mean')
     plt.fill_between(np.arange(opt.n-1), p_mean + p_std, p_mean - p_std, color = 'red', alpha = 0.5, label = 'std')
+    plt.ylim(-0.5, 1)
     plt.xlabel('Distance', fontsize = 16)
     plt.ylabel('Pearson Correlation Coefficient', fontsize = 16)
     plt.legend(loc = 'lower left')

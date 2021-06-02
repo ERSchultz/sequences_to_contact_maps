@@ -84,7 +84,7 @@ def debugModel(model_type):
         opt.kernel_w_list=str2list('5-5-5')
         opt.hidden_sizes_list=str2list('4-6-8')
         opt.dilation_list_trunk=str2list('2-4-8-16')
-        opt.bottleneck=4 
+        opt.bottleneck=4
         opt.dilation_list_head=str2list('2-4-8-16')
         opt.out_act=nn.ReLU(True)
         opt.training_norm='batch'
@@ -120,13 +120,9 @@ def debugModel(model_type):
     opt.model_type = 'test'
     core_test_train(model, opt)
 
-
-
-
 def main():
     # cleanup()
     debugModel('Akita')
-
 
 
 if __name__ == '__main__':
