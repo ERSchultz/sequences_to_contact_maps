@@ -556,6 +556,28 @@ def contactPlots(dataFolder):
         y_prcnt_norm = np.load(os.path.join(path, 'y_prcnt.npy'))
         plotContactMap(y_prcnt_norm, os.path.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
+def updatePCATable(model_type):
+    parser = getBaseParser()
+    model_path = os.path.join('results', model_type)
+    results = [['Model type', 'ID', 'Preprocessing', 'Norm', 'Loss', 'Output Activation', 'initial lr', 'epochs', 'Accuracy', 'Spearman', 'Pearson']]
+    for id in os.listdir(model_path):
+        id_path = os.path.join(model_path, id)
+        if os.path.isdir(id_path) and id.isdigit():
+            txt_file = os.path.join(id_path, 'argparse.txt')
+            opt = parser.parse_args(['@{}'.format(txt_file)])
+            with open(os.path.join(id_path, 'PCA_results.txt'), 'r') as f:
+                f.readline()
+                acc = f.readline().split(':')[1].strip()
+                spearman = f.readline().split(':')[1].strip()
+                pearson = f.readline().split(':')[1].strip()
+            row_list = [model_type, id, opt.y_preprocessing, opt.y_norm, opt.loss, opt.out_act, opt.lr, opt.n_epochs, acc, spearman, pearson]
+            results.append(row_list)
+
+    ofile = os.path.join(model_path, 'PCA_table.csv')
+    with open(ofile, 'w', newline = '') as f:
+        wr = csv.writer(f)
+        wr.writerows(results)
+
 def plotting_script(model, opt, train_loss_arr, val_loss_arr):
     opt.batch_size = 1 # batch size must be 1
     opt.shuffle = False # for reproducibility
@@ -650,4 +672,4 @@ def main2():
 
 
 if __name__ == '__main__':
-    main2()
+    updatePCATable('UNet')
