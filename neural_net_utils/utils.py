@@ -1,7 +1,6 @@
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
-from numba import jit, njit
 import numpy as np
 import os
 import sys
@@ -56,7 +55,6 @@ def splitDataset(dataset, opt):
     return torch.utils.data.random_split(dataset, [opt.trainN, opt.valN, opt.testN], torch.Generator().manual_seed(opt.seed))
 
 # data processing functions
-@njit
 def x2xx(x, mode = 'mean'):
     # TODO better explanation here
     """
