@@ -587,7 +587,7 @@ def plotting_script(model, opt, train_loss_arr, val_loss_arr):
     opt.shuffle = False # for reproducibility
     seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop, names = True, minmax = True)
+                                        opt.y_reshape, opt.crop, opt.min_subtraction, names = True, minmax = True)
     _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
 
     imagePath = opt.ofile_folder
@@ -634,7 +634,7 @@ def main():
     opt.shuffle = False # for reproducibility
     seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop, names = True, minmax = True)
+                                        opt.y_reshape, opt.crop, opt.min_subtraction, names = True, minmax = True)
     _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
 
     model_name = os.path.join(opt.ofile_folder, 'model.pt')

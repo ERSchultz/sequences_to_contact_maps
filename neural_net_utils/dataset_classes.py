@@ -25,11 +25,12 @@ class Names(Dataset):
 
 class Sequences2Contacts(Dataset):
     def __init__(self, dirname, toxx, toxx_mode, y_preprocessing, y_norm, x_reshape, ydtype,
-                y_reshape, crop, names = False, minmax = False, min_sample = 0):
+                y_reshape, crop, min_subtraction, names = False, minmax = False, min_sample = 0):
         super(Sequences2Contacts, self).__init__()
         self.toxx = toxx
         self.toxx_mode = toxx_mode
         self.y_norm = y_norm
+        self.min_subtraction = min_subtraction
         if self.y_norm == 'batch':
             assert y_preprocessing is not None, "use instance normalization instead"
             min_max = np.load(os.path.join(dirname, "y_{}_min_max.npy".format(y_preprocessing)))
@@ -74,7 +75,10 @@ class Sequences2Contacts(Dataset):
             self.ymin = np.min(y)
 
         # if y_norm is batch this uses batch parameters from init, if y_norm is None, this does nothing
-        y = (y - self.ymin) / (self.ymax - self.ymin)
+        if self.min_subtraction:
+            y = (y - self.ymin) / (self.ymax - self.ymin)
+        else:
+            y = y / self.ymax
 
         if self.toxx:
             if self.toxx_mode == 'concat':

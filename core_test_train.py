@@ -47,7 +47,7 @@ def core_test_train(model, opt):
     # split dataset
     dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
                                         opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop)
+                                        opt.y_reshape, opt.crop, opt.min_subtraction)
     train_dataloader, val_dataloader, test_dataloader = getDataLoaders(dataset, opt)
 
     if opt.pretrained:

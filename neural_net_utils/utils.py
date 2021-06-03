@@ -364,6 +364,7 @@ def getBaseParser():
     parser.add_argument('--toxx_mode', type=str, default='mean', help='mode for toxx (default mean)')
     parser.add_argument('--y_preprocessing', type=str2None, default='diag', help='type of pre-processing for y')
     parser.add_argument('--y_norm', type=str2None, default='batch', help='type of [0,1] normalization for y')
+    parser.add_argument('--min_subtraction', type=str2bool, default=True, help='if min subtraction should be used for y_norm')
     parser.add_argument('--x_reshape', type=str2bool, default=True, help='True if x should be considered a 1D image')
     parser.add_argument('--ydtype', type=str2dtype, default='float32', help='torch data type for y')
     parser.add_argument('--y_reshape', type=str2bool, default=True, help='True if y should be considered a 2D image')

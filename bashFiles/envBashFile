@@ -1,8 +1,13 @@
 cd ~/sequences_to_contact_maps
 conda create --name seq2contact_pytorch -y
 source activate seq2contact_pytorch
-conda install -y pytorch=1.8.1 torchvision cudatoolkit=10.2 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy -c pytorch -c conda-forge &>> \logFiles\conda_env.log
+conda install -y pytorch=1.8.1 torchvision cudatoolkit=10.2 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy gcc-5 -c psi4 -c pytorch -c conda-forge &>> \logFiles\conda_env.log
 python3 -m pip install pynvml hic-straw &>> \logFiles\conda_env.log
+python3 -m pip install torch-scatter -f https://pytorch-geometric.com/whl/torch-1.8.0+cu102.html
+python3 -m pip install torch-sparse -f https://pytorch-geometric.com/whl/torch-1.8.0+cu102.html
+python3 -m pip install torch-cluster -f https://pytorch-geometric.com/whl/torch-1.8.0+cu102.html
+python3 -m pip install torch-spline-conv -f https://pytorch-geometric.com/whl/torch-1.8.0+cu102.html
+python3 -m pip install torch-geometric
 conda deactivate
 
 # cd ~/sequences_to_contact_maps
