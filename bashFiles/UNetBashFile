@@ -18,8 +18,8 @@ xReshape='false'
 # architecture
 k=2
 n=1024
-yPreprocessing='diag'
-yNorm='batch'
+yPreprocessing='prcnt'
+yNorm='instance'
 nf=8
 loss='mse'
 outAct='sigmoid'
@@ -36,6 +36,13 @@ cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
 
 for lr in 1e-1
+do
+  python3 core_test_train.py --data_folder $dirname --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --loss $loss --out_act $outAct --training_norm $trainingNorm --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
+done
+
+milestones='none'
+nEpochs=20
+for lr in 1e-1 1e-2 1e-3
 do
   python3 core_test_train.py --data_folder $dirname --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --nf $nf --loss $loss --out_act $outAct --training_norm $trainingNorm --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
 done
