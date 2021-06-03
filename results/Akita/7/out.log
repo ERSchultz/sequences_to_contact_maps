@@ -1,0 +1,54 @@
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=False, toxx_mode='mean', y_preprocessing='diag', y_norm='instance', x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=4, num_workers=4, start_epoch=1, n_epochs=20, save_mod=5, print_mod=2, lr=0.001, gpus=1, milestones=None, gamma=0.1, loss='mse', model_type='Akita', id=7, pretrained=False, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act='sigmoid', training_norm='batch', kernel_w_list=[5, 5, 5], hidden_sizes_list=[32, 64, 128], nf=None, dilation_list=None, dilation_list_trunk=[2, 4, 8, 16, 32, 64, 128, 256, 512], bottleneck=32, dilation_list_head=[2, 4, 8, 16, 32, 64, 128, 256, 512], down_sampling='conv', plot=True, plot_predictions=True, ofile_folder='results/Akita/7', log_file=<_io.TextIOWrapper name='results/Akita/7/out.log' mode='a' encoding='UTF-8'>, criterion=<function mse_loss at 0x7f0c3f440550>, channels=1, cuda=True, use_parallel=False, device=device(type='cuda'))
+
+Epoch 2, loss = 0.0046
+Mean test/val loss: 0.0039
+Epoch 4, loss = 0.0045
+Mean test/val loss: 0.0039
+Epoch 6, loss = 0.0041
+Mean test/val loss: 0.0041
+Epoch 8, loss = 0.0040
+Mean test/val loss: 0.0052
+Epoch 10, loss = 0.0039
+Mean test/val loss: 0.0041
+Epoch 12, loss = 0.0039
+Mean test/val loss: 0.0039
+Epoch 14, loss = 0.0038
+Mean test/val loss: 0.0039
+Epoch 16, loss = 0.0039
+Mean test/val loss: 0.0046
+Epoch 18, loss = 0.0038
+Mean test/val loss: 0.0038
+Epoch 20, loss = 0.0038
+Mean test/val loss: 0.0038
+
+to_device_time:  0
+test_time:  0
+forward_time:  0
+backward_time: 0
+
+Total parameters: 605468
+Total time: 12194.3321621418
+Final val loss: 0.003807893851771951
+
+#### Plotting Script ####
+PCA Results:
+Accuracy: 0.947 +- 0.028
+Spearman R: 0.98 +- 0.009
+Pearson R: 0.989 +- 0.006
+
+Distance Stratified Pearson Correlation Results:
+Overall Pearson R: 0.843 $\pm$ 0.114
+
+Class Accuracy Results:
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+Accuracy: 32.7% +- 7.3
+Loss: 0.004 +- 0.001
+Prediction Results:
+results/Akita/7/sample189
+results/Akita/7/sample662
+results/Akita/7/sample997
+results/Akita/7/sample1950
+results/Akita/7/sample898
+Loss: 9.047724190168082e-05 +- 0.0006184897936346523
+

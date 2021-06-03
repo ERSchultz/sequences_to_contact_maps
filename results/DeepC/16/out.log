@@ -1,0 +1,54 @@
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=False, toxx_mode='mean', y_preprocessing='diag', y_norm='batch', x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=32, num_workers=4, start_epoch=1, n_epochs=20, save_mod=5, print_mod=2, lr=0.01, gpus=1, milestones=None, gamma=0.1, loss='mse', model_type='DeepC', id=16, pretrained=False, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act='sigmoid', training_norm='batch', kernel_w_list=[5, 5, 5], hidden_sizes_list=[32, 64, 128], nf=None, dilation_list=[2, 4, 8, 16, 32, 64, 128, 256, 512], dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, down_sampling=None, plot=True, plot_predictions=True, ofile_folder='results/DeepC/16', log_file=<_io.TextIOWrapper name='results/DeepC/16/out.log' mode='a' encoding='UTF-8'>, criterion=<function mse_loss at 0x7fb3cac2c550>, channels=1, cuda=True, use_parallel=False, device=device(type='cuda'))
+
+Epoch 2, loss = 0.2098
+Mean test/val loss: 0.1916
+Epoch 4, loss = 0.1614
+Mean test/val loss: 0.1553
+Epoch 6, loss = 0.1415
+Mean test/val loss: 0.1383
+Epoch 8, loss = 0.1280
+Mean test/val loss: 0.1261
+Epoch 10, loss = 0.1090
+Mean test/val loss: 0.1074
+Epoch 12, loss = 0.1057
+Mean test/val loss: 0.1063
+Epoch 14, loss = 0.0911
+Mean test/val loss: 0.0886
+Epoch 16, loss = 0.0663
+Mean test/val loss: 0.0604
+Epoch 18, loss = 0.0539
+Mean test/val loss: 0.0588
+Epoch 20, loss = 0.0524
+Mean test/val loss: 0.0534
+
+to_device_time:  0
+test_time:  0
+forward_time:  0
+backward_time: 0
+
+Total parameters: 943843
+Total time: 4434.88201713562
+Final val loss: 0.053418918911899836
+
+#### Plotting Script ####
+PCA Results:
+Accuracy: 0.842 +- 0.099
+Spearman R: 0.585 +- 0.291
+Pearson R: 0.533 +- 0.265
+
+Distance Stratified Pearson Correlation Results:
+Overall Pearson R: 0.314 $\pm$ 0.109
+
+Class Accuracy Results:
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+Accuracy: 21.099999999999998% +- 5.6000000000000005
+Loss: 0.054 +- 0.007
+Prediction Results:
+results/DeepC/16/sample189
+results/DeepC/16/sample662
+results/DeepC/16/sample997
+results/DeepC/16/sample1950
+results/DeepC/16/sample898
+Loss: 0.0014072192832827568 +- 0.008800893650052303
+
