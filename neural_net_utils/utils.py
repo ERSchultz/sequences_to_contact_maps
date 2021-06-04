@@ -253,7 +253,7 @@ def calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson'):
 
 def calculatePerClassAccuracy(val_dataloader, model, opt):
     print('Class Accuracy Results:', file = opt.log_file)
-    assert opt.y_preprocessing == 'diag' or opt.y_preprocessing == 'prcnt', "invalid preprocessing: {}".format(opt.y_preprocessing)
+    assert opt.y_preprocessing in {'diag', 'prcnt'}, "invalid preprocessing: {}".format(opt.y_preprocessing)
     if opt.y_preprocessing != 'prcnt':
         prcntDist_path = os.path.join(opt.data_folder, 'prcntDist.npy')
         prcntDist = np.load(prcntDist_path)
