@@ -18,6 +18,8 @@ none
 2-4-8-16-32-64-128-256-512
 --out_act
 none
+--training_norm
+none
 --n_epochs
 20
 --lr

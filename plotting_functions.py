@@ -11,7 +11,7 @@ import seaborn as sns
 import pandas as pd
 from neural_net_utils.utils import *
 from neural_net_utils.networks import *
-from neural_net_utils.dataset_classes import Sequences2Contacts
+from neural_net_utils.dataset_classes import *
 
 def plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid, split = 'type', xmax = None):
     """
@@ -292,7 +292,7 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
         plt.savefig(os.path.join(imagePath, 'train_val_loss.png'))
     plt.close()
 
-def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False):
+def plotContactMap(y, ofile, title = None, vmin = 0, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False, cmap = None):
     """
     Plotting function for contact maps.
 
@@ -305,17 +305,18 @@ def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 6, minVal = None,
         minVal: values in y less than minVal are set to 0
         maxVal: values in y greater than maxVal are set to 0
     """
-    if prcnt:
-        mycmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                 [(0,       'white'),
-                                                  (0.25,    'orange'),
-                                                  (0.5,     'red'),
-                                                  (0.74,    'purple'),
-                                                  (1,       'blue')], N=10)
-    else:
-        mycmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                 [(0,    'white'),
-                                                  (1,    'red')], N=126)
+    if cmap is None:
+        if prcnt:
+            cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                     [(0,       'white'),
+                                                      (0.25,    'orange'),
+                                                      (0.5,     'red'),
+                                                      (0.74,    'purple'),
+                                                      (1,       'blue')], N=10)
+        else:
+            cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                     [(0,    'white'),
+                                                      (1,    'red')], N=126)
     if len(y.shape) == 4:
         N, C, H, W = y.shape
         assert N == 1 and C == 1
@@ -338,7 +339,7 @@ def plotContactMap(y, ofile, title = None, vmax = 1, size_in = 6, minVal = None,
         vmax = np.mean(y)
     elif vmax == 'max':
         vmax = np.max(y)
-    ax = sns.heatmap(y, linewidth = 0, vmin = 0, vmax = vmax, cmap = mycmap)
+    ax = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap)
     if title is not None:
         plt.title(title, fontsize = 16)
     plt.tight_layout()
@@ -516,8 +517,14 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
                 plotContactMap(yhat_prcnt, os.path.join(subpath, 'yhat_prcnt.png'), vmax = 'max', prcnt = True, title = 'Y hat prcnt')
 
                 # plot dif
+                ydif_abs = abs(yhat - y)
+                plotContactMap(ydif_abs, os.path.join(subpath, 'ydif_abs.png'), vmax = v_max, title = '|yhat - y|')
                 ydif = yhat - y
-                plotContactMap(ydif, os.path.join(subpath, 'ydif.png'), vmax = v_max, title = 'difference')
+                cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                         [(-1, 'blue'),
+                                                         (0, 'white'),
+                                                          (1, 'red')], N=126)
+                plotContactMap(ydif, os.path.join(subpath, 'ydif.png'), vmin = -1 * vmax, vmax = v_max, title = 'yhat - y', cmap = cmap)
             else:
                 raise Exception("Unsupported preprocessing: {}".format(y_preprocessing))
 
@@ -556,7 +563,7 @@ def contactPlots(dataFolder):
         y_prcnt_norm = np.load(os.path.join(path, 'y_prcnt.npy'))
         plotContactMap(y_prcnt_norm, os.path.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
-def updatePCATables():
+def updateAllPCATables():
     for model_type in ['Akita', 'DeepC', 'UNet']:
         updatePCATable(model_type)
 
@@ -582,78 +589,64 @@ def updatePCATable(model_type):
         wr = csv.writer(f)
         wr.writerows(results)
 
-def plotting_script(model, opt, train_loss_arr, val_loss_arr):
+def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None):
+    if model is None:
+        model = getModel(opt)
+        model.to(opt.device)
+        model_name = os.path.join(opt.ofile_folder, 'model.pt')
+        if os.path.exists(model_name):
+            save_dict = torch.load(model_name, map_location=torch.device('cpu'))
+            model.load_state_dict(save_dict['model_state_dict'])
+            train_loss_arr = save_dict['train_loss']
+            val_loss_arr = save_dict['val_loss']
+            print('Model is loaded: {}'.format(model_name), file = opt.log_file)
+        else:
+            raise Exception('Model does not exist: {}'.format(model_name))
+
     opt.batch_size = 1 # batch size must be 1
     opt.shuffle = False # for reproducibility
-    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
-                                        opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop, opt.min_subtraction, names = True, minmax = True)
-    _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
+    # seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
+    #                                     opt.y_norm, opt.x_reshape, opt.ydtype,
+    #                                     opt.y_reshape, opt.crop, opt.min_subtraction, names = True, minmax = True)
+    # _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
 
     imagePath = opt.ofile_folder
     print('#### Plotting Script ####', file = opt.log_file)
-    plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
-    plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt, True)
+    if opt.plot:
+        plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
+        plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt, True)
 
-    comparePCA(val_dataloader, imagePath, model, opt)
+        comparePCA(val_dataloader, imagePath, model, opt)
 
-    plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt)
+        plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt)
 
-    plotPerClassAccuracy(val_dataloader, imagePath, model, opt)
+        plotPerClassAccuracy(val_dataloader, imagePath, model, opt)
 
     if opt.plot_predictions:
+        return
         plotPredictions(val_dataloader, model, opt)
 
-def main():
-    opt = argparseSetup()
+def updateAllPlots():
+    parser = getBaseParser()
+    for model_type in ['DeepC']:
+        model_path = os.path.join('results', model_type)
+        # for id in ['7']:
+        for id in os.listdir(model_path):
+            print(id)
+            id_path = os.path.join(model_path, id)
+            if os.path.isdir(id_path) and id.isdigit():
+                txt_file = os.path.join(id_path, 'argparse.txt')
+                opt = parser.parse_args(['@{}'.format(txt_file)])
+                opt.id = int(id)
+                opt = finalizeOpt(opt, parser)
 
-    if opt.model_type == 'SimpleEpiNet':
-        model = SimpleEpiNet(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
-    if opt.model_type == 'UNet':
-        model = UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm, out_act = opt.out_act)
-    elif opt.model_type == 'DeepC':
-        model = DeepC(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
-                            opt.dilation_list, opt.training_norm, opt.out_act)
-    elif opt.model_type == 'Akita':
-        model = Akita(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
-                            opt.dilation_list_trunk,
-                            opt.bottleneck,
-                            opt.dilation_list_head,
-                            opt.out_act,
-                            opt.channels,
-                            opt.training_norm,
-                            opt.down_sampling)
-    else:
-        raise Exception('Invalid model type: {}'.format(opt.model_type))
+                # overwrite plotting flags
+                opt.plot = False
+                opt.plot_predictions = True
+                print(opt, file = opt.log_file)
+                plotting_script(None, opt)
 
-    print(opt, file = opt.log_file)
-    print(opt)
-    model.to(opt.device)
-
-    opt.batch_size = 1 # batch size must be 1
-    opt.shuffle = False # for reproducibility
-    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
-                                        opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop, opt.min_subtraction, names = True, minmax = True)
-    _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
-
-    model_name = os.path.join(opt.ofile_folder, 'model.pt')
-    if os.path.exists(model_name):
-        save_dict = torch.load(model_name, map_location=torch.device('cpu'))
-        model.load_state_dict(save_dict['model_state_dict'])
-        train_loss_arr = save_dict['train_loss']
-        val_loss_arr = save_dict['val_loss']
-        print('Model is loaded: {}'.format(model_name), file = opt.log_file)
-    else:
-        raise Exception('Model does not exist: {}'.format(model_name))
-    plotting_script(model, opt, train_loss_arr, val_loss_arr)
-    # plotPredictions(val_dataloader, model, opt)
-
-    # freqDistributionPlots('dataset_04_18_21')
-    # freqStatisticsPlots('dataset_04_18_21')
-    # contactPlots('dataset_04_18_21')
-
-def main_plotCombinedModels():
+def plotCombinedModels():
     path = 'results\\UNet'
     ids = [28, 29, 30]
 
@@ -673,7 +666,13 @@ def main_plotCombinedModels():
     for log in [True, False]:
         plotModelsFromDirs(dirs, imagePath, opts, log_y = log)
 
-
+def main():
+    opt = argparseSetup()
+    plotting_script(None, opt)
 
 if __name__ == '__main__':
-    updatePCATables()
+    updateAllPlots()
+    # main()
+    # updatePCATables()
+    # freqDistributionPlots('dataset_04_18_21')
+    # freqStatisticsPlots('dataset_04_18_21')

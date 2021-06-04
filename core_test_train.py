@@ -5,7 +5,7 @@ import os
 import sys
 import time
 from neural_net_utils.networks import *
-from neural_net_utils.utils import getDataLoaders, comparePCA, save_opt, save_args, argparseSetup
+from neural_net_utils.utils import getDataLoaders, comparePCA, save_opt, save_args, argparseSetup, getModel
 from plotting_functions import plotting_script, plotModelFromArrays
 from neural_net_utils.dataset_classes import Sequences2Contacts
 
@@ -14,28 +14,6 @@ def main():
     model = getModel(opt)
 
     core_test_train(model, opt)
-
-def getModel(opt):
-    if opt.model_type == 'SimpleEpiNet':
-        model = SimpleEpiNet(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
-    if opt.model_type == 'UNet':
-        model = UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm, out_act = opt.out_act)
-    elif opt.model_type == 'DeepC':
-        model = DeepC(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
-                            opt.dilation_list, opt.training_norm, opt.out_act)
-    elif opt.model_type == 'Akita':
-        model = Akita(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
-                            opt.dilation_list_trunk,
-                            opt.bottleneck,
-                            opt.dilation_list_head,
-                            opt.out_act,
-                            opt.channels,
-                            opt.training_norm,
-                            opt.down_sampling)
-    else:
-        raise Exception('Invalid model type: {}'.format(opt.model_type))
-
-    return model
 
 def core_test_train(model, opt):
     print(opt, end = '\n\n', file = opt.log_file)
@@ -89,8 +67,7 @@ def core_test_train(model, opt):
     print('Total time: {}'.format(time.time() - t0), file = opt.log_file)
     print('Final val loss: {}\n'.format(val_loss_arr[-1]), file = opt.log_file)
 
-    if opt.plot:
-        plotting_script(model, opt, train_loss_arr, val_loss_arr)
+    plotting_script(model, opt, train_loss_arr, val_loss_arr)
 
     opt.log_file.close()
 

@@ -1,15 +1,43 @@
+import os
+import sys
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+sys.path.insert(0, dname)
+
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
+
 import numpy as np
-import os
-import sys
 import math
 import argparse
 from sklearn.decomposition import PCA
 from scipy.stats import spearmanr, pearsonr
 import matplotlib.pyplot as plt
 import csv
+from networks import *
+
+def getModel(opt):
+    if opt.model_type == 'SimpleEpiNet':
+        model = SimpleEpiNet(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
+    if opt.model_type == 'UNet':
+        model = UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm, out_act = opt.out_act)
+    elif opt.model_type == 'DeepC':
+        model = DeepC(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
+                            opt.dilation_list, opt.training_norm, opt.out_act)
+    elif opt.model_type == 'Akita':
+        model = Akita(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
+                            opt.dilation_list_trunk,
+                            opt.bottleneck,
+                            opt.dilation_list_head,
+                            opt.out_act,
+                            opt.channels,
+                            opt.training_norm,
+                            opt.down_sampling)
+    else:
+        raise Exception('Invalid model type: {}'.format(opt.model_type))
+
+    return model
 
 # dataset functions
 def make_dataset(dir, minSample = 0):
@@ -417,19 +445,16 @@ def getBaseParser():
     parser.add_argument('--down_sampling', type=str2None, help='type of down sampling to use')
 
     # post-processing args
-    parser.add_argument('--plot', type=str2bool, default=True, help='True to run plotting script')
+    parser.add_argument('--plot', type=str2bool, default=True, help='True to plot result figures')
     parser.add_argument('--plot_predictions', type=str2bool, default=True, help='True to plot predictions')
 
     return parser
 
-def argparseSetup():
-    """Helper function set up parser."""
-    parser = getBaseParser()
-    opt = parser.parse_args()
-
+def finalizeOpt(opt, parser):
     # set up output folders/files
     model_type_folder = os.path.join('results', opt.model_type)
     if opt.id is None:
+        print('alert '*10)
         if not os.path.exists(model_type_folder):
             os.mkdir(model_type_folder, mode = 0o755)
             opt.id = 1
@@ -444,7 +469,9 @@ def argparseSetup():
     else:
         txt_file = os.path.join(model_type_folder, str(opt.id), 'argparse.txt')
         assert os.path.exists(txt_file), "{} does not exist".format(txt_file)
+        id_copy = opt.id
         opt = parser.parse_args(sys.argv.append('@{}'.format(txt_file))) # parse again
+        opt.id = id_copy
 
     opt.ofile_folder = os.path.join(model_type_folder, str(opt.id))
     if not os.path.exists(opt.ofile_folder):
@@ -499,6 +526,14 @@ def argparseSetup():
         torch.cuda.manual_seed(opt.seed)
 
     return opt
+
+
+def argparseSetup():
+    """Helper function set up parser."""
+    parser = getBaseParser()
+    opt = parser.parse_args()
+    return finalizeOpt(opt, parser)
+
 
 def save_args(opt):
     with open(os.path.join(opt.ofile_folder, 'argparse.txt'), 'w') as f:
