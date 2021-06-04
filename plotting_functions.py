@@ -659,8 +659,7 @@ def updateAllPlots():
     for model_type in ['UNet', 'DeepC']: # 'Akita'
         print(model_type)
         model_path = os.path.join('results', model_type)
-        for id in ['6', '8']
-        # for id in os.listdir(model_path):
+        for id in os.listdir(model_path):
             print('\t', id)
             id_path = os.path.join(model_path, id)
             if os.path.isdir(id_path) and id.isdigit():
