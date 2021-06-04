@@ -521,8 +521,8 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
                 plotContactMap(ydif_abs, os.path.join(subpath, 'ydif_abs.png'), vmax = v_max, title = '|yhat - y|')
                 ydif = yhat - y
                 cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                         [(-1, 'blue'),
-                                                         (0, 'white'),
+                                                         [(0, 'blue'),
+                                                         (0.5, 'white'),
                                                           (1, 'red')], N=126)
                 plotContactMap(ydif, os.path.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = 'yhat - y', cmap = cmap)
             else:
