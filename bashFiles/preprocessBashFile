@@ -13,7 +13,7 @@ numWorkers=20
 k=2
 n=1024
 sampleSize=200
-overwrite="True"
+overwrite="False"
 
 cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch

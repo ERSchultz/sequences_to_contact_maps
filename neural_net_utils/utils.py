@@ -205,6 +205,7 @@ def generateDistStats(y, mode = 'freq', stat = 'mean'):
     '''
     if mode == 'prob':
         y = y.copy() / np.max(y)
+
     if stat == 'mean':
         npStat = np.mean
     elif stat == 'var':

@@ -25,7 +25,7 @@ def setupParser():
     # preprocessing args
     parser.add_argument('--sample_size', type=int, default=2, help='Size of sample for preprocessing statistics')
     parser.add_argument('--seed', type=int, default=42, help='Random seed to use. Default: 42')
-    parser.add_argument('--overwrite', type=str2bool, default=True, help='Whether or not to overwrite existing preprocessing files')
+    parser.add_argument('--overwrite', type=str2bool, default=False, help='Whether or not to overwrite existing preprocessing files')
     parser.add_argument('--percentiles', type=str2list, default=[20, 40, 50, 60, 70, 80, 85, 90, 95, 100], help='Percentiles to use for percentile preprocessing')
 
     return parser
@@ -39,6 +39,7 @@ def process_data(opt):
     samples_path = os.path.join(opt.output_folder, 'samples')
     if not os.path.exists(samples_path):
         os.mkdir(samples_path, mode = 0o755)
+
     for in_path in in_paths:
         sample = os.path.split(in_path)[-1]
         out_path = os.path.join(opt.output_folder, 'samples', sample)
@@ -136,10 +137,18 @@ def diag_processing(opt, out_paths):
 
 def process_sample_diag(path, meanDist, overwrite):
     # check if sample needs to be processed
-    if not os.path.exists(os.path.join(path, 'y_diag.npy')) or overwrite:
+    y_diag_path = os.path.join(path, 'y_diag.npy')
+    if not os.path.exists(y_diag_path) or overwrite:
         y = np.load(os.path.join(path, 'y.npy')).astype(np.float64)
         y_diag = diagonal_preprocessing(y, meanDist)
-        np.save(os.path.join(path, 'y_diag.npy'), y_diag)
+        np.save(y_diag_path, y_diag)
+
+    y_diag_instance_path = os.path.join(path, 'y_diag_instance.npy')
+    if not os.path.exists(y_diag_instance_path) or overwrite:
+        y = np.load(os.path.join(path, 'y.npy')).astype(np.float64)
+        meanDist = generateDistStats(y)
+        y_diag_instance = diagonal_preprocessing(y, meanDist)
+        np.save(y_diag_instance_path, y_diag_instance)
 
 def percentile_processing(opt, out_paths):
     # determine prcnt_dist for percentile preprocessing

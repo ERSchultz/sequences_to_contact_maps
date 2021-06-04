@@ -21,6 +21,7 @@ UNet,34,prcnt,instance,mse,sigmoid,0.1,20,0.938,0.032,0.953,0.025,0.975,0.01
 UNet,35,prcnt,instance,mse,sigmoid,0.01,20,0.947,0.027,0.96,0.019,0.98,0.01
 UNet,36,diag,batch,mse,sigmoid,0.1,15,0.888,0.038,0.819,0.049,0.891,0.02
 UNet,37,prcnt,instance,mse,sigmoid,0.001,20,0.946,0.025,0.96,0.022,0.98,0.009
+UNet,38,diag,instance,mse,sigmoid,0.1,15,0.844,0.062,0.813,0.054,0.863,0.023
 UNet,4,diag,batch,mse,sigmoid,0.1,20,0.901,0.039,0.885,0.046,0.929,0.016
 UNet,5,diag,batch,mse,sigmoid,0.01,20,0.919,0.034,0.951,0.015,0.956,0.013
 UNet,6,diag,batch,mse,sigmoid,0.001,20,0.934,0.03,0.96,0.011,0.963,0.013
