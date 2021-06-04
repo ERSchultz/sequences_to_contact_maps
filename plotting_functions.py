@@ -605,10 +605,10 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None):
 
     opt.batch_size = 1 # batch size must be 1
     opt.shuffle = False # for reproducibility
-    # seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
-    #                                     opt.y_norm, opt.x_reshape, opt.ydtype,
-    #                                     opt.y_reshape, opt.crop, opt.min_subtraction, names = True, minmax = True)
-    # _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
+    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
+                                        opt.y_norm, opt.x_reshape, opt.ydtype,
+                                        opt.y_reshape, opt.crop, opt.min_subtraction, names = True, minmax = True)
+    _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
 
     imagePath = opt.ofile_folder
     print('#### Plotting Script ####', file = opt.log_file)
@@ -623,16 +623,13 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None):
         plotPerClassAccuracy(val_dataloader, imagePath, model, opt)
 
     if opt.plot_predictions:
-        return
         plotPredictions(val_dataloader, model, opt)
 
 def updateAllPlots():
     parser = getBaseParser()
-    for model_type in ['DeepC']:
+    for model_type in ['Akita', 'UNet', 'DeepC']:
         model_path = os.path.join('results', model_type)
-        # for id in ['7']:
         for id in os.listdir(model_path):
-            print(id)
             id_path = os.path.join(model_path, id)
             if os.path.isdir(id_path) and id.isdigit():
                 txt_file = os.path.join(id_path, 'argparse.txt')
