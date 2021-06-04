@@ -471,62 +471,63 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
 
     loss_arr = np.zeros(opt.valN)
     for i, (x, y, path, minmax) in enumerate(val_dataloader):
-        if i < count:
-            assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
-            x = x.to(opt.device)
-            y = y.to(opt.device)
-            path = path[0]
-            sample = os.path.split(path)[-1]
-            subpath = os.path.join(opt.ofile_folder, sample)
-            print(subpath, file = opt.log_file)
-            if not os.path.exists(subpath):
-                os.mkdir(subpath, mode = 0o755)
+        if i == count:
+            break
+        assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
+        x = x.to(opt.device)
+        y = y.to(opt.device)
+        path = path[0]
+        sample = os.path.split(path)[-1]
+        subpath = os.path.join(opt.ofile_folder, sample)
+        print(subpath, file = opt.log_file)
+        if not os.path.exists(subpath):
+            os.mkdir(subpath, mode = 0o755)
 
-            yhat = model(x)
-            loss = opt.criterion(yhat, y).item()
-            if opt.loss == 'mse':
-                yhat_title = '{}\nY hat (MSE Loss: {})'.format(upper_title, np.round(loss, 3))
-            elif opt.loss == 'cross_entropy':
-                yhat_title = '{}\Y hat (Cross Entropy Loss: {})'.format(upper_title, np.round(loss, 3))
+        yhat = model(x)
+        loss = opt.criterion(yhat, y).item()
+        if opt.loss == 'mse':
+            yhat_title = '{}\nY hat (MSE Loss: {})'.format(upper_title, np.round(loss, 3))
+        elif opt.loss == 'cross_entropy':
+            yhat_title = '{}\Y hat (Cross Entropy Loss: {})'.format(upper_title, np.round(loss, 3))
+        else:
+            yhat_title = '{}\Y hat (Loss: {})'.format(np.round(upper_title, loss, 3))
+        loss_arr[i] = loss
+        y = y.cpu().numpy()
+        yhat = yhat.cpu().detach().numpy()
+        if opt.verbose:
+            print('y', y, np.max(y))
+            print('yhat', yhat, np.max(yhat))
+
+        y = un_normalize(y, minmax)
+        if opt.y_preprocessing == 'prcnt':
+            plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = 'max', prcnt = True, title = 'Y')
+            if opt.loss == 'cross_entropy':
+                yhat = np.argmax(yhat, axis = 1)
+                plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = True, title = yhat_title)
             else:
-                yhat_title = '{}\Y hat (Loss: {})'.format(np.round(upper_title, loss, 3))
-            loss_arr[i] = loss
-            y = y.cpu().numpy()
-            yhat = yhat.cpu().detach().numpy()
-            if opt.verbose:
-                print('y', y, np.max(y))
-                print('yhat', yhat, np.max(yhat))
-
-            y = un_normalize(y, minmax)
-            if opt.y_preprocessing == 'prcnt':
-                plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = 'max', prcnt = True, title = 'Y')
-                if opt.loss == 'cross_entropy':
-                    yhat = np.argmax(yhat, axis = 1)
-                    plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = True, title = yhat_title)
-                else:
-                    yhat = un_normalize(yhat, minmax)
-                    plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = yhat_title)
-            elif opt.y_preprocessing == 'diag':
-                v_max = np.max(y)
-                plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = v_max, prcnt = False, title = 'Y')
                 yhat = un_normalize(yhat, minmax)
-                plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = v_max, prcnt = False, title =yhat_title)
+                plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = yhat_title)
+        elif opt.y_preprocessing == 'diag' or opt.y_preprocessing == 'diag_instance':
+            v_max = np.max(y)
+            plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = v_max, prcnt = False, title = 'Y')
+            yhat = un_normalize(yhat, minmax)
+            plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = v_max, prcnt = False, title =yhat_title)
 
-                # plot prcnt
-                yhat_prcnt = percentile_preprocessing(yhat, prcntDist)
-                plotContactMap(yhat_prcnt, os.path.join(subpath, 'yhat_prcnt.png'), vmax = 'max', prcnt = True, title = 'Y hat prcnt')
+            # plot prcnt
+            yhat_prcnt = percentile_preprocessing(yhat, prcntDist)
+            plotContactMap(yhat_prcnt, os.path.join(subpath, 'yhat_prcnt.png'), vmax = 'max', prcnt = True, title = 'Y hat prcnt')
 
-                # plot dif
-                ydif_abs = abs(yhat - y)
-                plotContactMap(ydif_abs, os.path.join(subpath, 'ydif_abs.png'), vmax = v_max, title = '|yhat - y|')
-                ydif = yhat - y
-                cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                         [(0, 'blue'),
-                                                         (0.5, 'white'),
-                                                          (1, 'red')], N=126)
-                plotContactMap(ydif, os.path.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = 'yhat - y', cmap = cmap)
-            else:
-                raise Exception("Unsupported preprocessing: {}".format(y_preprocessing))
+            # plot dif
+            ydif_abs = abs(yhat - y)
+            plotContactMap(ydif_abs, os.path.join(subpath, 'ydif_abs.png'), vmax = v_max, title = '|yhat - y|')
+            ydif = yhat - y
+            cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                     [(0, 'blue'),
+                                                     (0.5, 'white'),
+                                                      (1, 'red')], N=126)
+            plotContactMap(ydif, os.path.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = 'yhat - y', cmap = cmap)
+        else:
+            raise Exception("Unsupported preprocessing: {}".format(opt.y_preprocessing))
 
     print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
 
@@ -655,9 +656,12 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None):
 
 def updateAllPlots():
     parser = getBaseParser()
-    for model_type in ['Akita', 'UNet', 'DeepC']:
+    for model_type in ['UNet', 'DeepC']: # 'Akita'
+        print(model_type)
         model_path = os.path.join('results', model_type)
-        for id in os.listdir(model_path):
+        for id in ['6', '8']
+        # for id in os.listdir(model_path):
+            print('\t', id)
             id_path = os.path.join(model_path, id)
             if os.path.isdir(id_path) and id.isdigit():
                 txt_file = os.path.join(id_path, 'argparse.txt')
