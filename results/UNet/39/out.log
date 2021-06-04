@@ -1,0 +1,38 @@
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=True, toxx_mode='mean', y_preprocessing='diag_instance', y_norm='instance', min_subtraction=False, x_reshape=False, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=32, num_workers=4, start_epoch=1, n_epochs=15, save_mod=5, print_mod=2, lr=0.1, gpus=1, milestones=[5, 10], gamma=0.1, loss='mse', model_type='UNet', id=39, pretrained=False, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act='sigmoid', training_norm='batch', kernel_w_list=None, hidden_sizes_list=None, nf=8, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, down_sampling=None, plot=True, plot_predictions=True, ofile_folder='results/UNet/39', log_file=<_io.TextIOWrapper name='results/UNet/39/out.log' mode='a' encoding='UTF-8'>, criterion=<function mse_loss at 0x7f2e577385e0>, channels=1, cuda=True, use_parallel=False, device=device(type='cuda'))
+
+Epoch 2, loss = 0.0099
+Mean test/val loss: 0.0105
+Epoch 4, loss = 0.0099
+Mean test/val loss: 0.0102
+Epoch 6, loss = 0.0075
+Mean test/val loss: 0.0102
+Epoch 8, loss = 0.0070
+Mean test/val loss: 0.0067
+Epoch 10, loss = 0.0068
+Mean test/val loss: 0.0069
+Epoch 12, loss = 0.0066
+Mean test/val loss: 0.0065
+Epoch 14, loss = 0.0066
+Mean test/val loss: 0.0067
+Epoch 15, loss = 0.0066
+Mean test/val loss: 0.0066
+
+to_device_time:  0
+test_time:  0
+forward_time:  0
+backward_time: 0
+
+Total parameters: 655361
+Total time: 2678.4650065898895
+Final val loss: 0.006647641837064709
+
+#### Plotting Script ####
+PCA Results:
+Accuracy: 0.912 +- 0.043
+Spearman R: 0.807 +- 0.063
+Pearson R: 0.855 +- 0.034
+
+Distance Stratified Pearson Correlation Results:
+Overall Pearson R: 0.706 $\pm$ 0.115
+
+Class Accuracy Results:
