@@ -52,17 +52,15 @@ class Sequences2Contacts(Dataset):
     def __getitem__(self, index):
         if self.y_preprocessing is None:
             y_path = os.path.join(self.paths[index], 'y.npy')
-            y = np.load(y_path)
         elif self.y_preprocessing == 'diag':
             y_path = os.path.join(self.paths[index], 'y_diag.npy')
-            y = np.load(y_path)
         elif self.y_preprocessing == 'prcnt':
             y_path = os.path.join(self.paths[index], 'y_prcnt.npy')
-            y = np.load(y_path)
+        elif self.y_preprocessing == 'diag_instance':
+            y_path = os.path.join(self.paths[index], 'y_diag_instance.npy')
         else:
-            print("Warning: Unknown preprocessing: {}".format(self.y_preprocessing))
-            y_path = os.path.join(self.paths[index], 'y.npy')
-            y = np.load(y_path)
+            raise Exception("Warning: Unknown preprocessing: {}".format(self.y_preprocessing))
+        y = np.load(y_path)
 
         if self.crop is not None:
             y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]

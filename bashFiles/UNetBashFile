@@ -18,7 +18,7 @@ xReshape='false'
 # architecture
 k=2
 n=1024
-yPreprocessing='diag'
+yPreprocessing='diag_instance'
 yNorm='instance'
 minSubtraction='False'
 nf=8
