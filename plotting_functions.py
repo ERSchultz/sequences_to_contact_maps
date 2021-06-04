@@ -524,7 +524,7 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
                                                          [(-1, 'blue'),
                                                          (0, 'white'),
                                                           (1, 'red')], N=126)
-                plotContactMap(ydif, os.path.join(subpath, 'ydif.png'), vmin = -1 * vmax, vmax = v_max, title = 'yhat - y', cmap = cmap)
+                plotContactMap(ydif, os.path.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = 'yhat - y', cmap = cmap)
             else:
                 raise Exception("Unsupported preprocessing: {}".format(y_preprocessing))
 
