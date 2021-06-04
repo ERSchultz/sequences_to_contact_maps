@@ -696,7 +696,8 @@ def main():
     plotting_script(None, opt)
 
 if __name__ == '__main__':
-    updateResultTables('Akita')
+    # updateResultTables('Akita')
+    updateAllPlots()
     # main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')
