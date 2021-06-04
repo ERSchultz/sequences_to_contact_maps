@@ -563,31 +563,59 @@ def contactPlots(dataFolder):
         y_prcnt_norm = np.load(os.path.join(path, 'y_prcnt.npy'))
         plotContactMap(y_prcnt_norm, os.path.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
-def updateAllPCATables():
+def updateResultTables(model_type):
     for model_type in ['Akita', 'DeepC', 'UNet']:
-        updatePCATable(model_type)
+        # set up header row
+        opt_list = ['model_type', 'id',  'data_folder','toxx', 'toxx_mode', 'y_preprocessing',
+            'y_norm', 'x_reshape', 'ydtype', 'y_reshape', 'crop', 'classes', 'split', 'shuffle',
+            'batch_size', 'num_workers', 'start_epoch', 'n_epochs', 'lr', 'gpus', 'milestones',
+            'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'n',
+            'seed', 'out_act', 'training_norm', 'plot', 'plot_predictions']
+        if model_type == 'simpleEpiNet':
+            opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])
+        elif model_type == 'UNet':
+            opt_list.append('nf')
+        elif model_type == 'Akita':
+            opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'down_sampling'])
+        elif model_type == 'DeepC':
+            opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list'])
+        elif model_type == 'test':
+            opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'nf'])
+        else:
+            raise Exception("Unknown model type: {}".format(model_type))
+        opt_list.extend(['Final Validation Loss', 'PCA Accuracy Mean', 'PCA Accuracy Std', 'PCA Spearman Mean', 'PCA Spearman Std', 'PCA Pearson Mean', 'PCA Pearson Std', 'Overall Pearson Mean', 'Overall Pearson Std'])
+        results = [opt_list]
 
-def updatePCATable(model_type):
-    parser = getBaseParser()
-    model_path = os.path.join('results', model_type)
-    results = [['Model type', 'ID', 'Preprocessing', 'Norm', 'Loss', 'Output Activation', 'Initial LR', 'Epochs', 'Accuracy Mean', 'Accuracy Std', 'Spearman Mean', 'Spearman Std', 'Pearson Mean', 'Pearson Std']]
-    for id in os.listdir(model_path):
-        id_path = os.path.join(model_path, id)
-        if os.path.isdir(id_path) and id.isdigit():
-            txt_file = os.path.join(id_path, 'argparse.txt')
-            opt = parser.parse_args(['@{}'.format(txt_file)])
-            with open(os.path.join(id_path, 'PCA_results.txt'), 'r') as f:
-                f.readline()
-                acc = f.readline().split(':')[1].strip().split(' +- ')
-                spearman = f.readline().split(':')[1].strip().split(' +- ')
-                pearson = f.readline().split(':')[1].strip().split(' +- ')
-            row_list = [model_type, id, opt.y_preprocessing, opt.y_norm, opt.loss, opt.out_act, opt.lr, opt.n_epochs, acc[0], acc[1], spearman[0], spearman[1], pearson[0], pearson[1]]
-            results.append(row_list)
+        # get data
+        model_path = os.path.join('results', model_type)
+        parser = getBaseParser()
+        for id in os.listdir(model_path):
+            id_path = os.path.join(model_path, id)
+            if os.path.isdir(id_path) and id.isdigit():
+                txt_file = os.path.join(id_path, 'argparse.txt')
+                opt = parser.parse_args(['@{}'.format(txt_file)])
+                opt.id = int(id)
+                opt = finalizeOpt(opt, parser, True)
+                opt_list = opt2list(opt)
+                with open(os.path.join(id_path, 'PCA_results.txt'), 'r') as f:
+                    f.readline()
+                    acc = f.readline().split(':')[1].strip().split(' +- ')
+                    spearman = f.readline().split(':')[1].strip().split(' +- ')
+                    pearson = f.readline().split(':')[1].strip().split(' +- ')
+                with open(os.path.join(id_path, 'out.log'), 'r') as f:
+                    for line in f:
+                        if line.startswith('Final val loss: '):
+                            final_val_loss = line.split(':')[1].strip()
+                        elif line.startswith('Overall Pearson R: '):
+                            dist_pearson = line.split(':')[1].strip().split(' $\pm$ ')
+                opt_list.extend([final_val_loss, acc[0], acc[1], spearman[0], spearman[1], pearson[0], pearson[1], dist_pearson[0], dist_pearson[1]])
+                results.append(opt_list)
 
-    ofile = os.path.join(model_path, 'PCA_table.csv')
-    with open(ofile, 'w', newline = '') as f:
-        wr = csv.writer(f)
-        wr.writerows(results)
+        ofile = os.path.join(model_path, 'results_table.csv')
+        with open(ofile, 'w', newline = '') as f:
+            wr = csv.writer(f)
+            wr.writerows(results)
+
 
 def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None):
     if model is None:
@@ -668,8 +696,7 @@ def main():
     plotting_script(None, opt)
 
 if __name__ == '__main__':
-    updateAllPlots()
+    updateResultTables('Akita')
     # main()
-    # updatePCATables()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')

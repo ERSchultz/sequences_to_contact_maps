@@ -450,7 +450,8 @@ def getBaseParser():
 
     return parser
 
-def finalizeOpt(opt, parser):
+def finalizeOpt(opt, parser, local = False):
+    # local is a flag to not print the warning for falling back to cpu
     # set up output folders/files
     model_type_folder = os.path.join('results', opt.model_type)
     if opt.id is None:
@@ -513,7 +514,7 @@ def finalizeOpt(opt, parser):
         opt.cuda = False
         opt.use_parallel = False
 
-    if opt.cuda and not torch.cuda.is_available():
+    if opt.cuda and not torch.cuda.is_available() and not local:
         print('Warning: falling back to cpu', file = opt.log_file)
         opt.cuda = False
         opt.use_parallel = False
@@ -540,6 +541,28 @@ def save_args(opt):
         for arg in sys.argv[1:]: # skip the program file
             f.write(arg + '\n')
 
+def opt2list(opt):
+    opt_list = [opt.model_type, opt.id, opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
+        opt.y_norm, opt.x_reshape, opt.ydtype, opt.y_reshape, opt.crop, opt.classes, opt.split,
+        opt.shuffle, opt.batch_size, opt.num_workers, opt.start_epoch, opt.n_epochs, opt.lr,
+        opt.gpus, opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
+        opt.ifile_folder, opt.ifile, opt.k, opt.n, opt.seed, opt.out_act, opt.training_norm,
+        opt.plot, opt.plot_predictions]
+    if opt.model_type == 'simpleEpiNet':
+        opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list])
+    elif opt.model_type == 'UNet':
+        opt_list.append(opt.nf)
+    elif opt.model_type == 'Akita':
+        opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.down_sampling])
+    elif opt.model_type == 'DeepC':
+        opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list])
+    elif opt.model_type == 'test':
+        opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.nf])
+    else:
+        raise Exception("Unknown model type: {}".format(opt.model_type))
+
+    return opt_list
+
 def save_opt(opt, ofile):
     if not os.path.exists(ofile):
         with open(ofile, 'w', newline = '') as f:
@@ -564,25 +587,7 @@ def save_opt(opt, ofile):
             wr.writerow(opt_list)
     with open(ofile, 'a') as f:
         wr = csv.writer(f)
-        opt_list = [opt.model_type, opt.id, opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
-            opt.y_norm, opt.x_reshape, opt.ydtype, opt.y_reshape, opt.crop, opt.classes, opt.split,
-            opt.shuffle, opt.batch_size, opt.num_workers, opt.start_epoch, opt.n_epochs, opt.lr,
-            opt.gpus, opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
-            opt.ifile_folder, opt.ifile, opt.k, opt.n, opt.seed, opt.out_act, opt.training_norm,
-            opt.plot, opt.plot_predictions]
-        if opt.model_type == 'simpleEpiNet':
-            opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list])
-        elif opt.model_type == 'UNet':
-            opt_list.append(opt.nf)
-        elif opt.model_type == 'Akita':
-            opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.down_sampling])
-        elif opt.model_type == 'DeepC':
-            opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list])
-        elif opt.model_type == 'test':
-            opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.nf])
-        else:
-            raise Exception("Unknown model type: {}".format(opt.model_type))
-
+        opt_list = opt2list(opt)
         wr.writerow(opt_list)
 
 def roundUpBy10(val):
