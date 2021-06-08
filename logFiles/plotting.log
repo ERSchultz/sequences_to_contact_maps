@@ -1,0 +1,4 @@
+  File "/home/erschultz/sequences_to_contact_maps/plotting_functions.py", line 662
+    for id in ['6', '8']
+                        ^
+SyntaxError: invalid syntax
