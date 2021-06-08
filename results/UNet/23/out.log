@@ -106,3 +106,14 @@ results/UNet/23/sample1950
 results/UNet/23/sample898
 Loss: 0.0010425371304154396 +- 0.006776421844805171
 
+Namespace(mode=None, verbose=False, data_folder='/../../../project2/depablo/erschultz/dataset_04_18_21', toxx=True, toxx_mode='mean', y_preprocessing='diag', y_norm=None, min_subtraction=False, x_reshape=False, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, split=[0.8, 0.1, 0.1], shuffle=True, batch_size=16, num_workers=4, start_epoch=1, n_epochs=20, save_mod=5, print_mod=2, lr=0.01, gpus=1, milestones=None, gamma=0.1, loss='mse', model_type='UNet', id=23, pretrained=False, resume_training=False, ifile_folder=None, ifile=None, k=2, n=1024, seed=42, out_act=None, training_norm='batch', kernel_w_list=None, hidden_sizes_list=None, nf=8, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, down_sampling=None, plot=False, plot_predictions=True, ofile_folder='results/UNet/23', log_file=<_io.TextIOWrapper name='results/UNet/23/out.log' mode='a' encoding='UTF-8'>, criterion=<function mse_loss at 0x7fb0ee2288b0>, channels=1, cuda=True, use_parallel=False, device=device(type='cuda'))
+Model is loaded: results/UNet/23/model.pt
+#### Plotting Script ####
+Prediction Results:
+results/UNet/23/sample189
+results/UNet/23/sample662
+results/UNet/23/sample997
+results/UNet/23/sample1950
+results/UNet/23/sample898
+Loss: 0.001178807970136404 +- 0.007593135929757718
+
