@@ -7,7 +7,7 @@ sys.path.insert(0, dname)
 import torch
 from torch.utils.data import Dataset
 from utils import make_dataset
-import torch
+import torch_geometric.data
 import numpy as np
 
 class Names(Dataset):
@@ -110,3 +110,7 @@ class Sequences2Contacts(Dataset):
 
     def __len__(self):
         return len(self.paths)
+
+class ContactsGraph(torch_geometric.data.Dataset):
+    def __init__(self, dirname):
+        super(ContactsGraph, self).__init__()

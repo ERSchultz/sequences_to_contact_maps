@@ -656,7 +656,7 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None):
 
 def updateAllPlots():
     parser = getBaseParser()
-    for model_type in ['UNet', 'DeepC']: # 'Akita'
+    for model_type in ['DeepC']: # 'Akita', 'UNet',
         print(model_type)
         model_path = os.path.join('results', model_type)
         for id in os.listdir(model_path):
@@ -665,6 +665,7 @@ def updateAllPlots():
             if os.path.isdir(id_path) and id.isdigit():
                 txt_file = os.path.join(id_path, 'argparse.txt')
                 opt = parser.parse_args(['@{}'.format(txt_file)])
+                print(opt)
                 opt.id = int(id)
                 opt = finalizeOpt(opt, parser)
 
