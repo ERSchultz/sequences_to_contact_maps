@@ -1,0 +1,93 @@
+Collecting pynvml
+  Downloading pynvml-11.0.0-py3-none-any.whl (46 kB)
+Collecting hic-straw
+  Using cached hic_straw-0.0.6-py3-none-any.whl (8.9 kB)
+Requirement already satisfied: requests in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from hic-straw) (2.25.1)
+Requirement already satisfied: certifi>=2017.4.17 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from requests->hic-straw) (2021.5.30)
+Requirement already satisfied: chardet<5,>=3.0.2 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from requests->hic-straw) (4.0.0)
+Requirement already satisfied: urllib3<1.27,>=1.21.1 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from requests->hic-straw) (1.26.5)
+Requirement already satisfied: idna<3,>=2.5 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from requests->hic-straw) (2.10)
+Installing collected packages: pynvml, hic-straw
+Successfully installed hic-straw-0.0.6 pynvml-11.0.0
+Looking in links: https://pytorch-geometric.com/whl/torch-1.8.0+cu102.html
+Collecting torch-scatter
+  Downloading https://pytorch-geometric.com/whl/torch-1.8.0%2Bcu102/torch_scatter-2.0.7-cp38-cp38-linux_x86_64.whl (2.7 MB)
+Installing collected packages: torch-scatter
+Successfully installed torch-scatter-2.0.7
+Looking in links: https://pytorch-geometric.com/whl/torch-1.8.0+cu102.html
+Collecting torch-sparse
+  Downloading https://pytorch-geometric.com/whl/torch-1.8.0%2Bcu102/torch_sparse-0.6.9-cp38-cp38-linux_x86_64.whl (1.5 MB)
+Requirement already satisfied: scipy in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from torch-sparse) (1.6.3)
+Requirement already satisfied: numpy<1.23.0,>=1.16.5 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from scipy->torch-sparse) (1.20.3)
+Installing collected packages: torch-sparse
+Successfully installed torch-sparse-0.6.9
+Looking in links: https://pytorch-geometric.com/whl/torch-1.8.0+cu102.html
+Collecting torch-cluster
+  Downloading https://pytorch-geometric.com/whl/torch-1.8.0%2Bcu102/torch_cluster-1.5.9-cp38-cp38-linux_x86_64.whl (1.1 MB)
+Installing collected packages: torch-cluster
+Successfully installed torch-cluster-1.5.9
+Looking in links: https://pytorch-geometric.com/whl/torch-1.8.0+cu102.html
+Collecting torch-spline-conv
+  Downloading https://pytorch-geometric.com/whl/torch-1.8.0%2Bcu102/torch_spline_conv-1.2.1-cp38-cp38-linux_x86_64.whl (390 kB)
+Installing collected packages: torch-spline-conv
+Successfully installed torch-spline-conv-1.2.1
+Collecting torch-geometric
+  Using cached torch_geometric-1.7.0.tar.gz (212 kB)
+Requirement already satisfied: numpy in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from torch-geometric) (1.20.3)
+Collecting tqdm
+  Using cached tqdm-4.61.0-py2.py3-none-any.whl (75 kB)
+Requirement already satisfied: scipy in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from torch-geometric) (1.6.3)
+Collecting networkx
+  Using cached networkx-2.5.1-py3-none-any.whl (1.6 MB)
+Collecting python-louvain
+  Using cached python-louvain-0.15.tar.gz (204 kB)
+Requirement already satisfied: scikit-learn in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from torch-geometric) (0.24.2)
+Requirement already satisfied: numba in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from torch-geometric) (0.53.1)
+Requirement already satisfied: requests in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from torch-geometric) (2.25.1)
+Requirement already satisfied: pandas in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from torch-geometric) (1.2.4)
+Collecting rdflib
+  Using cached rdflib-5.0.0-py3-none-any.whl (231 kB)
+Collecting h5py
+  Downloading h5py-3.2.1-cp38-cp38-manylinux1_x86_64.whl (4.5 MB)
+Collecting googledrivedownloader
+  Using cached googledrivedownloader-0.4-py2.py3-none-any.whl (3.9 kB)
+Collecting ase
+  Using cached ase-3.21.1-py3-none-any.whl (2.2 MB)
+Requirement already satisfied: jinja2 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from torch-geometric) (3.0.1)
+Requirement already satisfied: matplotlib>=2.0.0 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from ase->torch-geometric) (3.4.2)
+Requirement already satisfied: pillow>=6.2.0 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from matplotlib>=2.0.0->ase->torch-geometric) (8.2.0)
+Requirement already satisfied: kiwisolver>=1.0.1 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from matplotlib>=2.0.0->ase->torch-geometric) (1.3.1)
+Requirement already satisfied: python-dateutil>=2.7 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from matplotlib>=2.0.0->ase->torch-geometric) (2.8.1)
+Requirement already satisfied: cycler>=0.10 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from matplotlib>=2.0.0->ase->torch-geometric) (0.10.0)
+Requirement already satisfied: pyparsing>=2.2.1 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from matplotlib>=2.0.0->ase->torch-geometric) (2.4.7)
+Requirement already satisfied: six in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from cycler>=0.10->matplotlib>=2.0.0->ase->torch-geometric) (1.16.0)
+Requirement already satisfied: MarkupSafe>=2.0 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from jinja2->torch-geometric) (2.0.1)
+Collecting decorator<5,>=4.3
+  Using cached decorator-4.4.2-py2.py3-none-any.whl (9.2 kB)
+Requirement already satisfied: setuptools in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from numba->torch-geometric) (49.6.0.post20210108)
+Requirement already satisfied: llvmlite<0.37,>=0.36.0rc1 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from numba->torch-geometric) (0.36.0)
+Requirement already satisfied: pytz>=2017.3 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from pandas->torch-geometric) (2021.1)
+Collecting isodate
+  Using cached isodate-0.6.0-py2.py3-none-any.whl (45 kB)
+Requirement already satisfied: chardet<5,>=3.0.2 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from requests->torch-geometric) (4.0.0)
+Requirement already satisfied: urllib3<1.27,>=1.21.1 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from requests->torch-geometric) (1.26.5)
+Requirement already satisfied: idna<3,>=2.5 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from requests->torch-geometric) (2.10)
+Requirement already satisfied: certifi>=2017.4.17 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from requests->torch-geometric) (2021.5.30)
+Requirement already satisfied: threadpoolctl>=2.0.0 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from scikit-learn->torch-geometric) (2.1.0)
+Requirement already satisfied: joblib>=0.11 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages (from scikit-learn->torch-geometric) (1.0.1)
+Building wheels for collected packages: torch-geometric, python-louvain
+  Building wheel for torch-geometric (setup.py): started
+  Building wheel for torch-geometric (setup.py): finished with status 'done'
+  Created wheel for torch-geometric: filename=torch_geometric-1.7.0-py3-none-any.whl size=365383 sha256=9cf36f47953f7ddb6fe20684c1afb8cf6561ddff44efef1523c165bc37155bf4
+  Stored in directory: /home/erschultz/.cache/pip/wheels/c5/aa/bf/8be32199f2301dc154204f66b6abcff4f83a972e6aadec917e
+  Building wheel for python-louvain (setup.py): started
+  Building wheel for python-louvain (setup.py): finished with status 'done'
+  Created wheel for python-louvain: filename=python_louvain-0.15-py3-none-any.whl size=9401 sha256=e5fe31a72e5f1a667d072e95637996bcff0d6046554f07e43b0f0716be81b9b4
+  Stored in directory: /home/erschultz/.cache/pip/wheels/c8/68/21/d04741956802581119d875a0d9fce6895e8f9ffae71223f3e3
+Successfully built torch-geometric python-louvain
+Installing collected packages: decorator, networkx, isodate, tqdm, rdflib, python-louvain, h5py, googledrivedownloader, ase, torch-geometric
+  Attempting uninstall: decorator
+    Found existing installation: decorator 5.0.9
+    Uninstalling decorator-5.0.9:
+      Successfully uninstalled decorator-5.0.9
+Successfully installed ase-3.21.1 decorator-4.4.2 googledrivedownloader-0.4 h5py-3.2.1 isodate-0.6.0 networkx-2.5.1 python-louvain-0.15 rdflib-5.0.0 torch-geometric-1.7.0 tqdm-4.61.0
