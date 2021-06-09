@@ -111,6 +111,27 @@ class Sequences2Contacts(Dataset):
     def __len__(self):
         return len(self.paths)
 
-class ContactsGraph(torch_geometric.data.Dataset):
-    def __init__(self, dirname):
-        super(ContactsGraph, self).__init__()
+class ContactsGraph(torch_geometric.data.InMemoryDataset):
+    def __init__(self, dirname, transform = None, pre_transform = None):
+        self.dirname = dirname
+        super(ContactsGraph, self).__init__(dirname, transform ,pre_transform)
+
+    def raw_file_names(self):
+        return make_dataset(self.dirname)
+
+    def processed_file_names(self):
+        return [os.path.join(path, 'data_{}.pt'.format(i)) for i, path in enumerate(self.raw_file_names())]
+
+    def get(self, index):
+         data = torch.load(self.processed_paths[index])
+         return data
+
+    def len(self):
+        return len(self.processed_paths)
+
+def main():
+    g = ContactsGraph
+    print(g.processed_paths)
+
+if __name__ == '__main__':
+    main()
