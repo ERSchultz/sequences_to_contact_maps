@@ -22,7 +22,7 @@ hiddenSizesList='16-8'
 
 # hyperparameters
 nEpochs=20
-batchSize=32
+batchSize=16
 numWorkers=4
 milestones=None
 gamma=0.1
