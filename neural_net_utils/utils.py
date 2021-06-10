@@ -1,12 +1,15 @@
 import os
+import os.path as osp
 import sys
-abspath = os.path.abspath(__file__)
-dname = os.path.dirname(abspath)
+abspath = osp.abspath(__file__)
+dname = osp.dirname(abspath)
 sys.path.insert(0, dname)
 
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
+import torch_geometric.utils
+import torch_geometric.data
 
 import numpy as np
 import math
@@ -34,6 +37,8 @@ def getModel(opt):
                             opt.channels,
                             opt.training_norm,
                             opt.down_sampling)
+    elif opt.model_type == 'GNNAutoencoder':
+        model = GNNAutoencoder(opt.k, opt.hidden_sizes_list[0], opt.hidden_sizes_list[1])
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -42,7 +47,7 @@ def getModel(opt):
 # dataset functions
 def make_dataset(dir, minSample = 0):
     data_file_arr = []
-    samples_dir = os.path.join(dir, 'samples')
+    samples_dir = osp.join(dir, 'samples')
     for file in os.listdir(samples_dir):
         if not file.startswith('sample'):
             print("Skipping {}".format(file))
@@ -51,22 +56,27 @@ def make_dataset(dir, minSample = 0):
             if sample_id < minSample:
                 print("Skipping {}".format(file))
             else:
-                data_file = os.path.join(samples_dir, file)
+                data_file = osp.join(samples_dir, file)
                 data_file_arr.append(data_file)
     return data_file_arr
 
 def getDataLoaders(dataset, opt):
     train_dataset, val_dataset, test_dataset = splitDataset(dataset, opt)
 
-    train_dataloader = DataLoader(train_dataset, batch_size = opt.batch_size,
+    if opt.mode == 'GNN':
+        dataloader_fn = torch_geometric.data.DataLoader
+    else:
+        dataloader_fn = DataLoader
+
+    train_dataloader = dataloader_fn(train_dataset, batch_size = opt.batch_size,
                                     shuffle = opt.shuffle, num_workers = opt.num_workers)
     if len(val_dataset) > 0:
-        val_dataloader = DataLoader(val_dataset, batch_size = opt.batch_size,
+        val_dataloader = dataloader_fn(val_dataset, batch_size = opt.batch_size,
                                         shuffle = opt.shuffle, num_workers = opt.num_workers)
     else:
         val_dataloader = None
     if len(val_dataset) > 0:
-        test_dataloader = DataLoader(test_dataset, batch_size = opt.batch_size,
+        test_dataloader = dataloader_fn(test_dataset, batch_size = opt.batch_size,
                                         shuffle = opt.shuffle, num_workers = opt.num_workers)
     else:
         test_dataloader = None
@@ -192,13 +202,13 @@ def getFrequencies(dataFolder, diag, n, k, chi):
     ind = 0
     for sample in samples:
 
-        sampleid = int(os.path.split(sample)[-1][6:])
+        sampleid = int(osp.split(sample)[-1][6:])
 
-        x = np.load(os.path.join(sample, 'x.npy'))
+        x = np.load(osp.join(sample, 'x.npy'))
         if diag:
-            y = np.load(os.path.join(sample, 'y_diag.npy'))
+            y = np.load(osp.join(sample, 'y_diag.npy'))
         else:
-            y = np.load(os.path.join(sample, 'y.npy'))
+            y = np.load(osp.join(sample, 'y.npy'))
         for i in range(n):
             xi = x[i]
             for j in range(i+1):
@@ -283,7 +293,7 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
     print('Class Accuracy Results:', file = opt.log_file)
     assert opt.y_preprocessing in {'diag', 'prcnt'}, "invalid preprocessing: {}".format(opt.y_preprocessing)
     if opt.y_preprocessing != 'prcnt':
-        prcntDist_path = os.path.join(opt.data_folder, 'prcntDist.npy')
+        prcntDist_path = osp.join(opt.data_folder, 'prcntDist.npy')
         prcntDist = np.load(prcntDist_path)
         print('prcntDist', prcntDist, file = opt.log_file)
 
@@ -292,13 +302,22 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
     acc_c_arr = np.zeros((opt.valN, opt.classes))
     freq_c_arr = np.zeros((opt.valN, opt.classes))
 
-    for i, (x, y, path, minmax) in enumerate(val_dataloader):
-        assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
-        x = x.to(opt.device)
-        y = y.to(opt.device)
-        path = path[0]
-        yhat = model(x)
-        loss = opt.criterion(yhat, y).item()
+    for i, data in enumerate(val_dataloader):
+        data = data.to(opt.device)
+        if opt.mode == 'GNN':
+            y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr)
+            yhat = model(data)
+            edge_index = (yhat > 0).nonzero().t()
+            row, col = edge_index
+            yhat_edge_attr = yhat[row, col]
+            path = data.path[0]
+            minmax = data.minmax
+            loss = opt.criterion(yhat_edge_attr, data.edge_attr).item()
+        else:
+            x, y, path, minmax = data
+            path = path[0]
+            yhat = model(x)
+            loss = opt.criterion(yhat, y).item()
         loss_arr[i] = loss
         y = y.cpu().numpy().reshape((opt.n, opt.n))
         y = un_normalize(y, minmax)
@@ -308,10 +327,12 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
             ytrue = y
             yhat = np.argmax(yhat, axis = 1)
         if opt.y_preprocessing == 'diag':
-            ytrue = np.load(os.path.join(path, 'y_prcnt.npy'))
+            ytrue = np.load(osp.join(path, 'y_prcnt.npy'))
             yhat = un_normalize(yhat, minmax)
             yhat = percentile_preprocessing(yhat, prcntDist)
         yhat = yhat.reshape((opt.n,opt.n))
+        plotContactMap(yhat, None, vmax = 'max', prcnt = True, title = 'Y hat prcnt')
+        plotContactMap(ytrue, None, vmax = 'max', prcnt = True, title = 'Y prcnt')
         acc = np.sum(yhat == ytrue) / yhat.size
         acc_arr[i] = acc
 
@@ -327,41 +348,108 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
     print('Loss: {} +- {}'.format(np.round(np.mean(loss_arr), 3), np.round( np.std(loss_arr), 3)), file = opt.log_file)
     return acc_c_arr, freq_c_arr, acc_result
 
+# delete
+import matplotlib.pyplot as plt
+import matplotlib.colors
+import seaborn as sns
+def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False, cmap = None):
+    """
+    Plotting function for contact maps.
+
+    Inputs:
+        y: contact map numpy array
+        ofile: save location
+        title: plot title
+        vmax: maximum value for color bar, 'mean' to set as mean value
+        size_in: size of figure x,y in inches
+        minVal: values in y less than minVal are set to 0
+        maxVal: values in y greater than maxVal are set to 0
+    """
+    if cmap is None:
+        if prcnt:
+            cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                     [(0,       'white'),
+                                                      (0.25,    'orange'),
+                                                      (0.5,     'red'),
+                                                      (0.74,    'purple'),
+                                                      (1,       'blue')], N=10)
+        else:
+            cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                     [(0,    'white'),
+                                                      (1,    'red')], N=126)
+    if len(y.shape) == 4:
+        N, C, H, W = y.shape
+        assert N == 1 and C == 1
+        y = y.reshape(H,W)
+    elif len(y.shape) == 3:
+        N, H, W = y.shape
+        assert N == 1
+        y = y.reshape(H,W)
+
+    if minVal is not None or maxVal is not None:
+        y = y.copy() # prevent issues from reference type
+    if minVal is not None:
+        ind = y < minVal
+        y[ind] = 0
+    if maxVal is not None:
+        ind = y > maxVal
+        y[ind] = 0
+    plt.figure(figsize = (size_in, size_in))
+    if vmax == 'mean':
+        vmax = np.mean(y)
+    elif vmax == 'max':
+        vmax = np.max(y)
+    ax = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap)
+    if title is not None:
+        plt.title(title, fontsize = 16)
+    plt.tight_layout()
+    if ofile is not None:
+        plt.savefig(ofile)
+    else:
+        plt.show()
+    plt.close()
+
+
 # other functions
-def comparePCA(val_dataloader, imagePath, model, opt):
+def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
     """Computes statistics of 1st PC of contact map"""
     acc_arr = np.zeros(opt.valN)
     rho_arr = np.zeros(opt.valN)
     p_arr = np.zeros(opt.valN)
     pca = PCA()
     model.eval()
-    for i, (x, y, path, minmax) in enumerate(val_dataloader):
-        assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
-        path = path[0]
-        minmax = minmax
-        x = x.to(opt.device)
-        y = y.to(opt.device)
-        yhat = model(x)
+    for i, data in enumerate(val_dataloader):
+        data = data.to(opt.device)
+        if opt.mode == 'GNN':
+            y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr)
+            yhat = model(data)
+            path = data.path[0]
+            minmax = data.minmax
+        else:
+            x, y, path, minmax = data
+            path = path[0]
+            yhat = model(x)
         y = y.cpu().numpy().reshape((opt.n, opt.n))
         y = un_normalize(y, minmax)
         yhat = yhat.cpu().detach().numpy()
 
-        if opt.y_preprocessing == 'prcnt':
-            if opt.loss == 'cross_entropy':
-                yhat = np.argmax(yhat, axis = 1)
-            else:
-                yhat = un_normalize(yhat, minmax)
+        if opt.y_preprocessing == 'prcnt' and opt.loss == 'cross_entropy':
+            yhat = np.argmax(yhat, axis = 1)
         else:
             yhat = un_normalize(yhat, minmax)
         yhat = yhat.reshape((opt.n, opt.n))
 
+        # y
         result_y = pca.fit(y)
         comp1_y = pca.components_[0]
         sign1_y = np.sign(comp1_y)
 
+        # yhat
         result_yhat = pca.fit(yhat)
         comp1_yhat = pca.components_[0]
         sign1_yhat = np.sign(comp1_yhat)
+
+        # results
         acc = np.sum((sign1_yhat == sign1_y)) / sign1_y.size
         acc_arr[i] = max(acc, 1 - acc)
 
@@ -371,18 +459,33 @@ def comparePCA(val_dataloader, imagePath, model, opt):
         corr, pval = pearsonr(comp1_yhat, comp1_y)
         p_arr[i] = abs(corr)
 
+        # for plotting
+        if i < count:
+            sample = osp.split(path)[-1]
+            subpath = osp.join(opt.ofile_folder, sample)
+            if not osp.exists(subpath):
+                os.mkdir(subpath, mode = 0o755)
+
+            plt.plot(comp1_yhat, label = 'yhat')
+            plt.plot(comp1_y, label = 'y')
+            plt.legend()
+            plt.title('PC 1')
+            plt.savefig(osp.join(subpath, 'pc1.png'))
+            plt.close()
+
     results = 'PCA Results:\n' +\
             'Accuracy: {} +- {}\n'.format(np.round(np.mean(acc_arr), 3), np.round(np.std(acc_arr), 3)) +\
             'Spearman R: {} +- {}\n'.format(np.round(np.mean(rho_arr), 3), np.round(np.std(rho_arr), 3))+\
             'Pearson R: {} +- {}\n'.format(np.round(np.mean(p_arr), 3), np.round(np.std(p_arr), 3))
     print(results, file = opt.log_file)
-    with open(os.path.join(imagePath, 'PCA_results.txt'), 'w') as f:
+    print(results) # delete
+    with open(osp.join(imagePath, 'PCA_results.txt'), 'w') as f:
         f.write(results)
 
 def getBaseParser():
     '''Helper function that returns base parser'''
     parser = argparse.ArgumentParser(description='Base parser', fromfile_prefix_chars='@')
-    parser.add_argument('--mode', type=str)
+    parser.add_argument('--mode', type=str, help='set to "GNN" to use GNNs')
     parser.add_argument('--verbose', type=str2bool, default=False)
 
     # pre-processing args
@@ -444,6 +547,8 @@ def getBaseParser():
     parser.add_argument('--dilation_list_head', type=str2list, help='List of dilations for dilated convolutional layers of head')
     parser.add_argument('--down_sampling', type=str2None, help='type of down sampling to use')
 
+    # GNNAutoencoder args
+
     # post-processing args
     parser.add_argument('--plot', type=str2bool, default=True, help='True to plot result figures')
     parser.add_argument('--plot_predictions', type=str2bool, default=True, help='True to plot predictions')
@@ -453,10 +558,9 @@ def getBaseParser():
 def finalizeOpt(opt, parser, local = False):
     # local is a flag to not print the warning for falling back to cpu
     # set up output folders/files
-    model_type_folder = os.path.join('results', opt.model_type)
+    model_type_folder = osp.join('results', opt.model_type)
     if opt.id is None:
-        print('alert '*10)
-        if not os.path.exists(model_type_folder):
+        if not osp.exists(model_type_folder):
             os.mkdir(model_type_folder, mode = 0o755)
             opt.id = 1
         else:
@@ -468,16 +572,16 @@ def finalizeOpt(opt, parser, local = False):
                         max_id = id
             opt.id = max_id + 1
     else:
-        txt_file = os.path.join(model_type_folder, str(opt.id), 'argparse.txt')
-        assert os.path.exists(txt_file), "{} does not exist".format(txt_file)
+        txt_file = osp.join(model_type_folder, str(opt.id), 'argparse.txt')
+        assert osp.exists(txt_file), "{} does not exist".format(txt_file)
         id_copy = opt.id
         opt = parser.parse_args(sys.argv.append('@{}'.format(txt_file))) # parse again
         opt.id = id_copy
 
-    opt.ofile_folder = os.path.join(model_type_folder, str(opt.id))
-    if not os.path.exists(opt.ofile_folder):
+    opt.ofile_folder = osp.join(model_type_folder, str(opt.id))
+    if not osp.exists(opt.ofile_folder):
         os.mkdir(opt.ofile_folder, mode = 0o755)
-    log_file_path = os.path.join(opt.ofile_folder, 'out.log')
+    log_file_path = osp.join(opt.ofile_folder, 'out.log')
     opt.log_file = open(log_file_path, 'a')
 
     # configure other model params
@@ -485,9 +589,10 @@ def finalizeOpt(opt, parser, local = False):
         opt.criterion = F.mse_loss
         opt.channels = 1
     elif opt.loss == 'cross_entropy':
-        assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'
-        assert opt.y_norm is None, 'Cannot normalize with cross entropy'
-        assert opt.out_act is None, "Cannot use output activation with cross entropy"
+        if opt.mode != 'GNN':
+            assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'
+            assert opt.y_norm is None, 'Cannot normalize with cross entropy'
+            assert opt.out_act is None, "Cannot use output activation with cross entropy"
         opt.y_reshape = False
         opt.criterion = F.cross_entropy
         opt.ydtype = torch.int64
@@ -537,7 +642,7 @@ def argparseSetup():
 
 
 def save_args(opt):
-    with open(os.path.join(opt.ofile_folder, 'argparse.txt'), 'w') as f:
+    with open(osp.join(opt.ofile_folder, 'argparse.txt'), 'w') as f:
         for arg in sys.argv[1:]: # skip the program file
             f.write(arg + '\n')
 
@@ -558,13 +663,15 @@ def opt2list(opt):
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list])
     elif opt.model_type == 'test':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.nf])
+    elif opt.model_type == 'GNNAutoencoder':
+        opt.list.append(opt.hidden_sizes_list)
     else:
         raise Exception("Unknown model type: {}".format(opt.model_type))
 
     return opt_list
 
 def save_opt(opt, ofile):
-    if not os.path.exists(ofile):
+    if not osp.exists(ofile):
         with open(ofile, 'w', newline = '') as f:
             wr = csv.writer(f)
             opt_list = ['model_type', 'id',  'data_folder','toxx', 'toxx_mode', 'y_preprocessing',
@@ -582,6 +689,8 @@ def save_opt(opt, ofile):
                 opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list'])
             elif opt.model_type == 'test':
                 opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'nf'])
+            elif opt.model_type == 'GNNAutoencoder':
+                opt.list.append('hidden_sizes_list')
             else:
                 raise Exception("Unknown model type: {}".format(opt.model_type))
             wr.writerow(opt_list)

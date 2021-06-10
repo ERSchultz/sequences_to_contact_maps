@@ -7,6 +7,7 @@ sys.path.insert(0, dname)
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch_geometric.nn
 from base_networks import *
 import time
 
@@ -273,3 +274,17 @@ class SimpleEpiNet(nn.Module):
         out = self.act(out)
         out = torch.unsqueeze(out, 1)
         return out
+
+class GNNAutoencoder(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(GNNAutoencoder, self).__init__()
+        self.conv1 = torch_geometric.nn.GCNConv(input_size, hidden_size, add_self_loops = False)
+        self.conv2 = torch_geometric.nn.GCNConv(hidden_size, output_size, add_self_loops = False)
+
+    def forward(self, graph):
+        x, edge_index, edge_attr  = graph.x, graph.edge_index, graph.edge_attr
+        x = self.conv1(x, edge_index, edge_attr)
+        x = F.relu(x)
+        x = self.conv2(x, edge_index, edge_attr)
+
+        return F.relu(x @ x.t())
