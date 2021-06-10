@@ -664,7 +664,7 @@ def opt2list(opt):
     elif opt.model_type == 'test':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.nf])
     elif opt.model_type == 'GNNAutoencoder':
-        opt.list.append(opt.hidden_sizes_list)
+        opt_list.append(opt.hidden_sizes_list)
     else:
         raise Exception("Unknown model type: {}".format(opt.model_type))
 
