@@ -38,5 +38,5 @@ python3 -m pip install torch-scatter -f https://pytorch-geometric.com/whl/torch-
 python3 -m pip install torch-sparse -f https://pytorch-geometric.com/whl/torch-1.8.0+cu102.html &>> $ofile
 python3 -m pip install torch-cluster -f https://pytorch-geometric.com/whl/torch-1.8.0+cu102.html &>> $ofile
 python3 -m pip install torch-spline-conv -f https://pytorch-geometric.com/whl/torch-1.8.0+cu102.html &>> $ofile
-python3 -m pip install torch-geometric $ofile
+python3 -m pip install torch-geometric &>> $ofile
 conda deactivate

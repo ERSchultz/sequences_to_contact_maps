@@ -1,13 +1,14 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torch_geometric.data
 import os
 import sys
 import time
 from neural_net_utils.networks import *
 from neural_net_utils.utils import getDataLoaders, comparePCA, save_opt, save_args, argparseSetup, getModel
 from plotting_functions import plotting_script, plotModelFromArrays
-from neural_net_utils.dataset_classes import Sequences2Contacts
+from neural_net_utils.dataset_classes import *
 
 def main():
     opt = argparseSetup()
@@ -23,9 +24,13 @@ def core_test_train(model, opt):
     save_args(opt)
 
     # split dataset
-    dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
-                                        opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop, opt.min_subtraction)
+    if opt.mode == 'GNN':
+        dataset = ContactsGraph(opt.data_folder, opt.y_preprocessing,
+                                            opt.y_norm, opt.min_subtraction)
+    else:
+        dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
+                                            opt.y_norm, opt.x_reshape, opt.ydtype,
+                                            opt.y_reshape, opt.crop, opt.min_subtraction)
     train_dataloader, val_dataloader, test_dataloader = getDataLoaders(dataset, opt)
 
     if opt.pretrained:
@@ -39,12 +44,12 @@ def core_test_train(model, opt):
             print('Pre-trained model is loaded.', file = opt.log_file)
 
     # Set up model and scheduler
-    optimizer = optim.Adam(model.parameters(), lr = opt.lr)
+    opt.optimizer = optim.Adam(model.parameters(), lr = opt.lr)
     if opt.milestones is not None:
-        scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones = opt.milestones,
-                                                    gamma = opt.gamma, verbose = True)
+        opt.scheduler = optim.lr_scheduler.MultiStepLR(opt.optimizer, milestones = opt.milestones,
+                                                    gamma = opt.gamma, verbose = opt.verbose)
     else:
-        scheduler = None
+        opt.scheduler = None
 
     if opt.use_parallel:
         model = torch.nn.DataParallel(model, device_ids = opt.gpu_ids)
@@ -54,11 +59,7 @@ def core_test_train(model, opt):
 
 
     t0 = time.time()
-    train_loss_arr, val_loss_arr = train(train_dataloader, val_dataloader, model, optimizer,
-            opt.criterion, device = opt.device, save_location = os.path.join(opt.ofile_folder, 'model.pt'),
-            n_epochs = opt.n_epochs, start_epoch = opt.start_epoch, use_parallel = opt.use_parallel,
-            scheduler = scheduler, save_mod = opt.save_mod, print_mod = opt.print_mod, verbose = opt.verbose,
-            ofile = opt.log_file)
+    train_loss_arr, val_loss_arr = train(train_dataloader, val_dataloader, model, opt)
 
     tot_pars = 0
     for k,p in model.named_parameters():
@@ -71,82 +72,89 @@ def core_test_train(model, opt):
 
     opt.log_file.close()
 
-def train(train_loader, val_dataloader, model, optimizer, criterion, device, save_location,
-        n_epochs, start_epoch, use_parallel, scheduler, save_mod, print_mod, verbose, ofile = sys.stdout):
+def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
     train_loss = []
     val_loss = []
-    to_device_time = 0
-    test_time = 0
-    forward_time = 0
-    backward_time = 0
-    for e in range(start_epoch, n_epochs+1):
-        if verbose:
+    for e in range(opt.start_epoch, opt.n_epochs+1):
+        if opt.verbose:
             print('Epoch:', e)
         model.train()
         avg_loss = 0
-        for t, (x,y) in enumerate(train_loader):
-            if verbose:
+        for t, data in enumerate(train_loader):
+            data = data.to(opt.device)
+            if opt.verbose:
                 print('Iteration: ', t)
-            x = x.to(device)
-            y = y.to(device)
-            optimizer.zero_grad()
+            opt.optimizer.zero_grad()
 
-            yhat = model(x)
-            if verbose:
-                print('y', y)
-                print('yhat', yhat)
-            loss = criterion(yhat, y)
+            if opt.mode == 'GNN':
+                y = data.edge_attr
+                adj = model(data)
+                edge_index = (adj > 0).nonzero().t()
+                row, col = edge_index
+                yhat = adj[row, col]
+            else:
+                x, y = data
+                yhat = model(x)
+            if opt.verbose:
+                print('y', y, y.shape)
+                print('yhat', yhat, yhat.shape)
+            loss = opt.criterion(yhat, y)
             avg_loss += loss.item()
             loss.backward()
-            optimizer.step()
+            opt.optimizer.step()
         avg_loss /= (t+1)
         train_loss.append(avg_loss)
 
-        if scheduler is not None:
-            scheduler.step()
-        if e % print_mod == 0 or e == n_epochs:
+        if opt.scheduler is not None:
+            opt.scheduler.step()
+        if e % opt.print_mod == 0 or e == opt.n_epochs:
             print('Epoch {}, loss = {:.4f}'.format(e, avg_loss), file = ofile)
             print_val_loss = True
         else:
             print_val_loss = False
-        val_loss.append(test(val_dataloader, model, optimizer, criterion, device, print_val_loss, ofile))
+        val_loss.append(test(val_dataloader, model, opt, ofile))
 
-        if e % save_mod == 0:
-            if use_parallel:
+        if e % opt.save_mod == 0:
+            if opt.use_parallel:
                 model_state = model.module.state_dict()
             else:
                 model_state = model.state_dict()
             save_dict = {'model_state_dict': model_state,
                         'epoch': e,
-                        'optimizer_state_dict': optimizer.state_dict(),
+                        'optimizer_state_dict': opt.optimizer.state_dict(),
                         'scheduler_state_dict': None,
                         'train_loss': train_loss,
                         'val_loss': val_loss}
-            if scheduler is not None:
-                save_dict['scheduler_state_dict'] = scheduler.state_dict()
-            torch.save(save_dict, save_location)
-
-    print('\nto_device_time: ', to_device_time, file = ofile)
-    print('test_time: ', test_time, file = ofile)
-    print('forward_time: ', forward_time, file = ofile)
-    print('backward_time: {}\n'.format(backward_time), file = ofile)
+            if opt.scheduler is not None:
+                save_dict['scheduler_state_dict'] = opt.scheduler.state_dict()
+            torch.save(save_dict, os.path.join(opt.ofile_folder, 'model.pt'))
 
     return train_loss, val_loss
 
-def test(loader, model, optimizer, criterion, device, toprint, ofile = sys.stdout):
+def test(loader, model, opt, toprint, ofile = sys.stdout):
     model.eval()
     avg_loss = 0
     with torch.no_grad():
-        for t, (x,y) in enumerate(loader):
-            x = x.to(device)
-            y = y.to(device)
-            optimizer.zero_grad()
-            yhat = model(x)
-            loss = criterion(yhat, y)
+        for t, data in enumerate(loader):
+            data = data.to(opt.device)
+            opt.optimizer.zero_grad()
+            if opt.mode == 'GNN':
+                y = data.edge_attr
+                adj = model(data)
+                edge_index = (adj > 0).nonzero().t()
+                row, col = edge_index
+                yhat = adj[row, col]
+            else:
+                x, y = data
+                yhat = model(x)
+            if opt.verbose:
+                print('y', y, y.shape)
+                print('yhat', yhat, yhat.shape)
+            loss = opt.criterion(yhat, y)
             avg_loss += loss.item()
     avg_loss /= (t+1)
     if toprint:
-        print('Mean test/val loss: {:.4f}'.format(avg_loss), file = ofile)
+        print('Mean test/val loss: {:.4f}\n'.format(avg_loss), file = ofile)
     # TODO quartiles and median loss
     return avg_loss
 

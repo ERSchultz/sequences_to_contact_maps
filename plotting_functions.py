@@ -1,6 +1,7 @@
 import torch
 import torch.nn.functional as F
 import os
+import os.path as osp
 import sys
 import numpy as np
 import itertools
@@ -78,7 +79,7 @@ def plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid, split = 'typ
     if xmax is not None:
         plt.xlim(right = xmax)
 
-    plt.savefig(os.path.join(dataFolder, 'samples', "sample{}".format(sampleid), 'freq_count_sample{}_diag_{}_split_{}.png'.format(sampleid, diag, split)))
+    plt.savefig(osp.join(dataFolder, 'samples', "sample{}".format(sampleid), 'freq_count_sample{}_diag_{}_split_{}.png'.format(sampleid, diag, split)))
     plt.close()
 
 def plotFrequenciesSampleSubplot(freq_arr, dataFolder, diag, k, split = 'type'):
@@ -133,7 +134,7 @@ def plotFrequenciesSampleSubplot(freq_arr, dataFolder, diag, k, split = 'type'):
     else:
         fig.suptitle('no preprocessing', fontsize = 16, y = 1)
 
-    plt.savefig(os.path.join(dataFolder, 'freq_count_multisample_diag_{}_split_{}.png'.format(diag, split)))
+    plt.savefig(osp.join(dataFolder, 'freq_count_multisample_diag_{}_split_{}.png'.format(diag, split)))
     plt.close()
 
 def plotDistStats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
@@ -151,11 +152,11 @@ def plotDistStats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
     samples = make_dataset(datafolder)
     for sample in samples:
         if diag:
-            y = np.load(os.path.join(sample, 'y_diag.npy'))
+            y = np.load(osp.join(sample, 'y_diag.npy'))
         else:
-            y = np.load(os.path.join(sample, 'y.npy'))
+            y = np.load(osp.join(sample, 'y.npy'))
         result = generateDistStats(y, mode = mode, stat = stat)
-        ax.plot(result, label = os.path.split(sample)[1])
+        ax.plot(result, label = osp.split(sample)[1])
     if not diag:
         plt.yscale('log')
 
@@ -230,9 +231,9 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
         ax.set_yscale('log')
     plt.tight_layout()
     if log_y:
-        plt.savefig(os.path.join(imagePath, 'train_val_loss_log.png'))
+        plt.savefig(osp.join(imagePath, 'train_val_loss_log.png'))
     else:
-        plt.savefig(os.path.join(imagePath, 'train_val_loss.png'))
+        plt.savefig(osp.join(imagePath, 'train_val_loss.png'))
     plt.close()
 
 def plotModelFromDir(dir, imagePath, opt = None, log_y = False):
@@ -287,12 +288,12 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
     plt.legend()
     plt.tight_layout()
     if log_y:
-        plt.savefig(os.path.join(imagePath, 'train_val_loss_log.png'))
+        plt.savefig(osp.join(imagePath, 'train_val_loss_log.png'))
     else:
-        plt.savefig(os.path.join(imagePath, 'train_val_loss.png'))
+        plt.savefig(osp.join(imagePath, 'train_val_loss.png'))
     plt.close()
 
-def plotContactMap(y, ofile, title = None, vmin = 0, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False, cmap = None):
+def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False, cmap = None):
     """
     Plotting function for contact maps.
 
@@ -343,7 +344,10 @@ def plotContactMap(y, ofile, title = None, vmin = 0, vmax = 1, size_in = 6, minV
     if title is not None:
         plt.title(title, fontsize = 16)
     plt.tight_layout()
-    plt.savefig(ofile)
+    if ofile is not None:
+        plt.savefig(ofile)
+    else:
+        plt.show()
     plt.close()
 
 def plotPerClassAccuracy(val_dataloader, imagePath, model, opt, title = None):
@@ -392,7 +396,7 @@ def plotPerClassAccuracy(val_dataloader, imagePath, model, opt, title = None):
     plt.title('Y Preprocessing: {}, Y Norm: {}\n{}'.format(preprocessing, y_norm, acc_result), fontsize = 16)
 
     plt.tight_layout()
-    plt.savefig(os.path.join(imagePath, 'per_class_acc.png'))
+    plt.savefig(osp.join(imagePath, 'per_class_acc.png'))
 
 def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt):
     """Plots Pearson correlation as a function of genomic distance"""
@@ -400,20 +404,25 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
     p_arr = np.zeros((opt.valN, opt.n-1))
     P_arr_overall = np.zeros(opt.valN)
     model.eval()
-    for i, (x, y, path, minmax) in enumerate(val_dataloader):
-        path = path[0]
-        minmax = minmax
-        assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
-        x = x.to(opt.device)
-        y = y.to(opt.device)
-        yhat = model(x)
+    for i, data in enumerate(val_dataloader):
+        data = data.to(opt.device)
+        if opt.mode == 'GNN':
+            y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr)
+            yhat = model(data)
+            path = data.path
+            minmax = data.minmax
+        else:
+            x, y, path, minmax = data
+            path = path[0]
+            yhat = model(x)
         y = y.cpu().numpy().reshape((opt.n, opt.n))
         y = un_normalize(y, minmax)
         yhat = yhat.cpu().detach().numpy()
 
         if opt.y_preprocessing == 'prcnt' and opt.loss == 'cross_entropy':
             yhat = np.argmax(yhat, axis = 1)
-        yhat = un_normalize(yhat, minmax)
+        else:
+            yhat = un_normalize(yhat, minmax)
         yhat = yhat.reshape((opt.n,opt.n))
 
         overall_corr, corr_arr = calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson')
@@ -423,9 +432,9 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
         p_arr[i, :] = corr_arr
 
     p_mean = np.mean(p_arr, axis = 0)
-    np.save(os.path.join(imagePath, 'distance_pearson_mean.npy'), p_mean)
+    np.save(osp.join(imagePath, 'distance_pearson_mean.npy'), p_mean)
     p_std = np.std(p_arr, axis = 0)
-    np.save(os.path.join(imagePath, 'distance_pearson_std.npy'), p_std)
+    np.save(osp.join(imagePath, 'distance_pearson_std.npy'), p_std)
 
     title = r'Overall Pearson R: {} $\pm$ {}'.format(np.round(np.mean(P_arr_overall), 3), np.round(np.std(P_arr_overall),3))
     print('Distance Stratified Pearson Correlation Results:', file = opt.log_file)
@@ -449,14 +458,15 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
     plt.title('Y Preprocessing: {}, Y Norm: {}\n{}'.format(preprocessing, y_norm, title), fontsize = 16)
 
     plt.tight_layout()
-    plt.savefig(os.path.join(imagePath, 'distance_pearson.png'))
+    plt.savefig(osp.join(imagePath, 'distance_pearson.png'))
     plt.close()
 
 def plotPredictions(val_dataloader, model, opt, count = 5):
     print('Prediction Results:', file = opt.log_file)
     if opt.y_preprocessing != 'prcnt':
-        prcntDist_path = os.path.join(opt.data_folder, 'prcntDist.npy')
+        prcntDist_path = osp.join(opt.data_folder, 'prcntDist.npy')
         prcntDist = np.load(prcntDist_path)
+        print('prcntDist', prcntDist, file = opt.log_file)
 
     if opt.y_preprocessing is not None:
         preprocessing = opt.y_preprocessing.capitalize()
@@ -470,69 +480,81 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
 
 
     loss_arr = np.zeros(opt.valN)
-    for i, (x, y, path, minmax) in enumerate(val_dataloader):
+    for i, data in enumerate(val_dataloader):
         if i == count:
             break
-        assert x.shape[0] == 1, 'batch size must be 1 not {}'.format(x.shape[0])
-        x = x.to(opt.device)
-        y = y.to(opt.device)
-        path = path[0]
-        sample = os.path.split(path)[-1]
-        subpath = os.path.join(opt.ofile_folder, sample)
+        data = data.to(opt.device)
+        if opt.mode == 'GNN':
+            y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr)
+            yhat = model(data)
+            edge_index = (yhat > 0).nonzero().t()
+            row, col = edge_index
+            yhat_edge_attr = yhat[row, col]
+            path = data.path[0]
+            minmax = data.minmax
+            loss = opt.criterion(yhat_edge_attr, data.edge_attr).item()
+        else:
+            x, y, path, minmax = data
+            path = path[0]
+            yhat = model(x)
+            loss = opt.criterion(yhat, y).item()
+        y = y.cpu().numpy().reshape((opt.n, opt.n))
+        y = un_normalize(y, minmax)
+        yhat = yhat.cpu().detach().numpy()
+        yhat = yhat.reshape((opt.n,opt.n))
+
+        sample = osp.split(path)[-1]
+        subpath = osp.join(opt.ofile_folder, sample)
         print(subpath, file = opt.log_file)
-        if not os.path.exists(subpath):
+        if not osp.exists(subpath):
             os.mkdir(subpath, mode = 0o755)
 
-        yhat = model(x)
-        loss = opt.criterion(yhat, y).item()
         if opt.loss == 'mse':
             yhat_title = '{}\nY hat (MSE Loss: {})'.format(upper_title, np.round(loss, 3))
         elif opt.loss == 'cross_entropy':
-            yhat_title = '{}\Y hat (Cross Entropy Loss: {})'.format(upper_title, np.round(loss, 3))
+            yhat_title = '{}\nY hat (Cross Entropy Loss: {})'.format(upper_title, np.round(loss, 3))
         else:
-            yhat_title = '{}\Y hat (Loss: {})'.format(np.round(upper_title, loss, 3))
+            yhat_title = '{}\nY hat (Loss: {})'.format(np.round(upper_title, loss, 3))
+
         loss_arr[i] = loss
-        y = y.cpu().numpy()
-        yhat = yhat.cpu().detach().numpy()
         if opt.verbose:
             print('y', y, np.max(y))
             print('yhat', yhat, np.max(yhat))
 
-        y = un_normalize(y, minmax)
         if opt.y_preprocessing == 'prcnt':
-            plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = 'max', prcnt = True, title = 'Y')
+            plotContactMap(y, osp.join(subpath, 'y.png'), vmax = 'max', prcnt = True, title = 'Y')
             if opt.loss == 'cross_entropy':
                 yhat = np.argmax(yhat, axis = 1)
-                plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = True, title = yhat_title)
+                plotContactMap(yhat, osp.join(subpath, 'yhat.png'), vmax = 'max', prcnt = True, title = yhat_title)
             else:
                 yhat = un_normalize(yhat, minmax)
-                plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = yhat_title)
+                plotContactMap(yhat, osp.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = yhat_title)
         elif opt.y_preprocessing == 'diag' or opt.y_preprocessing == 'diag_instance':
             v_max = np.max(y)
-            plotContactMap(y, os.path.join(subpath, 'y.png'), vmax = v_max, prcnt = False, title = 'Y')
+            plotContactMap(y, osp.join(subpath, 'y.png'), vmax = v_max, prcnt = False, title = 'Y')
             yhat = un_normalize(yhat, minmax)
-            plotContactMap(yhat, os.path.join(subpath, 'yhat.png'), vmax = v_max, prcnt = False, title =yhat_title)
+            plotContactMap(yhat, osp.join(subpath, 'yhat.png'), vmax = v_max, prcnt = False, title =yhat_title)
 
             # plot prcnt
             yhat_prcnt = percentile_preprocessing(yhat, prcntDist)
-            plotContactMap(yhat_prcnt, os.path.join(subpath, 'yhat_prcnt.png'), vmax = 'max', prcnt = True, title = 'Y hat prcnt')
+            plotContactMap(yhat_prcnt, osp.join(subpath, 'yhat_prcnt.png'), vmax = 'max', prcnt = True, title = 'Y hat prcnt')
 
             # plot dif
             ydif_abs = abs(yhat - y)
-            plotContactMap(ydif_abs, os.path.join(subpath, 'ydif_abs.png'), vmax = v_max, title = '|yhat - y|')
+            plotContactMap(ydif_abs, osp.join(subpath, 'ydif_abs.png'), vmax = v_max, title = '|yhat - y|')
             ydif = yhat - y
             cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                      [(0, 'blue'),
                                                      (0.5, 'white'),
                                                       (1, 'red')], N=126)
-            plotContactMap(ydif, os.path.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = 'yhat - y', cmap = cmap)
+            plotContactMap(ydif, osp.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = 'yhat - y', cmap = cmap)
         else:
             raise Exception("Unsupported preprocessing: {}".format(opt.y_preprocessing))
 
     print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
 
 def freqDistributionPlots(dataFolder, n = 1024):
-    chi = np.load(os.path.join(dataFolder, 'chis.npy'))
+    chi = np.load(osp.join(dataFolder, 'chis.npy'))
     k = len(chi)
 
     # freq distribution plots
@@ -548,21 +570,21 @@ def freqStatisticsPlots(dataFolder):
     # freq statistics plots
     for diag in [True, False]:
         for stat in ['mean', 'var']:
-            ofile = os.path.join(dataFolder, "freq_stat_{}_diag_{}.png".format(stat, diag))
+            ofile = osp.join(dataFolder, "freq_stat_{}_diag_{}.png".format(stat, diag))
             plotDistStats(dataFolder, diag, ofile, stat = stat)
 
 def contactPlots(dataFolder):
     in_paths = sorted(make_dataset(dataFolder))
     for path in in_paths:
         print(path)
-        y = np.load(os.path.join(path, 'y.npy'))
-        plotContactMap(y, os.path.join(path, 'y.png'), title = 'pre normalization', vmax = 'mean')
+        y = np.load(osp.join(path, 'y.npy'))
+        plotContactMap(y, osp.join(path, 'y.png'), title = 'pre normalization', vmax = 'mean')
 
-        y_diag_norm = np.load(os.path.join(path, 'y_diag.npy'))
-        plotContactMap(y_diag_norm, os.path.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
+        y_diag_norm = np.load(osp.join(path, 'y_diag.npy'))
+        plotContactMap(y_diag_norm, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
 
-        y_prcnt_norm = np.load(os.path.join(path, 'y_prcnt.npy'))
-        plotContactMap(y_prcnt_norm, os.path.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
+        y_prcnt_norm = np.load(osp.join(path, 'y_prcnt.npy'))
+        plotContactMap(y_prcnt_norm, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
 def updateResultTables(model_type):
     for model_type in ['Akita', 'DeepC', 'UNet']:
@@ -588,22 +610,22 @@ def updateResultTables(model_type):
         results = [opt_list]
 
         # get data
-        model_path = os.path.join('results', model_type)
+        model_path = osp.join('results', model_type)
         parser = getBaseParser()
         for id in os.listdir(model_path):
-            id_path = os.path.join(model_path, id)
-            if os.path.isdir(id_path) and id.isdigit():
-                txt_file = os.path.join(id_path, 'argparse.txt')
+            id_path = osp.join(model_path, id)
+            if osp.isdir(id_path) and id.isdigit():
+                txt_file = osp.join(id_path, 'argparse.txt')
                 opt = parser.parse_args(['@{}'.format(txt_file)])
                 opt.id = int(id)
                 opt = finalizeOpt(opt, parser, True)
                 opt_list = opt2list(opt)
-                with open(os.path.join(id_path, 'PCA_results.txt'), 'r') as f:
+                with open(osp.join(id_path, 'PCA_results.txt'), 'r') as f:
                     f.readline()
                     acc = f.readline().split(':')[1].strip().split(' +- ')
                     spearman = f.readline().split(':')[1].strip().split(' +- ')
                     pearson = f.readline().split(':')[1].strip().split(' +- ')
-                with open(os.path.join(id_path, 'out.log'), 'r') as f:
+                with open(osp.join(id_path, 'out.log'), 'r') as f:
                     for line in f:
                         if line.startswith('Final val loss: '):
                             final_val_loss = line.split(':')[1].strip()
@@ -612,7 +634,7 @@ def updateResultTables(model_type):
                 opt_list.extend([final_val_loss, acc[0], acc[1], spearman[0], spearman[1], pearson[0], pearson[1], dist_pearson[0], dist_pearson[1]])
                 results.append(opt_list)
 
-        ofile = os.path.join(model_path, 'results_table.csv')
+        ofile = osp.join(model_path, 'results_table.csv')
         with open(ofile, 'w', newline = '') as f:
             wr = csv.writer(f)
             wr.writerows(results)
@@ -622,8 +644,8 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None):
     if model is None:
         model = getModel(opt)
         model.to(opt.device)
-        model_name = os.path.join(opt.ofile_folder, 'model.pt')
-        if os.path.exists(model_name):
+        model_name = osp.join(opt.ofile_folder, 'model.pt')
+        if osp.exists(model_name):
             save_dict = torch.load(model_name, map_location=torch.device('cpu'))
             model.load_state_dict(save_dict['model_state_dict'])
             train_loss_arr = save_dict['train_loss']
@@ -634,10 +656,14 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None):
 
     opt.batch_size = 1 # batch size must be 1
     opt.shuffle = False # for reproducibility
-    seq2ContactData = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
-                                        opt.y_norm, opt.x_reshape, opt.ydtype,
-                                        opt.y_reshape, opt.crop, opt.min_subtraction, names = True, minmax = True)
-    _, val_dataloader, _ = getDataLoaders(seq2ContactData, opt)
+    if opt.mode == 'GNN':
+        dataset = ContactsGraph(opt.data_folder, opt.y_preprocessing,
+                                            opt.y_norm, opt.min_subtraction)
+    else:
+        dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
+                                            opt.y_norm, opt.x_reshape, opt.ydtype,
+                                            opt.y_reshape, opt.crop, opt.min_subtraction, names = True, minmax = True)
+    _, val_dataloader, _ = getDataLoaders(dataset, opt)
 
     imagePath = opt.ofile_folder
     print('#### Plotting Script ####', file = opt.log_file)
@@ -658,14 +684,13 @@ def updateAllPlots():
     parser = getBaseParser()
     for model_type in ['DeepC']: # 'Akita', 'UNet',
         print(model_type)
-        model_path = os.path.join('results', model_type)
+        model_path = osp.join('results', model_type)
         for id in os.listdir(model_path):
             print('\t', id)
-            id_path = os.path.join(model_path, id)
-            if os.path.isdir(id_path) and id.isdigit():
-                txt_file = os.path.join(id_path, 'argparse.txt')
+            id_path = osp.join(model_path, id)
+            if osp.isdir(id_path) and id.isdigit():
+                txt_file = osp.join(id_path, 'argparse.txt')
                 opt = parser.parse_args(['@{}'.format(txt_file)])
-                print(opt)
                 opt.id = int(id)
                 opt = finalizeOpt(opt, parser)
 
@@ -683,13 +708,13 @@ def plotCombinedModels():
     opts = []
     parser = getBaseParser()
     for id in ids:
-        id_path = os.path.join(path, str(id))
-        dirs.append(os.path.join(id_path, 'model.pt'))
-        txt_file = os.path.join(id_path, 'argparse.txt')
+        id_path = osp.join(path, str(id))
+        dirs.append(osp.join(id_path, 'model.pt'))
+        txt_file = osp.join(id_path, 'argparse.txt')
         opt = parser.parse_args(['@{}'.format(txt_file)])
         opts.append(opt)
-    imagePath = os.path.join(path, '{} combined'.format(list2str(ids)))
-    if not os.path.exists(imagePath):
+    imagePath = osp.join(path, '{} combined'.format(list2str(ids)))
+    if not osp.exists(imagePath):
         os.mkdir(imagePath, mode = 0o755)
 
     for log in [True, False]:

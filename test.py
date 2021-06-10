@@ -9,7 +9,7 @@ from neural_net_utils.base_networks import *
 from neural_net_utils.networks import *
 from neural_net_utils.utils import *
 from neural_net_utils.dataset_classes import *
-from core_test_train import core_test_train, getModel
+from core_test_train import core_test_train
 
 def test_num_workers():
     opt = argparseSetup() # get default args
@@ -63,7 +63,7 @@ def cleanup():
 
 def debugModel(model_type):
     opt = argparseSetup()
-    opt.mode = 'debugging'
+    opt.mode = 'GNN'
     opt.model_type = model_type
 
     # Preprocessing
@@ -97,6 +97,10 @@ def debugModel(model_type):
         opt.kernel_w_list=str2list('5-5-5')
         opt.hidden_sizes_list=str2list('32-64-128')
         opt.dilation_list=str2list('2-4-8-16-32-64-128-256-512')
+    elif model_type == 'GNNAutoencoder':
+        opt.hidden_sizes_list=str2list('16-8')
+        opt.loss = 'cross_entropy'
+        opt.y_norm = 'instance'
 
 
 
@@ -109,7 +113,7 @@ def debugModel(model_type):
 
     # other
     opt.plot = True
-    opt.plot_predictions = False
+    opt.plot_predictions = True
     opt.verbose = False
     if opt.cuda:
         opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
@@ -122,7 +126,7 @@ def debugModel(model_type):
 
 def main():
     # cleanup()
-    debugModel('UNet')
+    debugModel('GNNAutoencoder')
 
 
 if __name__ == '__main__':
