@@ -92,6 +92,7 @@ def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
                 edge_index = (adj > 0).nonzero().t()
                 row, col = edge_index
                 yhat = adj[row, col]
+                del adj
             else:
                 x, y = data
                 yhat = model(x)
