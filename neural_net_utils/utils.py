@@ -38,7 +38,7 @@ def getModel(opt):
                             opt.training_norm,
                             opt.down_sampling)
     elif opt.model_type == 'GNNAutoencoder':
-        model = GNNAutoencoder(opt.k, opt.hidden_sizes_list[0], opt.hidden_sizes_list[1])
+        model = GNNAutoencoder(opt.n, opt.k, opt.hidden_sizes_list[0], opt.hidden_sizes_list[1])
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -170,7 +170,11 @@ def percentile_preprocessing(y, percentiles):
         result: new contact map
     """
 
-    if len(y.shape) > 2:
+    if len(y.shape) == 3:
+        N, H, W = y.shape
+        assert N == 1
+        y = y.reshape(H,W)
+    elif len(y.shape) == 4:
         N, C, H, W = y.shape
         assert N == 1 and C == 1
         y = y.reshape(H,W)
@@ -305,7 +309,7 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
     for i, data in enumerate(val_dataloader):
         data = data.to(opt.device)
         if opt.mode == 'GNN':
-            y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.n, opt.n))
+            y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr)
             yhat = model(data)
             minmax = data.minmax
             path = data.path[0]

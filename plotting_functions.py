@@ -407,7 +407,9 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
     for i, data in enumerate(val_dataloader):
         data = data.to(opt.device)
         if opt.mode == 'GNN':
-            y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.n, opt.n))
+            y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
+                                                    batch = data.batch,
+                                                    max_num_nodes = opt.n)
             yhat = model(data)
             path = data.path
             minmax = data.minmax
@@ -485,7 +487,9 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
             break
         data = data.to(opt.device)
         if opt.mode == 'GNN':
-            y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.n, opt.n))
+            y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
+                                                    batch = data.batch,
+                                                    max_num_nodes = opt.n)
             yhat = model(data)
             minmax = data.minmax
             path = data.path[0]

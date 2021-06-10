@@ -87,7 +87,9 @@ def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
             opt.optimizer.zero_grad()
 
             if opt.mode == 'GNN':
-                y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.n, opt.n))
+                y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
+                                                        batch = data.batch,
+                                                        max_num_nodes = opt.n)
                 yhat = model(data)
             else:
                 x, y = data
@@ -136,7 +138,7 @@ def test(loader, model, opt, toprint, ofile = sys.stdout):
             data = data.to(opt.device)
             opt.optimizer.zero_grad()
             if opt.mode == 'GNN':
-                y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.n, opt.n))
+                y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr)
                 yhat = model(data)
             else:
                 x, y = data

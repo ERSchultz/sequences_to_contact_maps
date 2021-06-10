@@ -276,8 +276,10 @@ class SimpleEpiNet(nn.Module):
         return out
 
 class GNNAutoencoder(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
+    def __init__(self, n, input_size, hidden_size, output_size):
         super(GNNAutoencoder, self).__init__()
+        self.n = n
+        self.output_size = output_size
         self.conv1 = torch_geometric.nn.GCNConv(input_size, hidden_size, add_self_loops = False)
         self.conv2 = torch_geometric.nn.GCNConv(hidden_size, output_size, add_self_loops = False)
 
@@ -286,5 +288,6 @@ class GNNAutoencoder(nn.Module):
         x = self.conv1(x, edge_index, edge_attr)
         x = F.relu(x)
         x = self.conv2(x, edge_index, edge_attr)
+        x = torch.reshape(x, (-1, self.n, self.output_size))
 
-        return F.relu(x @ x.t())
+        return F.relu(torch.einsum('bij, bkj->bik', x, x))
