@@ -587,7 +587,11 @@ def contactPlots(dataFolder):
         plotContactMap(y_prcnt_norm, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
 def updateResultTables(model_type):
-    for model_type in ['Akita', 'DeepC', 'UNet']:
+    if model_type is None:
+        model_types = ['Akita', 'DeepC', 'UNet', 'GNNAutoencoder']
+    else:
+        model_types = [model_type]
+    for model_type in model_types:
         # set up header row
         opt_list = ['model_type', 'id',  'data_folder','toxx', 'toxx_mode', 'y_preprocessing',
             'y_norm', 'x_reshape', 'ydtype', 'y_reshape', 'crop', 'classes', 'split', 'shuffle',
@@ -604,6 +608,8 @@ def updateResultTables(model_type):
             opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list'])
         elif model_type == 'test':
             opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'nf'])
+        elif model_type == 'GNNAutoencoder':
+            opt_list.append('hidden_sizes_list')
         else:
             raise Exception("Unknown model type: {}".format(model_type))
         opt_list.extend(['Final Validation Loss', 'PCA Accuracy Mean', 'PCA Accuracy Std', 'PCA Spearman Mean', 'PCA Spearman Std', 'PCA Pearson Mean', 'PCA Pearson Std', 'Overall Pearson Mean', 'Overall Pearson Std'])
@@ -701,8 +707,8 @@ def updateAllPlots():
                 plotting_script(None, opt)
 
 def plotCombinedModels():
-    path = 'results\\UNet'
-    ids = [28, 29, 30]
+    path = 'results\\GNNAutoencoder'
+    ids = [6, 7, 8]
 
     dirs = []
     opts = []
@@ -725,8 +731,9 @@ def main():
     plotting_script(None, opt)
 
 if __name__ == '__main__':
-    # updateResultTables('Akita')
-    updateAllPlots()
+    plotCombinedModels()
+    # updateResultTables('GNNAutoencoder')
+    # updateAllPlots()
     # main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')

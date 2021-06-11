@@ -59,7 +59,7 @@ def core_test_train(model, opt):
 
 
     t0 = time.time()
-    train_loss_arr, val_loss_arr = train(train_dataloader, val_dataloader, model, opt)
+    train_loss_arr, val_loss_arr = train(train_dataloader, val_dataloader, model, opt, file = opt.log_file)
 
     tot_pars = 0
     for k,p in model.named_parameters():

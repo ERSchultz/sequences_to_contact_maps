@@ -348,67 +348,6 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
     print('Loss: {} +- {}'.format(np.round(np.mean(loss_arr), 3), np.round( np.std(loss_arr), 3)), file = opt.log_file)
     return acc_c_arr, freq_c_arr, acc_result
 
-# delete
-import matplotlib.pyplot as plt
-import matplotlib.colors
-import seaborn as sns
-def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False, cmap = None):
-    """
-    Plotting function for contact maps.
-
-    Inputs:
-        y: contact map numpy array
-        ofile: save location
-        title: plot title
-        vmax: maximum value for color bar, 'mean' to set as mean value
-        size_in: size of figure x,y in inches
-        minVal: values in y less than minVal are set to 0
-        maxVal: values in y greater than maxVal are set to 0
-    """
-    if cmap is None:
-        if prcnt:
-            cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                     [(0,       'white'),
-                                                      (0.25,    'orange'),
-                                                      (0.5,     'red'),
-                                                      (0.74,    'purple'),
-                                                      (1,       'blue')], N=10)
-        else:
-            cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                     [(0,    'white'),
-                                                      (1,    'red')], N=126)
-    if len(y.shape) == 4:
-        N, C, H, W = y.shape
-        assert N == 1 and C == 1
-        y = y.reshape(H,W)
-    elif len(y.shape) == 3:
-        N, H, W = y.shape
-        assert N == 1
-        y = y.reshape(H,W)
-
-    if minVal is not None or maxVal is not None:
-        y = y.copy() # prevent issues from reference type
-    if minVal is not None:
-        ind = y < minVal
-        y[ind] = 0
-    if maxVal is not None:
-        ind = y > maxVal
-        y[ind] = 0
-    plt.figure(figsize = (size_in, size_in))
-    if vmax == 'mean':
-        vmax = np.mean(y)
-    elif vmax == 'max':
-        vmax = np.max(y)
-    ax = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap)
-    if title is not None:
-        plt.title(title, fontsize = 16)
-    plt.tight_layout()
-    if ofile is not None:
-        plt.savefig(ofile)
-    else:
-        plt.show()
-    plt.close()
-
 
 # other functions
 def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
@@ -478,7 +417,6 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
             'Spearman R: {} +- {}\n'.format(np.round(np.mean(rho_arr), 3), np.round(np.std(rho_arr), 3))+\
             'Pearson R: {} +- {}\n'.format(np.round(np.mean(p_arr), 3), np.round(np.std(p_arr), 3))
     print(results, file = opt.log_file)
-    print(results) # delete
     with open(osp.join(imagePath, 'PCA_results.txt'), 'w') as f:
         f.write(results)
 
