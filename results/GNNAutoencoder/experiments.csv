@@ -1,0 +1,7 @@
+GNNAutoencoder,2,/../../../project2/depablo/erschultz/dataset_04_18_21,False,mean,diag,instance,True,torch.float32,True,,10,"[0.8, 0.1, 0.1]",True,8,4,1,20,0.01,1,,0.1,mse,False,False,,,2,1024,42,,,True,True,"[16, 8]"
+GNNAutoencoder,3,/../../../project2/depablo/erschultz/dataset_04_18_21,False,mean,diag,instance,True,torch.float32,True,,10,"[0.8, 0.1, 0.1]",True,8,4,1,20,0.001,1,,0.1,mse,False,False,,,2,1024,42,,,True,True,"[16, 8]"
+GNNAutoencoder,4,/../../../project2/depablo/erschultz/dataset_04_18_21,False,mean,diag,instance,True,torch.float32,True,,10,"[0.8, 0.1, 0.1]",True,8,4,1,20,0.0001,1,,0.1,mse,False,False,,,2,1024,42,,,True,True,"[16, 8]"
+GNNAutoencoder,5,/../../../project2/depablo/erschultz/dataset_04_18_21,False,mean,diag,instance,True,torch.float32,True,,10,"[0.8, 0.1, 0.1]",True,8,4,1,20,0.01,1,,0.1,mse,False,False,,,2,1024,42,,,True,True,"[16, 8]"
+GNNAutoencoder,6,/../../../project2/depablo/erschultz/dataset_04_18_21,False,mean,diag,instance,True,torch.float32,True,,10,"[0.8, 0.1, 0.1]",True,8,4,1,20,0.01,1,,0.1,mse,False,False,,,2,1024,42,,,True,True,"[16, 8]"
+GNNAutoencoder,7,/../../../project2/depablo/erschultz/dataset_04_18_21,False,mean,diag,instance,True,torch.float32,True,,10,"[0.8, 0.1, 0.1]",True,8,4,1,20,0.001,1,,0.1,mse,False,False,,,2,1024,42,,,True,True,"[16, 8]"
+GNNAutoencoder,8,/../../../project2/depablo/erschultz/dataset_04_18_21,False,mean,diag,instance,True,torch.float32,True,,10,"[0.8, 0.1, 0.1]",True,8,4,1,20,0.0001,1,,0.1,mse,False,False,,,2,1024,42,,,True,True,"[16, 8]"
