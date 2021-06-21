@@ -99,8 +99,9 @@ def debugModel(model_type):
         opt.dilation_list=str2list('2-4-8-16-32-64-128-256-512')
     elif model_type == 'GNNAutoencoder':
         opt.hidden_sizes_list=str2list('16-8')
-        opt.loss = 'cross_entropy'
+        opt.loss = 'BCE'
         opt.y_norm = 'instance'
+        opt.out_act = None
 
 
 
@@ -114,7 +115,7 @@ def debugModel(model_type):
     # other
     opt.plot = False
     opt.plot_predictions = False
-    opt.verbose = False
+    opt.verbose = True
     if opt.cuda:
         opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
     else:

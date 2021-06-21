@@ -38,7 +38,7 @@ def getModel(opt):
                             opt.training_norm,
                             opt.down_sampling)
     elif opt.model_type == 'GNNAutoencoder':
-        model = GNNAutoencoder(opt.n, opt.k, opt.hidden_sizes_list[0], opt.hidden_sizes_list[1])
+        model = GNNAutoencoder(opt.n, opt.k, opt.hidden_sizes_list[0], opt.hidden_sizes_list[1], opt.out_act)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -525,14 +525,19 @@ def finalizeOpt(opt, parser, local = False):
         opt.criterion = F.mse_loss
         opt.channels = 1
     elif opt.loss == 'cross_entropy':
-        if opt.mode != 'GNN':
-            assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'
-            assert opt.y_norm is None, 'Cannot normalize with cross entropy'
-            assert opt.out_act is None, "Cannot use output activation with cross entropy"
+        assert opt.out_act is None, "Cannot use output activation with cross entropy"
+        assert opt.mode != 'GNN', 'cross_entropy only currently validated for non-GNN'
+        assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'
+        assert opt.y_norm is None, 'Cannot normalize with cross entropy'
+        opt.channels = opt.classes
         opt.y_reshape = False
         opt.criterion = F.cross_entropy
         opt.ydtype = torch.int64
-        opt.channels = opt.classes
+    elif opt.loss == 'BCE':
+        assert opt.mode == 'GNN', 'BCE only currently valideated for GNN'
+        assert opt.out_act is None, "Cannot use output activation with BCE"
+        assert opt.y_norm is not None, 'must use some sort of y_norm'
+        opt.criterion = F.binary_cross_entropy
     else:
         raise Exception('Invalid loss: {}'.format(repr(opt.loss)))
 

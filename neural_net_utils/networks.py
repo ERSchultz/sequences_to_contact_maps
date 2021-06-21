@@ -276,12 +276,26 @@ class SimpleEpiNet(nn.Module):
         return out
 
 class GNNAutoencoder(nn.Module):
-    def __init__(self, n, input_size, hidden_size, output_size):
+    def __init__(self, n, input_size, hidden_size, output_size, out_act):
         super(GNNAutoencoder, self).__init__()
         self.n = n
         self.output_size = output_size
         self.conv1 = torch_geometric.nn.GCNConv(input_size, hidden_size, add_self_loops = False)
         self.conv2 = torch_geometric.nn.GCNConv(hidden_size, output_size, add_self_loops = False)
+
+        if out_act is None:
+            self.out_act = nn.Identity()
+        elif issubclass(type(out_act), nn.Module):
+            self.out_act = out_act
+        elif isinstance(out_act, str):
+            if out_act.lower() == 'sigmoid':
+                self.out_act = nn.Sigmoid()
+            elif out_act.lower() == 'relu':
+                self.out_act = nn.ReLU(True)
+            else:
+                raise Exception("Unkown activation {}".format(out_act))
+        else:
+            raise Exception("Unknown out_act {}".format(out_act))
 
     def forward(self, graph):
         x, edge_index, edge_attr  = graph.x, graph.edge_index, graph.edge_attr
@@ -290,4 +304,4 @@ class GNNAutoencoder(nn.Module):
         x = self.conv2(x, edge_index, edge_attr)
         x = torch.reshape(x, (-1, self.n, self.output_size))
 
-        return F.relu(torch.einsum('bij, bkj->bik', x, x))
+        return self.out_act(torch.einsum('bij, bkj->bik', x, x))
