@@ -14,18 +14,18 @@ dirname="../../../project2/depablo/erschultz/dataset_04_18_21"
 gpus=1
 
 # model
-modelType='UNet'
+modelType='GNNAutoencoder'
+mode='GNN'
 pretrained='true'
 
 # other
-plotPredictions=True
+plotPredictions='true'
 
 
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2
 
-
-# python3 plotting_functions.py  --data_folder $dirname  --gpus $gpus --model_type $modelType --id $id --pretrained $pretrained
-
-
-python3 plotting_functions.py
+for id in 15 16 17
+do
+  python3 plotting_functions.py  --data_folder $dirname  --gpus $gpus --model_type $modelType --mode $mode --id $id --pretrained $pretrained -plot_predictions $plotPredictions
+done

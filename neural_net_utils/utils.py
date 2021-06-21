@@ -331,8 +331,6 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
             yhat = un_normalize(yhat, minmax)
             yhat = percentile_preprocessing(yhat, prcntDist)
         yhat = yhat.reshape((opt.n,opt.n))
-        plotContactMap(yhat, None, vmax = 'max', prcnt = True, title = 'Y hat prcnt')
-        plotContactMap(ytrue, None, vmax = 'max', prcnt = True, title = 'Y prcnt')
         acc = np.sum(yhat == ytrue) / yhat.size
         acc_arr[i] = acc
 

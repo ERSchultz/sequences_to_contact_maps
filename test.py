@@ -112,9 +112,9 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = True
-    opt.plot_predictions = True
-    opt.verbose = True
+    opt.plot = False
+    opt.plot_predictions = False
+    opt.verbose = False
     if opt.cuda:
         opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
     else:

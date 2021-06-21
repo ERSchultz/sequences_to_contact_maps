@@ -63,6 +63,8 @@ def core_test_train(model, opt):
 
     tot_pars = 0
     for k,p in model.named_parameters():
+        if opt.verbose:
+            print(k, p.numel())
         tot_pars += p.numel()
     print('Total parameters: {}'.format(tot_pars), file = opt.log_file)
     print('Total time: {}'.format(time.time() - t0), file = opt.log_file)
@@ -111,7 +113,7 @@ def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
             print_val_loss = True
         else:
             print_val_loss = False
-        val_loss.append(test(val_dataloader, model, opt, ofile))
+        val_loss.append(test(val_dataloader, model, opt, print_val_loss, ofile))
 
         if e % opt.save_mod == 0:
             if opt.use_parallel:
