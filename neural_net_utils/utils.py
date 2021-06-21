@@ -38,7 +38,8 @@ def getModel(opt):
                             opt.training_norm,
                             opt.down_sampling)
     elif opt.model_type == 'GNNAutoencoder':
-        model = GNNAutoencoder(opt.n, opt.k, opt.hidden_sizes_list[0], opt.hidden_sizes_list[1], opt.out_act)
+        model = GNNAutoencoder(opt.n, opt.k, opt.hidden_sizes_list[0], opt.hidden_sizes_list[1], opt.out_act,
+                                opt.message_passing, opt.head_architecture)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -484,6 +485,8 @@ def getBaseParser():
     parser.add_argument('--down_sampling', type=str2None, help='type of down sampling to use')
 
     # GNNAutoencoder args
+    parser.add_argument('--message_passing', type=str, default='GCN', help='type of message passing algorithm')
+    parser.add_argument('--head_architecture', type=str, default= 'xxT', help='type of head architecture')
 
     # post-processing args
     parser.add_argument('--plot', type=str2bool, default=True, help='True to plot result figures')
@@ -605,7 +608,7 @@ def opt2list(opt):
     elif opt.model_type == 'test':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.nf])
     elif opt.model_type == 'GNNAutoencoder':
-        opt_list.append(opt.hidden_sizes_list)
+        opt_list.extend([opt.hidden_sizes_list, opt.message_passing, opt.head_architecture])
     else:
         raise Exception("Unknown model type: {}".format(opt.model_type))
 
@@ -631,7 +634,7 @@ def save_opt(opt, ofile):
             elif opt.model_type == 'test':
                 opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'nf'])
             elif opt.model_type == 'GNNAutoencoder':
-                opt.list.append('hidden_sizes_list')
+                opt.opt_list.extend(['hidden_sizes_list', 'message_passing', 'head_architecture'])
             else:
                 raise Exception("Unknown model type: {}".format(opt.model_type))
             wr.writerow(opt_list)

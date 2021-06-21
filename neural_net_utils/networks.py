@@ -276,12 +276,18 @@ class SimpleEpiNet(nn.Module):
         return out
 
 class GNNAutoencoder(nn.Module):
-    def __init__(self, n, input_size, hidden_size, output_size, out_act):
+    def __init__(self, n, input_size, hidden_size, output_size, out_act,
+                message_passing, head_architecture):
         super(GNNAutoencoder, self).__init__()
         self.n = n
         self.output_size = output_size
-        self.conv1 = torch_geometric.nn.GCNConv(input_size, hidden_size, add_self_loops = False)
-        self.conv2 = torch_geometric.nn.GCNConv(hidden_size, output_size, add_self_loops = False)
+        if message_passing == 'GCN':
+            self.conv1 = torch_geometric.nn.GCNConv(input_size, hidden_size, add_self_loops = False)
+            self.conv2 = torch_geometric.nn.GCNConv(hidden_size, output_size, add_self_loops = False)
+        else:
+            raise Exception("Unkown message_passing {}".format(message_passing))
+
+        self.head_architecture = head_architecture
 
         if out_act is None:
             self.out_act = nn.Identity()
@@ -302,6 +308,11 @@ class GNNAutoencoder(nn.Module):
         x = self.conv1(x, edge_index, edge_attr)
         x = F.relu(x)
         x = self.conv2(x, edge_index, edge_attr)
-        x = torch.reshape(x, (-1, self.n, self.output_size))
 
-        return self.out_act(torch.einsum('bij, bkj->bik', x, x))
+        if self.head_architecture == 'xxT':
+            x = torch.reshape(x, (-1, self.n, self.output_size))
+            out = self.out_act(torch.einsum('bij, bkj->bik', x, x))
+        else:
+            raise Exception("Unkown head architecture {}".format(self.head))
+
+        return out
