@@ -706,9 +706,9 @@ def updateAllPlots():
                 print(opt, file = opt.log_file)
                 plotting_script(None, opt)
 
-def plotCombinedModels():
-    path = 'results\\GNNAutoencoder'
-    ids = [15, 16, 17]
+def plotCombinedModels(modelType):
+    path = osp.join('results', modelType)
+    ids = [24, 25, 26]
 
     dirs = []
     opts = []
@@ -731,9 +731,9 @@ def main():
     plotting_script(None, opt)
 
 if __name__ == '__main__':
-    # plotCombinedModels()
+    plotCombinedModels('GNNAutoencoder')
     # updateResultTables('GNNAutoencoder')
     # updateAllPlots()
-    main()
+    # main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')

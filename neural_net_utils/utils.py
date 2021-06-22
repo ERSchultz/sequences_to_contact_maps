@@ -634,7 +634,7 @@ def save_opt(opt, ofile):
             elif opt.model_type == 'test':
                 opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'nf'])
             elif opt.model_type == 'GNNAutoencoder':
-                opt.opt_list.extend(['hidden_sizes_list', 'message_passing', 'head_architecture'])
+                opt_list.extend(['hidden_sizes_list', 'message_passing', 'head_architecture'])
             else:
                 raise Exception("Unknown model type: {}".format(opt.model_type))
             wr.writerow(opt_list)
