@@ -540,7 +540,7 @@ def finalizeOpt(opt, parser, local = False):
         assert opt.mode == 'GNN', 'BCE only currently valideated for GNN'
         assert opt.out_act is None, "Cannot use output activation with BCE"
         assert opt.y_norm is not None, 'must use some sort of y_norm'
-        opt.criterion = F.binary_cross_entropy
+        opt.criterion = F.binary_cross_entropy_with_logits
     else:
         raise Exception('Invalid loss: {}'.format(repr(opt.loss)))
 

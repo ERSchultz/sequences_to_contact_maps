@@ -22,13 +22,13 @@ loss='BCE'
 outAct='none'
 
 # hyperparameters
-nEpochs=1
+nEpochs=20
 batchSize=8
 numWorkers=4
 milestones=None
 gamma=0.1
 
-verbose='true'
+verbose='false'
 
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2
