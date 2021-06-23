@@ -7,17 +7,10 @@
 #SBATCH --ntasks-per-node=4
 #SBATCH --mem-per-cpu=2000
 
-cd ~/sequences_to_contact_maps
-source activate seq2contact_pytorch
-
-
 dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
-
-
 
 
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2
 
-lr=1e-1
 python3 neural_net_utils/utils.py --data_folder $dirname
