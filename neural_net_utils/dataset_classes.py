@@ -129,6 +129,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
             self.ymin = 0
             self.ymax = 1
 
+        print(self.processed_file_names)
+
         super(ContactsGraph, self).__init__(dirname, transform, pre_transform)
 
     @property

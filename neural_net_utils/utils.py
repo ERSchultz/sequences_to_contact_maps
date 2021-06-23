@@ -548,7 +548,7 @@ def finalizeOpt(opt, parser, local = False):
 
     # move data to scratch
     if opt.use_scratch:
-        move_data_to_scratch(opt)
+        copy_data_to_scratch(opt)
 
     # configure cuda
     if opt.gpus > 1:
@@ -583,8 +583,8 @@ def finalizeOpt(opt, parser, local = False):
 
     return opt
 
-def move_data_to_scratch(opt):
-    scratch_path = osp.join('/../../../scratch/midway2/erschutz', osp.split(opt.data_folder)[-1])
+def copy_data_to_scratch(opt):
+    scratch_path = osp.join('/../../../scratch/midway2/erschultz', osp.split(opt.data_folder)[-1])
     if not osp.exists(scratch_path):
         os.mkdir(scratch_path, mode = 0o700)
 
@@ -873,7 +873,7 @@ class InteractionConverter():
 def main():
     opt = argparseSetup()
     print(opt)
-    move_data_to_scratch(opt)
+    copy_data_to_scratch(opt)
     # plotPerClassAccuracy(None, None, 5)
 
 if __name__ == '__main__':
