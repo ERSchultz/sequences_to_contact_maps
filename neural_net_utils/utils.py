@@ -547,7 +547,8 @@ def finalizeOpt(opt, parser, local = False):
         raise Exception('Invalid loss: {}'.format(repr(opt.loss)))
 
     # move data to scratch
-    move_data_to_scratch(opt)
+    if opt.use_scratch:
+        move_data_to_scratch(opt)
 
     # configure cuda
     if opt.gpus > 1:
@@ -583,7 +584,7 @@ def finalizeOpt(opt, parser, local = False):
     return opt
 
 def move_data_to_scratch(opt):
-    scratch_path = osp.join('/../../../scratch', osp.split(opt.data_folder)[-1])
+    scratch_path = osp.join('/../../../scratch/midway2/erschutz', osp.split(opt.data_folder)[-1])
     if not osp.exists(scratch_path):
         os.mkdir(scratch_path, mode = 0o700)
 
