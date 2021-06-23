@@ -513,8 +513,10 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
             yhat_title = '{}\nY hat (MSE Loss: {})'.format(upper_title, np.round(loss, 3))
         elif opt.loss == 'cross_entropy':
             yhat_title = '{}\nY hat (Cross Entropy Loss: {})'.format(upper_title, np.round(loss, 3))
+        elif op.loss = 'BCE'
+            yhat_title = '{}\nY hat (Binary Cross Entropy Loss: {})'.format(upper_title, np.round(loss, 3))
         else:
-            yhat_title = '{}\nY hat (Loss: {})'.format(np.round(upper_title, loss, 3))
+            yhat_title = '{}\nY hat (Loss: {})'.format(upper_title, np.round(loss, 3))
 
         loss_arr[i] = loss
         if opt.verbose:

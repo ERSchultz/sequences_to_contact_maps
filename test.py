@@ -10,6 +10,7 @@ from neural_net_utils.networks import *
 from neural_net_utils.utils import *
 from neural_net_utils.dataset_classes import *
 from core_test_train import core_test_train
+from scipy.io import savemat
 
 def test_num_workers():
     opt = argparseSetup() # get default args
@@ -114,7 +115,7 @@ def debugModel(model_type):
 
     # other
     opt.plot = False
-    opt.plot_predictions = False
+    opt.plot_predictions = True
     opt.verbose = True
     if opt.cuda:
         opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
@@ -125,9 +126,19 @@ def debugModel(model_type):
     opt.model_type = 'test'
     core_test_train(model, opt)
 
+def to_mat():
+    path = 'dataset_04_18_21\\samples\\sample1'
+    y = np.load(osp.join(path, 'y.npy'))
+    ydiag = np.load(osp.join(path, 'y_diag.npy'))
+    x = np.load(osp.join(path, 'x.npy'))
+    results = {'y':y, 'x':x, 'y_diag':ydiag}
+    savemat(osp.join(path, "sample1_xy.mat"), results)
+    print(y, x)
+
 def main():
     # cleanup()
     debugModel('GNNAutoencoder')
+    # to_mat()
 
 
 if __name__ == '__main__':
