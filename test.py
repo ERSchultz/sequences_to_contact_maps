@@ -100,10 +100,10 @@ def debugModel(model_type):
         opt.dilation_list=str2list('2-4-8-16-32-64-128-256-512')
     elif model_type == 'GNNAutoencoder':
         opt.hidden_sizes_list=str2list('16-8')
-        opt.loss = 'BCE'
+        opt.loss = 'mse'
         opt.y_norm = 'instance'
-        opt.out_act = None
-
+        opt.out_act = 'relu'
+        opt.use_scratch = True
 
 
     # hyperparameters

@@ -1,6 +1,7 @@
 import os
 import os.path as osp
 import sys
+import shutil
 abspath = osp.abspath(__file__)
 dname = osp.dirname(abspath)
 sys.path.insert(0, dname)
@@ -426,7 +427,7 @@ def getBaseParser():
     parser.add_argument('--verbose', type=str2bool, default=False)
 
     # pre-processing args
-    parser.add_argument('--data_folder', type=str, default='test', help='Location of data')
+    parser.add_argument('--data_folder', type=str, default='dataset_04_18_21', help='Location of data')
     parser.add_argument('--toxx', type=str2bool, default=False, help='True if x should be converted to 2D image')
     parser.add_argument('--toxx_mode', type=str, default='mean', help='mode for toxx (default mean)')
     parser.add_argument('--y_preprocessing', type=str2None, default='diag', help='type of pre-processing for y')
@@ -437,6 +438,7 @@ def getBaseParser():
     parser.add_argument('--y_reshape', type=str2bool, default=True, help='True if y should be considered a 2D image')
     parser.add_argument('--crop', type=str2list, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
     parser.add_argument('--classes', type=int, default=10, help='number of classes in percentile normalization')
+    parser.add_argument('--use_scratch', type=str2bool, default=False, help='True to move data to scratch')
 
     # dataloader args
     parser.add_argument('--split', type=str2list, default=[0.8, 0.1, 0.1], help='Train, val, test split for dataset')
@@ -544,6 +546,9 @@ def finalizeOpt(opt, parser, local = False):
     else:
         raise Exception('Invalid loss: {}'.format(repr(opt.loss)))
 
+    # move data to scratch
+    move_data_to_scratch(opt)
+
     # configure cuda
     if opt.gpus > 1:
         opt.cuda = True
@@ -576,6 +581,33 @@ def finalizeOpt(opt, parser, local = False):
         torch.cuda.manual_seed(opt.seed)
 
     return opt
+
+def move_data_to_scratch(opt):
+    scratch_path = osp.join('/../../../scratch', osp.split(opt.data_folder)[-1])
+    if not osp.exists(scratch_path):
+        os.mkdir(scratch_path, mode = 0o700)
+
+    for file in os.listdir(opt.data_folder):
+        file_dir = osp.join(opt.data_folder, file)
+        if file.endswith('npy'):
+            shutil.copyfile(file_dir, osp.join(scratch_path, file))
+
+    if not osp.exists(osp.join(scratch_path, 'samples')):
+        os.mkdir(osp.join(scratch_path, 'samples'), mode = 0o700)
+
+    for sample in os.listdir(osp.join(opt.data_folder, 'samples')):
+        sample_dir = osp.join(opt.data_folder, 'samples', sample)
+        scratch_sample_dir = osp.join(scratch_path, 'samples', sample)
+        if not osp.exists(scratch_sample_dir):
+            os.mkdir(scratch_sample_dir, mode = 0o700)
+        for file in os.listdir(sample_dir):
+            file_dir = osp.join(sample_dir, file)
+            scratch_file_dir = osp.join(scratch_sample_dir, file)
+            if file.endswith('npy'):
+                if not osp.exists(scratch_file_dir):
+                    shutil.copyfile(file_dir, scratch_file_dir)
+
+    opt.data_folder = scratch_path
 
 
 def argparseSetup():
@@ -840,6 +872,7 @@ class InteractionConverter():
 def main():
     opt = argparseSetup()
     print(opt)
+    move_data_to_scratch(opt)
     # plotPerClassAccuracy(None, None, 5)
 
 if __name__ == '__main__':
