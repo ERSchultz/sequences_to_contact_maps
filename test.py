@@ -100,9 +100,12 @@ def debugModel(model_type):
         opt.dilation_list=str2list('2-4-8-16-32-64-128-256-512')
     elif model_type == 'GNNAutoencoder':
         opt.hidden_sizes_list=str2list('16-8')
+        opt.MLP_hidden_sizes_list=str2list('200-25')
         opt.loss = 'mse'
         opt.y_norm = 'instance'
         opt.out_act = 'relu'
+        opt.head_architecture ='MLP'
+        opt.use_node_features = False
 
 
     # hyperparameters
@@ -115,7 +118,7 @@ def debugModel(model_type):
     # other
     opt.plot = False
     opt.plot_predictions = True
-    opt.verbose = True
+    opt.verbose = False
     if opt.cuda:
         opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
     else:
@@ -134,10 +137,30 @@ def to_mat():
     savemat(osp.join(path, "sample1_xy.mat"), results)
     print(y, x)
 
+def downsampling_test():
+    y = torch.tensor([[10,3,1,0],[3,10,4,2],[1,4,10,6], [0,2,6,10]], dtype = torch.float32)
+    print(y)
+    meanDist = generateDistStats(y)
+    y_diag = diagonal_preprocessing(y, meanDist)
+    print(y_diag)
+    print('---')
+    y = torch.reshape(y,(1,1,4,4))
+    y_down = F.avg_pool2d(y, 2)
+    y_down = torch.reshape(y_down,(2,2))
+    print(y_down)
+    meanDist = generateDistStats(y_down)
+    y_down_diag = diagonal_preprocessing(y_down, meanDist)
+    print(y_down_diag)
+    y_diag = torch.tensor(y_diag, dtype = torch.float32)
+    y_diag = torch.reshape(y_diag, (1,1,4,4))
+    y_diag_down = F.avg_pool2d(y_diag, 2)
+    print(y_diag_down)
+
 def main():
     # cleanup()
     debugModel('GNNAutoencoder')
     # to_mat()
+    # downsampling_test()
 
 
 if __name__ == '__main__':

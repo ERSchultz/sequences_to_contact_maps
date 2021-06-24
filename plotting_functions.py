@@ -650,11 +650,11 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None):
     opt.shuffle = False # for reproducibility
     if opt.mode == 'GNN':
         dataset = ContactsGraph(opt.data_folder, opt.y_preprocessing,
-                                            opt.y_norm, opt.min_subtraction)
+                                            opt.y_norm, opt.min_subtraction, opt.use_node_features)
     else:
         dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
                                             opt.y_norm, opt.x_reshape, opt.ydtype,
-                                            opt.y_reshape, opt.crop, opt.min_subtraction, names = True, minmax = True)
+                                            opt.y_reshape, opt.crop, opt.min_subtraction)
     _, val_dataloader, _ = getDataLoaders(dataset, opt)
 
     imagePath = opt.ofile_folder

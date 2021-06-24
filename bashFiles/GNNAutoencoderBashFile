@@ -19,8 +19,8 @@ yPreprocessing='diag'
 yNorm='instance'
 useNodeFeatures='true'
 hiddenSizesList='16-2'
-loss='relu'
-outAct='none'
+loss='mse'
+outAct='relu'
 
 # hyperparameters
 nEpochs=20

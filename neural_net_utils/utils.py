@@ -39,8 +39,8 @@ def getModel(opt):
                             opt.training_norm,
                             opt.down_sampling)
     elif opt.model_type == 'GNNAutoencoder':
-        model = GNNAutoencoder(opt.n, opt.k, opt.hidden_sizes_list[0], opt.hidden_sizes_list[1], opt.out_act,
-                                opt.message_passing, opt.head_architecture)
+        model = GNNAutoencoder(opt.n, opt.k, opt.hidden_sizes_list, opt.out_act,
+                                opt.message_passing, opt.head_architecture, opt.MLP_hidden_sizes_list)
     elif opt.model_type == 'ContactFCAutoencoder':
         model = FullyConnectedAutoencoder(opt.n, [200, 25])
     else:
@@ -492,6 +492,8 @@ def getBaseParser():
     # GNNAutoencoder args
     parser.add_argument('--message_passing', type=str, default='GCN', help='type of message passing algorithm')
     parser.add_argument('--head_architecture', type=str, default= 'xxT', help='type of head architecture')
+    parser.add_argument('--MLP_hidden_sizes_list', type=str2list, help='List of hidden sizes for convolutional layers')
+
 
     # post-processing args
     parser.add_argument('--plot', type=str2bool, default=True, help='True to plot result figures')

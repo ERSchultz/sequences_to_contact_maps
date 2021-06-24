@@ -276,10 +276,12 @@ class SimpleEpiNet(nn.Module):
         return out
 
 class GNNAutoencoder(nn.Module):
-    def __init__(self, n, input_size, hidden_size, output_size, out_act,
-                message_passing, head_architecture):
+    def __init__(self, n, input_size, hidden_sizes_list, out_act,
+                message_passing, head_architecture, MLP_hidden_sizes_list):
         super(GNNAutoencoder, self).__init__()
         self.n = n
+        hidden_size = hidden_sizes_list[0]
+        output_size = hidden_sizes_list[1]
         self.output_size = output_size
         if message_passing == 'GCN':
             self.conv1 = torch_geometric.nn.GCNConv(input_size, hidden_size, add_self_loops = False)
@@ -288,6 +290,18 @@ class GNNAutoencoder(nn.Module):
             raise Exception("Unkown message_passing {}".format(message_passing))
 
         self.head_architecture = head_architecture
+        if self.head_architecture == 'MLP':
+            encode_model = []
+            decode_model = []
+            input_size = self.n * self.output_size
+            for output_size in MLP_hidden_sizes_list:
+                encode_model.append(LinearBlock(input_size, output_size, activation = 'relu'))
+                decode_model.append(LinearBlock(output_size, input_size, activation = 'relu'))
+                input_size = output_size
+
+            self.encode = nn.Sequential(*encode_model)
+            decode_model.reverse()
+            self.decode = nn.Sequential(*decode_model)
 
         if out_act is None:
             self.out_act = nn.Identity()
@@ -305,11 +319,18 @@ class GNNAutoencoder(nn.Module):
 
     def forward(self, graph):
         x, edge_index, edge_attr  = graph.x, graph.edge_index, graph.edge_attr
+        print(x)
         x = self.conv1(x, edge_index, edge_attr)
         x = F.relu(x)
         x = self.conv2(x, edge_index, edge_attr)
 
         if self.head_architecture == 'xxT':
+            latent = torch.reshape(x, (-1, self.n, self.output_size))
+            out = self.out_act(torch.einsum('bij, bkj->bik', latent, latent))
+        elif self.head_architecture == 'MLP':
+            x = torch.reshape(x, (-1, self.n * self.output_size))
+            latent = self.encode(x)
+            x = self.decode(latent)
             x = torch.reshape(x, (-1, self.n, self.output_size))
             out = self.out_act(torch.einsum('bij, bkj->bik', x, x))
         else:
@@ -327,7 +348,6 @@ class FullyConnectedAutoencoder(nn.Module):
     '''
     def __init__(self, input_size, hidden_sizes_list):
         super(FullyConnectedAutoencoder, self).__init__()
-        self.input_size = input_size
         encode_model = []
         decode_model = []
         for output_size in hidden_sizes_list:
