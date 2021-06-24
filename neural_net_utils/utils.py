@@ -425,7 +425,7 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
 def getBaseParser():
     '''Helper function that returns base parser'''
     parser = argparse.ArgumentParser(description='Base parser', fromfile_prefix_chars='@')
-    parser.add_argument('--mode', type=str, help='set to "GNN" to use GNNs')
+    parser.add_argument('--mode', type=str, help='set to "GNN" to use GNNs (uses pytorch_geometric in core_test_train)')
     parser.add_argument('--verbose', type=str2bool, default=False)
 
     # pre-processing args
@@ -500,7 +500,7 @@ def getBaseParser():
     return parser
 
 def finalizeOpt(opt, parser, local = False):
-    # local is a flag to not print the warning for falling back to cpu
+    # local is a flag to overide some commands when working locally
     # set up output folders/files
     model_type_folder = osp.join('results', opt.model_type)
     if opt.id is None:
@@ -521,6 +521,8 @@ def finalizeOpt(opt, parser, local = False):
         id_copy = opt.id
         opt = parser.parse_args(sys.argv.append('@{}'.format(txt_file))) # parse again
         opt.id = id_copy
+
+
 
     opt.ofile_folder = osp.join(model_type_folder, str(opt.id))
     if not osp.exists(opt.ofile_folder):
@@ -549,8 +551,12 @@ def finalizeOpt(opt, parser, local = False):
     else:
         raise Exception('Invalid loss: {}'.format(repr(opt.loss)))
 
+    # check mode
+    if opt.model_type == 'GNNAutoencoder':
+        assert opt.mode == 'GNN', 'mode should be GNN for GNNAutoencoder'
+
     # move data to scratch
-    if opt.use_scratch:
+    if opt.use_scratch and not local:
         copy_data_to_scratch(opt)
 
     # configure cuda
@@ -656,32 +662,38 @@ def save_opt(opt, ofile):
     if not osp.exists(ofile):
         with open(ofile, 'w', newline = '') as f:
             wr = csv.writer(f)
-            opt_list = ['model_type', 'id',  'data_folder','toxx', 'toxx_mode', 'y_preprocessing',
-                'y_norm', 'x_reshape', 'ydtype', 'y_reshape', 'crop', 'classes', 'split', 'shuffle',
-                'batch_size', 'num_workers', 'start_epoch', 'n_epochs', 'lr', 'gpus', 'milestones',
-                'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'n',
-                'seed', 'out_act', 'training_norm', 'plot', 'plot_predictions']
-            if opt.mode == 'GNN':
-                opt_list.append('use_node_features')
-            if opt.model_type == 'simpleEpiNet':
-                opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])
-            elif opt.model_type == 'UNet':
-                opt_list.append('nf')
-            elif opt.model_type == 'Akita':
-                opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'down_sampling'])
-            elif opt.model_type == 'DeepC':
-                opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list'])
-            elif opt.model_type == 'test':
-                opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'nf'])
-            elif opt.model_type == 'GNNAutoencoder':
-                opt_list.extend(['hidden_sizes_list', 'message_passing', 'head_architecture'])
-            else:
-                raise Exception("Unknown model type: {}".format(opt.model_type))
+            opt_list = get_opt_header(opt.model_type, opt.mode)
             wr.writerow(opt_list)
     with open(ofile, 'a') as f:
         wr = csv.writer(f)
         opt_list = opt2list(opt)
         wr.writerow(opt_list)
+
+def get_opt_header(model_type, mode = None):
+    opt_list = ['model_type', 'id',  'data_folder','toxx', 'toxx_mode', 'y_preprocessing',
+        'y_norm', 'x_reshape', 'ydtype', 'y_reshape', 'crop', 'classes', 'split', 'shuffle',
+        'batch_size', 'num_workers', 'start_epoch', 'n_epochs', 'lr', 'gpus', 'milestones',
+        'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'n',
+        'seed', 'out_act', 'training_norm', 'plot', 'plot_predictions']
+    if mode == 'GNN':
+        opt_list.append('use_node_features')
+    if model_type == 'simpleEpiNet':
+        opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])
+    elif model_type == 'UNet':
+        opt_list.append('nf')
+    elif model_type == 'Akita':
+        opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'down_sampling'])
+    elif model_type == 'DeepC':
+        opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list'])
+    elif model_type == 'test':
+        opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'nf'])
+    elif model_type == 'GNNAutoencoder':
+        opt_list.extend(['hidden_sizes_list', 'message_passing', 'head_architecture'])
+    else:
+        raise Exception("Unknown model type: {}".format(model_type))
+
+    return opt_list
+
 
 def roundUpBy10(val):
     """Rounds value up to the nearst multiple of 10."""

@@ -20,7 +20,6 @@ def core_test_train(model, opt):
     print(opt, end = '\n\n', file = opt.log_file)
     print(opt)
     print(opt.ofile_folder, end = '\n\n')
-    save_opt(opt, os.path.join('results', opt.model_type, 'experiments.csv'))
     save_args(opt)
 
     # split dataset

@@ -588,32 +588,16 @@ def contactPlots(dataFolder):
         y_prcnt_norm = np.load(osp.join(path, 'y_prcnt.npy'))
         plotContactMap(y_prcnt_norm, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
-def updateResultTables(model_type):
+def updateResultTables(model_type = None, mode = None):
     if model_type is None:
         model_types = ['Akita', 'DeepC', 'UNet', 'GNNAutoencoder']
+        modes = [None, None, None, 'GNN']
     else:
         model_types = [model_type]
-    for model_type in model_types:
+        modes = [mode]
+    for model_type, mode in zip(model_types, modes):
         # set up header row
-        opt_list = ['model_type', 'id',  'data_folder','toxx', 'toxx_mode', 'y_preprocessing',
-            'y_norm', 'x_reshape', 'ydtype', 'y_reshape', 'crop', 'classes', 'split', 'shuffle',
-            'batch_size', 'num_workers', 'start_epoch', 'n_epochs', 'lr', 'gpus', 'milestones',
-            'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'n',
-            'seed', 'out_act', 'training_norm', 'plot', 'plot_predictions']
-        if model_type == 'simpleEpiNet':
-            opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])
-        elif model_type == 'UNet':
-            opt_list.append('nf')
-        elif model_type == 'Akita':
-            opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'down_sampling'])
-        elif model_type == 'DeepC':
-            opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list'])
-        elif model_type == 'test':
-            opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'nf'])
-        elif model_type == 'GNNAutoencoder':
-            opt_list.append('hidden_sizes_list')
-        else:
-            raise Exception("Unknown model type: {}".format(model_type))
+        opt_list = get_opt_header(model_type, mode)
         opt_list.extend(['Final Validation Loss', 'PCA Accuracy Mean', 'PCA Accuracy Std', 'PCA Spearman Mean', 'PCA Spearman Std', 'PCA Pearson Mean', 'PCA Pearson Std', 'Overall Pearson Mean', 'Overall Pearson Std'])
         results = [opt_list]
 
@@ -710,7 +694,7 @@ def updateAllPlots():
 
 def plotCombinedModels(modelType):
     path = osp.join('results', modelType)
-    ids = [24, 25, 26]
+    ids = [31, 34, 35]
 
     dirs = []
     opts = []
@@ -734,7 +718,7 @@ def main():
 
 if __name__ == '__main__':
     plotCombinedModels('GNNAutoencoder')
-    # updateResultTables('GNNAutoencoder')
+    # updateResultTables('GNNAutoencoder', 'GNN')
     # updateAllPlots()
     # main()
     # freqDistributionPlots('dataset_04_18_21')
