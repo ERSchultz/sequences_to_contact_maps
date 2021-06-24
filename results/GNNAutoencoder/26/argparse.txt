@@ -12,6 +12,8 @@ GNN
 diag
 --y_norm
 instance
+--use_node_features
+true
 --hidden_sizes_list
 16-32
 --loss

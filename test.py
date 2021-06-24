@@ -103,7 +103,6 @@ def debugModel(model_type):
         opt.loss = 'mse'
         opt.y_norm = 'instance'
         opt.out_act = 'relu'
-        opt.use_scratch = True
 
 
     # hyperparameters

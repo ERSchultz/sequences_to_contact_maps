@@ -316,3 +316,39 @@ class GNNAutoencoder(nn.Module):
             raise Exception("Unkown head architecture {}".format(self.head))
 
         return out
+
+class FullyConnectedAutoencoder(nn.Module):
+    '''
+    Fully connected symmetric autoendocer with user defined number of layers and hidden dimension.
+
+    The final value in the hidden_sizes_list is the size of the latent space.
+
+    Note that there is no parameter sharing between the encoder and the decoder.
+    '''
+    def __init__(self, input_size, hidden_sizes_list):
+        super(FullyConnectedAutoencoder, self).__init__()
+        self.input_size = input_size
+        encode_model = []
+        decode_model = []
+        for output_size in hidden_sizes_list:
+            encode_model.append(LinearBlock(input_size, output_size, activation = 'relu'))
+            decode_model.append(LinearBlock(output_size, input_size, activation = 'relu'))
+            input_size = output_size
+
+        self.encode = nn.Sequential(*encode_model)
+        decode_model.reverse()
+        self.decode = nn.Sequential(*decode_model)
+
+
+    def forward(self, input):
+        latent = self.encode(input)
+        output = self.decode(latent)
+        return output
+
+def main():
+    f = FullyConnectedAutoencoder(1024, [500, 300])
+    x = f(torch.ones(1024))
+    print(x)
+
+if __name__ == '__main__':
+    main()

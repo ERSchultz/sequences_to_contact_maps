@@ -26,7 +26,7 @@ def core_test_train(model, opt):
     # split dataset
     if opt.mode == 'GNN':
         dataset = ContactsGraph(opt.data_folder, opt.y_preprocessing,
-                                            opt.y_norm, opt.min_subtraction)
+                                            opt.y_norm, opt.min_subtraction, opt.use_node_features)
     else:
         dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
                                             opt.y_norm, opt.x_reshape, opt.ydtype,

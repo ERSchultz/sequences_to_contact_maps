@@ -41,6 +41,8 @@ def getModel(opt):
     elif opt.model_type == 'GNNAutoencoder':
         model = GNNAutoencoder(opt.n, opt.k, opt.hidden_sizes_list[0], opt.hidden_sizes_list[1], opt.out_act,
                                 opt.message_passing, opt.head_architecture)
+    elif opt.model_type == 'ContactFCAutoencoder':
+        model = FullyConnectedAutoencoder(opt.n, [200, 25])
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -439,6 +441,7 @@ def getBaseParser():
     parser.add_argument('--crop', type=str2list, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
     parser.add_argument('--classes', type=int, default=10, help='number of classes in percentile normalization')
     parser.add_argument('--use_scratch', type=str2bool, default=False, help='True to move data to scratch')
+    parser.add_argument('--use_node_features', type=str2bool, default=False, help='True to use node features for GNN models')
 
     # dataloader args
     parser.add_argument('--split', type=str2list, default=[0.8, 0.1, 0.1], help='Train, val, test split for dataset')
@@ -590,8 +593,9 @@ def copy_data_to_scratch(opt):
 
     for file in os.listdir(opt.data_folder):
         file_dir = osp.join(opt.data_folder, file)
-        if file.endswith('npy'):
-            shutil.copyfile(file_dir, osp.join(scratch_path, file))
+        scratch_file_dir = osp.join(scratch_path, file)
+        if file.endswith('npy') and not osp.exists(scratch_file_dir):
+            shutil.copyfile(file_dir, scratch_file_dir)
 
     if not osp.exists(osp.join(scratch_path, 'samples')):
         os.mkdir(osp.join(scratch_path, 'samples'), mode = 0o700)
@@ -604,9 +608,8 @@ def copy_data_to_scratch(opt):
         for file in os.listdir(sample_dir):
             file_dir = osp.join(sample_dir, file)
             scratch_file_dir = osp.join(scratch_sample_dir, file)
-            if file.endswith('npy'):
-                if not osp.exists(scratch_file_dir):
-                    shutil.copyfile(file_dir, scratch_file_dir)
+            if file.endswith('npy') and not osp.exists(scratch_file_dir):
+                shutil.copyfile(file_dir, scratch_file_dir)
 
     opt.data_folder = scratch_path
 
@@ -630,6 +633,8 @@ def opt2list(opt):
         opt.gpus, opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
         opt.ifile_folder, opt.ifile, opt.k, opt.n, opt.seed, opt.out_act, opt.training_norm,
         opt.plot, opt.plot_predictions]
+    if opt.mode == 'GNN':
+        opt_list.append(opt.use_node_features)
     if opt.model_type == 'simpleEpiNet':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list])
     elif opt.model_type == 'UNet':
@@ -656,6 +661,8 @@ def save_opt(opt, ofile):
                 'batch_size', 'num_workers', 'start_epoch', 'n_epochs', 'lr', 'gpus', 'milestones',
                 'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'n',
                 'seed', 'out_act', 'training_norm', 'plot', 'plot_predictions']
+            if opt.mode == 'GNN':
+                opt_list.append('use_node_features')
             if opt.model_type == 'simpleEpiNet':
                 opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])
             elif opt.model_type == 'UNet':

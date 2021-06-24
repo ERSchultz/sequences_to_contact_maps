@@ -1,5 +1,6 @@
 import os.path as osp
 import sys
+from shutil import rmtree
 abspath = osp.abspath(__file__)
 dname = osp.dirname(abspath)
 sys.path.insert(0, dname)
@@ -113,11 +114,12 @@ class Sequences2Contacts(Dataset):
 
 class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after convertign to GNN: https://github.com/rusty1s/pytorch_geometric/issues/1511
-    def __init__(self, dirname, y_preprocessing, y_norm, min_subtraction, transform = None, pre_transform = None):
+    def __init__(self, dirname, y_preprocessing, y_norm, min_subtraction, use_node_features, transform = None, pre_transform = None):
         self.dirname = dirname
         self.y_preprocessing = y_preprocessing
         self.y_norm = y_norm
         self.min_subtraction = min_subtraction
+        self.use_node_features = use_node_features
 
         if self.y_norm == 'batch':
             assert y_preprocessing is not None, "use instance normalization instead"
@@ -129,7 +131,11 @@ class ContactsGraph(torch_geometric.data.Dataset):
             self.ymin = 0
             self.ymax = 1
 
-        print(self.processed_file_names)
+        # delete existing saved graphs
+        # a bit hacky but works
+        dir = osp.join(dirname, 'processed')
+        if osp.exists(dir):
+            rmtree(dir)
 
         super(ContactsGraph, self).__init__(dirname, transform, pre_transform)
 
@@ -166,9 +172,12 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             x = torch.tensor(np.load(osp.join(raw_folder, 'x.npy')), dtype = torch.float32)
             edge_index = (y > 0).nonzero().t()
-            row, col = edge_index
-            edge_weight = y[row, col]
-            graph = torch_geometric.data.Data(x = x, edge_index = edge_index, edge_attr = edge_weight, y = x)
+            if self.use_node_features:
+                row, col = edge_index
+                edge_weight = y[row, col]
+                graph = torch_geometric.data.Data(x = x, edge_index = edge_index, edge_attr = edge_weight, y = x)
+            else:
+                graph = torch_geometric.data.Data(x = x, edge_index = edge_index, y = x)
             graph.minmax = torch.tensor([self.ymin, self.ymax])
             graph.path = raw_folder
             torch.save(graph, osp.join(self.processed_dir, 'graph_{}.pt'.format(i)))
