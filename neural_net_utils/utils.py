@@ -9,8 +9,10 @@ sys.path.insert(0, dname)
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
+
 import torch_geometric.utils
 import torch_geometric.data
+import torch_geometric.transforms
 
 import numpy as np
 import math
@@ -20,6 +22,7 @@ from scipy.stats import spearmanr, pearsonr
 import matplotlib.pyplot as plt
 import csv
 from networks import *
+from dataset_classes import *
 
 def getModel(opt):
     if opt.model_type == 'SimpleEpiNet':
@@ -39,35 +42,33 @@ def getModel(opt):
                             opt.training_norm,
                             opt.down_sampling)
     elif opt.model_type == 'GNNAutoencoder':
-        model = GNNAutoencoder(opt.n, opt.k, opt.hidden_sizes_list, opt.out_act,
+        model = GNNAutoencoder(opt.n, opt.node_feature_size, opt.hidden_sizes_list, opt.out_act,
                                 opt.message_passing, opt.head_architecture, opt.MLP_hidden_sizes_list)
     elif opt.model_type == 'ContactFCAutoencoder':
-        model = FullyConnectedAutoencoder(opt.n, [200, 25])
+        model = FullyConnectedAutoencoder(opt.n * opt.k, opt.hidden_sizes_list)
+    elif opt.model_type == 'ContactGNN':
+        model = ContactGNN(opt.n, opt.node_feature_size, opt.hidden_sizes_list, opt.out_act, opt.message_passing)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
     return model
 
 # dataset functions
-def make_dataset(dir, minSample = 0):
-    data_file_arr = []
-    samples_dir = osp.join(dir, 'samples')
-    for file in os.listdir(samples_dir):
-        if not file.startswith('sample'):
-            print("Skipping {}".format(file))
-        else:
-            sample_id = int(file[6:])
-            if sample_id < minSample:
-                print("Skipping {}".format(file))
-            else:
-                data_file = osp.join(samples_dir, file)
-                data_file_arr.append(data_file)
-    return data_file_arr
+def getDataset(opt):
+    if opt.GNN_mode:
+        dataset = ContactsGraph(opt.data_folder, opt.n, opt.y_preprocessing,
+                                            opt.y_norm, opt.min_subtraction, opt.use_node_features,
+                                            transform = opt.transforms_processed)
+    else:
+        dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
+                                            opt.y_norm, opt.x_reshape, opt.ydtype,
+                                            opt.y_reshape, opt.crop, opt.min_subtraction)
+    return dataset
 
 def getDataLoaders(dataset, opt):
     train_dataset, val_dataset, test_dataset = splitDataset(dataset, opt)
 
-    if opt.mode == 'GNN':
+    if opt.GNN_mode:
         dataloader_fn = torch_geometric.data.DataLoader
     else:
         dataloader_fn = DataLoader
@@ -312,8 +313,11 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
 
     for i, data in enumerate(val_dataloader):
         data = data.to(opt.device)
-        if opt.mode == 'GNN':
-            y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr)
+        if opt.GNN_mode:
+            if opt.autoencoder_mode:
+                y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.n, opt.n))
+            else:
+                y = data.y
             yhat = model(data)
             minmax = data.minmax
             path = data.path[0]
@@ -361,8 +365,11 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
     model.eval()
     for i, data in enumerate(val_dataloader):
         data = data.to(opt.device)
-        if opt.mode == 'GNN':
-            y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.n, opt.n))
+        if opt.GNN_mode:
+            if opt.autoencoder_mode:
+                y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.n, opt.n))
+            else:
+                y = data.y
             yhat = model(data)
             path = data.path[0]
             minmax = data.minmax
@@ -425,8 +432,10 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
 def getBaseParser():
     '''Helper function that returns base parser'''
     parser = argparse.ArgumentParser(description='Base parser', fromfile_prefix_chars='@')
-    parser.add_argument('--mode', type=str, help='set to "GNN" to use GNNs (uses pytorch_geometric in core_test_train)')
+    parser.add_argument('--GNN_mode', type=str2bool, default=False, help='True to use GNNs (uses pytorch_geometric in core_test_train)')
+    parser.add_argument('--autoencoder_mode', type=str2bool, default=False, help='True to use input as target output (i.e. autoencoder)')
     parser.add_argument('--verbose', type=str2bool, default=False)
+    parser.add_argument('--output_mode', type=str, default='contact', help='data structure of output {"contact", "sequence"}')
 
     # pre-processing args
     parser.add_argument('--data_folder', type=str, default='dataset_04_18_21', help='Location of data')
@@ -493,6 +502,7 @@ def getBaseParser():
     parser.add_argument('--message_passing', type=str, default='GCN', help='type of message passing algorithm')
     parser.add_argument('--head_architecture', type=str, default= 'xxT', help='type of head architecture')
     parser.add_argument('--MLP_hidden_sizes_list', type=str2list, help='List of hidden sizes for convolutional layers')
+    parser.add_argument('--transforms', type=str2list, help='list of transforms to use for GNN')
 
 
     # post-processing args
@@ -538,7 +548,7 @@ def finalizeOpt(opt, parser, local = False):
         opt.channels = 1
     elif opt.loss == 'cross_entropy':
         assert opt.out_act is None, "Cannot use output activation with cross entropy"
-        assert opt.mode != 'GNN', 'cross_entropy only currently validated for non-GNN'
+        assert not opt.GNN_mode, 'cross_entropy not validated for GNN'
         assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'
         assert opt.y_norm is None, 'Cannot normalize with cross entropy'
         opt.channels = opt.classes
@@ -546,7 +556,7 @@ def finalizeOpt(opt, parser, local = False):
         opt.criterion = F.cross_entropy
         opt.ydtype = torch.int64
     elif opt.loss == 'BCE':
-        assert opt.mode == 'GNN', 'BCE only currently valideated for GNN'
+        assert opt.GNN_mode, 'BCE only currently valideated for GNN'
         assert opt.out_act is None, "Cannot use output activation with BCE"
         assert opt.y_norm is not None, 'must use some sort of y_norm'
         opt.criterion = F.binary_cross_entropy_with_logits
@@ -555,7 +565,26 @@ def finalizeOpt(opt, parser, local = False):
 
     # check mode
     if opt.model_type == 'GNNAutoencoder':
-        assert opt.mode == 'GNN', 'mode should be GNN for GNNAutoencoder'
+        assert opt.GNN_mode, 'mode should be GNN for GNNAutoencoder'
+
+    # configure GNN transforms
+    opt.node_feature_size = 0
+    if opt.use_node_features:
+        opt.node_feature_size += opt.k
+    if opt.transforms is not None:
+        transforms_processed = []
+        for t_str in opt.transforms:
+            if t_str.lower() == 'constant':
+                transforms_processed.append(torch_geometric.transforms.Constant())
+                opt.node_feature_size += 1
+            elif t_str.lower() == 'onehotdegree':
+                transforms_processed.append(torch_geometric.transforms.OneHotDegree(opt.n))
+                opt.node_feature_size += opt.n
+            else:
+                raise Exception("Invalid transform {}".format(t_str))
+        opt.transforms_processed = torch_geometric.transforms.Compose(transforms_processed)
+    else:
+        opt.transforms_processed = None
 
     # move data to scratch
     if opt.use_scratch and not local:
@@ -580,8 +609,9 @@ def finalizeOpt(opt, parser, local = False):
         opt.cuda = False
         opt.use_parallel = False
 
-    if opt.cuda and not torch.cuda.is_available() and not local:
-        print('Warning: falling back to cpu', file = opt.log_file)
+    if opt.cuda and not torch.cuda.is_available():
+        if not local:
+            print('Warning: falling back to cpu', file = opt.log_file)
         opt.cuda = False
         opt.use_parallel = False
 
@@ -641,8 +671,8 @@ def opt2list(opt):
         opt.gpus, opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
         opt.ifile_folder, opt.ifile, opt.k, opt.n, opt.seed, opt.out_act, opt.training_norm,
         opt.plot, opt.plot_predictions]
-    if opt.mode == 'GNN':
-        opt_list.append(opt.use_node_features)
+    if opt.GNN_mode:
+        opt_list.extend([opt.use_node_features, opt.transforms])
     if opt.model_type == 'simpleEpiNet':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list])
     elif opt.model_type == 'UNet':
@@ -678,7 +708,7 @@ def get_opt_header(model_type, mode = None):
         'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'n',
         'seed', 'out_act', 'training_norm', 'plot', 'plot_predictions']
     if mode == 'GNN':
-        opt_list.append('use_node_features')
+        opt_list.extend(['use_node_features','transforms'])
     if model_type == 'simpleEpiNet':
         opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])
     elif model_type == 'UNet':
@@ -756,7 +786,11 @@ def str2list(v, sep = '-'):
         if v.lower() == 'none':
             return None
         else:
-            return [int(i) for i in v.split(sep)]
+            result = [i for i in v.split(sep)]
+            for i, val in enumerate(result):
+                if val.isnumeric():
+                    result[i] = int(val)
+            return result
     else:
         raise argparse.ArgumentTypeError('str value expected.')
 

@@ -63,9 +63,9 @@ def cleanup():
             pass
 
 def debugModel(model_type):
-    opt = argparseSetup()
-    opt.mode = 'GNN'
-    opt.model_type = model_type
+    parser = getBaseParser()
+    opt = parser.parse_args()
+    opt.GNN_mode = True
 
     # Preprocessing
     if model_type == 'UNet':
@@ -78,8 +78,8 @@ def debugModel(model_type):
     opt.crop = None
     opt.n = 1024
     opt.y_preprocessing = 'diag'
-    opt.y_norm = 'batch'
-    opt.loss = 'mse'
+    opt.y_norm = 'instance'
+    opt.loss = 'BCE'
 
     if model_type == 'Akita':
         opt.kernel_w_list=str2list('5-5-5')
@@ -101,12 +101,16 @@ def debugModel(model_type):
     elif model_type == 'GNNAutoencoder':
         opt.hidden_sizes_list=str2list('16-8')
         opt.MLP_hidden_sizes_list=str2list('200-25')
-        opt.loss = 'mse'
-        opt.y_norm = 'instance'
         opt.out_act = 'relu'
         opt.head_architecture ='MLP'
         opt.use_node_features = False
-
+        opt.transforms=str2list('constant')
+    elif model_type == 'ContactGNN':
+        opt.hidden_sizes_list=str2list('16-2')
+        opt.out_act = None
+        opt.use_node_features = False
+        opt.transforms=str2list('constant')
+        opt.output_mode='sequence'
 
     # hyperparameters
     opt.n_epochs = 1
@@ -116,15 +120,16 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = False
-    opt.plot_predictions = True
+    opt.plot = True
+    opt.plot_predictions = False
     opt.verbose = False
-    if opt.cuda:
-        opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
-    else:
-        opt.data_folder = "dataset_04_18_21"
+    opt.data_folder = "dataset_04_18_21"
 
+    opt = finalizeOpt(opt, parser, True)
+
+    opt.model_type = model_type
     model = getModel(opt)
+
     opt.model_type = 'test'
     core_test_train(model, opt)
 
@@ -158,7 +163,7 @@ def downsampling_test():
 
 def main():
     # cleanup()
-    debugModel('GNNAutoencoder')
+    debugModel('ContactGNN')
     # to_mat()
     # downsampling_test()
 

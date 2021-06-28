@@ -1,15 +1,27 @@
+import os
 import os.path as osp
-import sys
 from shutil import rmtree
-abspath = osp.abspath(__file__)
-dname = osp.dirname(abspath)
-sys.path.insert(0, dname)
 
 import torch
 from torch.utils.data import Dataset
-from utils import make_dataset
 import torch_geometric.data
+import torch_geometric.transforms
 import numpy as np
+
+def make_dataset(dir, minSample = 0):
+    data_file_arr = []
+    samples_dir = osp.join(dir, 'samples')
+    for file in os.listdir(samples_dir):
+        if not file.startswith('sample'):
+            print("Skipping {}".format(file))
+        else:
+            sample_id = int(file[6:])
+            if sample_id < minSample:
+                print("Skipping {}".format(file))
+            else:
+                data_file = osp.join(samples_dir, file)
+                data_file_arr.append(data_file)
+    return data_file_arr
 
 class Names(Dataset):
     # TODO make this directly iterable
@@ -114,7 +126,8 @@ class Sequences2Contacts(Dataset):
 
 class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after convertign to GNN: https://github.com/rusty1s/pytorch_geometric/issues/1511
-    def __init__(self, dirname, y_preprocessing, y_norm, min_subtraction, use_node_features, transform = None, pre_transform = None):
+    def __init__(self, dirname, n, y_preprocessing, y_norm, min_subtraction, use_node_features, transform, pre_transform = None):
+        self.n = n
         self.dirname = dirname
         self.y_preprocessing = y_preprocessing
         self.y_norm = y_norm
@@ -172,14 +185,15 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             x = torch.tensor(np.load(osp.join(raw_folder, 'x.npy')), dtype = torch.float32)
             edge_index = (y > 0).nonzero().t()
+            row, col = edge_index
+            edge_weight = y[row, col]
             if self.use_node_features:
-                row, col = edge_index
-                edge_weight = y[row, col]
                 graph = torch_geometric.data.Data(x = x, edge_index = edge_index, edge_attr = edge_weight, y = x)
             else:
-                graph = torch_geometric.data.Data(x = x, edge_index = edge_index, y = x)
+                graph = torch_geometric.data.Data(x = None, edge_index = edge_index, edge_attr = edge_weight, y = x)
             graph.minmax = torch.tensor([self.ymin, self.ymax])
             graph.path = raw_folder
+            graph.num_nodes = self.n
             torch.save(graph, osp.join(self.processed_dir, 'graph_{}.pt'.format(i)))
 
     def get(self, index):
@@ -192,9 +206,13 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
 
 def main():
-    g = ContactsGraph('dataset_04_18_21', None, None, True)
+    t1 = torch_geometric.transforms.OneHotDegree(1024)
+    t2 = torch_geometric.transforms.Constant()
+    t = torch_geometric.transforms.Compose([t1, t2])
+    g = ContactsGraph('dataset_04_18_21', 1024, None, None, True, False, transform = t)
     graph = g[0]
     x, edge_index, edge_attr  = graph.x, graph.edge_index, graph.edge_attr
+    print(x)
 
 
 if __name__ == '__main__':

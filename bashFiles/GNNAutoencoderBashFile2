@@ -10,7 +10,8 @@
 
 dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
 modelType='GNNAutoencoder'
-mode='GNN'
+GNNMode='true'
+autoencoderMode='true'
 
 # architecture
 k=2
@@ -21,8 +22,9 @@ useNodeFeatures='false'
 hiddenSizesList='16-8'
 MLPHiddenSizesList='200-25'
 headArchitecture='MLP'
-loss='relu'
-outAct='none'
+transforms='constant'
+loss='mse'
+outAct='relu'
 
 # hyperparameters
 nEpochs=20
@@ -40,5 +42,5 @@ source activate python3.8_pytorch1.8.1_cuda10.2
 
 for lr in 1e-1 1e-2 1e-3
 do
-python3 core_test_train.py --data_folder $dirname --model_type $modelType --mode $mode --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --use_node_features $useNodeFeatures --hidden_sizes_list $hiddenSizesList --MLP_hidden_sizes_list $MLPHiddenSizesList --head_architecture $headArchitecture --loss $loss --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --verbose $verbose --use_scratch $useScratch
+python3 core_test_train.py --data_folder $dirname --model_type $modelType --GNN_mode $GNNMode --autoencoder_mode $autoencoderMode --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --use_node_features $useNodeFeatures --hidden_sizes_list $hiddenSizesList --MLP_hidden_sizes_list $MLPHiddenSizesList --head_architecture $headArchitecture --transforms $transforms --loss $loss --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --verbose $verbose --use_scratch $useScratch
 done

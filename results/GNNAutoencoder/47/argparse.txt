@@ -2,8 +2,10 @@
 /../../../project2/depablo/erschultz/dataset_04_18_21
 --model_type
 GNNAutoencoder
---mode
-GNN
+--GNN_mode
+true
+--autoencoder_mode
+true
 --k
 2
 --n

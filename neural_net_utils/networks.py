@@ -319,7 +319,6 @@ class GNNAutoencoder(nn.Module):
 
     def forward(self, graph):
         x, edge_index, edge_attr  = graph.x, graph.edge_index, graph.edge_attr
-        print(x)
         x = self.conv1(x, edge_index, edge_attr)
         x = F.relu(x)
         x = self.conv2(x, edge_index, edge_attr)
@@ -347,9 +346,15 @@ class FullyConnectedAutoencoder(nn.Module):
     Note that there is no parameter sharing between the encoder and the decoder.
     '''
     def __init__(self, input_size, hidden_sizes_list):
+        '''
+        Inputs:
+            input_size: size of input (also used as size of output)
+            hidden_sizes_list: list of hidden sizes
+        '''
         super(FullyConnectedAutoencoder, self).__init__()
         encode_model = []
         decode_model = []
+        self.input_size = input_size
         for output_size in hidden_sizes_list:
             encode_model.append(LinearBlock(input_size, output_size, activation = 'relu'))
             decode_model.append(LinearBlock(output_size, input_size, activation = 'relu'))
@@ -361,12 +366,66 @@ class FullyConnectedAutoencoder(nn.Module):
 
 
     def forward(self, input):
+        # assume input is n x k
+        input = torch.reshape(input, (-1, self.input_size))
         latent = self.encode(input)
         output = self.decode(latent)
         return output
 
+class ContactGNN(nn.Module):
+    '''
+    Graph neural network that maps contact map data to node embeddings of arbitrary length.
+
+    Primary use is to map contact data (formatted as graph) to particle type vector
+    where particle type vector is not given as node feature in graph.
+    '''
+    def __init__(self, n, input_size, hidden_sizes_list, out_act,
+                message_passing):
+        '''
+        Inputs:
+            n: number of nodes
+            input_size: size of input node feature vector
+            hidden_sizes_list: list of node feature vector hidden sizes (final value is output size)
+            out_act: output activation
+            message_passing: type of message passing algorithm to use
+        '''
+        super(ContactGNN, self).__init__()
+        self.n = n
+        if len(hidden_sizes_list) > 2:
+            print('Warning: only using first two hidden sizes')
+        hidden_size = hidden_sizes_list[0]
+        output_size = hidden_sizes_list[1]
+        self.output_size = output_size
+        if message_passing == 'GCN':
+            self.conv1 = torch_geometric.nn.GCNConv(input_size, hidden_size, add_self_loops = False)
+            self.conv2 = torch_geometric.nn.GCNConv(hidden_size, output_size, add_self_loops = False)
+        else:
+            raise Exception("Unkown message_passing {}".format(message_passing))
+
+        if out_act is None:
+            self.out_act = nn.Identity()
+        elif issubclass(type(out_act), nn.Module):
+            self.out_act = out_act
+        elif isinstance(out_act, str):
+            if out_act.lower() == 'sigmoid':
+                self.out_act = nn.Sigmoid()
+            elif out_act.lower() == 'relu':
+                self.out_act = nn.ReLU(True)
+            else:
+                raise Exception("Unkown activation {}".format(out_act))
+        else:
+            raise Exception("Unknown out_act {}".format(out_act))
+
+    def forward(self, graph):
+        x, edge_index, edge_attr  = graph.x, graph.edge_index, graph.edge_attr
+        x = self.conv1(x, edge_index, edge_attr)
+        x = F.relu(x)
+        x = self.conv2(x, edge_index, edge_attr)
+        out = self.out_act(x)
+        return out
+
 def main():
-    f = FullyConnectedAutoencoder(1024, [500, 300])
+    f = ContactGNN(1024, 2, [16, 2], None, 'GCN')
     x = f(torch.ones(1024))
     print(x)
 

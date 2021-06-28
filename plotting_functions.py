@@ -1,8 +1,10 @@
-import torch
-import torch.nn.functional as F
 import os
 import os.path as osp
 import sys
+
+import torch
+import torch.nn.functional as F
+
 import numpy as np
 import itertools
 import math
@@ -10,6 +12,9 @@ import matplotlib.pyplot as plt
 import matplotlib.colors
 import seaborn as sns
 import pandas as pd
+import time
+from sklearn import metrics
+
 from neural_net_utils.utils import *
 from neural_net_utils.networks import *
 from neural_net_utils.dataset_classes import *
@@ -400,19 +405,21 @@ def plotPerClassAccuracy(val_dataloader, imagePath, model, opt, title = None):
 
 def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt):
     """Plots Pearson correlation as a function of genomic distance"""
-
     p_arr = np.zeros((opt.valN, opt.n-1))
     P_arr_overall = np.zeros(opt.valN)
     model.eval()
     for i, data in enumerate(val_dataloader):
         data = data.to(opt.device)
-        if opt.mode == 'GNN':
-            y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
-                                                    batch = data.batch,
-                                                    max_num_nodes = opt.n)
+        if opt.GNN_mode:
+            if opt.autoencoder_mode:
+                y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
+                                                        batch = data.batch,
+                                                        max_num_nodes = opt.n)
+            else:
+                y = data.y
             yhat = model(data)
-            path = data.path
             minmax = data.minmax
+            path = data.path[0]
         else:
             x, y, path, minmax = data
             path = path[0]
@@ -486,10 +493,13 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
         if i == count:
             break
         data = data.to(opt.device)
-        if opt.mode == 'GNN':
-            y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
-                                                    batch = data.batch,
-                                                    max_num_nodes = opt.n)
+        if opt.GNN_mode:
+            if opt.autoencoder_mode:
+                y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
+                                                        batch = data.batch,
+                                                        max_num_nodes = opt.n)
+            else:
+                y = data.y
             yhat = model(data)
             minmax = data.minmax
             path = data.path[0]
@@ -588,6 +598,73 @@ def contactPlots(dataFolder):
         y_prcnt_norm = np.load(osp.join(path, 'y_prcnt.npy'))
         plotContactMap(y_prcnt_norm, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
+def plotROCCurve(val_dataloader, imagePath, model, opt):
+    assert opt.GNN_mode and not opt.autoencoder_mode
+    t0 = time.time()
+    thresholds = np.linspace(0, 1, 51) # step size of 0.02
+    tpr_array = np.zeros((51, opt.valN, opt.k))
+    fpr_array = np.zeros((51, opt.valN, opt.k))
+    acc_array = np.zeros((51, opt.valN))
+    model.eval()
+    for i, data in enumerate(val_dataloader):
+        data = data.to(opt.device)
+        y = data.y
+        y = y.cpu().numpy().astype(bool)
+        y_not = np.logical_not(y)
+        yhat = model(data)
+        yhat = yhat.cpu().detach().numpy()
+        minmax = data.minmax
+        path = data.path[0]
+        for j,t in enumerate(thresholds):
+            yhat_t = yhat > t
+            tp = y & yhat_t
+            tpr = np.sum(tp, 0) / np.sum(y, 0)
+            fp = y_not & yhat_t
+            fpr = np.sum(fp, 0) / np.sum(y_not, 0)
+            tpr_array[j, i] = tpr
+            fpr_array[j, i] = fpr
+
+            tn = y_not & np.logical_not(yhat_t)
+            acc = np.sum(tp | tn) / opt.n / opt.k
+            acc_array[j, i] = acc
+
+    tpr_mean_array = np.mean(tpr_array, 1)
+    tpr_std_array = np.std(tpr_array, 1)
+    fpr_mean_array = np.mean(fpr_array, 1)
+    acc_mean_array = np.mean(acc_array, 1)
+
+
+    title = 'AUC:'
+    for i in range(opt.k):
+        area = np.round(metrics.auc(fpr_mean_array[:,i], tpr_mean_array[:,i]), 3)
+        title += ' particle {} = {}'.format(i, area)
+        plt.plot(fpr_mean_array[:,i], tpr_mean_array[:,i], label = 'particle {}'.format(i))
+        plt.fill_between(fpr_mean_array[:,i],  tpr_mean_array[:,i] + tpr_std_array[:,i],  tpr_mean_array[:,i] - tpr_std_array[:,i], alpha = 0.5)
+        plt.fill_between(fpr_mean_array[:,i],  tpr_mean_array[:,i] + tpr_std_array[:,i],  tpr_mean_array[:,i] - tpr_std_array[:,i], alpha = 0.5)
+    plt.plot(np.linspace(0,1, 100), np.linspace(0,1,100), color = 'gray', linestyle='dashed')
+    plt.xlabel('False Positive Rate', fontsize = 16)
+    plt.ylabel('True Positive Rate', fontsize = 16)
+    plt.legend(loc = 'lower right')
+
+    if opt.y_preprocessing is not None:
+        preprocessing = opt.y_preprocessing.capitalize()
+    else:
+        preprocessing = 'None'
+    if opt.y_norm is not None:
+        y_norm = opt.y_norm.capitalize()
+    else:
+         y_norm = 'None'
+    plt.title('Y Preprocessing: {}, Y Norm: {}\n{}'.format(preprocessing, y_norm, title), fontsize = 16)
+
+    plt.tight_layout()
+    plt.savefig(osp.join(imagePath, 'ROC_curve.png'))
+    plt.show()
+    plt.close()
+
+    print('ROC Curve Results:', file = opt.log_file)
+    print(title, end = '\n\n', file = opt.log_file)
+    print('ROC time: {}'.format(np.round(time.time() - t0, 3)))
+
 def updateResultTables(model_type = None, mode = None):
     if model_type is None:
         model_types = ['Akita', 'DeepC', 'UNet', 'GNNAutoencoder']
@@ -632,7 +709,7 @@ def updateResultTables(model_type = None, mode = None):
             wr.writerows(results)
 
 
-def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None):
+def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, dataset = None):
     if model is None:
         model = getModel(opt)
         model.to(opt.device)
@@ -645,31 +722,33 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None):
             print('Model is loaded: {}'.format(model_name), file = opt.log_file)
         else:
             raise Exception('Model does not exist: {}'.format(model_name))
+        model.eval()
 
     opt.batch_size = 1 # batch size must be 1
     opt.shuffle = False # for reproducibility
-    if opt.mode == 'GNN':
-        dataset = ContactsGraph(opt.data_folder, opt.y_preprocessing,
-                                            opt.y_norm, opt.min_subtraction, opt.use_node_features)
-    else:
-        dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
-                                            opt.y_norm, opt.x_reshape, opt.ydtype,
-                                            opt.y_reshape, opt.crop, opt.min_subtraction)
+    if dataset is None:
+        dataset = getDataset(opt)
     _, val_dataloader, _ = getDataLoaders(dataset, opt)
 
     imagePath = opt.ofile_folder
     print('#### Plotting Script ####', file = opt.log_file)
+    plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
+    plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt, True)
+
     if opt.plot:
-        plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
-        plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt, True)
+        if opt.output_mode == 'contact':
+            comparePCA(val_dataloader, imagePath, model, opt)
 
-        comparePCA(val_dataloader, imagePath, model, opt)
+            plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt)
 
-        plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt)
-
-        plotPerClassAccuracy(val_dataloader, imagePath, model, opt)
+            plotPerClassAccuracy(val_dataloader, imagePath, model, opt)
+        elif opt.output_mode == 'sequence':
+            plotROCCurve(val_dataloader, imagePath, model, opt)
+        else:
+            raise Exception("Unkown output_mode {}".format(opt.output_mode))
 
     if opt.plot_predictions:
+        assert opt.output_mode == 'contact', 'only contact predictions supported for plot_predictions not {}'.format(opt.output_mode)
         plotPredictions(val_dataloader, model, opt)
 
 def updateAllPlots():
@@ -694,7 +773,7 @@ def updateAllPlots():
 
 def plotCombinedModels(modelType):
     path = osp.join('results', modelType)
-    ids = [31, 34, 35]
+    ids = [42, 43, 44]
 
     dirs = []
     opts = []

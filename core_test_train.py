@@ -1,12 +1,15 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch_geometric.data
 import os
 import sys
 import time
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+import torch_geometric.data
+
 from neural_net_utils.networks import *
-from neural_net_utils.utils import getDataLoaders, comparePCA, save_opt, save_args, argparseSetup, getModel
+from neural_net_utils.utils import getDataLoaders, comparePCA, save_args, argparseSetup, getModel, getDataset
 from plotting_functions import plotting_script, plotModelFromArrays
 from neural_net_utils.dataset_classes import *
 
@@ -23,13 +26,7 @@ def core_test_train(model, opt):
     save_args(opt)
 
     # split dataset
-    if opt.mode == 'GNN':
-        dataset = ContactsGraph(opt.data_folder, opt.y_preprocessing,
-                                            opt.y_norm, opt.min_subtraction, opt.use_node_features)
-    else:
-        dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
-                                            opt.y_norm, opt.x_reshape, opt.ydtype,
-                                            opt.y_reshape, opt.crop, opt.min_subtraction)
+    dataset = getDataset(opt)
     train_dataloader, val_dataloader, test_dataloader = getDataLoaders(dataset, opt)
 
     if opt.pretrained:
@@ -69,7 +66,7 @@ def core_test_train(model, opt):
     print('Total time: {}'.format(time.time() - t0), file = opt.log_file)
     print('Final val loss: {}\n'.format(val_loss_arr[-1]), file = opt.log_file)
 
-    plotting_script(model, opt, train_loss_arr, val_loss_arr)
+    plotting_script(model, opt, train_loss_arr, val_loss_arr, dataset)
 
     opt.log_file.close()
 
@@ -87,10 +84,13 @@ def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
                 print('Iteration: ', t)
             opt.optimizer.zero_grad()
 
-            if opt.mode == 'GNN':
-                y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
-                                                        batch = data.batch,
-                                                        max_num_nodes = opt.n)
+            if opt.GNN_mode:
+                if opt.autoencoder_mode:
+                    y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
+                                                            batch = data.batch,
+                                                            max_num_nodes = opt.n)
+                else:
+                    y = data.y
                 yhat = model(data)
             else:
                 x, y = data
@@ -138,10 +138,13 @@ def test(loader, model, opt, toprint, ofile = sys.stdout):
         for t, data in enumerate(loader):
             data = data.to(opt.device)
             opt.optimizer.zero_grad()
-            if opt.mode == 'GNN':
-                y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
-                                                        batch = data.batch,
-                                                        max_num_nodes = opt.n)
+            if opt.GNN_mode:
+                if opt.autoencoder_mode:
+                    y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
+                                                            batch = data.batch,
+                                                            max_num_nodes = opt.n)
+                else:
+                    y = data.y
                 yhat = model(data)
             else:
                 x, y = data
