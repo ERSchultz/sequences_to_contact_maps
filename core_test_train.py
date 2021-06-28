@@ -17,7 +17,6 @@ from neural_net_utils.dataset_classes import *
 def main():
     opt = argparseSetup()
     model = getModel(opt)
-    print(opt.root)
 
     core_test_train(model, opt)
 
