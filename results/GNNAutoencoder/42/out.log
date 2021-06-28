@@ -1,0 +1,60 @@
+Namespace(MLP_hidden_sizes_list=None, batch_size=8, bottleneck=None, channels=1, classes=10, criterion=<function mse_loss at 0x7f86b5a470d0>, crop=None, cuda=True, data_folder='/../../../scratch/midway2/erschultz/dataset_04_18_21', device=device(type='cuda'), dilation_list=None, dilation_list_head=None, dilation_list_trunk=None, down_sampling=None, gamma=0.1, gpus=1, head_architecture='xxT', hidden_sizes_list=[16, 2], id=42, ifile=None, ifile_folder=None, k=2, kernel_w_list=None, log_file=<_io.TextIOWrapper name='results/GNNAutoencoder/42/out.log' mode='a' encoding='UTF-8'>, loss='mse', lr=0.1, message_passing='GCN', milestones=None, min_subtraction=True, mode='GNN', model_type='GNNAutoencoder', n=1024, n_epochs=20, nf=None, num_workers=4, ofile_folder='results/GNNAutoencoder/42', out_act='relu', plot=True, plot_predictions=True, pretrained=False, print_mod=2, resume_training=False, save_mod=5, seed=42, shuffle=True, split=[0.8, 0.1, 0.1], start_epoch=1, toxx=False, toxx_mode='mean', training_norm=None, use_node_features=True, use_parallel=False, use_scratch=True, verbose=False, x_reshape=True, y_norm='instance', y_preprocessing='diag', y_reshape=True, ydtype=torch.float32)
+
+Epoch 2, loss = 0.0165
+Mean test/val loss: 0.0156
+
+Epoch 4, loss = 0.0075
+Mean test/val loss: 0.0057
+
+Epoch 6, loss = 0.0063
+Mean test/val loss: 0.0051
+
+Epoch 8, loss = 0.0057
+Mean test/val loss: 0.0078
+
+Epoch 10, loss = 0.0056
+Mean test/val loss: 0.0046
+
+Epoch 12, loss = 0.0051
+Mean test/val loss: 0.0053
+
+Epoch 14, loss = 0.0051
+Mean test/val loss: 0.0048
+
+Epoch 16, loss = 0.0060
+Mean test/val loss: 0.0047
+
+Epoch 18, loss = 0.0052
+Mean test/val loss: 0.0062
+
+Epoch 20, loss = 0.0053
+Mean test/val loss: 0.0051
+
+Total parameters: 82
+Total time: 6691.197031021118
+Final val loss: 0.005100009292364121
+
+#### Plotting Script ####
+PCA Results:
+Accuracy: 0.924 +- 0.04
+Spearman R: 0.953 +- 0.053
+Pearson R: 0.951 +- 0.054
+
+Distance Stratified Pearson Correlation Results:
+Overall Pearson R: 0.816 $\pm$ 0.114
+
+Class Accuracy Results:
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+Accuracy: 28.199999999999996% +- 5.8999999999999995
+Loss: 0.005 +- 0.002
+Prediction Results:
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+results/GNNAutoencoder/42/sample1230
+results/GNNAutoencoder/42/sample1761
+results/GNNAutoencoder/42/sample40
+results/GNNAutoencoder/42/sample1751
+results/GNNAutoencoder/42/sample1718
+Loss: 0.00012205040315166116 +- 0.0007750278084559665
+
