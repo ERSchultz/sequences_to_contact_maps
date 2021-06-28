@@ -1,6 +1,5 @@
 import os
 import os.path as osp
-from shutil import rmtree
 
 import torch
 from torch.utils.data import Dataset
@@ -125,7 +124,7 @@ class Sequences2Contacts(Dataset):
         return len(self.paths)
 
 class ContactsGraph(torch_geometric.data.Dataset):
-    # How to backprop through model after convertign to GNN: https://github.com/rusty1s/pytorch_geometric/issues/1511
+    # How to backprop through model after converting to GNN: https://github.com/rusty1s/pytorch_geometric/issues/1511
     def __init__(self, dirname, n, y_preprocessing, y_norm, min_subtraction, use_node_features, transform, pre_transform = None):
         self.n = n
         self.dirname = dirname
@@ -144,13 +143,19 @@ class ContactsGraph(torch_geometric.data.Dataset):
             self.ymin = 0
             self.ymax = 1
 
-        # delete existing saved graphs
-        # a bit hacky but works
-        dir = osp.join(dirname, 'processed')
-        if osp.exists(dir):
-            rmtree(dir)
+        # find any currently existing graph data folders
+        # make new folder for this dataset
+        max_val = -1
+        for file in os.listdir(dirname):
+            file_path = osp.join(dirname, file)
+            if file.startswith('graphs') and osp.isdir(file_path):
+                # format is graphs### where ### is number
+                val = int(file[6:])
+                if val > max_val:
+                    max_val = val
 
-        super(ContactsGraph, self).__init__(dirname, transform, pre_transform)
+        self.root = osp.join(dirname, 'graphs{}'.format(max_val+1))
+        super(ContactsGraph, self).__init__(self.root, transform, pre_transform)
 
     @property
     def raw_file_names(self):
@@ -194,11 +199,10 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.minmax = torch.tensor([self.ymin, self.ymax])
             graph.path = raw_folder
             graph.num_nodes = self.n
-            torch.save(graph, osp.join(self.processed_dir, 'graph_{}.pt'.format(i)))
+            torch.save(graph, self.processed_paths[i])
 
     def get(self, index):
          data = torch.load(self.processed_paths[index])
-
          return data
 
     def len(self):

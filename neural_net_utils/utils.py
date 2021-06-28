@@ -59,10 +59,12 @@ def getDataset(opt):
         dataset = ContactsGraph(opt.data_folder, opt.n, opt.y_preprocessing,
                                             opt.y_norm, opt.min_subtraction, opt.use_node_features,
                                             transform = opt.transforms_processed)
+        opt.root = dataset.root
     else:
         dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
                                             opt.y_norm, opt.x_reshape, opt.ydtype,
                                             opt.y_reshape, opt.crop, opt.min_subtraction)
+        opt.root = None
     return dataset
 
 def getDataLoaders(dataset, opt):

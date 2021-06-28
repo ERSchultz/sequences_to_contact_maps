@@ -658,7 +658,6 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
 
     plt.tight_layout()
     plt.savefig(osp.join(imagePath, 'ROC_curve.png'))
-    plt.show()
     plt.close()
 
     print('ROC Curve Results:', file = opt.log_file)
@@ -794,6 +793,10 @@ def plotCombinedModels(modelType):
 def main():
     opt = argparseSetup()
     plotting_script(None, opt)
+
+    # cleanup
+    if opt.root is not None:
+        rmtree(opt.root)
 
 if __name__ == '__main__':
     plotCombinedModels('GNNAutoencoder')

@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+from shutil import rmtree
 
 import torch
 import torch.nn as nn
@@ -16,6 +17,7 @@ from neural_net_utils.dataset_classes import *
 def main():
     opt = argparseSetup()
     model = getModel(opt)
+    print(opt.root)
 
     core_test_train(model, opt)
 
@@ -68,7 +70,10 @@ def core_test_train(model, opt):
 
     plotting_script(model, opt, train_loss_arr, val_loss_arr, dataset)
 
+    # cleanup
     opt.log_file.close()
+    if opt.root is not None:
+        rmtree(opt.root)
 
 def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
     train_loss = []
