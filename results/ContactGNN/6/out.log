@@ -1,0 +1,39 @@
+Namespace(GNN_mode=True, MLP_hidden_sizes_list=None, autoencoder_mode=False, batch_size=8, bottleneck=None, classes=10, criterion=<function binary_cross_entropy_with_logits at 0x7f9e745be040>, crop=None, cuda=True, data_folder='/../../../scratch/midway2/erschultz/dataset_04_18_21', device=device(type='cuda'), dilation_list=None, dilation_list_head=None, dilation_list_trunk=None, down_sampling=None, gamma=0.1, gpus=1, head_architecture='xxT', hidden_sizes_list=[16, 2], id=6, ifile=None, ifile_folder=None, k=2, kernel_w_list=None, log_file=<_io.TextIOWrapper name='results/ContactGNN/6/out.log' mode='a' encoding='UTF-8'>, loss='BCE', lr=0.001, message_passing='GCN', milestones=None, min_subtraction=True, model_type='ContactGNN', n=1024, n_epochs=20, nf=None, node_feature_size=1, num_workers=4, ofile_folder='results/ContactGNN/6', out_act=None, output_mode='contact', plot=True, plot_predictions=True, pretrained=False, print_mod=2, resume_training=False, save_mod=5, seed=42, shuffle=True, split=[0.8, 0.1, 0.1], start_epoch=1, toxx=False, toxx_mode='mean', training_norm=None, transforms=['constant'], transforms_processed=Compose([
+    Constant(value=1),
+]), use_node_features=False, use_parallel=False, use_scratch=True, verbose=False, x_reshape=True, y_norm='instance', y_preprocessing='diag', y_reshape=True, ydtype=torch.float32)
+
+Epoch 2, loss = 0.6856
+Mean test/val loss: 0.6843
+
+Epoch 4, loss = 0.6768
+Mean test/val loss: 0.6756
+
+Epoch 6, loss = 0.6678
+Mean test/val loss: 0.6670
+
+Epoch 8, loss = 0.6588
+Mean test/val loss: 0.6590
+
+Epoch 10, loss = 0.6502
+Mean test/val loss: 0.6504
+
+Epoch 12, loss = 0.6418
+Mean test/val loss: 0.6423
+
+Epoch 14, loss = 0.6336
+Mean test/val loss: 0.6346
+
+Epoch 16, loss = 0.6258
+Mean test/val loss: 0.6271
+
+Epoch 18, loss = 0.6184
+Mean test/val loss: 0.6202
+
+Epoch 20, loss = 0.6113
+Mean test/val loss: 0.6132
+
+Total parameters: 66
+Total time: 7621.117471933365
+Final val loss: 0.6132062411308289
+
+#### Plotting Script ####
