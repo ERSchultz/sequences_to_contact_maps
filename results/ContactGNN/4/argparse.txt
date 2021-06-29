@@ -4,6 +4,8 @@
 ContactGNN
 --GNN_mode
 true
+--output_mode
+sequence
 --k
 2
 --n

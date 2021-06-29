@@ -5,6 +5,8 @@ import torch
 from torch.utils.data import Dataset
 import torch_geometric.data
 import torch_geometric.transforms
+
+import time
 import numpy as np
 
 def make_dataset(dir, minSample = 0):
@@ -126,6 +128,7 @@ class Sequences2Contacts(Dataset):
 class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN: https://github.com/rusty1s/pytorch_geometric/issues/1511
     def __init__(self, dirname, n, y_preprocessing, y_norm, min_subtraction, use_node_features, transform, pre_transform = None):
+        t0 = time.time()
         self.n = n
         self.dirname = dirname
         self.y_preprocessing = y_preprocessing
@@ -156,6 +159,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
         self.root = osp.join(dirname, 'graphs{}'.format(max_val+1))
         super(ContactsGraph, self).__init__(self.root, transform, pre_transform)
+        print('graph init time: {}'.format(np.round(time.time() - t0, 3)))
 
     @property
     def raw_file_names(self):

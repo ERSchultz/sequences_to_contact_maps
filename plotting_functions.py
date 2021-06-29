@@ -198,8 +198,14 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
         saveDict = torch.load(dir, map_location=torch.device('cpu'))
         train_loss_arr = saveDict['train_loss']
         val_loss_arr = saveDict['val_loss']
-        l1 = ax.plot(np.arange(1, len(train_loss_arr)+1), train_loss_arr, ls = styles[0], color = c)
-        l2 = ax.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr, ls = styles[1], color = c)
+        if log_y:
+            y_train = np.log10(train_loss_arr)
+            y_val = np.log10(val_loss_arr)
+        else:
+            y_train = train_loss_arr
+            y_val = val_loss_arr
+        l1 = ax.plot(np.arange(1, len(train_loss_arr)+1), y_train, ls = styles[0], color = c)
+        l2 = ax.plot(np.arange(1, len(val_loss_arr)+1), y_val, ls = styles[1], color = c)
         lrs.append(opt.lr)
 
     for c, lr in zip(colors, lrs):
@@ -216,11 +222,16 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
     ax.set_xlabel('Epoch', fontsize = 16)
     opt = opts[0]
     if opt.loss == 'mse':
-        ax.set_ylabel('MSE Loss', fontsize = 16)
+        ylabel = 'MSE Loss'
     elif opt.loss == 'cross_entropy':
-        ax.set_ylabel('Cross Entropy Loss', fontsize = 16)
+        ylabel = 'Cross Entropy Loss'
+    elif opt.loss == 'BCE':
+        ylabel = 'Binary Cross Entropy Loss'
     else:
-        ax.set_ylabel('Loss', fontsize = 16)
+        ylabel = 'Loss'
+    if log_y:
+        ylabel = r'$\log_{10}$(' + ylabel + ')'
+    ax.set_ylabel(ylabel, fontsize = 16)
 
     if opt.y_preprocessing is not None:
         preprocessing = opt.y_preprocessing.capitalize()
@@ -232,8 +243,6 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
          y_norm = 'None'
     plt.title('Y Preprocessing: {}, Y Norm: {}'.format(preprocessing, y_norm), fontsize = 16)
 
-    if log_y:
-        ax.set_yscale('log')
     plt.tight_layout()
     if log_y:
         plt.savefig(osp.join(imagePath, 'train_val_loss_log.png'))
@@ -628,10 +637,12 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
             acc = np.sum(tp | tn) / opt.n / opt.k
             acc_array[j, i] = acc
 
-    tpr_mean_array = np.mean(tpr_array, 1)
-    tpr_std_array = np.std(tpr_array, 1)
-    fpr_mean_array = np.mean(fpr_array, 1)
-    acc_mean_array = np.mean(acc_array, 1)
+    tpr_mean_array = np.round(np.mean(tpr_array, 1), 3)
+    tpr_std_array = np.round(np.std(tpr_array, 1), 3)
+    fpr_mean_array = np.round(np.mean(fpr_array, 1), 3)
+    fpr_std_array = np.round(np.std(fpr_array, 1), 3)
+    acc_mean_array = np.round(np.mean(acc_array, 1), 3)
+    acc_std_array = np.round(np.std(acc_array, 1), 3)
 
 
     title = 'AUC:'
@@ -662,7 +673,11 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
 
     print('ROC Curve Results:', file = opt.log_file)
     print(title, end = '\n\n', file = opt.log_file)
-    print('ROC time: {}'.format(np.round(time.time() - t0, 3)))
+    max_t = np.argmax(acc_mean_array)
+    print('Max accuracy at t = {}: {} +- {}'.format(thresholds[max_t], acc_mean_array[max_t], acc_std_array[max_t]))
+    print('Corresponding FPR = {} +- {} and TPR = {} +- {}'.format(fpr_mean_array[max_t], fpr_std_array[max_t],
+                                                                    tpr_mean_array[max_t], tpr_std_array[max_t]))
+    print('ROC time: {}'.format(np.round (time.time() - t0, 3)))
 
 def updateResultTables(model_type = None, mode = None):
     if model_type is None:
@@ -772,7 +787,7 @@ def updateAllPlots():
 
 def plotCombinedModels(modelType):
     path = osp.join('results', modelType)
-    ids = [42, 43, 44]
+    ids = [4, 5, 6]
 
     dirs = []
     opts = []
@@ -799,9 +814,9 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    plotCombinedModels('GNNAutoencoder')
+    # plotCombinedModels('ContactGNN')
     # updateResultTables('GNNAutoencoder', 'GNN')
     # updateAllPlots()
-    # main()
+    main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')
