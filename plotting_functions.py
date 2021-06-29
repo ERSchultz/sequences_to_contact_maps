@@ -188,6 +188,7 @@ def plotDistStats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
 
 def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
     # assume only difference in opts is lr
+    # TODO good idea to check this with assert
     fig, ax = plt.subplots()
     colors = ['b', 'r', 'g', 'c']
     styles = ['-', '--']
@@ -259,16 +260,23 @@ def plotModelFromDir(dir, imagePath, opt = None, log_y = False):
 
 def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log_y = False):
     """Plots loss as function of epoch."""
-    plt.plot(np.arange(1, len(train_loss_arr)+1), train_loss_arr, label = 'Training')
-    plt.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr, label = 'Validation')
-    plt.xlabel('Epoch', fontsize = 16)
-    plt.ylabel('Loss', fontsize = 16)
+    if log_y:
+        y_train = np.log10(train_loss_arr)
+        y_val = np.log10(val_loss_arr)
+    else:
+        y_train = train_loss_arr
+        y_val = val_loss_arr
+    plt.plot(np.arange(1, len(train_loss_arr)+1), y_train, label = 'Training')
+    plt.plot(np.arange(1, len(val_loss_arr)+1), y_val, label = 'Validation')
 
+    ylabel = 'Loss'
     if opt is not None:
-        if opt.criterion == F.mse_loss:
-            plt.ylabel('MSE Loss', fontsize = 16)
-        elif opt.criterion == F.cross_entropy:
-            plt.ylabel('Cross Entropy Loss', fontsize = 16)
+        if opt.loss == 'mse':
+            ylabel = 'MSE Loss'
+        elif opt.loss == 'cross_entropy':
+            ylabel = 'Cross Entropy Loss'
+        elif opt.loss == 'BCE':
+            ylabel = 'Binary Cross Entropy Loss'
 
         if opt.y_preprocessing is not None:
             preprocessing = opt.y_preprocessing.capitalize()
@@ -297,8 +305,12 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
                 lr = lr * opt.gamma
                 plt.axvline(m, linestyle = 'dashed', color = 'green')
                 plt.annotate('lr: {:.1e}'.format(lr), (m + x_offset, annotate_y))
+
     if log_y:
-        plt.yscale('log')
+        ylabel = r'$\log_{10}$(' + ylabel + ')'
+    plt.xlabel('Epoch', fontsize = 16)
+    plt.ylabel(ylabel, fontsize = 16)
+
     plt.legend()
     plt.tight_layout()
     if log_y:
