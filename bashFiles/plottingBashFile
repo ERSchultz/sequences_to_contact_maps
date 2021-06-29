@@ -26,5 +26,5 @@ source activate python3.8_pytorch1.8.1_cuda10.2
 
 for id in 4 5 6
 do
-  python3 plotting_functions.py  --data_folder $dirname  --gpus $gpus --id $id --pretrained $pretrained --plot_predictions $plotPredictions
+  python3 plotting_functions.py  --data_folder $dirname --model_type $modelType --gpus $gpus --id $id --pretrained $pretrained --plot_predictions $plotPredictions
 done
