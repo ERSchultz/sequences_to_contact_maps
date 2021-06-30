@@ -42,3 +42,11 @@ Model is loaded: results/ContactGNN/5/model.pt
 ROC Curve Results:
 AUC: particle 0 = 0.064 particle 1 = 0.142
 
+Model is loaded: results/ContactGNN/5/model.pt
+#### Plotting Script ####
+ROC Curve Results:
+AUC: particle 0 = 0.959 particle 1 = 0.753
+
+Max accuracy at t = 0.36: 0.765 +- 0.055
+Corresponding FPR = [0.263 0.524] +- [0.127 0.099] and TPR = [0.965 0.905] +- [0.011 0.052]
+ROC time: 38.853
