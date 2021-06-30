@@ -37,3 +37,8 @@ Total time: 11983.579036712646
 Final val loss: 0.44512362360954283
 
 #### Plotting Script ####
+Model is loaded: results/ContactGNN/5/model.pt
+#### Plotting Script ####
+ROC Curve Results:
+AUC: particle 0 = 0.064 particle 1 = 0.142
+
