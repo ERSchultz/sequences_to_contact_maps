@@ -1,6 +1,7 @@
 import os
 import os.path as osp
 import sys
+from shutil import rmtree
 
 import torch
 import torch.nn.functional as F
@@ -628,22 +629,37 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
     acc_array = np.zeros((51, opt.valN))
     model.eval()
     for i, data in enumerate(val_dataloader):
+        if opt.verbose:
+            print('Iteration: {}'.format(i))
         data = data.to(opt.device)
         y = data.y
         y = y.cpu().numpy().astype(bool)
         y_not = np.logical_not(y)
         yhat = model(data)
+        if opt.loss =='BCE':
+            # usincg BCE with logits loss, which combines sigmoid into loss
+            # so need to do sigmoid here
+            yhat = F.sigmoid(yhat)
         yhat = yhat.cpu().detach().numpy()
         minmax = data.minmax
         path = data.path[0]
+
+        positives = np.sum(y, 0)
+        negatives = np.sum(y_not, 0)
         for j,t in enumerate(thresholds):
+            if opt.verbose:
+                print('treshold: {}'.format(t))
             yhat_t = yhat > t
             tp = y & yhat_t
-            tpr = np.sum(tp, 0) / np.sum(y, 0)
+            tpr = np.sum(tp, 0) / positives
             fp = y_not & yhat_t
-            fpr = np.sum(fp, 0) / np.sum(y_not, 0)
+            fpr = np.sum(fp, 0) / negatives
             tpr_array[j, i] = tpr
             fpr_array[j, i] = fpr
+            if opt.verbose:
+                # print('yhat_t\n', yhat_t)
+                print('tp: {}, p: {}, tpr: {}'.format(np.sum(tp, 0), positives, tpr))
+                print('fp: {}, n: {}, fpr: {}\n'.format(np.sum(fp, 0), negatives, fpr))
 
             tn = y_not & np.logical_not(yhat_t)
             acc = np.sum(tp | tn) / opt.n / opt.k
@@ -686,10 +702,10 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
     print('ROC Curve Results:', file = opt.log_file)
     print(title, end = '\n\n', file = opt.log_file)
     max_t = np.argmax(acc_mean_array)
-    print('Max accuracy at t = {}: {} +- {}'.format(thresholds[max_t], acc_mean_array[max_t], acc_std_array[max_t]))
+    print('Max accuracy at t = {}: {} +- {}'.format(thresholds[max_t], acc_mean_array[max_t], acc_std_array[max_t]), file = opt.log_file)
     print('Corresponding FPR = {} +- {} and TPR = {} +- {}'.format(fpr_mean_array[max_t], fpr_std_array[max_t],
-                                                                    tpr_mean_array[max_t], tpr_std_array[max_t]))
-    print('ROC time: {}'.format(np.round (time.time() - t0, 3)))
+                                                                    tpr_mean_array[max_t], tpr_std_array[max_t]), file = opt.log_file)
+    print('ROC time: {}'.format(np.round (time.time() - t0, 3)), file = opt.log_file)
 
 def updateResultTables(model_type = None, mode = None):
     if model_type is None:
@@ -822,7 +838,7 @@ def main():
     plotting_script(None, opt)
 
     # cleanup
-    if opt.root is not None:
+    if opt.root is not None and opt.delete_root:
         rmtree(opt.root)
 
 if __name__ == '__main__':

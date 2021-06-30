@@ -35,10 +35,11 @@ Mean test/val loss: 0.4110
 Total parameters: 66
 Total time: 6952.861456155777
 Final val loss: 0.4109885847568512
-
-#### Plotting Script ####
-Model is loaded: results/ContactGNN/4/model.pt
+Model is loaded: results\ContactGNN\4\model.pt
 #### Plotting Script ####
 ROC Curve Results:
-AUC: particle 0 = 0.039 particle 1 = 0.094
+AUC: particle 0 = 0.98 particle 1 = 0.752
 
+Max accuracy at t = 0.64: 0.822 +- 0.0
+Corresponding FPR = [0.054 0.074] +- [0. 0.] and TPR = [0.917 0.459] +- [0. 0.]
+ROC time: 5.86

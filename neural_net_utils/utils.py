@@ -56,7 +56,7 @@ def getModel(opt):
 # dataset functions
 def getDataset(opt):
     if opt.GNN_mode:
-        dataset = ContactsGraph(opt.data_folder, opt.n, opt.y_preprocessing,
+        dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.n, opt.y_preprocessing,
                                             opt.y_norm, opt.min_subtraction, opt.use_node_features,
                                             transform = opt.transforms_processed)
         opt.root = dataset.root
@@ -441,6 +441,8 @@ def getBaseParser():
 
     # pre-processing args
     parser.add_argument('--data_folder', type=str, default='dataset_04_18_21', help='Location of data')
+    parser.add_argument('--root_name', type=str, help='name of file to save graph data (leave as None to create root automatically) (root is the directory path - defined later)')
+    parser.add_argument('--delete_root', type=str2bool, default=True, help='True to delete root directory after runtime')
     parser.add_argument('--toxx', type=str2bool, default=False, help='True if x should be converted to 2D image')
     parser.add_argument('--toxx_mode', type=str, default='mean', help='mode for toxx (default mean)')
     parser.add_argument('--y_preprocessing', type=str2None, default='diag', help='type of pre-processing for y')
@@ -514,6 +516,7 @@ def getBaseParser():
     return parser
 
 def finalizeOpt(opt, parser, local = False):
+    print(opt)
     # local is a flag to overide some commands when working locally
     # set up output folders/files
     model_type_folder = osp.join('results', opt.model_type)
@@ -533,7 +536,9 @@ def finalizeOpt(opt, parser, local = False):
         txt_file = osp.join(model_type_folder, str(opt.id), 'argparse.txt')
         assert osp.exists(txt_file), "{} does not exist".format(txt_file)
         id_copy = opt.id
-        opt = parser.parse_args(sys.argv.append('@{}'.format(txt_file))) # parse again
+        opt = parser.parse_args(sys.argv.insert(1, '@{}'.format(txt_file))) # parse again
+        # by inserting at position 1, the original arguments will override the txt file
+        print(sys.argv)
         opt.id = id_copy
 
 

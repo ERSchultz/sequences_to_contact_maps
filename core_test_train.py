@@ -71,7 +71,7 @@ def core_test_train(model, opt):
 
     # cleanup
     opt.log_file.close()
-    if opt.root is not None:
+    if opt.root is not None and opt.delete_root:
         rmtree(opt.root)
 
 def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):

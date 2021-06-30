@@ -127,7 +127,7 @@ class Sequences2Contacts(Dataset):
 
 class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN: https://github.com/rusty1s/pytorch_geometric/issues/1511
-    def __init__(self, dirname, n, y_preprocessing, y_norm, min_subtraction, use_node_features, transform, pre_transform = None):
+    def __init__(self, dirname, root_name, n, y_preprocessing, y_norm, min_subtraction, use_node_features, transform, pre_transform = None):
         t0 = time.time()
         self.n = n
         self.dirname = dirname
@@ -146,18 +146,20 @@ class ContactsGraph(torch_geometric.data.Dataset):
             self.ymin = 0
             self.ymax = 1
 
-        # find any currently existing graph data folders
-        # make new folder for this dataset
-        max_val = -1
-        for file in os.listdir(dirname):
-            file_path = osp.join(dirname, file)
-            if file.startswith('graphs') and osp.isdir(file_path):
-                # format is graphs### where ### is number
-                val = int(file[6:])
-                if val > max_val:
-                    max_val = val
-
-        self.root = osp.join(dirname, 'graphs{}'.format(max_val+1))
+        if root_name is None:
+            # find any currently existing graph data folders
+            # make new folder for this dataset
+            max_val = -1
+            for file in os.listdir(dirname):
+                file_path = osp.join(dirname, file)
+                if file.startswith('graphs') and osp.isdir(file_path):
+                    # format is graphs### where ### is number
+                    val = int(file[6:])
+                    if val > max_val:
+                        max_val = val
+            self.root = osp.join(dirname, 'graphs{}'.format(max_val+1))
+        else:
+            self.root = osp.join(dirname, root_name)
         super(ContactsGraph, self).__init__(self.root, transform, pre_transform)
         print('graph init time: {}'.format(np.round(time.time() - t0, 3)))
 
