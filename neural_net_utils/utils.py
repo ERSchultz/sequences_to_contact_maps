@@ -324,8 +324,8 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
             else:
                 y = data.y
             yhat = model(data)
-            minmax = data.minmax
             path = data.path[0]
+            minmax = data.minmax
         else:
             x, y, path, minmax = data
             x = x.to(opt.device)

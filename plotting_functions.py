@@ -641,7 +641,7 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
             yhat = model(data)
         elif opt.autoencoder_mode:
             x = data[0]
-            x.to(opt.device)
+            x = x.to(opt.device)
             y = x
             yhat = model(x)
             y = torch.reshape(y, (opt.n, opt.k))

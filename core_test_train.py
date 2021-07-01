@@ -102,13 +102,13 @@ def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
                 yhat = model(data)
             elif opt.autoencoder_mode and opt.output_mode == 'sequence':
                 x = data[0]
-                x.to(opt.device)
+                x = x.to(opt.device)
                 y = x
                 yhat = model(x)
             else:
                 x, y = data
-                x.to(opt.device)
-                y.to(opt.device)
+                x = x.to(opt.device)
+                y = y.to(opt.device)
                 yhat = model(x)
             if opt.verbose:
                 print('y', y, y.shape)
@@ -163,13 +163,13 @@ def test(loader, model, opt, toprint, ofile = sys.stdout):
                 yhat = model(data)
             elif opt.autoencoder_mode and opt.output_mode == 'sequence':
                 x = data[0]
-                x.to(opt.device)
+                x = x.to(opt.device)
                 y = x
                 yhat = model(x)
             else:
                 x, y = data
-                x.to(opt.device)
-                y.to(opt.device)
+                x = x.to(opt.device)
+                y = y.to(opt.device)
                 yhat = model(x)
             if opt.verbose:
                 print('y', y, y.shape)
