@@ -32,6 +32,7 @@ gamma=0.1
 
 useScratch='true'
 verbose='false'
+plotPredictions='false'
 
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2
@@ -39,5 +40,5 @@ source activate python3.8_pytorch1.8.1_cuda10.2
 
 for lr in 1e-2 1e-3
 do
-python3 core_test_train.py --data_folder $dirname --model_type $modelType --autoencoder_mode $autoencoderMode --output_mode $outputMode --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --hidden_sizes_list $hiddenSizesList --loss $loss --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --use_scratch $useScratch --verbose $verbose
+python3 core_test_train.py --data_folder $dirname --model_type $modelType --autoencoder_mode $autoencoderMode --output_mode $outputMode --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --hidden_sizes_list $hiddenSizesList --loss $loss --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --use_scratch $useScratch --verbose $verbose --plot_predictions $plotPredictions
 done

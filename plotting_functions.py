@@ -625,7 +625,6 @@ def contactPlots(dataFolder):
         plotContactMap(y_prcnt_norm, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
 def plotROCCurve(val_dataloader, imagePath, model, opt):
-    opt.verbose = True
     t0 = time.time()
     thresholds = np.linspace(0, 1, 51) # step size of 0.02
     tpr_array = np.zeros((51, opt.valN, opt.k))
@@ -859,8 +858,8 @@ def main():
 
 if __name__ == '__main__':
     # plotCombinedModels('ContactGNN')
-    # updateResultTables('GNNAutoencoder', 'GNN')
+    updateResultTables('GNNAutoencoder', 'GNN')
     # updateAllPlots()
-    main()
+    # main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')

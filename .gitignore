@@ -1,4 +1,5 @@
 *.out
+*.pt
 /dataset_04_08_21/*
 /dataset_04_18_21/*
 /test/*

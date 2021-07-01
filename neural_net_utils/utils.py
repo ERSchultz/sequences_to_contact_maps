@@ -543,9 +543,9 @@ def finalizeOpt(opt, parser, local = False):
         txt_file = osp.join(model_type_folder, str(opt.id), 'argparse.txt')
         assert osp.exists(txt_file), "{} does not exist".format(txt_file)
         id_copy = opt.id
-        opt = parser.parse_args(sys.argv.insert(1, '@{}'.format(txt_file))) # parse again
+        argv = sys.argv.copy() # need to copy if running finalizeOpt multiple times
+        opt = parser.parse_args(argv.insert(1, '@{}'.format(txt_file))) # parse again
         # by inserting at position 1, the original arguments will override the txt file
-        print(sys.argv)
         opt.id = id_copy
 
 
