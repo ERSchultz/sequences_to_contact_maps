@@ -60,3 +60,25 @@ results/GNNAutoencoder/54/sample1751
 results/GNNAutoencoder/54/sample1718
 Loss: 0.0028450480103492737 +- 0.018070411830005205
 
+Warning: falling back to cpu
+Model is loaded: results\GNNAutoencoder\54\model.pt
+#### Plotting Script ####
+PCA Results:
+Accuracy: 0.909 +- 0.0
+Spearman R: 0.03 +- 0.0
+Pearson R: 0.035 +- 0.0
+
+Distance Stratified Pearson Correlation Results:
+Overall Pearson R: nan $\pm$ nan
+
+Class Accuracy Results:
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+Accuracy: 18.8% +- 0.0
+Loss: 0.122 +- 0.0
+Prediction Results:
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+results\GNNAutoencoder\54\sample2
+Loss: 0.12213694304227829 +- 0.0
+

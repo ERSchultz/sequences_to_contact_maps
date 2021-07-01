@@ -276,7 +276,7 @@ class SimpleEpiNet(nn.Module):
         return out
 
 class GNNAutoencoder(nn.Module):
-    def __init__(self, n, input_size, hidden_sizes_list, out_act,
+    def __init__(self, n, input_size, hidden_sizes_list, act, head_act, out_act,
                 message_passing, head_architecture, MLP_hidden_sizes_list):
         super(GNNAutoencoder, self).__init__()
         self.n = n
@@ -289,14 +289,16 @@ class GNNAutoencoder(nn.Module):
         else:
             raise Exception("Unkown message_passing {}".format(message_passing))
 
+        if act
+
         self.head_architecture = head_architecture
         if self.head_architecture == 'MLP':
             encode_model = []
             decode_model = []
             input_size = self.n * self.output_size
             for output_size in MLP_hidden_sizes_list:
-                encode_model.append(LinearBlock(input_size, output_size, activation = 'relu'))
-                decode_model.append(LinearBlock(output_size, input_size, activation = 'relu'))
+                encode_model.append(LinearBlock(input_size, output_size, activation = head_act))
+                decode_model.append(LinearBlock(output_size, input_size, activation = head_act))
                 input_size = output_size
 
             self.encode = nn.Sequential(*encode_model)

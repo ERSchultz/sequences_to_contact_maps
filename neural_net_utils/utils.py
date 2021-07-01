@@ -42,7 +42,7 @@ def getModel(opt):
                             opt.training_norm,
                             opt.down_sampling)
     elif opt.model_type == 'GNNAutoencoder':
-        model = GNNAutoencoder(opt.n, opt.node_feature_size, opt.hidden_sizes_list, opt.out_act,
+        model = GNNAutoencoder(opt.n, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.head_act, opt.out_act,
                                 opt.message_passing, opt.head_architecture, opt.MLP_hidden_sizes_list)
     elif opt.model_type == 'SequenceFCAutoencoder':
         model = FullyConnectedAutoencoder(opt.n * opt.k, opt.hidden_sizes_list)
@@ -490,6 +490,7 @@ def getBaseParser():
     parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
     parser.add_argument('--n', type=int, default=1024, help='Number of particles')
     parser.add_argument('--seed', type=int, default=42, help='random seed to use. Default: 42')
+    parser.add_argument('--act', type=str2None, default='relu', help='default activation') # TODO impelement throughout
     parser.add_argument('--out_act', type=str2None, help='activation of final layer')
     parser.add_argument('--training_norm', type=str2None, help='norm during training (batch, instance, or None)')
 
@@ -514,6 +515,7 @@ def getBaseParser():
     parser.add_argument('--head_architecture', type=str, default= 'xxT', help='type of head architecture')
     parser.add_argument('--MLP_hidden_sizes_list', type=str2list, help='List of hidden sizes for convolutional layers')
     parser.add_argument('--transforms', type=str2list, help='list of transforms to use for GNN')
+    parser.add_argument('--head_act', type=str, default='relu', help='activation function for head network')
 
 
     # post-processing args
@@ -543,8 +545,10 @@ def finalizeOpt(opt, parser, local = False):
         txt_file = osp.join(model_type_folder, str(opt.id), 'argparse.txt')
         assert osp.exists(txt_file), "{} does not exist".format(txt_file)
         id_copy = opt.id
-        argv = sys.argv.copy() # need to copy if running finalizeOpt multiple times
-        opt = parser.parse_args(argv.insert(1, '@{}'.format(txt_file))) # parse again
+        args = sys.argv.copy()
+        args.insert(1, '@{}'.format(txt_file)) # need to copy if running finalizeOpt multiple times
+        args.pop(0) # remove program name
+        opt = parser.parse_args(args) # parse again
         # by inserting at position 1, the original arguments will override the txt file
         opt.id = id_copy
 

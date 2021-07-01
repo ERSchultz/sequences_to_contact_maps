@@ -660,7 +660,8 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
 
         positives = np.sum(y, 0)
         negatives = np.sum(y_not, 0)
-        print('p: {}, n: {}'.format(positives, negatives))
+        if opt.verbose:
+            print('p: {}, n: {}'.format(positives, negatives))
         for j,t in enumerate(thresholds):
             if opt.verbose:
                 print('treshold: {}'.format(t))
@@ -686,7 +687,6 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
     fpr_std_array = np.round(np.std(fpr_array, 1), 3)
     acc_mean_array = np.round(np.mean(acc_array, 1), 3)
     acc_std_array = np.round(np.std(acc_array, 1), 3)
-
 
     title = 'AUC:'
     for i in range(opt.k):
@@ -858,8 +858,8 @@ def main():
 
 if __name__ == '__main__':
     # plotCombinedModels('ContactGNN')
-    updateResultTables('GNNAutoencoder', 'GNN')
+    # updateResultTables('GNNAutoencoder', 'GNN')
     # updateAllPlots()
-    # main()
+    main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')
