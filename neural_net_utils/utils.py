@@ -44,7 +44,7 @@ def getModel(opt):
     elif opt.model_type == 'GNNAutoencoder':
         model = GNNAutoencoder(opt.n, opt.node_feature_size, opt.hidden_sizes_list, opt.out_act,
                                 opt.message_passing, opt.head_architecture, opt.MLP_hidden_sizes_list)
-    elif opt.model_type == 'ContactFCAutoencoder':
+    elif opt.model_type == 'SequenceFCAutoencoder':
         model = FullyConnectedAutoencoder(opt.n * opt.k, opt.hidden_sizes_list)
     elif opt.model_type == 'ContactGNN':
         model = ContactGNN(opt.n, opt.node_feature_size, opt.hidden_sizes_list, opt.out_act, opt.message_passing)
@@ -54,16 +54,19 @@ def getModel(opt):
     return model
 
 # dataset functions
-def getDataset(opt):
+def getDataset(opt, names = False, minmax = False):
     if opt.GNN_mode:
         dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.n, opt.y_preprocessing,
                                             opt.y_norm, opt.min_subtraction, opt.use_node_features,
                                             transform = opt.transforms_processed)
         opt.root = dataset.root
+    elif opt.autoencoder_mode and opt.output_mode == 'sequence':
+        dataset = Sequences(opt.data_folder, opt.crop, names)
+        opt.root = None
     else:
         dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
                                             opt.y_norm, opt.x_reshape, opt.ydtype,
-                                            opt.y_reshape, opt.crop, opt.min_subtraction)
+                                            opt.y_reshape, opt.crop, opt.min_subtraction, names, minmax)
         opt.root = None
     return dataset
 
@@ -314,8 +317,8 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
     freq_c_arr = np.zeros((opt.valN, opt.classes))
 
     for i, data in enumerate(val_dataloader):
-        data = data.to(opt.device)
         if opt.GNN_mode:
+            data = data.to(opt.device)
             if opt.autoencoder_mode:
                 y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.n, opt.n))
             else:
@@ -325,6 +328,8 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
             path = data.path[0]
         else:
             x, y, path, minmax = data
+            x = x.to(opt.device)
+            y = y.to(opt.device)
             path = path[0]
             yhat = model(x)
         loss = opt.criterion(yhat, y).item()
@@ -366,8 +371,8 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
     pca = PCA()
     model.eval()
     for i, data in enumerate(val_dataloader):
-        data = data.to(opt.device)
         if opt.GNN_mode:
+            data = data.to(opt.device)
             if opt.autoencoder_mode:
                 y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.n, opt.n))
             else:
@@ -377,6 +382,8 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
             minmax = data.minmax
         else:
             x, y, path, minmax = data
+            x = x.to(opt.device)
+            y = y.to(opt.device)
             path = path[0]
             yhat = model(x)
         y = y.cpu().numpy().reshape((opt.n, opt.n))
@@ -563,7 +570,6 @@ def finalizeOpt(opt, parser, local = False):
         opt.criterion = F.cross_entropy
         opt.ydtype = torch.int64
     elif opt.loss == 'BCE':
-        assert opt.GNN_mode, 'BCE only currently valideated for GNN'
         assert opt.out_act is None, "Cannot use output activation with BCE"
         assert opt.y_norm is not None, 'must use some sort of y_norm'
         opt.criterion = F.binary_cross_entropy_with_logits

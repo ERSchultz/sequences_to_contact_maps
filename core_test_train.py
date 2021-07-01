@@ -67,7 +67,11 @@ def core_test_train(model, opt):
     print('Total time: {}'.format(time.time() - t0), file = opt.log_file)
     print('Final val loss: {}\n'.format(val_loss_arr[-1]), file = opt.log_file)
 
-    plotting_script(model, opt, train_loss_arr, val_loss_arr, dataset)
+    if opt.GNN_mode:
+        plotting_script(model, opt, train_loss_arr, val_loss_arr, dataset)
+    else:
+        plotting_script(model, opt, train_loss_arr, val_loss_arr)
+        # don't pass dataset
 
     # cleanup
     opt.log_file.close()
@@ -83,12 +87,12 @@ def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
         model.train()
         avg_loss = 0
         for t, data in enumerate(train_loader):
-            data = data.to(opt.device)
             if opt.verbose:
                 print('Iteration: ', t)
             opt.optimizer.zero_grad()
 
             if opt.GNN_mode:
+                data = data.to(opt.device)
                 if opt.autoencoder_mode:
                     y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
                                                             batch = data.batch,
@@ -96,8 +100,15 @@ def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
                 else:
                     y = data.y
                 yhat = model(data)
+            elif opt.autoencoder_mode and opt.output_mode == 'sequence':
+                x = data[0]
+                x.to(opt.device)
+                y = x
+                yhat = model(x)
             else:
                 x, y = data
+                x.to(opt.device)
+                y.to(opt.device)
                 yhat = model(x)
             if opt.verbose:
                 print('y', y, y.shape)
@@ -140,9 +151,9 @@ def test(loader, model, opt, toprint, ofile = sys.stdout):
     avg_loss = 0
     with torch.no_grad():
         for t, data in enumerate(loader):
-            data = data.to(opt.device)
             opt.optimizer.zero_grad()
             if opt.GNN_mode:
+                data = data.to(opt.device)
                 if opt.autoencoder_mode:
                     y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
                                                             batch = data.batch,
@@ -150,8 +161,15 @@ def test(loader, model, opt, toprint, ofile = sys.stdout):
                 else:
                     y = data.y
                 yhat = model(data)
+            elif opt.autoencoder_mode and opt.output_mode == 'sequence':
+                x = data[0]
+                x.to(opt.device)
+                y = x
+                yhat = model(x)
             else:
                 x, y = data
+                x.to(opt.device)
+                y.to(opt.device)
                 yhat = model(x)
             if opt.verbose:
                 print('y', y, y.shape)

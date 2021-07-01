@@ -65,7 +65,6 @@ def cleanup():
 def debugModel(model_type):
     parser = getBaseParser()
     opt = parser.parse_args()
-    opt.GNN_mode = True
 
     # Preprocessing
     if model_type == 'UNet':
@@ -79,7 +78,7 @@ def debugModel(model_type):
     opt.n = 1024
     opt.y_preprocessing = 'diag'
     opt.y_norm = 'instance'
-    opt.loss = 'BCE'
+    opt.loss = 'mse'
 
     if model_type == 'Akita':
         opt.kernel_w_list=str2list('5-5-5')
@@ -99,6 +98,7 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('32-64-128')
         opt.dilation_list=str2list('2-4-8-16-32-64-128-256-512')
     elif model_type == 'GNNAutoencoder':
+        opt.GNN_mode = True
         opt.hidden_sizes_list=str2list('16-8')
         opt.MLP_hidden_sizes_list=str2list('200-25')
         opt.out_act = 'relu'
@@ -106,11 +106,18 @@ def debugModel(model_type):
         opt.use_node_features = False
         opt.transforms=str2list('constant')
     elif model_type == 'ContactGNN':
+        opt.GNN_mode = True
+        opt.output_mode = 'sequence'
         opt.hidden_sizes_list=str2list('16-2')
         opt.out_act = None
         opt.use_node_features = False
         opt.transforms=str2list('constant')
         opt.output_mode='sequence'
+    elif model_type == 'SequenceFCAutoencoder':
+        opt.output_mode = 'sequence'
+        opt.autoencoder_mode = True
+        opt.out_act = None
+        opt.hidden_sizes_list=str2list('2048-1024-1024-128')
 
     # hyperparameters
     opt.n_epochs = 1
@@ -163,7 +170,7 @@ def downsampling_test():
 
 def main():
     # cleanup()
-    debugModel('ContactGNN')
+    debugModel('SequenceFCAutoencoder')
     # to_mat()
     # downsampling_test()
 

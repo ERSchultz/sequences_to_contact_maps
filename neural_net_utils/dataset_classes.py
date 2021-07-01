@@ -214,6 +214,29 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def len(self):
         return len(self.raw_file_names)
 
+class Sequences(Dataset):
+    def __init__(self, dirname, crop, names = False, min_sample = 0):
+        super(Sequences, self).__init__()
+        self.crop = crop
+        self.names = names
+        self.paths = sorted(make_dataset(dirname, minSample = min_sample))
+
+    def __getitem__(self, index):
+        x_path = osp.join(self.paths[index], 'x.npy')
+        x = np.load(x_path)
+        if self.crop is not None:
+            x = x[self.crop[0]:self.crop[1], :]
+
+        x = torch.tensor(x, dtype = torch.float32)
+        result = [x]
+        if self.names:
+            result.append(self.paths[index])
+
+        return result
+
+    def __len__(self):
+        return len(self.paths)
+
 
 def main():
     t1 = torch_geometric.transforms.OneHotDegree(1024)

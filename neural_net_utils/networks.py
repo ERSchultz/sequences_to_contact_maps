@@ -367,10 +367,19 @@ class FullyConnectedAutoencoder(nn.Module):
 
     def forward(self, input):
         # assume input is n x k
+        N, n, k = input.shape
+
         input = torch.reshape(input, (-1, self.input_size))
         latent = self.encode(input)
         output = self.decode(latent)
+        output = torch.reshape(output, (-1, n, k))
         return output
+
+    def get_latent(self, input):
+        # assume input is n x k
+        input = torch.reshape(input, (-1, self.input_size))
+        latent = self.encode(input)
+        return latent
 
 class ContactGNN(nn.Module):
     '''

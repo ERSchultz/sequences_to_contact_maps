@@ -431,8 +431,8 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
     P_arr_overall = np.zeros(opt.valN)
     model.eval()
     for i, data in enumerate(val_dataloader):
-        data = data.to(opt.device)
         if opt.GNN_mode:
+            data = data.to(opt.device)
             if opt.autoencoder_mode:
                 y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
                                                         batch = data.batch,
@@ -444,6 +444,8 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
             path = data.path[0]
         else:
             x, y, path, minmax = data
+            x = x.to(opt.device)
+            y = y.to(opt.device)
             path = path[0]
             yhat = model(x)
         y = y.cpu().numpy().reshape((opt.n, opt.n))
@@ -514,8 +516,8 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
     for i, data in enumerate(val_dataloader):
         if i == count:
             break
-        data = data.to(opt.device)
         if opt.GNN_mode:
+            data = data.to(opt.device)
             if opt.autoencoder_mode:
                 y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
                                                         batch = data.batch,
@@ -527,6 +529,8 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
             path = data.path[0]
         else:
             x, y, path, minmax = data
+            x = x.to(opt.device)
+            y = y.to(opt.device)
             path = path[0]
             yhat = model(x)
         loss = opt.criterion(yhat, y).item()
@@ -621,7 +625,7 @@ def contactPlots(dataFolder):
         plotContactMap(y_prcnt_norm, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
 def plotROCCurve(val_dataloader, imagePath, model, opt):
-    assert opt.GNN_mode and not opt.autoencoder_mode
+    opt.verbose = True
     t0 = time.time()
     thresholds = np.linspace(0, 1, 51) # step size of 0.02
     tpr_array = np.zeros((51, opt.valN, opt.k))
@@ -631,21 +635,33 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
     for i, data in enumerate(val_dataloader):
         if opt.verbose:
             print('Iteration: {}'.format(i))
-        data = data.to(opt.device)
-        y = data.y
+        if opt.GNN_mode:
+            data = data.to(opt.device)
+            y = data.y
+            yhat = model(data)
+        elif opt.autoencoder_mode:
+            x = data[0]
+            x.to(opt.device)
+            y = x
+            yhat = model(x)
+            y = torch.reshape(y, (opt.n, opt.k))
+            yhat = torch.reshape(yhat, (opt.n, opt.k))
         y = y.cpu().numpy().astype(bool)
         y_not = np.logical_not(y)
-        yhat = model(data)
+
         if opt.loss =='BCE':
             # usincg BCE with logits loss, which combines sigmoid into loss
             # so need to do sigmoid here
-            yhat = F.sigmoid(yhat)
+            yhat = torch.sigmoid(yhat)
         yhat = yhat.cpu().detach().numpy()
-        minmax = data.minmax
-        path = data.path[0]
+
+        if opt.verbose:
+            print('y', y, y.shape)
+            print('yhat', yhat, yhat.shape)
 
         positives = np.sum(y, 0)
         negatives = np.sum(y_not, 0)
+        print('p: {}, n: {}'.format(positives, negatives))
         for j,t in enumerate(thresholds):
             if opt.verbose:
                 print('treshold: {}'.format(t))
@@ -769,7 +785,7 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
     opt.batch_size = 1 # batch size must be 1
     opt.shuffle = False # for reproducibility
     if dataset is None:
-        dataset = getDataset(opt)
+        dataset = getDataset(opt, True, True)
     _, val_dataloader, _ = getDataLoaders(dataset, opt)
 
     imagePath = opt.ofile_folder
