@@ -59,7 +59,8 @@ def getDataset(opt, names = False, minmax = False):
     if opt.GNN_mode:
         dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.n, opt.y_preprocessing,
                                             opt.y_norm, opt.min_subtraction, opt.use_node_features,
-                                            transform = opt.transforms_processed)
+                                            opt.sparsify_threshold, opt.top_k,
+                                            opt.transforms_processed, opt.pre_transforms_processed)
         opt.root = dataset.root
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
         dataset = Sequences(opt.data_folder, opt.crop, names)
@@ -442,10 +443,13 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
 def getBaseParser():
     '''Helper function that returns base parser'''
     parser = argparse.ArgumentParser(description='Base parser', fromfile_prefix_chars='@')
+
+    # GNN args
     parser.add_argument('--GNN_mode', type=str2bool, default=False, help='True to use GNNs (uses pytorch_geometric in core_test_train)')
-    parser.add_argument('--autoencoder_mode', type=str2bool, default=False, help='True to use input as target output (i.e. autoencoder)')
-    parser.add_argument('--verbose', type=str2bool, default=False)
-    parser.add_argument('--output_mode', type=str, default='contact', help='data structure of output {"contact", "sequence"}')
+    parser.add_argument('--transforms', type=str2list, help='list of transforms to use for GNN')
+    parser.add_argument('--pre_transforms', type=str2list, help='list of pre-transforms to use for GNN')
+    parser.add_argument('--sparsify_threshold', type=float, help='remove all edges with weight < threshold (None for all edges)')
+    parser.add_argument('--top_k', type=int, help='number of edge to keep per node (None for all edges)')
 
     # pre-processing args
     parser.add_argument('--data_folder', type=str, default='dataset_04_18_21', help='Location of data')
@@ -480,6 +484,10 @@ def getBaseParser():
     parser.add_argument('--milestones', type=str2list, default=[2], help='Milestones for lr decay - format: <milestone1-milestone2>')
     parser.add_argument('--gamma', type=float, default=0.1, help='Gamma for lr decay')
     parser.add_argument('--loss', type=str, default='mse', help='Type of loss to use: options: {"mse", "cross_entropy"}')
+    parser.add_argument('--autoencoder_mode', type=str2bool, default=False, help='True to use input as target output (i.e. autoencoder)')
+    parser.add_argument('--verbose', type=str2bool, default=False)
+    parser.add_argument('--output_mode', type=str, default='contact', help='data structure of output {"contact", "sequence"}')
+
 
     # model args
     parser.add_argument('--model_type', type=str, default='test', help='Type of model')
@@ -516,7 +524,6 @@ def getBaseParser():
     parser.add_argument('--message_passing', type=str, default='GCN', help='type of message passing algorithm')
     parser.add_argument('--head_architecture', type=str, default= 'xxT', help='type of head architecture')
     parser.add_argument('--MLP_hidden_sizes_list', type=str2list, help='List of hidden sizes for convolutional layers')
-    parser.add_argument('--transforms', type=str2list, help='list of transforms to use for GNN')
     parser.add_argument('--head_act', type=str, default='relu', help='activation function for head network')
 
 
@@ -590,6 +597,7 @@ def finalizeOpt(opt, parser, local = False):
     opt.node_feature_size = 0
     if opt.use_node_features:
         opt.node_feature_size += opt.k
+
     if opt.transforms is not None:
         transforms_processed = []
         for t_str in opt.transforms:
@@ -604,6 +612,21 @@ def finalizeOpt(opt, parser, local = False):
         opt.transforms_processed = torch_geometric.transforms.Compose(transforms_processed)
     else:
         opt.transforms_processed = None
+
+    if opt.pre_transforms is not None:
+        pre_transforms_processed = []
+        for t_str in opt.pre_transforms:
+            if t_str.lower() == 'constant':
+                pre_transforms_processed.append(torch_geometric.transforms.Constant())
+                opt.node_feature_size += 1
+            elif t_str.lower() == 'onehotdegree':
+                pre_transforms_processed.append(torch_geometric.transforms.OneHotDegree(opt.n))
+                opt.node_feature_size += opt.n
+            else:
+                raise Exception("Invalid transform {}".format(t_str))
+        opt.pre_transforms_processed = torch_geometric.transforms.Compose(pre_transforms_processed)
+    else:
+        opt.pre_transforms_processed = None
 
     # move data to scratch
     if opt.use_scratch and not local:
@@ -691,7 +714,7 @@ def opt2list(opt):
         opt.ifile_folder, opt.ifile, opt.k, opt.n, opt.seed, opt.out_act, opt.training_norm,
         opt.plot, opt.plot_predictions]
     if opt.GNN_mode:
-        opt_list.extend([opt.use_node_features, opt.transforms])
+        opt_list.extend([opt.use_node_features, opt.transforms, opt.pre_transforms, opt.sparsify_dense, opt.top_k])
     if opt.model_type == 'simpleEpiNet':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list])
     elif opt.model_type == 'UNet':
@@ -703,9 +726,11 @@ def opt2list(opt):
     elif opt.model_type == 'test':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.nf])
     elif opt.model_type == 'GNNAutoencoder':
-        opt_list.extend([opt.hidden_sizes_list, opt.message_passing, opt.head_architecture])
+        opt_list.extend([opt.hidden_sizes_list, opt.message_passing, opt.head_architecture, opt.MLP_hidden_sizes_list])
     elif opt.model_type == 'ContactGNN':
         opt_list.extend([opt.hidden_sizes_list, opt.message_passing])
+    elif opt.model_type == 'SequenceFCAutoencoder':
+        opt_list.extend([opt.hidden_sizes_list, opt.parameter_sharing])
     else:
         raise Exception("Unknown model type: {}".format(opt.model_type))
 
@@ -729,7 +754,7 @@ def get_opt_header(model_type, mode = None):
         'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'n',
         'seed', 'out_act', 'training_norm', 'plot', 'plot_predictions']
     if mode == 'GNN':
-        opt_list.extend(['use_node_features','transforms'])
+        opt_list.extend(['use_node_features','transforms', 'pre_transforms', 'sparsify_dense', 'top_k'])
     if model_type == 'simpleEpiNet':
         opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])
     elif model_type == 'UNet':
@@ -741,9 +766,11 @@ def get_opt_header(model_type, mode = None):
     elif model_type == 'test':
         opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'nf'])
     elif model_type == 'GNNAutoencoder':
-        opt_list.extend(['hidden_sizes_list', 'message_passing', 'head_architecture'])
+        opt_list.extend(['hidden_sizes_list', 'message_passing', 'head_architecture', 'MLP_hidden_sizes_list'])
     elif model_type == 'ContactGNN':
         opt_list.extend(['hidden_sizes_list', 'message_passing'])
+    elif model_type == 'SequenceFCAutoencoder':
+        opt_list.extend(['hidden_sizes_list', 'parameter_sharing'])
     else:
         raise Exception("Unknown model type: {}".format(model_type))
 

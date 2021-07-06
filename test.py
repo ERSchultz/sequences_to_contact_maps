@@ -112,7 +112,8 @@ def debugModel(model_type):
         opt.out_act = None
         opt.use_node_features = False
         opt.transforms=str2list('constant')
-        opt.output_mode='sequence'
+        opt.sparsify_threshold = 0.1
+        opt.top_k = 500
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
         opt.autoencoder_mode = True
@@ -171,7 +172,7 @@ def downsampling_test():
 
 def main():
     # cleanup()
-    debugModel('SequenceFCAutoencoder')
+    debugModel('ContactGNN')
     # to_mat()
     # downsampling_test()
 

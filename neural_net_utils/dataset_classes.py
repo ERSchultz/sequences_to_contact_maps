@@ -127,7 +127,7 @@ class Sequences2Contacts(Dataset):
 
 class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN: https://github.com/rusty1s/pytorch_geometric/issues/1511
-    def __init__(self, dirname, root_name, n, y_preprocessing, y_norm, min_subtraction, use_node_features, transform, pre_transform = None):
+    def __init__(self, dirname, root_name, n, y_preprocessing, y_norm, min_subtraction, use_node_features, sparsify_threshold, top_k, transform, pre_transform):
         t0 = time.time()
         self.n = n
         self.dirname = dirname
@@ -135,6 +135,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.y_norm = y_norm
         self.min_subtraction = min_subtraction
         self.use_node_features = use_node_features
+        self.sparsify_threshold = sparsify_threshold
+        self.top_k = top_k
 
         if self.y_norm == 'batch':
             assert y_preprocessing is not None, "use instance normalization instead"
@@ -194,10 +196,20 @@ class ContactsGraph(torch_geometric.data.Dataset):
             else:
                 y = y / self.ymax
 
+            if self.sparsify_threshold is not None:
+                y[y < self.sparsify_threshold] = 0
+
+            if self.top_k is not None:
+                GDC = torch_geometric.transforms.GDC()
+                edge_index, edge_weight = GDC.sparsify_dense(y, num_nodes = self.n, method = 'topk', k = self.top_k, dim = 0)
+            else:
+                edge_index = (y > 0).nonzero().t()
+                row, col = edge_index
+                edge_weight = y[row, col]
+
+            print(edge_index.shape)
             x = torch.tensor(np.load(osp.join(raw_folder, 'x.npy')), dtype = torch.float32)
-            edge_index = (y > 0).nonzero().t()
-            row, col = edge_index
-            edge_weight = y[row, col]
+
             if self.use_node_features:
                 graph = torch_geometric.data.Data(x = x, edge_index = edge_index, edge_attr = edge_weight, y = x)
             else:
