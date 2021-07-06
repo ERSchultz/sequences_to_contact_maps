@@ -722,17 +722,24 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
                                                                     tpr_mean_array[max_t], tpr_std_array[max_t]), file = opt.log_file)
     print('ROC time: {}'.format(np.round (time.time() - t0, 3)), file = opt.log_file)
 
-def updateResultTables(model_type = None, mode = None):
+def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
     if model_type is None:
-        model_types = ['Akita', 'DeepC', 'UNet', 'GNNAutoencoder']
-        modes = [None, None, None, 'GNN']
+        model_types = ['Akita', 'DeepC', 'UNet', 'GNNAutoencoder', 'ContactGNN']
+        modes = [None, None, None, 'GNN', 'GNN']
+        output_modes = ['contact', 'contact', 'contact', 'contact', 'sequence']
     else:
         model_types = [model_type]
         modes = [mode]
-    for model_type, mode in zip(model_types, modes):
+        output_modes = [output_mode]
+    for model_type, mode, output_mode in zip(model_types, modes, output_modes):
         # set up header row
         opt_list = get_opt_header(model_type, mode)
-        opt_list.extend(['Final Validation Loss', 'PCA Accuracy Mean', 'PCA Accuracy Std', 'PCA Spearman Mean', 'PCA Spearman Std', 'PCA Pearson Mean', 'PCA Pearson Std', 'Overall Pearson Mean', 'Overall Pearson Std'])
+        if output_mode == 'contact':
+            opt_list.extend(['Final Validation Loss', 'PCA Accuracy Mean', 'PCA Accuracy Std', 'PCA Spearman Mean', 'PCA Spearman Std', 'PCA Pearson Mean', 'PCA Pearson Std', 'Overall Pearson Mean', 'Overall Pearson Std'])
+        elif output_mode == 'sequence':
+            opt_list.extend(['Final Validation Loss', 'AUC'])
+        else:
+            raise Exception('Unknown output_mode {}'.format(output_mode))
         results = [opt_list]
 
         # get data
@@ -746,18 +753,27 @@ def updateResultTables(model_type = None, mode = None):
                 opt.id = int(id)
                 opt = finalizeOpt(opt, parser, True)
                 opt_list = opt2list(opt)
-                with open(osp.join(id_path, 'PCA_results.txt'), 'r') as f:
-                    f.readline()
-                    acc = f.readline().split(':')[1].strip().split(' +- ')
-                    spearman = f.readline().split(':')[1].strip().split(' +- ')
-                    pearson = f.readline().split(':')[1].strip().split(' +- ')
-                with open(osp.join(id_path, 'out.log'), 'r') as f:
-                    for line in f:
-                        if line.startswith('Final val loss: '):
-                            final_val_loss = line.split(':')[1].strip()
-                        elif line.startswith('Overall Pearson R: '):
-                            dist_pearson = line.split(':')[1].strip().split(' $\pm$ ')
-                opt_list.extend([final_val_loss, acc[0], acc[1], spearman[0], spearman[1], pearson[0], pearson[1], dist_pearson[0], dist_pearson[1]])
+                if output_mode == 'contact':
+                    with open(osp.join(id_path, 'PCA_results.txt'), 'r') as f:
+                        f.readline()
+                        acc = f.readline().split(':')[1].strip().split(' +- ')
+                        spearman = f.readline().split(':')[1].strip().split(' +- ')
+                        pearson = f.readline().split(':')[1].strip().split(' +- ')
+                    with open(osp.join(id_path, 'out.log'), 'r') as f:
+                        for line in f:
+                            if line.startswith('Final val loss: '):
+                                final_val_loss = line.split(':')[1].strip()
+                            elif line.startswith('Overall Pearson R: '):
+                                dist_pearson = line.split(':')[1].strip().split(' $\pm$ ')
+                    opt_list.extend([final_val_loss, acc[0], acc[1], spearman[0], spearman[1], pearson[0], pearson[1], dist_pearson[0], dist_pearson[1]])
+                elif output_mode == 'sequence':
+                    with open(osp.join(id_path, 'out.log'), 'r') as f:
+                        for line in f:
+                            if line.startswith('Final val loss: '):
+                                final_val_loss = line.split(':')[1].strip()
+                            elif line.startswith('AUC: '):
+                                auc = line.split(':')[1].strip()
+                    opt_list.extend([final_val_loss, auc])
                 results.append(opt_list)
 
         ofile = osp.join(model_path, 'results_table.csv')
@@ -830,7 +846,7 @@ def updateAllPlots():
 
 def plotCombinedModels(modelType):
     path = osp.join('results', modelType)
-    ids = [4, 5, 6]
+    ids = [45, 46, 47]
 
     dirs = []
     opts = []
@@ -857,9 +873,9 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    # plotCombinedModels('ContactGNN')
-    # updateResultTables('GNNAutoencoder', 'GNN')
+    # plotCombinedModels('GNNAutoencoder')
+    updateResultTables('ContactGNN', 'GNN', 'sequence')
     # updateAllPlots()
-    main()
+    # main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')

@@ -33,37 +33,6 @@ class UNet(nn.Module):
     def forward(self, input):
         return self.model(input)
 
-class PatchGANDiscriminator(nn.Module):
-    '''PatchGAN discriminator adapted from https://github.com/phillipi/pix2pix.'''
-    def __init__(self, nf = 64, std_norm = 'batch'):
-        # nf is the number of filters in the output of the first layer
-        super(PatchGANDiscriminator, self).__init__()
-        std_kernel = 4
-        std_pad = 1
-        std_act = 'prelu'
-
-        sequence = [ConvBlock(6, nf, std_kernel, 2, std_pad,
-                              bias = True, activation = std_act, norm = None)]
-        sequence.append(ConvBlock(nf, nf * 2, std_kernel, 2, std_pad,
-                              bias = False, activation = std_act, norm = std_norm))
-        sequence.append(ConvBlock(nf * 2, nf * 4, std_kernel, 2, std_pad,
-                            bias = False, activation = std_act, norm = std_norm))
-
-        sequence.append(ConvBlock(nf * 4, nf * 8, std_kernel, 1, std_pad,
-                              bias = False, activation = std_act, norm = std_norm))
-
-        sequence.append(ConvBlock(nf * 8, 1, std_kernel, 1, std_pad,
-                              bias = True, activation = None, norm = None))
-
-        self.model = nn.Sequential(*sequence)
-
-    def forward(self, input):
-        return self.model(input)
-
-    def set_requires_grad(self, val):
-        for param in self.parameters():
-            param.requires_grad = val
-
 class VAE(nn.Module):
     '''Adapted from https://doi.org/10.1371/journal.pcbi.1008262'''
     def __init__(self, input_size, hidden_size, latent_size):
@@ -110,7 +79,7 @@ class VAE(nn.Module):
 class DeepC(nn.Module):
     '''Roughly based on https://doi.org/10.1038/s41592-020-0960-3 (Deepc).'''
     def __init__(self, n, k, kernel_w_list, hidden_sizes_list,
-                dilation_list, std_norm, out_act):
+                dilation_list, std_norm, act, out_act):
         """
         Inputs:
             n: number of particles
@@ -129,7 +98,7 @@ class DeepC(nn.Module):
         assert len(kernel_w_list) == len(hidden_sizes_list), "length of kernel_w_list ({}) and hidden_sizes_list ({}) must match".format(len(kernel_w_list), len(hidden_sizes_list))
         for kernel_w, output_size in zip(kernel_w_list, hidden_sizes_list):
             model.append(ConvBlock(input_size, output_size, kernel_w, padding = kernel_w//2,
-                                    activation = 'prelu', norm = std_norm, dropout = 'drop', dropout_p = 0.2, conv1d = True))
+                                    activation = act, norm = std_norm, dropout = 'drop', dropout_p = 0.2, conv1d = True))
             input_size = output_size
 
         # Dilated Convolution
@@ -166,6 +135,7 @@ class Akita(nn.Module):
                 dilation_list_trunk,
                 bottleneck_size,
                 dilation_list_head,
+                act,
                 out_act,
                 out_channels,
                 std_norm,
@@ -179,6 +149,7 @@ class Akita(nn.Module):
             dilation_list_trunk: list of dilations for dilated convolutional layers of trunk
             bottleneck_size: size of bottleneck layer
             dilation_list_head: list of dilations for dilated convolutional layers of head
+            act: activation of inner layers
             out_act: activation of finally layer (str)
             out_channels: number of channels in output
             std_norm: default normalization method during training (str)
@@ -193,17 +164,17 @@ class Akita(nn.Module):
         assert len(kernel_w_list) == len(hidden_sizes_list), "length of kernel_w_list ({}) and hidden_sizes_list ({}) must match".format(len(kernel_w_list), len(hidden_sizes_list))
         for kernel_w, output_size in zip(kernel_w_list, hidden_sizes_list):
             trunk.append(ConvBlock(input_size, output_size, kernel_w, padding = kernel_w//2,
-                                    activation = 'relu', norm = std_norm, conv1d = True))
+                                    activation = act, norm = std_norm, conv1d = True))
             input_size = output_size
 
 
         # Diaated Convolution
         for dilation in dilation_list_trunk:
             trunk.append(ConvBlock(input_size, input_size, 3, padding = dilation,
-                                    activation = 'relu', norm = std_norm, dilation = dilation, residual = True, conv1d = True))
+                                    activation = act, norm = std_norm, dilation = dilation, residual = True, conv1d = True))
 
         # Bottleneck
-        trunk.append(ConvBlock(input_size, bottleneck_size, 1, padding = 0, activation = 'relu', conv1d = True))
+        trunk.append(ConvBlock(input_size, bottleneck_size, 1, padding = 0, activation = act, conv1d = True))
 
         # Downsampling
         downsampling_factor = 2
@@ -213,7 +184,7 @@ class Akita(nn.Module):
             trunk.append(nn.AvgPool1d(pool_kernel_size))
         elif downsample_method == 'conv':
             trunk.append(ConvBlock(bottleneck_size, bottleneck_size, stride = stride_size,
-                                    activation = 'relu', norm = std_norm, conv1d = True))
+                                    activation = act, norm = std_norm, conv1d = True))
         else:
             downsampling_factor = 1
             assert downsample_method is None, "{}".format(downsample_method)
@@ -224,18 +195,18 @@ class Akita(nn.Module):
         head = []
         head.append(AverageTo2d(True, n // downsampling_factor))
         input_size = bottleneck_size + 1
-        head.append(ConvBlock(input_size, input_size, 1, padding = 0, activation = 'relu'))
+        head.append(ConvBlock(input_size, input_size, 1, padding = 0, activation = act))
 
         # Dilated Convolution
         for dilation in dilation_list_head:
             head.append(ConvBlock(input_size, input_size, 3, padding = dilation,
-                                    activation = 'relu', norm = std_norm, dilation = dilation, residual = True))
+                                    activation = act, norm = std_norm, dilation = dilation, residual = True))
             head.append(Symmetrize2D())
 
         # UpSampling
         if downsample_method is not None:
             head.append(DeconvBlock(input_size, input_size, stride = stride_size,
-                                        activation = 'relu', norm = std_norm, output_padding = 1))
+                                        activation = act, norm = std_norm, output_padding = 1))
 
         self.head = nn.Sequential(*head)
 
@@ -265,13 +236,13 @@ class SimpleEpiNet(nn.Module):
 
         self.model = nn.Sequential(*model)
 
-        self.act = out_act
+        self.out_act = out_act
 
     def forward(self, input):
         out = self.model(input)
 
         out = torch.einsum('...kn, ...km->...nm', out, out)
-        out = self.act(out)
+        out = self.out_act(out)
         out = torch.unsqueeze(out, 1)
         return out
 
@@ -289,7 +260,19 @@ class GNNAutoencoder(nn.Module):
         else:
             raise Exception("Unkown message_passing {}".format(message_passing))
 
-        if act
+        if act is None:
+            self.act = nn.Identity()
+        elif issubclass(type(act), nn.Module):
+            self.act = act
+        elif isinstance(act, str):
+            if act.lower() == 'sigmoid':
+                self.act = nn.Sigmoid()
+            elif act.lower() == 'relu':
+                self.act = nn.ReLU(True)
+            else:
+                raise Exception("Unkown activation {}".format(act))
+        else:
+            raise Exception("Unknown out_act {}".format(act))
 
         self.head_architecture = head_architecture
         if self.head_architecture == 'MLP':
@@ -322,8 +305,9 @@ class GNNAutoencoder(nn.Module):
     def forward(self, graph):
         x, edge_index, edge_attr  = graph.x, graph.edge_index, graph.edge_attr
         x = self.conv1(x, edge_index, edge_attr)
-        x = F.relu(x)
+        x = self.act(x)
         x = self.conv2(x, edge_index, edge_attr)
+        # TODO act??
 
         if self.head_architecture == 'xxT':
             latent = torch.reshape(x, (-1, self.n, self.output_size))
@@ -347,40 +331,91 @@ class FullyConnectedAutoencoder(nn.Module):
 
     Note that there is no parameter sharing between the encoder and the decoder.
     '''
-    def __init__(self, input_size, hidden_sizes_list):
+    def __init__(self, input_size, hidden_sizes_list, act, out_act, parameter_sharing):
         '''
         Inputs:
             input_size: size of input (also used as size of output)
             hidden_sizes_list: list of hidden sizes
         '''
         super(FullyConnectedAutoencoder, self).__init__()
-        encode_model = []
-        decode_model = []
+        if act is None:
+            self.act = nn.Identity()
+        elif issubclass(type(act), nn.Module):
+            self.act = act
+        elif isinstance(act, str):
+            if act.lower() == 'sigmoid':
+                self.act = nn.Sigmoid()
+            elif act.lower() == 'relu':
+                self.act = nn.ReLU(True)
+            else:
+                raise Exception("Unkown activation {}".format(act))
+        else:
+            raise Exception("Unknown out_act {}".format(act))
+
+        if out_act is None:
+            self.out_act = nn.Identity()
+        elif issubclass(type(out_act), nn.Module):
+            self.out_act = out_act
+        elif isinstance(out_act, str):
+            if out_act.lower() == 'sigmoid':
+                self.out_act = nn.Sigmoid()
+            elif out_act.lower() == 'relu':
+                self.out_act = nn.ReLU(True)
+            else:
+                raise Exception("Unkown activation {}".format(out_act))
+        else:
+            raise Exception("Unknown out_act {}".format(out_act))
+
+        self.encode_weights = nn.ParameterList()
+        self.encode_biases = nn.ParameterList()
+        self.decode_weights = nn.ParameterList()
+        self.decode_biases = nn.ParameterList()
         self.input_size = input_size
         for output_size in hidden_sizes_list:
-            encode_model.append(LinearBlock(input_size, output_size, activation = 'relu'))
-            decode_model.append(LinearBlock(output_size, input_size, activation = 'relu'))
+            self.encode_weights.append(nn.Parameter(torch.randn(output_size, input_size)))
+            self.encode_biases.append(nn.Parameter(torch.randn(output_size)))
+
+            self.decode_biases.append(nn.Parameter(torch.randn(input_size)))
+            if not parameter_sharing:
+                self.decode_weights.append(nn.Parameter(torch.randn(input_size, output_size)))
             input_size = output_size
-
-        self.encode = nn.Sequential(*encode_model)
-        decode_model.reverse()
-        self.decode = nn.Sequential(*decode_model)
-
 
     def forward(self, input):
         # assume input is n x k
         N, n, k = input.shape
 
-        input = torch.reshape(input, (-1, self.input_size))
-        latent = self.encode(input)
-        output = self.decode(latent)
-        output = torch.reshape(output, (-1, n, k))
+        input = torch.reshape(input, (N, self.input_size))
+        for weight, bias in zip(self.encode_weights, self.encode_biases):
+            input = F.linear(input, weight, bias)
+            input = self.act(input)
+
+        latent = input
+
+        bias_list = reversed(list(self.decode_biases))
+        if self.decode_weights:
+            # True if not empty
+            for weight, bias in zip(reversed(list(self.decode_weights)), bias_list):
+                latent = F.linear(latent, weight, bias)
+                latent = self.act(latent)
+        else:
+            for weight, bias in zip(reversed(list(self.encode_weights)), bias_list):
+                latent = F.linear(latent, weight.t(), bias)
+                latent = self.act(latent)
+
+        output = self.out_act(latent)
+        output = torch.reshape(latent, (N, n, k))
         return output
 
     def get_latent(self, input):
         # assume input is n x k
-        input = torch.reshape(input, (-1, self.input_size))
-        latent = self.encode(input)
+        N, n, k = input.shape
+
+        input = torch.reshape(input, (N, self.input_size))
+        for weight, bias in zip(self.encode_weights, self.encode_biases):
+            input = F.linear(input, weight, bias)
+            input = self.act(input)
+
+        latent = input
         return latent
 
 class ContactGNN(nn.Module):
@@ -390,7 +425,7 @@ class ContactGNN(nn.Module):
     Primary use is to map contact data (formatted as graph) to particle type vector
     where particle type vector is not given as node feature in graph.
     '''
-    def __init__(self, n, input_size, hidden_sizes_list, out_act,
+    def __init__(self, n, input_size, hidden_sizes_list, act, out_act,
                 message_passing):
         '''
         Inputs:
@@ -413,6 +448,20 @@ class ContactGNN(nn.Module):
         else:
             raise Exception("Unkown message_passing {}".format(message_passing))
 
+        if act is None:
+            self.act = nn.Identity()
+        elif issubclass(type(act), nn.Module):
+            self.act = act
+        elif isinstance(act, str):
+            if act.lower() == 'sigmoid':
+                self.act = nn.Sigmoid()
+            elif act.lower() == 'relu':
+                self.act = nn.ReLU(True)
+            else:
+                raise Exception("Unkown activation {}".format(act))
+        else:
+            raise Exception("Unknown out_act {}".format(act))
+
         if out_act is None:
             self.out_act = nn.Identity()
         elif issubclass(type(out_act), nn.Module):
@@ -430,15 +479,28 @@ class ContactGNN(nn.Module):
     def forward(self, graph):
         x, edge_index, edge_attr  = graph.x, graph.edge_index, graph.edge_attr
         x = self.conv1(x, edge_index, edge_attr)
-        x = F.relu(x)
+        x = self.act(x)
         x = self.conv2(x, edge_index, edge_attr)
         out = self.out_act(x)
         return out
 
 def main():
-    f = ContactGNN(1024, 2, [16, 2], None, 'GCN')
-    x = f(torch.ones(1024))
-    print(x)
+
+    model = FullyConnectedAutoencoder(12, [2], 'relu', False)
+    criterion = torch.nn.MSELoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr = 1e-3)
+
+    x = torch.ones((1, 4, 3))
+    y = model(x)
+    loss = criterion(y, x)
+    loss.backward()
+    optimizer.step()
+    tot_pars = 0
+    for k,p in model.named_parameters():
+        print(k, p.numel())
+        tot_pars += p.numel()
+    print('Total parameters: {}'.format(tot_pars))
+
 
 if __name__ == '__main__':
     main()

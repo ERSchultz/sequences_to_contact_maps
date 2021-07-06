@@ -9,6 +9,9 @@ import torch.optim as optim
 
 import torch_geometric.data
 
+import locale
+locale.setlocale(locale.LC_ALL, 'en_US')
+
 from neural_net_utils.networks import *
 from neural_net_utils.utils import getDataLoaders, comparePCA, save_args, argparseSetup, getModel, getDataset
 from plotting_functions import plotting_script, plotModelFromArrays
@@ -60,10 +63,10 @@ def core_test_train(model, opt):
 
     tot_pars = 0
     for k,p in model.named_parameters():
-        if opt.verbose:
-            print(k, p.numel())
         tot_pars += p.numel()
-    print('Total parameters: {}'.format(tot_pars), file = opt.log_file)
+        if opt.verbose:
+            print(k, p.numel(), p.shape)
+    print('Total parameters: {}'.format(locale.format("%d", tot_pars, grouping = True)), file = opt.log_file)
     print('Total time: {}'.format(time.time() - t0), file = opt.log_file)
     print('Final val loss: {}\n'.format(val_loss_arr[-1]), file = opt.log_file)
 

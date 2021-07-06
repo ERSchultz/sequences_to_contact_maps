@@ -78,7 +78,7 @@ def debugModel(model_type):
     opt.n = 1024
     opt.y_preprocessing = 'diag'
     opt.y_norm = 'instance'
-    opt.loss = 'mse'
+    opt.loss = 'BCE'
 
     if model_type == 'Akita':
         opt.kernel_w_list=str2list('5-5-5')
@@ -117,7 +117,8 @@ def debugModel(model_type):
         opt.output_mode = 'sequence'
         opt.autoencoder_mode = True
         opt.out_act = None
-        opt.hidden_sizes_list=str2list('2048-1024-1024-128')
+        opt.hidden_sizes_list=str2list('1024-1024-128')
+        opt.parameter_sharing = False
 
     # hyperparameters
     opt.n_epochs = 1
@@ -127,9 +128,9 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = True
+    opt.plot = False
     opt.plot_predictions = False
-    opt.verbose = False
+    opt.verbose = True
     opt.data_folder = "dataset_04_18_21"
 
     opt = finalizeOpt(opt, parser, True)

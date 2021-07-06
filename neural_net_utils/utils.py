@@ -31,12 +31,13 @@ def getModel(opt):
         model = UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm, out_act = opt.out_act)
     elif opt.model_type == 'DeepC':
         model = DeepC(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
-                            opt.dilation_list, opt.training_norm, opt.out_act)
+                            opt.dilation_list, opt.training_norm, opt.act, opt.out_act)
     elif opt.model_type == 'Akita':
         model = Akita(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list_trunk,
                             opt.bottleneck,
                             opt.dilation_list_head,
+                            opt.act,
                             opt.out_act,
                             opt.channels,
                             opt.training_norm,
@@ -45,9 +46,9 @@ def getModel(opt):
         model = GNNAutoencoder(opt.n, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.head_act, opt.out_act,
                                 opt.message_passing, opt.head_architecture, opt.MLP_hidden_sizes_list)
     elif opt.model_type == 'SequenceFCAutoencoder':
-        model = FullyConnectedAutoencoder(opt.n * opt.k, opt.hidden_sizes_list)
+        model = FullyConnectedAutoencoder(opt.n * opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, opt.parameter_sharing)
     elif opt.model_type == 'ContactGNN':
-        model = ContactGNN(opt.n, opt.node_feature_size, opt.hidden_sizes_list, opt.out_act, opt.message_passing)
+        model = ContactGNN(opt.n, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.out_act, opt.message_passing)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -493,6 +494,7 @@ def getBaseParser():
     parser.add_argument('--act', type=str2None, default='relu', help='default activation') # TODO impelement throughout
     parser.add_argument('--out_act', type=str2None, help='activation of final layer')
     parser.add_argument('--training_norm', type=str2None, help='norm during training (batch, instance, or None)')
+    parser.add_argument('--parameter_sharing', type=str2bool, default=False, help='True to use parameter sharing in autoencoder blocks')
 
     # SimpleEpiNet args
     parser.add_argument('--kernel_w_list', type=str2list, help='List of kernel widths of convolutional layers')
@@ -702,6 +704,8 @@ def opt2list(opt):
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.nf])
     elif opt.model_type == 'GNNAutoencoder':
         opt_list.extend([opt.hidden_sizes_list, opt.message_passing, opt.head_architecture])
+    elif opt.model_type == 'ContactGNN':
+        opt_list.extend([opt.hidden_sizes_list, opt.message_passing])
     else:
         raise Exception("Unknown model type: {}".format(opt.model_type))
 
@@ -738,6 +742,8 @@ def get_opt_header(model_type, mode = None):
         opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'nf'])
     elif model_type == 'GNNAutoencoder':
         opt_list.extend(['hidden_sizes_list', 'message_passing', 'head_architecture'])
+    elif model_type == 'ContactGNN':
+        opt_list.extend(['hidden_sizes_list', 'message_passing'])
     else:
         raise Exception("Unknown model type: {}".format(model_type))
 
