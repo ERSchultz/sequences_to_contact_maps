@@ -450,6 +450,10 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
             yhat = model(x)
         y = y.cpu().numpy().reshape((opt.n, opt.n))
         y = un_normalize(y, minmax)
+        if opt.loss == 'BCE':
+            # using BCE with logits loss, which combines sigmoid into loss
+            # so need to do sigmoid here
+            yhat = torch.sigmoid(yhat)
         yhat = yhat.cpu().detach().numpy()
 
         if opt.y_preprocessing == 'prcnt' and opt.loss == 'cross_entropy':
@@ -536,6 +540,10 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
         loss = opt.criterion(yhat, y).item()
         y = y.cpu().numpy().reshape((opt.n, opt.n))
         y = un_normalize(y, minmax)
+        if opt.loss == 'BCE':
+            # using BCE with logits loss, which combines sigmoid into loss
+            # so need to do sigmoid here
+            yhat = torch.sigmoid(yhat)
         yhat = yhat.cpu().detach().numpy()
         yhat = yhat.reshape((opt.n,opt.n))
 
@@ -649,7 +657,7 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
         y_not = np.logical_not(y)
 
         if opt.loss =='BCE':
-            # usincg BCE with logits loss, which combines sigmoid into loss
+            # using BCE with logits loss, which combines sigmoid into loss
             # so need to do sigmoid here
             yhat = torch.sigmoid(yhat)
         yhat = yhat.cpu().detach().numpy()
@@ -780,7 +788,6 @@ def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
         with open(ofile, 'w', newline = '') as f:
             wr = csv.writer(f)
             wr.writerows(results)
-
 
 def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, dataset = None):
     if model is None:
