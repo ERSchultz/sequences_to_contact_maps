@@ -207,7 +207,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 row, col = edge_index
                 edge_weight = y[row, col]
 
-            print(edge_index.shape)
             x = torch.tensor(np.load(osp.join(raw_folder, 'x.npy')), dtype = torch.float32)
 
             if self.use_node_features:

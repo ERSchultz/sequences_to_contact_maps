@@ -170,9 +170,21 @@ def downsampling_test():
     y_diag_down = F.avg_pool2d(y_diag, 2)
     print(y_diag_down)
 
+def test_argwhere():
+    converter = InteractionConverter(2)
+    all_binary_vectors = converter.generateAllBinaryStrings()
+    data = np.repeat(all_binary_vectors, 3).reshape((-1, 2))
+    print(data)
+    for v in all_binary_vectors:
+        print(v)
+        where = np.where((data == v).all(axis=1))
+        print(where)
+        print('\n')
+
 def main():
     # cleanup()
-    debugModel('ContactGNN')
+    # debugModel('ContactGNN')
+    test_argwhere()
     # to_mat()
     # downsampling_test()
 

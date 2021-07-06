@@ -634,10 +634,11 @@ def contactPlots(dataFolder):
 
 def plotROCCurve(val_dataloader, imagePath, model, opt):
     t0 = time.time()
-    thresholds = np.linspace(0, 1, 51) # step size of 0.02
-    tpr_array = np.zeros((51, opt.valN, opt.k))
-    fpr_array = np.zeros((51, opt.valN, opt.k))
-    acc_array = np.zeros((51, opt.valN))
+    steps = 101 # step size of 0.01
+    thresholds = np.linspace(0, 1, steps)
+    tpr_array = np.zeros((steps, opt.valN, opt.k))
+    fpr_array = np.zeros((steps, opt.valN, opt.k))
+    acc_array = np.zeros((steps, opt.valN))
     model.eval()
     for i, data in enumerate(val_dataloader):
         if opt.verbose:
@@ -699,11 +700,11 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
     title = 'AUC:'
     for i in range(opt.k):
         area = np.round(metrics.auc(fpr_mean_array[:,i], tpr_mean_array[:,i]), 3)
-        title += ' particle {} = {}'.format(i, area)
-        plt.plot(fpr_mean_array[:,i], tpr_mean_array[:,i], label = 'particle {}'.format(i))
+        title += ' particle type {} = {}'.format(i, area)
+        plt.plot(fpr_mean_array[:,i], tpr_mean_array[:,i], label = 'particle type {}'.format(i))
         plt.fill_between(fpr_mean_array[:,i],  tpr_mean_array[:,i] + tpr_std_array[:,i],  tpr_mean_array[:,i] - tpr_std_array[:,i], alpha = 0.5)
         plt.fill_between(fpr_mean_array[:,i],  tpr_mean_array[:,i] + tpr_std_array[:,i],  tpr_mean_array[:,i] - tpr_std_array[:,i], alpha = 0.5)
-    plt.plot(np.linspace(0,1, 100), np.linspace(0,1,100), color = 'gray', linestyle='dashed')
+    plt.plot(np.linspace(0,1,100), np.linspace(0,1,100), color = 'gray', linestyle='dashed')
     plt.xlabel('False Positive Rate', fontsize = 16)
     plt.ylabel('True Positive Rate', fontsize = 16)
     plt.legend(loc = 'lower right')
@@ -729,6 +730,50 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
     print('Corresponding FPR = {} +- {} and TPR = {} +- {}'.format(fpr_mean_array[max_t], fpr_std_array[max_t],
                                                                     tpr_mean_array[max_t], tpr_std_array[max_t]), file = opt.log_file)
     print('ROC time: {}'.format(np.round (time.time() - t0, 3)), file = opt.log_file)
+
+def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1), use_latent = False):
+    # TODO explain what this does
+    assert len(dims) == 2, 'currently only support 2D plots'
+    converter = InteractionConverter(opt.k)
+    all_binary_vectors = converter.generateAllBinaryStrings()
+    print(all_binary_vectors)
+    model.eval()
+    for i, data in enumerate(val_dataloader):
+        if i == count:
+            break
+        if opt.GNN_mode:
+            data = data.to(opt.device)
+            x = data.y # x is the simulated epigenetic marks
+            if opt.autoencoder_mode:
+                assert opt.output_mode == 'contact'
+                z = model.get_latent(data)
+            else:
+                assert opt.output_mode == 'sequence'
+                z = model(x)
+            minmax = data.minmax
+            path = data.path[0]
+        else:
+            assert False, "sorry haven't checked this yet"
+            x, y, path, minmax = data
+            x = x.to(opt.device)
+            path = path[0]
+
+        sample = osp.split(path)[-1]
+        subpath = osp.join(opt.ofile_folder, sample)
+        print(subpath, file = opt.log_file)
+        if not osp.exists(subpath):
+            os.mkdir(subpath, mode = 0o755)
+
+        # Now get the distribution of latent vectors for each combination of input marks
+        for vector in all_binary_vectors:
+            # need to use subplots here
+            print(vector)
+            ind = np.where((x == vector).all(axis = 1))
+            plt.plot(z[ind, dims[0]], z[ind, dims[1]])
+            plt.xlabel('particle type {}'.format(dims[0]))
+            plt.ylabel('particle type {}'.format(dims[1]))
+            plt.savefig()
+
 
 def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
     if model_type is None:
@@ -817,19 +862,25 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
 
     if opt.plot:
         if opt.output_mode == 'contact':
-            comparePCA(val_dataloader, imagePath, model, opt)
+            # comparePCA(val_dataloader, imagePath, model, opt)
 
-            plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt)
+            # plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt)
 
-            plotPerClassAccuracy(val_dataloader, imagePath, model, opt)
+            # plotPerClassAccuracy(val_dataloader, imagePath, model, opt)
+
+            if opt.model_type == 'GNNAutoencoder':
+                plotParticleDistribution(val_dataloader, model, opt, use_latent = True)
         elif opt.output_mode == 'sequence':
-            plotROCCurve(val_dataloader, imagePath, model, opt)
+            # plotROCCurve(val_dataloader, imagePath, model, opt)
+
+            plotParticleDistribution(val_dataloader, imagePath, model, opt)
         else:
             raise Exception("Unkown output_mode {}".format(opt.output_mode))
 
+
     if opt.plot_predictions:
         assert opt.output_mode == 'contact', 'only contact predictions supported for plot_predictions not {}'.format(opt.output_mode)
-        plotPredictions(val_dataloader, model, opt)
+        # plotPredictions(val_dataloader, model, opt)
 
 def updateAllPlots():
     parser = getBaseParser()
@@ -881,7 +932,7 @@ def main():
 
 if __name__ == '__main__':
     # plotCombinedModels('GNNAutoencoder')
-    updateResultTables('ContactGNN', 'GNN', 'sequence')
+    # updateResultTables('ContactGNN', 'GNN', 'sequence')
     # updateAllPlots()
     main()
     # freqDistributionPlots('dataset_04_18_21')
