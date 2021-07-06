@@ -883,6 +883,6 @@ if __name__ == '__main__':
     # plotCombinedModels('GNNAutoencoder')
     updateResultTables('ContactGNN', 'GNN', 'sequence')
     # updateAllPlots()
-    # main()
+    main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')
