@@ -34,27 +34,4 @@ Total parameters: 592
 Total time: 7148.175270795822
 Final val loss: 0.6855139899253845
 
-#### Plotting Script ####
-PCA Results:
-Accuracy: 0.698 +- 0.039
-Spearman R: 0.956 +- 0.051
-Pearson R: 0.954 +- 0.053
-
-Distance Stratified Pearson Correlation Results:
-Overall Pearson R: 0.618 $\pm$ 0.105
-
-Class Accuracy Results:
-prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
- 1.26702019 1.41689416 1.70505444 5.05148524]
-Accuracy: 21.4% +- 4.2
-Loss: 0.686 +- 0.005
-Prediction Results:
-prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
- 1.26702019 1.41689416 1.70505444 5.05148524]
-results/GNNAutoencoder/34/sample1230
-results/GNNAutoencoder/34/sample1761
-results/GNNAutoencoder/34/sample40
-results/GNNAutoencoder/34/sample1751
-results/GNNAutoencoder/34/sample1718
-Loss: 0.01712181031703949 +- 0.10692860377358143
 

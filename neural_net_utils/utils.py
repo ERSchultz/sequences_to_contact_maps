@@ -338,6 +338,10 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
         loss_arr[i] = loss
         y = y.cpu().numpy().reshape((opt.n, opt.n))
         y = un_normalize(y, minmax)
+        if opt.loss == 'BCE':
+            # using BCE with logits loss, which combines sigmoid into loss
+            # so need to do sigmoid here
+            yhat = torch.sigmoid(yhat)
         yhat = yhat.cpu().detach().numpy()
 
         if opt.y_preprocessing == 'prcnt':
@@ -390,6 +394,10 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
             yhat = model(x)
         y = y.cpu().numpy().reshape((opt.n, opt.n))
         y = un_normalize(y, minmax)
+        if opt.loss == 'BCE':
+            # using BCE with logits loss, which combines sigmoid into loss
+            # so need to do sigmoid here
+            yhat = torch.sigmoid(yhat)
         yhat = yhat.cpu().detach().numpy()
 
         if opt.y_preprocessing == 'prcnt' and opt.loss == 'cross_entropy':
