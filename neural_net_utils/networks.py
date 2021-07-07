@@ -323,6 +323,16 @@ class GNNAutoencoder(nn.Module):
 
         return out
 
+    def get_latent(self, graph):
+        x, edge_index, edge_attr  = graph.x, graph.edge_index, graph.edge_attr
+        x = self.conv1(x, edge_index, edge_attr)
+        x = self.act(x)
+        x = self.conv2(x, edge_index, edge_attr)
+
+        assert self.head_architecture == 'xxT', 'get_latent not supported for {}'.format(self.head_architecture)
+        latent = torch.reshape(x, (-1, self.n, self.output_size))
+        return latent
+
 class FullyConnectedAutoencoder(nn.Module):
     '''
     Fully connected symmetric autoendocer with user defined number of layers and hidden dimension.
