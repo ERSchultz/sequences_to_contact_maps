@@ -14,7 +14,7 @@ def main():
     if opt.use_scratch:
         opt.data_folder = osp.join('/../../../scratch/midway2/erschultz', osp.split(opt.data_folder)[-1])
 
-    root = osp.join(opt.data_folder, root_name)
+    root = osp.join(opt.data_folder, opt.root_name)
 
     if osp.exists(root):
         print('Removing {}'.format(root))

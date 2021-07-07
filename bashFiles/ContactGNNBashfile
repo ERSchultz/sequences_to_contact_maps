@@ -36,6 +36,7 @@ gamma=0.1
 
 useScratch='true'
 verbose='false'
+plotPredictinos='false'
 
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2
@@ -43,7 +44,7 @@ source activate python3.8_pytorch1.8.1_cuda10.2
 
 for lr in 1e-1 1e-2 1e-3
 do
-python3 core_test_train.py --data_folder $dirname --root_name $modelType --delete_root $deleteRoot --model_type $modelType --GNN_mode $GNNMode --output_mode $outputMode --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --use_node_features $useNodeFeatures --hidden_sizes_list $hiddenSizesList --transforms $transforms --top_k $topK --loss $loss --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --verbose $verbose --use_scratch $useScratch
+python3 core_test_train.py --data_folder $dirname --root_name $modelType --delete_root $deleteRoot --model_type $modelType --GNN_mode $GNNMode --output_mode $outputMode --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --use_node_features $useNodeFeatures --hidden_sizes_list $hiddenSizesList --transforms $transforms --top_k $topK --loss $loss --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --verbose $verbose --use_scratch $useScratch --plot_predictions $plotPredictions
 done
 
 python3 cleanDirectories.py --data_folder $dirname --root_name $modelType --use_scratch $useScratch

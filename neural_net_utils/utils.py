@@ -542,7 +542,6 @@ def getBaseParser():
     return parser
 
 def finalizeOpt(opt, parser, local = False):
-    print(opt)
     # local is a flag to overide some commands when working locally
     # set up output folders/files
     model_type_folder = osp.join('results', opt.model_type)
