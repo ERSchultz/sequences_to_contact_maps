@@ -7,8 +7,6 @@
 #SBATCH --output=logFiles/plotting.log
 #SBATCH --time=06:00:00
 
-#SBATCH --gres=gpu:1
-
 dirname="../../../project2/depablo/erschultz/dataset_04_18_21"
 
 # partition
