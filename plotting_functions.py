@@ -977,8 +977,8 @@ def main():
 
 if __name__ == '__main__':
     # updateResultTables('ContactGNN', 'GNN', 'sequence')
-    updateAllPlots()
-    plotCombinedModels('ContactGNN', [7, 8, 9])
-    # main()
+    # updateAllPlots()
+    # plotCombinedModels('ContactGNN', [7, 8, 9])
+    main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')
