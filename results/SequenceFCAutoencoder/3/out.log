@@ -161,3 +161,17 @@ AUC: particle 0 = 0.5 particle 1 = 0.5
 Max accuracy at t = 0.5: 0.512 +- 0.049
 Corresponding FPR = [0. 0.] +- [0. 0.] and TPR = [0. 0.] +- [0. 0.]
 ROC time: 1.816
+Warning: falling back to cpu
+Model is loaded: results/SequenceFCAutoencoder/3/model.pt
+#### Plotting Script ####
+ROC Curve Results:
+AUC: particle type 0 = 0.5 particle type 1 = 0.5
+
+Max accuracy at t = 0.5: 0.512 +- 0.049
+Corresponding FPR = [0. 0.] +- [0. 0.] and TPR = [0. 0.] +- [0. 0.]
+ROC time: 3.621
+results/SequenceFCAutoencoder/3/sample189
+results/SequenceFCAutoencoder/3/sample662
+results/SequenceFCAutoencoder/3/sample997
+results/SequenceFCAutoencoder/3/sample1950
+results/SequenceFCAutoencoder/3/sample898
