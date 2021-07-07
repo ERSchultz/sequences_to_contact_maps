@@ -748,7 +748,9 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
                 z = model.get_latent(data)
             else:
                 assert opt.output_mode == 'sequence'
-                z = model(x)
+                z = model(data)
+                if opt.loss == 'BCE':
+                    z = torch.sigmoid(z)
             minmax = data.minmax
             path = data.path[0]
         else:
@@ -894,29 +896,31 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
 
     if opt.plot:
         if opt.output_mode == 'contact':
-            # comparePCA(val_dataloader, imagePath, model, opt)
+            comparePCA(val_dataloader, imagePath, model, opt)
 
-            # plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt)
+            plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt)
 
-            # plotPerClassAccuracy(val_dataloader, imagePath, model, opt)
+            plotPerClassAccuracy(val_dataloader, imagePath, model, opt)
 
-            if opt.model_type == 'GNNAutoencoder':
-                plotParticleDistribution(val_dataloader, model, opt, use_latent = True)
         elif opt.output_mode == 'sequence':
-            # plotROCCurve(val_dataloader, imagePath, model, opt)
+            plotROCCurve(val_dataloader, imagePath, model, opt)
 
-            plotParticleDistribution(val_dataloader, imagePath, model, opt)
         else:
             raise Exception("Unkown output_mode {}".format(opt.output_mode))
 
 
     if opt.plot_predictions:
-        assert opt.output_mode == 'contact', 'only contact predictions supported for plot_predictions not {}'.format(opt.output_mode)
-        # plotPredictions(val_dataloader, model, opt)
+        if opt.output_mode == 'contact':
+            plotPredictions(val_dataloader, model, opt)
+
+        if opt.model_type == 'ContactGNN':
+            plotParticleDistribution(val_dataloader, model, opt, use_latent = False)
+        elif opt.model_type == 'GNNAutoencoder':
+            plotParticleDistribution(val_dataloader, model, opt, use_latent = True)
 
 def updateAllPlots():
     parser = getBaseParser()
-    for model_type in ['DeepC']: # 'Akita', 'UNet',
+    for model_type in ['ContactGNN']: # 'Akita', 'UNet',
         print(model_type)
         model_path = osp.join('results', model_type)
         for id in os.listdir(model_path):
@@ -929,14 +933,13 @@ def updateAllPlots():
                 opt = finalizeOpt(opt, parser)
 
                 # overwrite plotting flags
-                opt.plot = False
+                opt.plot = True
                 opt.plot_predictions = True
                 print(opt, file = opt.log_file)
                 plotting_script(None, opt)
 
-def plotCombinedModels(modelType):
+def plotCombinedModels(modelType, ids):
     path = osp.join('results', modelType)
-    ids = [45, 46, 47]
 
     dirs = []
     opts = []
@@ -963,9 +966,9 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    # plotCombinedModels('GNNAutoencoder')
     # updateResultTables('ContactGNN', 'GNN', 'sequence')
-    # updateAllPlots()
-    main()
+    updateAllPlots()
+    plotCombinedModels('ContactGNN', [7, 8, 9])
+    # main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')
