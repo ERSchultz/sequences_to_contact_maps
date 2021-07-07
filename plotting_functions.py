@@ -736,7 +736,6 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
     assert len(dims) == 2, 'currently only support 2D plots'
     converter = InteractionConverter(opt.k)
     all_binary_vectors = converter.generateAllBinaryStrings()
-    print(all_binary_vectors)
     model.eval()
     for i, data in enumerate(val_dataloader):
         if i == count:
@@ -755,8 +754,10 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
         else:
             assert False, "sorry haven't checked this yet"
             x, y, path, minmax = data
-            x = x.to(opt.device)
             path = path[0]
+
+        x = x.cpu().numpy().reshape((opt.n, opt.k))
+        z = z.cpu().detach().numpy().reshape((opt.n, -1))
 
         sample = osp.split(path)[-1]
         subpath = osp.join(opt.ofile_folder, sample)
@@ -764,15 +765,46 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
         if not osp.exists(subpath):
             os.mkdir(subpath, mode = 0o755)
 
-        # Now get the distribution of latent vectors for each combination of input marks
+        # merge plot
+        for vector in all_binary_vectors:
+            ind = np.where((x == vector).all(axis = 1))
+            plt.scatter(z[ind, dims[0]].reshape((-1)), z[ind, dims[1]].reshape((-1)),
+                        label = vector)
+
+        plt.xlabel('particle type {}'.format(dims[0]))
+        plt.ylabel('particle type {}'.format(dims[1]))
+
+        plt.legend(title = 'input particle type vector', title_fontsize = 16)
+        plt.savefig(osp.join(subpath, 'particle_type_{}_{}_distribution_merged.png'.format(dims[0], dims[1])))
+        plt.close()
+
+        # plot with subplots
+        fig = plt.figure(figsize=(12, 12))
+        bigax = fig.add_subplot(111, label = 'bigax')
+        indplt = 1
+
         for vector in all_binary_vectors:
             # need to use subplots here
-            print(vector)
+            ax = fig.add_subplot(2, 2, indplt)
             ind = np.where((x == vector).all(axis = 1))
-            plt.plot(z[ind, dims[0]], z[ind, dims[1]])
-            plt.xlabel('particle type {}'.format(dims[0]))
-            plt.ylabel('particle type {}'.format(dims[1]))
-            plt.savefig()
+            ax.scatter(z[ind, dims[0]].reshape((-1)), z[ind, dims[1]].reshape((-1)))
+            ax.set_title('input particle type vector {}'.format(vector))
+            indplt += 1
+
+        # Turn off axis lines and ticks of the big subplot
+        bigax.spines['top'].set_color('none')
+        bigax.spines['bottom'].set_color('none')
+        bigax.spines['left'].set_color('none')
+        bigax.spines['right'].set_color('none')
+        bigax.tick_params(labelcolor = 'w', top = False, bottom = False, left = False, right = False)
+        # set axis labels
+        bigax.set_xlabel('particle type {}'.format(dims[0]), fontsize = 16)
+        bigax.set_ylabel('particle type {}'.format(dims[1]), fontsize = 16)
+
+        fig.tight_layout()
+
+        plt.savefig(osp.join(subpath, 'particle_type_{}_{}_distribution.png'.format(dims[0], dims[1])))
+        plt.close()
 
 
 def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
