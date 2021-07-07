@@ -633,6 +633,8 @@ def contactPlots(dataFolder):
         plotContactMap(y_prcnt_norm, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
 def plotROCCurve(val_dataloader, imagePath, model, opt):
+    # here y is the ground truth particle types
+    # and yhat is the predicted particle types
     t0 = time.time()
     steps = 101 # step size of 0.01
     thresholds = np.linspace(0, 1, steps)
@@ -732,7 +734,11 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
     print('ROC time: {}'.format(np.round (time.time() - t0, 3)), file = opt.log_file)
 
 def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1), use_latent = False):
-    # TODO explain what this does
+    '''
+    Plots the distribution of particle type predictions for models that attempt to predict particle types.
+
+    Here, x is the ground truth particle type array and z is the predicted particle type array.
+    '''
     assert len(dims) == 2, 'currently only support 2D plots'
     converter = InteractionConverter(opt.k)
     all_binary_vectors = converter.generateAllBinaryStrings()
@@ -754,9 +760,13 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
             minmax = data.minmax
             path = data.path[0]
         else:
-            assert False, "sorry haven't checked this yet"
-            x, y, path, minmax = data
+            assert opt.output_mode == 'sequence'
+            x, path = data
             path = path[0]
+            x = x.to(opt.device)
+            z = model(x)
+            if opt.loss == 'BCE':
+                z = torch.sigmoid(z)
 
         x = x.cpu().numpy().reshape((opt.n, opt.k))
         z = z.cpu().detach().numpy().reshape((opt.n, -1))
@@ -913,14 +923,14 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
         if opt.output_mode == 'contact':
             plotPredictions(val_dataloader, model, opt)
 
-        if opt.model_type == 'ContactGNN':
+        if opt.model_type in {'ContactGNN', 'SequenceFCAutoencoder'}:
             plotParticleDistribution(val_dataloader, model, opt, use_latent = False)
-        elif opt.model_type == 'GNNAutoencoder':
+        elif opt.model_type == 'GNNAutoencoder' and opt.head_architecture == 'xxT':
             plotParticleDistribution(val_dataloader, model, opt, use_latent = True)
 
 def updateAllPlots():
     parser = getBaseParser()
-    for model_type in ['ContactGNN']: # 'Akita', 'UNet',
+    for model_type in ['ContactGNN', 'SequenceFCAutoencoder']: # 'Akita', 'UNet',
         print(model_type)
         model_path = osp.join('results', model_type)
         for id in os.listdir(model_path):

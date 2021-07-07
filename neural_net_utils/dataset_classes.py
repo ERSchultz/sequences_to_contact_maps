@@ -1,10 +1,13 @@
 import os
 import os.path as osp
+from shutil import rmtree
 
 import torch
 from torch.utils.data import Dataset
 import torch_geometric.data
 import torch_geometric.transforms
+from torch_scatter import scatter_min, scatter_max, scatter_mean, scatter_std
+from torch_geometric.utils import degree
 
 import time
 import numpy as np
@@ -127,7 +130,10 @@ class Sequences2Contacts(Dataset):
 
 class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN: https://github.com/rusty1s/pytorch_geometric/issues/1511
-    def __init__(self, dirname, root_name, n, y_preprocessing, y_norm, min_subtraction, use_node_features, sparsify_threshold, top_k, transform, pre_transform):
+    def __init__(self, dirname, root_name = None, n = 1024, y_preprocessing = 'diag',
+                y_norm = 'instance', min_subtraction = True, use_node_features = True,
+                sparsify_threshold = None, top_k = None, weighted_LDP = False,
+                transform = None, pre_transform = None):
         t0 = time.time()
         self.n = n
         self.dirname = dirname
@@ -136,6 +142,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.min_subtraction = min_subtraction
         self.use_node_features = use_node_features
         self.sparsify_threshold = sparsify_threshold
+        self.weighted_LDP = weighted_LDP
         self.top_k = top_k
 
         if self.y_norm == 'batch':
@@ -185,10 +192,10 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 y_path = osp.join(raw_folder, 'y_diag_instance.npy')
             else:
                 raise Exception("Warning: Unknown preprocessing: {}".format(self.y_preprocessing))
-            y = torch.tensor(np.load(y_path), dtype = torch.float32)
+            y = np.load(y_path)
             if self.y_norm == 'instance':
-                self.ymax = torch.max(y)
-                self.ymin = torch.min(y)
+                self.ymax = np.max(y)
+                self.ymin = np.min(y)
 
             # if y_norm is batch this uses batch parameters from init, if y_norm is None, this does nothing
             if self.min_subtraction:
@@ -200,15 +207,11 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 y[y < self.sparsify_threshold] = 0
 
             if self.top_k is not None:
-                GDC = torch_geometric.transforms.GDC()
-                edge_index, edge_weight = GDC.sparsify_dense(y, num_nodes = self.n, method = 'topk', k = self.top_k, dim = 0)
-            else:
-                edge_index = (y > 0).nonzero().t()
-                row, col = edge_index
-                edge_weight = y[row, col]
+                self.filter_to_topk(y)
 
+            y = torch.tensor(y, dtype = torch.float32)
+            edge_index, edge_weight = self.sparsify_adj_mat(y)
             x = torch.tensor(np.load(osp.join(raw_folder, 'x.npy')), dtype = torch.float32)
-
             if self.use_node_features:
                 graph = torch_geometric.data.Data(x = x, edge_index = edge_index, edge_attr = edge_weight, y = x)
             else:
@@ -216,6 +219,10 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.minmax = torch.tensor([self.ymin, self.ymax])
             graph.path = raw_folder
             graph.num_nodes = self.n
+            if self.weighted_LDP:
+                if not self.top_k and not self.sparsify_threshold:
+                    print('Warning: using LDP without any sparsification')
+                graph = self.weightedLocalDegreeProfile(graph, y)
             torch.save(graph, self.processed_paths[i])
 
     def get(self, index):
@@ -224,6 +231,51 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def len(self):
         return len(self.raw_file_names)
+
+    def weighted_degree(self, y):
+        return torch.sum(y, axis = 1)
+
+    def filter_to_topk(self, y):
+        # any entry not in the topk will be set to 0, row-wise
+        k = self.n - self.top_k
+        z = np.argpartition(y, k)
+        z = z[:, :k]
+        y[np.arange(self.n)[:,None], z] = 0
+
+    def sparsify_adj_mat(self, y):
+        edge_index = (y > 0).nonzero().t()
+        row, col = edge_index
+        edge_weight = y[row, col]
+        return edge_index, edge_weight
+
+    def weightedLocalDegreeProfile(self, data, y):
+        '''
+        Weighted version of Local Degree Profile (LDP) from https://arxiv.org/abs/1811.03508
+
+        Reference code: https://pytorch-geometric.readthedocs.io/en/latest/_modules/torch_geometric/transforms/local_degree_profile.html#LocalDegreeProfile
+        '''
+        row, col = data.edge_index
+        N = data.num_nodes
+
+        deg = self.weighted_degree(y)
+        deg_col = deg[col]
+
+        min_deg, _ = scatter_min(deg_col, row, dim_size=N)
+        min_deg[min_deg > 10000] = 0
+        max_deg, _ = scatter_max(deg_col, row, dim_size=N)
+        max_deg[max_deg < -10000] = 0
+        mean_deg = scatter_mean(deg_col, row, dim_size=N)
+        std_deg = scatter_std(deg_col, row, dim_size=N)
+
+        x = torch.stack([deg, min_deg, max_deg, mean_deg, std_deg], dim=1)
+
+        if data.x is not None:
+            data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
+            data.x = torch.cat([data.x, x], dim=-1)
+        else:
+            data.x = x
+
+        return data
 
 class Sequences(Dataset):
     def __init__(self, dirname, crop, names = False, min_sample = 0):
@@ -250,13 +302,14 @@ class Sequences(Dataset):
 
 
 def main():
-    t1 = torch_geometric.transforms.OneHotDegree(1024)
     t2 = torch_geometric.transforms.Constant()
-    t = torch_geometric.transforms.Compose([t1, t2])
-    g = ContactsGraph('dataset_04_18_21', 1024, None, None, True, False, transform = t)
-    graph = g[0]
-    x, edge_index, edge_attr  = graph.x, graph.edge_index, graph.edge_attr
-    print(x)
+    t = torch_geometric.transforms.Compose([t2])
+    t0 = time.time()
+    for i in range(1):
+        g = ContactsGraph('dataset_04_18_21', root_name = 'graphs0', top_k = 100, weighted_LDP = True)
+        print(g[0].x[:, 2:])
+        rmtree(g.root)
+    print('tot time', time.time() - t0)
 
 
 if __name__ == '__main__':

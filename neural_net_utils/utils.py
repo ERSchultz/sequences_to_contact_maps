@@ -59,7 +59,7 @@ def getDataset(opt, names = False, minmax = False):
     if opt.GNN_mode:
         dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.n, opt.y_preprocessing,
                                             opt.y_norm, opt.min_subtraction, opt.use_node_features,
-                                            opt.sparsify_threshold, opt.top_k,
+                                            opt.sparsify_threshold, opt.top_k, opt.weighted_LDP,
                                             opt.transforms_processed, opt.pre_transforms_processed)
         opt.root = dataset.root
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
@@ -611,24 +611,24 @@ def finalizeOpt(opt, parser, local = False):
             if t_str.lower() == 'constant':
                 transforms_processed.append(torch_geometric.transforms.Constant())
                 opt.node_feature_size += 1
-            elif t_str.lower() == 'onehotdegree':
-                transforms_processed.append(torch_geometric.transforms.OneHotDegree(opt.n))
-                opt.node_feature_size += opt.n
             else:
                 raise Exception("Invalid transform {}".format(t_str))
         opt.transforms_processed = torch_geometric.transforms.Compose(transforms_processed)
     else:
         opt.transforms_processed = None
 
+    opt.weighted_LDP = False
     if opt.pre_transforms is not None:
         pre_transforms_processed = []
         for t_str in opt.pre_transforms:
             if t_str.lower() == 'constant':
                 pre_transforms_processed.append(torch_geometric.transforms.Constant())
                 opt.node_feature_size += 1
-            elif t_str.lower() == 'onehotdegree':
-                pre_transforms_processed.append(torch_geometric.transforms.OneHotDegree(opt.n))
-                opt.node_feature_size += opt.n
+            elif t_str.lower() == 'weighted_LDP':
+                # don't append to pre_transforms
+                # instead set flag to True
+                opt.weighted_LDP = True
+                opt.node_feature_size += 5
             else:
                 raise Exception("Invalid transform {}".format(t_str))
         opt.pre_transforms_processed = torch_geometric.transforms.Compose(pre_transforms_processed)

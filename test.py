@@ -142,14 +142,20 @@ def debugModel(model_type):
     opt.model_type = 'test'
     core_test_train(model, opt)
 
-def to_mat():
+def test_argpartition(k):
     path = 'dataset_04_18_21\\samples\\sample1'
     y = np.load(osp.join(path, 'y.npy'))
-    ydiag = np.load(osp.join(path, 'y_diag.npy'))
-    x = np.load(osp.join(path, 'x.npy'))
-    results = {'y':y, 'x':x, 'y_diag':ydiag}
-    savemat(osp.join(path, "sample1_xy.mat"), results)
-    print(y, x)
+    k = len(y) - k
+    print(y, y.shape)
+    print(y[3])
+    z = np.partition(y, k)
+    z =z[:, k:]
+    print(z[3], z[3].shape)
+
+    miny = np.min(y, axis = 1)
+    minz = np.min(z, axis = 1)
+    print(miny)
+    print(minz)
 
 def downsampling_test():
     y = torch.tensor([[10,3,1,0],[3,10,4,2],[1,4,10,6], [0,2,6,10]], dtype = torch.float32)
@@ -170,21 +176,22 @@ def downsampling_test():
     y_diag_down = F.avg_pool2d(y_diag, 2)
     print(y_diag_down)
 
-def test_argwhere():
-    converter = InteractionConverter(2)
-    all_binary_vectors = converter.generateAllBinaryStrings()
-    data = np.repeat(all_binary_vectors, 3).reshape((-1, 2))
-    print(data)
-    for v in all_binary_vectors:
-        print(v)
-        where = np.where((data == v).all(axis=1))
-        print(where)
-        print('\n')
+def timeTest():
+    z = np.random.random(size = 100000)
+    t0 = time.time()
+    np.min(z)
+    print(time.time() - t0)
+
+    z = torch.tensor(z)
+    t0 = time.time()
+    torch.min(z)
+    print(time.time() - t0)
 
 def main():
     # cleanup()
     # debugModel('ContactGNN')
-    test_argwhere()
+    # test_argpartition(10)
+    timeTest()
     # to_mat()
     # downsampling_test()
 
