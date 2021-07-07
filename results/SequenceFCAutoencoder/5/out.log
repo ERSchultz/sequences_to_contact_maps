@@ -1,0 +1,163 @@
+Namespace(GNN_mode=False, MLP_hidden_sizes_list=None, act='relu', autoencoder_mode=True, batch_size=16, bottleneck=None, classes=10, criterion=<function binary_cross_entropy_with_logits at 0x7fa6e60e4040>, crop=None, cuda=True, data_folder='/../../../scratch/midway2/erschultz/dataset_04_18_21', delete_root=True, device=device(type='cuda'), dilation_list=None, dilation_list_head=None, dilation_list_trunk=None, down_sampling=None, gamma=0.1, gpus=1, head_act='relu', head_architecture='xxT', hidden_sizes_list=[1024, 1024, 128], id=5, ifile=None, ifile_folder=None, k=2, kernel_w_list=None, log_file=<_io.TextIOWrapper name='results/SequenceFCAutoencoder/5/out.log' mode='a' encoding='UTF-8'>, loss='BCE', lr=0.001, message_passing='GCN', milestones=None, min_subtraction=True, model_type='SequenceFCAutoencoder', n=1024, n_epochs=100, nf=None, node_feature_size=0, num_workers=4, ofile_folder='results/SequenceFCAutoencoder/5', out_act=None, output_mode='sequence', parameter_sharing=False, plot=True, plot_predictions=False, pre_transforms=None, pre_transforms_processed=None, pretrained=False, print_mod=2, resume_training=False, root_name=None, save_mod=5, seed=42, shuffle=True, sparsify_threshold=None, split=[0.8, 0.1, 0.1], start_epoch=1, top_k=None, toxx=False, toxx_mode='mean', training_norm=None, transforms=None, transforms_processed=None, use_node_features=False, use_parallel=False, use_scratch=True, verbose=False, x_reshape=True, y_norm='instance', y_preprocessing='diag', y_reshape=True, ydtype=torch.float32)
+
+Epoch 2, loss = 3121.4330
+Mean test/val loss: 4596.1976
+
+Epoch 4, loss = 23.3165
+Mean test/val loss: 3847.5366
+
+Epoch 6, loss = 16.6861
+Mean test/val loss: 3844.8045
+
+Epoch 8, loss = 12.8893
+Mean test/val loss: 3910.8493
+
+Epoch 10, loss = 10.0559
+Mean test/val loss: 4151.3011
+
+Epoch 12, loss = 7.9688
+Mean test/val loss: 3903.3858
+
+Epoch 14, loss = 6.4355
+Mean test/val loss: 3827.4098
+
+Epoch 16, loss = 5.1824
+Mean test/val loss: 3824.9630
+
+Epoch 18, loss = 4.2577
+Mean test/val loss: 3825.0852
+
+Epoch 20, loss = 3.4463
+Mean test/val loss: 3820.9128
+
+Epoch 22, loss = 2.7998
+Mean test/val loss: 3819.2807
+
+Epoch 24, loss = 2.2833
+Mean test/val loss: 3817.8596
+
+Epoch 26, loss = 1.8961
+Mean test/val loss: 4221.8860
+
+Epoch 28, loss = 1.6060
+Mean test/val loss: 4218.5694
+
+Epoch 30, loss = 1.3766
+Mean test/val loss: 4438.9507
+
+Epoch 32, loss = 1.2009
+Mean test/val loss: 3814.2869
+
+Epoch 34, loss = 1.0592
+Mean test/val loss: 3813.7291
+
+Epoch 36, loss = 0.9476
+Mean test/val loss: 3813.2663
+
+Epoch 38, loss = 0.8590
+Mean test/val loss: 3812.9107
+
+Epoch 40, loss = 0.7923
+Mean test/val loss: 3812.6540
+
+Epoch 42, loss = 0.7469
+Mean test/val loss: 4007.0641
+
+Epoch 44, loss = 0.7185
+Mean test/val loss: 3812.3947
+
+Epoch 46, loss = 0.7025
+Mean test/val loss: 3812.3335
+
+Epoch 48, loss = 0.6958
+Mean test/val loss: 3812.3030
+
+Epoch 50, loss = 0.6941
+Mean test/val loss: 3812.2906
+
+Epoch 52, loss = 0.6936
+Mean test/val loss: 3812.2867
+
+Epoch 54, loss = 0.6935
+Mean test/val loss: 4436.1615
+
+Epoch 56, loss = 0.6934
+Mean test/val loss: 3812.2802
+
+Epoch 58, loss = 0.6933
+Mean test/val loss: 4214.7661
+
+Epoch 60, loss = 0.6933
+Mean test/val loss: 3812.2765
+
+Epoch 62, loss = 0.6933
+Mean test/val loss: 4573.5212
+
+Epoch 64, loss = 0.6932
+Mean test/val loss: 4011.4166
+
+Epoch 66, loss = 0.6933
+Mean test/val loss: 3812.2714
+
+Epoch 68, loss = 0.6932
+Mean test/val loss: 3812.2679
+
+Epoch 70, loss = 0.6933
+Mean test/val loss: 3812.2663
+
+Epoch 72, loss = 0.6932
+Mean test/val loss: 3812.2607
+
+Epoch 74, loss = 0.6933
+Mean test/val loss: 3812.2595
+
+Epoch 76, loss = 0.6932
+Mean test/val loss: 3812.2535
+
+Epoch 78, loss = 0.6932
+Mean test/val loss: 3812.2485
+
+Epoch 80, loss = 0.6932
+Mean test/val loss: 4028.0895
+
+Epoch 82, loss = 0.6933
+Mean test/val loss: 4194.1152
+
+Epoch 84, loss = 0.6932
+Mean test/val loss: 3812.2387
+
+Epoch 86, loss = 0.6932
+Mean test/val loss: 3812.2332
+
+Epoch 88, loss = 0.6932
+Mean test/val loss: 3812.2244
+
+Epoch 90, loss = 0.6932
+Mean test/val loss: 4028.0615
+
+Epoch 92, loss = 0.6932
+Mean test/val loss: 3812.2077
+
+Epoch 94, loss = 0.6932
+Mean test/val loss: 3812.2022
+
+Epoch 96, loss = 0.6932
+Mean test/val loss: 3812.1805
+
+Epoch 98, loss = 0.6932
+Mean test/val loss: 3812.1787
+
+Epoch 100, loss = 0.6932
+Mean test/val loss: 4011.3150
+
+Total parameters: 6,559,872
+Total time: 217.40916085243225
+Final val loss: 4011.315020946356
+
+#### Plotting Script ####
+ROC Curve Results:
+AUC: particle 0 = 0.5 particle 1 = 0.499
+
+Max accuracy at t = 1.0: 0.512 +- 0.049
+Corresponding FPR = [0. 0.] +- [0. 0.] and TPR = [0. 0.] +- [0. 0.]
+ROC time: 1.97
