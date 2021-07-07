@@ -144,6 +144,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.sparsify_threshold = sparsify_threshold
         self.weighted_LDP = weighted_LDP
         self.top_k = top_k
+        if self.weighted_LDP and self.top_k is None and self.sparsify_threshold is None:
+            print('Warning: using LDP without any sparsification')
 
         if self.y_norm == 'batch':
             assert y_preprocessing is not None, "use instance normalization instead"
@@ -220,8 +222,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.path = raw_folder
             graph.num_nodes = self.n
             if self.weighted_LDP:
-                if not self.top_k and not self.sparsify_threshold:
-                    print('Warning: using LDP without any sparsification')
                 graph = self.weightedLocalDegreeProfile(graph, y)
             torch.save(graph, self.processed_paths[i])
 

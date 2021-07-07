@@ -21,7 +21,7 @@ false
 --MLP_hidden_sizes_list
 200-25
 --head_architecture
-MLP
+FCAutoencoder
 --transforms
 constant
 --loss

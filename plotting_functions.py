@@ -928,26 +928,6 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
         elif opt.model_type == 'GNNAutoencoder' and opt.head_architecture == 'xxT':
             plotParticleDistribution(val_dataloader, model, opt, use_latent = True)
 
-def updateAllPlots():
-    parser = getBaseParser()
-    for model_type in ['ContactGNN', 'SequenceFCAutoencoder']: # 'Akita', 'UNet',
-        print(model_type)
-        model_path = osp.join('results', model_type)
-        for id in os.listdir(model_path):
-            print('\t', id)
-            id_path = osp.join(model_path, id)
-            if osp.isdir(id_path) and id.isdigit():
-                txt_file = osp.join(id_path, 'argparse.txt')
-                opt = parser.parse_args(['@{}'.format(txt_file)])
-                opt.id = int(id)
-                opt = finalizeOpt(opt, parser)
-
-                # overwrite plotting flags
-                opt.plot = True
-                opt.plot_predictions = True
-                print(opt, file = opt.log_file)
-                plotting_script(None, opt)
-
 def plotCombinedModels(modelType, ids):
     path = osp.join('results', modelType)
 
@@ -969,6 +949,7 @@ def plotCombinedModels(modelType, ids):
 
 def main():
     opt = argparseSetup()
+    print(opt, '\n')
     plotting_script(None, opt)
 
     # cleanup
@@ -977,8 +958,7 @@ def main():
 
 if __name__ == '__main__':
     # updateResultTables('ContactGNN', 'GNN', 'sequence')
-    updateAllPlots()
     # plotCombinedModels('ContactGNN', [7, 8, 9])
-    # main()
+    main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')

@@ -44,7 +44,7 @@ def getModel(opt):
                             opt.down_sampling)
     elif opt.model_type == 'GNNAutoencoder':
         model = GNNAutoencoder(opt.n, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.head_act, opt.out_act,
-                                opt.message_passing, opt.head_architecture, opt.MLP_hidden_sizes_list)
+                                opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list, opt.parameter_sharing)
     elif opt.model_type == 'SequenceFCAutoencoder':
         model = FullyConnectedAutoencoder(opt.n * opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, opt.parameter_sharing)
     elif opt.model_type == 'ContactGNN':
@@ -531,7 +531,7 @@ def getBaseParser():
     # GNNAutoencoder args
     parser.add_argument('--message_passing', type=str, default='GCN', help='type of message passing algorithm')
     parser.add_argument('--head_architecture', type=str, default= 'xxT', help='type of head architecture')
-    parser.add_argument('--MLP_hidden_sizes_list', type=str2list, help='List of hidden sizes for convolutional layers')
+    parser.add_argument('--head_hidden_sizes_list', type=str2list, help='List of hidden sizes for convolutional layers')
     parser.add_argument('--head_act', type=str, default='relu', help='activation function for head network')
 
 
@@ -624,7 +624,7 @@ def finalizeOpt(opt, parser, local = False):
             if t_str.lower() == 'constant':
                 pre_transforms_processed.append(torch_geometric.transforms.Constant())
                 opt.node_feature_size += 1
-            elif t_str.lower() == 'weighted_LDP':
+            elif t_str.lower() == 'weighted_ldp':
                 # don't append to pre_transforms
                 # instead set flag to True
                 opt.weighted_LDP = True
@@ -733,7 +733,7 @@ def opt2list(opt):
     elif opt.model_type == 'test':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.nf])
     elif opt.model_type == 'GNNAutoencoder':
-        opt_list.extend([opt.hidden_sizes_list, opt.message_passing, opt.head_architecture, opt.MLP_hidden_sizes_list])
+        opt_list.extend([opt.hidden_sizes_list, opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list])
     elif opt.model_type == 'ContactGNN':
         opt_list.extend([opt.hidden_sizes_list, opt.message_passing])
     elif opt.model_type == 'SequenceFCAutoencoder':
@@ -773,7 +773,7 @@ def get_opt_header(model_type, mode = None):
     elif model_type == 'test':
         opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'nf'])
     elif model_type == 'GNNAutoencoder':
-        opt_list.extend(['hidden_sizes_list', 'message_passing', 'head_architecture', 'MLP_hidden_sizes_list'])
+        opt_list.extend(['hidden_sizes_list', 'message_passing', 'head_architecture', 'head_hidden_sizes_list'])
     elif model_type == 'ContactGNN':
         opt_list.extend(['hidden_sizes_list', 'message_passing'])
     elif model_type == 'SequenceFCAutoencoder':

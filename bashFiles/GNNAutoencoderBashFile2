@@ -21,9 +21,11 @@ yPreprocessing='diag'
 yNorm='instance'
 useNodeFeatures='false'
 hiddenSizesList='16-8'
-MLPHiddenSizesList='200-25'
-headArchitecture='MLP'
-transforms='constant-weighted_LDP'
+headHiddenSizesList='200-25'
+headArchitecture='FCAutoencoder'
+parameterSharing='true'
+transforms='none'
+preTransforms='weighted_LDP'
 topK=500
 loss='mse'
 outAct='relu'
@@ -44,7 +46,7 @@ source activate python3.8_pytorch1.8.1_cuda10.2
 
 for lr in 1e-1 1e-2 1e-3
 do
-python3 core_test_train.py --data_folder $dirname --root_name $modelType --delete_root $deleteRoot --model_type $modelType --GNN_mode $GNNMode --autoencoder_mode $autoencoderMode --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --use_node_features $useNodeFeatures --hidden_sizes_list $hiddenSizesList --MLP_hidden_sizes_list $MLPHiddenSizesList --head_architecture $headArchitecture --transforms $transforms --top_k $topK --loss $loss --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --verbose $verbose --use_scratch $useScratch
+python3 core_test_train.py --data_folder $dirname --root_name $modelType --delete_root $deleteRoot --model_type $modelType --GNN_mode $GNNMode --autoencoder_mode $autoencoderMode --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --use_node_features $useNodeFeatures --hidden_sizes_list $hiddenSizesList --head_hidden_sizes_list $headHiddenSizesList --head_architecture $headArchitecture --parameter_sharing $parameterSharing --transforms $transforms --pre_transforms $preTransforms --top_k $topK --loss $loss --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --verbose $verbose --use_scratch $useScratch
 done
 
 python3 cleanDirectories.py --data_folder $dirname --root_name $modelType --use_scratch $useScratch

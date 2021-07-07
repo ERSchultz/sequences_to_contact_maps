@@ -248,7 +248,7 @@ class SimpleEpiNet(nn.Module):
 
 class GNNAutoencoder(nn.Module):
     def __init__(self, n, input_size, hidden_sizes_list, act, head_act, out_act,
-                message_passing, head_architecture, MLP_hidden_sizes_list):
+                message_passing, head_architecture, head_hidden_sizes_list, parameter_sharing):
         super(GNNAutoencoder, self).__init__()
         self.n = n
         hidden_size = hidden_sizes_list[0]
@@ -275,18 +275,9 @@ class GNNAutoencoder(nn.Module):
             raise Exception("Unknown out_act {}".format(act))
 
         self.head_architecture = head_architecture
-        if self.head_architecture == 'MLP':
-            encode_model = []
-            decode_model = []
+        if self.head_architecture == 'FCAutoencoder':
             input_size = self.n * self.output_size
-            for output_size in MLP_hidden_sizes_list:
-                encode_model.append(LinearBlock(input_size, output_size, activation = head_act))
-                decode_model.append(LinearBlock(output_size, input_size, activation = head_act))
-                input_size = output_size
-
-            self.encode = nn.Sequential(*encode_model)
-            decode_model.reverse()
-            self.decode = nn.Sequential(*decode_model)
+            self.head = FullyConnectedAutoencoder(input_size, head_hidden_sizes_list, head_act, out_act, parameter_sharing)
 
         if out_act is None:
             self.out_act = nn.Identity()
@@ -312,11 +303,9 @@ class GNNAutoencoder(nn.Module):
         if self.head_architecture == 'xxT':
             latent = torch.reshape(x, (-1, self.n, self.output_size))
             out = self.out_act(torch.einsum('bij, bkj->bik', latent, latent))
-        elif self.head_architecture == 'MLP':
-            x = torch.reshape(x, (-1, self.n * self.output_size))
-            latent = self.encode(x)
-            x = self.decode(latent)
+        elif self.head_architecture == 'FCAutoencoder':
             x = torch.reshape(x, (-1, self.n, self.output_size))
+            out = self.head(x)
             out = self.out_act(torch.einsum('bij, bkj->bik', x, x))
         else:
             raise Exception("Unkown head architecture {}".format(self.head))
@@ -335,11 +324,11 @@ class GNNAutoencoder(nn.Module):
 
 class FullyConnectedAutoencoder(nn.Module):
     '''
-    Fully connected symmetric autoendocer with user defined number of layers and hidden dimension.
+    Fully connected symmetric autoencoder with user defined number of layers and hidden dimension.
 
     The final value in the hidden_sizes_list is the size of the latent space.
 
-    Note that there is no parameter sharing between the encoder and the decoder.
+    Note that there is no parameter sharing between bias of the encoder and the decoder.
     '''
     def __init__(self, input_size, hidden_sizes_list, act, out_act, parameter_sharing):
         '''
@@ -494,8 +483,7 @@ class ContactGNN(nn.Module):
         out = self.out_act(x)
         return out
 
-def main():
-
+def testFullyConnectedAutoencoder():
     model = FullyConnectedAutoencoder(12, [2], 'relu', False)
     criterion = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr = 1e-3)
@@ -510,6 +498,13 @@ def main():
         print(k, p.numel())
         tot_pars += p.numel()
     print('Total parameters: {}'.format(tot_pars))
+
+def testGNNAutoencoder():
+    model = GNNAutoencoder(1024, 2, [8, 4], 'relu', 'relu', 'sigmoid', 'GCN', 'FCAutoencoder', [200, 25], True)
+
+
+def main():
+    testGNNAutoencoder()
 
 
 if __name__ == '__main__':

@@ -78,7 +78,7 @@ def debugModel(model_type):
     opt.n = 1024
     opt.y_preprocessing = 'diag'
     opt.y_norm = 'instance'
-    opt.loss = 'BCE'
+    opt.loss = 'mse'
 
     if model_type == 'Akita':
         opt.kernel_w_list=str2list('5-5-5')
@@ -99,12 +99,16 @@ def debugModel(model_type):
         opt.dilation_list=str2list('2-4-8-16-32-64-128-256-512')
     elif model_type == 'GNNAutoencoder':
         opt.GNN_mode = True
-        opt.hidden_sizes_list=str2list('16-8')
-        opt.MLP_hidden_sizes_list=str2list('200-25')
+        opt.autoencoder_mode=True
+        opt.hidden_sizes_list=str2list('12-4')
+        opt.head_hidden_sizes_list=str2list('200-25')
         opt.out_act = 'relu'
-        opt.head_architecture ='MLP'
+        opt.head_architecture ='FCAutoencoder'
         opt.use_node_features = False
         opt.transforms=str2list('constant')
+        opt.pre_transforms=str2list('weighted_LDP')
+        opt.top_k = 500
+        opt.parameter_sharing = True
     elif model_type == 'ContactGNN':
         opt.GNN_mode = True
         opt.output_mode = 'sequence'
@@ -176,22 +180,11 @@ def downsampling_test():
     y_diag_down = F.avg_pool2d(y_diag, 2)
     print(y_diag_down)
 
-def timeTest():
-    z = np.random.random(size = 100000)
-    t0 = time.time()
-    np.min(z)
-    print(time.time() - t0)
-
-    z = torch.tensor(z)
-    t0 = time.time()
-    torch.min(z)
-    print(time.time() - t0)
 
 def main():
     # cleanup()
-    # debugModel('ContactGNN')
+    debugModel('GNNAutoencoder')
     # test_argpartition(10)
-    timeTest()
     # to_mat()
     # downsampling_test()
 
