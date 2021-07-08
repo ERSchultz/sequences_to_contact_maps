@@ -81,3 +81,17 @@ Max accuracy at t = 0.65: 0.823 +- 0.0
 Corresponding FPR = [0.05  0.061] +- [0. 0.] and TPR = [0.91  0.453] +- [0. 0.]
 ROC time: 21.309
 results\ContactGNN\4\sample2
+Warning: falling back to cpu
+Model is loaded: results/ContactGNN/4/model.pt
+#### Plotting Script ####
+ROC Curve Results:
+AUC: particle type 0 = 0.96 particle type 1 = 0.771
+
+Max accuracy at t = 0.32: 0.79 +- 0.043
+Corresponding FPR = [0.176 0.507] +- [0.079 0.077] and TPR = [0.943 0.916] +- [0.024 0.028]
+ROC time: 65.068
+results/ContactGNN/4/sample1230
+results/ContactGNN/4/sample1761
+results/ContactGNN/4/sample40
+results/ContactGNN/4/sample1751
+results/ContactGNN/4/sample1718

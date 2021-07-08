@@ -49,3 +49,17 @@ Namespace(GNN_mode=True, MLP_hidden_sizes_list=None, act='relu', autoencoder_mod
 ]), use_node_features=False, use_parallel=False, use_scratch=True, verbose=False, weighted_LDP=False, x_reshape=True, y_norm='instance', y_preprocessing='diag', y_reshape=True, ydtype=torch.float32)
 Model is loaded: results/ContactGNN/7/model.pt
 #### Plotting Script ####
+Warning: falling back to cpu
+Model is loaded: results/ContactGNN/7/model.pt
+#### Plotting Script ####
+ROC Curve Results:
+AUC: particle type 0 = 0.729 particle type 1 = 0.674
+
+Max accuracy at t = 0.25: 0.68 +- 0.037
+Corresponding FPR = [0.675 0.044] +- [0.117 0.022] and TPR = [0.998 0.447] +- [0.002 0.089]
+ROC time: 32.739
+results/ContactGNN/7/sample1230
+results/ContactGNN/7/sample1761
+results/ContactGNN/7/sample40
+results/ContactGNN/7/sample1751
+results/ContactGNN/7/sample1718

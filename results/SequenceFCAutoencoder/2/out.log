@@ -41,3 +41,4 @@ AUC: particle 0 = 0.514 particle 1 = 0.517
 Max accuracy at t = 0.5: 0.525 +- 0.043
 Corresponding FPR = [0.07  0.054] +- [0.043 0.028] and TPR = [0.096 0.087] +- [0.053 0.038]
 ROC time: 1.975
+Warning: falling back to cpu
