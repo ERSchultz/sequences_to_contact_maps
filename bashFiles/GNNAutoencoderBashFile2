@@ -10,7 +10,7 @@
 
 dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
 deleteRoot='false'
-modelType='GNNAutoencoder'
+modelType='GNNAutoencoder2'
 GNNMode='true'
 autoencoderMode='true'
 

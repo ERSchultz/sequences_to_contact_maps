@@ -821,7 +821,7 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
 
 def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
     if model_type is None:
-        model_types = ['Akita', 'DeepC', 'UNet', 'GNNAutoencoder', 'ContactGNN']
+        model_types = ['Akita', 'DeepC', 'UNet', 'GNNAutoencoder', 'GNNAutoencoder2', 'ContactGNN']
         modes = [None, None, None, 'GNN', 'GNN']
         output_modes = ['contact', 'contact', 'contact', 'contact', 'sequence']
     else:
@@ -925,7 +925,7 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
 
         if opt.model_type in {'ContactGNN', 'SequenceFCAutoencoder'}:
             plotParticleDistribution(val_dataloader, model, opt, use_latent = False)
-        elif opt.model_type == 'GNNAutoencoder' and opt.head_architecture == 'xxT':
+        elif opt.model_type == 'GNNAutoencoder':
             plotParticleDistribution(val_dataloader, model, opt, use_latent = True)
 
 def plotCombinedModels(modelType, ids):

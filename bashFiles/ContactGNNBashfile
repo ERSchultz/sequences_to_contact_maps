@@ -37,7 +37,7 @@ gamma=0.1
 
 useScratch='true'
 verbose='false'
-plotPredictinos='true'
+plotPredictions='true'
 
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2

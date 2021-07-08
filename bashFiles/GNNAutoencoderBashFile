@@ -23,6 +23,7 @@ useNodeFeatures='true'
 hiddenSizesList='16-2'
 transforms='none'
 preTransforms='weighted_LDP'
+topK=500
 loss='mse'
 outAct='relu'
 
@@ -42,7 +43,7 @@ source activate python3.8_pytorch1.8.1_cuda10.2
 
 for lr in 1e-1 1e-2 1e-3
 do
-python3 core_test_train.py --data_folder $dirname --root_name $modelType --delete_root $deleteRoot --model_type $modelType --GNN_mode $GNNMode --autoencoder_mode $autoencoderMode --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --use_node_features $useNodeFeatures --hidden_sizes_list $hiddenSizesList --transforms $transforms --pre_transforms $preTransforms --loss $loss --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --verbose $verbose --use_scratch $useScratch
+python3 core_test_train.py --data_folder $dirname --root_name $modelType --delete_root $deleteRoot --model_type $modelType --GNN_mode $GNNMode --autoencoder_mode $autoencoderMode --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --use_node_features $useNodeFeatures --hidden_sizes_list $hiddenSizesList --transforms $transforms --pre_transforms $preTransforms --top_k $topK --loss $loss --out_act $outAct --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --verbose $verbose --use_scratch $useScratch
 done
 
 python3 cleanDirectories.py --data_folder $dirname --root_name $modelType --use_scratch $useScratch

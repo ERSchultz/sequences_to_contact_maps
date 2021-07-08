@@ -42,7 +42,7 @@ def getModel(opt):
                             opt.channels,
                             opt.training_norm,
                             opt.down_sampling)
-    elif opt.model_type == 'GNNAutoencoder':
+    elif opt.model_type.startswith('GNNAutoencoder'):
         model = GNNAutoencoder(opt.n, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.head_act, opt.out_act,
                                 opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list, opt.parameter_sharing)
     elif opt.model_type == 'SequenceFCAutoencoder':
@@ -597,8 +597,8 @@ def finalizeOpt(opt, parser, local = False):
         raise Exception('Invalid loss: {}'.format(repr(opt.loss)))
 
     # check mode
-    if opt.model_type == 'GNNAutoencoder':
-        assert opt.GNN_mode, 'mode should be GNN for GNNAutoencoder'
+    if opt.model_type.startswith('GNNAutoencoder') or opt.model_type == 'ContactGNN':
+        assert opt.GNN_mode, 'mode should be GNN'
 
     # configure GNN transforms
     opt.node_feature_size = 0
