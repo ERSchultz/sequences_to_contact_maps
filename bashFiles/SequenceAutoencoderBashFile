@@ -22,7 +22,7 @@ yNorm='instance'
 hiddenSizesList='1024-128'
 loss='BCE'
 outAct='none'
-parameterSharing='false'
+parameterSharing='true'
 
 # hyperparameters
 nEpochs=100
