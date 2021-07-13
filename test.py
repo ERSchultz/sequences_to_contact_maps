@@ -100,6 +100,14 @@ def debugModel(model_type):
     elif model_type == 'GNNAutoencoder':
         opt.GNN_mode = True
         opt.autoencoder_mode=True
+        opt.hidden_sizes_list=str2list('8-2')
+        opt.out_act = 'relu'
+        opt.use_node_features = False
+        opt.pre_transforms=str2list('constant')
+        opt.top_k = 500
+    elif model_type == 'GNNAutoencoder2':
+        opt.GNN_mode = True
+        opt.autoencoder_mode=True
         opt.hidden_sizes_list=str2list('12-4')
         opt.head_hidden_sizes_list=str2list('200-25')
         opt.out_act = 'relu'
@@ -190,6 +198,5 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    print(np.load('dataset_04_18_21\chis.npy'))
-    
+    main()
+    # print(np.load('dataset_04_18_21\chis.npy'))

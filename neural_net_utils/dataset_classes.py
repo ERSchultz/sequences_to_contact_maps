@@ -223,6 +223,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.num_nodes = self.n
             if self.weighted_LDP:
                 graph = self.weightedLocalDegreeProfile(graph, y)
+            if self.pre_transform is not None:
+                graph = self.pre_transform(graph)
             torch.save(graph, self.processed_paths[i])
 
     def get(self, index):
