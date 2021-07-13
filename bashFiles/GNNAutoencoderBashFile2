@@ -24,11 +24,11 @@ hiddenSizesList='16-8'
 headHiddenSizesList='200-25'
 headArchitecture='FCAutoencoder'
 parameterSharing='true'
-transforms='none'
+transforms='constant'
 preTransforms='weighted_LDP'
 topK=500
-loss='mse'
-outAct='relu'
+loss='BCE'
+outAct='none'
 
 # hyperparameters
 nEpochs=20

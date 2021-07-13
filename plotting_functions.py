@@ -424,6 +424,7 @@ def plotPerClassAccuracy(val_dataloader, imagePath, model, opt, title = None):
 
     plt.tight_layout()
     plt.savefig(osp.join(imagePath, 'per_class_acc.png'))
+    plt.close()
 
 def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt):
     """Plots Pearson correlation as a function of genomic distance"""
@@ -818,7 +819,6 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
         plt.savefig(osp.join(subpath, 'particle_type_{}_{}_distribution.png'.format(dims[0], dims[1])))
         plt.close()
 
-
 def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
     if model_type is None:
         model_types = ['Akita', 'DeepC', 'UNet', 'GNNAutoencoder', 'GNNAutoencoder2', 'ContactGNN']
@@ -958,7 +958,7 @@ def main():
 
 if __name__ == '__main__':
     # updateResultTables('ContactGNN', 'GNN', 'sequence')
-    # plotCombinedModels('ContactGNN', [7, 8, 9])
-    main()
+    plotCombinedModels('GNNAutoencoder2', [2, 3, 4])
+    # main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')

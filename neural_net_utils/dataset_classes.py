@@ -133,7 +133,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def __init__(self, dirname, root_name = None, n = 1024, y_preprocessing = 'diag',
                 y_norm = 'instance', min_subtraction = True, use_node_features = True,
                 sparsify_threshold = None, top_k = None, weighted_LDP = False,
-                transform = None, pre_transform = None):
+                transform = None, pre_transform = None, relabel_11_to_00 = False):
         t0 = time.time()
         self.n = n
         self.dirname = dirname
@@ -144,6 +144,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.sparsify_threshold = sparsify_threshold
         self.weighted_LDP = weighted_LDP
         self.top_k = top_k
+        self.relabel_11_to_00 = relabel_11_to_00
         if self.weighted_LDP and self.top_k is None and self.sparsify_threshold is None:
             print('Warning: using LDP without any sparsification')
 
@@ -214,6 +215,10 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y = torch.tensor(y, dtype = torch.float32)
             edge_index, edge_weight = self.sparsify_adj_mat(y)
             x = torch.tensor(np.load(osp.join(raw_folder, 'x.npy')), dtype = torch.float32)
+            if self.relabel_11_to_00:
+                m, k = x.shape
+                ind = np.where((x == np.ones(k)).all(axis = 1))
+                x[ind] = 0
             if self.use_node_features:
                 graph = torch_geometric.data.Data(x = x, edge_index = edge_index, edge_attr = edge_weight, y = x)
             else:

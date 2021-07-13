@@ -60,7 +60,8 @@ def getDataset(opt, names = False, minmax = False):
         dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.n, opt.y_preprocessing,
                                             opt.y_norm, opt.min_subtraction, opt.use_node_features,
                                             opt.sparsify_threshold, opt.top_k, opt.weighted_LDP,
-                                            opt.transforms_processed, opt.pre_transforms_processed)
+                                            opt.transforms_processed, opt.pre_transforms_processed,
+                                            opt.relabel_11_to_00)
         opt.root = dataset.root
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
         dataset = Sequences(opt.data_folder, opt.crop, names)
@@ -361,7 +362,7 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
             acc = num / denom
             acc_c_arr[i, c] = acc
 
-    acc_result = 'Accuracy: {}% +- {}'.format(round(np.mean(acc_arr), 3) * 100, round(np.std(acc_arr), 3) * 100)
+    acc_result = 'Accuracy: {}% +- {}'.format(round(np.mean(acc_arr) * 100, 3) , round(np.std(acc_arr) * 100, 3) )
     print(acc_result, file = opt.log_file)
     print('Loss: {} +- {}'.format(np.round(np.mean(loss_arr), 3), np.round( np.std(loss_arr), 3)), file = opt.log_file)
     return acc_c_arr, freq_c_arr, acc_result
@@ -474,6 +475,7 @@ def getBaseParser():
     parser.add_argument('--classes', type=int, default=10, help='number of classes in percentile normalization')
     parser.add_argument('--use_scratch', type=str2bool, default=False, help='True to move data to scratch')
     parser.add_argument('--use_node_features', type=str2bool, default=False, help='True to use node features for GNN models')
+    parser.add_argument('--relabel_11_to_00',type=str2bool, default=False, help='True to relabel [1,1] particles as [0,0] particles')
 
     # dataloader args
     parser.add_argument('--split', type=str2list, default=[0.8, 0.1, 0.1], help='Train, val, test split for dataset')
@@ -718,7 +720,7 @@ def opt2list(opt):
         opt.shuffle, opt.batch_size, opt.num_workers, opt.start_epoch, opt.n_epochs, opt.lr,
         opt.gpus, opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
         opt.ifile_folder, opt.ifile, opt.k, opt.n, opt.seed, opt.out_act, opt.training_norm,
-        opt.plot, opt.plot_predictions]
+        opt.plot, opt.plot_predictions, opt.relabel_11_to_00]
     if opt.GNN_mode:
         opt_list.extend([opt.use_node_features, opt.transforms, opt.pre_transforms, opt.sparsify_dense, opt.top_k])
     if opt.model_type == 'simpleEpiNet':
@@ -758,7 +760,7 @@ def get_opt_header(model_type, mode = None):
         'y_norm', 'x_reshape', 'ydtype', 'y_reshape', 'crop', 'classes', 'split', 'shuffle',
         'batch_size', 'num_workers', 'start_epoch', 'n_epochs', 'lr', 'gpus', 'milestones',
         'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'n',
-        'seed', 'out_act', 'training_norm', 'plot', 'plot_predictions']
+        'seed', 'out_act', 'training_norm', 'plot', 'plot_predictions', 'relabel_11_to_00']
     if mode == 'GNN':
         opt_list.extend(['use_node_features','transforms', 'pre_transforms', 'sparsify_dense', 'top_k'])
     if model_type == 'simpleEpiNet':

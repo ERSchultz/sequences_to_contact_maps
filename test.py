@@ -123,7 +123,8 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('16-2')
         opt.out_act = None
         opt.use_node_features = False
-        opt.transforms=str2list('constant')
+        opt.transforms='none'
+        opt.pre_transforms=strwlist('weighted_LDP')
         opt.sparsify_threshold = 0.1
         opt.top_k = 500
     elif model_type == 'SequenceFCAutoencoder':
@@ -141,8 +142,8 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = False
-    opt.plot_predictions = False
+    opt.plot = True
+    opt.plot_predictions = True
     opt.verbose = True
     opt.data_folder = "dataset_04_18_21"
 
@@ -191,7 +192,7 @@ def downsampling_test():
 
 def main():
     # cleanup()
-    debugModel('GNNAutoencoder')
+    debugModel('GNNAutoencoder2')
     # test_argpartition(10)
     # to_mat()
     # downsampling_test()
@@ -199,4 +200,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # print(np.load('dataset_04_18_21\chis.npy'))
