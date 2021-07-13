@@ -321,11 +321,10 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
     for i, data in enumerate(val_dataloader):
         if opt.GNN_mode:
             data = data.to(opt.device)
-            if opt.autoencoder_mode:
-                y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.n, opt.n))
-            else:
-                y = data.y
+            assert opt.autoencoder_mode
+            y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.n, opt.n))
             yhat = model(data)
+            yhat = torch.reshape(yhat, (opt.n, opt.n))
             path = data.path[0]
             minmax = data.minmax
         else:

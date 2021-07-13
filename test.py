@@ -190,4 +190,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    print(np.load('dataset_04_18_21\chis.npy'))
+    

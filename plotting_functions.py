@@ -587,13 +587,13 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
 
             # plot dif
             ydif_abs = abs(yhat - y)
-            plotContactMap(ydif_abs, osp.join(subpath, 'ydif_abs.png'), vmax = v_max, title = '|yhat - y|')
+            plotContactMap(ydif_abs, osp.join(subpath, 'ydif_abs.png'), vmax = v_max, title = '|Y hat - Y|')
             ydif = yhat - y
             cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                      [(0, 'blue'),
                                                      (0.5, 'white'),
                                                       (1, 'red')], N=126)
-            plotContactMap(ydif, osp.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = 'yhat - y', cmap = cmap)
+            plotContactMap(ydif, osp.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = 'Y hat - Y', cmap = cmap)
         else:
             raise Exception("Unsupported preprocessing: {}".format(opt.y_preprocessing))
 
@@ -783,8 +783,8 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
             plt.scatter(z[ind, dims[0]].reshape((-1)), z[ind, dims[1]].reshape((-1)),
                         label = vector)
 
-        plt.xlabel('particle type {}'.format(dims[0]))
-        plt.ylabel('particle type {}'.format(dims[1]))
+        plt.xlabel('particle type {}'.format(dims[0]), fontsize = 16)
+        plt.ylabel('particle type {}'.format(dims[1]), fontsize = 16)
 
         plt.legend(title = 'input particle type vector', title_fontsize = 16)
         plt.savefig(osp.join(subpath, 'particle_type_{}_{}_distribution_merged.png'.format(dims[0], dims[1])))
@@ -800,7 +800,7 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
             ax = fig.add_subplot(2, 2, indplt)
             ind = np.where((x == vector).all(axis = 1))
             ax.scatter(z[ind, dims[0]].reshape((-1)), z[ind, dims[1]].reshape((-1)))
-            ax.set_title('input particle type vector {}'.format(vector))
+            ax.set_title('input particle type vector {}'.format(vector), fontsize = 16)
             indplt += 1
 
         # Turn off axis lines and ticks of the big subplot
