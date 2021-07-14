@@ -1,0 +1,64 @@
+Namespace(GNN_mode=True, act='relu', autoencoder_mode=True, batch_size=8, bottleneck=None, classes=10, criterion=<function binary_cross_entropy_with_logits at 0x7f9bb5323040>, crop=None, cuda=True, data_folder='/../../../scratch/midway2/erschultz/dataset_04_18_21', delete_root=False, device=device(type='cuda'), dilation_list=None, dilation_list_head=None, dilation_list_trunk=None, down_sampling=None, gamma=0.1, gpus=1, head_act='relu', head_architecture='FCAutoencoder', head_hidden_sizes_list=[200, 25], hidden_sizes_list=[16, 8], id=6, ifile=None, ifile_folder=None, k=2, kernel_w_list=None, log_file=<_io.TextIOWrapper name='results/GNNAutoencoder2/6/out.log' mode='a' encoding='UTF-8'>, loss='BCE', lr=0.01, message_passing='GCN', milestones=None, min_subtraction=True, model_type='GNNAutoencoder2', n=1024, n_epochs=20, nf=None, node_feature_size=6, num_workers=4, ofile_folder='results/GNNAutoencoder2/6', out_act=None, output_mode='contact', parameter_sharing=True, plot=True, plot_predictions=True, pre_transforms=['weighted_LDP'], pre_transforms_processed=Compose([
+
+]), pretrained=False, print_mod=2, relabel_11_to_00=False, resume_training=False, root_name='GNNAutoencoder2', save_mod=5, seed=42, shuffle=True, sparsify_threshold=None, split=[0.8, 0.1, 0.1], start_epoch=1, top_k=500, toxx=False, toxx_mode='mean', training_norm=None, transforms=['constant'], transforms_processed=Compose([
+    Constant(value=1),
+]), use_node_features=False, use_parallel=False, use_scratch=True, verbose=False, weighted_LDP=True, x_reshape=True, y_norm='instance', y_preprocessing='diag', y_reshape=True, ydtype=torch.float32)
+
+Epoch 2, loss = 29.6962
+Mean test/val loss: 14.4895
+
+Epoch 4, loss = 8.6163
+Mean test/val loss: 6.6475
+
+Epoch 6, loss = 5.8638
+Mean test/val loss: 4.4822
+
+Epoch 8, loss = 4.8966
+Mean test/val loss: 3.8890
+
+Epoch 10, loss = 3.7997
+Mean test/val loss: 5.0905
+
+Epoch 12, loss = 3.2612
+Mean test/val loss: 2.5853
+
+Epoch 14, loss = 2.7655
+Mean test/val loss: 3.1958
+
+Epoch 16, loss = 1.9846
+Mean test/val loss: 1.5788
+
+Epoch 18, loss = 1.7025
+Mean test/val loss: 1.4621
+
+Epoch 20, loss = 1.4434
+Mean test/val loss: 2.7055
+
+Total parameters: 1,652,265
+Total time: 3505.4553542137146
+Final val loss: 2.705486650466919
+
+#### Plotting Script ####
+PCA Results:
+Accuracy: 0.665 +- 0.15
+Spearman R: 0.709 +- 0.242
+Pearson R: 0.631 +- 0.213
+
+Distance Stratified Pearson Correlation Results:
+Overall Pearson R: 0.397 $\pm$ 0.13
+
+Class Accuracy Results:
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+Accuracy: 4.979% +- 6.722
+Loss: 2.705 +- 1.682
+Prediction Results:
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+results/GNNAutoencoder2/6/sample1230
+results/GNNAutoencoder2/6/sample1761
+results/GNNAutoencoder2/6/sample40
+results/GNNAutoencoder2/6/sample1751
+results/GNNAutoencoder2/6/sample1718
+Loss: 0.09043227672576905 +- 0.6831787785204754
+
