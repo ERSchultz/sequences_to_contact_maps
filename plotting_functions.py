@@ -428,7 +428,7 @@ def plotPerClassAccuracy(val_dataloader, imagePath, model, opt, title = None):
 
 def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt):
     """Plots Pearson correlation as a function of genomic distance"""
-    p_arr = np.zeros((opt.valN, opt.n-1))
+    p_arr = np.zeros((opt.valN, opt.m-1))
     P_arr_overall = np.zeros(opt.valN)
     model.eval()
     for i, data in enumerate(val_dataloader):
@@ -437,7 +437,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
             if opt.autoencoder_mode:
                 y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
                                                         batch = data.batch,
-                                                        max_num_nodes = opt.n)
+                                                        max_num_nodes = opt.m)
             else:
                 y = data.y
             yhat = model(data)
@@ -449,7 +449,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
             y = y.to(opt.device)
             path = path[0]
             yhat = model(x)
-        y = y.cpu().numpy().reshape((opt.n, opt.n))
+        y = y.cpu().numpy().reshape((opt.m, opt.m))
         y = un_normalize(y, minmax)
         if opt.loss == 'BCE':
             # using BCE with logits loss, which combines sigmoid into loss
@@ -461,7 +461,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
             yhat = np.argmax(yhat, axis = 1)
         else:
             yhat = un_normalize(yhat, minmax)
-        yhat = yhat.reshape((opt.n,opt.n))
+        yhat = yhat.reshape((opt.m,opt.m))
 
         overall_corr, corr_arr = calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson')
         if opt.verbose:
@@ -478,8 +478,8 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
     print('Distance Stratified Pearson Correlation Results:', file = opt.log_file)
     print(title, end = '\n\n', file = opt.log_file)
 
-    plt.plot(np.arange(opt.n-1), p_mean, color = 'black', label = 'mean')
-    plt.fill_between(np.arange(opt.n-1), p_mean + p_std, p_mean - p_std, color = 'red', alpha = 0.5, label = 'std')
+    plt.plot(np.arange(opt.m-1), p_mean, color = 'black', label = 'mean')
+    plt.fill_between(np.arange(opt.m-1), p_mean + p_std, p_mean - p_std, color = 'red', alpha = 0.5, label = 'std')
     plt.ylim(-0.5, 1)
     plt.xlabel('Distance', fontsize = 16)
     plt.ylabel('Pearson Correlation Coefficient', fontsize = 16)
@@ -526,7 +526,7 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
             if opt.autoencoder_mode:
                 y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
                                                         batch = data.batch,
-                                                        max_num_nodes = opt.n)
+                                                        max_num_nodes = opt.m)
             else:
                 y = data.y
             yhat = model(data)
@@ -539,14 +539,14 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
             path = path[0]
             yhat = model(x)
         loss = opt.criterion(yhat, y).item()
-        y = y.cpu().numpy().reshape((opt.n, opt.n))
+        y = y.cpu().numpy().reshape((opt.m, opt.m))
         y = un_normalize(y, minmax)
         if opt.loss == 'BCE':
             # using BCE with logits loss, which combines sigmoid into loss
             # so need to do sigmoid here
             yhat = torch.sigmoid(yhat)
         yhat = yhat.cpu().detach().numpy()
-        yhat = yhat.reshape((opt.n,opt.n))
+        yhat = yhat.reshape((opt.m,opt.m))
 
         sample = osp.split(path)[-1]
         subpath = osp.join(opt.ofile_folder, sample)
@@ -655,8 +655,8 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
             x = x.to(opt.device)
             y = x
             yhat = model(x)
-            y = torch.reshape(y, (opt.n, opt.k))
-            yhat = torch.reshape(yhat, (opt.n, opt.k))
+            y = torch.reshape(y, (opt.m, opt.k))
+            yhat = torch.reshape(yhat, (opt.m, opt.k))
         y = y.cpu().numpy().astype(bool)
         y_not = np.logical_not(y)
 
@@ -690,7 +690,7 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
                 print('fp: {}, n: {}, fpr: {}\n'.format(np.sum(fp, 0), negatives, fpr))
 
             tn = y_not & np.logical_not(yhat_t)
-            acc = np.sum(tp | tn) / opt.n / opt.k
+            acc = np.sum(tp | tn) / opt.m / opt.k
             acc_array[j, i] = acc
 
     tpr_mean_array = np.round(np.mean(tpr_array, 1), 3)
@@ -769,8 +769,8 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
             if opt.loss == 'BCE':
                 z = torch.sigmoid(z)
 
-        x = x.cpu().numpy().reshape((opt.n, opt.k))
-        z = z.cpu().detach().numpy().reshape((opt.n, -1))
+        x = x.cpu().numpy().reshape((opt.m, opt.k))
+        z = z.cpu().detach().numpy().reshape((opt.m, -1))
 
         sample = osp.split(path)[-1]
         subpath = osp.join(opt.ofile_folder, sample)
@@ -957,8 +957,8 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    # updateResultTables('ContactGNN', 'GNN', 'sequence')
-    plotCombinedModels('GNNAutoencoder2', [2, 3, 4])
+    updateResultTables('SequenceFCAutoencoder', None, 'sequence')
+    # plotCombinedModels('GNNAutoencoder2', [2, 3, 4])
     # main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')

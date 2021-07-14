@@ -219,23 +219,58 @@ class ConvBlock(nn.Module):
 class DeconvBlock(nn.Module):
     def __init__(self, input_size, output_size, kernel_size = 3, stride = 1, padding = 1,
                  bias = True, activation = 'prelu', norm = None, dropout = None,
-                 dropout_p = 0.5, output_padding = 0):
+                 dropout_p = 0.5, output_padding = 0, conv1d = False):
         super(DeconvBlock, self).__init__()
-        model = [nn.ConvTranspose2d(input_size, output_size, kernel_size,
+
+        if conv1d:
+            conv_fn = nn.ConvTranspose1d
+        else:
+            conv_fn = nn.ConvTranspose2d
+
+        model = [conv_fn(input_size, output_size, kernel_size,
                                                stride, padding, bias = bias, output_padding = output_padding)]
 
         if norm == 'batch':
-            model.append(nn.BatchNorm2d(output_size))
+            if conv1d:
+                batch_fn = nn.BatchNorm1d
+            else:
+                batch_fn = nn.BatchNorm2d
         elif norm == 'instance':
-            model.append(nn.InstanceNorm2d(output_size))
+            if conv1d:
+                batch_fn = nn.InstanceNorm1d
+            else:
+                batch_fn = nn.InstanceNorm2d
+        else:
+            batch_fn = nn.Identity
+        model.append(batch_fn(output_size))
 
         if dropout == 'drop':
-            model.append(nn.Dropout2d(dropout_p))
+            if conv1d:
+                dropout_fn = nn.Dropout
+            else:
+                dropout_fn = nn.Dropout2d
+            model.append(dropout_fn(dropout_p))
+            model2.append(dropout_fn(dropout_p))
 
-        if activation.lower() == 'relu':
-            model.append(nn.ReLU(True))
-        elif activation.lower() == 'prelu':
-            model.append(nn.PReLU())
+        if activation is None:
+            pass
+        elif issubclass(type(activation), nn.Module):
+            model.append(activation)
+        elif isinstance(activation, str):
+            if activation.lower() == 'relu':
+                model.append(nn.ReLU(True))
+            elif activation.lower() == 'prelu':
+                model.append(nn.PReLU())
+            elif activation.lower() == 'gated':
+                model.append(nn.Tanh())
+                model2.append(nn.Sigmoid())
+                self.model2 = nn.Sequential(*model2)
+            elif activation.lower() == 'sigmoid':
+                model.append(nn.Sigmoid())
+            else:
+                raise Exception("Unkown activation {}".format(activation))
+        else:
+            raise Exception("Unkown activation {}".format(activation))
 
         self.model = nn.Sequential(*model)
 

@@ -78,11 +78,11 @@ class VAE(nn.Module):
 
 class DeepC(nn.Module):
     '''Roughly based on https://doi.org/10.1038/s41592-020-0960-3 (Deepc).'''
-    def __init__(self, n, k, kernel_w_list, hidden_sizes_list,
+    def __init__(self, m, k, kernel_w_list, hidden_sizes_list,
                 dilation_list, std_norm, act, out_act):
         """
         Inputs:
-            n: number of particles
+            m: number of particles
             k: number of epigenetic marks
             kernel_w_list: list of kernel widths of convolutional layers
             hidden_sizes_list: list of hidden sizes for convolutional layers
@@ -131,7 +131,7 @@ class DeepC(nn.Module):
 
 class Akita(nn.Module):
     '''Roughly based on https://doi.org/10.1038/s41592-020-0958-x (Akita).'''
-    def __init__(self, n, k, kernel_w_list, hidden_sizes_list,
+    def __init__(self, m, k, kernel_w_list, hidden_sizes_list,
                 dilation_list_trunk,
                 bottleneck_size,
                 dilation_list_head,
@@ -142,7 +142,7 @@ class Akita(nn.Module):
                 downsample_method, pool_kernel_size = 2, stride_size = 2):
         """
         Inputs:
-            n: number of particles
+            m: number of particles
             k: number of epigenetic marks
             kernel_w_list: list of kernel widths of convolutional layers
             hidden_sizes_list: list of hidden sizes for convolutional layers
@@ -193,7 +193,7 @@ class Akita(nn.Module):
 
         ## Head ##
         head = []
-        head.append(AverageTo2d(True, n // downsampling_factor))
+        head.append(AverageTo2d(True, m // downsampling_factor))
         input_size = bottleneck_size + 1
         head.append(ConvBlock(input_size, input_size, 1, padding = 0, activation = act))
 
@@ -223,7 +223,7 @@ class Akita(nn.Module):
         return out
 
 class SimpleEpiNet(nn.Module):
-    def __init__(self, n, k, kernel_w_list, hidden_sizes_list, out_act = nn.Sigmoid()):
+    def __init__(self, m, k, kernel_w_list, hidden_sizes_list, out_act = nn.Sigmoid()):
         super(SimpleEpiNet, self).__init__()
         model = []
 
@@ -247,10 +247,10 @@ class SimpleEpiNet(nn.Module):
         return out
 
 class GNNAutoencoder(nn.Module):
-    def __init__(self, n, input_size, hidden_sizes_list, act, head_act, out_act,
+    def __init__(self, m, input_size, hidden_sizes_list, act, head_act, out_act,
                 message_passing, head_architecture, head_hidden_sizes_list, parameter_sharing):
         super(GNNAutoencoder, self).__init__()
-        self.n = n
+        self.m = m
         hidden_size = hidden_sizes_list[0]
         output_size = hidden_sizes_list[1]
         self.output_size = output_size
@@ -276,7 +276,7 @@ class GNNAutoencoder(nn.Module):
 
         self.head_architecture = head_architecture
         if self.head_architecture == 'FCAutoencoder':
-            input_size = self.n * self.output_size
+            input_size = self.m * self.output_size
             self.head = FullyConnectedAutoencoder(input_size, head_hidden_sizes_list, head_act, out_act, parameter_sharing)
 
         if out_act is None:
@@ -301,10 +301,10 @@ class GNNAutoencoder(nn.Module):
         # TODO act??
 
         if self.head_architecture == 'xxT':
-            latent = torch.reshape(x, (-1, self.n, self.output_size))
+            latent = torch.reshape(x, (-1, self.m, self.output_size))
             out = self.out_act(torch.einsum('bij, bkj->bik', latent, latent))
         elif self.head_architecture == 'FCAutoencoder':
-            x = torch.reshape(x, (-1, self.n, self.output_size))
+            x = torch.reshape(x, (-1, self.m, self.output_size))
             out = self.head(x)
             out = self.out_act(torch.einsum('bij, bkj->bik', x, x))
         else:
@@ -319,7 +319,7 @@ class GNNAutoencoder(nn.Module):
         x = self.conv2(x, edge_index, edge_attr)
 
         assert self.head_architecture == 'xxT', 'get_latent not supported for {}'.format(self.head_architecture)
-        latent = torch.reshape(x, (-1, self.n, self.output_size))
+        latent = torch.reshape(x, (-1, self.m, self.output_size))
         return latent
 
 class FullyConnectedAutoencoder(nn.Module):
@@ -335,6 +335,9 @@ class FullyConnectedAutoencoder(nn.Module):
         Inputs:
             input_size: size of input (also used as size of output)
             hidden_sizes_list: list of hidden sizes
+            act: default activation
+            out_act: output activation
+            parameter_sharing: True to share parameters between encoder and decoder
         '''
         super(FullyConnectedAutoencoder, self).__init__()
         if act is None:
@@ -380,8 +383,8 @@ class FullyConnectedAutoencoder(nn.Module):
             input_size = output_size
 
     def forward(self, input):
-        # assume input is n x k
-        N, n, k = input.shape
+        # assume input is m x k
+        N, m, k = input.shape
 
         input = torch.reshape(input, (N, self.input_size))
         for weight, bias in zip(self.encode_weights, self.encode_biases):
@@ -402,12 +405,12 @@ class FullyConnectedAutoencoder(nn.Module):
                 latent = self.act(latent)
 
         output = self.out_act(latent)
-        output = torch.reshape(latent, (N, n, k))
+        output = torch.reshape(latent, (N, m, k))
         return output
 
     def get_latent(self, input):
-        # assume input is n x k
-        N, n, k = input.shape
+        # assume input is m x k
+        N, m, k = input.shape
 
         input = torch.reshape(input, (N, self.input_size))
         for weight, bias in zip(self.encode_weights, self.encode_biases):
@@ -417,6 +420,60 @@ class FullyConnectedAutoencoder(nn.Module):
         latent = input
         return latent
 
+class ConvolutionalAutoencoder(nn.Module):
+    def __init__(self, m, input_size, hidden_sizes_list, act, out_act, pooling = 'maxpool', conv1d = True):
+        '''
+        Inputs:
+            m: number of particles
+            input_size: size of input (also used as size of output)
+            hidden_sizes_list: list of hidden sizes, last size is used as latent size of FC layer
+            act: default activation
+            out_act: output activation
+            pooling: method for pooling ('maxpool' or 'strided')
+        '''
+        super(ConvolutionalAutoencoder, self).__init__()
+        encode_model = []
+        decode_model = []
+        latent_size = hidden_sizes_list.pop()
+        print(hidden_sizes_list)
+        first = True
+        for output_size in hidden_sizes_list:
+            encode_model.append(ConvBlock(input_size, output_size, activation = act, pool = pooling, conv1d = conv1d))
+            if first:
+                decode_model.append(DeconvBlock(output_size, input_size, activation = out_act, conv1d = conv1d, stride = 2, output_padding = 1))
+                first = False
+            else:
+                decode_model.append(DeconvBlock(output_size, input_size, activation = act, conv1d = conv1d, stride = 2, output_padding = 1))
+            input_size = output_size
+
+        self.encode = nn.Sequential(*encode_model)
+        self.decode = nn.Sequential(*reversed(decode_model))
+
+        input_size = int(m / 2**len(hidden_sizes_list) * input_size)
+        print(input_size)
+        self.fc1 = LinearBlock(input_size, latent_size, activation = act)
+        self.fc2 = LinearBlock(latent_size, input_size, activation = act)
+
+    def forward(self, x):
+        x = self.encode(x)
+        N, d, m = x.shape
+        x = torch.reshape(x, (N, -1))
+        latent = self.fc1(x)
+
+        out = self.fc2(latent)
+        out = torch.reshape(out, (N, d, m))
+        out = self.decode(out)
+
+        return out
+
+    def get_latent(self, x):
+        x = self.encode(x)
+        N, d, m = x.shape
+        x = torch.reshape(x, (N, -1))
+        latent = self.fc1(x)
+
+        return latent
+
 class ContactGNN(nn.Module):
     '''
     Graph neural network that maps contact map data to node embeddings of arbitrary length.
@@ -424,18 +481,18 @@ class ContactGNN(nn.Module):
     Primary use is to map contact data (formatted as graph) to particle type vector
     where particle type vector is not given as node feature in graph.
     '''
-    def __init__(self, n, input_size, hidden_sizes_list, act, out_act,
+    def __init__(self, m, input_size, hidden_sizes_list, act, out_act,
                 message_passing):
         '''
         Inputs:
-            n: number of nodes
+            m: number of nodes
             input_size: size of input node feature vector
             hidden_sizes_list: list of node feature vector hidden sizes (final value is output size)
             out_act: output activation
             message_passing: type of message passing algorithm to use
         '''
         super(ContactGNN, self).__init__()
-        self.n = n
+        self.m = m
         if len(hidden_sizes_list) > 2:
             print('Warning: only using first two hidden sizes')
         hidden_size = hidden_sizes_list[0]

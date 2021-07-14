@@ -130,12 +130,12 @@ class Sequences2Contacts(Dataset):
 
 class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN: https://github.com/rusty1s/pytorch_geometric/issues/1511
-    def __init__(self, dirname, root_name = None, n = 1024, y_preprocessing = 'diag',
+    def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag',
                 y_norm = 'instance', min_subtraction = True, use_node_features = True,
                 sparsify_threshold = None, top_k = None, weighted_LDP = False,
                 transform = None, pre_transform = None, relabel_11_to_00 = False):
         t0 = time.time()
-        self.n = n
+        self.m = m
         self.dirname = dirname
         self.y_preprocessing = y_preprocessing
         self.y_norm = y_norm
@@ -214,18 +214,19 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             y = torch.tensor(y, dtype = torch.float32)
             edge_index, edge_weight = self.sparsify_adj_mat(y)
-            x = torch.tensor(np.load(osp.join(raw_folder, 'x.npy')), dtype = torch.float32)
+            x = np.load(osp.join(raw_folder, 'x.npy'))
             if self.relabel_11_to_00:
                 m, k = x.shape
                 ind = np.where((x == np.ones(k)).all(axis = 1))
                 x[ind] = 0
+            x = torch.tensor(x, dtype = torch.float32)
             if self.use_node_features:
                 graph = torch_geometric.data.Data(x = x, edge_index = edge_index, edge_attr = edge_weight, y = x)
             else:
                 graph = torch_geometric.data.Data(x = None, edge_index = edge_index, edge_attr = edge_weight, y = x)
             graph.minmax = torch.tensor([self.ymin, self.ymax])
             graph.path = raw_folder
-            graph.num_nodes = self.n
+            graph.num_nodes = self.m
             if self.weighted_LDP:
                 graph = self.weightedLocalDegreeProfile(graph, y)
             if self.pre_transform is not None:
@@ -244,10 +245,10 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def filter_to_topk(self, y):
         # any entry not in the topk will be set to 0, row-wise
-        k = self.n - self.top_k
+        k = self.m - self.top_k
         z = np.argpartition(y, k)
         z = z[:, :k]
-        y[np.arange(self.n)[:,None], z] = 0
+        y[np.arange(self.m)[:,None], z] = 0
 
     def sparsify_adj_mat(self, y):
         edge_index = (y > 0).nonzero().t()
@@ -285,9 +286,10 @@ class ContactsGraph(torch_geometric.data.Dataset):
         return data
 
 class Sequences(Dataset):
-    def __init__(self, dirname, crop, names = False, min_sample = 0):
+    def __init__(self, dirname, crop, x_reshape, names = False, min_sample = 0):
         super(Sequences, self).__init__()
         self.crop = crop
+        self.x_reshape = x_reshape
         self.names = names
         self.paths = sorted(make_dataset(dirname, minSample = min_sample))
 
@@ -296,6 +298,9 @@ class Sequences(Dataset):
         x = np.load(x_path)
         if self.crop is not None:
             x = x[self.crop[0]:self.crop[1], :]
+        if self.x_reshape:
+            # treat x as 1d image with k channels
+            x = x.T
 
         x = torch.tensor(x, dtype = torch.float32)
         result = [x]

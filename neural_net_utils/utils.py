@@ -26,14 +26,14 @@ from dataset_classes import *
 
 def getModel(opt):
     if opt.model_type == 'SimpleEpiNet':
-        model = SimpleEpiNet(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
+        model = SimpleEpiNet(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
     if opt.model_type == 'UNet':
         model = UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm, out_act = opt.out_act)
     elif opt.model_type == 'DeepC':
-        model = DeepC(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
+        model = DeepC(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list, opt.training_norm, opt.act, opt.out_act)
     elif opt.model_type == 'Akita':
-        model = Akita(opt.n, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
+        model = Akita(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list_trunk,
                             opt.bottleneck,
                             opt.dilation_list_head,
@@ -43,12 +43,14 @@ def getModel(opt):
                             opt.training_norm,
                             opt.down_sampling)
     elif opt.model_type.startswith('GNNAutoencoder'):
-        model = GNNAutoencoder(opt.n, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.head_act, opt.out_act,
+        model = GNNAutoencoder(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.head_act, opt.out_act,
                                 opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list, opt.parameter_sharing)
     elif opt.model_type == 'SequenceFCAutoencoder':
-        model = FullyConnectedAutoencoder(opt.n * opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, opt.parameter_sharing)
+        model = FullyConnectedAutoencoder(opt.m * opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, opt.parameter_sharing)
+    elif opt.model_type == 'SequenceConvAutoencoder':
+        model = ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, conv1d = True)
     elif opt.model_type == 'ContactGNN':
-        model = ContactGNN(opt.n, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.out_act, opt.message_passing)
+        model = ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.out_act, opt.message_passing)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -57,14 +59,14 @@ def getModel(opt):
 # dataset functions
 def getDataset(opt, names = False, minmax = False):
     if opt.GNN_mode:
-        dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.n, opt.y_preprocessing,
+        dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.m, opt.y_preprocessing,
                                             opt.y_norm, opt.min_subtraction, opt.use_node_features,
                                             opt.sparsify_threshold, opt.top_k, opt.weighted_LDP,
                                             opt.transforms_processed, opt.pre_transforms_processed,
                                             opt.relabel_11_to_00)
         opt.root = dataset.root
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
-        dataset = Sequences(opt.data_folder, opt.crop, names)
+        dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)
         opt.root = None
     else:
         dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
@@ -323,9 +325,9 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
         if opt.GNN_mode:
             data = data.to(opt.device)
             assert opt.autoencoder_mode
-            y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.n, opt.n))
+            y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.m, opt.m))
             yhat = model(data)
-            yhat = torch.reshape(yhat, (opt.n, opt.n))
+            yhat = torch.reshape(yhat, (opt.m, opt.m))
             path = data.path[0]
             minmax = data.minmax
         else:
@@ -336,7 +338,7 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
             yhat = model(x)
         loss = opt.criterion(yhat, y).item()
         loss_arr[i] = loss
-        y = y.cpu().numpy().reshape((opt.n, opt.n))
+        y = y.cpu().numpy().reshape((opt.m, opt.m))
         y = un_normalize(y, minmax)
         if opt.loss == 'BCE':
             # using BCE with logits loss, which combines sigmoid into loss
@@ -351,7 +353,7 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
             ytrue = np.load(osp.join(path, 'y_prcnt.npy'))
             yhat = un_normalize(yhat, minmax)
             yhat = percentile_preprocessing(yhat, prcntDist)
-        yhat = yhat.reshape((opt.n,opt.n))
+        yhat = yhat.reshape((opt.m,opt.m))
         acc = np.sum(yhat == ytrue) / yhat.size
         acc_arr[i] = acc
 
@@ -380,7 +382,7 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
         if opt.GNN_mode:
             data = data.to(opt.device)
             if opt.autoencoder_mode:
-                y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.n, opt.n))
+                y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.m, opt.m))
             else:
                 y = data.y
             yhat = model(data)
@@ -392,7 +394,7 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
             y = y.to(opt.device)
             path = path[0]
             yhat = model(x)
-        y = y.cpu().numpy().reshape((opt.n, opt.n))
+        y = y.cpu().numpy().reshape((opt.m, opt.m))
         y = un_normalize(y, minmax)
         if opt.loss == 'BCE':
             # using BCE with logits loss, which combines sigmoid into loss
@@ -404,7 +406,7 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
             yhat = np.argmax(yhat, axis = 1)
         else:
             yhat = un_normalize(yhat, minmax)
-        yhat = yhat.reshape((opt.n, opt.n))
+        yhat = yhat.reshape((opt.m, opt.m))
 
         # y
         result_y = pca.fit(y)
@@ -506,7 +508,7 @@ def getBaseParser():
     parser.add_argument('--ifile_folder', type=str, help='Location of input file for pretrained model')
     parser.add_argument('--ifile', type=str, help='Name of input file for pretrained model')
     parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
-    parser.add_argument('--n', type=int, default=1024, help='Number of particles')
+    parser.add_argument('--m', type=int, default=1024, help='Number of particles')
     parser.add_argument('--seed', type=int, default=42, help='random seed to use. Default: 42')
     parser.add_argument('--act', type=str2None, default='relu', help='default activation') # TODO impelement throughout
     parser.add_argument('--out_act', type=str2None, help='activation of final layer')
@@ -719,10 +721,10 @@ def opt2list(opt):
         opt.y_norm, opt.x_reshape, opt.ydtype, opt.y_reshape, opt.crop, opt.classes, opt.split,
         opt.shuffle, opt.batch_size, opt.num_workers, opt.start_epoch, opt.n_epochs, opt.lr,
         opt.gpus, opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
-        opt.ifile_folder, opt.ifile, opt.k, opt.n, opt.seed, opt.out_act, opt.training_norm,
+        opt.ifile_folder, opt.ifile, opt.k, opt.m, opt.seed, opt.out_act, opt.training_norm,
         opt.plot, opt.plot_predictions, opt.relabel_11_to_00]
     if opt.GNN_mode:
-        opt_list.extend([opt.use_node_features, opt.transforms, opt.pre_transforms, opt.sparsify_dense, opt.top_k])
+        opt_list.extend([opt.use_node_features, opt.transforms, opt.pre_transforms, opt.sparsify_threshold, opt.top_k])
     if opt.model_type == 'simpleEpiNet':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list])
     elif opt.model_type == 'UNet':
@@ -762,7 +764,7 @@ def get_opt_header(model_type, mode = None):
         'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'n',
         'seed', 'out_act', 'training_norm', 'plot', 'plot_predictions', 'relabel_11_to_00']
     if mode == 'GNN':
-        opt_list.extend(['use_node_features','transforms', 'pre_transforms', 'sparsify_dense', 'top_k'])
+        opt_list.extend(['use_node_features','transforms', 'pre_transforms', 'sparsify_threshold', 'top_k'])
     if model_type == 'simpleEpiNet':
         opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])
     elif model_type == 'UNet':

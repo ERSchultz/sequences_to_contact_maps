@@ -75,7 +75,7 @@ def debugModel(model_type):
     # architecture
     opt.k = 2
     opt.crop = None
-    opt.n = 1024
+    opt.m = 1024
     opt.y_preprocessing = 'diag'
     opt.y_norm = 'instance'
     opt.loss = 'mse'
@@ -123,16 +123,21 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('16-2')
         opt.out_act = None
         opt.use_node_features = False
-        opt.transforms='none'
-        opt.pre_transforms=strwlist('weighted_LDP')
-        opt.sparsify_threshold = 0.1
+        opt.transforms=None
+        opt.pre_transforms=str2list('weighted_LDP')
         opt.top_k = 500
+        opt.relabel_11_to_00 = True
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
         opt.autoencoder_mode = True
         opt.out_act = None
         opt.hidden_sizes_list=str2list('1024-1024-128')
         opt.parameter_sharing = False
+    elif model_type == 'SequenceConvAutoencoder':
+        opt.output_mode = 'sequence'
+        opt.autoencoder_mode = True
+        opt.out_act = None
+        opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
     opt.n_epochs = 1
@@ -144,7 +149,7 @@ def debugModel(model_type):
     # other
     opt.plot = True
     opt.plot_predictions = True
-    opt.verbose = True
+    opt.verbose = False
     opt.data_folder = "dataset_04_18_21"
 
     opt = finalizeOpt(opt, parser, True)
@@ -192,7 +197,7 @@ def downsampling_test():
 
 def main():
     # cleanup()
-    debugModel('GNNAutoencoder2')
+    debugModel('SequenceConvAutoencoder')
     # test_argpartition(10)
     # to_mat()
     # downsampling_test()
