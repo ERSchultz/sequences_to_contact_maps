@@ -13,7 +13,7 @@ modelType='SimpleEpiNet'
 
 # architecture
 k=2
-n=1024
+m=1024
 yPreprocessing='diag'
 kernelWList='3-5-5'
 hiddenSizesList='10-20-30'
@@ -28,4 +28,4 @@ gamma=0.1
 
 cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
-python3 main.py --data_folder $dirname --model_type $modelType --k $k --n $n --y_preprocessing $yPreprocessing --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
+python3 main.py --data_folder $dirname --model_type $modelType --k $k --m $m --y_preprocessing $yPreprocessing --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma

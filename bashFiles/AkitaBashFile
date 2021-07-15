@@ -14,7 +14,7 @@ modelType='Akita'
 
 # architecture
 k=2
-n=1024
+m=1024
 yPreprocessing='diag'
 yNorm='instance'
 kernelWList='5-5-5'
@@ -40,8 +40,8 @@ cd ~/sequences_to_contact_maps
 source activate seq2contact_pytorch
 
 
-python3 core_test_train.py --data_folder $dirname --model_type $modelType --k $k --n $n --y_preprocessing $yPreprocessing --y_norm $yNorm --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list_trunk $dilationListTrunk --bottleneck $bottleneck --dilation_list_head $dilationListHead --out_act $outAct --training_norm $trainingNorm --down_sampling $downSampling --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
+python3 core_test_train.py --data_folder $dirname --model_type $modelType --k $k --m $m --y_preprocessing $yPreprocessing --y_norm $yNorm --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list_trunk $dilationListTrunk --bottleneck $bottleneck --dilation_list_head $dilationListHead --out_act $outAct --training_norm $trainingNorm --down_sampling $downSampling --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
 
 yNorm='none'
 outAct='none'
-python3 core_test_train.py --data_folder $dirname --model_type $modelType --k $k --n $n --y_preprocessing $yPreprocessing --y_norm $yNorm --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list_trunk $dilationListTrunk --bottleneck $bottleneck --dilation_list_head $dilationListHead --out_act $outAct --training_norm $trainingNorm --down_sampling $downSampling --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
+python3 core_test_train.py --data_folder $dirname --model_type $modelType --k $k --m $m --y_preprocessing $yPreprocessing --y_norm $yNorm --kernel_w_list $kernelWList --hidden_sizes_list $hiddenSizesList --dilation_list_trunk $dilationListTrunk --bottleneck $bottleneck --dilation_list_head $dilationListHead --out_act $outAct --training_norm $trainingNorm --down_sampling $downSampling --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma

@@ -17,7 +17,7 @@ xReshape='false'
 
 # architecture
 k=2
-n=1024
+m=1024
 yPreprocessing='diag_instance'
 yNorm='instance'
 minSubtraction='False'
@@ -38,5 +38,5 @@ source activate seq2contact_pytorch
 
 for lr in 1e-1
 do
-  python3 core_test_train.py --data_folder $dirname --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --n $n --y_preprocessing ${yPreprocessing} --y_norm $yNorm --min_subtraction $minSubtraction --nf $nf --loss $loss --out_act $outAct --training_norm $trainingNorm --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
+  python3 core_test_train.py --data_folder $dirname --model_type $modelType --toxx $toxx --x_reshape $xReshape --k $k --m $m --y_preprocessing ${yPreprocessing} --y_norm $yNorm --min_subtraction $minSubtraction --nf $nf --loss $loss --out_act $outAct --training_norm $trainingNorm --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma
 done
