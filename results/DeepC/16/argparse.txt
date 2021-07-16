@@ -4,7 +4,7 @@
 DeepC
 --k
 2
---n
+--m
 1024
 --y_preprocessing
 diag

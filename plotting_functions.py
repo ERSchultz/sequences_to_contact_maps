@@ -9,17 +9,20 @@ import torch.nn.functional as F
 import numpy as np
 import itertools
 import math
-import matplotlib.pyplot as plt
-import matplotlib.colors
 import seaborn as sns
 import pandas as pd
 import time
 from sklearn import metrics
 
+import matplotlib.pyplot as plt
+import matplotlib.colors
+import matplotlib.cm
+
 from neural_net_utils.utils import *
 from neural_net_utils.networks import *
 from neural_net_utils.dataset_classes import *
 
+#### Functions for plotting contact frequency statistics ####
 def plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid, split = 'type', xmax = None):
     """
     Plotting function for frequency distributions corresponding to only one sample.
@@ -186,6 +189,28 @@ def plotDistStats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
     plt.legend()
     plt.savefig(ofile)
     plt.close()
+
+def freqDistributionPlots(dataFolder, n = 1024):
+    '''Wrapper function for plotFrequenciesSubplot and plotFrequenciesSampleSubplot.'''
+    chi = np.load(osp.join(dataFolder, 'chis.npy'))
+    k = len(chi)
+
+    # freq distribution plots
+    for diag in [True, False]:
+        print(diag)
+        freq_arr = getFrequencies(dataFolder, diag, n, k, chi)
+        for split in [None, 'type', 'psi']:
+            print(split)
+            plotFrequenciesSampleSubplot(freq_arr, dataFolder, diag, k, split)
+            plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid = 1, split = split)
+
+def freqStatisticsPlots(dataFolder):
+    '''Wrapper function for plotDistStats.'''
+    for diag in [True, False]:
+        for stat in ['mean', 'var']:
+            ofile = osp.join(dataFolder, "freq_stat_{}_diag_{}.png".format(stat, diag))
+            plotDistStats(dataFolder, diag, ofile, stat = stat)
+#### End section ####
 
 def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
     # assume only difference in opts is lr
@@ -600,26 +625,6 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
 
     print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
 
-def freqDistributionPlots(dataFolder, n = 1024):
-    chi = np.load(osp.join(dataFolder, 'chis.npy'))
-    k = len(chi)
-
-    # freq distribution plots
-    for diag in [True, False]:
-        print(diag)
-        freq_arr = getFrequencies(dataFolder, diag, n, k, chi)
-        for split in [None, 'type', 'psi']:
-            print(split)
-            plotFrequenciesSampleSubplot(freq_arr, dataFolder, diag, k, split)
-            plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid = 1, split = split)
-
-def freqStatisticsPlots(dataFolder):
-    # freq statistics plots
-    for diag in [True, False]:
-        for stat in ['mean', 'var']:
-            ofile = osp.join(dataFolder, "freq_stat_{}_diag_{}.png".format(stat, diag))
-            plotDistStats(dataFolder, diag, ofile, stat = stat)
-
 def contactPlots(dataFolder):
     in_paths = sorted(make_dataset(dataFolder))
     for path in in_paths:
@@ -734,6 +739,7 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
                                                                     tpr_mean_array[max_t], tpr_std_array[max_t]), file = opt.log_file)
     print('ROC time: {}'.format(np.round (time.time() - t0, 3)), file = opt.log_file)
 
+#### Functions for plotting predicted particles ####
 def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1), use_latent = False):
     '''
     Plots the distribution of particle type predictions for models that attempt to predict particle types.
@@ -778,7 +784,15 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
         if not osp.exists(subpath):
             os.mkdir(subpath, mode = 0o755)
 
-        # merge plot
+        # plots along polymer
+        plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath)
+
+
+        # plots of distribution of predictions
+        cmap = matplotlib.cm.get_cmap('tab10')
+        ind = np.arange(len(all_binary_vectors)) % cmap.N
+        colors = plt.cycler('color', cmap(ind))
+        plt.rcParams["axes.prop_cycle"] = colors
         for vector in all_binary_vectors:
             ind = np.where((x == vector).all(axis = 1))
             plt.scatter(z[ind, dims[0]].reshape((-1)), z[ind, dims[1]].reshape((-1)),
@@ -796,11 +810,10 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
         bigax = fig.add_subplot(111, label = 'bigax')
         indplt = 1
 
-        for vector in all_binary_vectors:
-            # need to use subplots here
+        for vector, c in zip(all_binary_vectors, colors):
             ax = fig.add_subplot(2, 2, indplt)
             ind = np.where((x == vector).all(axis = 1))
-            ax.scatter(z[ind, dims[0]].reshape((-1)), z[ind, dims[1]].reshape((-1)))
+            ax.scatter(z[ind, dims[0]].reshape((-1)), z[ind, dims[1]].reshape((-1)), color = c['color'])
             ax.set_title('input particle type vector {}'.format(vector), fontsize = 16)
             indplt += 1
 
@@ -818,6 +831,77 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
 
         plt.savefig(osp.join(subpath, 'particle_type_{}_{}_distribution.png'.format(dims[0], dims[1])))
         plt.close()
+
+def plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath):
+    '''Plots the predicted particle types as a vector along the polymer.'''
+    # cycler: # https://stackoverflow.com/questions/30079590/use-matplotlib-color-map-for-color-cycle
+    cmap = matplotlib.cm.get_cmap('Set1')
+    ind = np.arange(opt.k) % cmap.N
+    colors = plt.cycler('color', cmap(ind))
+    fig, ax = plt.subplots()
+
+    styles = ['--', '-']
+    types = ['predicted', 'true']
+
+    # merged plot
+    for mark, c in enumerate(colors):
+        l1 = ax.plot(np.arange(opt.m), z[:, mark], ls = styles[0], color = c['color'])
+        l2 = ax.plot(np.arange(opt.m), x[:, mark], ls = styles[1], color = c['color'])
+
+    for mark, c in enumerate(colors):
+        ax.plot(np.NaN, np.NaN, color = c['color'], label = mark)
+
+    ax2 = ax.twinx()
+    for type, style in zip(types, styles):
+        ax2.plot(np.NaN, np.NaN, ls = style, label = type, c = 'k')
+    ax2.get_yaxis().set_visible(False)
+
+    ax.legend(loc = 1, title = 'particle type', title_fontsize = 16)
+    ax2.legend(loc = 3, title_fontsize = 16)
+
+    ax.set_xlabel('particle index', fontsize = 16)
+    ax.set_ylabel('value', fontsize = 16)
+
+    plt.tight_layout()
+    plt.savefig(osp.join(subpath, 'particle_type_vector_predicted_merged.png'))
+    plt.close()
+
+    # subplots
+    fig = plt.figure(figsize=(12, 12))
+    bigax = fig.add_subplot(111, label = 'bigax')
+    indplt = 1
+
+    rows = max(1, opt.k % 2)
+    cols = math.ceil(opt.k / rows)
+    print(rows, cols)
+    for mark, c in enumerate(colors):
+        ax = fig.add_subplot(rows, cols, indplt)
+        ax.plot(np.arange(opt.m), z[:, mark], ls = styles[0], color = c['color'])
+        ax.plot(np.arange(opt.m), x[:, mark], ls = styles[1], color = c['color'])
+        ax.set_title('particle type {}'.format(mark), fontsize = 16)
+        indplt += 1
+
+    ax2 = bigax.twinx()
+    for type, style in zip(types, styles):
+        ax2.plot(np.NaN, np.NaN, ls = style, label = type, c = 'k')
+    ax2.get_yaxis().set_visible(False)
+
+    ax2.legend(loc = 3, title_fontsize = 16)
+
+    # Turn off axis lines and ticks of the big subplot
+    bigax.spines['top'].set_color('none')
+    bigax.spines['bottom'].set_color('none')
+    bigax.spines['left'].set_color('none')
+    bigax.spines['right'].set_color('none')
+    bigax.tick_params(labelcolor = 'w', top = False, bottom = False, left = False, right = False)
+    # set axis labels
+    bigax.set_xlabel('particle index', fontsize = 16)
+    bigax.set_ylabel('value', fontsize = 16)
+
+    plt.tight_layout()
+    plt.savefig(osp.join(subpath, 'particle_type_vector_predicted.png'))
+    plt.close()
+#### End section ####
 
 def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
     if model_type is None:
@@ -957,8 +1041,8 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    updateResultTables('SequenceFCAutoencoder', None, 'sequence')
+    # updateResultTables('SequenceFCAutoencoder', None, 'sequence')
     # plotCombinedModels('GNNAutoencoder2', [2, 3, 4])
-    # main()
+    main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')

@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import time
 import csv
 import os
+import os.path as osp
 from neural_net_utils.base_networks import *
 from neural_net_utils.networks import *
 from neural_net_utils.utils import *
@@ -40,27 +41,25 @@ def test_num_workers():
 
     print(np.round(results, 1))
 
-def cleanup():
+def edit_argparse():
     dir = "results"
     for type in os.listdir(dir):
-        type_path = os.path.join(dir, type)
-        if os.path.isdir(type_path):
+        type_path = osp.join(dir, type)
+        if osp.isdir(type_path):
             for id in os.listdir(type_path):
-                id_path = os.path.join(type_path, id)
-                if os.path.isdir(id_path):
-                    for file in os.listdir(id_path):
-                        f_path = os.path.join(id_path, file)
-                        if os.path.isdir(f_path) and file.startswith('sample'):
-                            for file2 in os.listdir(f_path):
-                                f2_path = os.path.join(f_path, file2)
-                                os.remove(f2_path)
-                                print('Delete', f2_path)
-                            os.rmdir(f_path)
-                            print('Delete', f_path)
-                else:
-                    pass
-        else:
-            pass
+                id_path = osp.join(type_path, id)
+                if osp.isdir(id_path):
+                    arg_file = osp.join(id_path, 'argparse.txt')
+                    if osp.exists(arg_file):
+                        print(arg_file)
+                        with open(arg_file, 'r') as f:
+                            lines = f.readlines()
+                        for i, line in enumerate(lines):
+                            if line == '--n\n':
+                                lines[i] = '--m\n'
+                                break
+                        with open(arg_file, 'w') as f:
+                            f.write("".join(lines))
 
 def debugModel(model_type):
     parser = getBaseParser()
@@ -78,7 +77,7 @@ def debugModel(model_type):
     opt.m = 1024
     opt.y_preprocessing = 'diag'
     opt.y_norm = 'instance'
-    opt.loss = 'mse'
+    opt.loss = 'BCE'
 
     if model_type == 'Akita':
         opt.kernel_w_list=str2list('5-5-5')
@@ -125,7 +124,7 @@ def debugModel(model_type):
         opt.use_node_features = False
         opt.transforms=None
         opt.pre_transforms=str2list('weighted_LDP')
-        opt.top_k = 500
+        opt.top_k = 100
         opt.relabel_11_to_00 = True
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
@@ -157,7 +156,7 @@ def debugModel(model_type):
     opt.model_type = model_type
     model = getModel(opt)
 
-    opt.model_type = 'test'
+    # opt.model_type = 'test'
     core_test_train(model, opt)
 
 def test_argpartition(k):
@@ -196,8 +195,8 @@ def downsampling_test():
 
 
 def main():
-    # cleanup()
-    debugModel('SequenceConvAutoencoder')
+    edit_argparse()
+    # debugModel('ContactGNN')
     # test_argpartition(10)
     # to_mat()
     # downsampling_test()
