@@ -3,6 +3,34 @@ import torch.nn as nn
 import math
 import numpy as np
 
+def actToModule(act):
+    '''
+    Converts input activation, act, to nn.Module activation.
+
+    act can be None, a string, or nn.Module already.
+    '''
+    if act is None:
+        act = nn.Identity()
+    elif issubclass(type(act), nn.Module):
+        pass
+    elif isinstance(act, str):
+        if act.lower() == 'sigmoid':
+            act = nn.Sigmoid()
+        elif act.lower() == 'relu':
+            act = nn.ReLU(True)
+        elif act.lower() == 'prelu':
+            act =  nn.PReLU()
+        elif act.lower() == 'leaky':
+            act = nn.LeakyReLU(0.2, True)
+        elif act.lower() == 'tanh':
+            act = nn.Tanh()
+        else:
+            raise Exception("Unkown activation {}".format(act))
+    else:
+        raise Exception("Unknown out_act {}".format(act))
+
+    return act
+
 class UnetBlock(nn.Module):
     '''U Net Block adapted from https://github.com/phillipi/pix2pix.'''
     def __init__(self, input_size, inner_size, output_size = None, subBlock = None,
@@ -27,33 +55,14 @@ class UnetBlock(nn.Module):
 
         conv1 = nn.Conv2d(input_size, inner_size, kernel_size, stride, padding, bias)
 
-        if activation1.lower() == 'relu':
-            act1 = nn.ReLU(True)
-        elif activation1.lower() == 'prelu':
-            act1 = nn.PReLU()
-        elif activation1.lower() == 'leaky':
-            act1 = nn.LeakyReLU(0.2, True)
-
-        if activation2.lower() == 'relu':
-            act2 = nn.ReLU(True)
-        elif activation2.lower() == 'prelu':
-            act2 = nn.PReLU()
-        elif activation2.lower() == 'leaky':
-            act2 = nn.LeakyReLU(0.2, True)
+        act1 = actToModule(activation1)
+        act2 = actToModule(activation2)
 
         if outermost:
             conv2 = nn.ConvTranspose2d(inner_size * 2, output_size, kernel_size, stride, padding)
             down = [conv1]
             if out_act is not None:
-                if issubclass(type(out_act), nn.Module):
-                    pass
-                elif isinstance(out_act, str):
-                    if out_act.lower() == 'sigmoid':
-                        out_act = nn.Sigmoid()
-                    elif out_act.lower() == 'tanh':
-                        out_act = nn.Tanh()
-                    else:
-                        raise Exception("Unknown out_act {}".format(out_act))
+                out_act = actToModule(out_act)
                 up = [act2, conv2, out_act]
             else:
                 up = [act2, conv2]
@@ -101,12 +110,7 @@ class ResnetBlock(nn.Module):
         elif self.drop == 'drop':
             self.drop = nn.Dropout(dropout_p)
 
-        if self.act.lower() == 'relu':
-            self.act = nn.ReLU(True)
-        elif self.act.lower() == 'prelu':
-            self.act = nn.PReLU()
-        elif self.act.lower() == 'leaky':
-            self.act = nn.LeakyReLU(0.2, True)
+        self.act = actToModule(act)
 
     def forward(self, x):
         if self.norm is not None:
@@ -186,23 +190,12 @@ class ConvBlock(nn.Module):
 
         if activation is None:
             pass
-        elif issubclass(type(activation), nn.Module):
-            model.append(activation)
-        elif isinstance(activation, str):
-            if activation.lower() == 'relu':
-                model.append(nn.ReLU(True))
-            elif activation.lower() == 'prelu':
-                model.append(nn.PReLU())
-            elif activation.lower() == 'gated':
-                model.append(nn.Tanh())
-                model2.append(nn.Sigmoid())
-                self.model2 = nn.Sequential(*model2)
-            elif activation.lower() == 'sigmoid':
-                model.append(nn.Sigmoid())
-            else:
-                raise Exception("Unkown activation {}".format(activation))
+        elif isinstance(activation, str) and activation.lower() == 'gated':
+            model.append(nn.Tanh())
+            model2.append(nn.Sigmoid())
+            self.model2 = nn.Sequential(*model2)
         else:
-            raise Exception("Unkown activation {}".format(activation))
+            model.append(actToModule(act))
 
         self.model = nn.Sequential(*model)
 
@@ -254,23 +247,12 @@ class DeconvBlock(nn.Module):
 
         if activation is None:
             pass
-        elif issubclass(type(activation), nn.Module):
-            model.append(activation)
-        elif isinstance(activation, str):
-            if activation.lower() == 'relu':
-                model.append(nn.ReLU(True))
-            elif activation.lower() == 'prelu':
-                model.append(nn.PReLU())
-            elif activation.lower() == 'gated':
-                model.append(nn.Tanh())
-                model2.append(nn.Sigmoid())
-                self.model2 = nn.Sequential(*model2)
-            elif activation.lower() == 'sigmoid':
-                model.append(nn.Sigmoid())
-            else:
-                raise Exception("Unkown activation {}".format(activation))
+        elif isinstance(activation, str) and activation.lower() == 'gated':
+            model.append(nn.Tanh())
+            model2.append(nn.Sigmoid())
+            self.model2 = nn.Sequential(*model2)
         else:
-            raise Exception("Unkown activation {}".format(activation))
+            model.append(actToModule(act))
 
         self.model = nn.Sequential(*model)
 
@@ -293,23 +275,8 @@ class LinearBlock(nn.Module):
         if dropout == 'drop':
             model.append(nn.Dropout(dropout_p))
 
-        if activation is None:
-            pass
-        elif issubclass(type(activation), nn.Module):
-            model.append(activation)
-        elif isinstance(activation, str):
-            if activation.lower() == 'relu':
-                model.append(nn.ReLU(True))
-            elif activation.lower() == 'prelu':
-                model.append(nn.PReLU())
-            elif activation.lower() == 'sigmoid':
-                model.append(nn.Sigmoid())
-            elif activation.lower() == 'sigmoid':
-                model.append(nn.Sigmoid())
-            else:
-                raise Exception("Unkown activation {}".format(activation))
-        else:
-            raise Exception("Unkown activation {}".format(activation))
+        if activation is not None:
+            model.append(actToModule(activation))
 
         self.model = nn.Sequential(*model)
 

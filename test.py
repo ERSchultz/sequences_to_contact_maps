@@ -120,7 +120,7 @@ def debugModel(model_type):
         opt.message_passing='SignedConv'
         opt.GNN_mode = True
         opt.output_mode = 'sequence'
-        opt.hidden_sizes_list=str2list('2')
+        opt.hidden_sizes_list=str2list('16-2')
         opt.out_act = None
         opt.use_node_features = False
         opt.transforms=str2list('constant')

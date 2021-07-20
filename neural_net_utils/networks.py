@@ -260,38 +260,13 @@ class GNNAutoencoder(nn.Module):
         else:
             raise Exception("Unkown message_passing {}".format(message_passing))
 
-        if act is None:
-            self.act = nn.Identity()
-        elif issubclass(type(act), nn.Module):
-            self.act = act
-        elif isinstance(act, str):
-            if act.lower() == 'sigmoid':
-                self.act = nn.Sigmoid()
-            elif act.lower() == 'relu':
-                self.act = nn.ReLU(True)
-            else:
-                raise Exception("Unkown activation {}".format(act))
-        else:
-            raise Exception("Unknown out_act {}".format(act))
+        self.act = actToModule(act)
+        self.out_act = actToModule(out_act)
 
         self.head_architecture = head_architecture
         if self.head_architecture == 'FCAutoencoder':
             input_size = self.m * self.output_size
             self.head = FullyConnectedAutoencoder(input_size, head_hidden_sizes_list, head_act, out_act, parameter_sharing)
-
-        if out_act is None:
-            self.out_act = nn.Identity()
-        elif issubclass(type(out_act), nn.Module):
-            self.out_act = out_act
-        elif isinstance(out_act, str):
-            if out_act.lower() == 'sigmoid':
-                self.out_act = nn.Sigmoid()
-            elif out_act.lower() == 'relu':
-                self.out_act = nn.ReLU(True)
-            else:
-                raise Exception("Unkown activation {}".format(out_act))
-        else:
-            raise Exception("Unknown out_act {}".format(out_act))
 
     def forward(self, graph):
         x, edge_index, edge_attr  = graph.x, graph.edge_index, graph.edge_attr
@@ -340,33 +315,8 @@ class FullyConnectedAutoencoder(nn.Module):
             parameter_sharing: True to share parameters between encoder and decoder
         '''
         super(FullyConnectedAutoencoder, self).__init__()
-        if act is None:
-            self.act = nn.Identity()
-        elif issubclass(type(act), nn.Module):
-            self.act = act
-        elif isinstance(act, str):
-            if act.lower() == 'sigmoid':
-                self.act = nn.Sigmoid()
-            elif act.lower() == 'relu':
-                self.act = nn.ReLU(True)
-            else:
-                raise Exception("Unkown activation {}".format(act))
-        else:
-            raise Exception("Unknown out_act {}".format(act))
-
-        if out_act is None:
-            self.out_act = nn.Identity()
-        elif issubclass(type(out_act), nn.Module):
-            self.out_act = out_act
-        elif isinstance(out_act, str):
-            if out_act.lower() == 'sigmoid':
-                self.out_act = nn.Sigmoid()
-            elif out_act.lower() == 'relu':
-                self.out_act = nn.ReLU(True)
-            else:
-                raise Exception("Unkown activation {}".format(out_act))
-        else:
-            raise Exception("Unknown out_act {}".format(out_act))
+        self.act = actToModule(act)
+        self.out_act = actToModule(out_act)
 
         self.encode_weights = nn.ParameterList()
         self.encode_biases = nn.ParameterList()
@@ -505,34 +455,9 @@ class ContactGNN(nn.Module):
             head_architecture = head_architecture.lower()
         self.head_architecture = head_architecture
 
-        if act is None:
-            self.act = nn.Identity()
-        elif issubclass(type(act), nn.Module):
-            self.act = act
-        elif isinstance(act, str):
-            if act.lower() == 'sigmoid':
-                self.act = nn.Sigmoid()
-            elif act.lower() == 'relu':
-                self.act = nn.ReLU(True)
-            else:
-                raise Exception("Unkown activation {}".format(act))
-        else:
-            raise Exception("Unknown out_act {}".format(act))
-
-        if out_act is None:
-            self.out_act = nn.Identity()
-        elif issubclass(type(out_act), nn.Module):
-            self.out_act = out_act
-        elif isinstance(out_act, str):
-            if out_act.lower() == 'sigmoid':
-                self.out_act = nn.Sigmoid()
-            elif out_act.lower() == 'relu':
-                self.out_act = nn.ReLU(True)
-            else:
-                raise Exception("Unkown activation {}".format(out_act))
-        else:
-            raise Exception("Unknown out_act {}".format(out_act))
-
+        self.act = actToModule(act)
+        self.out_act = actToModule(out_act)
+        self.head_act = actToModule(head_act)
 
         model = []
         if self.message_passing == 'gcn':
