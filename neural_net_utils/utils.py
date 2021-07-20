@@ -51,7 +51,8 @@ def getModel(opt):
         model = ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, conv1d = True)
     elif opt.model_type == 'ContactGNN':
         model = ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.out_act,
-        opt.message_passing, opt.use_edge_weights)
+        opt.message_passing, opt.use_edge_weights,
+        opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -455,7 +456,7 @@ def getBaseParser():
     '''Helper function that returns base parser'''
     parser = argparse.ArgumentParser(description='Base parser', fromfile_prefix_chars='@')
 
-    # GNN args
+    # GNN pre-processing args
     parser.add_argument('--GNN_mode', type=str2bool, default=False, help='True to use GNNs (uses pytorch_geometric in core_test_train)')
     parser.add_argument('--transforms', type=str2list, help='list of transforms to use for GNN')
     parser.add_argument('--pre_transforms', type=str2list, help='list of pre-transforms to use for GNN')
@@ -502,7 +503,6 @@ def getBaseParser():
     parser.add_argument('--verbose', type=str2bool, default=False)
     parser.add_argument('--output_mode', type=str, default='contact', help='data structure of output {"contact", "sequence"}')
 
-
     # model args
     parser.add_argument('--model_type', type=str, default='test', help='Type of model')
     parser.add_argument('--id', type=int, help='id of model')
@@ -517,6 +517,12 @@ def getBaseParser():
     parser.add_argument('--out_act', type=str2None, help='activation of final layer')
     parser.add_argument('--training_norm', type=str2None, help='norm during training (batch, instance, or None)')
     parser.add_argument('--parameter_sharing', type=str2bool, default=False, help='True to use parameter sharing in autoencoder blocks')
+
+    # GNN model args
+    parser.add_argument('--message_passing', type=str, default='GCN', help='type of message passing algorithm')
+    parser.add_argument('--head_architecture', type=str, help='type of head architecture')
+    parser.add_argument('--head_hidden_sizes_list', type=str2list, help='List of hidden sizes for convolutional layers')
+    parser.add_argument('--head_act', type=str, default='relu', help='activation function for head network')
 
     # SimpleEpiNet args
     parser.add_argument('--kernel_w_list', type=str2list, help='List of kernel widths of convolutional layers')
@@ -533,12 +539,6 @@ def getBaseParser():
     parser.add_argument('--bottleneck', type=int, help='Number of filters in bottleneck (must be <= hidden_size_dilation_trunk)')
     parser.add_argument('--dilation_list_head', type=str2list, help='List of dilations for dilated convolutional layers of head')
     parser.add_argument('--down_sampling', type=str2None, help='type of down sampling to use')
-
-    # GNNAutoencoder args
-    parser.add_argument('--message_passing', type=str, default='GCN', help='type of message passing algorithm')
-    parser.add_argument('--head_architecture', type=str, default= 'xxT', help='type of head architecture')
-    parser.add_argument('--head_hidden_sizes_list', type=str2list, help='List of hidden sizes for convolutional layers')
-    parser.add_argument('--head_act', type=str, default='relu', help='activation function for head network')
 
     # post-processing args
     parser.add_argument('--plot', type=str2bool, default=True, help='True to plot result figures')
@@ -738,7 +738,9 @@ def opt2list(opt):
         opt.ifile_folder, opt.ifile, opt.k, opt.m, opt.seed, opt.out_act, opt.training_norm,
         opt.plot, opt.plot_predictions, opt.relabel_11_to_00]
     if opt.GNN_mode:
-        opt_list.extend([opt.use_node_features, opt.transforms, opt.pre_transforms, opt.sparsify_threshold, opt.top_k])
+        opt_list.extend([opt.use_node_features, opt.transforms, opt.pre_transforms, opt.sparsify_threshold, opt.top_k,
+                        opt.hidden_sizes_list, opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list])
+
     if opt.model_type == 'simpleEpiNet':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list])
     elif opt.model_type == 'UNet':
@@ -749,10 +751,10 @@ def opt2list(opt):
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list])
     elif opt.model_type == 'test':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.nf])
-    elif opt.model_type == 'GNNAutoencoder':
-        opt_list.extend([opt.hidden_sizes_list, opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list])
+    elif opt.model_type.startswith('GNNAutoencoder'):
+        opt_list.extend([opt.head_act, opt.parameter_sharing])
     elif opt.model_type == 'ContactGNN':
-        opt_list.extend([opt.hidden_sizes_list, opt.message_passing])
+        pass
     elif opt.model_type == 'SequenceFCAutoencoder':
         opt_list.extend([opt.hidden_sizes_list, opt.parameter_sharing])
     else:

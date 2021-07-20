@@ -191,17 +191,17 @@ class ContactsGraph(torch_geometric.data.Dataset):
         for i, raw_folder in enumerate(self.raw_file_names):
             x = self.process_x(raw_folder)
             y = self.process_y(raw_folder)
-            pos_edge_index, neg_edge_index, edge_weight = self.sparsify_adj_mat(y)
-            # if neg_edge_index is None, then pos_edge_index actually contains pos edges + neg edges (i.e. just edge_index)
+            edge_index, pos_edge_index, neg_edge_index, edge_weight = self.sparsify_adj_mat(y)
 
             if self.use_node_features:
-                graph = torch_geometric.data.Data(x = x, edge_index = pos_edge_index, edge_attr = edge_weight, y = x)
+                graph = torch_geometric.data.Data(x = x, edge_index = edge_index, edge_attr = edge_weight, y = x)
             else:
-                graph = torch_geometric.data.Data(x = None, edge_index = pos_edge_index, edge_attr = edge_weight, y = x)
+                graph = torch_geometric.data.Data(x = None, edge_index = edge_index, edge_attr = edge_weight, y = x)
             graph.minmax = torch.tensor([self.ymin, self.ymax])
             graph.path = raw_folder
             graph.num_nodes = self.m
-            graph.neg_edge_index = neg_edge_index # this is usually None
+            graph.pos_edge_index = pos_edge_index
+            graph.neg_edge_index = neg_edge_index
             if self.weighted_LDP:
                 graph = self.weightedLocalDegreeProfile(graph, y)
             if self.pre_transform is not None:
@@ -240,7 +240,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
         if self.y_log_transform:
             y = np.log10(y)
-            print(y, np.min(y), np.max(y))
 
         if self.y_norm == 'instance':
             self.ymax = np.max(y)
@@ -280,19 +279,22 @@ class ContactsGraph(torch_geometric.data.Dataset):
         y[np.arange(self.m)[:,None], z] = 0
 
     def sparsify_adj_mat(self, y):
+        edge_index = y.nonzero().t()
         if self.split_neg_pos:
             assert not self.use_edge_weights, "not supported"
             pos_edge_index = (y > 0).nonzero().t()
             neg_edge_index = (y < 0).nonzero().t()
-            return pos_edge_index, neg_edge_index, None
         else:
-            edge_index = y.nonzero().t()
-            if self.use_edge_weights:
-                row, col = edge_index
-                edge_weight = y[row, col]
-            else:
-                edge_weight = None
-            return edge_index, None, edge_weight
+            pos_edge_index = None
+            neg_edge_index = None
+
+        if self.use_edge_weights:
+            row, col = edge_index
+            edge_weight = y[row, col]
+        else:
+            edge_weight = None
+
+        return edge_index, pos_edge_index, neg_edge_index, edge_weight
 
     def weightedLocalDegreeProfile(self, data, y):
         '''

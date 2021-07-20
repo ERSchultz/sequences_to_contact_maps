@@ -482,7 +482,8 @@ class ContactGNN(nn.Module):
     where particle type vector is not given as node feature in graph.
     '''
     def __init__(self, m, input_size, hidden_sizes_list, act, out_act,
-                message_passing, use_edge_weights):
+                message_passing, use_edge_weights,
+                head_architecture, head_hidden_sizes_list, head_act):
         '''
         Inputs:
             m: number of nodes
@@ -490,11 +491,19 @@ class ContactGNN(nn.Module):
             hidden_sizes_list: list of node feature vector hidden sizes (final value is output size)
             out_act: output activation
             message_passing: type of message passing algorithm to use
+            use_edge_weights: True to use edge weights
+            head_architecture: type of head architecture {'FC', 'GCN', None}
+            head_hidden_sizes_list: hidden sizes of head architecture
         '''
         super(ContactGNN, self).__init__()
+
         self.m = m
         self.message_passing = message_passing.lower()
         self.use_edge_weights = use_edge_weights
+        assert head_architecture in {'FC', 'fc', 'GCN', 'gcn', None}, 'Unsupported head architecture {}'.format(head_architecture)
+        if head_architecture is not None:
+            head_architecture = head_architecture.lower()
+        self.head_architecture = head_architecture
 
         if act is None:
             self.act = nn.Identity()
@@ -526,12 +535,12 @@ class ContactGNN(nn.Module):
 
 
         model = []
-
         if self.message_passing == 'gcn':
             if self.use_edge_weights:
                 fn_header = 'x, edge_index, edge_attr -> x'
             else:
                 fn_header = 'x, edge_index -> x'
+
             for i, output_size in enumerate(hidden_sizes_list):
                 module = (gnn.GCNConv(input_size, output_size),
                             fn_header)
@@ -539,29 +548,62 @@ class ContactGNN(nn.Module):
                     model.extend([module, self.out_act])
                 else:
                     model.extend([module, self.act])
-                first_layer = False
                 input_size = output_size
+
             self.model = gnn.Sequential('x, edge_index, edge_attr', model)
         elif self.message_passing == 'signedconv':
-            assert not self.use_edge_weights
+            assert not self.use_edge_weights and self.head_architecture is not None
             first_layer = True
+
             for output_size in hidden_sizes_list:
                 module = (gnn.SignedConv(input_size, output_size, first_aggr = first_layer),
                             'x, pos_edge_index, neg_edge_index -> x')
                 model.extend([module, self.act])
                 first_layer = False
                 input_size = output_size
+            input_size *= 2 # SignedConv
+
             self.model = gnn.Sequential('x, pos_edge_index, neg_edge_index', model)
+
         else:
             raise Exception("Unkown message_passing {}".format(message_passing))
         print(self.model)
 
+        head = []
+        if self.head_architecture == 'fc':
+            for i, output_size in enumerate(hidden_sizes_list):
+                if i == len(hidden_sizes_list) - 1:
+                    act = self.out_act
+                else:
+                    act = self.head_act
+                head.append(LinearBlock(input_size, output_size, activation = act))
+                input_size = output_size
+
+            self.head = nn.Sequential(*head)
+        elif self.head_architecture == 'gcn':
+            for i, output_size in enumerate(hidden_sizes_list):
+                module = (gnn.GCNConv(input_size, output_size),
+                            'x, edge_index -> x')
+                if i == len(hidden_sizes_list) - 1:
+                    head.extend([module, self.out_act])
+                else:
+                    head.extend([module, self.head_act])
+                input_size = output_size
+
+            self.head = gnn.Sequential('x, edge_index', head)
+
     def forward(self, graph):
         if self.message_passing == 'gcn':
-            out = self.model(graph.x, graph.edge_index, graph.edge_attr)
-        else:
+            latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
+        elif self.message_passing == 'signedconv':
             latent = self.model(graph.x, graph.edge_index, graph.neg_edge_index)
-            out = None
+
+        if self.head_architecture is None:
+            out = latent
+        elif self.head_architecture == 'gcn':
+            out = self.head(latent, graph.edge_index)
+        elif self.head_architecture == 'fc':
+            out = self.head(latent)
         return out
 
 def testFullyConnectedAutoencoder():

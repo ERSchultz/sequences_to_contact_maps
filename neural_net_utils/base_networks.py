@@ -297,7 +297,7 @@ class LinearBlock(nn.Module):
             pass
         elif issubclass(type(activation), nn.Module):
             model.append(activation)
-        if isinstance(activation, str):
+        elif isinstance(activation, str):
             if activation.lower() == 'relu':
                 model.append(nn.ReLU(True))
             elif activation.lower() == 'prelu':

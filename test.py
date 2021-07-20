@@ -117,7 +117,7 @@ def debugModel(model_type):
         opt.top_k = 500
         opt.parameter_sharing = True
     elif model_type == 'ContactGNN':
-        opt.message_passing='gcn'
+        opt.message_passing='SignedConv'
         opt.GNN_mode = True
         opt.output_mode = 'sequence'
         opt.hidden_sizes_list=str2list('2')
@@ -131,6 +131,8 @@ def debugModel(model_type):
         opt.relabel_11_to_00 = True
         opt.y_log_transform = True
         opt.y_norm = None
+        opt.head_architecture = 'fc'
+        opt.head_hidden_sizes_list = [2]
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
         opt.autoencoder_mode = True
