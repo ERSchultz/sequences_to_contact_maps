@@ -50,7 +50,8 @@ def getModel(opt):
     elif opt.model_type == 'SequenceConvAutoencoder':
         model = ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, conv1d = True)
     elif opt.model_type == 'ContactGNN':
-        model = ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.out_act, opt.message_passing)
+        model = ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.out_act,
+        opt.message_passing, opt.use_edge_weights)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -59,11 +60,11 @@ def getModel(opt):
 # dataset functions
 def getDataset(opt, names = False, minmax = False):
     if opt.GNN_mode:
-        dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.m, opt.y_preprocessing,
-                                            opt.y_norm, opt.min_subtraction, opt.use_node_features,
-                                            opt.sparsify_threshold, opt.top_k, opt.weighted_LDP,
+        dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.m, opt.y_preprocessing, opt.y_log_transform,
+                                            opt.y_norm, opt.min_subtraction, opt.use_node_features, opt.use_edge_weights,
+                                            opt.sparsify_threshold, opt.top_k, opt.weighted_LDP, opt.split_neg_pos_edges,
                                             opt.transforms_processed, opt.pre_transforms_processed,
-                                            opt.relabel_11_to_00)
+                                            opt.relabel_11_to_00, opt.output_mode)
         opt.root = dataset.root
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
         dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)
@@ -409,7 +410,7 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
         yhat = yhat.reshape((opt.m, opt.m))
 
         # y
-        result_y = pca.fit(y)
+        pca.fit(y)
         comp1_y = pca.components_[0]
         sign1_y = np.sign(comp1_y)
 
@@ -438,7 +439,7 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
             plt.plot(comp1_yhat, label = 'yhat')
             plt.plot(comp1_y, label = 'y')
             plt.legend()
-            plt.title('PC 1')
+            plt.title('PC 1\nPearson R: corr')
             plt.savefig(osp.join(subpath, 'pc1.png'))
             plt.close()
 
@@ -460,6 +461,9 @@ def getBaseParser():
     parser.add_argument('--pre_transforms', type=str2list, help='list of pre-transforms to use for GNN')
     parser.add_argument('--sparsify_threshold', type=float, help='remove all edges with weight < threshold (None for all edges)')
     parser.add_argument('--top_k', type=int, help='number of edge to keep per node (None for all edges)')
+    parser.add_argument('--use_node_features', type=str2bool, default=False, help='True to use node features for GNN models')
+    parser.add_argument('--use_edge_weights', type=str2bool, default=True, help='True to use edge weights in GNN')
+    parser.add_argument('--relabel_11_to_00',type=str2bool, default=False, help='True to relabel [1,1] particles as [0,0] particles')
 
     # pre-processing args
     parser.add_argument('--data_folder', type=str, default='dataset_04_18_21', help='Location of data')
@@ -468,6 +472,7 @@ def getBaseParser():
     parser.add_argument('--toxx', type=str2bool, default=False, help='True if x should be converted to 2D image')
     parser.add_argument('--toxx_mode', type=str, default='mean', help='mode for toxx (default mean)')
     parser.add_argument('--y_preprocessing', type=str2None, default='diag', help='type of pre-processing for y')
+    parser.add_argument('--y_log_transform', type=str2bool, default=False, help='True to log transform y')
     parser.add_argument('--y_norm', type=str2None, default='batch', help='type of [0,1] normalization for y')
     parser.add_argument('--min_subtraction', type=str2bool, default=True, help='if min subtraction should be used for y_norm')
     parser.add_argument('--x_reshape', type=str2bool, default=True, help='True if x should be considered a 1D image')
@@ -476,8 +481,6 @@ def getBaseParser():
     parser.add_argument('--crop', type=str2list, help='size of crop to apply to image - format: <leftcrop-rightcrop>')
     parser.add_argument('--classes', type=int, default=10, help='number of classes in percentile normalization')
     parser.add_argument('--use_scratch', type=str2bool, default=False, help='True to move data to scratch')
-    parser.add_argument('--use_node_features', type=str2bool, default=False, help='True to use node features for GNN models')
-    parser.add_argument('--relabel_11_to_00',type=str2bool, default=False, help='True to relabel [1,1] particles as [0,0] particles')
 
     # dataloader args
     parser.add_argument('--split', type=str2list, default=[0.8, 0.1, 0.1], help='Train, val, test split for dataset')
@@ -537,7 +540,6 @@ def getBaseParser():
     parser.add_argument('--head_hidden_sizes_list', type=str2list, help='List of hidden sizes for convolutional layers')
     parser.add_argument('--head_act', type=str, default='relu', help='activation function for head network')
 
-
     # post-processing args
     parser.add_argument('--plot', type=str2bool, default=True, help='True to plot result figures')
     parser.add_argument('--plot_predictions', type=str2bool, default=True, help='True to plot predictions')
@@ -580,6 +582,17 @@ def finalizeOpt(opt, parser, local = False):
     opt.log_file = open(log_file_path, 'a')
 
     # configure other model params
+    if opt.y_log_transform:
+        assert opt.y_norm is None, "don't use log transform with y norm"
+
+    opt.split_neg_pos_edges = False
+    if opt.message_passing.lower() == 'signedconv':
+        opt.split_neg_pos_edges = True
+        if opt.use_edge_weights:
+            opt.use_edge_weights = False
+            print('Setting use_edge_weights to False', file = opt.log_file)
+
+
     if opt.loss == 'mse':
         opt.criterion = F.mse_loss
         opt.channels = 1
@@ -594,7 +607,8 @@ def finalizeOpt(opt, parser, local = False):
         opt.ydtype = torch.int64
     elif opt.loss == 'BCE':
         assert opt.out_act is None, "Cannot use output activation with BCE"
-        assert opt.y_norm is not None, 'must use some sort of y_norm'
+        if opt.output_mode == 'contact':
+            assert opt.y_norm is not None, 'must use some sort of y_norm'
         opt.criterion = F.binary_cross_entropy_with_logits
     else:
         raise Exception('Invalid loss: {}'.format(repr(opt.loss)))
@@ -607,6 +621,8 @@ def finalizeOpt(opt, parser, local = False):
     opt.node_feature_size = 0
     if opt.use_node_features:
         opt.node_feature_size += opt.k
+    else:
+        assert opt.transforms is not None or opt.pre_transforms is not None, "need feature augmentation"
 
     if opt.transforms is not None:
         transforms_processed = []
@@ -703,13 +719,11 @@ def copy_data_to_scratch(opt):
 
     opt.data_folder = scratch_path
 
-
 def argparseSetup():
     """Helper function set up parser."""
     parser = getBaseParser()
     opt = parser.parse_args()
     return finalizeOpt(opt, parser)
-
 
 def save_args(opt):
     with open(osp.join(opt.ofile_folder, 'argparse.txt'), 'w') as f:
@@ -718,7 +732,7 @@ def save_args(opt):
 
 def opt2list(opt):
     opt_list = [opt.model_type, opt.id, opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
-        opt.y_norm, opt.x_reshape, opt.ydtype, opt.y_reshape, opt.crop, opt.classes, opt.split,
+        opt.y_norm, opt.y_log_transform, opt.x_reshape, opt.ydtype, opt.y_reshape, opt.crop, opt.classes, opt.split,
         opt.shuffle, opt.batch_size, opt.num_workers, opt.start_epoch, opt.n_epochs, opt.lr,
         opt.gpus, opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
         opt.ifile_folder, opt.ifile, opt.k, opt.m, opt.seed, opt.out_act, opt.training_norm,
@@ -750,20 +764,20 @@ def save_opt(opt, ofile):
     if not osp.exists(ofile):
         with open(ofile, 'w', newline = '') as f:
             wr = csv.writer(f)
-            opt_list = get_opt_header(opt.model_type, opt.mode)
+            opt_list = get_opt_header(opt.model_type, opt.GNN_mode)
             wr.writerow(opt_list)
     with open(ofile, 'a') as f:
         wr = csv.writer(f)
         opt_list = opt2list(opt)
         wr.writerow(opt_list)
 
-def get_opt_header(model_type, mode = None):
+def get_opt_header(model_type, GNN_mode):
     opt_list = ['model_type', 'id',  'data_folder','toxx', 'toxx_mode', 'y_preprocessing',
-        'y_norm', 'x_reshape', 'ydtype', 'y_reshape', 'crop', 'classes', 'split', 'shuffle',
+        'y_norm', 'y_log_transform', 'x_reshape', 'ydtype', 'y_reshape', 'crop', 'classes', 'split', 'shuffle',
         'batch_size', 'num_workers', 'start_epoch', 'n_epochs', 'lr', 'gpus', 'milestones',
-        'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'n',
+        'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'm',
         'seed', 'out_act', 'training_norm', 'plot', 'plot_predictions', 'relabel_11_to_00']
-    if mode == 'GNN':
+    if GNN_mode:
         opt_list.extend(['use_node_features','transforms', 'pre_transforms', 'sparsify_threshold', 'top_k'])
     if model_type == 'simpleEpiNet':
         opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])

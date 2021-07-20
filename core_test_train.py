@@ -97,9 +97,8 @@ def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
             if opt.GNN_mode:
                 data = data.to(opt.device)
                 if opt.autoencoder_mode:
-                    y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
-                                                            batch = data.batch,
-                                                            max_num_nodes = opt.n)
+                    y = data.contact_map
+                    y = torch.reshape(y, (-1, opt.m, opt.m))
                 else:
                     y = data.y
                 yhat = model(data)
@@ -158,9 +157,8 @@ def test(loader, model, opt, toprint, ofile = sys.stdout):
             if opt.GNN_mode:
                 data = data.to(opt.device)
                 if opt.autoencoder_mode:
-                    y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
-                                                            batch = data.batch,
-                                                            max_num_nodes = opt.n)
+                    y = data.contact_map
+                    y = torch.reshape(y, (-1, opt.m, opt.m))
                 else:
                     y = data.y
                 yhat = model(data)

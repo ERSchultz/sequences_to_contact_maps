@@ -77,7 +77,7 @@ def debugModel(model_type):
     opt.m = 1024
     opt.y_preprocessing = 'diag'
     opt.y_norm = 'instance'
-    opt.loss = 'BCE'
+    opt.loss = 'mse'
 
     if model_type == 'Akita':
         opt.kernel_w_list=str2list('5-5-5')
@@ -103,7 +103,7 @@ def debugModel(model_type):
         opt.out_act = 'relu'
         opt.use_node_features = False
         opt.pre_transforms=str2list('constant')
-        opt.top_k = 500
+        opt.top_k = 100
     elif model_type == 'GNNAutoencoder2':
         opt.GNN_mode = True
         opt.autoencoder_mode=True
@@ -117,15 +117,20 @@ def debugModel(model_type):
         opt.top_k = 500
         opt.parameter_sharing = True
     elif model_type == 'ContactGNN':
+        opt.message_passing='gcn'
         opt.GNN_mode = True
         opt.output_mode = 'sequence'
-        opt.hidden_sizes_list=str2list('16-2')
+        opt.hidden_sizes_list=str2list('2')
         opt.out_act = None
         opt.use_node_features = False
-        opt.transforms=None
-        opt.pre_transforms=str2list('weighted_LDP')
-        opt.top_k = 100
+        opt.transforms=str2list('constant')
+        opt.pre_transforms=None
+        # opt.top_k = 100
+        opt.sparsify_threshold = 0.1
+        opt.use_edge_weights = False
         opt.relabel_11_to_00 = True
+        opt.y_log_transform = True
+        opt.y_norm = None
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
         opt.autoencoder_mode = True
@@ -146,9 +151,9 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = True
-    opt.plot_predictions = True
-    opt.verbose = False
+    opt.plot = False
+    opt.plot_predictions = False
+    opt.verbose = True
     opt.data_folder = "dataset_04_18_21"
 
     opt = finalizeOpt(opt, parser, True)
@@ -195,8 +200,8 @@ def downsampling_test():
 
 
 def main():
-    edit_argparse()
-    # debugModel('ContactGNN')
+    # edit_argparse()
+    debugModel('ContactGNN')
     # test_argpartition(10)
     # to_mat()
     # downsampling_test()

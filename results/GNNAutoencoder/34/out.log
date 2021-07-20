@@ -35,3 +35,13 @@ Total time: 7148.175270795822
 Final val loss: 0.6855139899253845
 
 
+Warning: falling back to cpu
+Model is loaded: results\GNNAutoencoder\34\model.pt
+#### Plotting Script ####
+Prediction Results:
+prcntDist [0.75067625 0.86077441 0.91623315 0.98192538 1.05521968 1.17607021
+ 1.26702019 1.41689416 1.70505444 5.05148524]
+results\GNNAutoencoder\34\sample2
+Loss: 0.6837030649185181 +- 0.0
+
+results\GNNAutoencoder\34\sample2

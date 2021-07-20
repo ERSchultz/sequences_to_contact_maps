@@ -11,8 +11,10 @@ import itertools
 import math
 import seaborn as sns
 import pandas as pd
-import time
+from scipy.stats import pearsonr
+
 from sklearn import metrics
+from sklearn.decomposition import PCA
 
 import matplotlib.pyplot as plt
 import matplotlib.colors
@@ -213,8 +215,23 @@ def freqStatisticsPlots(dataFolder):
 #### End section ####
 
 def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
-    # assume only difference in opts is lr
-    # TODO good idea to check this with assert
+    # check that only difference in opts is lr
+    print(opts[0])
+    opt_header = get_opt_header(opts[0].model_type, opts[0].GNN_mode)
+    print(opt_header)
+    opt_lists = []
+    for opt in opts:
+        opt_lists.append(opt2list(opt))
+
+    for pos in range(len(opt_lists[0])):
+        first = True
+        for model in range(len(opt_lists)):
+            if first:
+                ref = opt_lists[model][pos]
+                first = False
+            elif opt_header[pos] != 'lr':
+                assert opt_lists[model][pos] == ref
+
     fig, ax = plt.subplots()
     colors = ['b', 'r', 'g', 'c']
     styles = ['-', '--']
@@ -460,9 +477,8 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
         if opt.GNN_mode:
             data = data.to(opt.device)
             if opt.autoencoder_mode:
-                y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
-                                                        batch = data.batch,
-                                                        max_num_nodes = opt.m)
+                y = data.contact_map
+                y = torch.reshape(y, (-1, opt.m, opt.m))
             else:
                 y = data.y
             yhat = model(data)
@@ -549,9 +565,8 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
         if opt.GNN_mode:
             data = data.to(opt.device)
             if opt.autoencoder_mode:
-                y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
-                                                        batch = data.batch,
-                                                        max_num_nodes = opt.m)
+                y = data.contact_map
+                y = torch.reshape(y, (-1, opt.m, opt.m))
             else:
                 y = data.y
             yhat = model(data)
@@ -564,14 +579,8 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
             path = path[0]
             yhat = model(x)
         loss = opt.criterion(yhat, y).item()
+        y_torch = y # copy of torch version for PCA reconstruction
         y = y.cpu().numpy().reshape((opt.m, opt.m))
-        y = un_normalize(y, minmax)
-        if opt.loss == 'BCE':
-            # using BCE with logits loss, which combines sigmoid into loss
-            # so need to do sigmoid here
-            yhat = torch.sigmoid(yhat)
-        yhat = yhat.cpu().detach().numpy()
-        yhat = yhat.reshape((opt.m,opt.m))
 
         sample = osp.split(path)[-1]
         subpath = osp.join(opt.ofile_folder, sample)
@@ -580,13 +589,28 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
             os.mkdir(subpath, mode = 0o755)
 
         if opt.loss == 'mse':
-            yhat_title = '{}\nY hat (MSE Loss: {})'.format(upper_title, np.round(loss, 3))
+            loss_title = 'MSE Loss'
         elif opt.loss == 'cross_entropy':
-            yhat_title = '{}\nY hat (Cross Entropy Loss: {})'.format(upper_title, np.round(loss, 3))
+            loss_title = 'Cross Entropy Loss'
         elif opt.loss == 'BCE':
-            yhat_title = '{}\nY hat (Binary Cross Entropy Loss: {})'.format(upper_title, np.round(loss, 3))
+            loss_title = 'Binary Cross Entropy Loss'
         else:
-            yhat_title = '{}\nY hat (Loss: {})'.format(upper_title, np.round(loss, 3))
+            loss_title = 'Loss'
+
+        if opt.autoencoder_mode and opt.output_mode == 'contact':
+            plotPCAReconstructions(y, y_torch, subpath, opt, loss_title, minmax)
+        return # TOOD
+        del y_torch
+
+        y = un_normalize(y, minmax)
+        if opt.loss == 'BCE':
+            # using BCE with logits loss, which combines sigmoid into loss
+            # so need to do sigmoid here
+            yhat = torch.sigmoid(yhat)
+        yhat = yhat.cpu().detach().numpy()
+        yhat = yhat.reshape((opt.m,opt.m))
+
+        yhat_title = '{}\nYhat ({}: {})'.format(upper_title, loss_title, np.round(loss, 3))
 
         loss_arr[i] = loss
         if opt.verbose:
@@ -605,21 +629,21 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
             v_max = np.max(y)
             plotContactMap(y, osp.join(subpath, 'y.png'), vmax = v_max, prcnt = False, title = 'Y')
             yhat = un_normalize(yhat, minmax)
-            plotContactMap(yhat, osp.join(subpath, 'yhat.png'), vmax = v_max, prcnt = False, title =yhat_title)
+            plotContactMap(yhat, osp.join(subpath, 'yhat.png'), vmax = v_max, prcnt = False, title = yhat_title)
 
             # plot prcnt
             yhat_prcnt = percentile_preprocessing(yhat, prcntDist)
-            plotContactMap(yhat_prcnt, osp.join(subpath, 'yhat_prcnt.png'), vmax = 'max', prcnt = True, title = 'Y hat prcnt')
+            plotContactMap(yhat_prcnt, osp.join(subpath, 'yhat_prcnt.png'), vmax = 'max', prcnt = True, title = r'$\hat{Y}$ prcnt')
 
             # plot dif
             ydif_abs = abs(yhat - y)
-            plotContactMap(ydif_abs, osp.join(subpath, 'ydif_abs.png'), vmax = v_max, title = '|Y hat - Y|')
+            plotContactMap(ydif_abs, osp.join(subpath, 'ydif_abs.png'), vmax = v_max, title = r'|$\hat{Y}$ - Y|')
             ydif = yhat - y
             cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                      [(0, 'blue'),
                                                      (0.5, 'white'),
                                                       (1, 'red')], N=126)
-            plotContactMap(ydif, osp.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = 'Y hat - Y', cmap = cmap)
+            plotContactMap(ydif, osp.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{Y}$ - Y', cmap = cmap)
         else:
             raise Exception("Unsupported preprocessing: {}".format(opt.y_preprocessing))
 
@@ -638,10 +662,23 @@ def contactPlots(dataFolder):
         y_prcnt_norm = np.load(osp.join(path, 'y_prcnt.npy'))
         plotContactMap(y_prcnt_norm, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
+def plotPCAReconstructions(y, y_torch, subpath, opt, loss_title, minmax):
+    assert opt.autoencoder_mode and opt.output_mode == 'contact'
+    for k in range(opt.k):
+        pca = PCA(n_components = k)
+        y_trans = pca.fit_transform(y)
+        y_pca = pca.inverse_transform(y_trans)
+
+        y_pca_torch = torch.tensor(y_pca, dtype = opt.ydtype)
+        y_pca_torch = torch.reshape(y_pca_torch, (1, opt.m, opt.m))
+        loss = opt.criterion(y_pca_torch, y_torch)
+
+        y_pca = un_normalize(y_pca, minmax)
+        plotContactMap(y_pca, osp.join(subpath, 'y_pc{}.png'.format(k+1)), vmax = np.max(un_normalize(y, minmax)), prcnt = False, title = 'Yhat Top {} PCs\n{}: {}'.format(k+1, loss_title, np.round(loss, 3)))
+
 def plotROCCurve(val_dataloader, imagePath, model, opt):
     # here y is the ground truth particle types
     # and yhat is the predicted particle types
-    t0 = time.time()
     steps = 101 # step size of 0.01
     thresholds = np.linspace(0, 1, steps)
     tpr_array = np.zeros((steps, opt.valN, opt.k))
@@ -737,7 +774,6 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
     print('Max accuracy at t = {}: {} +- {}'.format(thresholds[max_t], acc_mean_array[max_t], acc_std_array[max_t]), file = opt.log_file)
     print('Corresponding FPR = {} +- {} and TPR = {} +- {}'.format(fpr_mean_array[max_t], fpr_std_array[max_t],
                                                                     tpr_mean_array[max_t], tpr_std_array[max_t]), file = opt.log_file)
-    print('ROC time: {}'.format(np.round (time.time() - t0, 3)), file = opt.log_file)
 
 #### Functions for plotting predicted particles ####
 def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1), use_latent = False):
@@ -750,15 +786,20 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
     converter = InteractionConverter(opt.k)
     all_binary_vectors = converter.generateAllBinaryStrings()
     model.eval()
+    yhat = None
     for i, data in enumerate(val_dataloader):
         if i == count:
             break
         if opt.GNN_mode:
             data = data.to(opt.device)
             x = data.y # x is the simulated epigenetic marks
+            minmax = data.minmax
             if opt.autoencoder_mode:
                 assert opt.output_mode == 'contact'
                 z = model.get_latent(data)
+                yhat = model(data)
+                yhat = yhat.cpu().detach().numpy().reshape((opt.m, opt.m))
+                yhat = un_normalize(yhat, minmax)
             else:
                 assert opt.output_mode == 'sequence'
                 z = model(data)
@@ -786,6 +827,8 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
 
         # plots along polymer
         plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath)
+        if yhat is not None:
+            plotPredictedParticlesVsPC(x, z, yhat, opt, subpath)
 
 
         # plots of distribution of predictions
@@ -814,7 +857,7 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
             ax = fig.add_subplot(2, 2, indplt)
             ind = np.where((x == vector).all(axis = 1))
             ax.scatter(z[ind, dims[0]].reshape((-1)), z[ind, dims[1]].reshape((-1)), color = c['color'])
-            ax.set_title('input particle type vector {}'.format(vector), fontsize = 16)
+            ax.set_title('input particle type vector {}\n{} particles'.format(vector, len(ind[0])), fontsize = 16)
             indplt += 1
 
         # Turn off axis lines and ticks of the big subplot
@@ -831,6 +874,70 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
 
         plt.savefig(osp.join(subpath, 'particle_type_{}_{}_distribution.png'.format(dims[0], dims[1])))
         plt.close()
+
+def plotPredictedParticlesVsPC(x, z, yhat, opt, subpath):
+    '''
+    Plots the predicted particle types as a vector along the polymer
+    compared to most similar principal component.
+    '''
+    cmap = matplotlib.cm.get_cmap('Set1')
+    ind = np.arange(opt.k) % cmap.N
+    colors = plt.cycler('color', cmap(ind))
+    fig, ax = plt.subplots()
+
+    styles = ['--', '-']
+    types = ['predicted', 'PC']
+
+    pca = PCA()
+    pca.fit(yhat)
+
+    # subplots
+    fig = plt.figure(figsize=(12, 12))
+    bigax = fig.add_subplot(111, label = 'bigax')
+    indplt = 1
+
+    rows = max(1, opt.k % 2)
+    cols = math.ceil(opt.k / rows)
+
+    for mark, c in enumerate(colors):
+        ax = fig.add_subplot(rows, cols, indplt)
+        ax.plot(np.arange(opt.m), z[:, mark], ls = styles[0], color = c['color'])
+        max_corr = 0
+        max_i = None
+        for i in range(10):
+            pc_i = pca.components_[i]
+            corr, pval = pearsonr(pc_i, z[:, mark])
+            corr = abs(corr)
+            if corr > max_corr:
+                max_i = i
+                max_corr = corr
+        ax.plot(np.arange(opt.m), pca.components_[max_i], ls = styles[1],
+                color = c['color'], label = 'PC {}'.format(max_i))
+        ax.set_title('particle type {}\nPearson R: {}'.format(mark, np.round(max_corr, 3)), fontsize = 16)
+        ax.legend()
+        indplt += 1
+
+    ax2 = bigax.twinx()
+    for type, style in zip(types, styles):
+        ax2.plot(np.NaN, np.NaN, ls = style, label = type, c = 'k')
+    ax2.get_yaxis().set_visible(False)
+
+    ax2.legend(loc = 3, title_fontsize = 16)
+
+    # Turn off axis lines and ticks of the big subplot
+    bigax.spines['top'].set_color('none')
+    bigax.spines['bottom'].set_color('none')
+    bigax.spines['left'].set_color('none')
+    bigax.spines['right'].set_color('none')
+    bigax.tick_params(labelcolor = 'w', top = False, bottom = False, left = False, right = False)
+    # set axis labels
+    bigax.set_xlabel('particle index', fontsize = 16)
+    bigax.set_ylabel('value', fontsize = 16)
+
+    plt.tight_layout()
+    plt.savefig(osp.join(subpath, 'particle_type_vector_predicted_PC.png'))
+    plt.close()
+
 
 def plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath):
     '''Plots the predicted particle types as a vector along the polymer.'''
@@ -873,12 +980,12 @@ def plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath):
 
     rows = max(1, opt.k % 2)
     cols = math.ceil(opt.k / rows)
-    print(rows, cols)
+
     for mark, c in enumerate(colors):
         ax = fig.add_subplot(rows, cols, indplt)
         ax.plot(np.arange(opt.m), z[:, mark], ls = styles[0], color = c['color'])
         ax.plot(np.arange(opt.m), x[:, mark], ls = styles[1], color = c['color'])
-        ax.set_title('particle type {}'.format(mark), fontsize = 16)
+        ax.set_title('particle type {}\n{} particles'.format(mark, np.sum(x[:, mark]).astype(int)), fontsize = 16)
         indplt += 1
 
     ax2 = bigax.twinx()
@@ -1041,8 +1148,8 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    # updateResultTables('SequenceFCAutoencoder', None, 'sequence')
-    # plotCombinedModels('GNNAutoencoder2', [2, 3, 4])
-    main()
+    # updateResultTables('ContactGNN', 'GNN', 'sequence')
+    plotCombinedModels('ContactGNN', [19, 20, 21])
+    # main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')

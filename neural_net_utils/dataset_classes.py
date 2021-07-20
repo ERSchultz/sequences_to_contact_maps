@@ -130,21 +130,25 @@ class Sequences2Contacts(Dataset):
 
 class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN: https://github.com/rusty1s/pytorch_geometric/issues/1511
-    def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag',
-                y_norm = 'instance', min_subtraction = True, use_node_features = True,
-                sparsify_threshold = None, top_k = None, weighted_LDP = False,
-                transform = None, pre_transform = None, relabel_11_to_00 = False):
+    def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag', y_log_transform = False,
+                y_norm = 'instance', min_subtraction = True, use_node_features = True, use_edge_weights = True,
+                sparsify_threshold = None, top_k = None, weighted_LDP = False, split_neg_pos_edges = False,
+                transform = None, pre_transform = None, relabel_11_to_00 = False, output = 'contact'):
         t0 = time.time()
         self.m = m
         self.dirname = dirname
         self.y_preprocessing = y_preprocessing
+        self.y_log_transform = y_log_transform
         self.y_norm = y_norm
         self.min_subtraction = min_subtraction
         self.use_node_features = use_node_features
+        self.use_edge_weights = use_edge_weights
         self.sparsify_threshold = sparsify_threshold
         self.weighted_LDP = weighted_LDP
+        self.split_neg_pos = split_neg_pos_edges
         self.top_k = top_k
         self.relabel_11_to_00 = relabel_11_to_00
+        self.output = output
         if self.weighted_LDP and self.top_k is None and self.sparsify_threshold is None:
             print('Warning: using LDP without any sparsification')
 
@@ -185,53 +189,77 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def process(self):
         for i, raw_folder in enumerate(self.raw_file_names):
-            if self.y_preprocessing is None:
-                y_path = osp.join(raw_folder, 'y.npy')
-            elif self.y_preprocessing == 'diag':
-                y_path = osp.join(raw_folder, 'y_diag.npy')
-            elif self.y_preprocessing == 'prcnt':
-                y_path = osp.join(raw_folder, 'y_prcnt.npy')
-            elif self.y_preprocessing == 'diag_instance':
-                y_path = osp.join(raw_folder, 'y_diag_instance.npy')
-            else:
-                raise Exception("Warning: Unknown preprocessing: {}".format(self.y_preprocessing))
-            y = np.load(y_path)
-            if self.y_norm == 'instance':
-                self.ymax = np.max(y)
-                self.ymin = np.min(y)
+            x = self.process_x(raw_folder)
+            y = self.process_y(raw_folder)
+            pos_edge_index, neg_edge_index, edge_weight = self.sparsify_adj_mat(y)
+            # if neg_edge_index is None, then pos_edge_index actually contains pos edges + neg edges (i.e. just edge_index)
 
-            # if y_norm is batch this uses batch parameters from init, if y_norm is None, this does nothing
-            if self.min_subtraction:
-                y = (y - self.ymin) / (self.ymax - self.ymin)
-            else:
-                y = y / self.ymax
-
-            if self.sparsify_threshold is not None:
-                y[y < self.sparsify_threshold] = 0
-
-            if self.top_k is not None:
-                self.filter_to_topk(y)
-
-            y = torch.tensor(y, dtype = torch.float32)
-            edge_index, edge_weight = self.sparsify_adj_mat(y)
-            x = np.load(osp.join(raw_folder, 'x.npy'))
-            if self.relabel_11_to_00:
-                m, k = x.shape
-                ind = np.where((x == np.ones(k)).all(axis = 1))
-                x[ind] = 0
-            x = torch.tensor(x, dtype = torch.float32)
             if self.use_node_features:
-                graph = torch_geometric.data.Data(x = x, edge_index = edge_index, edge_attr = edge_weight, y = x)
+                graph = torch_geometric.data.Data(x = x, edge_index = pos_edge_index, edge_attr = edge_weight, y = x)
             else:
-                graph = torch_geometric.data.Data(x = None, edge_index = edge_index, edge_attr = edge_weight, y = x)
+                graph = torch_geometric.data.Data(x = None, edge_index = pos_edge_index, edge_attr = edge_weight, y = x)
             graph.minmax = torch.tensor([self.ymin, self.ymax])
             graph.path = raw_folder
             graph.num_nodes = self.m
+            graph.neg_edge_index = neg_edge_index # this is usually None
             if self.weighted_LDP:
                 graph = self.weightedLocalDegreeProfile(graph, y)
             if self.pre_transform is not None:
                 graph = self.pre_transform(graph)
+            if self.output == 'contact':
+                graph.contact_map = y
+                # TODO double check that this works in core test train
+                # y =  torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
+                                                        # batch = data.batch,
+                                                        # max_num_nodes = opt.n)
             torch.save(graph, self.processed_paths[i])
+
+    def process_x(self, raw_folder):
+        '''Helper function to load the appropriate particle type matrix and apply any necessary preprocessing.'''
+        x = np.load(osp.join(raw_folder, 'x.npy'))
+        if self.relabel_11_to_00:
+            m, k = x.shape
+            ind = np.where((x == np.ones(k)).all(axis = 1))
+            x[ind] = 0
+        x = torch.tensor(x, dtype = torch.float32)
+        return x
+
+    def process_y(self, raw_folder):
+        '''Helper function to load the appropriate contact map and apply any necessary preprocessing.'''
+        if self.y_preprocessing is None:
+            y_path = osp.join(raw_folder, 'y.npy')
+        elif self.y_preprocessing == 'diag':
+            y_path = osp.join(raw_folder, 'y_diag.npy')
+        elif self.y_preprocessing == 'prcnt':
+            y_path = osp.join(raw_folder, 'y_prcnt.npy')
+        elif self.y_preprocessing == 'diag_instance':
+            y_path = osp.join(raw_folder, 'y_diag_instance.npy')
+        else:
+            raise Exception("Warning: Unknown preprocessing: {}".format(self.y_preprocessing))
+        y = np.load(y_path)
+
+        if self.y_log_transform:
+            y = np.log10(y)
+            print(y, np.min(y), np.max(y))
+
+        if self.y_norm == 'instance':
+            self.ymax = np.max(y)
+            self.ymin = np.min(y)
+
+        # if y_norm is batch this uses batch parameters from init, if y_norm is None, this does nothing
+        if self.min_subtraction:
+            y = (y - self.ymin) / (self.ymax - self.ymin)
+        else:
+            y = y / self.ymax
+
+        if self.sparsify_threshold is not None:
+            y[np.abs(y) < self.sparsify_threshold] = 0
+
+        if self.top_k is not None:
+            self.filter_to_topk(y)
+
+        y = torch.tensor(y, dtype = torch.float32)
+        return y
 
     def get(self, index):
          data = torch.load(self.processed_paths[index])
@@ -244,17 +272,27 @@ class ContactsGraph(torch_geometric.data.Dataset):
         return torch.sum(y, axis = 1)
 
     def filter_to_topk(self, y):
-        # any entry not in the topk will be set to 0, row-wise
+        # any entry whose absolute value is not in the topk will be set to 0, row-wise
+        yabs = np.abs(y)
         k = self.m - self.top_k
-        z = np.argpartition(y, k)
+        z = np.argpartition(yabs, k)
         z = z[:, :k]
         y[np.arange(self.m)[:,None], z] = 0
 
     def sparsify_adj_mat(self, y):
-        edge_index = (y > 0).nonzero().t()
-        row, col = edge_index
-        edge_weight = y[row, col]
-        return edge_index, edge_weight
+        if self.split_neg_pos:
+            assert not self.use_edge_weights, "not supported"
+            pos_edge_index = (y > 0).nonzero().t()
+            neg_edge_index = (y < 0).nonzero().t()
+            return pos_edge_index, neg_edge_index, None
+        else:
+            edge_index = y.nonzero().t()
+            if self.use_edge_weights:
+                row, col = edge_index
+                edge_weight = y[row, col]
+            else:
+                edge_weight = None
+            return edge_index, None, edge_weight
 
     def weightedLocalDegreeProfile(self, data, y):
         '''

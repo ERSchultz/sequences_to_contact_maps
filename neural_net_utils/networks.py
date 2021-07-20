@@ -7,7 +7,7 @@ sys.path.insert(0, dname)
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch_geometric.nn
+import torch_geometric.nn as gnn
 from base_networks import *
 import time
 
@@ -255,8 +255,8 @@ class GNNAutoencoder(nn.Module):
         output_size = hidden_sizes_list[1]
         self.output_size = output_size
         if message_passing == 'GCN':
-            self.conv1 = torch_geometric.nn.GCNConv(input_size, hidden_size, add_self_loops = False)
-            self.conv2 = torch_geometric.nn.GCNConv(hidden_size, output_size, add_self_loops = False)
+            self.conv1 = gnn.GCNConv(input_size, hidden_size, add_self_loops = False)
+            self.conv2 = gnn.GCNConv(hidden_size, output_size, add_self_loops = False)
         else:
             raise Exception("Unkown message_passing {}".format(message_passing))
 
@@ -482,7 +482,7 @@ class ContactGNN(nn.Module):
     where particle type vector is not given as node feature in graph.
     '''
     def __init__(self, m, input_size, hidden_sizes_list, act, out_act,
-                message_passing):
+                message_passing, use_edge_weights):
         '''
         Inputs:
             m: number of nodes
@@ -493,16 +493,8 @@ class ContactGNN(nn.Module):
         '''
         super(ContactGNN, self).__init__()
         self.m = m
-        if len(hidden_sizes_list) > 2:
-            print('Warning: only using first two hidden sizes')
-        hidden_size = hidden_sizes_list[0]
-        output_size = hidden_sizes_list[1]
-        self.output_size = output_size
-        if message_passing == 'GCN':
-            self.conv1 = torch_geometric.nn.GCNConv(input_size, hidden_size, add_self_loops = False)
-            self.conv2 = torch_geometric.nn.GCNConv(hidden_size, output_size, add_self_loops = False)
-        else:
-            raise Exception("Unkown message_passing {}".format(message_passing))
+        self.message_passing = message_passing.lower()
+        self.use_edge_weights = use_edge_weights
 
         if act is None:
             self.act = nn.Identity()
@@ -532,12 +524,44 @@ class ContactGNN(nn.Module):
         else:
             raise Exception("Unknown out_act {}".format(out_act))
 
+
+        model = []
+
+        if self.message_passing == 'gcn':
+            if self.use_edge_weights:
+                fn_header = 'x, edge_index, edge_attr -> x'
+            else:
+                fn_header = 'x, edge_index -> x'
+            for i, output_size in enumerate(hidden_sizes_list):
+                module = (gnn.GCNConv(input_size, output_size),
+                            fn_header)
+                if i == len(hidden_sizes_list) - 1:
+                    model.extend([module, self.out_act])
+                else:
+                    model.extend([module, self.act])
+                first_layer = False
+                input_size = output_size
+            self.model = gnn.Sequential('x, edge_index, edge_attr', model)
+        elif self.message_passing == 'signedconv':
+            assert not self.use_edge_weights
+            first_layer = True
+            for output_size in hidden_sizes_list:
+                module = (gnn.SignedConv(input_size, output_size, first_aggr = first_layer),
+                            'x, pos_edge_index, neg_edge_index -> x')
+                model.extend([module, self.act])
+                first_layer = False
+                input_size = output_size
+            self.model = gnn.Sequential('x, pos_edge_index, neg_edge_index', model)
+        else:
+            raise Exception("Unkown message_passing {}".format(message_passing))
+        print(self.model)
+
     def forward(self, graph):
-        x, edge_index, edge_attr  = graph.x, graph.edge_index, graph.edge_attr
-        x = self.conv1(x, edge_index, edge_attr)
-        x = self.act(x)
-        x = self.conv2(x, edge_index, edge_attr)
-        out = self.out_act(x)
+        if self.message_passing == 'gcn':
+            out = self.model(graph.x, graph.edge_index, graph.edge_attr)
+        else:
+            latent = self.model(graph.x, graph.edge_index, graph.neg_edge_index)
+            out = None
         return out
 
 def testFullyConnectedAutoencoder():
