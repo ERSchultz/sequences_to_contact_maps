@@ -6,4 +6,4 @@
 /__pycache__/*
 /neural_net_utils/__pycache__/*
 /results/test/**
-!/results/ContactGNN
+!/results/ContactGNN/***
