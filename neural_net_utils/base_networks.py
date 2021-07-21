@@ -25,9 +25,9 @@ def actToModule(act):
         elif act.lower() == 'tanh':
             act = nn.Tanh()
         else:
-            raise Exception("Unkown activation {}".format(act))
+            raise Exception("Unsupported activation {}".format(act))
     else:
-        raise Exception("Unknown out_act {}".format(act))
+        raise Exception("Unsupported activation {}".format(act))
 
     return act
 

@@ -816,6 +816,8 @@ def str2None(v):
     """
     Helper function for argparser, converts str to None if str == 'none'
 
+    Returns the string otherwise.
+
     Inputs:
         v: string
     """
@@ -826,6 +828,25 @@ def str2None(v):
             return None
         else:
             return v
+    else:
+        raise argparse.ArgumentTypeError('String value expected.')
+
+def str2Int(v):
+    """
+    Helper function for argparser, converts str to int if possible.
+
+    Inputs:
+        v: string
+    """
+    if v is None:
+        return v
+    elif isinstance(v, str):
+        if v.lower() == 'none':
+            return None
+        elif v.isnumeric():
+            return int(v)
+        else:
+            raise argparse.ArgumentTypeError('none or int expected not {}'.format(v))
     else:
         raise argparse.ArgumentTypeError('String value expected.')
 
