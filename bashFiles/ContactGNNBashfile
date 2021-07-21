@@ -32,7 +32,6 @@ sparsifyThreshold='none'
 loss='BCE'
 outAct='none'
 
-
 # hyperparameters
 nEpochs=20
 batchSize=8
