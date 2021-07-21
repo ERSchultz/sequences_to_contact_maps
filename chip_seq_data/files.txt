@@ -1,0 +1,13 @@
+"https://www.encodeproject.org/metadata/?files.output_type=pseudoreplicated+peaks&files.file_type=bed+narrowPeak&type=Experiment&cart=%2Fcarts%2Fc6cf671c-5804-4e6c-8617-6fa12d99b66e%2F&files.assembly=GRCh38&files.analyses.status=released&files.preferred_default=true"
+https://www.encodeproject.org/files/ENCFF193VYC/@@download/ENCFF193VYC.bed.gz
+https://www.encodeproject.org/files/ENCFF300WHS/@@download/ENCFF300WHS.bed.gz
+https://www.encodeproject.org/files/ENCFF101KOJ/@@download/ENCFF101KOJ.bed.gz
+https://www.encodeproject.org/files/ENCFF104PUB/@@download/ENCFF104PUB.bed.gz
+https://www.encodeproject.org/files/ENCFF105NDA/@@download/ENCFF105NDA.bed.gz
+https://www.encodeproject.org/files/ENCFF730VTQ/@@download/ENCFF730VTQ.bed.gz
+https://www.encodeproject.org/files/ENCFF294LZM/@@download/ENCFF294LZM.bed.gz
+https://www.encodeproject.org/files/ENCFF832IOO/@@download/ENCFF832IOO.bed.gz
+https://www.encodeproject.org/files/ENCFF931YSQ/@@download/ENCFF931YSQ.bed.gz
+https://www.encodeproject.org/files/ENCFF137TPC/@@download/ENCFF137TPC.bed.gz
+https://www.encodeproject.org/files/ENCFF711MPL/@@download/ENCFF711MPL.bed.gz
+https://www.encodeproject.org/files/ENCFF899XEF/@@download/ENCFF899XEF.bed.gz
