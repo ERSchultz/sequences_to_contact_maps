@@ -200,7 +200,6 @@ def downsampling_test():
     y_diag_down = F.avg_pool2d(y_diag, 2)
     print(y_diag_down)
 
-
 def main():
     # edit_argparse()
     debugModel('ContactGNN')

@@ -461,7 +461,7 @@ def getBaseParser():
     parser.add_argument('--transforms', type=str2list, help='list of transforms to use for GNN')
     parser.add_argument('--pre_transforms', type=str2list, help='list of pre-transforms to use for GNN')
     parser.add_argument('--sparsify_threshold', type=float, help='remove all edges with weight < threshold (None for all edges)')
-    parser.add_argument('--top_k', type=int, help='number of edge to keep per node (None for all edges)')
+    parser.add_argument('--top_k', type=str2Int, help='number of edge to keep per node (None for all edges)')
     parser.add_argument('--use_node_features', type=str2bool, default=False, help='True to use node features for GNN models')
     parser.add_argument('--use_edge_weights', type=str2bool, default=True, help='True to use edge weights in GNN')
     parser.add_argument('--relabel_11_to_00',type=str2bool, default=False, help='True to relabel [1,1] particles as [0,0] particles')
