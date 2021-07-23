@@ -58,7 +58,7 @@ def getModel(opt):
 
     return model
 
-# dataset functions
+## dataset functions ##
 def getDataset(opt, names = False, minmax = False):
     if opt.GNN_mode:
         dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.m, opt.y_preprocessing, opt.y_log_transform,
@@ -109,7 +109,7 @@ def splitDataset(dataset, opt):
     opt.testN = opt.N - opt.trainN - opt.valN
     return torch.utils.data.random_split(dataset, [opt.trainN, opt.valN, opt.testN], torch.Generator().manual_seed(opt.seed))
 
-# data processing functions
+## data processing functions ##
 def x2xx(x, mode = 'mean'):
     # TODO better explanation here
     """
@@ -208,7 +208,7 @@ def percentile_preprocessing(y, percentiles):
 
     return result
 
-# plotting helper functions
+## plotting helper functions ##
 def un_normalize(y, minmax):
     ymin = minmax[0].item()
     ymax = minmax[1].item()
@@ -222,7 +222,7 @@ def getFrequencies(dataFolder, diag, n, k, chi):
     freq_arr = np.zeros((int(n * (n+1) / 2 * len(samples)), 4)) # freq, sample, type, psi_ij
     ind = 0
     for sample in samples:
-
+        print(sample)
         sampleid = int(osp.split(sample)[-1][6:])
 
         x = np.load(osp.join(sample, 'x.npy'))
@@ -371,8 +371,6 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
     print('Loss: {} +- {}'.format(np.round(np.mean(loss_arr), 3), np.round( np.std(loss_arr), 3)), file = opt.log_file)
     return acc_c_arr, freq_c_arr, acc_result
 
-
-# other functions
 def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
     """Computes statistics of 1st PC of contact map"""
     acc_arr = np.zeros(opt.valN)
@@ -452,6 +450,7 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
     with open(osp.join(imagePath, 'PCA_results.txt'), 'w') as f:
         f.write(results)
 
+## Parser funtions ##
 def getBaseParser():
     '''Helper function that returns base parser'''
     parser = argparse.ArgumentParser(description='Base parser', fromfile_prefix_chars='@')
@@ -732,13 +731,13 @@ def save_args(opt):
 
 def opt2list(opt):
     opt_list = [opt.model_type, opt.id, opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
-        opt.y_norm, opt.y_log_transform, opt.x_reshape, opt.ydtype, opt.y_reshape, opt.crop, opt.classes, opt.split,
+        opt.y_norm, opt.min_subtraction, opt.y_log_transform, opt.x_reshape, opt.ydtype, opt.y_reshape, opt.crop, opt.classes, opt.split,
         opt.shuffle, opt.batch_size, opt.num_workers, opt.start_epoch, opt.n_epochs, opt.lr,
         opt.gpus, opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
         opt.ifile_folder, opt.ifile, opt.k, opt.m, opt.seed, opt.out_act, opt.training_norm,
         opt.plot, opt.plot_predictions, opt.relabel_11_to_00]
     if opt.GNN_mode:
-        opt_list.extend([opt.use_node_features, opt.transforms, opt.pre_transforms, opt.sparsify_threshold, opt.top_k,
+        opt_list.extend([opt.use_node_features, opt.use_edge_weights, opt.transforms, opt.pre_transforms, opt.sparsify_threshold, opt.top_k,
                         opt.hidden_sizes_list, opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list])
 
     if opt.model_type == 'simpleEpiNet':
@@ -775,12 +774,13 @@ def save_opt(opt, ofile):
 
 def get_opt_header(model_type, GNN_mode):
     opt_list = ['model_type', 'id',  'data_folder','toxx', 'toxx_mode', 'y_preprocessing',
-        'y_norm', 'y_log_transform', 'x_reshape', 'ydtype', 'y_reshape', 'crop', 'classes', 'split', 'shuffle',
+        'y_norm', 'min_subtraction', 'y_log_transform', 'x_reshape', 'ydtype', 'y_reshape', 'crop', 'classes', 'split', 'shuffle',
         'batch_size', 'num_workers', 'start_epoch', 'n_epochs', 'lr', 'gpus', 'milestones',
         'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'm',
         'seed', 'out_act', 'training_norm', 'plot', 'plot_predictions', 'relabel_11_to_00']
     if GNN_mode:
-        opt_list.extend(['use_node_features','transforms', 'pre_transforms', 'sparsify_threshold', 'top_k'])
+        opt_list.extend(['use_node_features','use_edge_weights', 'transforms', 'pre_transforms', 'sparsify_threshold', 'top_k',
+                        'hidden_sizes_list', 'message_passing', 'head_architecture', 'head_hidden_sizes_list'])
     if model_type == 'simpleEpiNet':
         opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])
     elif model_type == 'UNet':
@@ -792,16 +792,15 @@ def get_opt_header(model_type, GNN_mode):
     elif model_type == 'test':
         opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'nf'])
     elif model_type == 'GNNAutoencoder':
-        opt_list.extend(['hidden_sizes_list', 'message_passing', 'head_architecture', 'head_hidden_sizes_list'])
+        opt_list.extend(['head_act', 'head_hidden_sizes_list'])
     elif model_type == 'ContactGNN':
-        opt_list.extend(['hidden_sizes_list', 'message_passing'])
+        pass
     elif model_type == 'SequenceFCAutoencoder':
         opt_list.extend(['hidden_sizes_list', 'parameter_sharing'])
     else:
         raise Exception("Unknown model type: {}".format(model_type))
 
     return opt_list
-
 
 def roundUpBy10(val):
     """Rounds value up to the nearst multiple of 10."""
@@ -1023,9 +1022,8 @@ class InteractionConverter():
         return np_arr
 
 def main():
-    opt = argparseSetup()
-    print(opt)
-    copy_data_to_scratch(opt)
+    aggregate_peaks('chip_seq_data/ENCFF101KOJ.bed')
+    # copy_data_to_scratch(opt)
     # plotPerClassAccuracy(None, None, 5)
 
 if __name__ == '__main__':

@@ -42,7 +42,7 @@ def plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid, split = 'typ
     converter = InteractionConverter(k)
 
     if split is None:
-        fig = plt.figure(figsize=(10, 5))
+        fig = plt.figure(figsize=(8, 4))
     elif split == 'type':
         fig = plt.figure(figsize=(12, 12))
     elif split == 'psi':
@@ -78,8 +78,11 @@ def plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid, split = 'typ
     bigax.spines['right'].set_color('none')
     bigax.tick_params(labelcolor = 'w', top = False, bottom = False, left = False, right = False)
     # set axis labels
-    bigax.set_xlabel('contact frequency', fontsize = 16)
-    bigax.set_ylabel('count of contact frequency', fontsize = 16)
+    if diag:
+        bigax.set_xlabel('observed/expected contact frequency', fontsize = 16)
+    else:
+        bigax.set_xlabel('contact frequency', fontsize = 16)
+    bigax.set_ylabel('count ', fontsize = 16)
 
     fig.tight_layout()
     if diag:
@@ -203,7 +206,7 @@ def freqDistributionPlots(dataFolder, n = 1024):
         freq_arr = getFrequencies(dataFolder, diag, n, k, chi)
         for split in [None, 'type', 'psi']:
             print(split)
-            plotFrequenciesSampleSubplot(freq_arr, dataFolder, diag, k, split)
+            # plotFrequenciesSampleSubplot(freq_arr, dataFolder, diag, k, split)
             plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid = 1, split = split)
 
 def freqStatisticsPlots(dataFolder):
@@ -216,9 +219,7 @@ def freqStatisticsPlots(dataFolder):
 
 def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
     # check that only difference in opts is lr
-    print(opts[0])
     opt_header = get_opt_header(opts[0].model_type, opts[0].GNN_mode)
-    print(opt_header)
     opt_lists = []
     for opt in opts:
         opt_lists.append(opt2list(opt))
@@ -1055,6 +1056,7 @@ def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
                                 dist_pearson = line.split(':')[1].strip().split(' $\pm$ ')
                     opt_list.extend([final_val_loss, acc[0], acc[1], spearman[0], spearman[1], pearson[0], pearson[1], dist_pearson[0], dist_pearson[1]])
                 elif output_mode == 'sequence':
+                    final_val_loss = None; auc = None
                     with open(osp.join(id_path, 'out.log'), 'r') as f:
                         for line in f:
                             if line.startswith('Final val loss: '):
@@ -1149,7 +1151,7 @@ def main():
 
 if __name__ == '__main__':
     # updateResultTables('ContactGNN', 'GNN', 'sequence')
-    plotCombinedModels('ContactGNN', [19, 20, 21])
+    # plotCombinedModels('ContactGNN', [34, 35, 36])
     # main()
-    # freqDistributionPlots('dataset_04_18_21')
+    freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')

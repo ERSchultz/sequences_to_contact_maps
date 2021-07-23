@@ -32,7 +32,7 @@ ofile=conda_env.log
 cd ~/sequences_to_contact_maps
 conda create --name $envName -y
 source activate $envName
-conda install -y python=3.8 pytorch=1.8.1 torchvision cudatoolkit=10.2 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy -c pytorch -c conda-forge &>> \logFiles\conda_env.log
+conda install -y python=3.8 pytorch=1.8.1 torchvision cudatoolkit=10.2 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy pybigwig pybind11 -c pytorch -c conda-forge -c bioconda &>> \logFiles\conda_env.log
 python3 -m pip install pynvml hic-straw &>> $ofile
 python3 -m pip install torch-scatter -f https://pytorch-geometric.com/whl/torch-1.8.0+cu102.html &>> $ofile
 python3 -m pip install torch-sparse -f https://pytorch-geometric.com/whl/torch-1.8.0+cu102.html &>> $ofile
