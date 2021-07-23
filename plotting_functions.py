@@ -21,8 +21,7 @@ import matplotlib.colors
 import matplotlib.cm
 
 from neural_net_utils.utils import *
-from neural_net_utils.networks import *
-from neural_net_utils.dataset_classes import *
+from neural_net_utils.argparseSetup import *
 
 #### Functions for plotting contact frequency statistics ####
 def plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid, split = 'type', xmax = None):

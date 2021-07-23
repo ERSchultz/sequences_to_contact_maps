@@ -13,9 +13,10 @@ import locale
 locale.setlocale(locale.LC_ALL, 'en_US')
 
 from neural_net_utils.networks import *
-from neural_net_utils.utils import getDataLoaders, comparePCA, save_args, argparseSetup, getModel, getDataset
+from neural_net_utils.utils import getDataLoaders, comparePCA, getModel, getDataset
 from plotting_functions import plotting_script, plotModelFromArrays
 from neural_net_utils.dataset_classes import *
+from neural_net_utils.argparseSetup import argparseSetup, save_args
 
 def main():
     opt = argparseSetup()

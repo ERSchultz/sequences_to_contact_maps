@@ -10,6 +10,7 @@ from neural_net_utils.base_networks import *
 from neural_net_utils.networks import *
 from neural_net_utils.utils import *
 from neural_net_utils.dataset_classes import *
+from neural_net_utils.argparseSetup import *
 from core_test_train import core_test_train
 from scipy.io import savemat
 
@@ -117,22 +118,23 @@ def debugModel(model_type):
         opt.top_k = 500
         opt.parameter_sharing = True
     elif model_type == 'ContactGNN':
-        opt.message_passing='SignedConv'
+        opt.message_passing='GCN'
         opt.GNN_mode = True
         opt.output_mode = 'sequence'
         opt.hidden_sizes_list=str2list('16-2')
         opt.out_act = None
         opt.use_node_features = False
+        opt.use_edge_weights = False
         opt.transforms=str2list('constant')
         opt.pre_transforms=None
         # opt.top_k = 100
-        opt.sparsify_threshold = 0.1
-        opt.use_edge_weights = False
+        opt.sparsify_threshold = 2
+
         opt.relabel_11_to_00 = True
-        opt.y_log_transform = True
+        opt.y_log_transform = False
         opt.y_norm = None
-        opt.head_architecture = 'fc'
-        opt.head_hidden_sizes_list = [2]
+        # opt.head_architecture = 'fc'
+        # opt.head_hidden_sizes_list = [2]
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
         opt.autoencoder_mode = True
@@ -153,7 +155,7 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = False
+    opt.plot = True
     opt.plot_predictions = False
     opt.verbose = True
     opt.data_folder = "dataset_04_18_21"

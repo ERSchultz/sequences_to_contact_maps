@@ -9,6 +9,8 @@ import torch_geometric.transforms
 from torch_scatter import scatter_min, scatter_max, scatter_mean, scatter_std
 from torch_geometric.utils import degree
 
+import matplotlib.pyplot as plt
+
 import time
 import numpy as np
 
@@ -175,6 +177,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                         max_val = val
             self.root = osp.join(dirname, 'graphs{}'.format(max_val+1))
         else:
+            # use exsting graph data folder
             self.root = osp.join(dirname, root_name)
         super(ContactsGraph, self).__init__(self.root, transform, pre_transform)
         print('graph init time: {}'.format(np.round(time.time() - t0, 3)))
@@ -254,10 +257,13 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if self.sparsify_threshold is not None:
             y[np.abs(y) < self.sparsify_threshold] = 0
 
+
         if self.top_k is not None:
             self.filter_to_topk(y)
 
         y = torch.tensor(y, dtype = torch.float32)
+        yflat = y.flatten()
+        where = yflat > 0
         return y
 
     def get(self, index):
@@ -280,6 +286,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def sparsify_adj_mat(self, y):
         edge_index = y.nonzero().t()
+        print(edge_index, edge_index.shape)
         if self.split_neg_pos:
             assert not self.use_edge_weights, "not supported"
             pos_edge_index = (y > 0).nonzero().t()
