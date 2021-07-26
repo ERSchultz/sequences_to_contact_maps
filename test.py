@@ -127,8 +127,8 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.transforms=str2list('constant')
         opt.pre_transforms=None
-        opt.top_k = 50
-        # opt.sparsify_threshold = 1.5
+        # opt.top_k = 50
+        opt.sparsify_threshold = 0.5
 
         opt.relabel_11_to_00 = True
         opt.y_log_transform = False

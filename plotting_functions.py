@@ -1150,7 +1150,7 @@ def main():
 
 if __name__ == '__main__':
     updateResultTables('ContactGNN', 'GNN', 'sequence')
-    plotCombinedModels('ContactGNN', [38, 39, 40])
+    # plotCombinedModels('ContactGNN', [44, 45, 46])
     # main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')

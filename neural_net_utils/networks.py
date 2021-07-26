@@ -486,7 +486,10 @@ class ContactGNN(nn.Module):
                 model.extend([module, self.act])
                 first_layer = False
                 input_size = output_size
-            input_size *= 2 # SignedConv
+            input_size *= 2
+            # SignedConv convention that output_size is the size of the
+            # negative representation and positive representation respectively,
+            # so the total length is 2 * output_size 
 
             self.model = gnn.Sequential('x, pos_edge_index, neg_edge_index', model)
 

@@ -292,11 +292,11 @@ def save_args(opt):
 
 def opt2list(opt):
     opt_list = [opt.model_type, opt.id, opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
-        opt.y_norm, opt.min_subtraction, opt.y_log_transform, opt.x_reshape, opt.ydtype, opt.y_reshape, opt.crop, opt.classes, opt.split,
-        opt.shuffle, opt.batch_size, opt.num_workers, opt.start_epoch, opt.n_epochs, opt.lr,
+        opt.y_norm, opt.min_subtraction, opt.y_log_transform, opt.crop, opt.split,
+        opt.shuffle, opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr,
         opt.gpus, opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
         opt.ifile_folder, opt.ifile, opt.k, opt.m, opt.seed, opt.out_act, opt.training_norm,
-        opt.plot, opt.plot_predictions, opt.relabel_11_to_00]
+        opt.relabel_11_to_00]
     if opt.GNN_mode:
         opt_list.extend([opt.use_node_features, opt.use_edge_weights, opt.transforms, opt.pre_transforms, opt.sparsify_threshold, opt.top_k,
                         opt.hidden_sizes_list, opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list])
@@ -335,10 +335,10 @@ def save_opt(opt, ofile):
 
 def get_opt_header(model_type, GNN_mode):
     opt_list = ['model_type', 'id',  'data_folder','toxx', 'toxx_mode', 'y_preprocessing',
-        'y_norm', 'min_subtraction', 'y_log_transform', 'x_reshape', 'ydtype', 'y_reshape', 'crop', 'classes', 'split', 'shuffle',
-        'batch_size', 'num_workers', 'start_epoch', 'n_epochs', 'lr', 'gpus', 'milestones',
+        'y_norm', 'min_subtraction', 'y_log_transform', 'crop', 'split', 'shuffle',
+        'batch_size', 'num_workers', 'n_epochs', 'lr', 'gpus', 'milestones',
         'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'm',
-        'seed', 'out_act', 'training_norm', 'plot', 'plot_predictions', 'relabel_11_to_00']
+        'seed', 'out_act', 'training_norm', 'relabel_11_to_00']
     if GNN_mode:
         opt_list.extend(['use_node_features','use_edge_weights', 'transforms', 'pre_transforms', 'sparsify_threshold', 'top_k',
                         'hidden_sizes_list', 'message_passing', 'head_architecture', 'head_hidden_sizes_list'])
@@ -362,8 +362,6 @@ def get_opt_header(model_type, GNN_mode):
         raise Exception("Unknown model type: {}".format(model_type))
 
     return opt_list
-
-
 
 def str2None(v):
     """

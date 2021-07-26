@@ -23,7 +23,7 @@ yNorm='instance'
 yLogTransform='false'
 messagePassing='GCN'
 useNodeFeatures='false'
-useEdgeWeights='false'
+useEdgeWeights='true'
 hiddenSizesList='16-2'
 transforms='constant'
 preTransforms='none'
@@ -46,7 +46,7 @@ relabel_11_to_00='true'
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2
 
-for sparsifyThreshold in 0.5 1.0 1.5
+for sparsifyThreshold in 0
 do
   for lr in 1e-1 1e-2 1e-3
   do

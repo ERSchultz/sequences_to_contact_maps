@@ -347,7 +347,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def sparsify_adj_mat(self, y):
         edge_index = y.nonzero().t()
-        print(edge_index.shape)
         if self.split_neg_pos:
             assert not self.use_edge_weights, "not supported"
             pos_edge_index = (y > 0).nonzero().t()
