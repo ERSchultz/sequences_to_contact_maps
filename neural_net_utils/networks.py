@@ -489,7 +489,7 @@ class ContactGNN(nn.Module):
             input_size *= 2
             # SignedConv convention that output_size is the size of the
             # negative representation and positive representation respectively,
-            # so the total length is 2 * output_size 
+            # so the total length is 2 * output_size
 
             self.model = gnn.Sequential('x, pos_edge_index, neg_edge_index', model)
 
@@ -521,14 +521,11 @@ class ContactGNN(nn.Module):
             self.head = gnn.Sequential('x, edge_index', head)
 
     def forward(self, graph):
-        if self.message_passing == 'gcn':
-            print(graph.edge_index, graph.edge_index.shape, '\n', graph.edge_attr) # todo del
-            latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
+        if self.message_passing == 'gcn':            latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
         elif self.message_passing == 'signedconv':
             latent = self.model(graph.x, graph.edge_index, graph.neg_edge_index)
 
         if self.head_architecture is None:
-            print(latent)
             out = latent
         elif self.head_architecture == 'gcn':
             out = self.head(latent, graph.edge_index)
