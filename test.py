@@ -127,8 +127,8 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.transforms=str2list('constant')
         opt.pre_transforms=None
-        # opt.top_k = 100
-        opt.sparsify_threshold = 2
+        opt.top_k = 50
+        # opt.sparsify_threshold = 1.5
 
         opt.relabel_11_to_00 = True
         opt.y_log_transform = False
@@ -150,12 +150,12 @@ def debugModel(model_type):
     # hyperparameters
     opt.n_epochs = 1
     opt.lr = 1e-3
-    opt.batch_size = 8
+    opt.batch_size = 1
     opt.milestones = str2list('1')
     opt.gamma = 0.1
 
     # other
-    opt.plot = True
+    opt.plot = False
     opt.plot_predictions = False
     opt.verbose = True
     opt.data_folder = "dataset_04_18_21"

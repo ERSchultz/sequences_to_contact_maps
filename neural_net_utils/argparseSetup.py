@@ -363,6 +363,8 @@ def get_opt_header(model_type, GNN_mode):
 
     return opt_list
 
+
+
 def str2None(v):
     """
     Helper function for argparser, converts str to None if str == 'none'
@@ -413,10 +415,10 @@ def str2Float(v):
     elif isinstance(v, str):
         if v.lower() == 'none':
             return None
-        elif v.isnumeric():
+        try:
             return float(v)
-        else:
-            raise argparse.ArgumentTypeError('none or int expected not {}'.format(v))
+        except ValueError:
+            raise argparse.ArgumentTypeError('none or float expected not {}'.format(v))
     else:
         raise argparse.ArgumentTypeError('String value expected.')
 

@@ -519,11 +519,13 @@ class ContactGNN(nn.Module):
 
     def forward(self, graph):
         if self.message_passing == 'gcn':
+            print(graph.edge_index, graph.edge_index.shape, '\n', graph.edge_attr) # todo del
             latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
         elif self.message_passing == 'signedconv':
             latent = self.model(graph.x, graph.edge_index, graph.neg_edge_index)
 
         if self.head_architecture is None:
+            print(latent)
             out = latent
         elif self.head_architecture == 'gcn':
             out = self.head(latent, graph.edge_index)

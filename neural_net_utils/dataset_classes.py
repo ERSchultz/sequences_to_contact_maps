@@ -10,9 +10,13 @@ from torch_scatter import scatter_min, scatter_max, scatter_mean, scatter_std
 from torch_geometric.utils import degree
 
 import matplotlib.pyplot as plt
+import matplotlib.colors
+import matplotlib.cm
+import seaborn as sns
 
 import time
 import numpy as np
+import scipy.stats as ss
 
 def make_dataset(dir, minSample = 0):
     data_file_arr = []
@@ -28,6 +32,63 @@ def make_dataset(dir, minSample = 0):
                 data_file = osp.join(samples_dir, file)
                 data_file_arr.append(data_file)
     return data_file_arr
+
+def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False, cmap = None):
+    """
+    Plotting function for contact maps.
+
+    Inputs:
+        y: contact map numpy array
+        ofile: save location
+        title: plot title
+        vmax: maximum value for color bar, 'mean' to set as mean value
+        size_in: size of figure x,y in inches
+        minVal: values in y less than minVal are set to 0
+        maxVal: values in y greater than maxVal are set to 0
+    """
+    if cmap is None:
+        if prcnt:
+            cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                     [(0,       'white'),
+                                                      (0.25,    'orange'),
+                                                      (0.5,     'red'),
+                                                      (0.74,    'purple'),
+                                                      (1,       'blue')], N=10)
+        else:
+            cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                     [(0,    'white'),
+                                                      (1,    'red')], N=126)
+    if len(y.shape) == 4:
+        N, C, H, W = y.shape
+        assert N == 1 and C == 1
+        y = y.reshape(H,W)
+    elif len(y.shape) == 3:
+        N, H, W = y.shape
+        assert N == 1
+        y = y.reshape(H,W)
+
+    if minVal is not None or maxVal is not None:
+        y = y.copy() # prevent issues from reference type
+    if minVal is not None:
+        ind = y < minVal
+        y[ind] = 0
+    if maxVal is not None:
+        ind = y > maxVal
+        y[ind] = 0
+    plt.figure(figsize = (size_in, size_in))
+    if vmax == 'mean':
+        vmax = np.mean(y)
+    elif vmax == 'max':
+        vmax = np.max(y)
+    ax = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap)
+    if title is not None:
+        plt.title(title, fontsize = 16)
+    plt.tight_layout()
+    if ofile is not None:
+        plt.savefig(ofile)
+    else:
+        plt.show()
+    plt.close()
 
 class Names(Dataset):
     # TODO make this directly iterable
@@ -261,9 +322,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if self.top_k is not None:
             self.filter_to_topk(y)
 
+        # self.plotDegreeProfile(y)
+        # plotContactMap(y, vmax = 'max')
         y = torch.tensor(y, dtype = torch.float32)
-        yflat = y.flatten()
-        where = yflat > 0
         return y
 
     def get(self, index):
@@ -286,7 +347,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def sparsify_adj_mat(self, y):
         edge_index = y.nonzero().t()
-        print(edge_index, edge_index.shape)
+        print(edge_index.shape)
         if self.split_neg_pos:
             assert not self.use_edge_weights, "not supported"
             pos_edge_index = (y > 0).nonzero().t()
@@ -331,6 +392,15 @@ class ContactsGraph(torch_geometric.data.Dataset):
             data.x = x
 
         return data
+
+    def plotDegreeProfile(self, y):
+        y[y > 0] = 1
+        deg = np.sum(y, axis = 0)
+        print(np.min(deg), np.max(deg), ss.mode(deg))
+        plt.hist(deg)
+        plt.ylabel('count', fontsize=16)
+        plt.xlabel('degree', fontsize=16)
+        plt.show()
 
 class Sequences(Dataset):
     def __init__(self, dirname, crop, x_reshape, names = False, min_sample = 0):

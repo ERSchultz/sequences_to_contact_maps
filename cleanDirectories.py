@@ -1,7 +1,7 @@
 import os.path as osp
 from shutil import rmtree
 
-from neural_net_utils.utils import str2bool
+from neural_net_utils.argparseSetup import str2bool
 import argparse
 
 def main():
