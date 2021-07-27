@@ -381,6 +381,7 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
     else:
         plt.savefig(osp.join(imagePath, 'train_val_loss.png'))
     plt.close()
+
 #### End section ####
 
 def contactPlots(dataFolder):
@@ -1150,8 +1151,8 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    # updateResultTables('ContactGNN', 'GNN', 'sequence')
+    updateResultTables('ContactGNN', 'GNN', 'sequence')
     # plotCombinedModels('ContactGNN', [53, 54, 55])
-    main()
+    # main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')
