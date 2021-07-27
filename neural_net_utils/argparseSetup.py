@@ -21,7 +21,7 @@ def getBaseParser():
     parser.add_argument('--transforms', type=str2list, help='list of transforms to use for GNN')
     parser.add_argument('--pre_transforms', type=str2list, help='list of pre-transforms to use for GNN')
     parser.add_argument('--sparsify_threshold', type=str2Float, help='remove all edges with weight < threshold (None to do nothing)')
-    parser.add_argument('--sparsify_threshold_upper', type=str2Float, help='remove all edges with weight < threshold (None to do nothing)'))
+    parser.add_argument('--sparsify_threshold_upper', type=str2Float, help='remove all edges with weight < threshold (None to do nothing)')
     parser.add_argument('--top_k', type=str2Int, help='filter to top k largest edges per node (None to do nothing)')
     parser.add_argument('--use_node_features', type=str2bool, default=False, help='True to use node features for GNN models')
     parser.add_argument('--use_edge_weights', type=str2bool, default=True, help='True to use edge weights in GNN')
