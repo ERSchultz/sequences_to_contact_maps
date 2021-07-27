@@ -195,8 +195,10 @@ class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN: https://github.com/rusty1s/pytorch_geometric/issues/1511
     def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag', y_log_transform = False,
                 y_norm = 'instance', min_subtraction = True, use_node_features = True, use_edge_weights = True,
-                sparsify_threshold = None, top_k = None, weighted_LDP = False, split_neg_pos_edges = False,
-                transform = None, pre_transform = None, relabel_11_to_00 = False, output = 'contact'):
+                sparsify_threshold = None, sparsify_threshold_upper = None, top_k = None, 
+                weighted_LDP = False, split_neg_pos_edges = False,
+                transform = None, pre_transform = None,
+                relabel_11_to_00 = False, output = 'contact'):
         t0 = time.time()
         self.m = m
         self.dirname = dirname
@@ -207,6 +209,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.use_node_features = use_node_features
         self.use_edge_weights = use_edge_weights
         self.sparsify_threshold = sparsify_threshold
+        self.sparsify_threshold_upper = sparsify_threshold_upper
         self.weighted_LDP = weighted_LDP
         self.split_neg_pos = split_neg_pos_edges
         self.top_k = top_k
@@ -316,8 +319,10 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y = y / self.ymax
 
         if self.sparsify_threshold is not None:
-            y[np.abs(y) < self.sparsify_threshold] = 0
-
+            if self.sparsify_threshold > 0:
+                y[np.abs(y) < self.sparsify_threshold] = 0
+            elif self.sparsify_threshold < 0:
+                y[np.abs(y) > abs(self.sparsify_threshold)] = 0
 
         if self.top_k is not None:
             self.filter_to_topk(y)

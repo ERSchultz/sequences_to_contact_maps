@@ -60,7 +60,8 @@ def getDataset(opt, names = False, minmax = False):
     if opt.GNN_mode:
         dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.m, opt.y_preprocessing, opt.y_log_transform,
                                             opt.y_norm, opt.min_subtraction, opt.use_node_features, opt.use_edge_weights,
-                                            opt.sparsify_threshold, opt.top_k, opt.weighted_LDP, opt.split_neg_pos_edges,
+                                            opt.sparsify_threshold, opt.sparsify_threshold_upper, opt.top_k,
+                                            opt.weighted_LDP, opt.split_neg_pos_edges,
                                             opt.transforms_processed, opt.pre_transforms_processed,
                                             opt.relabel_11_to_00, opt.output_mode)
         opt.root = dataset.root
