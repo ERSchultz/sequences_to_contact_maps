@@ -1,6 +1,6 @@
 #! /bin/bash
 #SBATCH --job-name=ContactGNN
-#SBATCH --output=logFiles/ContactGNN2.out
+#SBATCH --output=logFiles/ContactGNN4.out
 #SBATCH --time=20:00:00
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -12,7 +12,7 @@ dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
 deleteRoot='false'
 
 modelType='ContactGNN'
-rootName='ContactGNN2' # change to run multiple bash files at once
+rootName='ContactGNN4' # change to run multiple bash files at once
 GNNMode='true'
 outputMode='sequence'
 
@@ -20,7 +20,7 @@ outputMode='sequence'
 k=2
 m=1024
 yPreprocessing='diag'
-yNorm='none'
+yNorm='instance'
 yLogTransform='false'
 messagePassing='GCN'
 useNodeFeatures='false'
@@ -28,7 +28,9 @@ useEdgeWeights='false'
 hiddenSizesList='16-2'
 transforms='constant'
 preTransforms='none'
-topK='none'
+topK=500
+sparsifyThresholdUpper='none'
+sparsifyThreshold='none'
 loss='BCE'
 outAct='none'
 
@@ -47,9 +49,9 @@ relabel_11_to_00='true'
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2
 
-sparsifyThresholdUpper='none'
 
-for sparsifyThreshold in 0.5 1 1.5
+
+for sparsifyThreshold in 'none'
 do
   for lr in 1e-1 1e-2 1e-3
   do
