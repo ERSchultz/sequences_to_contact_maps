@@ -118,7 +118,9 @@ def debugModel(model_type):
         opt.top_k = 500
         opt.parameter_sharing = True
     elif model_type == 'ContactGNN':
-        opt.message_passing='GCN'
+        opt.loss = 'BCE'
+        opt.y_norm = 'none'
+        opt.message_passing='SignedConv'
         opt.GNN_mode = True
         opt.output_mode = 'sequence'
         opt.hidden_sizes_list=str2list('16-2')
@@ -127,14 +129,13 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.transforms=str2list('constant')
         opt.pre_transforms=None
-        # opt.top_k = 50
-        opt.sparsify_threshold = 0.5
-
+        opt.top_k = 100
+        opt.sparsify_threshold = None
         opt.relabel_11_to_00 = True
-        opt.y_log_transform = False
+        opt.y_log_transform = True
         opt.y_norm = None
-        # opt.head_architecture = 'fc'
-        # opt.head_hidden_sizes_list = [2]
+        opt.head_architecture = 'fc'
+        opt.head_hidden_sizes_list = [2]
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
         opt.autoencoder_mode = True
@@ -148,16 +149,16 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 1
+    opt.n_epochs = 3
     opt.lr = 1e-3
     opt.batch_size = 1
     opt.milestones = str2list('1')
     opt.gamma = 0.1
 
     # other
-    opt.plot = False
-    opt.plot_predictions = False
-    opt.verbose = True
+    opt.plot = True
+    opt.plot_predictions = True
+    opt.verbose = False
     opt.data_folder = "dataset_04_18_21"
 
     opt = finalizeOpt(opt, parser, True)
