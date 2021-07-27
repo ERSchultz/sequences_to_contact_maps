@@ -27,7 +27,7 @@ useEdgeWeights='true'
 hiddenSizesList='16-2'
 transforms='constant'
 preTransforms='weighted_LDP'
-topK='none'
+topK=500
 loss='BCE'
 outAct='none'
 
