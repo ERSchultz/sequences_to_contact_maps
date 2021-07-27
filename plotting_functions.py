@@ -216,6 +216,26 @@ def freqStatisticsPlots(dataFolder):
             plotDistStats(dataFolder, diag, ofile, stat = stat)
 #### End section ####
 
+#### Functions for plotting loss ####
+def plotCombinedModels(modelType, ids):
+    path = osp.join('results', modelType)
+
+    dirs = []
+    opts = []
+    parser = getBaseParser()
+    for id in ids:
+        id_path = osp.join(path, str(id))
+        dirs.append(osp.join(id_path, 'model.pt'))
+        txt_file = osp.join(id_path, 'argparse.txt')
+        opt = parser.parse_args(['@{}'.format(txt_file)])
+        opts.append(opt)
+    imagePath = osp.join(path, '{} combined'.format(list2str(ids)))
+    if not osp.exists(imagePath):
+        os.mkdir(imagePath, mode = 0o755)
+
+    for log in [True, False]:
+        plotModelsFromDirs(dirs, imagePath, opts, log_y = log)
+
 def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
     # check that only difference in opts is lr
     opt_header = get_opt_header(opts[0].model_type, opts[0].GNN_mode)
@@ -361,6 +381,20 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
     else:
         plt.savefig(osp.join(imagePath, 'train_val_loss.png'))
     plt.close()
+#### End section ####
+
+def contactPlots(dataFolder):
+    in_paths = sorted(make_dataset(dataFolder))
+    for path in in_paths:
+        print(path)
+        y = np.load(osp.join(path, 'y.npy'))
+        plotContactMap(y, osp.join(path, 'y.png'), title = 'pre normalization', vmax = 'mean')
+
+        y_diag_norm = np.load(osp.join(path, 'y_diag.npy'))
+        plotContactMap(y_diag_norm, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
+
+        y_prcnt_norm = np.load(osp.join(path, 'y_prcnt.npy'))
+        plotContactMap(y_prcnt_norm, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
 def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False, cmap = None):
     """
@@ -649,19 +683,6 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
 
     print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
 
-def contactPlots(dataFolder):
-    in_paths = sorted(make_dataset(dataFolder))
-    for path in in_paths:
-        print(path)
-        y = np.load(osp.join(path, 'y.npy'))
-        plotContactMap(y, osp.join(path, 'y.png'), title = 'pre normalization', vmax = 'mean')
-
-        y_diag_norm = np.load(osp.join(path, 'y_diag.npy'))
-        plotContactMap(y_diag_norm, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
-
-        y_prcnt_norm = np.load(osp.join(path, 'y_prcnt.npy'))
-        plotContactMap(y_prcnt_norm, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
-
 def plotPCAReconstructions(y, y_torch, subpath, opt, loss_title, minmax):
     assert opt.autoencoder_mode and opt.output_mode == 'contact'
     for k in range(opt.k):
@@ -938,7 +959,6 @@ def plotPredictedParticlesVsPC(x, z, yhat, opt, subpath):
     plt.savefig(osp.join(subpath, 'particle_type_vector_predicted_PC.png'))
     plt.close()
 
-
 def plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath):
     '''Plots the predicted particle types as a vector along the polymer.'''
     # cycler: # https://stackoverflow.com/questions/30079590/use-matplotlib-color-map-for-color-cycle
@@ -1120,25 +1140,6 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
         elif opt.model_type == 'GNNAutoencoder':
             plotParticleDistribution(val_dataloader, model, opt, use_latent = True)
 
-def plotCombinedModels(modelType, ids):
-    path = osp.join('results', modelType)
-
-    dirs = []
-    opts = []
-    parser = getBaseParser()
-    for id in ids:
-        id_path = osp.join(path, str(id))
-        dirs.append(osp.join(id_path, 'model.pt'))
-        txt_file = osp.join(id_path, 'argparse.txt')
-        opt = parser.parse_args(['@{}'.format(txt_file)])
-        opts.append(opt)
-    imagePath = osp.join(path, '{} combined'.format(list2str(ids)))
-    if not osp.exists(imagePath):
-        os.mkdir(imagePath, mode = 0o755)
-
-    for log in [True, False]:
-        plotModelsFromDirs(dirs, imagePath, opts, log_y = log)
-
 def main():
     opt = argparseSetup()
     print(opt, '\n')
@@ -1149,12 +1150,8 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    updateResultTables('ContactGNN', 'GNN', 'sequence')
-    plotCombinedModels('ContactGNN', [53, 54, 55])
-    plotCombinedModels('ContactGNN', [56, 57, 58])
-    plotCombinedModels('ContactGNN', [59, 60, 61])
-    plotCombinedModels('ContactGNN', [62, 63, 64])
-    plotCombinedModels('ContactGNN', [65, 66, 67])
-    # main()
+    # updateResultTables('ContactGNN', 'GNN', 'sequence')
+    # plotCombinedModels('ContactGNN', [53, 54, 55])
+    main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')
