@@ -320,8 +320,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
         if self.sparsify_threshold is not None:
             y[np.abs(y) < self.sparsify_threshold] = 0
-        if self.sparsify_threshold_uppper is not None:
-            y[np.abs(y) > self.sparsify_threshold_uppper] = 0
+        if self.sparsify_threshold_upper is not None:
+            y[np.abs(y) > self.sparsify_threshold_upper] = 0
 
         if self.top_k is not None:
             self.filter_to_topk(y)
