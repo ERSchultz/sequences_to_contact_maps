@@ -20,11 +20,11 @@ outputMode='sequence'
 k=2
 m=1024
 yPreprocessing='diag'
-yNorm='instance'
+yNorm='none'
 yLogTransform='false'
 messagePassing='GCN'
 useNodeFeatures='false'
-useEdgeWeights='false'
+useEdgeWeights='true'
 hiddenSizesList='16-2'
 transforms='constant'
 preTransforms='none'
@@ -51,7 +51,7 @@ source activate python3.8_pytorch1.8.1_cuda10.2
 
 
 
-for sparsifyThreshold in 'none'
+for topk in 100 500
 do
   for lr in 1e-1 1e-2 1e-3
   do
