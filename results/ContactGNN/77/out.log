@@ -50,3 +50,23 @@ results/ContactGNN/88/sample1751
 results/ContactGNN/88/sample1718
 Setting use_edge_weights to False
 Setting use_edge_weights to False
+Setting use_edge_weights to False
+Warning: falling back to cpu
+Model is loaded: results\ContactGNN\77\model.pt
+#### Plotting Script ####
+ROC Curve Results:
+AUC: particle type 0 = 0.5 particle type 1 = 0.5
+
+Max accuracy at t = 0.27: 0.75 +- 0.0
+Corresponding FPR = [0. 0.] +- [0. 0.] and TPR = [0. 0.] +- [0. 0.]
+results\ContactGNN\77\sample3
+Setting use_edge_weights to False
+Warning: falling back to cpu
+Model is loaded: results\ContactGNN\77\model.pt
+#### Plotting Script ####
+results\ContactGNN\77\sample3
+Setting use_edge_weights to False
+Warning: falling back to cpu
+Model is loaded: results\ContactGNN\77\model.pt
+#### Plotting Script ####
+results\ContactGNN\77\sample3

@@ -866,6 +866,9 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
         plt.xlabel('particle type {}'.format(dims[0]), fontsize = 16)
         plt.ylabel('particle type {}'.format(dims[1]), fontsize = 16)
 
+        plt.ylim(0,1)
+        plt.xlim(0,1)
+
         plt.legend(title = 'input particle type vector', title_fontsize = 16)
         plt.savefig(osp.join(subpath, 'particle_type_{}_{}_distribution_merged.png'.format(dims[0], dims[1])))
         plt.close()
@@ -880,6 +883,8 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
             ind = np.where((x == vector).all(axis = 1))
             ax.scatter(z[ind, dims[0]].reshape((-1)), z[ind, dims[1]].reshape((-1)), color = c['color'])
             ax.set_title('input particle type vector {}\n{} particles'.format(vector, len(ind[0])), fontsize = 16)
+            ax.set_xlim(0, 1)
+            ax.set_ylim(0, 1)
             indplt += 1
 
         # Turn off axis lines and ticks of the big subplot
@@ -972,27 +977,27 @@ def plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath):
     types = ['predicted', 'true']
 
     # merged plot
-    for mark, c in enumerate(colors):
-        l1 = ax.plot(np.arange(opt.m), z[:, mark], ls = styles[0], color = c['color'])
-        l2 = ax.plot(np.arange(opt.m), x[:, mark], ls = styles[1], color = c['color'])
-
-    for mark, c in enumerate(colors):
-        ax.plot(np.NaN, np.NaN, color = c['color'], label = mark)
-
-    ax2 = ax.twinx()
-    for type, style in zip(types, styles):
-        ax2.plot(np.NaN, np.NaN, ls = style, label = type, c = 'k')
-    ax2.get_yaxis().set_visible(False)
-
-    ax.legend(loc = 1, title = 'particle type', title_fontsize = 16)
-    ax2.legend(loc = 3, title_fontsize = 16)
-
-    ax.set_xlabel('particle index', fontsize = 16)
-    ax.set_ylabel('value', fontsize = 16)
-
-    plt.tight_layout()
-    plt.savefig(osp.join(subpath, 'particle_type_vector_predicted_merged.png'))
-    plt.close()
+    # for mark, c in enumerate(colors):
+    #     l1 = ax.plot(np.arange(opt.m), z[:, mark], ls = styles[0], color = c['color'])
+    #     l2 = ax.plot(np.arange(opt.m), x[:, mark], ls = styles[1], color = c['color'])
+    #
+    # for mark, c in enumerate(colors):
+    #     ax.plot(np.NaN, np.NaN, color = c['color'], label = mark)
+    #
+    # ax2 = ax.twinx()
+    # for type, style in zip(types, styles):
+    #     ax2.plot(np.NaN, np.NaN, ls = style, label = type, c = 'k')
+    # ax2.get_yaxis().set_visible(False)
+    #
+    # ax.legend(loc = 1, title = 'particle type', title_fontsize = 16)
+    # ax2.legend(loc = 3, title_fontsize = 16)
+    #
+    # ax.set_xlabel('particle index', fontsize = 16)
+    # ax.set_ylabel('value', fontsize = 16)
+    #
+    # plt.tight_layout()
+    # plt.savefig(osp.join(subpath, 'particle_type_vector_predicted_merged.png'))
+    # plt.close()
 
     # subplots
     fig = plt.figure(figsize=(12, 12))
@@ -1152,8 +1157,8 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    updateResultTables('ContactGNN', 'GNN', 'sequence')
-    # plotCombinedModels('ContactGNN', [48, 49])
-    # main()
+    # updateResultTables('ContactGNN', 'GNN', 'sequence')
+    # plotCombinedModels('ContactGNN', [77, 78, 79])
+    main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')
