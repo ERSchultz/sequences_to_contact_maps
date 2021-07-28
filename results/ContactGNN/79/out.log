@@ -48,3 +48,5 @@ results/ContactGNN/99/sample1761
 results/ContactGNN/99/sample40
 results/ContactGNN/99/sample1751
 results/ContactGNN/99/sample1718
+Setting use_edge_weights to False
+Setting use_edge_weights to False

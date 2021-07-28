@@ -1058,33 +1058,34 @@ def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
             id_path = osp.join(model_path, id)
             if osp.isdir(id_path) and id.isdigit():
                 txt_file = osp.join(id_path, 'argparse.txt')
-                opt = parser.parse_args(['@{}'.format(txt_file)])
-                opt.id = int(id)
-                opt = finalizeOpt(opt, parser, True)
-                opt_list = opt2list(opt)
-                if output_mode == 'contact':
-                    with open(osp.join(id_path, 'PCA_results.txt'), 'r') as f:
-                        f.readline()
-                        acc = f.readline().split(':')[1].strip().split(' +- ')
-                        spearman = f.readline().split(':')[1].strip().split(' +- ')
-                        pearson = f.readline().split(':')[1].strip().split(' +- ')
-                    with open(osp.join(id_path, 'out.log'), 'r') as f:
-                        for line in f:
-                            if line.startswith('Final val loss: '):
-                                final_val_loss = line.split(':')[1].strip()
-                            elif line.startswith('Overall Pearson R: '):
-                                dist_pearson = line.split(':')[1].strip().split(' $\pm$ ')
-                    opt_list.extend([final_val_loss, acc[0], acc[1], spearman[0], spearman[1], pearson[0], pearson[1], dist_pearson[0], dist_pearson[1]])
-                elif output_mode == 'sequence':
-                    final_val_loss = None; auc = None
-                    with open(osp.join(id_path, 'out.log'), 'r') as f:
-                        for line in f:
-                            if line.startswith('Final val loss: '):
-                                final_val_loss = line.split(':')[1].strip()
-                            elif line.startswith('AUC: '):
-                                auc = line.split(':')[1].strip()
-                    opt_list.extend([final_val_loss, auc])
-                results.append(opt_list)
+                if osp.exists(txt_file):
+                    opt = parser.parse_args(['@{}'.format(txt_file)])
+                    opt.id = int(id)
+                    opt = finalizeOpt(opt, parser, True)
+                    opt_list = opt2list(opt)
+                    if output_mode == 'contact':
+                        with open(osp.join(id_path, 'PCA_results.txt'), 'r') as f:
+                            f.readline()
+                            acc = f.readline().split(':')[1].strip().split(' +- ')
+                            spearman = f.readline().split(':')[1].strip().split(' +- ')
+                            pearson = f.readline().split(':')[1].strip().split(' +- ')
+                        with open(osp.join(id_path, 'out.log'), 'r') as f:
+                            for line in f:
+                                if line.startswith('Final val loss: '):
+                                    final_val_loss = line.split(':')[1].strip()
+                                elif line.startswith('Overall Pearson R: '):
+                                    dist_pearson = line.split(':')[1].strip().split(' $\pm$ ')
+                        opt_list.extend([final_val_loss, acc[0], acc[1], spearman[0], spearman[1], pearson[0], pearson[1], dist_pearson[0], dist_pearson[1]])
+                    elif output_mode == 'sequence':
+                        final_val_loss = None; auc = None
+                        with open(osp.join(id_path, 'out.log'), 'r') as f:
+                            for line in f:
+                                if line.startswith('Final val loss: '):
+                                    final_val_loss = line.split(':')[1].strip()
+                                elif line.startswith('AUC: '):
+                                    auc = line.split(':')[1].strip()
+                        opt_list.extend([final_val_loss, auc])
+                    results.append(opt_list)
 
         ofile = osp.join(model_path, 'results_table.csv')
         with open(ofile, 'w', newline = '') as f:
@@ -1151,8 +1152,8 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    # updateResultTables('ContactGNN', 'GNN', 'sequence')
-    plotCombinedModels('ContactGNN', [48, 49])
+    updateResultTables('ContactGNN', 'GNN', 'sequence')
+    # plotCombinedModels('ContactGNN', [48, 49])
     # main()
     # freqDistributionPlots('dataset_04_18_21')
     # freqStatisticsPlots('dataset_04_18_21')
