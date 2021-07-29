@@ -77,7 +77,8 @@ def getBaseParser():
     parser.add_argument('--act', type=str2None, default='relu', help='default activation') # TODO impelement throughout
     parser.add_argument('--out_act', type=str2None, help='activation of final layer')
     parser.add_argument('--training_norm', type=str2None, help='norm during training (batch, instance, or None)')
-    parser.add_argument('--parameter_sharing', type=str2bool, default=False, help='True to use parameter sharing in autoencoder blocks')
+    parser.add_argument('--parameter_sharing', type=str2bool, default=False, help='true to use parameter sharing in autoencoder blocks')
+    parser.add_argument('--use_bias', type=str2bool, default=True, help='true to use bias (only implemented in ContactGNN)')
 
     # GNN model args
     parser.add_argument('--message_passing', type=str, default='GCN', help='type of message passing algorithm')

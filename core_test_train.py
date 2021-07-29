@@ -67,6 +67,7 @@ def core_test_train(model, opt):
         tot_pars += p.numel()
         if opt.verbose:
             print(k, p.numel(), p.shape)
+            print(p)
     print('Total parameters: {}'.format(locale.format_string("%d", tot_pars, grouping = True)), file = opt.log_file)
     print('Total time: {}'.format(time.time() - t0), file = opt.log_file)
     print('Final val loss: {}\n'.format(val_loss_arr[-1]), file = opt.log_file)
@@ -114,6 +115,10 @@ def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
                 y = y.to(opt.device)
                 yhat = model(x)
             if opt.verbose:
+                if 'x' in locals():
+                    print('x', x, x.shape)
+                if opt.GNN_mode:
+                    print('x', data.x, data.x.shape)
                 print('y', y, y.shape)
                 print('yhat', yhat, yhat.shape)
             loss = opt.criterion(yhat, y)
@@ -173,9 +178,6 @@ def test(loader, model, opt, toprint, ofile = sys.stdout):
                 x = x.to(opt.device)
                 y = y.to(opt.device)
                 yhat = model(x)
-            if opt.verbose:
-                print('y', y, y.shape)
-                print('yhat', yhat, yhat.shape)
             loss = opt.criterion(yhat, y)
             avg_loss += loss.item()
     avg_loss /= (t+1)

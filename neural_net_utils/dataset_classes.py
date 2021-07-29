@@ -198,7 +198,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 sparsify_threshold = None, sparsify_threshold_upper = None, top_k = None,
                 weighted_LDP = False, split_neg_pos_edges = False,
                 transform = None, pre_transform = None,
-                relabel_11_to_00 = False, output = 'contact'):
+                relabel_11_to_00 = False, output = 'contact', crop = None):
         t0 = time.time()
         self.m = m
         self.dirname = dirname
@@ -215,6 +215,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.top_k = top_k
         self.relabel_11_to_00 = relabel_11_to_00
         self.output = output
+        self.crop = crop
         if self.weighted_LDP and self.top_k is None and self.sparsify_threshold is None and self.sparsify_threshold_upper is None:
             print('Warning: using LDP without any sparsification')
 
@@ -288,6 +289,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
             m, k = x.shape
             ind = np.where((x == np.ones(k)).all(axis = 1))
             x[ind] = 0
+        if self.crop is not None:
+            x = x[self.crop[0]:self.crop[1], :]
         x = torch.tensor(x, dtype = torch.float32)
         return x
 
@@ -304,6 +307,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
         else:
             raise Exception("Warning: Unknown preprocessing: {}".format(self.y_preprocessing))
         y = np.load(y_path)
+        if self.crop is not None:
+            y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
 
         if self.y_log_transform:
             y = np.log10(y)
@@ -345,7 +350,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         # any entry whose absolute value is not in the topk will be set to 0, row-wise
         yabs = np.abs(y)
         k = self.m - self.top_k
-        z = np.argpartition(yabs, k)
+        z = np.argpartition(yabs, k, axis = -1)
         z = z[:, :k]
         y[np.arange(self.m)[:,None], z] = 0
 
@@ -397,13 +402,15 @@ class ContactsGraph(torch_geometric.data.Dataset):
         return data
 
     def plotDegreeProfile(self, y):
-        y[y > 0] = 1
-        deg = np.sum(y, axis = 0)
-        print(np.min(deg), np.max(deg), ss.mode(deg))
+        ycopy = y.copy()
+        ycopy[y > 0] = 1
+        print(ycopy)
+        deg = np.sum(ycopy, axis = 0)
+        print('min: ', np.min(deg), 'max: ', np.max(deg), ss.mode(deg))
         plt.hist(deg)
         plt.ylabel('count', fontsize=16)
         plt.xlabel('degree', fontsize=16)
-        plt.show()
+        # plt.show()
 
 class Sequences(Dataset):
     def __init__(self, dirname, crop, x_reshape, names = False, min_sample = 0):

@@ -433,7 +433,7 @@ class ContactGNN(nn.Module):
     '''
     def __init__(self, m, input_size, hidden_sizes_list, act, out_act,
                 message_passing, use_edge_weights,
-                head_architecture, head_hidden_sizes_list, head_act):
+                head_architecture, head_hidden_sizes_list, head_act, use_bias):
         '''
         Inputs:
             m: number of nodes
@@ -444,6 +444,7 @@ class ContactGNN(nn.Module):
             use_edge_weights: True to use edge weights
             head_architecture: type of head architecture {'FC', 'GCN', None}
             head_hidden_sizes_list: hidden sizes of head architecture
+            use_bias: true to use bias term in message passing (used in head regardless)
         '''
         super(ContactGNN, self).__init__()
 
@@ -460,6 +461,7 @@ class ContactGNN(nn.Module):
         self.head_act = actToModule(head_act)
 
         model = []
+        first_layer = True
         if self.message_passing == 'gcn':
             if self.use_edge_weights:
                 fn_header = 'x, edge_index, edge_attr -> x'
@@ -467,11 +469,15 @@ class ContactGNN(nn.Module):
                 fn_header = 'x, edge_index -> x'
 
             for i, output_size in enumerate(hidden_sizes_list):
-                module = (gnn.GCNConv(input_size, output_size),
+                module = (gnn.GCNConv(input_size, output_size, bias = use_bias),
                             fn_header)
+
                 if i == len(hidden_sizes_list) - 1:
                     model.extend([module, self.out_act])
                 else:
+                    if first_layer:
+                        self.first_layer = module
+                        first_layer = False
                     model.extend([module, self.act])
                 input_size = output_size
 
@@ -481,7 +487,7 @@ class ContactGNN(nn.Module):
             first_layer = True
 
             for output_size in hidden_sizes_list:
-                module = (gnn.SignedConv(input_size, output_size, first_aggr = first_layer),
+                module = (gnn.SignedConv(input_size, output_size, first_aggr = first_layer, bias = use_bias),
                             'x, pos_edge_index, neg_edge_index -> x')
                 model.extend([module, self.act])
                 first_layer = False
@@ -521,7 +527,8 @@ class ContactGNN(nn.Module):
             self.head = gnn.Sequential('x, edge_index', head)
 
     def forward(self, graph):
-        if self.message_passing == 'gcn':            latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
+        if self.message_passing == 'gcn':
+            latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
         elif self.message_passing == 'signedconv':
             latent = self.model(graph.x, graph.edge_index, graph.neg_edge_index)
 
@@ -531,6 +538,11 @@ class ContactGNN(nn.Module):
             out = self.head(latent, graph.edge_index)
         elif self.head_architecture == 'fc':
             out = self.head(latent)
+        return out
+
+    def get_first_layer(self, graph):
+        out = self.first_layer[0](graph.x, graph.edge_index)
+        out = self.act(out)
         return out
 
 def testFullyConnectedAutoencoder():

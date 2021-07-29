@@ -47,3 +47,5 @@ results/ContactGNN/41/sample1761
 results/ContactGNN/41/sample40
 results/ContactGNN/41/sample1751
 results/ContactGNN/41/sample1718
+Warning: falling back to cpu
+Model is loaded: results\ContactGNN\41\model.pt

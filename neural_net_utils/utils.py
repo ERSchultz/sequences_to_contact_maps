@@ -49,7 +49,7 @@ def getModel(opt):
     elif opt.model_type == 'ContactGNN':
         model = ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.out_act,
         opt.message_passing, opt.use_edge_weights,
-        opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act)
+        opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act, opt.use_bias)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -63,7 +63,7 @@ def getDataset(opt, names = False, minmax = False):
                                             opt.sparsify_threshold, opt.sparsify_threshold_upper, opt.top_k,
                                             opt.weighted_LDP, opt.split_neg_pos_edges,
                                             opt.transforms_processed, opt.pre_transforms_processed,
-                                            opt.relabel_11_to_00, opt.output_mode)
+                                            opt.relabel_11_to_00, opt.output_mode, opt.crop)
         opt.root = dataset.root
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
         dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)
