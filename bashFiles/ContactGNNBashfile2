@@ -20,7 +20,7 @@ outputMode='sequence'
 k=2
 m=1024
 yPreprocessing='diag'
-yNorm='none'
+yNorm='instance'
 yLogTransform='false'
 messagePassing='GCN'
 useNodeFeatures='false'
@@ -30,7 +30,7 @@ transforms='constant'
 preTransforms='none'
 topK='none'
 sparsifyThresholdUpper='none'
-sparsifyThreshold='none'
+sparsifyThreshold=0.0
 loss='BCE'
 outAct='none'
 headArchitecture='none'
@@ -51,7 +51,7 @@ relabel_11_to_00='true'
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2
 
-for sparsifyThreshold in 0.0
+for yNorm in 'instance' 'none'
 do
   for lr in 1e-1 1e-2 1e-3
   do
