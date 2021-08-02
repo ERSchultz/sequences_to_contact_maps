@@ -35,7 +35,7 @@ none
 --top_k
 none
 --sparsify_threshold
-0.5
+1.5
 --sparsify_threshold_upper
 none
 --loss
@@ -49,7 +49,7 @@ fc
 --n_epochs
 20
 --lr
-1e-3
+1e-1
 --batch_size
 8
 --num_workers

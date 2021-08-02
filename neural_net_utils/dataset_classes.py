@@ -80,6 +80,8 @@ def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 
         vmax = np.mean(y)
     elif vmax == 'max':
         vmax = np.max(y)
+    if vmin == 'min':
+        vmin = np.min(y)
     ax = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap)
     if title is not None:
         plt.title(title, fontsize = 16)
@@ -305,13 +307,16 @@ class ContactsGraph(torch_geometric.data.Dataset):
         elif self.y_preprocessing == 'diag_instance':
             y_path = osp.join(raw_folder, 'y_diag_instance.npy')
         else:
-            raise Exception("Warning: Unknown preprocessing: {}".format(self.y_preprocessing))
+            raise Exception("Unknown preprocessing: {}".format(self.y_preprocessing))
         y = np.load(y_path)
         if self.crop is not None:
             y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
 
+        # plotContactMap(y, vmax = 'max', title = 'input')
         if self.y_log_transform:
             y = np.log10(y)
+        # plotContactMap(y, vmax = 'max', vmin = 'min', title = 'log10')
+        # self.plotDegreeProfile(y)
 
         if self.y_norm == 'instance':
             self.ymax = np.max(y)
@@ -331,7 +336,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if self.top_k is not None:
             y = self.filter_to_topk(y)
 
-        self.plotDegreeProfile(y)
+        # self.plotDegreeProfile(y)
         # plotContactMap(y, vmax = 'max')
         y = torch.tensor(y, dtype = torch.float32)
         return y
@@ -349,7 +354,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def filter_to_topk(self, y):
         # any entry whose absolute value is not in the topk will be set to 0, row-wise
         yabs = np.abs(y)
-        print(yabs)
         k = self.m - self.top_k
         z = np.argpartition(yabs, k, axis = -1)
         z = z[:, :k]
@@ -407,13 +411,33 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def plotDegreeProfile(self, y):
         ycopy = y.copy()
         ycopy[y > 0] = 1
-        print(ycopy)
+        ycopy[y < 0] = 1
+        # plotContactMap(ycopy, vmax = 'max', title = 'all')
+
+        ypos = y.copy()
+        ypos[y > 0] = 1
+        ypos[y < 0] = 0
+        # plotContactMap(ypos, vmax = 'max', title = 'pos')
+
+        yneg = y.copy()
+        yneg[y > 0] = 0
+        yneg[y < 0] = -1
+        # plotContactMap(yneg, vmin = 'min', vmax = 'max', title = 'neg')
+
         deg = np.sum(ycopy, axis = 0)
+        degpos = np.sum(ypos, axis = 0)
+        degneg = np.sum(yneg, axis = 0)
         print('min: ', np.min(deg), 'max: ', np.max(deg), ss.mode(deg))
-        plt.hist(deg)
+        print('min: ', np.min(degpos), 'max: ', np.max(degpos), ss.mode(degpos))
+        print('min: ', np.min(degneg), 'max: ', np.max(degneg), ss.mode(degneg))
+        plt.hist(deg, bins = 100, label = 'deg')
+        # plt.hist(degpos, bins = 50, label = 'pos')
+        # plt.hist(degneg, bins = 50, label = 'neg')
         plt.ylabel('count', fontsize=16)
         plt.xlabel('degree', fontsize=16)
+        plt.legend()
         # plt.show()
+        plt.close()
 
 class Sequences(Dataset):
     def __init__(self, dirname, crop, x_reshape, names = False, min_sample = 0):

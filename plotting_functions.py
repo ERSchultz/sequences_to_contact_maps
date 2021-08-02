@@ -24,7 +24,7 @@ from neural_net_utils.utils import *
 from neural_net_utils.argparseSetup import *
 
 #### Functions for plotting contact frequency statistics ####
-def plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid, split = 'type', xmax = None):
+def plotFrequenciesForSample(freq_arr, dataFolder, diag, k, sampleid, split = 'type', xmax = None, log = False):
     """
     Plotting function for frequency distributions corresponding to only one sample.
 
@@ -52,7 +52,10 @@ def plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid, split = 'typ
         if g_name == sampleid:
             if split is None:
                 ax = fig.add_subplot(1, 1, indplt)
-                ax.hist(g_df['freq'], bins = 100)
+                if log:
+                    ax.hist(np.log10(g_df['freq']), bins = 200)
+                else:
+                    ax.hist(g_df['freq'], bins = 200)
                 ax.set_yscale('log')
                 indplt += 1
             elif split == 'type':
@@ -92,7 +95,16 @@ def plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid, split = 'typ
     if xmax is not None:
         plt.xlim(right = xmax)
 
-    plt.savefig(osp.join(dataFolder, 'samples', "sample{}".format(sampleid), 'freq_count_sample{}_diag_{}_split_{}.png'.format(sampleid, diag, split)))
+
+    f_name = 'freq_count'
+    if split is not None:
+        f_name += '_split_{}'.format(split)
+    if diag:
+        f_name += '_diag'
+    if log:
+        f_name += '_log'
+    f_path = osp.join(dataFolder, 'samples', "sample{}".format(sampleid), f_name + '.png')
+    plt.savefig(f_path)
     plt.close()
 
 def plotFrequenciesSampleSubplot(freq_arr, dataFolder, diag, k, split = 'type'):
@@ -194,8 +206,8 @@ def plotDistStats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
     plt.savefig(ofile)
     plt.close()
 
-def freqDistributionPlots(dataFolder, n = 1024):
-    '''Wrapper function for plotFrequenciesSubplot and plotFrequenciesSampleSubplot.'''
+def freqSampleDistributionPlots(dataFolder, n = 1024):
+    '''Wrapper function for plotFrequenciesForSample and plotFrequenciesSampleSubplot.'''
     chi = np.load(osp.join(dataFolder, 'chis.npy'))
     k = len(chi)
 
@@ -203,12 +215,16 @@ def freqDistributionPlots(dataFolder, n = 1024):
     for diag in [True, False]:
         print(diag)
         freq_arr = getFrequencies(dataFolder, diag, n, k, chi)
-        for split in [None, 'type', 'psi']:
-            print(split)
-            # plotFrequenciesSampleSubplot(freq_arr, dataFolder, diag, k, split)
-            plotFrequenciesSubplot(freq_arr, dataFolder, diag, k, sampleid = 1, split = split)
 
-def freqStatisticsPlots(dataFolder):
+        for split in [None, 'type', 'psi']:
+            if split is not None:
+                continue
+            # plotFrequenciesSampleSubplot(freq_arr, dataFolder, diag, k, split)
+            if split is None:
+                plotFrequenciesForSample(freq_arr, dataFolder, diag, k, sampleid = 2, split = split, log = True)
+            plotFrequenciesForSample(freq_arr, dataFolder, diag, k, sampleid = 2, split = split)
+
+def freqDistDistriutionPlots(dataFolder):
     '''Wrapper function for plotDistStats.'''
     for diag in [True, False]:
         for stat in ['mean', 'var']:
@@ -1205,8 +1221,8 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    updateResultTables('ContactGNN', 'GNN', 'sequence')
-    # plotCombinedModels('ContactGNN', [59, 60, 61])
+    # updateResultTables('ContactGNN', 'GNN', 'sequence')
+    plotCombinedModels('ContactGNN', [77, 78, 79])
     # main()
-    # freqDistributionPlots('dataset_04_18_21')
-    # freqStatisticsPlots('dataset_04_18_21')
+    # freqSampleDistributionPlots('dataset_04_18_21')
+    # freqDistDistriutionPlots('dataset_04_18_21')

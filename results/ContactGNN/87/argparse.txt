@@ -1,7 +1,7 @@
 --data_folder
 /../../../project2/depablo/erschultz/dataset_04_18_21
 --root_name
-ContactGNN2
+ContactGNN
 --delete_root
 false
 --model_type
@@ -35,7 +35,7 @@ none
 --top_k
 none
 --sparsify_threshold
-0.0
+1.0
 --sparsify_threshold_upper
 none
 --loss
