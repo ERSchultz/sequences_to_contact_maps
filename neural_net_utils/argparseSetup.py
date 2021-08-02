@@ -82,7 +82,7 @@ def getBaseParser():
 
     # GNN model args
     parser.add_argument('--message_passing', type=str, default='GCN', help='type of message passing algorithm')
-    parser.add_argument('--head_architecture', type=str, help='type of head architecture')
+    parser.add_argument('--head_architecture', type=str2None, help='type of head architecture')
     parser.add_argument('--head_hidden_sizes_list', type=str2list, help='List of hidden sizes for convolutional layers')
     parser.add_argument('--head_act', type=str, default='relu', help='activation function for head network')
 

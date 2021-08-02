@@ -329,9 +329,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y[np.abs(y) > self.sparsify_threshold_upper] = 0
 
         if self.top_k is not None:
-            self.filter_to_topk(y)
+            y = self.filter_to_topk(y)
 
-        # self.plotDegreeProfile(y)
+        self.plotDegreeProfile(y)
         # plotContactMap(y, vmax = 'max')
         y = torch.tensor(y, dtype = torch.float32)
         return y
@@ -349,10 +349,13 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def filter_to_topk(self, y):
         # any entry whose absolute value is not in the topk will be set to 0, row-wise
         yabs = np.abs(y)
+        print(yabs)
         k = self.m - self.top_k
         z = np.argpartition(yabs, k, axis = -1)
         z = z[:, :k]
         y[np.arange(self.m)[:,None], z] = 0
+        y = y.T # convert to col_wise filtering
+        return y
 
     def sparsify_adj_mat(self, y):
         edge_index = y.nonzero().t()

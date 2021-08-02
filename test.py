@@ -129,16 +129,16 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.transforms=str2list('constant')
         opt.pre_transforms=None
-        opt.top_k = None
+        opt.top_k = 3
         opt.sparsify_threshold = None
-        opt.sparsify_threshold_upper = 0.5
+        opt.sparsify_threshold_upper = None
         opt.relabel_11_to_00 = True
         opt.y_log_transform = False
         opt.head_architecture = None
         opt.head_hidden_sizes_list = [2]
         opt.split=[0.2,0.2,0.6]
-        # opt.crop=[0,5]
-        # opt.m = 5
+        opt.crop=[0,5]
+        opt.m = 5
         opt.use_bias = False
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
