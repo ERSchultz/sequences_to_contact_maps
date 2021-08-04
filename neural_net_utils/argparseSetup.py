@@ -26,6 +26,7 @@ def getBaseParser():
     parser.add_argument('--use_node_features', type=str2bool, default=False, help='True to use node features for GNN models')
     parser.add_argument('--use_edge_weights', type=str2bool, default=True, help='True to use edge weights in GNN')
     parser.add_argument('--relabel_11_to_00',type=str2bool, default=False, help='True to relabel [1,1] particles as [0,0] particles')
+    parser.add_argument('--split_neg_pos_edges_for_feature_augmentation', type=str2bool, default=False, help='True to split edges for feature augmentation')
 
     # pre-processing args
     parser.add_argument('--data_folder', type=str, default='dataset_04_18_21', help='Location of data')
@@ -199,6 +200,8 @@ def finalizeOpt(opt, parser, local = False):
         opt.transforms_processed = None
 
     opt.weighted_LDP = False
+    opt.degree = False
+    opt.weighted_degree = False
     if opt.pre_transforms is not None:
         pre_transforms_processed = []
         for t_str in opt.pre_transforms:
@@ -210,6 +213,21 @@ def finalizeOpt(opt, parser, local = False):
                 # instead set flag to True
                 opt.weighted_LDP = True
                 opt.node_feature_size += 5
+            elif t_str.lower() == 'degree':
+                opt.node_feature_size += 1
+                if opt.split_neg_pos_edges_for_feature_augmentation:
+                    opt.node_feature_size += 2
+                    # additional feature for neg and pos
+                opt.degree = True
+            elif t_str.lower() == 'weighted_degree':
+                opt.node_feature_size += 1
+                if opt.split_neg_pos_edges_for_feature_augmentation:
+                    opt.node_feature_size += 2
+                    # additional feature for neg and pos
+                opt.weighted_degree = True
+            elif t_str.lower() == 'onehotdegree':
+                opt.node_feature_size += opt.m + 1
+                pre_transforms_processed.append(torch_geometric.transforms.OneHotDegree(opt.m))
             else:
                 raise Exception("Invalid transform {}".format(t_str))
         opt.pre_transforms_processed = torch_geometric.transforms.Compose(pre_transforms_processed)

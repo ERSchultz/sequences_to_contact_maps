@@ -7,7 +7,7 @@ from torch.utils.data import Dataset
 import torch_geometric.data
 import torch_geometric.transforms
 from torch_scatter import scatter_min, scatter_max, scatter_mean, scatter_std
-from torch_geometric.utils import degree
+import torch_geometric.utils
 
 import matplotlib.pyplot as plt
 import matplotlib.colors
@@ -198,7 +198,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag', y_log_transform = False,
                 y_norm = 'instance', min_subtraction = True, use_node_features = True, use_edge_weights = True,
                 sparsify_threshold = None, sparsify_threshold_upper = None, top_k = None,
-                weighted_LDP = False, split_neg_pos_edges = False,
+                weighted_LDP = False, split_neg_pos_edges = False, degree = False, weighted_degree = False,
+                split_neg_pos_edges_for_feature_augmentation = False,
                 transform = None, pre_transform = None,
                 relabel_11_to_00 = False, output = 'contact', crop = None):
         t0 = time.time()
@@ -212,9 +213,12 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.use_edge_weights = use_edge_weights
         self.sparsify_threshold = sparsify_threshold
         self.sparsify_threshold_upper = sparsify_threshold_upper
+        self.top_k = top_k
         self.weighted_LDP = weighted_LDP
         self.split_neg_pos = split_neg_pos_edges
-        self.top_k = top_k
+        self.degree = degree
+        self.weighted_degree = weighted_degree
+        self.split_neg_pos_edges_for_feature_augmentation = split_neg_pos_edges_for_feature_augmentation
         self.relabel_11_to_00 = relabel_11_to_00
         self.output = output
         self.crop = crop
@@ -274,6 +278,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.neg_edge_index = neg_edge_index
             if self.weighted_LDP:
                 graph = self.weightedLocalDegreeProfile(graph, y)
+            if self.degree or self.weighted_degree:
+                self.concatDegree(graph, y, self.weighted_degree)
             if self.pre_transform is not None:
                 graph = self.pre_transform(graph)
             if self.output == 'contact':
@@ -348,7 +354,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def len(self):
         return len(self.raw_file_names)
 
-    def weighted_degree(self, y):
+    def get_weighted_degree(self, y):
         return torch.sum(y, axis = 1)
 
     def filter_to_topk(self, y):
@@ -384,11 +390,13 @@ class ContactsGraph(torch_geometric.data.Dataset):
         Weighted version of Local Degree Profile (LDP) from https://arxiv.org/abs/1811.03508
 
         Reference code: https://pytorch-geometric.readthedocs.io/en/latest/_modules/torch_geometric/transforms/local_degree_profile.html#LocalDegreeProfile
+
+        Appends LDP features to feature vector.
         '''
         row, col = data.edge_index
         N = data.num_nodes
 
-        deg = self.weighted_degree(y)
+        deg = self.get_weighted_degree(y)
         deg_col = deg[col]
 
         min_deg, _ = scatter_min(deg_col, row, dim_size=N)
@@ -405,6 +413,40 @@ class ContactsGraph(torch_geometric.data.Dataset):
             data.x = torch.cat([data.x, x], dim=-1)
         else:
             data.x = x
+
+        return data
+
+    def concatDegree(self, data, y, weighted):
+        if weighted:
+            deg = self.get_weighted_degree(y)
+            if self.split_neg_pos_edges_for_feature_augmentation:
+                ypos = torch.clone(y)
+                ypos[y < 0] = 0
+                pos_deg = self.get_weighted_degree(ypos)
+                del ypos
+                yneg = torch.clone(y)
+                yneg[y > 0] = 0
+                neg_deg = self.get_weighted_degree(yneg)
+                del yneg
+        else:
+            deg = torch_geometric.utils.degree(edge_index[0], num_nodes = self.m)
+            if self.split_neg_pos_edges_for_feature_augmentation:
+                pos_deg = torch_geometric.utils.degree(pos_edge_index[0], num_nodes = self.m)
+                neg_deg = torch_geometric.utils.degree(neg_edge_index[0], num_nodes = self.m)
+
+        deg = deg / torch.max(deg)
+        if self.split_neg_pos_edges_for_feature_augmentation:
+            pos_deg = pos_deg / torch.max(pos_deg)
+            neg_deg = neg_deg / torch.max(neg_deg)
+            deg = torch.stack([deg, pos_deg, neg_deg], dim=1)
+        else:
+            deg = torch.stack([deg], dim=1)
+
+        if data.x is not None:
+            data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
+            data.x = torch.cat([graph.x, x], dim=-1)
+        else:
+            data.x = deg
 
         return data
 

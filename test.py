@@ -120,15 +120,16 @@ def debugModel(model_type):
     elif model_type == 'ContactGNN':
         opt.loss = 'BCE'
         opt.y_norm = None
-        opt.message_passing='SignedConv'
+        opt.message_passing='signedconv'
         opt.GNN_mode = True
         opt.output_mode = 'sequence'
         opt.hidden_sizes_list=str2list('2')
         opt.out_act = None
         opt.use_node_features = False
         opt.use_edge_weights = False
-        opt.transforms=str2list('constant')
-        opt.pre_transforms=None
+        opt.transforms=str2list('none')
+        opt.pre_transforms=str2list('weighted_degree')
+        opt.split_neg_pos_edges_for_feature_augmentation = True
         opt.top_k = None
         opt.sparsify_threshold = 0.176
         opt.sparsify_threshold_upper = None
@@ -153,7 +154,7 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 3
+    opt.n_epochs = 1
     opt.lr = 1e-3
     opt.batch_size = 1
     opt.milestones = str2list('1')
@@ -162,7 +163,7 @@ def debugModel(model_type):
     # other
     opt.plot = True
     opt.plot_predictions = True
-    opt.verbose = False
+    opt.verbose = True
     opt.data_folder = "dataset_04_18_21"
 
     opt = finalizeOpt(opt, parser, True)
