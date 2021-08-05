@@ -318,7 +318,7 @@ def opt2list(opt):
         opt.ifile_folder, opt.ifile, opt.k, opt.m, opt.seed, opt.out_act, opt.training_norm,
         opt.relabel_11_to_00]
     if opt.GNN_mode:
-        opt_list.extend([opt.use_node_features, opt.use_edge_weights, opt.transforms, opt.pre_transforms, opt.sparsify_threshold, opt.sparsify_threshold_upper, opt.top_k,
+        opt_list.extend([opt.use_node_features, opt.use_edge_weights, opt.transforms, opt.pre_transforms, opt.split_neg_pos_edges_for_feature_augmentation, opt.sparsify_threshold, opt.sparsify_threshold_upper, opt.top_k,
                         opt.hidden_sizes_list, opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list])
 
     if opt.model_type == 'simpleEpiNet':
@@ -360,7 +360,7 @@ def get_opt_header(model_type, GNN_mode):
         'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'm',
         'seed', 'out_act', 'training_norm', 'relabel_11_to_00']
     if GNN_mode:
-        opt_list.extend(['use_node_features','use_edge_weights', 'transforms', 'pre_transforms', 'sparsify_threshold', 'sparsify_threshold_upper', 'top_k',
+        opt_list.extend(['use_node_features','use_edge_weights', 'transforms', 'pre_transforms', 'split_neg_pos_edges_for_feature_augmentation','sparsify_threshold', 'sparsify_threshold_upper', 'top_k',
                         'hidden_sizes_list', 'message_passing', 'head_architecture', 'head_hidden_sizes_list'])
     if model_type == 'simpleEpiNet':
         opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])

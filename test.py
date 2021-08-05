@@ -128,7 +128,7 @@ def debugModel(model_type):
         opt.use_node_features = False
         opt.use_edge_weights = False
         opt.transforms=str2list('none')
-        opt.pre_transforms=str2list('weighted_degree')
+        opt.pre_transforms=str2list('degree')
         opt.split_neg_pos_edges_for_feature_augmentation = True
         opt.top_k = None
         opt.sparsify_threshold = 0.176

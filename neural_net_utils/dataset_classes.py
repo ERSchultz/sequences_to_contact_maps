@@ -429,10 +429,10 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 neg_deg = self.get_weighted_degree(yneg)
                 del yneg
         else:
-            deg = torch_geometric.utils.degree(edge_index[0], num_nodes = self.m)
+            deg = torch_geometric.utils.degree(data.edge_index[0], num_nodes = self.m)
             if self.split_neg_pos_edges_for_feature_augmentation:
-                pos_deg = torch_geometric.utils.degree(pos_edge_index[0], num_nodes = self.m)
-                neg_deg = torch_geometric.utils.degree(neg_edge_index[0], num_nodes = self.m)
+                pos_deg = torch_geometric.utils.degree(data.pos_edge_index[0], num_nodes = self.m)
+                neg_deg = torch_geometric.utils.degree(data.neg_edge_index[0], num_nodes = self.m)
 
         deg = deg / torch.max(deg)
         if self.split_neg_pos_edges_for_feature_augmentation:
