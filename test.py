@@ -161,9 +161,9 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = True
+    opt.plot = False
     opt.plot_predictions = True
-    opt.verbose = True
+    opt.verbose = False
     opt.data_folder = "dataset_04_18_21"
 
     opt = finalizeOpt(opt, parser, True)

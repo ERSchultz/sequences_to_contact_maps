@@ -862,6 +862,8 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
         if not osp.exists(subpath):
             os.mkdir(subpath, mode = 0o755)
 
+        np.save(osp.join(subpath,'z.npy'), z)
+
         # plots along polymer
         plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath)
         if yhat is not None:
@@ -1213,16 +1215,16 @@ def interogateParams(model, opt):
 def main():
     opt = argparseSetup()
     print(opt, '\n')
-    # plotting_script(None, opt)
-    interogateParams(None, opt)
+    plotting_script(None, opt)
+    # interogateParams(None, opt)
 
     # cleanup
     if opt.root is not None and opt.delete_root:
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    updateResultTables('ContactGNN', 'GNN', 'sequence')
+    # updateResultTables('ContactGNN', 'GNN', 'sequence')
     # plotCombinedModels('ContactGNN', [129, 130, 131])
-    # main()
+    main()
     # freqSampleDistributionPlots('dataset_04_18_21')
     # freqDistDistriutionPlots('dataset_04_18_21')
