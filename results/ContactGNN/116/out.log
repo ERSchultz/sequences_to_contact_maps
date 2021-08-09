@@ -47,3 +47,16 @@ results/ContactGNN/116/sample1761
 results/ContactGNN/116/sample40
 results/ContactGNN/116/sample1751
 results/ContactGNN/116/sample1718
+Warning: falling back to cpu
+Model is loaded: results/ContactGNN/116/model.pt
+#### Plotting Script ####
+ROC Curve Results:
+AUC: particle type 0 = 0.987 particle type 1 = 0.983
+
+Max accuracy at t = 0.52: 0.955 +- 0.018
+Corresponding FPR = [0.035 0.019] +- [0.017 0.008] and TPR = [0.939 0.86 ] +- [0.031 0.073]
+results/ContactGNN/116/sample1230
+results/ContactGNN/116/sample1761
+results/ContactGNN/116/sample40
+results/ContactGNN/116/sample1751
+results/ContactGNN/116/sample1718
