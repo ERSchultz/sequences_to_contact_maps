@@ -9,7 +9,7 @@
 #SBATCH --mem-per-gpu=12000
 #SBATCH --account=pi-depablo
 
-dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
+dirname="/project2/depablo/erschultz/dataset_04_18_21"
 modelType='Akita'
 
 # architecture

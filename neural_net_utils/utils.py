@@ -303,7 +303,7 @@ def calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson'):
     n, n = y.shape
     triu_ind = np.triu_indices(n)
 
-    overall_corr, pval = pearsonr(y[triu_ind], yhat[triu_ind])
+    overall_corr, pval = stat(y[triu_ind], yhat[triu_ind])
 
     corr_arr = np.zeros(n-1)
     for d in range(n-1):
@@ -486,7 +486,7 @@ class InteractionConverter():
 
         self.types = np.arange(0, curr_type, 1)
 
-        if self.chi is not None and self.x is not None:
+        if self.chi is not None:
             self.setPsi()
 
     def setChi(self, chi):

@@ -465,7 +465,7 @@ def str2list(v, sep = '-'):
 
     Inputs:
         v: string
-        sep: separartor
+        sep: separator
     """
     if v is None:
         return None

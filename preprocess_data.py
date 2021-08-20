@@ -91,6 +91,7 @@ def process_data(opt):
     # copy over chi
     chi = np.loadtxt(os.path.join(opt.input_folder, 'chis.txt'))
     np.save(os.path.join(opt.output_folder, 'chis.npy'), chi)
+    np.savetxt(os.path.join(opt.output_folder, 'chis.txt'), chi, fmt='%0.5f')
 
 def process_sample_save(in_path, out_path, k, n, overwrite):
     # check if sample needs to be processed

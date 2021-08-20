@@ -31,7 +31,7 @@ false
 --transforms
 none
 --pre_transforms
-degree
+weighted_LDP
 --split_neg_pos_edges_for_feature_augmentation
 false
 --top_k
@@ -51,7 +51,7 @@ fc
 --n_epochs
 20
 --lr
-1e-3
+1e-2
 --batch_size
 8
 --num_workers

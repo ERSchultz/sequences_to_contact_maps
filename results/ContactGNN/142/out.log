@@ -1,51 +1,49 @@
-Namespace(GNN_mode=True, act='relu', autoencoder_mode=False, batch_size=8, bottleneck=None, classes=10, criterion=<function binary_cross_entropy_with_logits at 0x7f57397dae50>, crop=None, cuda=True, data_folder='/../../../scratch/midway2/erschultz/dataset_04_18_21', degree=True, delete_root=False, device=device(type='cuda'), dilation_list=None, dilation_list_head=None, dilation_list_trunk=None, down_sampling=None, gamma=0.1, gpus=1, head_act='relu', head_architecture=None, head_hidden_sizes_list=None, hidden_sizes_list=[16, 2], id=142, ifile=None, ifile_folder=None, k=2, kernel_w_list=None, log_file=<_io.TextIOWrapper name='results/ContactGNN/142/out.log' mode='a' encoding='UTF-8'>, loss='BCE', lr=0.1, m=1024, message_passing='GCN', milestones=None, min_subtraction=True, model_type='ContactGNN', n_epochs=20, nf=None, node_feature_size=2, num_workers=4, ofile_folder='results/ContactGNN/142', out_act=None, output_mode='sequence', parameter_sharing=False, plot=True, plot_predictions=True, pre_transforms=['degree'], pre_transforms_processed=Compose([
+Namespace(GNN_mode=True, act='relu', autoencoder_mode=False, batch_size=8, bottleneck=None, classes=10, criterion=<function binary_cross_entropy_with_logits at 0x7f6565d64e50>, crop=None, cuda=True, data_folder='/../../../scratch/midway2/erschultz/dataset_04_18_21', degree=True, delete_root=False, device=device(type='cuda'), dilation_list=None, dilation_list_head=None, dilation_list_trunk=None, down_sampling=None, gamma=0.1, gpus=1, head_act='relu', head_architecture='fc', head_hidden_sizes_list=[2], hidden_sizes_list=[16, 2], id=143, ifile=None, ifile_folder=None, k=2, kernel_w_list=None, log_file=<_io.TextIOWrapper name='results/ContactGNN/143/out.log' mode='a' encoding='UTF-8'>, loss='BCE', lr=0.01, m=1024, message_passing='SignedConv', milestones=None, min_subtraction=True, model_type='ContactGNN', n_epochs=20, nf=None, node_feature_size=1, num_workers=4, ofile_folder='results/ContactGNN/143', out_act=None, output_mode='sequence', parameter_sharing=False, plot=True, plot_predictions=True, pre_transforms=['degree'], pre_transforms_processed=Compose([
 
-]), pretrained=False, print_mod=2, relabel_11_to_00=True, resume_training=False, root_name='ContactGNN2', save_mod=5, seed=42, shuffle=True, sparsify_threshold=1.0, sparsify_threshold_upper=None, split=[0.8, 0.1, 0.1], split_neg_pos_edges=False, split_neg_pos_edges_for_feature_augmentation=False, start_epoch=1, top_k=None, toxx=False, toxx_mode='mean', training_norm=None, transforms=['constant'], transforms_processed=Compose([
-    Constant(value=1),
-]), use_bias=True, use_edge_weights=True, use_node_features=False, use_parallel=False, use_scratch=True, verbose=False, weighted_LDP=False, weighted_degree=False, x_reshape=True, y_log_transform=False, y_norm=None, y_preprocessing='diag', y_reshape=True, ydtype=torch.float32)
+]), pretrained=False, print_mod=2, relabel_11_to_00=True, resume_training=False, root_name='ContactGNN3', save_mod=5, seed=42, shuffle=True, sparsify_threshold=0.176, sparsify_threshold_upper=None, split=[0.8, 0.1, 0.1], split_neg_pos_edges=True, split_neg_pos_edges_for_feature_augmentation=False, start_epoch=1, top_k=None, toxx=False, toxx_mode='mean', training_norm=None, transforms=None, transforms_processed=None, use_bias=True, use_edge_weights=False, use_node_features=False, use_parallel=False, use_scratch=True, verbose=False, weighted_LDP=False, weighted_degree=False, x_reshape=True, y_log_transform=True, y_norm=None, y_preprocessing='diag', y_reshape=True, ydtype=torch.float32)
 
-Epoch 2, loss = 0.1549
-Mean test/val loss: 0.1423
+Epoch 2, loss = 0.1671
+Mean test/val loss: 0.1690
 
-Epoch 4, loss = 0.1292
-Mean test/val loss: 0.1263
+Epoch 4, loss = 0.1518
+Mean test/val loss: 0.1481
 
-Epoch 6, loss = 0.1222
-Mean test/val loss: 0.1240
+Epoch 6, loss = 0.1441
+Mean test/val loss: 0.1420
 
-Epoch 8, loss = 0.1192
-Mean test/val loss: 0.1192
+Epoch 8, loss = 0.1381
+Mean test/val loss: 0.1372
 
-Epoch 10, loss = 0.1176
-Mean test/val loss: 0.1211
+Epoch 10, loss = 0.1369
+Mean test/val loss: 0.1354
 
-Epoch 12, loss = 0.1171
-Mean test/val loss: 0.1176
+Epoch 12, loss = 0.1354
+Mean test/val loss: 0.1340
 
-Epoch 14, loss = 0.1160
-Mean test/val loss: 0.1168
+Epoch 14, loss = 0.1336
+Mean test/val loss: 0.1366
 
-Epoch 16, loss = 0.1157
-Mean test/val loss: 0.1162
+Epoch 16, loss = 0.1332
+Mean test/val loss: 0.1330
 
-Epoch 18, loss = 0.1155
-Mean test/val loss: 0.1174
+Epoch 18, loss = 0.1341
+Mean test/val loss: 0.1325
 
-Epoch 20, loss = 0.1157
-Mean test/val loss: 0.1160
+Epoch 20, loss = 0.1331
+Mean test/val loss: 0.1309
 
-Total parameters: 82
-Total time: 3928.831454515457
-Final val loss: 0.11595489859580993
+Total parameters: 406
+Total time: 3379.796909570694
+Final val loss: 0.13088663071393966
 
 #### Plotting Script ####
 ROC Curve Results:
-AUC: particle type 0 = 0.987 particle type 1 = 0.984
+AUC: particle type 0 = 0.983 particle type 1 = 0.98
 
-Max accuracy at t = 0.44: 0.96 +- 0.008
-Corresponding FPR = [0.022 0.03 ] +- [0.008 0.011] and TPR = [0.919 0.903] +- [0.049 0.036]
-results/ContactGNN/142/sample1230
-results/ContactGNN/142/sample1761
-results/ContactGNN/142/sample40
-results/ContactGNN/142/sample1751
-results/ContactGNN/142/sample1718
+Max accuracy at t = 0.5: 0.953 +- 0.013
+Corresponding FPR = [0.018 0.031] +- [0.011 0.018] and TPR = [0.87  0.873] +- [0.137 0.039]
+results/ContactGNN/143/sample1230
+results/ContactGNN/143/sample1761
+results/ContactGNN/143/sample40
+results/ContactGNN/143/sample1751
+results/ContactGNN/143/sample1718

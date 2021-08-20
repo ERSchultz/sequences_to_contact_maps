@@ -8,7 +8,7 @@
 #SBATCH --ntasks-per-node=4
 #SBATCH --mem-per-cpu=2000
 
-dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
+dirname="/project2/depablo/erschultz/dataset_04_18_21"
 deleteRoot='false'
 
 modelType='ContactGNN'
@@ -46,7 +46,7 @@ gamma=0.1
 useScratch='true'
 verbose='false'
 plotPredictions='true'
-relabel_11_to_00='true'
+relabel_11_to_00='false'
 
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2

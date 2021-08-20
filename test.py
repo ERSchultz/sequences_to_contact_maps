@@ -210,10 +210,18 @@ def downsampling_test():
 
 def main():
     # edit_argparse()
-    debugModel('ContactGNN')
+    # debugModel('ContactGNN')
     # test_argpartition(10)
     # to_mat()
     # downsampling_test()
+    chi = np.load('dataset_04_18_21/chis.npy')
+    # np.savetxt('dataset_04_18_21/chis.txt', chi, fmt='%0.5f')
+    # print(chi)
+    conv = InteractionConverter(2, chi)
+    print(conv.Psi)
+    x = np.array([[0,1],[0,1], [1,0], [1,0], [1,1]])
+    print(x.shape)
+    print( x @ conv.chi @ x.T)
 
 
 if __name__ == '__main__':
