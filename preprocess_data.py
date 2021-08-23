@@ -1,15 +1,19 @@
+import os
+import os.path as osp
+
 import multiprocessing
 import numpy as np
-import torch
-from neural_net_utils.utils import *
-from neural_net_utils.dataset_classes import Names
 import time
 import argparse
-import os
 
-def setupParser():
+from neural_net_utils.utils import getDataLoaders, x2xx, generateDistStats, diagonal_preprocessing, percentile_preprocessing, getPercentiles
+from neural_net_utils.argparseSetup import str2bool, str2list
+from neural_net_utils.dataset_classes import Names, make_dataset
+
+
+def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
-    parser.add_argument('--input_folder', type=str, default='dataset_04_18_21', help='Location of input data')
+    parser.add_argument('--input_folder', type=str, default='dataset_08_18_21', help='Location of input data')
     parser.add_argument('--output_folder', type=str, default='test', help='Location to write data to')
 
     # dataloader args
@@ -26,104 +30,76 @@ def setupParser():
     parser.add_argument('--sample_size', type=int, default=2, help='Size of sample for preprocessing statistics')
     parser.add_argument('--seed', type=int, default=42, help='Random seed to use. Default: 42')
     parser.add_argument('--overwrite', type=str2bool, default=False, help='Whether or not to overwrite existing preprocessing files')
-    parser.add_argument('--percentiles', type=str2list, default=[20, 40, 50, 60, 70, 80, 85, 90, 95, 100], help='Percentiles to use for percentile preprocessing')
+    parser.add_argument('--percentiles', type=str2list, default=[20, 40, 50, 60, 70, 80, 85, 90, 95, 100], help='Percentiles to use for percentile preprocessing (None to skip)')
 
-    return parser
+    args = parser.parse_args()
+    args.GNN_mode = False # used in getDataLoaders
+    return args
 
-def process_data(opt):
-    in_paths = sorted(make_dataset(opt.input_folder))
-
-    # ensure output files exist
-    if not os.path.exists(opt.output_folder):
-        os.mkdir(opt.output_folder, mode = 0o755)
-    samples_path = os.path.join(opt.output_folder, 'samples')
-    if not os.path.exists(samples_path):
+def make_paths(args, in_paths):
+    '''Helper function to ensure that necessary paths exist.'''
+    if not osp.exists(args.output_folder):
+        os.mkdir(args.output_folder, mode = 0o755)
+    samples_path = osp.join(args.output_folder, 'samples')
+    if not osp.exists(samples_path):
         os.mkdir(samples_path, mode = 0o755)
 
     for in_path in in_paths:
-        sample = os.path.split(in_path)[-1]
-        out_path = os.path.join(opt.output_folder, 'samples', sample)
-        if not os.path.exists(out_path):
+        sample = osp.split(in_path)[-1]
+        out_path = osp.join(args.output_folder, 'samples', sample)
+        if not osp.exists(out_path):
             os.mkdir(out_path, mode = 0o755)
 
-    out_paths = sorted(make_dataset(opt.output_folder))
-
-    # set up for multiprocessing
-    mapping = []
-    for in_path, out_path in zip(in_paths, out_paths):
-        mapping.append((in_path, out_path, opt.k, opt.n, opt.overwrite))
-
-    with multiprocessing.Pool(opt.num_workers) as p:
-        p.starmap(process_sample_save, mapping)
-
-    diag_processing(opt, out_paths)
-
-    percentile_processing(opt, out_paths)
-
-    # find min,max of y_diag and y_prcnt
-    y_diag_min_max = np.array([float('inf'), -float('inf')])
-    y_prcnt_min_max = np.array([float('inf'), -float('inf')])
-    train_dataloader, _, _ = getDataLoaders(Names(opt.output_folder), opt)
-    for i, path in enumerate(train_dataloader):
-        if i < opt.sample_size: # dataloader shuffles so this is a random sample
+def get_min_max(args, dataloader, ifile):
+    '''Helper function to get min and max'''
+    min_max = np.array([float('inf'), -float('inf')])
+    for i, path in enumerate(dataloader):
+        if i < args.sample_size: # dataloader shuffles so this is a random sample
             path = path[0]
-            y_diag = np.load(os.path.join(path, 'y_diag.npy'))
-            min_val = np.min(y_diag)
-            if min_val < y_diag_min_max[0]:
-                y_diag_min_max[0] = min_val
-            max_val = np.max(y_diag)
-            if max_val > y_diag_min_max[1]:
-                y_diag_min_max[1] = max_val
-
-            y_prcnt = np.load(os.path.join(path, 'y_prcnt.npy'))
-            min_val = np.min(y_prcnt)
-            if min_val < y_prcnt_min_max[0]:
-                y_prcnt_min_max[0] = min_val
-            max_val = np.max(y_prcnt)
-            if max_val > y_prcnt_min_max[1]:
-                y_prcnt_min_max[1] = max_val
-    print(y_diag_min_max)
-    print(y_prcnt_min_max)
-    np.save(os.path.join(opt.output_folder, 'y_diag_min_max.npy'), y_diag_min_max.astype(np.float64))
-    np.save(os.path.join(opt.output_folder, 'y_prcnt_min_max.npy'), y_prcnt_min_max.astype(np.float64))
-
-
-    # copy over chi
-    chi = np.loadtxt(os.path.join(opt.input_folder, 'chis.txt'))
-    np.save(os.path.join(opt.output_folder, 'chis.npy'), chi)
-    np.savetxt(os.path.join(opt.output_folder, 'chis.txt'), chi, fmt='%0.5f')
+            y = np.load(osp.join(path, ifile))
+            min_val = np.min(y)
+            if min_val < min_max[0]:
+                min_max[0] = min_val
+            max_val = np.max(y)
+            if max_val > min_max[1]:
+                min_max[1] = max_val
+    return min_max
 
 def process_sample_save(in_path, out_path, k, n, overwrite):
+    '''Saves relevant files as .npy files'''
     # check if sample needs to be processed
-    if not os.path.exists(os.path.join(out_path, 'x.npy')) or overwrite:
+    x_npy_file = osp.join(out_path, 'x.npy')
+    if not osp.exists(x_npy_file) or overwrite:
         x = np.zeros((n, k))
         for i in range(1, k + 1):
-            xi_path = os.path.join(in_path, 'seq{}.txt'.format(i))
+            xi_path = osp.join(in_path, 'seq{}.txt'.format(i))
             xi = np.loadtxt(xi_path)
             x[:, i-1] = xi
-        np.save(os.path.join(out_path, 'x.npy'), x.astype(np.int8))
+        np.save(x_npy_file, x.astype(np.int8))
 
         xx = x2xx(x)
-        np.save(os.path.join(out_path, 'xx.npy'), xx.astype(np.int8))
+        np.save(osp.join(out_path, 'xx.npy'), xx.astype(np.int8))
 
-        y_path = os.path.join(in_path, 'data_out/contacts.txt')
-        y = np.loadtxt(y_path)[:n, :n] # TODO delete this later
-        np.save(os.path.join(out_path, 'y.npy'), y.astype(np.int16))
+    y_npy_file = osp.join(out_path, 'y.npy')
+    if not osp.exists(y_npy_file) or overwrite:
+        y_path = osp.join(in_path, 'data_out/contacts.txt')
+        y = np.loadtxt(y_path)[:n, :n]
+        np.save(y_npy_file, y.astype(np.int16))
 
-def diag_processing(opt, out_paths):
+def process_diag(args, out_paths):
     # determine mean_dist for diagonal preprocessing
-    meanDist_path = os.path.join(opt.output_folder, 'meanDist.npy')
-    if not os.path.exists(meanDist_path) or opt.overwrite:
-        train_dataloader, _, _ = getDataLoaders(Names(opt.output_folder), opt)
-        assert opt.sample_size <= opt.trainN, "Sample size too large - max {}".format(opt.trainN)
-        meanDist = np.zeros(opt.n)
+    meanDist_path = osp.join(args.output_folder, 'meanDist.npy')
+    if not osp.exists(meanDist_path) or args.overwrite:
+        train_dataloader, _, _ = getDataLoaders(Names(args.output_folder), args)
+        assert args.sample_size <= args.trainN, "Sample size too large - max {}".format(args.trainN)
+        meanDist = np.zeros(args.n)
         for i, path in enumerate(train_dataloader):
-            if i < opt.sample_size: # dataloader shuffles so this is a random sample
+            if i < args.sample_size: # dataloader shuffles so this is a random sample
                 path = path[0]
-                y = np.load(os.path.join(path, 'y.npy'))
+                y = np.load(osp.join(path, 'y.npy'))
                 meanDist += generateDistStats(y)
-        meanDist = meanDist / opt.sample_size
-        print(meanDist)
+        meanDist = meanDist / args.sample_size
+        print('meanDist: ', meanDist)
         np.save(meanDist_path, meanDist)
     else:
         meanDist = np.load(meanDist_path)
@@ -131,42 +107,43 @@ def diag_processing(opt, out_paths):
     # set up for multiprocessing
     mapping = []
     for out_path in out_paths:
-        mapping.append((out_path, meanDist.copy(), opt.overwrite))
+        mapping.append((out_path, meanDist.copy(), args.overwrite))
 
-    with multiprocessing.Pool(opt.num_workers) as p:
+    with multiprocessing.Pool(args.num_workers) as p:
         p.starmap(process_sample_diag, mapping)
 
 def process_sample_diag(path, meanDist, overwrite):
+    '''Inner function for process_diag.'''
     # check if sample needs to be processed
-    y_diag_path = os.path.join(path, 'y_diag.npy')
-    if not os.path.exists(y_diag_path) or overwrite:
-        y = np.load(os.path.join(path, 'y.npy')).astype(np.float64)
+    y_diag_path = osp.join(path, 'y_diag.npy')
+    if not osp.exists(y_diag_path) or overwrite:
+        y = np.load(osp.join(path, 'y.npy')).astype(np.float64)
         y_diag = diagonal_preprocessing(y, meanDist)
         np.save(y_diag_path, y_diag)
 
-    y_diag_instance_path = os.path.join(path, 'y_diag_instance.npy')
-    if not os.path.exists(y_diag_instance_path) or overwrite:
-        y = np.load(os.path.join(path, 'y.npy')).astype(np.float64)
+    y_diag_instance_path = osp.join(path, 'y_diag_instance.npy')
+    if not osp.exists(y_diag_instance_path) or overwrite:
+        y = np.load(osp.join(path, 'y.npy')).astype(np.float64)
         meanDist = generateDistStats(y)
         y_diag_instance = diagonal_preprocessing(y, meanDist)
         np.save(y_diag_instance_path, y_diag_instance)
 
-def percentile_processing(opt, out_paths):
+def process_percentile(args, out_paths):
     # determine prcnt_dist for percentile preprocessing
-    prcntDist_path = os.path.join(opt.output_folder, 'prcntDist.npy')
-    if not os.path.exists(prcntDist_path) or opt.overwrite:
-        train_dataloader, _, _ = getDataLoaders(Names(opt.output_folder), opt)
-        assert opt.sample_size <= opt.trainN, "Sample size too large - max {}".format(opt.trainN)
-        y_arr = np.zeros((opt.sample_size, opt.n, opt.n))
+    prcntDist_path = osp.join(args.output_folder, 'prcntDist.npy')
+    if not osp.exists(prcntDist_path) or args.overwrite:
+        train_dataloader, _, _ = getDataLoaders(Names(args.output_folder), args)
+        assert args.sample_size <= args.trainN, "Sample size too large - max {}".format(args.trainN)
+        y_arr = np.zeros((args.sample_size, args.n, args.n))
         for i, path in enumerate(train_dataloader):
-            if i < opt.sample_size: # dataloader shuffles so this is a random sample
+            if i < args.sample_size: # dataloader shuffles so this is a random sample
                 path = path[0]
-                y_diag = np.load(os.path.join(path, 'y_diag.npy'))
+                y_diag = np.load(osp.join(path, 'y_diag.npy'))
                 y_arr[i,:,:] = y_diag
                 # This should be ok from a RAM standpoint
 
-        prcntDist = getPercentiles(y_arr, opt.percentiles) # flattens array to do computation
-        print(prcntDist)
+        prcntDist = getPercentiles(y_arr, args.percentiles) # flattens array to do computation
+        print('prcntDist: ', prcntDist)
         np.save(prcntDist_path, prcntDist)
     else:
         prcntDist = np.load(prcntDist_path)
@@ -174,26 +151,62 @@ def percentile_processing(opt, out_paths):
     # set up for multiprocessing
     mapping = []
     for out_path in out_paths:
-        mapping.append((out_path, prcntDist.copy(), opt.overwrite))
+        mapping.append((out_path, prcntDist.copy(), args.overwrite))
 
-    with multiprocessing.Pool(opt.num_workers) as p:
+    with multiprocessing.Pool(args.num_workers) as p:
         p.starmap(process_sample_percentile, mapping)
 
-
 def process_sample_percentile(path, prcntDist, overwrite):
-    if not os.path.exists(os.path.join(path, 'y_prcnt.npy')) or overwrite:
-        y_diag = np.load(os.path.join(path, 'y_diag.npy')).astype(np.float64)
+    '''Inner function for process_percentile.'''
+    if not osp.exists(osp.join(path, 'y_prcnt.npy')) or overwrite:
+        y_diag = np.load(osp.join(path, 'y_diag.npy')).astype(np.float64)
         y_prcnt = percentile_preprocessing(y_diag, prcntDist)
-        np.save(os.path.join(path, 'y_prcnt.npy'), y_prcnt.astype(np.int16))
+        np.save(osp.join(path, 'y_prcnt.npy'), y_prcnt.astype(np.int16))
 
 def main():
     t0 = time.time()
-    parser = setupParser()
-    opt = parser.parse_args()
-    print(opt.input_folder)
-    process_data(opt)
-    print('Total time: {}'.format(time.time() - t0))
+    args = getArgs()
 
+    print('Input folder: ', args.input_folder)
+    print('Output folder: ', args.output_folder)
+    in_paths = sorted(make_dataset(args.input_folder))
+
+    # ensure output files exist
+    make_paths(args, in_paths)
+
+    out_paths = sorted(make_dataset(args.output_folder))
+
+    # set up for multiprocessing
+    mapping = []
+    for in_path, out_path in zip(in_paths, out_paths):
+        mapping.append((in_path, out_path, args.k, args.n, args.overwrite))
+
+    with multiprocessing.Pool(args.num_workers) as p:
+        p.starmap(process_sample_save, mapping)
+
+    train_dataloader, _, _ = getDataLoaders(Names(args.output_folder), args)
+
+    # diag
+    process_diag(args, out_paths)
+    y_diag_min_max = get_min_max(args, train_dataloader, 'y_diag.npy')
+    np.save(osp.join(args.output_folder, 'y_diag_min_max.npy'), y_diag_min_max.astype(np.float64))
+    print('y_diag_min_max: ', y_diag_min_max)
+
+    # percentile
+    if args.percentiles is not None:
+        process_percentile(args, out_paths)
+        y_prcnt_min_max = get_min_max(args, train_dataloader, 'y_prcnt.npy')
+        np.save(osp.join(args.output_folder, 'y_prcnt_min_max.npy'), y_prcnt_min_max.astype(np.float64))
+        print('y_prcnt_min_max: ', y_prcnt_min_max)
+
+    # copy over chi
+    chis_path = osp.join(args.input_folder, 'chis.txt')
+    if osp.exists(chis_path):
+        chi = np.loadtxt(chis_path)
+        np.save(osp.join(args.output_folder, 'chis.npy'), chi)
+        np.savetxt(osp.join(args.output_folder, 'chis.txt'), chi, fmt='%0.5f')
+
+    print('Total time: {}'.format(time.time() - t0))
 
 if __name__ == '__main__':
     main()
