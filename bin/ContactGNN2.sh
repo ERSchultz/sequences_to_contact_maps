@@ -8,7 +8,7 @@
 #SBATCH --ntasks-per-node=4
 #SBATCH --mem-per-cpu=2000
 
-dirname="/project2/depablo/erschultz/dataset_04_18_21"
+dirname="/project2/depablo/erschultz/dataset_08_18_21"
 deleteRoot='false'
 
 modelType='ContactGNN'
@@ -17,7 +17,7 @@ GNNMode='true'
 outputMode='sequence'
 
 # architecture
-k=2
+k=4
 m=1024
 yPreprocessing='diag'
 yNorm='none'

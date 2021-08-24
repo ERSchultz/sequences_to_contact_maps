@@ -29,7 +29,7 @@ def getArgs():
     # preprocessing args
     parser.add_argument('--sample_size', type=int, default=2, help='Size of sample for preprocessing statistics')
     parser.add_argument('--seed', type=int, default=42, help='Random seed to use. Default: 42')
-    parser.add_argument('--overwrite', type=str2bool, default=False, help='Whether or not to overwrite existing preprocessing files')
+    parser.add_argument('--overwrite', type=str2bool, default=True, help='Whether or not to overwrite existing preprocessing files')
     parser.add_argument('--percentiles', type=str2list, default=[20, 40, 50, 60, 70, 80, 85, 90, 95, 100], help='Percentiles to use for percentile preprocessing (None to skip)')
 
     args = parser.parse_args()
@@ -71,7 +71,11 @@ def process_sample_save(in_path, out_path, k, n, overwrite):
     x_npy_file = osp.join(out_path, 'x.npy')
     if not osp.exists(x_npy_file) or overwrite:
         x = np.zeros((n, k))
-        for i in range(1, k + 1):
+        if osp.exists(osp.join(in_path, 'seq0.txt'):
+            rangefn = range(k)
+        else:
+            rangefn = range(1, k + 1)
+        for i in rangefn:
             xi_path = osp.join(in_path, 'seq{}.txt'.format(i))
             xi = np.loadtxt(xi_path)
             x[:, i-1] = xi

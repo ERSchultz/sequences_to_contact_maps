@@ -1,18 +1,23 @@
-import numpy as np
+import os
+import os.path as osp
+import sys
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+import numpy as np
 import time
 import csv
-import os
-import os.path as osp
+from scipy.io import savemat
+
 from neural_net_utils.base_networks import *
 from neural_net_utils.networks import *
 from neural_net_utils.utils import *
 from neural_net_utils.dataset_classes import *
 from neural_net_utils.argparseSetup import *
 from core_test_train import core_test_train
-from scipy.io import savemat
+from plotting_functions import *
 
 def test_num_workers():
     opt = argparseSetup() # get default args
@@ -208,6 +213,27 @@ def downsampling_test():
     y_diag_down = F.avg_pool2d(y_diag, 2)
     print(y_diag_down)
 
+def plot_fixed():
+    for i in range(1, 4):
+        for j in range(1, 4):
+            if i >= j:
+                continue
+            y1 = np.load('dataset_fixed/samples/sample{}/y.npy'.format(i))
+            y2 = np.load('dataset_fixed/samples/sample{}/y.npy'.format(j))
+
+            overall_corr, corr_arr = calculateDistanceStratifiedCorrelation(y1, y2, mode = 'pearson')
+            title = 'Overall Pearson R: {}'.format(np.round(overall_corr, 3))
+
+            plt.plot(np.arange(1023), corr_arr, color = 'black')
+            plt.ylim(-0.5, 1)
+            plt.xlabel('Distance', fontsize = 16)
+            plt.ylabel('Pearson Correlation Coefficient', fontsize = 16)
+            plt.title(title, fontsize = 16)
+
+            plt.tight_layout()
+            plt.savefig('dataset_fixed/samples/distance_pearson_i{}j{}.png'.format(i, j))
+            plt.close()
+
 def main():
     # edit_argparse()
     # debugModel('ContactGNN')
@@ -225,4 +251,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    plot_fixed()
