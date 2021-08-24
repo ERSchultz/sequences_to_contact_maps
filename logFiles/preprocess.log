@@ -1,32 +1,7 @@
 Input folder:  /project2/depablo/erschultz/dataset_08_18_21
 Output folder:  /project2/depablo/erschultz/dataset_08_18_21
-multiprocessing.pool.RemoteTraceback: 
-"""
-Traceback (most recent call last):
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/multiprocessing/pool.py", line 125, in worker
-    result = (True, func(*args, **kwds))
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/multiprocessing/pool.py", line 51, in starmapstar
-    return list(itertools.starmap(args[0], args[1]))
-  File "preprocess_data.py", line 76, in process_sample_save
-    xi = np.loadtxt(xi_path)
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages/numpy/lib/npyio.py", line 1065, in loadtxt
-    fh = np.lib._datasource.open(fname, 'rt', encoding=encoding)
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages/numpy/lib/_datasource.py", line 194, in open
-    return ds.open(path, mode, encoding=encoding, newline=newline)
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/site-packages/numpy/lib/_datasource.py", line 531, in open
-    raise IOError("%s not found." % path)
-OSError: /project2/depablo/erschultz/dataset_08_18_21/samples/sample136/seq4.txt not found.
-"""
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "preprocess_data.py", line 212, in <module>
-    main()
-  File "preprocess_data.py", line 185, in main
-    p.starmap(process_sample_save, mapping)
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/multiprocessing/pool.py", line 372, in starmap
-    return self._map_async(func, iterable, starmapstar, chunksize).get()
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2/lib/python3.8/multiprocessing/pool.py", line 771, in get
-    raise self._value
-OSError: /project2/depablo/erschultz/dataset_08_18_21/samples/sample136/seq4.txt not found.
+Diagonal Preprocessing
+meanDist:  [5000.         2610.77938905 1194.06584149 ...   74.59         68.1275
+   61.59      ]
+y_diag_min_max:  [0.         8.81199798]
+Total time: 470.35259437561035
