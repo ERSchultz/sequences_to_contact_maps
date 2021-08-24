@@ -25,7 +25,7 @@ yLogTransform='true'
 messagePassing='SignedConv'
 useNodeFeatures='false'
 useEdgeWeights='false'
-hiddenSizesList='16-2'
+hiddenSizesList='16-4'
 transforms='none'
 preTransforms='none'
 split_neg_pos_edges_for_feature_augmentation='false'
@@ -35,7 +35,7 @@ sparsifyThreshold=0.176
 loss='BCE'
 outAct='none'
 headArchitecture='fc'
-headHiddenSizesList='2'
+headHiddenSizesList='4'
 
 # hyperparameters
 nEpochs=20
