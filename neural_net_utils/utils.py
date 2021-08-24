@@ -246,11 +246,12 @@ def getFrequencies(dataFolder, diag, n, k, chi):
     np.save(freq_path, freq_arr)
     return freq_arr
 
-def getPercentiles(arr, prcnt_arr):
+def getPercentiles(arr, prcnt_arr, plot = True):
     """Helper function to get multiple percentiles at once."""
     result = np.zeros_like(prcnt_arr).astype(np.float64)
-    plt.hist(arr.flatten())
-    plt.show()
+    if plot:
+        plt.hist(arr.flatten())
+        plt.show()
     for i, p in enumerate(prcnt_arr):
         result[i] = np.percentile(arr, p)
     return result

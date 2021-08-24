@@ -71,7 +71,7 @@ def process_sample_save(in_path, out_path, k, n, overwrite):
     x_npy_file = osp.join(out_path, 'x.npy')
     if not osp.exists(x_npy_file) or overwrite:
         x = np.zeros((n, k))
-        if osp.exists(osp.join(in_path, 'seq0.txt'):
+        if osp.exists(osp.join(in_path, 'seq0.txt')):
             rangefn = range(k)
         else:
             rangefn = range(1, k + 1)
@@ -146,7 +146,7 @@ def process_percentile(args, out_paths):
                 y_arr[i,:,:] = y_diag
                 # This should be ok from a RAM standpoint
 
-        prcntDist = getPercentiles(y_arr, args.percentiles) # flattens array to do computation
+        prcntDist = getPercentiles(y_arr, args.percentiles, plot = False) # flattens array to do computation
         print('prcntDist: ', prcntDist)
         np.save(prcntDist_path, prcntDist)
     else:
@@ -191,6 +191,7 @@ def main():
     train_dataloader, _, _ = getDataLoaders(Names(args.output_folder), args)
 
     # diag
+    print('Diagonal Preprocessing')
     process_diag(args, out_paths)
     y_diag_min_max = get_min_max(args, train_dataloader, 'y_diag.npy')
     np.save(osp.join(args.output_folder, 'y_diag_min_max.npy'), y_diag_min_max.astype(np.float64))
@@ -198,6 +199,7 @@ def main():
 
     # percentile
     if args.percentiles is not None:
+        print('Percentile Preprocessing')
         process_percentile(args, out_paths)
         y_prcnt_min_max = get_min_max(args, train_dataloader, 'y_prcnt.npy')
         np.save(osp.join(args.output_folder, 'y_prcnt_min_max.npy'), y_prcnt_min_max.astype(np.float64))

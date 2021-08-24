@@ -273,7 +273,7 @@ def finalizeOpt(opt, parser, local = False):
     return opt
 
 def copy_data_to_scratch(opt):
-    scratch_path = osp.join('/../../../scratch/midway2/erschultz', osp.split(opt.data_folder)[-1])
+    scratch_path = osp.join('/scratch/midway2/erschultz', osp.split(opt.data_folder)[-1])
     if not osp.exists(scratch_path):
         os.mkdir(scratch_path, mode = 0o700)
 
