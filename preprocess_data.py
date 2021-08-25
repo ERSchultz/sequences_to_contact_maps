@@ -179,7 +179,7 @@ def main():
     # ensure output files exist
     make_paths(args, in_paths)
 
-    out_paths = sorted(make_dataset(args.output_folder))
+    out_paths = sorted(make_dataset(args.output_folder, args.min_sample))
 
     # set up for multiprocessing
     mapping = []
