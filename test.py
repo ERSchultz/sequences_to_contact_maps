@@ -221,6 +221,10 @@ def plot_fixed():
             y1 = np.load('dataset_fixed/samples/sample{}/y.npy'.format(i))
             y2 = np.load('dataset_fixed/samples/sample{}/y.npy'.format(j))
 
+            x1 = np.load('dataset_fixed/samples/sample{}/x.npy'.format(i))
+            x2 = np.load('dataset_fixed/samples/sample{}/x.npy'.format(j))
+            assert np.array_equal(x1, x2)
+
             overall_corr, corr_arr = calculateDistanceStratifiedCorrelation(y1, y2, mode = 'pearson')
             title = 'Overall Pearson R: {}'.format(np.round(overall_corr, 3))
 
@@ -237,7 +241,8 @@ def plot_fixed():
 
 if __name__ == '__main__':
     # edit_argparse()
-    debugModel('ContactGNN')
+    # debugModel('ContactGNN')
+    plot_fixed()
     # test_argpartition(10)
     # to_mat()
     # downsampling_test()

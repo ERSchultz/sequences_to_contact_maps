@@ -95,7 +95,7 @@ def process_diag(args, out_paths):
     # determine mean_dist for diagonal preprocessing
     meanDist_path = osp.join(args.output_folder, 'meanDist.npy')
     if not osp.exists(meanDist_path) or args.overwrite:
-        train_dataloader, _, _ = getDataLoaders(Names(args.output_folder), args)
+        train_dataloader, _, _ = getDataLoaders(Names(args.output_folder, args.min_sample), args)
         assert args.sample_size <= args.trainN, "Sample size too large - max {}".format(args.trainN)
         meanDist = np.zeros(args.n)
         for i, path in enumerate(train_dataloader):
@@ -189,7 +189,7 @@ def main():
     with multiprocessing.Pool(args.num_workers) as p:
         p.starmap(process_sample_save, mapping)
 
-    train_dataloader, _, _ = getDataLoaders(Names(args.output_folder), args)
+    train_dataloader, _, _ = getDataLoaders(Names(args.output_folder, args.min_sample), args)
 
     # diag
     print('Diagonal Preprocessing')

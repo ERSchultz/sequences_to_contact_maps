@@ -313,7 +313,9 @@ def calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson'):
     corr_arr = np.zeros(n-1)
     for d in range(n-1):
         y_diag = np.diagonal(y, offset = d)
+        print(y_diag)
         yhat_diag = np.diagonal(yhat, offset = d)
+        print(yhat_diag, '\n')
         corr, pval = stat(y_diag, yhat_diag)
         corr_arr[d] = corr
 
