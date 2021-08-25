@@ -213,7 +213,7 @@ def un_normalize(y, minmax):
     ymax = minmax[1].item()
     return y.copy() * (ymax - ymin) + ymin
 
-def getFrequencies(dataFolder, diag, n, k, chi):
+def getFrequencies(dataFolder, diag, n, k, chi=None, save=True):
     # calculates number of times each interaction frequency
     # was observed
     freq_path = osp.join(dataFolder, 'freq_arr_diag_{}.npy'.format(diag))
@@ -239,11 +239,15 @@ def getFrequencies(dataFolder, diag, n, k, chi):
                 xj = x[j]
                 comb = frozenset({tuple(xi), tuple(xj)})
                 comb_type = converter.comb2Type(comb)
-                psi_ij = xi @ chi @ xj
+                if chi is not None:
+                    psi_ij = xi @ chi @ xj
+                else:
+                    psi_ij = None
                 freq_arr[ind] = [y[i,j], sampleid, comb_type, psi_ij]
                 ind += 1
 
-    np.save(freq_path, freq_arr)
+    if save:
+        np.save(freq_path, freq_arr)
     return freq_arr
 
 def getPercentiles(arr, prcnt_arr, plot = True):
