@@ -30,7 +30,8 @@ def make_dataset(dir, minSample = 0):
                 print("Skipping {}".format(file))
             else:
                 data_file = osp.join(samples_dir, file)
-                data_file_arr.append(data_file)
+                if os.listdir(data_file): # not empty
+                    data_file_arr.append(data_file)
     return data_file_arr
 
 def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False, cmap = None):
