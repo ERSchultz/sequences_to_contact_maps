@@ -13,8 +13,8 @@ from neural_net_utils.dataset_classes import Names, make_dataset
 
 def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
-    parser.add_argument('--input_folder', type=str, default='dataset_08_18_21', help='Location of input data')
-    parser.add_argument('--output_folder', type=str, default='test', help='Location to write data to')
+    parser.add_argument('--input_folder', type=str, default='dataset_fixed', help='Location of input data')
+    parser.add_argument('--output_folder', type=str, default='dataset_fixed', help='Location to write data to')
 
     # dataloader args
     parser.add_argument('--split', type=str2list, default=[0.8, 0.1, 0.1], help='Train, val, test split for dataset')
@@ -29,7 +29,7 @@ def getArgs():
     # preprocessing args
     parser.add_argument('--sample_size', type=int, default=2, help='Size of sample for preprocessing statistics')
     parser.add_argument('--seed', type=int, default=42, help='Random seed to use. Default: 42')
-    parser.add_argument('--overwrite', type=str2bool, default=True, help='Whether or not to overwrite existing preprocessing files')
+    parser.add_argument('--overwrite', type=str2bool, default=False, help='Whether or not to overwrite existing preprocessing files')
     parser.add_argument('--percentiles', type=str2list, default=[20, 40, 50, 60, 70, 80, 85, 90, 95, 100], help='Percentiles to use for percentile preprocessing (None to skip)')
 
     args = parser.parse_args()

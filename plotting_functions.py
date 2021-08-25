@@ -67,7 +67,7 @@ def plotFrequenciesForSample(freq_arr, dataFolder, diag, k, sampleid, split = 't
                     indplt += 1
             elif split == 'psi':
                 for g_name_2, g_df_2 in g_df.groupby(['psi']):
-                    ax = fig.add_subplot(1, 3, indplt)
+                    ax = fig.add_subplot(1, 4, indplt)
                     ax.hist(g_df_2['freq'], bins = 100)
                     ax.set_title(g_name_2)
                     ax.set_yscale('log')
@@ -206,10 +206,19 @@ def plotDistStats(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
     plt.savefig(ofile)
     plt.close()
 
-def freqSampleDistributionPlots(dataFolder, n = 1024):
+def freqSampleDistributionPlots(dataFolder, sample_id, n = 1024, k=None):
     '''Wrapper function for plotFrequenciesForSample and plotFrequenciesSampleSubplot.'''
-    chi = np.load(osp.join(dataFolder, 'chis.npy'))
-    k = len(chi)
+    chi_path1 = osp.join(dataFolder, 'chis.npy')
+    chi_path2 = osp.join(dataFolder, 'samples/sample{}'.format(sample_id), 'chis.npy')
+    if osp.exists(chi_path1):
+        chi = np.load(chi_path1)
+        k = len(chi)
+    elif osp.exists(chi_path2):
+        chi = np.load(chi_path2)
+        k = len(chi)
+    else:
+        chi = None
+        assert k is not None, "need to input k if chi_path is missing"
 
     # freq distribution plots
     for diag in [True, False]:
@@ -217,12 +226,8 @@ def freqSampleDistributionPlots(dataFolder, n = 1024):
         freq_arr = getFrequencies(dataFolder, diag, n, k, chi)
 
         for split in [None, 'type', 'psi']:
-            if split is not None:
-                continue
             # plotFrequenciesSampleSubplot(freq_arr, dataFolder, diag, k, split)
-            if split is None:
-                plotFrequenciesForSample(freq_arr, dataFolder, diag, k, sampleid = 2, split = split, log = True)
-            plotFrequenciesForSample(freq_arr, dataFolder, diag, k, sampleid = 2, split = split)
+            plotFrequenciesForSample(freq_arr, dataFolder, diag, k, sampleid = sample_id, split = split)
 
 def freqDistDistriutionPlots(dataFolder):
     '''Wrapper function for plotDistStats.'''
@@ -1223,8 +1228,8 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    updateResultTables('ContactGNN', 'GNN', 'sequence')
+    # updateResultTables('ContactGNN', 'GNN', 'sequence')
     # plotCombinedModels('ContactGNN', [149, 150, 151])
     # main()
-    # freqSampleDistributionPlots('dataset_04_18_21')
-    # freqDistDistriutionPlots('dataset_04_18_21')
+    freqSampleDistributionPlots('dataset_04_18_21', sample_id=40, k=2)
+    # freqDistDistriutionPlots('dataset_08_24_21')
