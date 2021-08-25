@@ -78,10 +78,10 @@ def debugModel(model_type):
         opt.x_reshape = False
 
     # architecture
-    opt.k = 2
+    opt.k = 4
     opt.crop = None
     opt.m = 1024
-    opt.y_preprocessing = 'diag'
+    opt.y_preprocessing = None
     opt.y_norm = 'instance'
     opt.loss = 'mse'
 
@@ -125,23 +125,23 @@ def debugModel(model_type):
     elif model_type == 'ContactGNN':
         opt.loss = 'BCE'
         opt.y_norm = None
-        opt.message_passing='signedconv'
+        opt.message_passing='GCN'
         opt.GNN_mode = True
         opt.output_mode = 'sequence'
-        opt.hidden_sizes_list=str2list('2')
+        opt.hidden_sizes_list=str2list('4')
         opt.out_act = None
         opt.use_node_features = False
         opt.use_edge_weights = False
         opt.transforms=str2list('none')
         opt.pre_transforms=str2list('degree')
-        opt.split_neg_pos_edges_for_feature_augmentation = True
+        opt.split_neg_pos_edges_for_feature_augmentation = False
         opt.top_k = None
-        opt.sparsify_threshold = 0.176
+        opt.sparsify_threshold = 1
         opt.sparsify_threshold_upper = None
-        opt.relabel_11_to_00 = True
+        opt.relabel_11_to_00 = False
         opt.y_log_transform = True
-        opt.head_architecture = 'fc'
-        opt.head_hidden_sizes_list = [2]
+        # opt.head_architecture = 'fc'
+        # opt.head_hidden_sizes_list = [2]
         opt.split=[0.2,0.2,0.6]
         # opt.crop=[0,5]
         # opt.m = 5
@@ -166,10 +166,10 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = False
+    opt.plot = True
     opt.plot_predictions = True
     opt.verbose = False
-    opt.data_folder = "dataset_04_18_21"
+    opt.data_folder = "dataset_08_18_21"
 
     opt = finalizeOpt(opt, parser, True)
 
@@ -197,7 +197,7 @@ def test_argpartition(k):
 def downsampling_test():
     y = torch.tensor([[10,3,1,0],[3,10,4,2],[1,4,10,6], [0,2,6,10]], dtype = torch.float32)
     print(y)
-    meanDist = generateDistStats(y)
+    meanDist = generateDistkStats(y)
     y_diag = diagonal_preprocessing(y, meanDist)
     print(y_diag)
     print('---')
@@ -234,21 +234,10 @@ def plot_fixed():
             plt.savefig('dataset_fixed/samples/distance_pearson_i{}j{}.png'.format(i, j))
             plt.close()
 
-def main():
+
+if __name__ == '__main__':
     # edit_argparse()
-    # debugModel('ContactGNN')
+    debugModel('ContactGNN')
     # test_argpartition(10)
     # to_mat()
     # downsampling_test()
-    chi = np.load('dataset_04_18_21/chis.npy')
-    # np.savetxt('dataset_04_18_21/chis.txt', chi, fmt='%0.5f')
-    # print(chi)
-    conv = InteractionConverter(2, chi)
-    print(conv.Psi)
-    x = np.array([[0,1],[0,1], [1,0], [1,0], [1,1]])
-    print(x.shape)
-    print( x @ conv.chi @ x.T)
-
-
-if __name__ == '__main__':
-    plot_fixed()

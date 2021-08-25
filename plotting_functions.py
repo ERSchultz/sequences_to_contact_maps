@@ -784,10 +784,17 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
     acc_mean_array = np.round(np.mean(acc_array, 1), 3)
     acc_std_array = np.round(np.std(acc_array, 1), 3)
 
-    title = 'AUC:'
+    title = 'AUC: '
     for i in range(opt.k):
         area = np.round(metrics.auc(fpr_mean_array[:,i], tpr_mean_array[:,i]), 3)
-        title += ' particle type {} = {}'.format(i, area)
+        if i == 0:
+            title += 'type {} = {}'.format(i, area)
+        else:
+             title += 'type {} = {}'.format(i, area)
+        if i % 2 == 1:
+            title += '\n'
+        else:
+            title += ' '
         plt.plot(fpr_mean_array[:,i], tpr_mean_array[:,i], label = 'particle type {}'.format(i))
         plt.fill_between(fpr_mean_array[:,i],  tpr_mean_array[:,i] + tpr_std_array[:,i],  tpr_mean_array[:,i] - tpr_std_array[:,i], alpha = 0.5)
         plt.fill_between(fpr_mean_array[:,i],  tpr_mean_array[:,i] + tpr_std_array[:,i],  tpr_mean_array[:,i] - tpr_std_array[:,i], alpha = 0.5)
@@ -804,7 +811,7 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
         y_norm = opt.y_norm.capitalize()
     else:
          y_norm = 'None'
-    plt.title('Y Preprocessing: {}, Y Norm: {}\n{}'.format(preprocessing, y_norm, title), fontsize = 16)
+    plt.title('Y Preprocessing: {}, Y Norm: {}\n{}'.format(preprocessing, y_norm, title.strip()), fontsize = 16)
 
     plt.tight_layout()
     plt.savefig(osp.join(imagePath, 'ROC_curve.png'))
@@ -901,10 +908,10 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
         indplt = 1
 
         for vector, c in zip(all_binary_vectors, colors):
-            ax = fig.add_subplot(2, 2, indplt)
+            ax = fig.add_subplot(opt.k, opt.k, indplt)
             ind = np.where((x == vector).all(axis = 1))
             ax.scatter(z[ind, dims[0]].reshape((-1)), z[ind, dims[1]].reshape((-1)), color = c['color'])
-            ax.set_title('input particle type vector {}\n{} particles'.format(vector, len(ind[0])), fontsize = 16)
+            ax.set_title('particle type vector {}\n{} particles'.format(vector, len(ind[0])), fontsize = 16)
             ax.set_xlim(0, 1)
             ax.set_ylim(0, 1)
             indplt += 1
@@ -998,29 +1005,6 @@ def plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath):
     styles = ['--', '-']
     types = ['predicted', 'true']
 
-    # merged plot
-    # for mark, c in enumerate(colors):
-    #     l1 = ax.plot(np.arange(opt.m), z[:, mark], ls = styles[0], color = c['color'])
-    #     l2 = ax.plot(np.arange(opt.m), x[:, mark], ls = styles[1], color = c['color'])
-    #
-    # for mark, c in enumerate(colors):
-    #     ax.plot(np.NaN, np.NaN, color = c['color'], label = mark)
-    #
-    # ax2 = ax.twinx()
-    # for type, style in zip(types, styles):
-    #     ax2.plot(np.NaN, np.NaN, ls = style, label = type, c = 'k')
-    # ax2.get_yaxis().set_visible(False)
-    #
-    # ax.legend(loc = 1, title = 'particle type', title_fontsize = 16)
-    # ax2.legend(loc = 3, title_fontsize = 16)
-    #
-    # ax.set_xlabel('particle index', fontsize = 16)
-    # ax.set_ylabel('value', fontsize = 16)
-    #
-    # plt.tight_layout()
-    # plt.savefig(osp.join(subpath, 'particle_type_vector_predicted_merged.png'))
-    # plt.close()
-
     # subplots
     fig = plt.figure(figsize=(12, 12))
     bigax = fig.add_subplot(111, label = 'bigax')
@@ -1031,7 +1015,7 @@ def plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath):
 
     for mark, c in enumerate(colors):
         ax = fig.add_subplot(rows, cols, indplt)
-        ax.plot(np.arange(opt.m), z[:, mark], ls = styles[0], color = c['color'])
+        ax.plot(np.arange(opt.m), z[:, mark], ls = styles[0], color = 'k')
         ax.plot(np.arange(opt.m), x[:, mark], ls = styles[1], color = c['color'])
         ax.set_title('particle type {}\n{} particles'.format(mark, np.sum(x[:, mark]).astype(int)), fontsize = 16)
         indplt += 1
