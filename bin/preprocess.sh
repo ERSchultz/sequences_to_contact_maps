@@ -7,10 +7,10 @@
 #SBATCH --output=logFiles/preprocess.log
 #SBATCH --time=02:00:00
 
-input="/project2/depablo/erschultz/dataset_08_18_21"
-output="/project2/depablo/erschultz/dataset_08_18_21"
+input="/project2/depablo/erschultz/dataset_08_24_21"
+output="/project2/depablo/erschultz/dataset_08_24_21"
 numWorkers=20
-k=4
+k=2
 n=1024
 sampleSize=200
 overwrite="False"
