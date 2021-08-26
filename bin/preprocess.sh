@@ -13,8 +13,8 @@ numWorkers=20
 k=2
 n=1024
 sampleSize=200
-minSample=1200
-overwrite="False"
+minSample=0
+overwrite="true"
 percentiles='none' # none skips percentiles
 
 cd ~/sequences_to_contact_maps

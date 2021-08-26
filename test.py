@@ -214,7 +214,7 @@ def downsampling_test():
     print(y_diag_down)
 
 def plot_fixed():
-    samples = [1, 2, 3]
+    samples = [11, 12]
     for i in samples:
         for j in samples:
             if i >= j:
@@ -243,8 +243,8 @@ def plot_fixed():
 
 if __name__ == '__main__':
     # edit_argparse()
-    debugModel('ContactGNN')
-    # plot_fixed()
+    # debugModel('ContactGNN')
+    plot_fixed()
     # test_argpartition(10)
     # to_mat()
     # downsampling_test()
