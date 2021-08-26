@@ -81,9 +81,10 @@ def debugModel(model_type):
     opt.k = 4
     opt.crop = None
     opt.m = 1024
-    opt.y_preprocessing = None
+    opt.y_preprocessing = 'diag'
     opt.y_norm = 'instance'
     opt.loss = 'mse'
+    opt.split=[0.2,0.2,0.6]
 
     if model_type == 'Akita':
         opt.kernel_w_list=str2list('5-5-5')
@@ -125,10 +126,10 @@ def debugModel(model_type):
     elif model_type == 'ContactGNN':
         opt.loss = 'BCE'
         opt.y_norm = None
-        opt.message_passing='GCN'
+        opt.message_passing='SignedConv'
         opt.GNN_mode = True
         opt.output_mode = 'sequence'
-        opt.hidden_sizes_list=str2list('4')
+        opt.hidden_sizes_list=str2list('8')
         opt.out_act = None
         opt.use_node_features = False
         opt.use_edge_weights = False
@@ -136,15 +137,14 @@ def debugModel(model_type):
         opt.pre_transforms=str2list('degree')
         opt.split_neg_pos_edges_for_feature_augmentation = False
         opt.top_k = None
-        opt.sparsify_threshold = 1
+        opt.sparsify_threshold = 0.176
         opt.sparsify_threshold_upper = None
         opt.relabel_11_to_00 = False
         opt.y_log_transform = True
-        # opt.head_architecture = 'fc'
-        # opt.head_hidden_sizes_list = [2]
-        opt.split=[0.2,0.2,0.6]
-        # opt.crop=[0,5]
-        # opt.m = 5
+        opt.head_architecture = 'fc'
+        opt.head_hidden_sizes_list = [4]
+        opt.crop=[0,20]
+        opt.m = 20
         opt.use_bias = False
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
@@ -214,8 +214,9 @@ def downsampling_test():
     print(y_diag_down)
 
 def plot_fixed():
-    for i in range(1, 4):
-        for j in range(1, 4):
+    samples = [1, 2, 3]
+    for i in samples:
+        for j in samples:
             if i >= j:
                 continue
             y1 = np.load('dataset_fixed/samples/sample{}/y.npy'.format(i))
@@ -226,9 +227,10 @@ def plot_fixed():
             assert np.array_equal(x1, x2)
 
             overall_corr, corr_arr = calculateDistanceStratifiedCorrelation(y1, y2, mode = 'pearson')
-            title = 'Overall Pearson R: {}'.format(np.round(overall_corr, 3))
+            avg = np.nanmean(corr_arr)
+            title = 'Overall Pearson R: {}\nAverage Dist Pearson R: {}'.format(np.round(overall_corr, 3), np.round(avg, 3))
 
-            plt.plot(np.arange(1023), corr_arr, color = 'black')
+            plt.plot(np.arange(1022), corr_arr, color = 'black')
             plt.ylim(-0.5, 1)
             plt.xlabel('Distance', fontsize = 16)
             plt.ylabel('Pearson Correlation Coefficient', fontsize = 16)
@@ -241,8 +243,8 @@ def plot_fixed():
 
 if __name__ == '__main__':
     # edit_argparse()
-    # debugModel('ContactGNN')
-    plot_fixed()
+    debugModel('ContactGNN')
+    # plot_fixed()
     # test_argpartition(10)
     # to_mat()
     # downsampling_test()

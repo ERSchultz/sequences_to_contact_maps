@@ -110,7 +110,7 @@ class ResnetBlock(nn.Module):
         elif self.drop == 'drop':
             self.drop = nn.Dropout(dropout_p)
 
-        self.act = actToModule(act)
+        self.act = actToModule(activation)
 
     def forward(self, x):
         if self.norm is not None:
@@ -195,7 +195,7 @@ class ConvBlock(nn.Module):
             model2.append(nn.Sigmoid())
             self.model2 = nn.Sequential(*model2)
         else:
-            model.append(actToModule(act))
+            model.append(actToModule(activation))
 
         self.model = nn.Sequential(*model)
 
@@ -252,7 +252,7 @@ class DeconvBlock(nn.Module):
             model2.append(nn.Sigmoid())
             self.model2 = nn.Sequential(*model2)
         else:
-            model.append(actToModule(act))
+            model.append(actToModule(activation))
 
         self.model = nn.Sequential(*model)
 

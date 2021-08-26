@@ -155,6 +155,7 @@ def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
     return train_loss, val_loss
 
 def test(loader, model, opt, toprint, ofile = sys.stdout):
+    assert loader is not None, 'loader is None - check train/val/test split'
     model.eval()
     avg_loss = 0
     with torch.no_grad():

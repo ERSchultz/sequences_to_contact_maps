@@ -505,7 +505,7 @@ class ContactGNN(nn.Module):
 
         head = []
         if self.head_architecture == 'fc':
-            for i, output_size in enumerate(hidden_sizes_list):
+            for i, output_size in enumerate(head_hidden_sizes_list):
                 if i == len(hidden_sizes_list) - 1:
                     act = self.out_act
                 else:
@@ -515,7 +515,7 @@ class ContactGNN(nn.Module):
 
             self.head = nn.Sequential(*head)
         elif self.head_architecture == 'gcn':
-            for i, output_size in enumerate(hidden_sizes_list):
+            for i, output_size in enumerate(head_hidden_sizes_list):
                 module = (gnn.GCNConv(input_size, output_size),
                             'x, edge_index -> x')
                 if i == len(hidden_sizes_list) - 1:
@@ -531,7 +531,6 @@ class ContactGNN(nn.Module):
             latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
         elif self.message_passing == 'signedconv':
             latent = self.model(graph.x, graph.edge_index, graph.neg_edge_index)
-
         if self.head_architecture is None:
             out = latent
         elif self.head_architecture == 'gcn':

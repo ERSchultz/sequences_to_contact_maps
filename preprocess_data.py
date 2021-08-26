@@ -13,9 +13,9 @@ from neural_net_utils.dataset_classes import Names, make_dataset
 
 def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
-    parser.add_argument('--input_folder', type=str, default='dataset_fixed', help='Location of input data')
-    parser.add_argument('--output_folder', type=str, default='dataset_fixed', help='Location to write data to')
-    parser.add_argument('--min_sample', type=int, help='minimum sample id')
+    parser.add_argument('--input_folder', type=str, default='dataset_08_18_21', help='Location of input data')
+    parser.add_argument('--output_folder', type=str, default='dataset_08_18_21', help='Location to write data to')
+    parser.add_argument('--min_sample', type=int, default=0, help='minimum sample id')
 
     # dataloader args
     parser.add_argument('--split', type=str2list, default=[0.8, 0.1, 0.1], help='Train, val, test split for dataset')

@@ -525,9 +525,10 @@ def plotPerClassAccuracy(val_dataloader, imagePath, model, opt, title = None):
     plt.close()
 
 def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt):
-    """Plots Pearson correlation as a function of genomic distance"""
-    p_arr = np.zeros((opt.valN, opt.m-1))
+    """Plots Pearson correlation as a function of genomic distance."""
+    p_arr = np.zeros((opt.valN, opt.m-2))
     P_arr_overall = np.zeros(opt.valN)
+    avg_arr = np.zeros(opt.valN)
     model.eval()
     for i, data in enumerate(val_dataloader):
         if opt.GNN_mode:
@@ -561,10 +562,12 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
         yhat = yhat.reshape((opt.m,opt.m))
 
         overall_corr, corr_arr = calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson')
+        avg = np.nanmean(corr_arr)
         if opt.verbose:
-            print(overall_corr, corr_arr)
+            print(overall_corr, corr_arr, avg)
         P_arr_overall[i] = overall_corr
         p_arr[i, :] = corr_arr
+        avg_arr[i] = avg
 
     p_mean = np.mean(p_arr, axis = 0)
     np.save(osp.join(imagePath, 'distance_pearson_mean.npy'), p_mean)
@@ -572,11 +575,12 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
     np.save(osp.join(imagePath, 'distance_pearson_std.npy'), p_std)
 
     title = r'Overall Pearson R: {} $\pm$ {}'.format(np.round(np.mean(P_arr_overall), 3), np.round(np.std(P_arr_overall),3))
+    title += r'\nAvg Dist Pearson R: {} $\pm$ {}'.format(np.round(np.mean(avg_arr), 3), np.round(np.std(avg_arr),3))
     print('Distance Stratified Pearson Correlation Results:', file = opt.log_file)
     print(title, end = '\n\n', file = opt.log_file)
 
-    plt.plot(np.arange(opt.m-1), p_mean, color = 'black', label = 'mean')
-    plt.fill_between(np.arange(opt.m-1), p_mean + p_std, p_mean - p_std, color = 'red', alpha = 0.5, label = 'std')
+    plt.plot(np.arange(opt.m-2), p_mean, color = 'black', label = 'mean')
+    plt.fill_between(np.arange(opt.m-2), p_mean + p_std, p_mean - p_std, color = 'red', alpha = 0.5, label = 'std')
     plt.ylim(-0.5, 1)
     plt.xlabel('Distance', fontsize = 16)
     plt.ylabel('Pearson Correlation Coefficient', fontsize = 16)

@@ -181,11 +181,12 @@ def finalizeOpt(opt, parser, local = False):
         assert opt.GNN_mode, 'mode should be GNN'
 
     # configure GNN transforms
-    opt.node_feature_size = 0
-    if opt.use_node_features:
-        opt.node_feature_size += opt.k
-    else:
-        assert opt.transforms is not None or opt.pre_transforms is not None, "need feature augmentation"
+    if opt.GNN_mode:
+        opt.node_feature_size = 0
+        if opt.use_node_features:
+            opt.node_feature_size += opt.k
+        else:
+            assert opt.transforms is not None or opt.pre_transforms is not None, "need feature augmentation"
 
     if opt.transforms is not None:
         transforms_processed = []
