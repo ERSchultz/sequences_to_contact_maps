@@ -262,7 +262,8 @@ def getPercentiles(arr, prcnt_arr, plot = True):
 
 def generateDistStats(y, mode = 'freq', stat = 'mean'):
     '''
-    Calculates statistics of contact frequency/probability as a function of distance
+    Calculates statistics of contact frequency/probability as a function of genomic distance
+    (i.e. along a give diagonal)
 
     Inputs:
         mode: freq for frequencies, prob for probabilities
