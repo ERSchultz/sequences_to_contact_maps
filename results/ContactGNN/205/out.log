@@ -1,0 +1,96 @@
+Namespace(GNN_mode=True, act='relu', autoencoder_mode=False, batch_size=8, bottleneck=None, classes=10, criterion=<function binary_cross_entropy_with_logits at 0x7fe3facfae50>, crop=None, cuda=True, data_folder='/scratch/midway2/erschultz/dataset_08_18_21', degree=True, delete_root=False, device=device(type='cuda'), dilation_list=None, dilation_list_head=None, dilation_list_trunk=None, down_sampling=None, gamma=0.1, gpus=1, head_act='relu', head_architecture='fc', head_hidden_sizes_list=[4], hidden_sizes_list=[16, 8], id=205, ifile=None, ifile_folder=None, k=4, kernel_w_list=None, log_file=<_io.TextIOWrapper name='results/ContactGNN/205/out.log' mode='a' encoding='UTF-8'>, loss='BCE', lr=0.01, m=1024, message_passing='SignedConv', milestones=None, min_subtraction=True, model_type='ContactGNN', n_epochs=50, nf=None, node_feature_size=3, num_workers=4, ofile_folder='results/ContactGNN/205', out_act=None, output_mode='sequence', parameter_sharing=False, plot=True, plot_predictions=True, pre_transforms=['degree'], pre_transforms_processed=Compose([
+
+]), pretrained=False, print_mod=2, relabel_11_to_00=False, resume_training=False, root_name='ContactGNN3', save_mod=5, seed=42, shuffle=True, sparsify_threshold=0.176, sparsify_threshold_upper=None, split=[0.8, 0.1, 0.1], split_neg_pos_edges=True, split_neg_pos_edges_for_feature_augmentation=True, start_epoch=1, top_k=None, toxx=False, toxx_mode='mean', training_norm=None, transforms=None, transforms_processed=None, use_bias=True, use_edge_weights=False, use_node_features=False, use_parallel=False, use_scratch=True, verbose=False, weighted_LDP=False, weighted_degree=False, x_reshape=True, y_log_transform=True, y_norm=None, y_preprocessing='diag', y_reshape=True, ydtype=torch.float32)
+
+Epoch 2, loss = 0.6392
+Mean test/val loss: 0.6409
+
+Epoch 4, loss = 0.6371
+Mean test/val loss: 0.6417
+
+Epoch 6, loss = 0.6355
+Mean test/val loss: 0.6379
+
+Epoch 8, loss = 0.6335
+Mean test/val loss: 0.6376
+
+Epoch 10, loss = 0.6322
+Mean test/val loss: 0.6353
+
+Epoch 12, loss = 0.6315
+Mean test/val loss: 0.6343
+
+Epoch 14, loss = 0.6310
+Mean test/val loss: 0.6342
+
+Epoch 16, loss = 0.6302
+Mean test/val loss: 0.6335
+
+Epoch 18, loss = 0.6297
+Mean test/val loss: 0.6329
+
+Epoch 20, loss = 0.6295
+Mean test/val loss: 0.6331
+
+Epoch 22, loss = 0.6290
+Mean test/val loss: 0.6331
+
+Epoch 24, loss = 0.6289
+Mean test/val loss: 0.6319
+
+Epoch 26, loss = 0.6287
+Mean test/val loss: 0.6319
+
+Epoch 28, loss = 0.6283
+Mean test/val loss: 0.6316
+
+Epoch 30, loss = 0.6280
+Mean test/val loss: 0.6332
+
+Epoch 32, loss = 0.6278
+Mean test/val loss: 0.6311
+
+Epoch 34, loss = 0.6281
+Mean test/val loss: 0.6312
+
+Epoch 36, loss = 0.6279
+Mean test/val loss: 0.6327
+
+Epoch 38, loss = 0.6276
+Mean test/val loss: 0.6312
+
+Epoch 40, loss = 0.6274
+Mean test/val loss: 0.6307
+
+Epoch 42, loss = 0.6275
+Mean test/val loss: 0.6300
+
+Epoch 44, loss = 0.6273
+Mean test/val loss: 0.6305
+
+Epoch 46, loss = 0.6273
+Mean test/val loss: 0.6329
+
+Epoch 48, loss = 0.6267
+Mean test/val loss: 0.6304
+
+Epoch 50, loss = 0.6267
+Mean test/val loss: 0.6309
+
+Total parameters: 1,076
+Total time: 18958.57507610321
+Final val loss: 0.630918698310852
+
+#### Plotting Script ####
+ROC Curve Results:
+AUC: type 0 = 0.5 type 1 = 0.693
+type 2 = 0.841 type 3 = 0.612
+
+
+Max accuracy at t = 0.5: 0.647 +- 0.04
+Corresponding FPR = [0.    0.065 0.13  0.444] +- [0.    0.06  0.103 0.12 ] and TPR = [0.    0.436 0.759 0.624] +- [0.    0.086 0.11  0.117]
+results/ContactGNN/205/sample1230
+results/ContactGNN/205/sample1761
+results/ContactGNN/205/sample40
+results/ContactGNN/205/sample1751
+results/ContactGNN/205/sample1718
