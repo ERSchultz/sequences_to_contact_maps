@@ -1216,8 +1216,8 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    # updateResultTables('ContactGNN', 'GNN', 'sequence')
-    plotCombinedModels('ContactGNN', [202, 203, 204])
+    updateResultTables('ContactGNN', 'GNN', 'sequence')
+    # plotCombinedModels('ContactGNN', [202, 203, 204])
     # main()
     # freqSampleDistributionPlots('dataset_04_18_21', sample_id=40, k=2)
     # freqDistDistriutionPlots('dataset_08_24_21')
