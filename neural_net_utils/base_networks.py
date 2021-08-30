@@ -292,19 +292,28 @@ class Symmetrize2D(nn.Module):
         super(Symmetrize2D, self).__init__()
 
     def forward(self, x):
-        # assume x is of shape N x C x H x W
-        return  (x + torch.transpose(x, 2, 3)) / 2
+
+        if len(x.shape) == 4:
+            # assume x is of shape N x C x H x W
+            return  (x + torch.transpose(x, 2, 3)) / 2
+        elif len(x.shape) == 3:
+            # assume x is of shape N x H x W
+            return  (x + torch.transpose(x, 1, 2)) / 2
+        else:
+            raise Exception('Invalid shape: {}'.format(x.shape))
 
 class AverageTo2d(nn.Module):
     '''https://github.com/calico/basenji/blob/master/basenji/layers.py'''
-    def __init__(self, concat_d = False, n = None):
+    def __init__(self, concat_d = False, n = None, mode = 'avg'):
         """
         Inputs:
             concat_d: True if positional encoding should be appended
             n: spatial dimension
+            mode: 'average' for default mode, 'concat' to concat instead of average
         """
         super(AverageTo2d, self).__init__()
         self.concat_d = concat_d
+        self.mode = mode
         if concat_d:
             assert n is not None
             d = torch.zeros((n, n))
@@ -317,19 +326,24 @@ class AverageTo2d(nn.Module):
             self.d = d
 
     def forward(self, x):
-        # assume x is of shape N x C x n
+        # assume x is of shape N x C x m
         # memory expensive
         assert len(x.shape) == 3, "shape must be 3D"
-        N, C, n = x.shape
-        x1 = torch.tile(x, (1, 1, n))
-        x1 = torch.reshape(x1, (-1, C, n, n))
+        N, C, m = x.shape
+        x1 = torch.tile(x, (1, 1, m))
+        x1 = torch.reshape(x1, (-1, C, m, m))
         x2 = torch.transpose(x1, 2, 3)
 
-        x1 = torch.unsqueeze(x1, 0)
-        x2 = torch.unsqueeze(x2, 0)
-        out = torch.cat((x1, x2), dim = 0)
+        if self.mode == 'avg':
+            x1 = torch.unsqueeze(x1, 0)
+            x2 = torch.unsqueeze(x2, 0)
+            out = torch.cat((x1, x2), dim = 0)
+            out = torch.mean(out, dim = 0, keepdim = False)
+        elif self.mode == 'concat':
+            out = torch.cat((x1, x2), dim = 1)
+
         del x1, x2
-        out = torch.mean(out, dim = 0, keepdim = False)
+
         if self.concat_d:
             # append abs(i - j)
             if out.is_cuda:
@@ -340,12 +354,15 @@ class AverageTo2d(nn.Module):
 
 def main():
     sym = Symmetrize2D()
+    avg = AverageTo2d(mode = 'concat')
     x = np.array([[[5,6,7],[3,9,12],[0, 7, 8]], [[5,3,1],[4,5,12],[0, 13, 7]]])
-    x = np.reshape(x, (1, 2, 3, 3))
-    x = torch.tensor(x, dtype = torch.int16)
-    print(x)
-    x = sym(x)
-    print(x)
+    x = np.reshape(x, (-1, 3, 6))
+    x = torch.tensor(x, dtype = torch.float32)
+    print(x, x.shape)
+    x = avg(x)
+    print(x.shape)
+    print(x[:, :, 0, 1])
+    print(x[:, :, 1, 0])
 
 
 if __name__ == '__main__':

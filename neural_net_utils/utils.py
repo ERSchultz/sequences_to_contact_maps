@@ -339,7 +339,7 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
         if opt.GNN_mode:
             data = data.to(opt.device)
             assert opt.autoencoder_mode
-            y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.m, opt.m))
+            y = data.contact_map
             yhat = model(data)
             yhat = torch.reshape(yhat, (opt.m, opt.m))
             path = data.path[0]
@@ -393,10 +393,8 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
     for i, data in enumerate(val_dataloader):
         if opt.GNN_mode:
             data = data.to(opt.device)
-            if opt.autoencoder_mode:
-                y = torch.reshape(torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr), (opt.m, opt.m))
-            else:
-                y = data.y
+            assert opt.autoencoder_mode
+            y = data.contact_map
             yhat = model(data)
             path = data.path[0]
             minmax = data.minmax

@@ -101,6 +101,9 @@ def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
                 if opt.autoencoder_mode:
                     y = data.contact_map
                     y = torch.reshape(y, (-1, opt.m, opt.m))
+                elif opt.output_mode == 'energy':
+                    y = data.energy
+                    y = torch.reshape(y, (-1, opt.m, opt.m))
                 else:
                     y = data.y
                 yhat = model(data)
@@ -165,6 +168,9 @@ def test(loader, model, opt, toprint, ofile = sys.stdout):
                 data = data.to(opt.device)
                 if opt.autoencoder_mode:
                     y = data.contact_map
+                    y = torch.reshape(y, (-1, opt.m, opt.m))
+                elif opt.output_mode == 'energy':
+                    y = data.energy
                     y = torch.reshape(y, (-1, opt.m, opt.m))
                 else:
                     y = data.y

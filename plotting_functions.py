@@ -533,11 +533,9 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
     for i, data in enumerate(val_dataloader):
         if opt.GNN_mode:
             data = data.to(opt.device)
-            if opt.autoencoder_mode:
-                y = data.contact_map
-                y = torch.reshape(y, (-1, opt.m, opt.m))
-            else:
-                y = data.y
+            assert opt.autoencoder_mode
+            y = data.contact_map
+            y = torch.reshape(y, (-1, opt.m, opt.m))
             yhat = model(data)
             minmax = data.minmax
             path = data.path[0]
@@ -600,6 +598,81 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
     plt.savefig(osp.join(imagePath, 'distance_pearson.png'))
     plt.close()
 
+def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
+    print('Prediction Results:', file = opt.log_file)
+    assert opt.output_mode == 'energy'
+    if opt.y_preprocessing is not None:
+        preprocessing = opt.y_preprocessing.capitalize()
+    else:
+        preprocessing = 'None'
+    if opt.y_norm is not None:
+        y_norm = opt.y_norm.capitalize()
+    else:
+         y_norm = 'None'
+    upper_title = 'Y Preprocessing: {}, Y Norm: {}'.format(preprocessing, y_norm)
+
+
+    loss_arr = np.zeros(opt.valN)
+    for i, data in enumerate(val_dataloader):
+        if i == count:
+            break
+        if opt.GNN_mode:
+            data = data.to(opt.device)
+            y = data.energy
+            y = torch.reshape(y, (-1, opt.m, opt.m))
+            yhat = model(data)
+            minmax = data.minmax
+            path = data.path[0]
+        else:
+            x, y, path, minmax = data
+            x = x.to(opt.device)
+            y = y.to(opt.device)
+            path = path[0]
+            yhat = model(x)
+        loss = opt.criterion(yhat, y).item()
+        y = y.cpu().numpy().reshape((opt.m, opt.m))
+
+        sample = osp.split(path)[-1]
+        subpath = osp.join(opt.ofile_folder, sample)
+        print(subpath, file = opt.log_file)
+        if not osp.exists(subpath):
+            os.mkdir(subpath, mode = 0o755)
+
+        if opt.loss == 'mse':
+            loss_title = 'MSE Loss'
+        elif opt.loss == 'cross_entropy':
+            loss_title = 'Cross Entropy Loss'
+        elif opt.loss == 'BCE':
+            loss_title = 'Binary Cross Entropy Loss'
+        else:
+            loss_title = 'Loss'
+
+        if opt.loss == 'BCE':
+            # using BCE with logits loss, which combines sigmoid into loss
+            # so need to do sigmoid here
+            yhat = torch.sigmoid(yhat)
+        yhat = yhat.cpu().detach().numpy()
+        yhat = yhat.reshape((opt.m,opt.m))
+
+        yhat_title = '{}\nYhat ({}: {})'.format(upper_title, loss_title, np.round(loss, 3))
+
+        loss_arr[i] = loss
+        if opt.verbose:
+            print('y', y, np.max(y))
+            print('yhat', yhat, np.max(yhat))
+
+        cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                 [(0,    'white'),
+                                                  (1,    'blue')], N=126)
+        # not a contat map but using this function anyways
+        v_max = np.max(y)
+        plotContactMap(yhat, osp.join(subpath, 'energy_hat.png'), vmax = v_max, cmap = cmap, title = r'$\hat{S}$')
+        plotContactMap(y, osp.join(subpath, 'energy.png'), vmax = v_max, cmap = cmap, title = r'$S$')
+
+
+    print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
+
+
 def plotPredictions(val_dataloader, model, opt, count = 5):
     print('Prediction Results:', file = opt.log_file)
     if opt.y_preprocessing != 'prcnt':
@@ -624,11 +697,9 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
             break
         if opt.GNN_mode:
             data = data.to(opt.device)
-            if opt.autoencoder_mode:
-                y = data.contact_map
-                y = torch.reshape(y, (-1, opt.m, opt.m))
-            else:
-                y = data.y
+            assert opt.autoencoder_mode
+            y = data.contact_map
+            y = torch.reshape(y, (-1, opt.m, opt.m))
             yhat = model(data)
             minmax = data.minmax
             path = data.path[0]
@@ -723,6 +794,7 @@ def plotPCAReconstructions(y, y_torch, subpath, opt, loss_title, minmax):
         plotContactMap(y_pca, osp.join(subpath, 'y_pc{}.png'.format(k+1)), vmax = np.max(un_normalize(y, minmax)), prcnt = False, title = 'Yhat Top {} PCs\n{}: {}'.format(k+1, loss_title, np.round(loss, 3)))
 
 def plotROCCurve(val_dataloader, imagePath, model, opt):
+    assert opt.output_mode == 'sequence'
     # here y is the ground truth particle types
     # and yhat is the predicted particle types
     steps = 101 # step size of 0.01
@@ -1136,14 +1208,13 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
     if opt.plot:
         if opt.output_mode == 'contact':
             comparePCA(val_dataloader, imagePath, model, opt)
-
             plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt)
-
             plotPerClassAccuracy(val_dataloader, imagePath, model, opt)
-
         elif opt.output_mode == 'sequence':
             plotROCCurve(val_dataloader, imagePath, model, opt)
-
+        elif opt.output_mode == 'energy':
+            pass
+            # TODO
         else:
             raise Exception("Unkown output_mode {}".format(opt.output_mode))
 
@@ -1151,11 +1222,13 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
     if opt.plot_predictions:
         if opt.output_mode == 'contact':
             plotPredictions(val_dataloader, model, opt)
-
-        if opt.model_type in {'ContactGNN', 'SequenceFCAutoencoder'}:
-            plotParticleDistribution(val_dataloader, model, opt, use_latent = False)
-        elif opt.model_type == 'GNNAutoencoder':
-            plotParticleDistribution(val_dataloader, model, opt, use_latent = True)
+        elif opt.output_mode == 'sequence':
+            if opt.model_type in {'ContactGNN', 'SequenceFCAutoencoder'}:
+                plotParticleDistribution(val_dataloader, model, opt, use_latent = False)
+            elif opt.model_type == 'GNNAutoencoder':
+                plotParticleDistribution(val_dataloader, model, opt, use_latent = True)
+        elif opt.output_mode == 'energy':
+            plotEnergyPredictions(val_dataloader, model, opt)
 
 def interogateParams(model, opt):
     if model is None:

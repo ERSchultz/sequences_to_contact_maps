@@ -84,7 +84,7 @@ def debugModel(model_type):
     opt.y_preprocessing = 'diag'
     opt.y_norm = 'instance'
     opt.loss = 'mse'
-    opt.split=[0.2,0.2,0.6]
+    opt.split=[0.6,0.2,0.2]
 
     if model_type == 'Akita':
         opt.kernel_w_list=str2list('5-5-5')
@@ -124,27 +124,27 @@ def debugModel(model_type):
         opt.top_k = 500
         opt.parameter_sharing = True
     elif model_type == 'ContactGNN':
-        opt.loss = 'BCE'
+        opt.loss = 'mse'
         opt.y_norm = None
-        opt.message_passing='SignedConv'
+        opt.message_passing='GCN'
         opt.GNN_mode = True
-        opt.output_mode = 'sequence'
-        opt.hidden_sizes_list=str2list('8')
-        opt.out_act = None
+        opt.output_mode = 'energy'
+        opt.hidden_sizes_list=str2list('8-4')
+        opt.out_act = 'relu'
         opt.use_node_features = False
         opt.use_edge_weights = False
         opt.transforms=str2list('none')
         opt.pre_transforms=str2list('degree')
         opt.split_neg_pos_edges_for_feature_augmentation = False
         opt.top_k = None
-        opt.sparsify_threshold = 0.176
+        opt.sparsify_threshold = 1
         opt.sparsify_threshold_upper = None
         opt.relabel_11_to_00 = False
-        opt.y_log_transform = True
-        opt.head_architecture = 'fc'
-        opt.head_hidden_sizes_list = [4]
-        opt.crop=[0,20]
-        opt.m = 20
+        opt.y_log_transform = False
+        opt.head_architecture = 'avg'
+        opt.head_hidden_sizes_list = [4,1]
+        opt.crop=[0,300]
+        opt.m = 300
         opt.use_bias = False
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
@@ -161,7 +161,7 @@ def debugModel(model_type):
     # hyperparameters
     opt.n_epochs = 1
     opt.lr = 1e-3
-    opt.batch_size = 1
+    opt.batch_size = 2
     opt.milestones = str2list('1')
     opt.gamma = 0.1
 
@@ -243,8 +243,8 @@ def plot_fixed():
 
 if __name__ == '__main__':
     # edit_argparse()
-    # debugModel('ContactGNN')
-    plot_fixed()
+    debugModel('ContactGNN')
+    # plot_fixed()
     # test_argpartition(10)
     # to_mat()
     # downsampling_test()

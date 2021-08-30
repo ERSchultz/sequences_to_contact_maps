@@ -442,7 +442,7 @@ class ContactGNN(nn.Module):
             out_act: output activation
             message_passing: type of message passing algorithm to use
             use_edge_weights: True to use edge weights
-            head_architecture: type of head architecture {'FC', 'GCN', None}
+            head_architecture: type of head architecture {'FC', 'GCN', 'Avg', 'Concat', None}
             head_hidden_sizes_list: hidden sizes of head architecture
             use_bias: true to use bias term in message passing (used in head regardless)
         '''
@@ -451,7 +451,7 @@ class ContactGNN(nn.Module):
         self.m = m
         self.message_passing = message_passing.lower()
         self.use_edge_weights = use_edge_weights
-        assert head_architecture in {'FC', 'fc', 'GCN', 'gcn', None}, 'Unsupported head architecture {}'.format(head_architecture)
+        assert head_architecture is None or head_architecture.lower() in {'fc', 'gcn', 'avg', 'concat'}, 'Unsupported head architecture {}'.format(head_architecture)
         if head_architecture is not None:
             head_architecture = head_architecture.lower()
         self.head_architecture = head_architecture
@@ -498,16 +498,17 @@ class ContactGNN(nn.Module):
             # so the total length is 2 * output_size
 
             self.model = gnn.Sequential('x, pos_edge_index, neg_edge_index', model)
-
         else:
             raise Exception("Unkown message_passing {}".format(message_passing))
         print(self.model)
 
+        ### Head Architecture ###
         head = []
         if self.head_architecture == 'fc':
             for i, output_size in enumerate(head_hidden_sizes_list):
                 if i == len(hidden_sizes_list) - 1:
                     act = self.out_act
+                    assert output_size == 1, "Final size must be 1 not {}".format(output_size)
                 else:
                     act = self.head_act
                 head.append(LinearBlock(input_size, output_size, activation = act))
@@ -515,6 +516,7 @@ class ContactGNN(nn.Module):
 
             self.head = nn.Sequential(*head)
         elif self.head_architecture == 'gcn':
+            # TODO not sure if I ever tested this
             for i, output_size in enumerate(head_hidden_sizes_list):
                 module = (gnn.GCNConv(input_size, output_size),
                             'x, edge_index -> x')
@@ -525,18 +527,40 @@ class ContactGNN(nn.Module):
                 input_size = output_size
 
             self.head = gnn.Sequential('x, edge_index', head)
+        elif self.head_architecture in {'avg', 'concat'}:
+            # Uses linear layers according to head_hidden_sizes_list after averaging to 2D
+            self.to2D = AverageTo2d(mode = self.head_architecture)
+            for i, output_size in enumerate(head_hidden_sizes_list):
+                if i == len(hidden_sizes_list) - 1:
+                    act = self.out_act
+                else:
+                    act = self.head_act
+                head.append(LinearBlock(input_size, output_size, activation = act))
+                input_size = output_size
+
+            self.head = nn.Sequential(*head)
 
     def forward(self, graph):
         if self.message_passing == 'gcn':
             latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
         elif self.message_passing == 'signedconv':
             latent = self.model(graph.x, graph.edge_index, graph.neg_edge_index)
+
         if self.head_architecture is None:
             out = latent
         elif self.head_architecture == 'gcn':
             out = self.head(latent, graph.edge_index)
         elif self.head_architecture == 'fc':
             out = self.head(latent)
+        elif self.head_architecture in {'avg', 'concat'}:
+            _, output_size = latent.shape
+            latent = torch.reshape(latent, (-1, output_size, self.m))
+            latent = self.to2D(latent)
+            _, output_size, _, _ = latent.shape
+            latent = torch.reshape(latent, (-1, self.m, self.m, output_size))
+            out = self.head(latent)
+            out = torch.reshape(out, (-1, self.m, self.m))
+
         return out
 
     def get_first_layer(self, graph):
