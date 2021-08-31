@@ -530,6 +530,8 @@ class ContactGNN(nn.Module):
         elif self.head_architecture in {'avg', 'concat'}:
             # Uses linear layers according to head_hidden_sizes_list after averaging to 2D
             self.to2D = AverageTo2d(mode = self.head_architecture)
+            if self.head_architecture == 'concat':
+                input_size *= 2 # concat doubles size
             for i, output_size in enumerate(head_hidden_sizes_list):
                 if i == len(hidden_sizes_list) - 1:
                     act = self.out_act
@@ -554,15 +556,11 @@ class ContactGNN(nn.Module):
             out = self.head(latent)
         elif self.head_architecture in {'avg', 'concat'}:
             _, output_size = latent.shape
-            print('1', latent.shape)
             latent = torch.reshape(latent, (-1, output_size, self.m))
-            print('2', latent.shape)
             latent = self.to2D(latent)
             _, output_size, _, _ = latent.shape
-            print('3', latent.shape)
             latent = torch.reshape(latent, (-1, self.m, self.m, output_size))
-            print('4', latent.shape)
-            out = self.head(latent) # broke here ?? TODO
+            out = self.head(latent)
             out = torch.reshape(out, (-1, self.m, self.m))
 
         return out
