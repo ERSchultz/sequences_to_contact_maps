@@ -1,8 +1,8 @@
 #! /bin/bash
 #SBATCH --job-name=ContactGNNEnergy
 #SBATCH --output=logFiles/ContactGNNEnergy.out
-#SBATCH --time=24:00:00
-#SBATCH --partition=depablo-gpu
+#SBATCH --time=1:00:00
+#SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
@@ -53,7 +53,6 @@ cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2
 
 for headArchitecture in 'avg' 'concat'
-  echo $headArchitecture
 do
   for preTransforms in 'degree'
   do

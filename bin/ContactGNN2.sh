@@ -2,7 +2,7 @@
 #SBATCH --job-name=ContactGNN2
 #SBATCH --output=logFiles/ContactGNN2.out
 #SBATCH --time=20:00:00
-#SBATCH --partition=gpu2
+#SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
