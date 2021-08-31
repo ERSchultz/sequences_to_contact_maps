@@ -8,7 +8,7 @@
 #SBATCH --ntasks-per-node=4
 #SBATCH --mem-per-cpu=2000
 
-dirname="/project2/depablo/erschultz/dataset_08_24_21"
+dirname="/project2/depablo/erschultz/dataset_04_18_21"
 deleteRoot='false'
 
 modelType='ContactGNN'
@@ -52,7 +52,7 @@ relabel_11_to_00='false'
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2
 
-for headArchitecture in 'concat'
+for headArchitecture in 'concat' 'avg'
 do
   for preTransforms in 'degree'
   do
