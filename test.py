@@ -71,6 +71,9 @@ def debugModel(model_type):
     parser = getBaseParser()
     opt = parser.parse_args()
 
+    # dataset
+    opt.data_folder = "dataset_08_24_21"
+
     # Preprocessing
     if model_type == 'UNet':
         opt.toxx = True
@@ -78,12 +81,10 @@ def debugModel(model_type):
         opt.x_reshape = False
 
     # architecture
-    opt.k = 4
+    opt.k = 2
     opt.crop = None
     opt.m = 1024
     opt.y_preprocessing = 'diag'
-    opt.y_norm = 'instance'
-    opt.loss = 'mse'
     opt.split=[0.6,0.2,0.2]
 
     if model_type == 'Akita':
@@ -126,26 +127,26 @@ def debugModel(model_type):
     elif model_type == 'ContactGNN':
         opt.loss = 'mse'
         opt.y_norm = None
-        opt.message_passing='GCN'
+        opt.message_passing='SignedConv'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
-        opt.hidden_sizes_list=str2list('8-4')
+        opt.hidden_sizes_list=str2list('16-4')
         opt.out_act = 'relu'
         opt.use_node_features = False
         opt.use_edge_weights = False
         opt.transforms=str2list('none')
         opt.pre_transforms=str2list('degree')
-        opt.split_neg_pos_edges_for_feature_augmentation = False
+        opt.split_neg_pos_edges_for_feature_augmentation = True
         opt.top_k = None
-        opt.sparsify_threshold = 1
+        opt.sparsify_threshold = 0.176
         opt.sparsify_threshold_upper = None
         opt.relabel_11_to_00 = False
-        opt.y_log_transform = False
+        opt.y_log_transform = True
         opt.head_architecture = 'avg'
         opt.head_hidden_sizes_list = [4,1]
         opt.crop=[0,300]
         opt.m = 300
-        opt.use_bias = False
+        opt.use_bias = True
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
         opt.autoencoder_mode = True
@@ -161,7 +162,7 @@ def debugModel(model_type):
     # hyperparameters
     opt.n_epochs = 1
     opt.lr = 1e-3
-    opt.batch_size = 2
+    opt.batch_size = 3
     opt.milestones = str2list('1')
     opt.gamma = 0.1
 
@@ -169,7 +170,6 @@ def debugModel(model_type):
     opt.plot = True
     opt.plot_predictions = True
     opt.verbose = False
-    opt.data_folder = "dataset_08_18_21"
 
     opt = finalizeOpt(opt, parser, True)
 

@@ -554,11 +554,15 @@ class ContactGNN(nn.Module):
             out = self.head(latent)
         elif self.head_architecture in {'avg', 'concat'}:
             _, output_size = latent.shape
+            print('1', latent.shape)
             latent = torch.reshape(latent, (-1, output_size, self.m))
+            print('2', latent.shape)
             latent = self.to2D(latent)
             _, output_size, _, _ = latent.shape
+            print('3', latent.shape)
             latent = torch.reshape(latent, (-1, self.m, self.m, output_size))
-            out = self.head(latent)
+            print('4', latent.shape)
+            out = self.head(latent) # broke here ?? TODO
             out = torch.reshape(out, (-1, self.m, self.m))
 
         return out
