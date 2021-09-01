@@ -130,7 +130,7 @@ def debugModel(model_type):
         opt.message_passing='SignedConv'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
-        opt.hidden_sizes_list=str2list('16-4')
+        opt.hidden_sizes_list=str2list('3-3')
         opt.out_act = 'relu'
         opt.use_node_features = False
         opt.use_edge_weights = False
@@ -143,9 +143,9 @@ def debugModel(model_type):
         opt.relabel_11_to_00 = False
         opt.y_log_transform = True
         opt.head_architecture = 'concat'
-        opt.head_hidden_sizes_list = [4,1]
-        opt.crop=[0,300]
-        opt.m = 300
+        opt.head_hidden_sizes_list = [1]
+        opt.crop=[20,100]
+        opt.m = 80
         opt.use_bias = True
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
@@ -161,15 +161,15 @@ def debugModel(model_type):
 
     # hyperparameters
     opt.n_epochs = 1
-    opt.lr = 1e-3
-    opt.batch_size = 3
+    opt.lr = 1e-5
+    opt.batch_size = 1
     opt.milestones = str2list('1')
     opt.gamma = 0.1
 
     # other
-    opt.plot = True
-    opt.plot_predictions = True
-    opt.verbose = False
+    opt.plot = False
+    opt.plot_predictions = False
+    opt.verbose = True
 
     opt = finalizeOpt(opt, parser, True)
 
@@ -240,6 +240,14 @@ def plot_fixed():
             plt.savefig('dataset_fixed/samples/distance_pearson_i{}j{}.png'.format(i, j))
             plt.close()
 
+def main():
+    x1 = np.array([0,1])
+    x2 = np.array([1,1])
+    chi = np.array([[-1, 1],[1, 0]])
+
+    s = x1 @ chi @ x2
+    print(s)
+    print(x1 @ chi)
 
 if __name__ == '__main__':
     # edit_argparse()
@@ -248,3 +256,4 @@ if __name__ == '__main__':
     # test_argpartition(10)
     # to_mat()
     # downsampling_test()
+    main()
