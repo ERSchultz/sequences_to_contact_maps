@@ -52,7 +52,7 @@ relabel_11_to_00='false'
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2
 
-for headArchitecture in 'concat'
+for headArchitecture in 'outer'
 do
   for preTransforms in 'degree'
   do

@@ -451,7 +451,7 @@ class ContactGNN(nn.Module):
         self.m = m
         self.message_passing = message_passing.lower()
         self.use_edge_weights = use_edge_weights
-        assert head_architecture is None or head_architecture.lower() in {'fc', 'gcn', 'avg', 'concat'}, 'Unsupported head architecture {}'.format(head_architecture)
+        assert head_architecture is None or head_architecture.lower() in {'fc', 'gcn', 'avg', 'concat', 'outer'}, 'Unsupported head architecture {}'.format(head_architecture)
         if head_architecture is not None:
             head_architecture = head_architecture.lower()
         self.head_architecture = head_architecture
@@ -527,11 +527,13 @@ class ContactGNN(nn.Module):
                 input_size = output_size
 
             self.head = gnn.Sequential('x, edge_index', head)
-        elif self.head_architecture in {'avg', 'concat'}:
+        elif self.head_architecture in {'avg', 'concat', 'outer'}:
             # Uses linear layers according to head_hidden_sizes_list after averaging to 2D
             self.to2D = AverageTo2d(mode = self.head_architecture)
             if self.head_architecture == 'concat':
                 input_size *= 2 # concat doubles size
+            if self.head_architecture == 'outer':
+                input_size *= input_size # outer squares size
             for i, output_size in enumerate(head_hidden_sizes_list):
                 if i == len(hidden_sizes_list) - 1:
                     act = self.out_act
@@ -554,7 +556,7 @@ class ContactGNN(nn.Module):
             out = self.head(latent, graph.edge_index)
         elif self.head_architecture == 'fc':
             out = self.head(latent)
-        elif self.head_architecture in {'avg', 'concat'}:
+        elif self.head_architecture in {'avg', 'concat', 'outer'}:
             _, output_size = latent.shape
             latent = torch.reshape(latent, (-1, output_size, self.m))
             latent = self.to2D(latent)

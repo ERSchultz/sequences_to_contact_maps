@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import math
 import numpy as np
+import time
 
 def actToModule(act):
     '''
@@ -309,9 +310,10 @@ class AverageTo2d(nn.Module):
         Inputs:
             concat_d: True if positional encoding should be appended
             n: spatial dimension
-            mode: 'average' for default mode, 'concat' to concat instead of average
+            mode: 'average' for default mode, 'concat' to concat instead of average, 'outer' to use outer product
         """
         super(AverageTo2d, self).__init__()
+        assert mode in {'avg', 'concat', 'outer'}, 'Invalid mode: {}'.format(mode)
         self.concat_d = concat_d
         self.mode = mode
         if concat_d:
@@ -330,17 +332,36 @@ class AverageTo2d(nn.Module):
         # memory expensive
         assert len(x.shape) == 3, "shape must be 3D"
         N, C, m = x.shape
-        x1 = torch.tile(x, (1, 1, m))
-        x1 = torch.reshape(x1, (-1, C, m, m))
-        x2 = torch.transpose(x1, 2, 3)
+
+
 
         if self.mode == 'avg':
+            x1 = torch.tile(x, (1, 1, m))
+            x1 = torch.reshape(x1, (-1, C, m, m))
+            x2 = torch.transpose(x1, 2, 3)
             x1 = torch.unsqueeze(x1, 0)
             x2 = torch.unsqueeze(x2, 0)
             out = torch.cat((x1, x2), dim = 0)
             out = torch.mean(out, dim = 0, keepdim = False)
         elif self.mode == 'concat':
+            x1 = torch.tile(x, (1, 1, m))
+            x1 = torch.reshape(x1, (-1, C, m, m))
+            x2 = torch.transpose(x1, 2, 3)
             out = torch.cat((x1, x2), dim = 1)
+        elif self.mode == 'outer':
+            # see testAverageTo2dOuter for evidence that this works
+            x1 = torch.tile(x, (1, C, m))
+            x1 = torch.reshape(x1, (-1, C*C, m, m))
+            x2 = torch.transpose(x1, 2, 3)
+
+            # use indicies to permute x2
+            indices = []
+            for i in range(C):
+                indices.extend(range(i, i + C * (C-1) + 1, C))
+            indices = torch.tensor(indices)
+            x2 = torch.index_select(x2, dim = 1, index = indices)
+
+            out = torch.einsum('ijkl,ijkl->ijkl', x1, x2)
 
         del x1, x2
 
@@ -351,19 +372,45 @@ class AverageTo2d(nn.Module):
             out = torch.cat((out, torch.tile(self.d, (N, 1, 1, 1))), dim = 1)
         return out
 
+def testAverageTo2dOuter():
+        avg = AverageTo2d(mode = 'outer')
+        N = 2
+        m = 300
+        for C in range(1, 5):
+            t0 = time.time()
+            input = np.random.randint(low = 1, high = 10, size = (N, C, m))
+            input = torch.tensor(input, dtype = torch.float32)
+            out1 = avg(input)
+            tf = time.time()
+            deltaT = np.round(tf - t0, 3)
+            print("AverageTo2d time: {}".format(deltaT))
+
+            t0 = time.time()
+            out = np.zeros((N, C*C, m, m))
+            for n in range(N):
+                for i in range(m):
+                    for j in range(m):
+                        out[n, :, i,j] = torch.flatten(torch.outer(input[n, :, i], input[n, :, j]))
+            tf = time.time()
+            deltaT = np.round(tf - t0, 3)
+            print("For loop time: {}".format(deltaT))
+
+            assert np.array_equal(out1, out)
 
 def main():
     sym = Symmetrize2D()
-    avg = AverageTo2d(mode = 'concat')
-    x = np.array([[[5,6,7],[3,9,12],[0, 7, 8]], [[5,3,1],[4,5,12],[0, 13, 7]]])
+    avg = AverageTo2d(mode = 'outer')
+    # x = np.random.randint(low = 1, high = 10, size = (5, 10, 500))
+    x = np.array([[[5,6,7],[3,9,12],[1, 7, 8]], [[5,3,1],[4,5,12],[1, 13, 7]]])
     x = np.reshape(x, (-1, 3, 6))
     x = torch.tensor(x, dtype = torch.float32)
     print(x, x.shape)
     x = avg(x)
-    print(x.shape)
+    # print(x, x.shape)
     print(x[:, :, 0, 1])
     print(x[:, :, 1, 0])
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    testAverageTo2dOuter()

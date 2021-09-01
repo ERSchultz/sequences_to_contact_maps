@@ -142,7 +142,7 @@ def debugModel(model_type):
         opt.sparsify_threshold_upper = None
         opt.relabel_11_to_00 = False
         opt.y_log_transform = True
-        opt.head_architecture = 'concat'
+        opt.head_architecture = 'outer'
         opt.head_hidden_sizes_list = [1]
         opt.crop=[20,100]
         opt.m = 80
