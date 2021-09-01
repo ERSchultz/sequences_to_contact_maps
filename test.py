@@ -143,7 +143,7 @@ def debugModel(model_type):
         opt.relabel_11_to_00 = False
         opt.y_log_transform = True
         opt.head_architecture = 'outer'
-        opt.head_hidden_sizes_list = [1]
+        opt.head_hidden_sizes_list = [5,1]
         opt.crop=[20,100]
         opt.m = 80
         opt.use_bias = True
@@ -169,7 +169,7 @@ def debugModel(model_type):
     # other
     opt.plot = False
     opt.plot_predictions = False
-    opt.verbose = True
+    opt.verbose = False
 
     opt = finalizeOpt(opt, parser, True)
 
@@ -256,4 +256,4 @@ if __name__ == '__main__':
     # test_argpartition(10)
     # to_mat()
     # downsampling_test()
-    main()
+    # main()

@@ -333,8 +333,6 @@ class AverageTo2d(nn.Module):
         assert len(x.shape) == 3, "shape must be 3D"
         N, C, m = x.shape
 
-
-
         if self.mode == 'avg':
             x1 = torch.tile(x, (1, 1, m))
             x1 = torch.reshape(x1, (-1, C, m, m))
@@ -354,7 +352,7 @@ class AverageTo2d(nn.Module):
             x1 = torch.reshape(x1, (-1, C*C, m, m))
             x2 = torch.transpose(x1, 2, 3)
 
-            # use indicies to permute x2
+            # use indices to permute x2
             indices = []
             for i in range(C):
                 indices.extend(range(i, i + C * (C-1) + 1, C))

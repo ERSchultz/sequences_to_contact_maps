@@ -25,7 +25,7 @@ yLogTransform='true'
 messagePassing='SignedConv'
 useNodeFeatures='false'
 useEdgeWeights='false'
-hiddenSizesList='16-16'
+hiddenSizesList='16-4'
 transforms='none'
 preTransforms='none'
 split_neg_pos_edges_for_feature_augmentation='true'
@@ -39,7 +39,7 @@ headHiddenSizesList='16-16-1'
 
 # hyperparameters
 nEpochs=40
-batchSize=8
+batchSize=4
 numWorkers=4
 milestones='none'
 gamma=0.1
