@@ -357,6 +357,8 @@ class AverageTo2d(nn.Module):
             for i in range(C):
                 indices.extend(range(i, i + C * (C-1) + 1, C))
             indices = torch.tensor(indices)
+            if x2.is_cuda:
+                indices = indices.to(x2.get_device())
             x2 = torch.index_select(x2, dim = 1, index = indices)
 
             out = torch.einsum('ijkl,ijkl->ijkl', x1, x2)

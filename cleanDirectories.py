@@ -12,7 +12,7 @@ def main():
     opt = parser.parse_args()
 
     if opt.use_scratch:
-        opt.data_folder = osp.join('/../../../scratch/midway2/erschultz', osp.split(opt.data_folder)[-1])
+        opt.data_folder = osp.join('/scratch/midway2/erschultz', osp.split(opt.data_folder)[-1])
 
     root = osp.join(opt.data_folder, opt.root_name)
 
