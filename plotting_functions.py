@@ -666,8 +666,9 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
                                                   (1,    'blue')], N=126)
         # not a contat map but using this function anyways
         v_max = np.max(y)
-        plotContactMap(yhat, osp.join(subpath, 'energy_hat.png'), vmax = v_max, cmap = cmap, title = r'$\hat{S}$')
-        plotContactMap(y, osp.join(subpath, 'energy.png'), vmax = v_max, cmap = cmap, title = r'$S$')
+        v_min = np.min(y)
+        plotContactMap(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$\hat{S}$')
+        plotContactMap(y, osp.join(subpath, 'energy.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$S$')
 
 
     print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
