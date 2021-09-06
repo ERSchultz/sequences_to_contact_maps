@@ -47,7 +47,7 @@ def getModel(opt):
     elif opt.model_type == 'SequenceConvAutoencoder':
         model = ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, conv1d = True)
     elif opt.model_type == 'ContactGNN':
-        model = ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.out_act,
+        model = ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.inner_act, opt.out_act,
         opt.message_passing, opt.use_edge_weights,
         opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act, opt.use_bias)
     else:
@@ -424,7 +424,7 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
         sign1_y = np.sign(comp1_y)
 
         # yhat
-        result_yhat = pca.fit(yhat)
+        pca.fit(yhat)
         comp1_yhat = pca.components_[0]
         sign1_yhat = np.sign(comp1_yhat)
 

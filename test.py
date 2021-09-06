@@ -131,6 +131,7 @@ def debugModel(model_type):
         opt.GNN_mode = True
         opt.output_mode = 'energy'
         opt.hidden_sizes_list=str2list('3-3')
+        opt.inner_act = 'sigmoid'
         opt.out_act = 'prelu'
         opt.head_act = 'prelu'
         opt.use_node_features = False
@@ -161,7 +162,7 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 3
+    opt.n_epochs = 1
     opt.lr = 1e-5
     opt.batch_size = 1
     opt.milestones = str2list('1')
@@ -169,7 +170,7 @@ def debugModel(model_type):
 
     # other
     opt.plot = False
-    opt.plot_predictions = True
+    opt.plot_predictions = False
     opt.verbose = False
 
     opt = finalizeOpt(opt, parser, True)

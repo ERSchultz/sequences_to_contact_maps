@@ -431,7 +431,7 @@ class ContactGNN(nn.Module):
     Primary use is to map contact data (formatted as graph) to particle type vector
     where particle type vector is not given as node feature in graph.
     '''
-    def __init__(self, m, input_size, hidden_sizes_list, act, out_act,
+    def __init__(self, m, input_size, hidden_sizes_list, act, inner_act, out_act,
                 message_passing, use_edge_weights,
                 head_architecture, head_hidden_sizes_list, head_act, use_bias):
         '''
@@ -457,6 +457,7 @@ class ContactGNN(nn.Module):
         self.head_architecture = head_architecture
 
         self.act = actToModule(act)
+        self.inner_act = actToModule(inner_act)
         self.out_act = actToModule(out_act)
         self.head_act = actToModule(head_act)
 
@@ -549,6 +550,9 @@ class ContactGNN(nn.Module):
             latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
         elif self.message_passing == 'signedconv':
             latent = self.model(graph.x, graph.edge_index, graph.neg_edge_index)
+
+        if self.inner_act is not None:
+            latent = self.inner_act(latent)
 
         if self.head_architecture is None:
             out = latent
