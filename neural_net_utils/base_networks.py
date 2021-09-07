@@ -15,7 +15,9 @@ def actToModule(act):
     elif issubclass(type(act), nn.Module):
         pass
     elif isinstance(act, str):
-        if act.lower() == 'sigmoid':
+        if act.lower() == 'none':
+            act = nn.Identity()
+        elif act.lower() == 'sigmoid':
             act = nn.Sigmoid()
         elif act.lower() == 'relu':
             act = nn.ReLU(True)
