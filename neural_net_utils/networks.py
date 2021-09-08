@@ -507,9 +507,9 @@ class ContactGNN(nn.Module):
         head = []
         if self.head_architecture == 'fc-outer':
             # primarily for testing
-            head.append(LinearBlock(input_size, 2, activation = 'sigmoid'))
+            self.fc = LinearBlock(input_size, 2, activation = 'sigmoid')
             self.to2D = AverageTo2d(mode = 'outer')
-            input_size *= input_size # outer squares size
+            input_size = 4 # outer squares size
             for i, output_size in enumerate(head_hidden_sizes_list):
                 if i == len(hidden_sizes_list) - 1:
                     act = self.out_act
@@ -575,6 +575,15 @@ class ContactGNN(nn.Module):
         elif self.head_architecture == 'fc':
             out = self.head(latent)
         elif self.head_architecture in {'avg', 'concat', 'outer'}:
+            _, output_size = latent.shape
+            latent = torch.reshape(latent, (-1, output_size, self.m))
+            latent = self.to2D(latent)
+            _, output_size, _, _ = latent.shape
+            latent = torch.reshape(latent, (-1, self.m, self.m, output_size))
+            out = self.head(latent)
+            out = torch.reshape(out, (-1, self.m, self.m))
+        elif self.head_architecture == 'fc-outer':
+            latent = self.fc(latent)
             _, output_size = latent.shape
             latent = torch.reshape(latent, (-1, output_size, self.m))
             latent = self.to2D(latent)

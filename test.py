@@ -74,12 +74,6 @@ def debugModel(model_type):
     # dataset
     opt.data_folder = "dataset_08_24_21"
 
-    # Preprocessing
-    if model_type == 'UNet':
-        opt.toxx = True
-        opt.toxx_mode = 'mean'
-        opt.x_reshape = False
-
     # architecture
     opt.k = 2
     opt.crop = None
@@ -97,6 +91,9 @@ def debugModel(model_type):
         opt.training_norm='batch'
         opt.down_sampling='conv'
     elif model_type == 'UNet':
+        opt.toxx = True
+        opt.toxx_mode = 'mean'
+        opt.x_reshape = False
         opt.nf = 8
         opt.out_act = 'sigmoid'
         opt.training_norm = 'batch'
@@ -130,7 +127,7 @@ def debugModel(model_type):
         opt.message_passing='SignedConv'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
-        opt.hidden_sizes_list=str2list('3-3')
+        opt.hidden_sizes_list=str2list('16-4')
         opt.inner_act = 'sigmoid'
         opt.out_act = 'prelu'
         opt.head_act = 'prelu'
@@ -144,8 +141,8 @@ def debugModel(model_type):
         opt.sparsify_threshold_upper = None
         opt.relabel_11_to_00 = False
         opt.y_log_transform = True
-        opt.head_architecture = 'outer'
-        opt.head_hidden_sizes_list = [5,1]
+        opt.head_architecture = 'fc-outer'
+        opt.head_hidden_sizes_list = [1]
         opt.crop=[20,100]
         opt.m = 80
         opt.use_bias = True
