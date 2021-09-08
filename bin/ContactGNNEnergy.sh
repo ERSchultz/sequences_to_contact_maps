@@ -2,7 +2,7 @@
 #SBATCH --job-name=ContactGNNEnergy
 #SBATCH --output=logFiles/ContactGNNEnergy.out
 #SBATCH --time=24:00:00
-#SBATCH --partition=depablo-gpu
+#SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
@@ -40,7 +40,7 @@ headArchitecture='fc-outer'
 headHiddenSizesList='1'
 
 # hyperparameters
-nEpochs=20
+nEpochs=10
 batchSize=4
 numWorkers=4
 milestones='none'
