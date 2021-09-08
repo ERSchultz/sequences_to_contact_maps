@@ -11,6 +11,9 @@ import time
 import csv
 from scipy.io import savemat
 
+import locale
+locale.setlocale(locale.LC_ALL, 'en_US')
+
 from neural_net_utils.base_networks import *
 from neural_net_utils.networks import *
 from neural_net_utils.utils import *
@@ -239,6 +242,82 @@ def plot_fixed():
             plt.savefig('dataset_fixed/samples/distance_pearson_i{}j{}.png'.format(i, j))
             plt.close()
 
+class ContactGNNEnergyTest(nn.Module):
+    def __init__(self, m, head_hidden_sizes_list):
+        super(ContactGNNEnergyTest, self).__init__()
+        self.m = m
+
+        ### Head Architecture ###
+        head = []
+        self.to2D = AverageTo2d(mode = 'outer')
+        input_size = 4 # outer squares size
+        for i, output_size in enumerate(head_hidden_sizes_list):
+            head.append(nn.Linear(input_size, output_size, bias=False))
+            input_size = output_size
+
+        self.head = nn.Sequential(*head)
+        with torch.no_grad():
+            self.head[0].weight = nn.Parameter(torch.tensor([-1, 1, 1, 0], dtype = torch.float32))
+
+    def forward(self, latent):
+        _, output_size = latent.shape
+        print('a', latent, latent.shape)
+        latent = torch.unsqueeze(latent.t(), 0)
+        print('b', latent, latent.shape)
+        print(latent[:, :, 1], latent[:, :, 2])
+        latent = self.to2D(latent)
+        print('c', latent, latent.shape)
+        print(latent[:, :, 1, 2])
+        latent = latent = latent.permute(0, 2, 3, 1)
+        print('d', latent, latent.shape)
+        out = self.head(latent)
+        print('e', out, out.shape)
+
+        return out
+
+
+def testEnergy():
+    dir = "C:/Users/Eric/OneDrive/Documents/Research/Coding/sequences_to_contact_maps"
+    ofile = osp.join(dir, "results/test/energy")
+    if not osp.exists(ofile):
+        os.mkdir(ofile, mode = 0o755)
+
+    m = 100
+
+    model = ContactGNNEnergyTest(m, [1])
+    tot_pars = 0
+    for k,p in model.named_parameters():
+        tot_pars += p.numel()
+        print(k, p.numel(), p.shape)
+        print(p)
+    print('Total parameters: {}'.format(locale.format_string("%d", tot_pars, grouping = True)))
+
+    x = np.load(osp.join(dir, "dataset_04_18_21/samples/sample40/x.npy"))[:m]
+    # x = np.array([[0,0], [0,1], [1,0], [1,1]])[:m]
+
+    chi = np.load(osp.join(dir, 'dataset_04_18_21/chis.npy'))
+    print(chi)
+    energy = x @ chi @ x.T
+    print(energy)
+
+    x = torch.tensor(x, dtype = torch.float32)
+
+    # z = np.load(osp.join(dir, "results/ContactGNN/159/sample40/z.npy"))[:m]
+    # z = torch.tensor(z, dtype = torch.float32)
+
+    energy_hat = model(x)
+
+    energy_hat = energy_hat.cpu().detach().numpy()
+    energy_hat = energy_hat.reshape((m,m))
+    cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                             [(0,    'white'),
+                                              (1,    'blue')], N=126)
+    # not a contat map but using this function anyways
+    v_max = np.max(energy)
+    v_min = np.min(energy)
+    plotContactMap(energy_hat, osp.join(ofile, 'energy_hat.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$\hat{S}$')
+    plotContactMap(energy, osp.join(ofile, 'energy.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$S$')
+
 def main():
     x1 = np.array([0,1])
     x2 = np.array([1,1])
@@ -250,9 +329,10 @@ def main():
 
 if __name__ == '__main__':
     # edit_argparse()
-    debugModel('ContactGNN')
+    # debugModel('ContactGNN')
     # plot_fixed()
     # test_argpartition(10)
     # to_mat()
     # downsampling_test()
+    testEnergy()
     # main()

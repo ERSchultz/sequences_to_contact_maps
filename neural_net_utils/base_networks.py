@@ -383,29 +383,35 @@ class AverageTo2d(nn.Module):
         return out
 
 def testAverageTo2dOuter():
-        avg = AverageTo2d(mode = 'outer')
-        N = 2
-        m = 300
-        for C in range(1, 5):
-            t0 = time.time()
-            input = np.random.randint(low = 1, high = 10, size = (N, C, m))
-            input = torch.tensor(input, dtype = torch.float32)
-            out1 = avg(input)
-            tf = time.time()
-            deltaT = np.round(tf - t0, 3)
-            print("AverageTo2d time: {}".format(deltaT))
+    avg = AverageTo2d(mode = 'outer')
+    verbose = True
+    N = 1
+    m = 10
+    C_list = [2]
+    for C in C_list:
+        t0 = time.time()
+        input = np.random.randint(low = 1, high = 10, size = (N, C, m))
+        input = torch.tensor(input, dtype = torch.float32)
+        if verbose:
+            print(input[:, :, 0], input[:, :, 1])
+        out1 = avg(input)
+        if verbose:
+            print(out1[:, :, 0, 1])
+        tf = time.time()
+        deltaT = np.round(tf - t0, 3)
+        print("AverageTo2d time: {}".format(deltaT))
 
-            t0 = time.time()
-            out = np.zeros((N, C*C, m, m))
-            for n in range(N):
-                for i in range(m):
-                    for j in range(m):
-                        out[n, :, i,j] = torch.flatten(torch.outer(input[n, :, i], input[n, :, j]))
-            tf = time.time()
-            deltaT = np.round(tf - t0, 3)
-            print("For loop time: {}".format(deltaT))
+        t0 = time.time()
+        out = np.zeros((N, C*C, m, m))
+        for n in range(N):
+            for i in range(m):
+                for j in range(m):
+                    out[n, :, i,j] = torch.flatten(torch.outer(input[n, :, i], input[n, :, j]))
+        tf = time.time()
+        deltaT = np.round(tf - t0, 3)
+        print("For loop time: {}".format(deltaT))
 
-            assert np.array_equal(out1, out)
+        assert np.array_equal(out1, out)
 
 def main():
     sym = Symmetrize2D()

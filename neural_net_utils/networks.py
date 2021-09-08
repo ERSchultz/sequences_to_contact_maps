@@ -576,21 +576,21 @@ class ContactGNN(nn.Module):
             out = self.head(latent)
         elif self.head_architecture in {'avg', 'concat', 'outer'}:
             _, output_size = latent.shape
-            latent = torch.reshape(latent, (-1, output_size, self.m))
+            latent = torch.unsqueeze(latent.t(), 0)
             latent = self.to2D(latent)
             _, output_size, _, _ = latent.shape
-            latent = torch.reshape(latent, (-1, self.m, self.m, output_size))
+            latent = latent = latent.permute(0, 2, 3, 1)
             out = self.head(latent)
             out = torch.reshape(out, (-1, self.m, self.m))
         elif self.head_architecture == 'fc-outer':
             latent = self.fc(latent)
             _, output_size = latent.shape
-            latent = torch.reshape(latent, (-1, output_size, self.m))
+            latent = torch.unsqueeze(latent.t(), 0)
             latent = self.to2D(latent)
             _, output_size, _, _ = latent.shape
-            latent = torch.reshape(latent, (-1, self.m, self.m, output_size))
+            latent = latent = latent.permute(0, 2, 3, 1)
             out = self.head(latent)
-            out = torch.reshape(out, (-1, self.m, self.m))
+            out = torch.squeeze(out, 3)
 
         return out
 
