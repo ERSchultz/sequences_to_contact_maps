@@ -130,7 +130,7 @@ def debugModel(model_type):
         opt.message_passing='SignedConv'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
-        opt.hidden_sizes_list=str2list('16-4')
+        opt.hidden_sizes_list=str2list('16-2')
         opt.inner_act = 'sigmoid'
         opt.out_act = 'prelu'
         opt.head_act = 'prelu'
@@ -146,8 +146,8 @@ def debugModel(model_type):
         opt.y_log_transform = True
         opt.head_architecture = 'fc-outer'
         opt.head_hidden_sizes_list = [1]
-        opt.crop=[20,100]
-        opt.m = 80
+        # opt.crop=[20,100]
+        # opt.m = 80
         opt.use_bias = True
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
@@ -164,7 +164,7 @@ def debugModel(model_type):
     # hyperparameters
     opt.n_epochs = 1
     opt.lr = 1e-5
-    opt.batch_size = 1
+    opt.batch_size = 2
     opt.milestones = str2list('1')
     opt.gamma = 0.1
 
@@ -329,10 +329,10 @@ def main():
 
 if __name__ == '__main__':
     # edit_argparse()
-    # debugModel('ContactGNN')
+    debugModel('ContactGNN')
     # plot_fixed()
     # test_argpartition(10)
     # to_mat()
     # downsampling_test()
-    testEnergy()
+    # testEnergy()
     # main()
