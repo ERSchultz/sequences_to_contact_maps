@@ -442,7 +442,7 @@ class ContactGNN(nn.Module):
             out_act: output activation
             message_passing: type of message passing algorithm to use
             use_edge_weights: True to use edge weights
-            head_architecture: type of head architecture {'FC', 'GCN', 'Avg', 'Concat', None}
+            head_architecture: type of head architecture
             head_hidden_sizes_list: hidden sizes of head architecture
             use_bias: true to use bias term in message passing (used in head regardless)
         '''
@@ -451,13 +451,13 @@ class ContactGNN(nn.Module):
         self.m = m
         self.message_passing = message_passing.lower()
         self.use_edge_weights = use_edge_weights
-        assert head_architecture is None or head_architecture.lower() in {'fc', 'gcn', 'avg', 'concat', 'outer'}, 'Unsupported head architecture {}'.format(head_architecture)
+        assert head_architecture is None or head_architecture.lower() in {'fc', 'gcn', 'avg', 'concat', 'outer', 'fc-outer'}, 'Unsupported head architecture {}'.format(head_architecture)
         if head_architecture is not None:
             head_architecture = head_architecture.lower()
         self.head_architecture = head_architecture
 
         self.act = actToModule(act)
-        self.inner_act = actToModule(inner_act)
+        self.inner_act = actToModule(inner_act, none_mode = True) # added this, non_mode should prevent older models from breaking when reloading
         self.out_act = actToModule(out_act)
         self.head_act = actToModule(head_act)
 
@@ -505,6 +505,20 @@ class ContactGNN(nn.Module):
 
         ### Head Architecture ###
         head = []
+        if self.head_architecture == 'fc-outer':
+            # primarily for testing
+            head.append(LinearBlock(input_size, 2, activation = 'sigmoid'))
+            self.to2D = AverageTo2d(mode = 'outer')
+            input_size *= input_size # outer squares size
+            for i, output_size in enumerate(head_hidden_sizes_list):
+                if i == len(hidden_sizes_list) - 1:
+                    act = self.out_act
+                else:
+                    act = self.head_act
+                head.append(LinearBlock(input_size, output_size, activation = act))
+                input_size = output_size
+
+            self.head = nn.Sequential(*head)
         if self.head_architecture == 'fc':
             for i, output_size in enumerate(head_hidden_sizes_list):
                 if i == len(hidden_sizes_list) - 1:

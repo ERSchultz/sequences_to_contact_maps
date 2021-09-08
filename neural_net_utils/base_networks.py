@@ -4,19 +4,27 @@ import math
 import numpy as np
 import time
 
-def actToModule(act):
+def actToModule(act, none_mode = False):
     '''
     Converts input activation, act, to nn.Module activation.
+
+    Inputs:
+        act: activation function - string, nn.Module, or None
+        none_mode: True to return None instead of nn.Identity for no activation
 
     act can be None, a string, or nn.Module already.
     '''
     if act is None:
         act = nn.Identity()
+        if none_mode:
+            return None
     elif issubclass(type(act), nn.Module):
         pass
     elif isinstance(act, str):
         if act.lower() == 'none':
             act = nn.Identity()
+            if none_mode:
+                return None
         elif act.lower() == 'sigmoid':
             act = nn.Sigmoid()
         elif act.lower() == 'relu':

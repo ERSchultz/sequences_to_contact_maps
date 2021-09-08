@@ -240,6 +240,7 @@ def finalizeOpt(opt, parser, local = False):
     if opt.use_scratch and not local:
         copy_data_to_scratch(opt)
 
+
     # configure cuda
     if opt.gpus > 1:
         opt.cuda = True
