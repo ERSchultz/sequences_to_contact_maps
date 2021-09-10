@@ -451,7 +451,6 @@ class ContactGNN(nn.Module):
         self.m = m
         self.message_passing = message_passing.lower()
         self.use_edge_weights = use_edge_weights
-        assert head_architecture is None or head_architecture.lower() in {'fc', 'gcn', 'avg', 'concat', 'outer', 'fc-outer'}, 'Unsupported head architecture {}'.format(head_architecture)
         if head_architecture is not None:
             head_architecture = head_architecture.lower()
         self.head_architecture = head_architecture
@@ -463,7 +462,10 @@ class ContactGNN(nn.Module):
 
         model = []
         first_layer = True
-        if self.message_passing == 'gcn':
+        if self.message_passing == 'identity':
+            # debugging option to skip message passing
+            self.model = None
+        elif self.message_passing == 'gcn':
             if self.use_edge_weights:
                 fn_header = 'x, edge_index, edge_attr -> x'
             else:
@@ -507,19 +509,19 @@ class ContactGNN(nn.Module):
         head = []
         if self.head_architecture == 'fc-outer':
             # primarily for testing
-            self.fc = LinearBlock(input_size, 2, activation = 'sigmoid')
+            # self.fc = LinearBlock(input_size, 2, activation = 'sigmoid')
+
             self.to2D = AverageTo2d(mode = 'outer')
             input_size = 4 # outer squares size
             for i, output_size in enumerate(head_hidden_sizes_list):
-                if i == len(hidden_sizes_list) - 1:
-                    act = self.out_act
-                else:
-                    act = self.head_act
-                head.append(LinearBlock(input_size, output_size, activation = act))
+                head.append(nn.Linear(input_size, output_size, bias=False))
                 input_size = output_size
 
             self.head = nn.Sequential(*head)
-        if self.head_architecture == 'fc':
+            with torch.no_grad():
+                self.head[0].weight = nn.Parameter(torch.tensor([-1, 1, 1, 0], dtype = torch.float32))
+                # self.head[0].weight.requires_grad = False
+        elif self.head_architecture == 'fc':
             for i, output_size in enumerate(head_hidden_sizes_list):
                 if i == len(hidden_sizes_list) - 1:
                     act = self.out_act
@@ -558,8 +560,12 @@ class ContactGNN(nn.Module):
                 input_size = output_size
 
             self.head = nn.Sequential(*head)
+        else:
+            raise Exception("Unkown head_architecture {}".format(head_architecture))
 
     def forward(self, graph):
+        if self.message_passing == 'identity':
+            latent = graph.x
         if self.message_passing == 'gcn':
             latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
         elif self.message_passing == 'signedconv':
@@ -580,19 +586,23 @@ class ContactGNN(nn.Module):
             latent = latent.permute(0, 2, 1)
             latent = self.to2D(latent)
             _, output_size, _, _ = latent.shape
-            latent = latent = latent.permute(0, 2, 3, 1)
+            latent = latent.permute(0, 2, 3, 1)
             out = self.head(latent)
-            out = torch.reshape(out, (-1, self.m, self.m))
+            if len(out.shape) > 3:
+                out = torch.squeeze(out, 3)
         elif self.head_architecture == 'fc-outer':
-            latent = self.fc(latent)
+            # print('latent a', latent)
+            # latent = self.fc(latent)
+            # print('latent b', latent)
             _, output_size = latent.shape
             latent = latent.reshape(-1, self.m, output_size)
             latent = latent.permute(0, 2, 1)
             latent = self.to2D(latent)
-            _, output_size, _, _ = latent.shape
-            latent = latent = latent.permute(0, 2, 3, 1)
+            latent = latent.permute(0, 2, 3, 1)
             out = self.head(latent)
-            out = torch.squeeze(out, 3)
+            # print(out, '\n')
+            if len(out.shape) > 3:
+                out = torch.squeeze(out, 3)
 
         return out
 

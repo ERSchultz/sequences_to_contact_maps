@@ -309,7 +309,7 @@ def calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson'):
     n, n = y.shape
     triu_ind = np.triu_indices(n)
 
-    overall_corr, pval = stat(y[triu_ind], yhat[triu_ind])
+    overall_corr, _ = stat(y[triu_ind], yhat[triu_ind])
 
     corr_arr = np.zeros(n-2)
     corr_arr[0] = np.NaN
@@ -317,7 +317,7 @@ def calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson'):
         # n-1, n, and 0 are NaN always, so skip
         y_diag = np.diagonal(y, offset = d)
         yhat_diag = np.diagonal(yhat, offset = d)
-        corr, pval = stat(y_diag, yhat_diag)
+        corr, _ = stat(y_diag, yhat_diag)
         corr_arr[d] = corr
 
     return overall_corr, corr_arr
