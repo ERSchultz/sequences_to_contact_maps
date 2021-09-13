@@ -252,7 +252,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             # use exsting graph data folder
             self.root = osp.join(dirname, root_name)
         super(ContactsGraph, self).__init__(self.root, transform, pre_transform)
-        print('graph init time: {}'.format(np.round(time.time() - t0, 3)))
+        print('graph init time: {}\n'.format(np.round(time.time() - t0, 3)))
 
     @property
     def raw_file_names(self):

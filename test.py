@@ -146,8 +146,8 @@ def debugModel(model_type):
         opt.y_log_transform = True
         opt.head_architecture = 'outer'
         opt.head_hidden_sizes_list = [1]
-        # opt.crop=[90,100]
-        # opt.m = 10
+        opt.crop=[50,100]
+        opt.m = 50
         opt.use_bias = False
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
@@ -162,7 +162,7 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 20
+    opt.n_epochs = 5
     opt.lr = 1e-2
     opt.batch_size = 2
     opt.milestones = str2list('1')
@@ -172,6 +172,7 @@ def debugModel(model_type):
     opt.plot = False
     opt.plot_predictions = True
     opt.verbose = False
+    opt.print_params = True
 
     opt = finalizeOpt(opt, parser, True)
 
@@ -318,15 +319,6 @@ def testEnergy():
     v_min = np.min(energy)
     plotContactMap(energy_hat, osp.join(ofile, 'energy_hat.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$\hat{S}$')
     plotContactMap(energy, osp.join(ofile, 'energy.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$S$')
-
-def main():
-    x1 = np.array([0,1])
-    x2 = np.array([1,1])
-    chi = np.array([[-1, 1],[1, 0]])
-
-    s = x1 @ chi @ x2
-    print(s)
-    print(x1 @ chi)
 
 if __name__ == '__main__':
     # edit_argparse()

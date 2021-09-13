@@ -444,7 +444,7 @@ class ContactGNN(nn.Module):
             use_edge_weights: True to use edge weights
             head_architecture: type of head architecture
             head_hidden_sizes_list: hidden sizes of head architecture
-            use_bias: true to use bias term in message passing (used in head regardless)
+            use_bias: true to use bias term - applies for message passing and head
         '''
         super(ContactGNN, self).__init__()
 
@@ -507,35 +507,21 @@ class ContactGNN(nn.Module):
 
         ### Head Architecture ###
         head = []
-        if self.head_architecture == 'fc-outer':
-            # primarily for testing
-            # self.fc = LinearBlock(input_size, 2, activation = 'sigmoid')
-
-            self.to2D = AverageTo2d(mode = 'outer')
-            input_size = 4 # outer squares size
-            for i, output_size in enumerate(head_hidden_sizes_list):
-                head.append(nn.Linear(input_size, output_size, bias=False))
-                input_size = output_size
-
-            self.head = nn.Sequential(*head)
-            with torch.no_grad():
-                self.head[0].weight = nn.Parameter(torch.tensor([-1, 1, 1, 0], dtype = torch.float32))
-                # self.head[0].weight.requires_grad = False
-        elif self.head_architecture == 'fc':
+        if self.head_architecture == 'fc':
             for i, output_size in enumerate(head_hidden_sizes_list):
                 if i == len(hidden_sizes_list) - 1:
                     act = self.out_act
                     assert output_size == 1, "Final size must be 1 not {}".format(output_size)
                 else:
                     act = self.head_act
-                head.append(LinearBlock(input_size, output_size, activation = act))
+                head.append(LinearBlock(input_size, output_size, activation = act, bias = use_bias))
                 input_size = output_size
 
             self.head = nn.Sequential(*head)
         elif self.head_architecture == 'gcn':
             # TODO not sure if I ever tested this
             for i, output_size in enumerate(head_hidden_sizes_list):
-                module = (gnn.GCNConv(input_size, output_size),
+                module = (gnn.GCNConv(input_size, output_size, bias = use_bias),
                             'x, edge_index -> x')
                 if i == len(hidden_sizes_list) - 1:
                     head.extend([module, self.out_act])
@@ -556,10 +542,11 @@ class ContactGNN(nn.Module):
                     act = self.out_act
                 else:
                     act = self.head_act
-                head.append(LinearBlock(input_size, output_size, activation = act))
+                head.append(LinearBlock(input_size, output_size, activation = act, bias = use_bias))
                 input_size = output_size
 
             self.head = nn.Sequential(*head)
+            # self.head[0].linear.weight = nn.Parameter(torch.tensor([-1, 1, 1, 0], dtype = torch.float32)) # TODO delete
         else:
             raise Exception("Unkown head_architecture {}".format(head_architecture))
 
@@ -588,19 +575,6 @@ class ContactGNN(nn.Module):
             _, output_size, _, _ = latent.shape
             latent = latent.permute(0, 2, 3, 1)
             out = self.head(latent)
-            if len(out.shape) > 3:
-                out = torch.squeeze(out, 3)
-        elif self.head_architecture == 'fc-outer':
-            # print('latent a', latent)
-            # latent = self.fc(latent)
-            # print('latent b', latent)
-            _, output_size = latent.shape
-            latent = latent.reshape(-1, self.m, output_size)
-            latent = latent.permute(0, 2, 1)
-            latent = self.to2D(latent)
-            latent = latent.permute(0, 2, 3, 1)
-            out = self.head(latent)
-            # print(out, '\n')
             if len(out.shape) > 3:
                 out = torch.squeeze(out, 3)
 

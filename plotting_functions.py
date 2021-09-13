@@ -662,14 +662,16 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
             print('yhat', yhat, np.max(yhat))
 
         cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                 [(0,    'white'),
-                                                  (1,    'blue')], N=126)
+                                                 [(0, 'blue'),
+                                                 (0.5, 'white'),
+                                                  (1, 'red')], N=126)
         # not a contat map but using this function anyways
         v_max = np.max(y)
         v_min = np.min(y)
         plotContactMap(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$\hat{S}$')
+        np.savetxt(osp.join(subpath, 'energy_hat.txt'), yhat, fmt = '%.3f')
         plotContactMap(y, osp.join(subpath, 'energy.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$S$')
-
+        np.savetxt(osp.join(subpath, 'energy.txt'), y, fmt = '%.3f')
 
     print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
 

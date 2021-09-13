@@ -63,7 +63,8 @@ def getBaseParser():
     parser.add_argument('--loss', type=str, default='mse', help='Type of loss to use: options: {"mse", "cross_entropy"}')
     parser.add_argument('--autoencoder_mode', type=str2bool, default=False, help='True to use input as target output (i.e. autoencoder)')
     parser.add_argument('--verbose', type=str2bool, default=False)
-    parser.add_argument('--output_mode', type=str, default='contact', help='data structure of output {"contact", "sequence"}')
+    parser.add_argument('--print_params', type=str2bool, default=False, help='True to print parameters after training')
+    parser.add_argument('--output_mode', type=str, default='contact', help='data structure of output {"contact", "sequence", "energy"}')
 
     # model args
     parser.add_argument('--model_type', type=str, default='test', help='Type of model')
