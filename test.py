@@ -127,7 +127,7 @@ def debugModel(model_type):
     elif model_type == 'ContactGNN':
         opt.loss = 'mse'
         opt.y_norm = None
-        opt.message_passing='identity'
+        opt.message_passing='GCN'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
         opt.hidden_sizes_list=str2list('2')
@@ -162,7 +162,7 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 5
+    opt.n_epochs = 2
     opt.lr = 1e-2
     opt.batch_size = 2
     opt.milestones = str2list('1')
