@@ -40,7 +40,7 @@ headArchitecture='outer'
 headHiddenSizesList='1'
 
 # hyperparameters
-nEpochs=20
+nEpochs=60
 batchSize=4
 numWorkers=4
 milestones='none'
