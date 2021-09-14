@@ -18,19 +18,20 @@ from sklearn.decomposition import PCA
 from scipy.stats import spearmanr, pearsonr
 import matplotlib.pyplot as plt
 import csv
-from networks import *
+
+import networks
 from dataset_classes import *
 
 def getModel(opt):
     if opt.model_type == 'SimpleEpiNet':
-        model = SimpleEpiNet(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
+        model = networks.SimpleEpiNet(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
     if opt.model_type == 'UNet':
-        model = UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm, out_act = opt.out_act)
+        model = networks.UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm, out_act = opt.out_act)
     elif opt.model_type == 'DeepC':
-        model = DeepC(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
+        model = networks.DeepC(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list, opt.training_norm, opt.act, opt.out_act)
     elif opt.model_type == 'Akita':
-        model = Akita(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
+        model = networks.Akita(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list_trunk,
                             opt.bottleneck,
                             opt.dilation_list_head,
@@ -40,14 +41,14 @@ def getModel(opt):
                             opt.training_norm,
                             opt.down_sampling)
     elif opt.model_type.startswith('GNNAutoencoder'):
-        model = GNNAutoencoder(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.head_act, opt.out_act,
+        model = networks.GNNAutoencoder(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.head_act, opt.out_act,
                                 opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list, opt.parameter_sharing)
     elif opt.model_type == 'SequenceFCAutoencoder':
-        model = FullyConnectedAutoencoder(opt.m * opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, opt.parameter_sharing)
+        model = networks.FullyConnectedAutoencoder(opt.m * opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, opt.parameter_sharing)
     elif opt.model_type == 'SequenceConvAutoencoder':
-        model = ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, conv1d = True)
+        model = networks.ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, conv1d = True)
     elif opt.model_type == 'ContactGNN':
-        model = ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.inner_act, opt.out_act,
+        model = networks.ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.inner_act, opt.out_act,
         opt.message_passing, opt.use_edge_weights,
         opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act, opt.use_bias)
     else:

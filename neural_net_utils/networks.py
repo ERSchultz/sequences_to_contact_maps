@@ -1,15 +1,21 @@
 import os
+import os.path as osp
 import sys
 abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 sys.path.insert(0, dname)
 
+import time
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch_geometric.nn as gnn
+
 from base_networks import *
-import time
+from argparseSetup import getBaseParser, finalizeOpt
+import utils
+
 
 class UNet(nn.Module):
     '''U Net adapted from https://github.com/phillipi/pix2pix.'''
@@ -501,13 +507,19 @@ class ContactGNN(nn.Module):
             # so the total length is 2 * output_size
 
             self.model = gnn.Sequential('x, pos_edge_index, neg_edge_index', model)
+        elif self.message_passing == 'z':
+            # uses prior model to predict particle types
+            # designed for debugging
+            self.model = None
         else:
             raise Exception("Unkown message_passing {}".format(message_passing))
         print(self.model)
 
         ### Head Architecture ###
         head = []
-        if self.head_architecture == 'fc':
+        if self.head_architecture is None:
+            pass
+        elif self.head_architecture == 'fc':
             for i, output_size in enumerate(head_hidden_sizes_list):
                 if i == len(hidden_sizes_list) - 1:
                     act = self.out_act
@@ -554,6 +566,28 @@ class ContactGNN(nn.Module):
     def forward(self, graph):
         if self.message_passing == 'identity':
             latent = graph.x
+        elif self.message_passing == 'z':
+            parser = getBaseParser()
+            opt = parser.parse_args()
+            opt.id = 159
+            opt.model_type = 'ContactGNN'
+            opt = finalizeOpt(opt, parser, local = True)
+            print(opt)
+            z_model = utils.getModel(opt)
+            if graph.x.is_cuda:
+                z_model.to(graph.x.get_device())
+            model_name = osp.join(opt.ofile_folder, 'model.pt')
+            if osp.exists(model_name):
+                save_dict = torch.load(model_name, map_location=torch.device('cpu'))
+                z_model.load_state_dict(save_dict['model_state_dict'])
+                print('Model is loaded: {}'.format(model_name))
+            else:
+                raise Exception('Model does not exist: {}'.format(model_name))
+            z_model.eval()
+            latent = z_model(graph)
+            if opt.loss == 'BCE':
+                latent = torch.sigmoid(latent)
+            print(latent, latent.shape)
         if self.message_passing == 'gcn':
             latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
         elif self.message_passing == 'signedconv':

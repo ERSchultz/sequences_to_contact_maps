@@ -127,7 +127,7 @@ def debugModel(model_type):
     elif model_type == 'ContactGNN':
         opt.loss = 'mse'
         opt.y_norm = None
-        opt.message_passing='GCN'
+        opt.message_passing='z'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
         opt.hidden_sizes_list=str2list('2')
