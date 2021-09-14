@@ -50,8 +50,7 @@ useScratch='true'
 verbose='false'
 plotPredictions='true'
 relabel_11_to_00='false'
-crop='50-100'
-m=50
+crop='none'
 printParams='true'
 
 cd ~/sequences_to_contact_maps
