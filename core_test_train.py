@@ -59,10 +59,10 @@ def core_test_train(model, opt):
         model.to(opt.device)
 
     if opt.print_params:
-        print('Initial Parameters: ')
+        print('Initial Parameters: ', file = opt.log_file)
         for k,p in model.named_parameters():
-            print(k, p.numel(), p.shape)
-            print(p)
+            print(k, p.numel(), p.shape, file = opt.log_file)
+            print(p, file = opt.log_file)
         print()
 
     t0 = time.time()
@@ -70,12 +70,12 @@ def core_test_train(model, opt):
 
     tot_pars = 0
     if opt.print_params:
-        print('Final Parameters: ')
+        print('Final Parameters: ', file = opt.log_file)
     for k,p in model.named_parameters():
         tot_pars += p.numel()
         if opt.verbose or opt.print_params:
-            print(k, p.numel(), p.shape)
-            print(p)
+            print(k, p.numel(), p.shape, file = opt.log_file)
+            print(p, file = opt.log_file)
     print('Total parameters: {}'.format(locale.format_string("%d", tot_pars, grouping = True)), file = opt.log_file)
     print('Total time: {}'.format(time.time() - t0), file = opt.log_file)
     print('Final val loss: {}\n'.format(val_loss_arr[-1]), file = opt.log_file)

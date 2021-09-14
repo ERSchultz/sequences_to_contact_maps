@@ -558,8 +558,8 @@ class ContactGNN(nn.Module):
 
             self.head = nn.Sequential(*head)
             # TODO delete below
-            self.head[0].linear.weight = nn.Parameter(torch.tensor([-1, 1, 1, 0], dtype = torch.float32))
-            self.head[0].linear.weight.requires_grad = False
+            # self.head[0].linear.weight = nn.Parameter(torch.tensor([-1, 1, 1, 0], dtype = torch.float32))
+            # self.head[0].linear.weight.requires_grad = False
         else:
             raise Exception("Unkown head_architecture {}".format(head_architecture))
 
