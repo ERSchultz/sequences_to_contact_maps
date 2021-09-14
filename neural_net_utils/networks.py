@@ -462,7 +462,7 @@ class ContactGNN(nn.Module):
         self.head_architecture = head_architecture
 
         self.act = actToModule(act)
-        self.inner_act = actToModule(inner_act, none_mode = True) # added this, non_mode should prevent older models from breaking when reloading
+        self.inner_act = actToModule(inner_act, none_mode = True, in_place = False) # added this, none_mode should prevent older models from breaking when reloading
         self.out_act = actToModule(out_act)
         self.head_act = actToModule(head_act)
 
@@ -523,7 +523,6 @@ class ContactGNN(nn.Module):
             for i, output_size in enumerate(head_hidden_sizes_list):
                 if i == len(hidden_sizes_list) - 1:
                     act = self.out_act
-                    assert output_size == 1, "Final size must be 1 not {}".format(output_size)
                 else:
                     act = self.head_act
                 head.append(LinearBlock(input_size, output_size, activation = act, bias = use_bias))
