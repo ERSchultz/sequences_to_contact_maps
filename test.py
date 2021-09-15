@@ -125,11 +125,34 @@ def debugModel(model_type):
         opt.top_k = 500
         opt.parameter_sharing = True
     elif model_type == 'ContactGNN':
+        opt.GNN_mode = True
+        opt.output_mode = 'sequence'
+        opt.loss = 'BCE'
+        opt.y_norm = None
+        opt.message_passing='SignedConv'
+        opt.hidden_sizes_list=str2list('16-2')
+        opt.out_act = None
+        opt.use_node_features = False
+        opt.use_edge_weights = False
+        opt.transforms=str2list('none')
+        opt.pre_transforms=str2list('degree')
+        opt.split_neg_pos_edges_for_feature_augmentation = True
+        opt.top_k = None
+        opt.sparsify_threshold = 0.176
+        opt.sparsify_threshold_upper = None
+        opt.relabel_11_to_00 = False
+        opt.y_log_transform = True
+        opt.head_architecture = 'fc'
+        opt.head_hidden_sizes_list = [2]
+        opt.crop=[50,100]
+        opt.m = 50
+        # opt.use_bias = False
+    elif model_type == 'ContactGNNEnergy':
         opt.loss = 'BCE'
         opt.y_norm = None
         opt.message_passing='SignedConv'
         opt.GNN_mode = True
-        opt.output_mode = 'sequence'
+        opt.output_mode = 'energy'
         opt.hidden_sizes_list=str2list('16-2')
         opt.inner_act = 'relu'
         # opt.out_act = 'none'
@@ -144,7 +167,7 @@ def debugModel(model_type):
         opt.sparsify_threshold_upper = None
         opt.relabel_11_to_00 = False
         opt.y_log_transform = True
-        opt.head_architecture = 'fc'
+        opt.head_architecture = 'outer'
         opt.head_hidden_sizes_list = [2]
         opt.crop=[50,100]
         opt.m = 50
@@ -162,15 +185,15 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 1
+    opt.n_epochs = 5
     opt.lr = 1e-2
     opt.batch_size = 2
     opt.milestones = str2list('1')
     opt.gamma = 0.1
 
     # other
-    opt.plot = False
-    opt.plot_predictions = False
+    opt.plot = True
+    opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = True
 

@@ -481,7 +481,7 @@ class ContactGNN(nn.Module):
                             fn_header)
 
                 if i == len(hidden_sizes_list) - 1:
-                    model.extend([module, self.out_act])
+                    model.extend([module]) # no act on last layer of message passing, use inner act
                 else:
                     model.extend([module, self.act])
                 input_size = output_size
@@ -491,10 +491,13 @@ class ContactGNN(nn.Module):
             assert not self.use_edge_weights and self.head_architecture is not None
             first_layer = True
 
-            for output_size in hidden_sizes_list:
+            for i, output_size in enumerate(hidden_sizes_list):
                 module = (gnn.SignedConv(input_size, output_size, first_aggr = first_layer, bias = use_bias),
                             'x, pos_edge_index, neg_edge_index -> x')
-                model.extend([module, self.act])
+                if i == len(hidden_sizes_list) - 1:
+                    model.extend([module]) # no act on last layer of message passing, use inner act
+                else:
+                    model.extend([module, self.act])
                 first_layer = False
                 input_size = output_size
             input_size *= 2
