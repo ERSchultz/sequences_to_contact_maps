@@ -467,7 +467,6 @@ class ContactGNN(nn.Module):
         self.head_act = actToModule(head_act)
 
         model = []
-        first_layer = True
         if self.message_passing == 'identity':
             # debugging option to skip message passing
             self.model = None
@@ -484,9 +483,6 @@ class ContactGNN(nn.Module):
                 if i == len(hidden_sizes_list) - 1:
                     model.extend([module, self.out_act])
                 else:
-                    if first_layer:
-                        self.first_layer = module
-                        first_layer = False
                     model.extend([module, self.act])
                 input_size = output_size
 
@@ -613,11 +609,6 @@ class ContactGNN(nn.Module):
             if len(out.shape) > 3:
                 out = torch.squeeze(out, 3)
 
-        return out
-
-    def get_first_layer(self, graph):
-        out = self.first_layer[0](graph.x, graph.edge_index)
-        out = self.act(out)
         return out
 
 def testFullyConnectedAutoencoder():
