@@ -242,3 +242,4 @@ results/ContactGNN/220/sample1751
 results/ContactGNN/220/sample1718
 Loss: 0.001834542602300644 +- 0.01159804956098778
 
+Warning: falling back to cpu
