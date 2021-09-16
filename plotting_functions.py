@@ -654,7 +654,7 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         yhat = yhat.cpu().detach().numpy()
         yhat = yhat.reshape((opt.m,opt.m))
 
-        yhat_title = r'{}\n$\hat{S}$ ({}: {})'.format(upper_title, loss_title, np.round(loss, 3))
+        yhat_title = '{}\n{} ({}: {})'.format(upper_title, r'$\hat{S}$', loss_title, np.round(loss, 3))
 
         loss_arr[i] = loss
         if opt.verbose:

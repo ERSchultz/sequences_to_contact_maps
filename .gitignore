@@ -7,4 +7,4 @@ __pycache__/**
 neural_net_utils/__pycache__/**
 results/test/**
 chip_seq_data/bedFiles
-!results/ContactGNN/**
+!results/ContactGNN*/**

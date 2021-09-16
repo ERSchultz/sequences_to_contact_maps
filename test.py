@@ -145,15 +145,15 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
-        opt.loss = 'BCE'
+        opt.loss = 'mse'
         opt.y_norm = None
         opt.message_passing='SignedConv'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
-        opt.hidden_sizes_list=str2list('16-2')
-        opt.inner_act = 'relu'
-        # opt.out_act = 'none'
-        # opt.head_act = 'none'
+        opt.hidden_sizes_list=str2list('16-4')
+        opt.inner_act = 'sigmoid'
+        opt.out_act = 'none'
+        opt.head_act = 'none'
         opt.use_node_features = False
         opt.use_edge_weights = False
         opt.transforms=str2list('none')
@@ -165,7 +165,7 @@ def debugModel(model_type):
         opt.relabel_11_to_00 = False
         opt.y_log_transform = True
         opt.head_architecture = 'outer'
-        opt.head_hidden_sizes_list = [2]
+        opt.head_hidden_sizes_list = [4, 1]
         opt.crop=[50,100]
         opt.m = 50
         # opt.use_bias = False
@@ -182,7 +182,7 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 10
+    opt.n_epochs = 5
     opt.lr = 1e-2
     opt.batch_size = 2
     opt.milestones = str2list('1')
@@ -193,6 +193,7 @@ def debugModel(model_type):
     opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = True
+    opt.gpus = 1
 
     opt = finalizeOpt(opt, parser, True)
 
@@ -342,7 +343,7 @@ def testEnergy():
 
 if __name__ == '__main__':
     # edit_argparse()
-    debugModel('ContactGNN')
+    debugModel('ContactGNNEnergy')
     # plot_fixed()
     # test_argpartition(10)
     # to_mat()
