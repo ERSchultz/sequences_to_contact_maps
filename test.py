@@ -72,7 +72,7 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    opt.data_folder = "dataset_08_24_21"
+    opt.data_folder = "dataset_04_18_21"
 
     # architecture
     opt.k = 2
@@ -122,15 +122,13 @@ def debugModel(model_type):
         opt.top_k = 500
         opt.parameter_sharing = True
     elif model_type == 'ContactGNN':
-        opt.loss = 'mse'
+        opt.GNN_mode = True
+        opt.output_mode = 'sequence'
+        opt.loss = 'BCE'
         opt.y_norm = None
         opt.message_passing='SignedConv'
-        opt.GNN_mode = True
-        opt.output_mode = 'energy'
         opt.hidden_sizes_list=str2list('16-2')
-        opt.inner_act = 'sigmoid'
-        opt.out_act = 'prelu'
-        opt.head_act = 'prelu'
+        opt.out_act = None
         opt.use_node_features = False
         opt.use_edge_weights = False
         opt.transforms=str2list('none')
@@ -141,11 +139,36 @@ def debugModel(model_type):
         opt.sparsify_threshold_upper = None
         opt.relabel_11_to_00 = False
         opt.y_log_transform = True
-        opt.head_architecture = 'fc-outer'
-        opt.head_hidden_sizes_list = [1]
-        # opt.crop=[20,100]
-        # opt.m = 80
-        opt.use_bias = True
+        opt.head_architecture = 'fc'
+        opt.head_hidden_sizes_list = [2]
+        opt.crop=[50,100]
+        opt.m = 50
+        # opt.use_bias = False
+    elif model_type == 'ContactGNNEnergy':
+        opt.loss = 'BCE'
+        opt.y_norm = None
+        opt.message_passing='SignedConv'
+        opt.GNN_mode = True
+        opt.output_mode = 'energy'
+        opt.hidden_sizes_list=str2list('16-2')
+        opt.inner_act = 'relu'
+        # opt.out_act = 'none'
+        # opt.head_act = 'none'
+        opt.use_node_features = False
+        opt.use_edge_weights = False
+        opt.transforms=str2list('none')
+        opt.pre_transforms=str2list('degree')
+        opt.split_neg_pos_edges_for_feature_augmentation = True
+        opt.top_k = None
+        opt.sparsify_threshold = 0.176
+        opt.sparsify_threshold_upper = None
+        opt.relabel_11_to_00 = False
+        opt.y_log_transform = True
+        opt.head_architecture = 'outer'
+        opt.head_hidden_sizes_list = [2]
+        opt.crop=[50,100]
+        opt.m = 50
+        # opt.use_bias = False
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
         opt.autoencoder_mode = True
@@ -159,16 +182,17 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 1
-    opt.lr = 1e-5
+    opt.n_epochs = 5
+    opt.lr = 1e-2
     opt.batch_size = 2
     opt.milestones = str2list('1')
     opt.gamma = 0.1
 
     # other
-    opt.plot = False
-    opt.plot_predictions = False
+    opt.plot = True
+    opt.plot_predictions = True
     opt.verbose = False
+    opt.print_params = True
 
     opt = finalizeOpt(opt, parser, True)
 
@@ -259,13 +283,14 @@ class ContactGNNEnergyTest(nn.Module):
     def forward(self, latent):
         _, output_size = latent.shape
         print('a', latent, latent.shape)
-        latent = torch.unsqueeze(latent.t(), 0)
+        latent = latent.reshape(-1, self.m, output_size)
+        latent = latent.permute(0, 2, 1)
         print('b', latent, latent.shape)
         print(latent[:, :, 1], latent[:, :, 2])
         latent = self.to2D(latent)
         print('c', latent, latent.shape)
         print(latent[:, :, 1, 2])
-        latent = latent = latent.permute(0, 2, 3, 1)
+        latent = latent.permute(0, 2, 3, 1)
         print('d', latent, latent.shape)
         out = self.head(latent)
         print('e', out, out.shape)
@@ -279,7 +304,7 @@ def testEnergy():
     if not osp.exists(ofile):
         os.mkdir(ofile, mode = 0o755)
 
-    m = 100
+    m = 1024
 
     model = ContactGNNEnergyTest(m, [1])
     tot_pars = 0
@@ -299,10 +324,10 @@ def testEnergy():
 
     x = torch.tensor(x, dtype = torch.float32)
 
-    # z = np.load(osp.join(dir, "results/ContactGNN/159/sample40/z.npy"))[:m]
-    # z = torch.tensor(z, dtype = torch.float32)
+    z = np.load(osp.join(dir, "results/ContactGNN/159/sample40/z.npy"))[:m]
+    z = torch.tensor(z, dtype = torch.float32)
 
-    energy_hat = model(x)
+    energy_hat = model(z)
 
     energy_hat = energy_hat.cpu().detach().numpy()
     energy_hat = energy_hat.reshape((m,m))
@@ -314,15 +339,6 @@ def testEnergy():
     v_min = np.min(energy)
     plotContactMap(energy_hat, osp.join(ofile, 'energy_hat.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$\hat{S}$')
     plotContactMap(energy, osp.join(ofile, 'energy.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$S$')
-
-def main():
-    x1 = np.array([0,1])
-    x2 = np.array([1,1])
-    chi = np.array([[-1, 1],[1, 0]])
-
-    s = x1 @ chi @ x2
-    print(s)
-    print(x1 @ chi)
 
 if __name__ == '__main__':
     # edit_argparse()

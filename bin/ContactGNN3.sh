@@ -8,7 +8,7 @@
 #SBATCH --ntasks-per-node=4
 #SBATCH --mem-per-cpu=2000
 
-dirname="/project2/depablo/erschultz/dataset_08_26_21"
+dirname="/project2/depablo/erschultz/dataset_04_18_21"
 deleteRoot='false'
 
 modelType='ContactGNN'
@@ -17,7 +17,7 @@ GNNMode='true'
 outputMode='sequence'
 
 # architecture
-k=4
+k=2
 m=1024
 yPreprocessing='diag'
 yNorm='none'
@@ -25,17 +25,17 @@ yLogTransform='true'
 messagePassing='SignedConv'
 useNodeFeatures='false'
 useEdgeWeights='false'
-hiddenSizesList='16-4'
+hiddenSizesList='16-2'
 transforms='none'
 preTransforms='none'
-split_neg_pos_edges_for_feature_augmentation='false'
+split_neg_pos_edges_for_feature_augmentation='true'
 topK='none'
 sparsifyThresholdUpper='none'
 sparsifyThreshold=0.176
 loss='BCE'
 outAct='none'
 headArchitecture='fc'
-headHiddenSizesList='4'
+headHiddenSizesList='2'
 
 # hyperparameters
 nEpochs=20

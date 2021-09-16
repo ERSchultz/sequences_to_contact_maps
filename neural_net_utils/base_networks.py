@@ -4,7 +4,7 @@ import math
 import numpy as np
 import time
 
-def actToModule(act, none_mode = False):
+def actToModule(act, none_mode = False, in_place = True):
     '''
     Converts input activation, act, to nn.Module activation.
 
@@ -28,11 +28,11 @@ def actToModule(act, none_mode = False):
         elif act.lower() == 'sigmoid':
             act = nn.Sigmoid()
         elif act.lower() == 'relu':
-            act = nn.ReLU(True)
+            act = nn.ReLU(in_place)
         elif act.lower() == 'prelu':
             act =  nn.PReLU()
         elif act.lower() == 'leaky':
-            act = nn.LeakyReLU(0.2, True)
+            act = nn.LeakyReLU(0.2, in_place)
         elif act.lower() == 'tanh':
             act = nn.Tanh()
         else:

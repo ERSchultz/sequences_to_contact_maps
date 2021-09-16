@@ -63,7 +63,8 @@ def getBaseParser():
     parser.add_argument('--loss', type=str, default='mse', help='Type of loss to use: options: {"mse", "cross_entropy"}')
     parser.add_argument('--autoencoder_mode', type=str2bool, default=False, help='True to use input as target output (i.e. autoencoder)')
     parser.add_argument('--verbose', type=str2bool, default=False)
-    parser.add_argument('--output_mode', type=str, default='contact', help='data structure of output {"contact", "sequence"}')
+    parser.add_argument('--print_params', type=str2bool, default=False, help='True to print parameters after training')
+    parser.add_argument('--output_mode', type=str, default='contact', help='data structure of output {"contact", "sequence", "energy"}')
 
     # model args
     parser.add_argument('--model_type', type=str, default='test', help='Type of model')
@@ -76,7 +77,7 @@ def getBaseParser():
     parser.add_argument('--m', type=int, default=1024, help='Number of particles')
     parser.add_argument('--seed', type=int, default=42, help='random seed to use. Default: 42')
     parser.add_argument('--act', type=str2None, default='relu', help='default activation') # TODO impelement throughout
-    parser.add_argument('--inner_act', type=str2None, default='relu', help='default activation (not used for all networks)')
+    parser.add_argument('--inner_act', type=str2None, help='default activation (not used for all networks)')
     parser.add_argument('--out_act', type=str2None, help='activation of final layer')
     parser.add_argument('--training_norm', type=str2None, help='norm during training (batch, instance, or None)')
     parser.add_argument('--parameter_sharing', type=str2bool, default=False, help='true to use parameter sharing in autoencoder blocks')
@@ -178,7 +179,7 @@ def finalizeOpt(opt, parser, local = False):
         raise Exception('Invalid loss: {}'.format(repr(opt.loss)))
 
     # check mode
-    if opt.model_type.startswith('GNNAutoencoder') or opt.model_type == 'ContactGNN':
+    if opt.model_type.startswith('GNNAutoencoder') or opt.model_type.startswith('ContactGNN'):
         assert opt.GNN_mode, 'mode should be GNN'
 
     # configure GNN transforms
@@ -336,7 +337,7 @@ def opt2list(opt):
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.nf])
     elif opt.model_type.startswith('GNNAutoencoder'):
         opt_list.extend([opt.head_act, opt.parameter_sharing])
-    elif opt.model_type == 'ContactGNN':
+    elif opt.model_type.startswith('ContactGNN'):
         pass
     elif opt.model_type == 'SequenceFCAutoencoder':
         opt_list.extend([opt.hidden_sizes_list, opt.parameter_sharing])
@@ -377,7 +378,7 @@ def get_opt_header(model_type, GNN_mode):
         opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'nf'])
     elif model_type == 'GNNAutoencoder':
         opt_list.extend(['head_act', 'head_hidden_sizes_list'])
-    elif model_type == 'ContactGNN':
+    elif model_type.startswith('ContactGNN'):
         pass
     elif model_type == 'SequenceFCAutoencoder':
         opt_list.extend(['hidden_sizes_list', 'parameter_sharing'])

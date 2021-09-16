@@ -252,7 +252,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             # use exsting graph data folder
             self.root = osp.join(dirname, root_name)
         super(ContactsGraph, self).__init__(self.root, transform, pre_transform)
-        print('graph init time: {}'.format(np.round(time.time() - t0, 3)))
+        print('graph init time: {}\n'.format(np.round(time.time() - t0, 3)))
 
     @property
     def raw_file_names(self):
@@ -448,8 +448,12 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
         deg = deg / torch.max(deg)
         if self.split_neg_pos_edges_for_feature_augmentation:
-            pos_deg = pos_deg / torch.max(pos_deg)
-            neg_deg = neg_deg / torch.max(neg_deg)
+            if torch.max(pos_deg) > 0:
+                # this condition failed during testing with small subgraphs
+                # shouldn't be a concern otherwise
+                pos_deg = pos_deg / torch.max(pos_deg)
+            if torch.max(neg_deg) > 0:
+                neg_deg = neg_deg / torch.max(neg_deg)
             deg = torch.stack([deg, pos_deg, neg_deg], dim=1)
         else:
             deg = torch.stack([deg], dim=1)

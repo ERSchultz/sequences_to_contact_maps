@@ -58,16 +58,24 @@ def core_test_train(model, opt):
     if opt.cuda:
         model.to(opt.device)
 
+    if opt.print_params:
+        print('Initial Parameters: ', file = opt.log_file)
+        for k,p in model.named_parameters():
+            print(k, p.numel(), p.shape, file = opt.log_file)
+            print(p, file = opt.log_file)
+        print()
 
     t0 = time.time()
     train_loss_arr, val_loss_arr = train(train_dataloader, val_dataloader, model, opt, ofile = opt.log_file)
 
     tot_pars = 0
+    if opt.print_params:
+        print('Final Parameters: ', file = opt.log_file)
     for k,p in model.named_parameters():
         tot_pars += p.numel()
-        if opt.verbose:
-            print(k, p.numel(), p.shape)
-            print(p)
+        if opt.verbose or opt.print_params:
+            print(k, p.numel(), p.shape, file = opt.log_file)
+            print(p, file = opt.log_file)
     print('Total parameters: {}'.format(locale.format_string("%d", tot_pars, grouping = True)), file = opt.log_file)
     print('Total time: {}'.format(time.time() - t0), file = opt.log_file)
     print('Final val loss: {}\n'.format(val_loss_arr[-1]), file = opt.log_file)

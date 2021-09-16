@@ -18,19 +18,20 @@ from sklearn.decomposition import PCA
 from scipy.stats import spearmanr, pearsonr
 import matplotlib.pyplot as plt
 import csv
-from networks import *
+
+import networks
 from dataset_classes import *
 
 def getModel(opt):
     if opt.model_type == 'SimpleEpiNet':
-        model = SimpleEpiNet(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
+        model = networks.SimpleEpiNet(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
     if opt.model_type == 'UNet':
-        model = UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm, out_act = opt.out_act)
+        model = networks.UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm, out_act = opt.out_act)
     elif opt.model_type == 'DeepC':
-        model = DeepC(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
+        model = networks.DeepC(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list, opt.training_norm, opt.act, opt.out_act)
     elif opt.model_type == 'Akita':
-        model = Akita(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
+        model = networks.Akita(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list_trunk,
                             opt.bottleneck,
                             opt.dilation_list_head,
@@ -40,14 +41,14 @@ def getModel(opt):
                             opt.training_norm,
                             opt.down_sampling)
     elif opt.model_type.startswith('GNNAutoencoder'):
-        model = GNNAutoencoder(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.head_act, opt.out_act,
+        model = networks.GNNAutoencoder(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.head_act, opt.out_act,
                                 opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list, opt.parameter_sharing)
     elif opt.model_type == 'SequenceFCAutoencoder':
-        model = FullyConnectedAutoencoder(opt.m * opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, opt.parameter_sharing)
+        model = networks.FullyConnectedAutoencoder(opt.m * opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, opt.parameter_sharing)
     elif opt.model_type == 'SequenceConvAutoencoder':
-        model = ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, conv1d = True)
-    elif opt.model_type == 'ContactGNN':
-        model = ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.inner_act, opt.out_act,
+        model = networks.ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, conv1d = True)
+    elif opt.model_type.startswith('ContactGNN'):
+        model = networks.ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.inner_act, opt.out_act,
         opt.message_passing, opt.use_edge_weights,
         opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act, opt.use_bias)
     else:
@@ -309,7 +310,7 @@ def calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson'):
     n, n = y.shape
     triu_ind = np.triu_indices(n)
 
-    overall_corr, pval = stat(y[triu_ind], yhat[triu_ind])
+    overall_corr, _ = stat(y[triu_ind], yhat[triu_ind])
 
     corr_arr = np.zeros(n-2)
     corr_arr[0] = np.NaN
@@ -317,7 +318,7 @@ def calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson'):
         # n-1, n, and 0 are NaN always, so skip
         y_diag = np.diagonal(y, offset = d)
         yhat_diag = np.diagonal(yhat, offset = d)
-        corr, pval = stat(y_diag, yhat_diag)
+        corr, _ = stat(y_diag, yhat_diag)
         corr_arr[d] = corr
 
     return overall_corr, corr_arr

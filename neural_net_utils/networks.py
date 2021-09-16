@@ -1,15 +1,21 @@
 import os
+import os.path as osp
 import sys
 abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 sys.path.insert(0, dname)
 
+import time
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch_geometric.nn as gnn
+
 from base_networks import *
-import time
+from argparseSetup import getBaseParser, finalizeOpt
+import utils
+
 
 class UNet(nn.Module):
     '''U Net adapted from https://github.com/phillipi/pix2pix.'''
@@ -444,26 +450,27 @@ class ContactGNN(nn.Module):
             use_edge_weights: True to use edge weights
             head_architecture: type of head architecture
             head_hidden_sizes_list: hidden sizes of head architecture
-            use_bias: true to use bias term in message passing (used in head regardless)
+            use_bias: true to use bias term - applies for message passing and head
         '''
         super(ContactGNN, self).__init__()
 
         self.m = m
         self.message_passing = message_passing.lower()
         self.use_edge_weights = use_edge_weights
-        assert head_architecture is None or head_architecture.lower() in {'fc', 'gcn', 'avg', 'concat', 'outer', 'fc-outer'}, 'Unsupported head architecture {}'.format(head_architecture)
         if head_architecture is not None:
             head_architecture = head_architecture.lower()
         self.head_architecture = head_architecture
 
         self.act = actToModule(act)
-        self.inner_act = actToModule(inner_act, none_mode = True) # added this, non_mode should prevent older models from breaking when reloading
+        self.inner_act = actToModule(inner_act, none_mode = True, in_place = False) # added this, none_mode should prevent older models from breaking when reloading
         self.out_act = actToModule(out_act)
         self.head_act = actToModule(head_act)
 
         model = []
-        first_layer = True
-        if self.message_passing == 'gcn':
+        if self.message_passing == 'identity':
+            # debugging option to skip message passing
+            self.model = None
+        elif self.message_passing == 'gcn':
             if self.use_edge_weights:
                 fn_header = 'x, edge_index, edge_attr -> x'
             else:
@@ -474,11 +481,8 @@ class ContactGNN(nn.Module):
                             fn_header)
 
                 if i == len(hidden_sizes_list) - 1:
-                    model.extend([module, self.out_act])
+                    model.extend([module]) # no act on last layer of message passing, use inner act
                 else:
-                    if first_layer:
-                        self.first_layer = module
-                        first_layer = False
                     model.extend([module, self.act])
                 input_size = output_size
 
@@ -487,10 +491,13 @@ class ContactGNN(nn.Module):
             assert not self.use_edge_weights and self.head_architecture is not None
             first_layer = True
 
-            for output_size in hidden_sizes_list:
+            for i, output_size in enumerate(hidden_sizes_list):
                 module = (gnn.SignedConv(input_size, output_size, first_aggr = first_layer, bias = use_bias),
                             'x, pos_edge_index, neg_edge_index -> x')
-                model.extend([module, self.act])
+                if i == len(hidden_sizes_list) - 1:
+                    model.extend([module]) # no act on last layer of message passing, use inner act
+                else:
+                    model.extend([module, self.act])
                 first_layer = False
                 input_size = output_size
             input_size *= 2
@@ -499,41 +506,32 @@ class ContactGNN(nn.Module):
             # so the total length is 2 * output_size
 
             self.model = gnn.Sequential('x, pos_edge_index, neg_edge_index', model)
+        elif self.message_passing == 'z':
+            # uses prior model to predict particle types
+            # designed for debugging
+            self.model = None
         else:
             raise Exception("Unkown message_passing {}".format(message_passing))
         print(self.model)
 
         ### Head Architecture ###
         head = []
-        if self.head_architecture == 'fc-outer':
-            # primarily for testing
-            self.fc = LinearBlock(input_size, 2, activation = 'sigmoid')
-            self.to2D = AverageTo2d(mode = 'outer')
-            input_size = 4 # outer squares size
+        if self.head_architecture is None:
+            pass
+        elif self.head_architecture == 'fc':
             for i, output_size in enumerate(head_hidden_sizes_list):
                 if i == len(hidden_sizes_list) - 1:
                     act = self.out_act
                 else:
                     act = self.head_act
-                head.append(LinearBlock(input_size, output_size, activation = act))
-                input_size = output_size
-
-            self.head = nn.Sequential(*head)
-        if self.head_architecture == 'fc':
-            for i, output_size in enumerate(head_hidden_sizes_list):
-                if i == len(hidden_sizes_list) - 1:
-                    act = self.out_act
-                    assert output_size == 1, "Final size must be 1 not {}".format(output_size)
-                else:
-                    act = self.head_act
-                head.append(LinearBlock(input_size, output_size, activation = act))
+                head.append(LinearBlock(input_size, output_size, activation = act, bias = use_bias))
                 input_size = output_size
 
             self.head = nn.Sequential(*head)
         elif self.head_architecture == 'gcn':
             # TODO not sure if I ever tested this
             for i, output_size in enumerate(head_hidden_sizes_list):
-                module = (gnn.GCNConv(input_size, output_size),
+                module = (gnn.GCNConv(input_size, output_size, bias = use_bias),
                             'x, edge_index -> x')
                 if i == len(hidden_sizes_list) - 1:
                     head.extend([module, self.out_act])
@@ -554,12 +552,41 @@ class ContactGNN(nn.Module):
                     act = self.out_act
                 else:
                     act = self.head_act
-                head.append(LinearBlock(input_size, output_size, activation = act))
+                head.append(LinearBlock(input_size, output_size, activation = act, bias = use_bias))
                 input_size = output_size
 
             self.head = nn.Sequential(*head)
+            # TODO delete below
+            # self.head[0].linear.weight = nn.Parameter(torch.tensor([-1, 1, 1, 0], dtype = torch.float32))
+            # self.head[0].linear.weight.requires_grad = False
+        else:
+            raise Exception("Unkown head_architecture {}".format(head_architecture))
 
     def forward(self, graph):
+        if self.message_passing == 'identity':
+            latent = graph.x
+        elif self.message_passing == 'z':
+            parser = getBaseParser()
+            opt = parser.parse_args()
+            opt.id = 159
+            opt.model_type = 'ContactGNN'
+            opt = finalizeOpt(opt, parser, local = True)
+            print(opt)
+            z_model = utils.getModel(opt)
+            if graph.x.is_cuda:
+                z_model.to(graph.x.get_device())
+            model_name = osp.join(opt.ofile_folder, 'model.pt')
+            if osp.exists(model_name):
+                save_dict = torch.load(model_name, map_location=torch.device('cpu'))
+                z_model.load_state_dict(save_dict['model_state_dict'])
+                print('Model is loaded: {}'.format(model_name))
+            else:
+                raise Exception('Model does not exist: {}'.format(model_name))
+            z_model.eval()
+            latent = z_model(graph)
+            if opt.loss == 'BCE':
+                latent = torch.sigmoid(latent)
+            print(latent, latent.shape)
         if self.message_passing == 'gcn':
             latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
         elif self.message_passing == 'signedconv':
@@ -580,25 +607,11 @@ class ContactGNN(nn.Module):
             latent = latent.permute(0, 2, 1)
             latent = self.to2D(latent)
             _, output_size, _, _ = latent.shape
-            latent = latent = latent.permute(0, 2, 3, 1)
+            latent = latent.permute(0, 2, 3, 1)
             out = self.head(latent)
-            out = torch.reshape(out, (-1, self.m, self.m))
-        elif self.head_architecture == 'fc-outer':
-            latent = self.fc(latent)
-            _, output_size = latent.shape
-            latent = latent.reshape(-1, self.m, output_size)
-            latent = latent.permute(0, 2, 1)
-            latent = self.to2D(latent)
-            _, output_size, _, _ = latent.shape
-            latent = latent = latent.permute(0, 2, 3, 1)
-            out = self.head(latent)
-            out = torch.squeeze(out, 3)
+            if len(out.shape) > 3:
+                out = torch.squeeze(out, 3)
 
-        return out
-
-    def get_first_layer(self, graph):
-        out = self.first_layer[0](graph.x, graph.edge_index)
-        out = self.act(out)
         return out
 
 def testFullyConnectedAutoencoder():
