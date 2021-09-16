@@ -76,7 +76,7 @@ def core_test_train(model, opt):
         if opt.verbose or opt.print_params:
             print(k, p.numel(), p.shape, file = opt.log_file)
             print(p, file = opt.log_file)
-    print('\nTotal parameters: {}''.format(locale.format_string("%d", tot_pars, grouping = True)), file = opt.log_file)
+    print('\nTotal parameters: {}'.format(locale.format_string("%d", tot_pars, grouping = True)), file = opt.log_file)
     print('Total time: {}'.format(time.time() - t0), file = opt.log_file)
     print('Final val loss: {}\n'.format(val_loss_arr[-1]), file = opt.log_file)
 

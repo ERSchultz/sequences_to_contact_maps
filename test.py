@@ -141,8 +141,8 @@ def debugModel(model_type):
         opt.y_log_transform = True
         opt.head_architecture = 'fc'
         opt.head_hidden_sizes_list = [2]
-        opt.crop=[50,100]
-        opt.m = 50
+        # opt.crop=[50,100]
+        # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
         opt.loss = 'BCE'
@@ -182,7 +182,7 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 5
+    opt.n_epochs = 10
     opt.lr = 1e-2
     opt.batch_size = 2
     opt.milestones = str2list('1')

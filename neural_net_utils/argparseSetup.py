@@ -262,8 +262,7 @@ def finalizeOpt(opt, parser, local = False):
         opt.use_parallel = False
 
     if opt.cuda and not torch.cuda.is_available():
-        if not local:
-            print('Warning: falling back to cpu', file = opt.log_file)
+        print('Warning: falling back to cpu', file = opt.log_file)
         opt.cuda = False
         opt.use_parallel = False
 
