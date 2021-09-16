@@ -10,7 +10,7 @@ import torch.optim as optim
 import torch_geometric.data
 
 import locale
-locale.setlocale(locale.LC_ALL, 'en_US')
+locale.setlocale(locale.LC_ALL, '')
 
 from neural_net_utils.networks import *
 from neural_net_utils.utils import getDataLoaders, comparePCA, getModel, getDataset

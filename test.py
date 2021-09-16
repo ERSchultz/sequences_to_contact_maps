@@ -11,9 +11,6 @@ import time
 import csv
 from scipy.io import savemat
 
-import locale
-locale.setlocale(locale.LC_ALL, 'en_US')
-
 from neural_net_utils.base_networks import *
 from neural_net_utils.networks import *
 from neural_net_utils.utils import *
@@ -290,7 +287,7 @@ def testEnergy():
         tot_pars += p.numel()
         print(k, p.numel(), p.shape)
         print(p)
-    print('Total parameters: {}'.format(locale.format_string("%d", tot_pars, grouping = True)))
+    print('Total parameters: {}'.format(tot_pars))
 
     x = np.load(osp.join(dir, "dataset_04_18_21/samples/sample40/x.npy"))[:m]
     # x = np.array([[0,0], [0,1], [1,0], [1,1]])[:m]
