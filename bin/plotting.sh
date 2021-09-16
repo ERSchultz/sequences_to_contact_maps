@@ -13,7 +13,7 @@ dirname="/project2/depablo/erschultz/dataset_04_18_21"
 gpus=1
 
 # model
-modelType='ContactGNN'
+modelType='ContactGNNEnergy'
 pretrained='true'
 
 # other
@@ -25,7 +25,7 @@ useScratch='true'
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2
 
-for id in 116
+for id in 1
 do
   python3 plotting_functions.py --data_folder $dirname --model_type $modelType --id $id --gpus $gpus --pretrained $pretrained --plot_predictions $plotPredictions --use_scratch $useScratch
 done

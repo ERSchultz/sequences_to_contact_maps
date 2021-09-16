@@ -63,7 +63,7 @@ def core_test_train(model, opt):
         for k,p in model.named_parameters():
             print(k, p.numel(), p.shape, file = opt.log_file)
             print(p, file = opt.log_file)
-        print()
+        print('\n', file = opt.log_file)
 
     t0 = time.time()
     train_loss_arr, val_loss_arr = train(train_dataloader, val_dataloader, model, opt, ofile = opt.log_file)
@@ -76,7 +76,7 @@ def core_test_train(model, opt):
         if opt.verbose or opt.print_params:
             print(k, p.numel(), p.shape, file = opt.log_file)
             print(p, file = opt.log_file)
-    print('Total parameters: {}'.format(locale.format_string("%d", tot_pars, grouping = True)), file = opt.log_file)
+    print('\nTotal parameters: {}''.format(locale.format_string("%d", tot_pars, grouping = True)), file = opt.log_file)
     print('Total time: {}'.format(time.time() - t0), file = opt.log_file)
     print('Final val loss: {}\n'.format(val_loss_arr[-1]), file = opt.log_file)
 

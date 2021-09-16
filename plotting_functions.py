@@ -654,7 +654,7 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         yhat = yhat.cpu().detach().numpy()
         yhat = yhat.reshape((opt.m,opt.m))
 
-        yhat_title = '{}\nYhat ({}: {})'.format(upper_title, loss_title, np.round(loss, 3))
+        yhat_title = r'{}\n$\hat{S}$ ({}: {})'.format(upper_title, loss_title, np.round(loss, 3))
 
         loss_arr[i] = loss
         if opt.verbose:
@@ -665,13 +665,20 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
                                                  [(0, 'blue'),
                                                  (0.5, 'white'),
                                                   (1, 'red')], N=126)
-        # not a contat map but using this function anyways
         v_max = np.max(y)
         v_min = np.min(y)
-        plotContactMap(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$\hat{S}$')
+
+        # not a contat map but using this plotContactMap function anyways
+        plotContactMap(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = yhat_title)
         np.savetxt(osp.join(subpath, 'energy_hat.txt'), yhat, fmt = '%.3f')
+
         plotContactMap(y, osp.join(subpath, 'energy.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$S$')
         np.savetxt(osp.join(subpath, 'energy.txt'), y, fmt = '%.3f')
+
+        # plot dif
+        ydif = yhat - y
+        plotContactMap(ydif, osp.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = cmap)
+
 
     print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
 
@@ -1305,8 +1312,8 @@ def main():
 if __name__ == '__main__':
     # contactPlots('dataset_04_18_21')
     # updateResultTables('ContactGNN', 'GNN', 'sequence')
-    updateResultTables('ContactGNNEnergy', 'GNN', 'energy')
+    # updateResultTables('ContactGNNEnergy', 'GNN', 'energy')
     # plotCombinedModels('ContactGNN', [202, 203, 204])
-    # main()
+    main()
     # freqSampleDistributionPlots('dataset_04_18_21', sample_id=40, k=2)
     # freqDistDistriutionPlots('dataset_08_24_21')

@@ -190,6 +190,7 @@ def finalizeOpt(opt, parser, local = False):
         else:
             assert opt.transforms is not None or opt.pre_transforms is not None, "need feature augmentation"
 
+    opt.transforms_processed = None
     if opt.transforms is not None:
         transforms_processed = []
         for t_str in opt.transforms:
@@ -198,13 +199,13 @@ def finalizeOpt(opt, parser, local = False):
                 opt.node_feature_size += 1
             else:
                 raise Exception("Invalid transform {}".format(t_str))
-        opt.transforms_processed = torch_geometric.transforms.Compose(transforms_processed)
-    else:
-        opt.transforms_processed = None
+        if len(transforms_processed) > 0:
+            opt.transforms_processed = torch_geometric.transforms.Compose(transforms_processed)
 
     opt.weighted_LDP = False
     opt.degree = False
     opt.weighted_degree = False
+    opt.pre_transforms_processed = None
     if opt.pre_transforms is not None:
         pre_transforms_processed = []
         for t_str in opt.pre_transforms:
@@ -233,9 +234,8 @@ def finalizeOpt(opt, parser, local = False):
                 pre_transforms_processed.append(torch_geometric.transforms.OneHotDegree(opt.m))
             else:
                 raise Exception("Invalid transform {}".format(t_str))
-        opt.pre_transforms_processed = torch_geometric.transforms.Compose(pre_transforms_processed)
-    else:
-        opt.pre_transforms_processed = None
+        if len(pre_transforms_processed) > 0:
+            opt.pre_transforms_processed = torch_geometric.transforms.Compose(pre_transforms_processed)
 
     # move data to scratch
     if opt.use_scratch and not local:
