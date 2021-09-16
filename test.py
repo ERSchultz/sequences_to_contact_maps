@@ -18,6 +18,7 @@ from neural_net_utils.dataset_classes import *
 from neural_net_utils.argparseSetup import *
 from core_test_train import core_test_train
 from plotting_functions import *
+import cleanDirectories
 
 def test_num_workers():
     opt = argparseSetup() # get default args
@@ -182,10 +183,10 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 5
-    opt.lr = 1e-2
+    opt.n_epochs = 20
+    opt.lr = 1e-3
     opt.batch_size = 2
-    opt.milestones = str2list('1')
+    opt.milestones = None
     opt.gamma = 0.1
 
     # other
@@ -343,7 +344,7 @@ def testEnergy():
 
 if __name__ == '__main__':
     # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    debugModel('ContactGNN')
     # plot_fixed()
     # test_argpartition(10)
     # to_mat()

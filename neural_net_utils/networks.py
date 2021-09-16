@@ -391,7 +391,6 @@ class ConvolutionalAutoencoder(nn.Module):
         encode_model = []
         decode_model = []
         latent_size = hidden_sizes_list.pop()
-        print(hidden_sizes_list)
         first = True
         for output_size in hidden_sizes_list:
             encode_model.append(ConvBlock(input_size, output_size, activation = act, pool = pooling, conv1d = conv1d))
@@ -406,7 +405,6 @@ class ConvolutionalAutoencoder(nn.Module):
         self.decode = nn.Sequential(*reversed(decode_model))
 
         input_size = int(m / 2**len(hidden_sizes_list) * input_size)
-        print(input_size)
         self.fc1 = LinearBlock(input_size, latent_size, activation = act)
         self.fc2 = LinearBlock(latent_size, input_size, activation = act)
 

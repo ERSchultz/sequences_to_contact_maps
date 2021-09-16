@@ -17,6 +17,7 @@ from neural_net_utils.utils import getDataLoaders, comparePCA, getModel, getData
 from plotting_functions import plotting_script, plotModelFromArrays
 from neural_net_utils.dataset_classes import *
 from neural_net_utils.argparseSetup import argparseSetup, save_args
+import cleanDirectories
 
 def main():
     opt = argparseSetup()
@@ -89,7 +90,8 @@ def core_test_train(model, opt):
     # cleanup
     opt.log_file.close()
     if opt.root is not None and opt.delete_root:
-        rmtree(opt.root)
+        # opt.root is set in utils.getDataset
+        cleanDirectories.main(root = opt.root)
 
 def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
     train_loss = []

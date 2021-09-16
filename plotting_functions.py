@@ -1153,9 +1153,9 @@ def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
         # get data
         model_path = osp.join('results', model_type)
         parser = getBaseParser()
-        for id in os.listdir(model_path):
-            id_path = osp.join(model_path, id)
-            if osp.isdir(id_path) and id.isdigit():
+        for id in range(1, 500):
+            id_path = osp.join(model_path, str(id))
+            if osp.isdir(id_path):
                 txt_file = osp.join(id_path, 'argparse.txt')
                 if osp.exists(txt_file):
                     opt = parser.parse_args(['@{}'.format(txt_file)])
@@ -1311,9 +1311,9 @@ def main():
 
 if __name__ == '__main__':
     # contactPlots('dataset_04_18_21')
-    # updateResultTables('ContactGNN', 'GNN', 'sequence')
+    updateResultTables('ContactGNN', 'GNN', 'sequence')
     # updateResultTables('ContactGNNEnergy', 'GNN', 'energy')
     # plotCombinedModels('ContactGNN', [202, 203, 204])
-    main()
+    # main()
     # freqSampleDistributionPlots('dataset_04_18_21', sample_id=40, k=2)
     # freqDistDistriutionPlots('dataset_08_24_21')
