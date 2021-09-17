@@ -1,0 +1,239 @@
+Namespace(GNN_mode=True, act='relu', autoencoder_mode=False, batch_size=4, bottleneck=None, channels=1, classes=10, criterion=<function mse_loss at 0x7f596a0cf040>, crop=None, cuda=True, data_folder='/scratch/midway2/erschultz/dataset_08_26_21', degree=True, delete_root=False, device=device(type='cuda'), dilation_list=None, dilation_list_head=None, dilation_list_trunk=None, down_sampling=None, gamma=0.1, gpus=1, head_act=None, head_architecture='outer', head_hidden_sizes_list=[1], hidden_sizes_list=[16, 2], id=2, ifile=None, ifile_folder=None, inner_act='sigmoid', k=2, kernel_w_list=None, log_file=<_io.TextIOWrapper name='results/ContactGNNEnergy/2/out.log' mode='a' encoding='UTF-8'>, loss='mse', lr=0.1, m=1024, message_passing='GCN', milestones=None, min_subtraction=True, model_type='ContactGNNEnergy', n_epochs=100, nf=None, node_feature_size=1, num_workers=4, ofile_folder='results/ContactGNNEnergy/2', out_act=None, output_mode='energy', parameter_sharing=False, plot=True, plot_predictions=True, pre_transforms=['degree'], pre_transforms_processed=None, pretrained=False, print_mod=2, print_params=True, relabel_11_to_00=False, resume_training=False, root_name='ContactGNNEnergy', save_mod=5, seed=42, shuffle=True, sparsify_threshold=1.0, sparsify_threshold_upper=None, split=[0.8, 0.1, 0.1], split_neg_pos_edges=False, split_neg_pos_edges_for_feature_augmentation=False, start_epoch=1, top_k=None, toxx=False, toxx_mode='mean', training_norm=None, transforms=None, transforms_processed=None, use_bias=True, use_edge_weights=True, use_node_features=False, use_parallel=False, use_scratch=True, verbose=False, weighted_LDP=False, weighted_degree=False, x_reshape=True, y_log_transform=False, y_norm=None, y_preprocessing='diag', y_reshape=True, ydtype=torch.float32)
+
+Initial Parameters: 
+model.nns.0.weight 16 torch.Size([1, 16])
+Parameter containing:
+tensor([[ 0.4542,  0.4931, -0.1392,  0.5457, -0.1302,  0.1199, -0.2892,  0.3489,
+          0.5237, -0.4358,  0.5164,  0.1112,  0.4389,  0.0805,  0.2865, -0.0839]],
+       device='cuda:0', requires_grad=True)
+model.nns.0.bias 16 torch.Size([16])
+Parameter containing:
+tensor([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       device='cuda:0', requires_grad=True)
+model.nns.2.weight 32 torch.Size([16, 2])
+Parameter containing:
+tensor([[ 0.4451,  0.0853],
+        [-0.2695,  0.1472],
+        [-0.2660, -0.0677],
+        [-0.2345,  0.3830],
+        [-0.4557, -0.2662],
+        [-0.1630, -0.3471],
+        [ 0.0545, -0.5702],
+        [ 0.5214, -0.4904],
+        [ 0.4457,  0.0961],
+        [-0.1875,  0.3568],
+        [ 0.0900,  0.4665],
+        [ 0.0631, -0.1821],
+        [ 0.1551, -0.1566],
+        [ 0.2430,  0.5155],
+        [ 0.3337, -0.2524],
+        [ 0.3333,  0.1033]], device='cuda:0', requires_grad=True)
+model.nns.2.bias 2 torch.Size([2])
+Parameter containing:
+tensor([0., 0.], device='cuda:0', requires_grad=True)
+head.0.linear.weight 4 torch.Size([1, 4])
+Parameter containing:
+tensor([[ 0.2539, -0.3048, -0.4950, -0.1932]], device='cuda:0',
+       requires_grad=True)
+head.0.linear.bias 1 torch.Size([1])
+Parameter containing:
+tensor([-0.3835], device='cuda:0', requires_grad=True)
+
+
+Epoch 2, loss = 1.9581
+Mean test/val loss: 2.0029
+
+Epoch 4, loss = 1.9173
+Mean test/val loss: 1.8845
+
+Epoch 6, loss = 1.9073
+Mean test/val loss: 1.8886
+
+Epoch 8, loss = 1.9136
+Mean test/val loss: 1.8984
+
+Epoch 10, loss = 1.9000
+Mean test/val loss: 1.8822
+
+Epoch 12, loss = 1.8961
+Mean test/val loss: 1.8960
+
+Epoch 14, loss = 1.8931
+Mean test/val loss: 1.9281
+
+Epoch 16, loss = 1.8813
+Mean test/val loss: 1.8544
+
+Epoch 18, loss = 1.8854
+Mean test/val loss: 1.8572
+
+Epoch 20, loss = 1.8916
+Mean test/val loss: 1.9860
+
+Epoch 22, loss = 1.8812
+Mean test/val loss: 1.8542
+
+Epoch 24, loss = 1.8913
+Mean test/val loss: 1.8673
+
+Epoch 26, loss = 1.8807
+Mean test/val loss: 1.8573
+
+Epoch 28, loss = 1.8845
+Mean test/val loss: 1.8531
+
+Epoch 30, loss = 1.8845
+Mean test/val loss: 1.8778
+
+Epoch 32, loss = 1.8823
+Mean test/val loss: 1.8596
+
+Epoch 34, loss = 1.8942
+Mean test/val loss: 1.8597
+
+Epoch 36, loss = 1.8814
+Mean test/val loss: 1.8555
+
+Epoch 38, loss = 1.8915
+Mean test/val loss: 1.8555
+
+Epoch 40, loss = 1.8783
+Mean test/val loss: 1.9104
+
+Epoch 42, loss = 1.8845
+Mean test/val loss: 1.8471
+
+Epoch 44, loss = 1.8811
+Mean test/val loss: 1.9962
+
+Epoch 46, loss = 1.8865
+Mean test/val loss: 1.8571
+
+Epoch 48, loss = 1.8747
+Mean test/val loss: 1.8706
+
+Epoch 50, loss = 1.8813
+Mean test/val loss: 1.9644
+
+Epoch 52, loss = 1.8744
+Mean test/val loss: 1.8469
+
+Epoch 54, loss = 1.8843
+Mean test/val loss: 1.9186
+
+Epoch 56, loss = 1.8790
+Mean test/val loss: 1.8512
+
+Epoch 58, loss = 1.8870
+Mean test/val loss: 1.9147
+
+Epoch 60, loss = 1.8735
+Mean test/val loss: 1.9434
+
+Epoch 62, loss = 1.8845
+Mean test/val loss: 1.8480
+
+Epoch 64, loss = 1.8854
+Mean test/val loss: 1.8773
+
+Epoch 66, loss = 1.8806
+Mean test/val loss: 1.8555
+
+Epoch 68, loss = 1.8752
+Mean test/val loss: 1.8476
+
+Epoch 70, loss = 1.8871
+Mean test/val loss: 1.8504
+
+Epoch 72, loss = 1.8747
+Mean test/val loss: 1.8634
+
+Epoch 74, loss = 1.8784
+Mean test/val loss: 1.8548
+
+Epoch 76, loss = 1.8775
+Mean test/val loss: 1.8717
+
+Epoch 78, loss = 1.8920
+Mean test/val loss: 1.8561
+
+Epoch 80, loss = 1.8827
+Mean test/val loss: 1.8493
+
+Epoch 82, loss = 1.8821
+Mean test/val loss: 1.8872
+
+Epoch 84, loss = 1.8874
+Mean test/val loss: 1.8662
+
+Epoch 86, loss = 1.8769
+Mean test/val loss: 1.8617
+
+Epoch 88, loss = 1.8747
+Mean test/val loss: 1.8507
+
+Epoch 90, loss = 1.8784
+Mean test/val loss: 1.8474
+
+Epoch 92, loss = 1.8793
+Mean test/val loss: 1.8554
+
+Epoch 94, loss = 1.8841
+Mean test/val loss: 1.8487
+
+Epoch 96, loss = 1.8888
+Mean test/val loss: 1.8620
+
+Epoch 98, loss = 1.8774
+Mean test/val loss: 1.9324
+
+Epoch 100, loss = 1.8843
+Mean test/val loss: 1.8875
+
+Final Parameters: 
+model.nns.0.weight 16 torch.Size([1, 16])
+Parameter containing:
+tensor([[-0.1758, -0.3672, -0.1392, -0.0934, -0.1302, 12.1346, -0.2892,  0.2675,
+         -0.1837, -0.4358, -0.1791,  0.6118,  8.8908, -0.5201,  0.4154, -0.0839]],
+       device='cuda:0', requires_grad=True)
+model.nns.0.bias 16 torch.Size([16])
+Parameter containing:
+tensor([-0.5931, -0.8153,  0.0000, -0.6743,  0.0000, -9.6338,  0.0000, -0.4189,
+        -0.6484,  0.0000, -0.6815, -0.8394, -4.2399, -0.6006, -0.5278,  0.0000],
+       device='cuda:0', requires_grad=True)
+model.nns.2.weight 32 torch.Size([16, 2])
+Parameter containing:
+tensor([[-1.3137e-01, -5.7884e-01],
+        [-7.9195e-01, -5.2174e-01],
+        [-2.6601e-01, -6.7708e-02],
+        [-7.5338e-01, -2.9441e-01],
+        [-4.5574e-01, -2.6616e-01],
+        [ 6.0076e+01,  1.6330e+00],
+        [ 5.4492e-02, -5.7024e-01],
+        [ 1.4126e-01, -3.5444e-01],
+        [-1.8045e-01, -5.7898e-01],
+        [-1.8747e-01,  3.5677e-01],
+        [-4.3307e-01, -2.0701e-01],
+        [ 2.2009e-01,  2.2226e-01],
+        [-5.6494e-01, -1.8576e+00],
+        [-3.5756e-01, -8.5078e-02],
+        [ 1.8754e-01, -1.1381e-01],
+        [ 3.3328e-01,  1.0330e-01]], device='cuda:0', requires_grad=True)
+model.nns.2.bias 2 torch.Size([2])
+Parameter containing:
+tensor([5.6468, 3.2998], device='cuda:0', requires_grad=True)
+head.0.linear.weight 4 torch.Size([1, 4])
+Parameter containing:
+tensor([[ 1.2532,  4.6212,  4.6212, -5.3929]], device='cuda:0',
+       requires_grad=True)
+head.0.linear.bias 1 torch.Size([1])
+Parameter containing:
+tensor([-4.5187], device='cuda:0', requires_grad=True)
+
+Total parameters: 71
+Total time: 18862.590026140213
+Final val loss: 1.8875172901153565
+
+#### Plotting Script ####
+Prediction Results:
+results/ContactGNNEnergy/2/sample1230
