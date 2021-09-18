@@ -1161,8 +1161,6 @@ def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
                     opt = parser.parse_args(['@{}'.format(txt_file)])
                     opt.id = int(id)
                     opt = finalizeOpt(opt, parser, True)
-                    if opt.id == 7:
-                        print(opt)
                     opt_list = opt2list(opt)
                     if output_mode == 'contact':
                         with open(osp.join(id_path, 'PCA_results.txt'), 'r') as f:
@@ -1311,7 +1309,7 @@ def main():
 
 if __name__ == '__main__':
     # contactPlots('dataset_04_18_21')
-    # updateResultTables('ContactGNN', 'GNN', 'sequence')
+    updateResultTables('ContactGNN', 'GNN', 'sequence')
     updateResultTables('ContactGNNEnergy', 'GNN', 'energy')
     # plotCombinedModels('ContactGNN', [202, 203, 204])
     # main()

@@ -1,6 +1,6 @@
 #! /bin/bash
-#SBATCH --job-name=ContactGNNEnergy
-#SBATCH --output=logFiles/ContactGNNEnergy.out
+#SBATCH --job-name=ContactGNNEnergy2
+#SBATCH --output=logFiles/ContactGNNEnergy2.out
 #SBATCH --time=24:00:00
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -8,7 +8,7 @@
 #SBATCH --ntasks-per-node=4
 #SBATCH --mem-per-cpu=2000
 
-dirname="/project2/depablo/erschultz/dataset_08_26_21"
+dirname="/project2/depablo/erschultz/dataset_04_18_21"
 deleteRoot='false'
 
 modelType='ContactGNNEnergy'
