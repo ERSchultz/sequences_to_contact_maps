@@ -1,5 +1,5 @@
 #! /bin/bash
-#SBATCH --job-name=ContactGNN
+#SBATCH --job-name=CGNN
 #SBATCH --output=logFiles/ContactGNN.out
 #SBATCH --time=24:00:00
 #SBATCH --partition=depablo-gpu

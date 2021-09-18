@@ -1,6 +1,6 @@
 #! /bin/bash
 #SBATCH --job-name=ContactGNNEnergy2
-#SBATCH --output=logFiles/ContactGNNEnergy2.out
+#SBATCH --output=logFiles/CGNNEnergy2.out
 #SBATCH --time=24:00:00
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
