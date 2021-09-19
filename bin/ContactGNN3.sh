@@ -39,7 +39,7 @@ headHiddenSizesList='2'
 innerAct='relu'
 
 # hyperparameters
-nEpochs=5
+nEpochs=40
 batchSize=8
 numWorkers=4
 milestones='none'
