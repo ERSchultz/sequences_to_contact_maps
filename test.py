@@ -183,16 +183,16 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 20
+    opt.n_epochs = 1
     opt.lr = 1e-3
     opt.batch_size = 2
     opt.milestones = None
     opt.gamma = 0.1
 
     # other
-    opt.plot = True
+    opt.plot = False
     opt.plot_predictions = True
-    opt.verbose = False
+    opt.verbose = True
     opt.print_params = True
     opt.gpus = 1
 

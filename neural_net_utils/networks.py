@@ -515,10 +515,10 @@ class ContactGNN(nn.Module):
         ### Head Architecture ###
         head = []
         if self.head_architecture is None:
-            pass
+            self.head = None
         elif self.head_architecture == 'fc':
             for i, output_size in enumerate(head_hidden_sizes_list):
-                if i == len(hidden_sizes_list) - 1:
+                if i == len(head_hidden_sizes_list) - 1:
                     act = self.out_act
                 else:
                     act = self.head_act
@@ -531,7 +531,7 @@ class ContactGNN(nn.Module):
             for i, output_size in enumerate(head_hidden_sizes_list):
                 module = (gnn.GCNConv(input_size, output_size, bias = use_bias),
                             'x, edge_index -> x')
-                if i == len(hidden_sizes_list) - 1:
+                if i == len(head_hidden_sizes_list) - 1:
                     head.extend([module, self.out_act])
                 else:
                     head.extend([module, self.head_act])
@@ -546,7 +546,7 @@ class ContactGNN(nn.Module):
             if self.head_architecture == 'outer':
                 input_size *= input_size # outer squares size
             for i, output_size in enumerate(head_hidden_sizes_list):
-                if i == len(hidden_sizes_list) - 1:
+                if i == len(head_hidden_sizes_list) - 1:
                     act = self.out_act
                 else:
                     act = self.head_act
@@ -559,6 +559,7 @@ class ContactGNN(nn.Module):
             # self.head[0].linear.weight.requires_grad = False
         else:
             raise Exception("Unkown head_architecture {}".format(head_architecture))
+        print(self.head)
 
     def forward(self, graph):
         if self.message_passing == 'identity':
