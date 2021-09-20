@@ -16,7 +16,8 @@ envName=python3.8_pytorch1.8.1_cuda11.1
 ofile=conda_env11.1.log
 conda create --name $envName -y
 source activate $envName
-conda install -y pytorch=1.8.1 pyg torchvision cudatoolkit=11.1 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy -c pytorch -c conda-forge -c nvidia -c pyg &>> $ofile
+conda install -y pytorch=1.8.1 pyg torchvision cudatoolkit=11.1 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy hic-straw -c pytorch -c conda-forge -c nvidia -c pyg -c jrhawley &>> $ofile
+python3 -m pip install pynvml hic-straw &>> $ofile
 conda env export > seq2contact_pytorch1.8.1_cuda11.1_environment.yml
 conda deactivate
 
