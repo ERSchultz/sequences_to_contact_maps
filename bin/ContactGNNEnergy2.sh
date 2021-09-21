@@ -21,14 +21,14 @@ k=2
 m=1024
 yPreprocessing='diag'
 yNorm='none'
-yLogTransform='false'
+yLogTransform='True'
 messagePassing='SignedConv'
 useNodeFeatures='false'
 useEdgeWeights='false'
-hiddenSizesList='16-4'
+hiddenSizesList='16-2'
 transforms='none'
 preTransforms='degree'
-split_neg_pos_edges_for_feature_augmentation='true'
+split_neg_pos_edges_for_feature_augmentation='false'
 topK='none'
 sparsifyThresholdUpper='none'
 sparsifyThreshold=0.176
@@ -40,7 +40,7 @@ headArchitecture='outer'
 headHiddenSizesList='4-1'
 
 # hyperparameters
-nEpochs=100
+nEpochs=20
 batchSize=4
 numWorkers=4
 milestones='none'
