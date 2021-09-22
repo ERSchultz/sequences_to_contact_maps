@@ -1,14 +1,14 @@
 #! /bin/bash
 #SBATCH --job-name=CGNN3
 #SBATCH --output=logFiles/ContactGNN3.out
-#SBATCH --time=24:00:00s
+#SBATCH --time=24:00:00
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
 #SBATCH --mem-per-cpu=2000
 
-dirname="/project2/depablo/erschultz/dataset_04_18_21"
+dirname="/project2/depablo/erschultz/dataset_08_29_21"
 deleteRoot='false'
 
 modelType='ContactGNN'
