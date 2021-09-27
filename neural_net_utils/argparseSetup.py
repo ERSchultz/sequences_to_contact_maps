@@ -315,7 +315,7 @@ def save_args(opt):
             f.write(arg + '\n')
 
 def opt2list(opt):
-    opt_list = [opt.model_type, opt.id, opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
+    opt_list = [opt.model_type, opt.id, opt.data_folder, opt.y_preprocessing,
         opt.y_norm, opt.min_subtraction, opt.y_log_transform, opt.crop, opt.split,
         opt.shuffle, opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr,
         opt.gpus, opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
@@ -328,7 +328,7 @@ def opt2list(opt):
     if opt.model_type == 'simpleEpiNet':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list])
     elif opt.model_type == 'UNet':
-        opt_list.append(opt.nf)
+        opt_list.extend([opt.nf, opt.toxx, opt.toxx_mode])
     elif opt.model_type == 'Akita':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list, opt.dilation_list_trunk, opt.bottleneck, opt.dilation_list_head, opt.down_sampling])
     elif opt.model_type == 'DeepC':
@@ -358,7 +358,7 @@ def save_opt(opt, ofile):
         wr.writerow(opt_list)
 
 def get_opt_header(model_type, GNN_mode):
-    opt_list = ['model_type', 'id',  'data_folder','toxx', 'toxx_mode', 'y_preprocessing',
+    opt_list = ['model_type', 'id',  'data_folder', 'y_preprocessing',
         'y_norm', 'min_subtraction', 'y_log_transform', 'crop', 'split', 'shuffle',
         'batch_size', 'num_workers', 'n_epochs', 'lr', 'gpus', 'milestones',
         'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'm',
@@ -369,7 +369,7 @@ def get_opt_header(model_type, GNN_mode):
     if model_type == 'simpleEpiNet':
         opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])
     elif model_type == 'UNet':
-        opt_list.append('nf')
+        opt_list.extend(['nf','toxx', 'toxx_mode'])
     elif model_type == 'Akita':
         opt_list.extend(['kernel_w_list', 'hidden_sizes_list', 'dilation_list_trunk', 'bottleneck', 'dilation_list_head', 'down_sampling'])
     elif model_type == 'DeepC':
