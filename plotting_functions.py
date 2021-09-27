@@ -443,6 +443,14 @@ def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 
             cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                      [(0,    'white'),
                                                       (1,    'red')], N=126)
+    elif cmap == 'blue-red':
+        cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                 [(0, 'blue'),
+                                                 (0.5, 'white'),
+                                                  (1, 'red')], N=126)
+    else:
+        raise Exception('Invalid cmap: {}'.format(cmap))
+
     if len(y.shape) == 4:
         N, C, H, W = y.shape
         assert N == 1 and C == 1
@@ -461,6 +469,8 @@ def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 
         ind = y > maxVal
         y[ind] = 0
     plt.figure(figsize = (size_in, size_in))
+    if vmin == 'min':
+        vmin = np.min(y)
     if vmax == 'mean':
         vmax = np.mean(y)
     elif vmax == 'max':
@@ -661,23 +671,19 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
             print('y', y, np.max(y))
             print('yhat', yhat, np.max(yhat))
 
-        cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                 [(0, 'blue'),
-                                                 (0.5, 'white'),
-                                                  (1, 'red')], N=126)
         v_max = np.max(y)
         v_min = np.min(y)
 
         # not a contat map but using this plotContactMap function anyways
-        plotContactMap(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = yhat_title)
+        plotContactMap(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min, vmax = v_max, cmap = 'blue-red', title = yhat_title)
         np.savetxt(osp.join(subpath, 'energy_hat.txt'), yhat, fmt = '%.3f')
 
-        plotContactMap(y, osp.join(subpath, 'energy.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$S$')
+        plotContactMap(y, osp.join(subpath, 'energy.png'), vmin = v_min, vmax = v_max, cmap = 'blue-red', title = r'$S$')
         np.savetxt(osp.join(subpath, 'energy.txt'), y, fmt = '%.3f')
 
         # plot dif
         ydif = yhat - y
-        plotContactMap(ydif, osp.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = cmap)
+        plotContactMap(ydif, osp.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
 
 
     print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)

@@ -3,9 +3,10 @@
 dataset*
 maxent*
 test/**
-__pycache__/**
-neural_net_utils/__pycache__/**
+__pycache__
+neural_net_utils/__pycache_
 results/test/**
 chip_seq_data/bedFiles
+chip_seq_data/__pycache__
 !results/ContactGNN*/**
 !dataset_summary.xlsx
