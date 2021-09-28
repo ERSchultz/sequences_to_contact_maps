@@ -14,6 +14,7 @@ import argparse
 import pandas as pd
 import itertools
 import copy
+import json
 from time import time
 from joblib import Parallel, delayed
 from sklearn import mixture as mix
@@ -43,7 +44,7 @@ def main():
 	chips, names = load_chipseq()
 	print("Chip vectors loaded.")
 
-	#Create chrom_flattened chips along bp
+	# Create chrom_flattened chips along bp
 	chrom_flat_chips = [] # Cross over all chroms, break down only by mark
 	for j_mark in range(len(chips[0])):
 		l = [chrom[j_mark] for chrom in chips]
@@ -64,7 +65,7 @@ def threshold_chip_ref(chips, cfl_chips):
 	"""Convert absolute magnitude fold-over-control chipseq into
 	binary yes/no vector of whether or not mark is present.
 	Determines thresholds for every mark which ensures the entire genome has the
-	total fraction as defined in args.chip/<mark>_frac.dat.
+	total fraction as defined in args.chip/frac.json.
 
 	Average input over 10kbp has coverage about 90% of all chromosomes; presuming
 	other regions are poorly sampled and discarding them.
@@ -98,14 +99,19 @@ def threshold_chip_ref(chips, cfl_chips):
 		#Work only on chromosome 1
 		chips = [chips[0]]
 
+	# get frac data
+	with open(osp.join(args.chip, "frac.json"), 'r') as f:
+		frac_dict = json.load(f)
+
 	#Target fractions
 	fracs = []
 	for name in names[:-1]:
-		fracs.append(np.loadtxt(osp.join(args.chip,"{}_frac.dat".format(name))))
+		fracs.append(frac_dict[name])
 	fracs = (np.array(fracs)).flatten()
 
 
 	#Raise error if cfl_chips resolution is different from INPUT_RES
+	print(cfl_chips, cfl_chips.shape)
 	inp = cfl_chips[-1]
 	inp_res = int(inp[1,0] - inp[0,0])
 	print("Input resolution: %s" % repr(inp_res))
@@ -312,7 +318,14 @@ def load_chipseq():
 			mark = osp.split(mark)[1]
 			df = meta_data[meta_data['File accession'] == mark]
 			name = df['Experiment target'].item().split('-')[0]
-			names.append(name)
+			if name.startswith("H2"):
+				print("H2 modifications not accepted: {}".format(mark))
+				del_list.append(i)
+			elif name.startswith("H4K20"):
+				print("H4K20 modifications not accepted: {}".format(mark))
+				del_list.append(i)
+			else:
+				names.append(name)
 		except Exception as e:
 			print(e)
 			print("Had issues processing dirname %s" % mark)
@@ -329,7 +342,6 @@ def load_chipseq():
 	#print("marks: %s" % repr(marks))
 
 
-
 	chrom_chips = [] #Accumulator: N_chroms x N_chroms x N_marks
 
 	loading_chroms = copy.copy(chroms)
@@ -339,9 +351,9 @@ def load_chipseq():
 		chroms[0] = "2" #TEMP!!
 
 
-	for i,base in enumerate(loading_chroms):
+	for i, base in enumerate(loading_chroms):
 		base_list = []
-		print("Loading chrom ",base)
+		print("Loading chrom ", base)
 		for mark in marks:
 			print("Loading mark ",mark)
 			track = np.load(osp.join(mark,"%s.npy" % base))

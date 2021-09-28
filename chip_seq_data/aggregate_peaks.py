@@ -53,9 +53,11 @@ def aggregate_peaks(ifile, resolution):
     dir = ifile.split('.')[0]
     if not osp.exists(dir):
         os.mkdir(dir, mode = 0o755)
+
     x = {}
     for i_c in CHROMS:
         x[i_c] = np.zeros(int(CHROM_LENGTHS[i_c] / resolution))
+
     with open(ifile, 'r') as f:
         reader = csv.reader(f, delimiter = '\t')
         for line in reader:
