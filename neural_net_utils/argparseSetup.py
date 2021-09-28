@@ -316,11 +316,11 @@ def save_args(opt):
 
 def opt2list(opt):
     opt_list = [opt.model_type, opt.id, opt.data_folder, opt.y_preprocessing,
-        opt.y_norm, opt.min_subtraction, opt.y_log_transform, opt.crop, opt.split,
-        opt.shuffle, opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr,
-        opt.gpus, opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
-        opt.ifile_folder, opt.ifile, opt.k, opt.m, opt.seed, opt.out_act, opt.training_norm,
-        opt.relabel_11_to_00]
+        opt.y_norm, opt.min_subtraction, opt.y_log_transform, opt.crop, opt.split, opt.shuffle,
+        opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr, opt.gpus, opt.milestones,
+        opt.gamma, opt.loss, opt.pretrained, opt.resume_training, opt.ifile_folder, opt.ifile, opt.k, opt.m,
+        opt.seed, opt.act, opt.inner_act, opt.head_act, opt.out_act,
+        opt.training_norm, opt.relabel_11_to_00]
     if opt.GNN_mode:
         opt_list.extend([opt.use_node_features, opt.use_edge_weights, opt.transforms, opt.pre_transforms, opt.split_neg_pos_edges_for_feature_augmentation, opt.sparsify_threshold, opt.sparsify_threshold_upper, opt.top_k,
                         opt.hidden_sizes_list, opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list])
@@ -362,7 +362,8 @@ def get_opt_header(model_type, GNN_mode):
         'y_norm', 'min_subtraction', 'y_log_transform', 'crop', 'split', 'shuffle',
         'batch_size', 'num_workers', 'n_epochs', 'lr', 'gpus', 'milestones',
         'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'm',
-        'seed', 'out_act', 'training_norm', 'relabel_11_to_00']
+        'seed', 'act', 'inner_act', 'head_act', 'out_act',
+        'training_norm', 'relabel_11_to_00']
     if GNN_mode:
         opt_list.extend(['use_node_features','use_edge_weights', 'transforms', 'pre_transforms', 'split_neg_pos_edges_for_feature_augmentation','sparsify_threshold', 'sparsify_threshold_upper', 'top_k',
                         'hidden_sizes_list', 'message_passing', 'head_architecture', 'head_hidden_sizes_list'])
@@ -537,3 +538,12 @@ def float2str(v):
     else:
         raise Exception('float value expected.')
     return vstr
+
+def main():
+    opt = argparseSetup()
+    optlist = opt2list(opt)
+    optheader = get_opt_header(opt.model_type, opt.GNN_mode)
+    assert len(optlist) == len(optheader)
+
+if __name__ == '__main__':
+    main()

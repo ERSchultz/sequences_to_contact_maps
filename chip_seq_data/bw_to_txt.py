@@ -2,7 +2,7 @@
 #Created by Aria Coraor
 
 import numpy as np
-# from subtool import *
+from subtool import *
 # import pyBigWig as pbw
 import argparse
 import hic_to_txt as hic

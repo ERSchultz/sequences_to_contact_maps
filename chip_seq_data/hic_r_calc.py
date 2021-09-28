@@ -25,11 +25,10 @@ from subtool import *
 #HIC = "/project2/depablo/coraor/hic/HSA"
 
 RES = 10000
-chroms = []
 #Autologous chroms
-chroms += [str(ele) for ele in range(1,23)]
+chroms = [str(ele) for ele in range(1,23)]
 #Sex chrom: X only
-chroms += "X"
+chroms.append("X")
 
 #INPUT_RES = 200
 INPUT_RES = 10000 # Resolution of the input channel
@@ -356,7 +355,7 @@ def load_chipseq():
 		print("Loading chrom ", base)
 		for mark in marks:
 			print("Loading mark ",mark)
-			track = np.load(osp.join(mark,"%s.npy" % base))
+			track = np.load(osp.join(mark, "{}.npy".format(base)))
 			base_list.append(track)
 		chrom_chips.append(base_list)
 

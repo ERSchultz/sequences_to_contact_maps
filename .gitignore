@@ -1,12 +1,15 @@
 *.out
 *.pt
+*.bed
+*.bigWig
 dataset*
 maxent*
 test/**
 __pycache__
 neural_net_utils/__pycache_
 results/test/**
-chip_seq_data/bedFiles
 chip_seq_data/__pycache__
+chip_seq_data/narrow_peaks
+chip_seq_data/fold_change_control
 !results/ContactGNN*/**
 !dataset_summary.xlsx
