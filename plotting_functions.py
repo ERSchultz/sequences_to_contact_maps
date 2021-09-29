@@ -1272,8 +1272,8 @@ def interogateParams(model, opt):
 
     opt.batch_size = 1 # batch size must be 1
     opt.shuffle = False # for reproducibility
-    dataset = getDataset(opt, True, True)
-    _, val_dataloader, _ = getDataLoaders(dataset, opt)
+    # dataset = getDataset(opt, True, True)
+    # _, val_dataloader, _ = getDataLoaders(dataset, opt)
 
     imagePath = opt.ofile_folder
     tot_pars = 0
@@ -1281,33 +1281,33 @@ def interogateParams(model, opt):
         tot_pars += p.numel()
         print(k, p, p.numel(), p.shape, '\n')
 
-    for i, data in enumerate(val_dataloader):
-        assert opt.GNN_mode and not opt.autoencoder_mode
-        data = data.to(opt.device)
-        path = data.path[0]
-        print(path)
-        y = data.y
-        yhat = model(data)
-        loss = opt.criterion(yhat, y).item()
-        if opt.loss == 'BCE':
-            # using BCE with logits loss, which combines sigmoid into loss
-            # so need to do sigmoid here
-            yhat = torch.sigmoid(yhat)
-        print('yhat', yhat)
-        layer1 = model.get_first_layer(data)
-        print(layer1)
-
-        minmax = data.minmax
-        path = data.path[0]
-
-
-        print(loss)
+    # for i, data in enumerate(val_dataloader):
+    #     assert opt.GNN_mode and not opt.autoencoder_mode
+    #     data = data.to(opt.device)
+    #     path = data.path[0]
+    #     print(path)
+    #     y = data.y
+    #     yhat = model(data)
+    #     loss = opt.criterion(yhat, y).item()
+    #     if opt.loss == 'BCE':
+    #         # using BCE with logits loss, which combines sigmoid into loss
+    #         # so need to do sigmoid here
+    #         yhat = torch.sigmoid(yhat)
+    #     print('yhat', yhat)
+    #     layer1 = model.get_first_layer(data)
+    #     print(layer1)
+    #
+    #     minmax = data.minmax
+    #     path = data.path[0]
+    #
+    #
+    #     print(loss)
 
 def main():
     opt = argparseSetup()
     print(opt, '\n')
-    plotting_script(None, opt)
-    # interogateParams(None, opt)
+    # plotting_script(None, opt)
+    interogateParams(None, opt)
 
     # cleanup
     if opt.root is not None and opt.delete_root:
@@ -1315,9 +1315,9 @@ def main():
 
 if __name__ == '__main__':
     # contactPlots('dataset_04_18_21')
-    updateResultTables('ContactGNN', 'GNN', 'sequence')
-    updateResultTables('ContactGNNEnergy', 'GNN', 'energy')
+    # updateResultTables('ContactGNN', 'GNN', 'sequence')
+    # updateResultTables('ContactGNNEnergy', 'GNN', 'energy')
     # plotCombinedModels('ContactGNN', [202, 203, 204])
-    # main()
+    main()
     # freqSampleDistributionPlots('dataset_04_18_21', sample_id=40, k=2)
     # freqDistDistriutionPlots('dataset_08_24_21')

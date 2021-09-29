@@ -21,7 +21,7 @@ def getArgs():
 	args = parser.parse_args()
 	return args
 
-def bw_to_txt(fname, args):
+def bw_to_npy(fname, args):
 	'''Take a BigWig file, and write its output to a matrix.'''
 	if "." in fname:
 		base = fname[:fname.rfind(".")]
@@ -42,7 +42,7 @@ def bw_to_txt(fname, args):
 		res = 200
 		mode = "max"
 
-	print("Loading chromosome data.")
+	print("Loading chromosome data for {}.".format(fname))
 	for i_c in hic.CHROMS:
 		bw_name = "chr" + i_c
 		length = bw.chroms()[bw_name]
@@ -58,9 +58,9 @@ def bw_to_txt(fname, args):
 
 		if chip_vals.shape != pos.shape:
 			raise ValueError("Shapes not equivalent: %s vs. %s" % (repr(chip_vals.shape), repr(pos.shape)))
-		zipped = np.column_stack((pos,chip_vals))
+		zipped = np.column_stack((pos, chip_vals))
 
-		np.savetxt(os.path.join(base, i_c + ".txt"),zipped)
+		np.save(os.path.join(base, i_c + ".npy"), zipped)
 		print("Saved data for chromosome %s." % i_c)
 
 def main():
@@ -70,9 +70,7 @@ def main():
 	names = get_names(args.dir, files)
 	print(names, len(names))
 	for file in files:
-		bw_to_txt(file, args)
-
-
+		bw_to_npy(file, args)
 
 if __name__ == '__main__':
 	main()

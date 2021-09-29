@@ -16,27 +16,21 @@ import itertools
 import copy
 import json
 from time import time
-from joblib import Parallel, delayed
-from sklearn import mixture as mix
 
 from subtool import *
 
-#CHIP = "/project2/depablo/coraor/chipseq"
-#HIC = "/project2/depablo/coraor/hic/HSA"
-
-RES = 10000
+RES = 25000
 #Autologous chroms
 CHROMS = [str(ele) for ele in range(1,23)]
 #Sex chrom: X only
 CHROMS.append("X")
 
 #INPUT_RES = 200
-INPUT_RES = 10000 # Resolution of the input channel
+INPUT_RES = 25000 # Resolution of the input channel
 #INPUT_RES = 20000
 
 def main():
-	""" Perform hic_r_calc
-	"""
+	'''Perform hic_r_calc.'''
 	global names
 	#Load Chip vectors
 	print("Loading Chip vectors.")
@@ -99,7 +93,7 @@ def threshold_chip_ref(chips, cfl_chips):
 		chips = [chips[0]]
 
 	# get frac data
-	with open(osp.join(args.chip, "frac.json"), 'r') as f:
+	with open(osp.join(osp.split(args.chip)[0], "frac.json"), 'r') as f:
 		frac_dict = json.load(f)
 
 	#Target fractions
@@ -110,7 +104,6 @@ def threshold_chip_ref(chips, cfl_chips):
 
 
 	#Raise error if cfl_chips resolution is different from INPUT_RES
-	print(cfl_chips, cfl_chips.shape)
 	inp = cfl_chips[-1]
 	inp_res = int(inp[1,0] - inp[0,0])
 	print("Input resolution: %s" % repr(inp_res))
@@ -118,6 +111,8 @@ def threshold_chip_ref(chips, cfl_chips):
 		raise ValueError(
 			"Input track at %s must have resolution %s, instead has %s" % (
 				args.chip, repr(INPUT_RES), repr(inp_res)))
+
+	return
 
 
 	#INPUT_RES/res must be an integer. if not, raise ValueError
@@ -355,7 +350,7 @@ def load_chipseq():
 		print("Loading chrom ", base)
 		for mark in marks:
 			print("Loading mark ",mark)
-			track = np.load(osp.join(mark, "{}.npy".format(base)))
+			track = np.load(osp.join(mark, "{}.npy".format(base)), allow_pickle = True)
 			base_list.append(track)
 		chrom_chips.append(base_list)
 
@@ -363,10 +358,8 @@ def load_chipseq():
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
-	parser.add_argument('-c','--chip', type=str, default=osp.join('chip_seq_data','bedFiles'), help="Input Chip-Seq master directory")
-	parser.add_argument('-d','--debug',action="store_true", help="Only run on chrom 1, debug")
-	#Note: Chip-seq master directory must contain as many marks as possible
-	#To enable meaningful maxEnt thresholding
+	parser.add_argument('-c','--chip', type=str, default=osp.join('chip_seq_data','fold_change_control'), help="Input Chip-Seq master directory")
+	parser.add_argument('-d','--debug', action="store_true", help="Only run on chrom 1, debug")
 
 	args = parser.parse_args()
 	main()

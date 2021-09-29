@@ -191,8 +191,8 @@ def debugModel(model_type):
 
     # other
     opt.plot = False
-    opt.plot_predictions = True
-    opt.verbose = True
+    opt.plot_predictions = False
+    opt.verbose = False
     opt.print_params = True
     opt.gpus = 1
 
