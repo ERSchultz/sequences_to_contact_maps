@@ -34,8 +34,8 @@ sparsifyThresholdUpper='none'
 sparsifyThreshold=1.0
 loss='mse'
 innerAct='sigmoid'
-outAct='tanh'
-headAct='relu'
+outAct='none'
+headAct='prelu'
 headArchitecture='outer'
 headHiddenSizesList='1'
 
