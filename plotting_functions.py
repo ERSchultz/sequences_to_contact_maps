@@ -1279,7 +1279,7 @@ def interogateParams(model, opt):
     tot_pars = 0
     for k,p in model.named_parameters():
         tot_pars += p.numel()
-        print(k, p, p.numel(), p.shape, '\n')
+        print(k, p, p.numel(), p.shape, '\n', p.grad, '\n\n')
 
     # for i, data in enumerate(val_dataloader):
     #     assert opt.GNN_mode and not opt.autoencoder_mode

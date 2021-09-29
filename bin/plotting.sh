@@ -7,7 +7,7 @@
 #SBATCH --output=logFiles/plotting.log
 #SBATCH --time=06:00:00
 
-dirname="/project2/depablo/erschultz/dataset_04_18_21"
+dirname="/project2/depablo/erschultz/dataset_08_29_21"
 
 # partition
 gpus=1
@@ -19,7 +19,7 @@ pretrained='true'
 # other
 plotPredictions='true'
 plot='false'
-useScratch='true'
+useScratch='false'
 
 
 cd ~/sequences_to_contact_maps

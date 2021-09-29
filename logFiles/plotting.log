@@ -1,16 +1,57 @@
-Namespace(GNN_mode=True, act='relu', autoencoder_mode=False, batch_size=4, bottleneck=None, channels=1, classes=10, criterion=<function mse_loss at 0x7f621a0344c0>, crop=None, cuda=False, data_folder='/scratch/midway2/erschultz/dataset_04_18_21', degree=True, delete_root=False, device=device(type='cpu'), dilation_list=None, dilation_list_head=None, dilation_list_trunk=None, down_sampling=None, gamma=0.1, gpus=1, head_act=None, head_architecture='outer', head_hidden_sizes_list=[1], hidden_sizes_list=[16, 2], id=1, ifile=None, ifile_folder=None, inner_act='sigmoid', k=2, kernel_w_list=None, log_file=<_io.TextIOWrapper name='results/ContactGNNEnergy/1/out.log' mode='a' encoding='UTF-8'>, loss='mse', lr=0.001, m=1024, message_passing='GCN', milestones=None, min_subtraction=True, model_type='ContactGNNEnergy', n_epochs=100, nf=None, node_feature_size=1, num_workers=4, ofile_folder='results/ContactGNNEnergy/1', out_act=None, output_mode='energy', parameter_sharing=False, plot=True, plot_predictions=True, pre_transforms=['degree'], pre_transforms_processed=None, pretrained=True, print_mod=2, print_params=True, relabel_11_to_00=False, resume_training=False, root_name='ContactGNNEnergy', save_mod=5, seed=42, shuffle=True, sparsify_threshold=1.0, sparsify_threshold_upper=None, split=[0.8, 0.1, 0.1], split_neg_pos_edges=False, split_neg_pos_edges_for_feature_augmentation=False, start_epoch=1, top_k=None, toxx=False, toxx_mode='mean', training_norm=None, transforms=None, transforms_processed=None, use_bias=True, use_edge_weights=True, use_node_features=False, use_parallel=False, use_scratch=True, verbose=False, weighted_LDP=False, weighted_degree=False, x_reshape=True, y_log_transform=False, y_norm=None, y_preprocessing='diag', y_reshape=True, ydtype=torch.float32) 
-
-Sequential(
-  (0): GCNConv(1, 16)
-  (1): ReLU(inplace=True)
-  (2): GCNConv(16, 2)
-)
-Traceback (most recent call last):
-  File "plotting_functions.py", line 1317, in <module>
-    main()
-  File "plotting_functions.py", line 1305, in main
-    plotting_script(None, opt)
-  File "plotting_functions.py", line 1215, in plotting_script
-    raise Exception('Model does not exist: {}'.format(model_name))
-Exception: Model does not exist: results/ContactGNNEnergy/1/model.pt
-/scratch/midway2/erschultz/dataset_04_18_21/ContactGNNEnergy does not exist
+usage: plotting_functions.py [-h] [--GNN_mode GNN_MODE]
+                             [--transforms TRANSFORMS]
+                             [--pre_transforms PRE_TRANSFORMS]
+                             [--sparsify_threshold SPARSIFY_THRESHOLD]
+                             [--sparsify_threshold_upper SPARSIFY_THRESHOLD_UPPER]
+                             [--top_k TOP_K]
+                             [--use_node_features USE_NODE_FEATURES]
+                             [--use_edge_weights USE_EDGE_WEIGHTS]
+                             [--relabel_11_to_00 RELABEL_11_TO_00]
+                             [--split_neg_pos_edges_for_feature_augmentation SPLIT_NEG_POS_EDGES_FOR_FEATURE_AUGMENTATION]
+                             [--data_folder DATA_FOLDER]
+                             [--root_name ROOT_NAME]
+                             [--delete_root DELETE_ROOT] [--toxx TOXX]
+                             [--toxx_mode TOXX_MODE]
+                             [--y_preprocessing Y_PREPROCESSING]
+                             [--y_log_transform Y_LOG_TRANSFORM]
+                             [--y_norm Y_NORM]
+                             [--min_subtraction MIN_SUBTRACTION]
+                             [--x_reshape X_RESHAPE] [--ydtype YDTYPE]
+                             [--y_reshape Y_RESHAPE] [--crop CROP]
+                             [--classes CLASSES] [--use_scratch USE_SCRATCH]
+                             [--split SPLIT] [--shuffle SHUFFLE]
+                             [--batch_size BATCH_SIZE]
+                             [--num_workers NUM_WORKERS]
+                             [--start_epoch START_EPOCH] [--n_epochs N_EPOCHS]
+                             [--save_mod SAVE_MOD] [--print_mod PRINT_MOD]
+                             [--lr LR] [--gpus GPUS] [--milestones MILESTONES]
+                             [--gamma GAMMA] [--loss LOSS]
+                             [--autoencoder_mode AUTOENCODER_MODE]
+                             [--verbose VERBOSE] [--print_params PRINT_PARAMS]
+                             [--output_mode OUTPUT_MODE]
+                             [--model_type MODEL_TYPE] [--id ID]
+                             [--pretrained PRETRAINED]
+                             [--resume_training RESUME_TRAINING]
+                             [--ifile_folder IFILE_FOLDER] [--ifile IFILE]
+                             [--k K] [--m M] [--seed SEED] [--act ACT]
+                             [--inner_act INNER_ACT] [--out_act OUT_ACT]
+                             [--training_norm TRAINING_NORM]
+                             [--parameter_sharing PARAMETER_SHARING]
+                             [--use_bias USE_BIAS]
+                             [--message_passing MESSAGE_PASSING]
+                             [--head_architecture HEAD_ARCHITECTURE]
+                             [--head_hidden_sizes_list HEAD_HIDDEN_SIZES_LIST]
+                             [--head_act HEAD_ACT]
+                             [--kernel_w_list KERNEL_W_LIST]
+                             [--hidden_sizes_list HIDDEN_SIZES_LIST] [--nf NF]
+                             [--dilation_list DILATION_LIST]
+                             [--dilation_list_trunk DILATION_LIST_TRUNK]
+                             [--bottleneck BOTTLENECK]
+                             [--dilation_list_head DILATION_LIST_HEAD]
+                             [--down_sampling DOWN_SAMPLING] [--plot PLOT]
+                             [--plot_predictions PLOT_PREDICTIONS]
+plotting_functions.py: error: argument --data_folder: expected one argument
+usage: cleanDirectories.py [-h] [--data_folder DATA_FOLDER]
+                           [--root_name ROOT_NAME] [--root ROOT]
+                           [--use_scratch USE_SCRATCH]
+cleanDirectories.py: error: argument --data_folder: expected one argument

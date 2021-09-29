@@ -308,3 +308,7 @@ results/ContactGNNEnergy/8/sample1751
 results/ContactGNNEnergy/8/sample1718
 Loss: 0.008328472524881362 +- 0.052321968751337405
 
+Warning: falling back to cpu
+Model is loaded: results/ContactGNNEnergy/8/model.pt
+Warning: falling back to cpu
+Model is loaded: results/ContactGNNEnergy/8/model.pt
