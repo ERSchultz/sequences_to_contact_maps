@@ -26,9 +26,9 @@ from subtool import *
 
 RES = 10000
 #Autologous chroms
-chroms = [str(ele) for ele in range(1,23)]
+CHROMS = [str(ele) for ele in range(1,23)]
 #Sex chrom: X only
-chroms.append("X")
+CHROMS.append("X")
 
 #INPUT_RES = 200
 INPUT_RES = 10000 # Resolution of the input channel
@@ -217,12 +217,12 @@ def threshold_chip_ref(chips, cfl_chips):
 	for i,c in enumerate(final_chips):
 		for j,n in enumerate(c[:-1]):
 			print("%s coverage on chrom %s: %s" % (names[j],
-				chroms[i],repr(np.average(n[:,1]))))
+				CHROMS[i],repr(np.average(n[:,1]))))
 
 	#Save binarization for each mark at filename "<chrom>_<name>_thresh_<val>_seq.txt"
-	for i,chrom in enumerate(final_chips):
-		for j,mark in enumerate(chrom[:-1]):
-			fn = "%s_%s_thresh_%s_seq.txt" % (chroms[i],names[j],repr(threshes[j]))
+	for i, chrom in enumerate(final_chips):
+		for j, mark in enumerate(chrom[:-1]):
+			fn = "%s_%s_thresh_%s_seq.txt" % (CHROMS[i],names[j],repr(threshes[j]))
 			np.savetxt(fn,mark, fmt = '%i')
 
 
@@ -343,11 +343,11 @@ def load_chipseq():
 
 	chrom_chips = [] #Accumulator: N_chroms x N_chroms x N_marks
 
-	loading_chroms = copy.copy(chroms)
+	loading_chroms = copy.copy(CHROMS)
 	#For every mark, load each chrom
 	if args.debug:
 		loading_chroms = ["2"]
-		chroms[0] = "2" #TEMP!!
+		CHROMS[0] = "2" #TEMP!!
 
 
 	for i, base in enumerate(loading_chroms):

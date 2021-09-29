@@ -1,28 +1,38 @@
 #Module bw_to_txt
-#Created by Aria Coraor
+#Created by Aria Coraor, modified by Eric Schultz
+
+import os
+import os.path as osp
 
 import numpy as np
-from subtool import *
-# import pyBigWig as pbw
+import pyBigWig as pbw
 import argparse
-import hic_to_txt as hic
-import os
 
-def main():
-	""" Take a BigWig file, and write its output to a matrix.
+from subtool import *
+from aggregate_peaks import get_names
+import hic_r_calc as hic
 
-	"""
-	fname = args.file
+
+def getArgs():
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--dir', default=osp.join('chip_seq_data','fold_change_control'), help='directory of chip-seq data')
+	parser.add_argument('-n','--nucl',action="store_true", help = "If True, store nucleosome-resolution data.")
+	parser.add_argument('-r','--res', type=int, default=hic.RES, help='Resolution of map, in bp')
+	args = parser.parse_args()
+	return args
+
+def bw_to_txt(fname, args):
+	'''Take a BigWig file, and write its output to a matrix.'''
 	if "." in fname:
 		base = fname[:fname.rfind(".")]
 	else:
-		raise ValueError("No dot found in args.file: %s" % args.file)
+		raise ValueError("No dot found in fname: {}".format(fname))
 
 	psub("mkdir %s" % base)
 
 	#For every chromosome, get stats.
 
-	bw = pbw.open(args.file)
+	bw = pbw.open(fname)
 
 	#Set resolution
 	if not args.nucl:
@@ -49,26 +59,20 @@ def main():
 		if chip_vals.shape != pos.shape:
 			raise ValueError("Shapes not equivalent: %s vs. %s" % (repr(chip_vals.shape), repr(pos.shape)))
 		zipped = np.column_stack((pos,chip_vals))
-		#print("Zipped columns: %s" % repr(zipped))
-		#print("Saving to ",os.path.join(base,i_c+".txt"))
-		#Fix nans to zero
-		#print("zipped: ",repr(zipped))
-		#print("Last, last element: ",repr(zipped[-1][-1]))
-		#print("Type of last, last element: ",repr(type(zipped[-1][-1])))
-
-		#nans = np.argwhere(np.isnan(zipped[:,1])).flatten()
-		#zipped[nans,1] = 0.
 
 		np.savetxt(os.path.join(base, i_c + ".txt"),zipped)
 		print("Saved data for chromosome %s." % i_c)
 
+def main():
+	args = getArgs()
+
+	files = [osp.join(args.dir, file) for file in os.listdir(args.dir) if file.endswith('bigWig')]
+	names = get_names(args.dir, files)
+	print(names, len(names))
+	for file in files:
+		bw_to_txt(file, args)
+
 
 
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser()
-	parser.add_argument('-f','--file', type=str, default=None, help='Input .hic file')
-	parser.add_argument('-n','--nucl',action="store_true", help = "If True, store nucleosome-resolution data.")
-	parser.add_argument('-r','--res', type=int, default=hic.RESOLUTION,help='Resolution of map, in bp')
-	#parser.add_argument('-a','--all',default=False,action='store_const',const=True, help="Calculate helical parameters for all datafiles in NRL range. Output to angles, radii files.")
-	args = parser.parse_args()
 	main()

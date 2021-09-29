@@ -6,7 +6,7 @@ def psub(cmd):
 	return Popen(cmd,shell=True,stdout=PIPE,stderr=STDOUT).stdout.read().decode('utf-8')
 
 def inb4(fname,s):
-	"""Inserts s before the ".", if it exists, and excises what currently is 
+	"""Inserts s before the ".", if it exists, and excises what currently is
 	before the dot. Otherwise, inserts s at the end.
 	Returns a relative path.
 	"""

@@ -75,7 +75,6 @@ def aggregate_peaks(ifile, resolution):
 
     return x
 
-
 def get_names(dir, files):
     metadata_file = osp.join(dir, 'metadata.tsv')
     if osp.exists(metadata_file):
@@ -98,7 +97,7 @@ def get_names(dir, files):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dir', default=osp.join('chip_seq_data','bedFiles'), help='directory of chip-seq data')
+    parser.add_argument('--dir', default=osp.join('chip_seq_data','narrow_peaks'), help='directory of chip-seq data')
     parser.add_argument('--res', default = 200, help='resolution for chip-seq data')
     args = parser.parse_args()
 
