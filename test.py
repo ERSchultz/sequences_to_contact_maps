@@ -183,7 +183,7 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 1
+    opt.n_epochs = 5
     opt.lr = 1e-3
     opt.batch_size = 2
     opt.milestones = None
@@ -199,6 +199,7 @@ def debugModel(model_type):
     opt = finalizeOpt(opt, parser, True)
 
     opt.model_type = model_type
+
     model = getModel(opt)
 
     # opt.model_type = 'test'

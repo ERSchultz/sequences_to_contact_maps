@@ -76,7 +76,7 @@ def core_test_train(model, opt):
         tot_pars += p.numel()
         if opt.verbose or opt.print_params:
             print(k, p.numel(), p.shape, file = opt.log_file)
-            print(p, file = opt.log_file)
+            print(p, '\n', 'grad: ', p.grad, file = opt.log_file)
     print('\nTotal parameters: {}'.format(locale.format_string("%d", tot_pars, grouping = True)), file = opt.log_file)
     print('Total time: {}'.format(time.time() - t0), file = opt.log_file)
     print('Final val loss: {}\n'.format(val_loss_arr[-1]), file = opt.log_file)
@@ -173,7 +173,6 @@ def test(loader, model, opt, toprint, ofile = sys.stdout):
     avg_loss = 0
     with torch.no_grad():
         for t, data in enumerate(loader):
-            opt.optimizer.zero_grad()
             if opt.GNN_mode:
                 data = data.to(opt.device)
                 if opt.autoencoder_mode:
