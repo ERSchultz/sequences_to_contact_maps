@@ -134,21 +134,20 @@ def threshold_chip_ref(chips, cfl_chips, names, args):
 			mark[:,1] = np.where(np.isfinite(foc[:,1]), mark[:,1],
 					np.zeros(mark[:,1].shape))
 
-	# What proportion of each chromosome is covered by each mark?
-	for i, c in enumerate(final_chips):
-		for j, n in enumerate(c):
-			print("{} coverage on chrom {}: {}".format(names[j],
-				CHROMS[i], np.round(np.average(n[:,1]), 5)))
-		print('')
-
-	#Save binarization for each mark at filename "<chrom>_<name>_seq.npy"
+	#Save binarization for each mark at filename "<chrom>_<name>_<coverage>_seq.npy"
 	odir = osp.join(args.chip, 'processed')
 	if not osp.exists(odir):
 		os.mkdir(odir, mode = 0o755)
+
 	for i, chrom in enumerate(final_chips):
-		for j, mark in enumerate(chrom[:-1]):
-			fn = "{}_{}_seq.npy".format(CHROMS[i], names[j])
-			np.save(osp.join(odir, fn), mark.astype(np.uint32)) # 32 bit int should be fine
+		for j, mark in enumerate(chrom):
+			# What proportion of each chromosome is covered by each mark?
+			coverage = np.round(np.average(mark[:,1]), 5)
+			print("{} coverage on chrom {}: {}".format(names[j],
+				CHROMS[i], coverage))
+			ofile = "{}_{}_{}_seq.npy".format(CHROMS[i], names[j], coverage)
+			np.save(osp.join(odir, ofile), mark.astype(np.uint32)) # 32 bit int should be fine
+		print('')
 
 	return final_chips, threshes
 
