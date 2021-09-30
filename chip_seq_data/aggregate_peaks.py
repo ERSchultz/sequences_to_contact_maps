@@ -45,7 +45,6 @@ def aggregate_peaks(ifile, resolution):
 
     Inputs:
         ifile: file location of single chip-seq narrow peak track in bed format
-        ofile: file location to save resulting aggregation
         resolution: resolution of data
     Outputs:
         x: dictionary mapping chr (int) : aggregated peaks (numpy array)
@@ -98,7 +97,7 @@ def get_names(dir, files):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dir', default=osp.join('chip_seq_data','narrow_peaks'), help='directory of chip-seq data')
-    parser.add_argument('--res', default = 200, help='resolution for chip-seq data')
+    parser.add_argument('--res', default=200, help='resolution for chip-seq data')
     args = parser.parse_args()
 
 

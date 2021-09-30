@@ -16,6 +16,7 @@ import itertools
 import copy
 import json
 from time import time
+import csv
 
 from subtool import *
 
@@ -54,11 +55,25 @@ def main():
 
 	#Calculate maxEnt thresholding
 	print("Thresholding chip tracks.")
-	flat_chips, threshes = threshold_chip_ref(chips, chrom_flat_chips, names, args)
+	final_chips, threshes = threshold_chip(chips, chrom_flat_chips, names, args)
 	print("Chip tracks thresholded.")
 
+	save_chip_for_CHROMHMM(final_chips, names, args)
+
+def save_chip_for_CHROMHMM(chips, names, args):
+	for i, chrom in enumerate(chips):
+		ofile = osp.join(args.chip, 'processed', 'chr{}_binary.txt'.format(CHROMS[i]))
+		combined_marks = np.zeros((len(chrom[0]), len(chrom)))
+		for j, mark in enumerate(chrom):
+			combined_marks[:, j] = mark[:, 1]
+			with open(ofile, 'w', newline = '') as f:
+				wr = csv.writer(f, delimiter = '\t')
+				wr.writerow(["HTC116", "chr{}".format(CHROMS[i])])
+				wr.writerow(names)
+				wr.writerows(combined_marks)
+
 @timeit
-def threshold_chip_ref(chips, cfl_chips, names, args):
+def threshold_chip(chips, cfl_chips, names, args):
 	"""Convert fold-over-control chipseq into
 	binary yes/no vector of whether or not mark is present.
 	Determines thresholds for every mark which ensures the entire genome has the
@@ -121,7 +136,7 @@ def threshold_chip_ref(chips, cfl_chips, names, args):
 		#Calculate indices from chromosome beginning
 		start_length = int(np.sum(lengths[:j]))
 		end_length = int(start_length + lengths[j])
-		for i, mark in enumerate(chrom[:-1]):
+		for i, mark in enumerate(chrom):
 
 			#Get fold-over-control value
 			foc = (cfl_chips[i])[start_length:end_length]

@@ -10,7 +10,7 @@ import argparse
 
 from subtool import *
 from aggregate_peaks import get_names
-import hic_r_calc as hic
+import threshold_chip as hic
 
 
 def getArgs():
