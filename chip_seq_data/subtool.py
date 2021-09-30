@@ -24,10 +24,10 @@ def timeit(f):
 		result = f(*args, **kw)
 		te = time()
 		if te-ts > 0.0001:
-			print(('func:%r  took: %2.4f sec' % \
+			print(('func:%r  took: %2.4f sec\n' % \
 			  (f.__name__, te-ts)))
 		else:
-			print(('func:%r  took: %2.4f ms' % \
+			print(('func:%r  took: %2.4f ms\n' % \
 			  (f.__name__, (te-ts)*1000)))
 		return result
 

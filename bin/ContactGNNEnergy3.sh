@@ -36,8 +36,8 @@ loss='mse'
 innerAct='sigmoid'
 outAct='prelu'
 headAct='none'
-headArchitecture='outer'
-headHiddenSizesList='4-1'
+headArchitecture='concat-outer'
+headHiddenSizesList='10-1'
 
 # hyperparameters
 nEpochs=60

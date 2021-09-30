@@ -30,7 +30,7 @@ def actToModule(act, none_mode = False, in_place = True):
         elif act.lower() == 'relu':
             act = nn.ReLU(in_place)
         elif act.lower() == 'prelu':
-            act =  nn.PReLU()
+            act = nn.PReLU()
         elif act.lower() == 'leaky':
             act = nn.LeakyReLU(0.2, in_place)
         elif act.lower() == 'tanh':
@@ -323,19 +323,26 @@ class AverageTo2d(nn.Module):
             mode: 'average' for default mode, 'concat' to concat instead of average, 'outer' to use outer product
         """
         super(AverageTo2d, self).__init__()
-        assert mode in {'avg', 'concat', 'outer'}, 'Invalid mode: {}'.format(mode)
+        assert mode in self.mode_options, 'Invalid mode: {}'.format(mode)
         self.concat_d = concat_d
         self.mode = mode
         if concat_d:
-            assert n is not None
-            d = torch.zeros((n, n))
-            for i in range(1, n):
-                y = torch.diagonal(d, offset = i)
-                y[:] = torch.ones(n-i) * i
-            d = d + torch.transpose(d, 0, 1)
-            d = torch.unsqueeze(d, 0)
-            d = torch.unsqueeze(d, 0)
-            self.d = d
+            get_positional_encoding(self, n)
+
+    def get_positional_encoding(self, n):
+        assert n is not None
+        d = torch.zeros((n, n))
+        for i in range(1, n):
+            y = torch.diagonal(d, offset = i)
+            y[:] = torch.ones(n-i) * i
+        d = d + torch.transpose(d, 0, 1)
+        d = torch.unsqueeze(d, 0)
+        d = torch.unsqueeze(d, 0)
+        self.d = d
+
+    @property
+    def mode_options(self):
+        return {'avg', 'concat', 'outer', 'concat-outer', 'avg-outer', None}
 
     def forward(self, x):
         # assume x is of shape N x C x m
@@ -343,51 +350,60 @@ class AverageTo2d(nn.Module):
         assert len(x.shape) == 3, "shape must be 3D"
         N, C, m = x.shape
 
-        if self.mode == 'avg':
-            x1 = torch.tile(x, (1, 1, m))
-            x1 = torch.reshape(x1, (-1, C, m, m))
-            x2 = torch.transpose(x1, 2, 3)
-            x1 = torch.unsqueeze(x1, 0)
-            x2 = torch.unsqueeze(x2, 0)
-            out = torch.cat((x1, x2), dim = 0)
-            out = torch.mean(out, dim = 0, keepdim = False)
-        elif self.mode == 'concat':
-            x1 = torch.tile(x, (1, 1, m))
-            x1 = torch.reshape(x1, (-1, C, m, m))
-            x2 = torch.transpose(x1, 2, 3)
-            out = torch.cat((x1, x2), dim = 1)
-        elif self.mode == 'outer':
-            # see testAverageTo2dOuter for evidence that this works
-            x1 = torch.tile(x, (1, C, m))
-            x1 = torch.reshape(x1, (-1, C*C, m, m))
-            x2 = torch.transpose(x1, 2, 3)
+        out_list = []
+        for mode in self.mode.split('-'):
+            if mode is None:
+                print("Warning: mode is None")
+                # code will probably break if you get here
+                out = x
+            elif mode == 'avg':
+                x1 = torch.tile(x, (1, 1, m))
+                x1 = torch.reshape(x1, (-1, C, m, m))
+                x2 = torch.transpose(x1, 2, 3)
+                x1 = torch.unsqueeze(x1, 0)
+                x2 = torch.unsqueeze(x2, 0)
+                out = torch.cat((x1, x2), dim = 0)
+                out = torch.mean(out, dim = 0, keepdim = False)
+            elif mode == 'concat':
+                x1 = torch.tile(x, (1, 1, m))
+                x1 = torch.reshape(x1, (-1, C, m, m))
+                x2 = torch.transpose(x1, 2, 3)
+                out = torch.cat((x1, x2), dim = 1)
+            elif mode == 'outer':
+                # see testAverageTo2dOuter for evidence that this works
+                x1 = torch.tile(x, (1, C, m))
+                x1 = torch.reshape(x1, (-1, C*C, m, m))
+                x2 = torch.transpose(x1, 2, 3)
 
-            # use indices to permute x2
-            indices = []
-            for i in range(C):
-                indices.extend(range(i, i + C * (C-1) + 1, C))
-            indices = torch.tensor(indices)
-            if x2.is_cuda:
-                indices = indices.to(x2.get_device())
-            x2 = torch.index_select(x2, dim = 1, index = indices)
+                # use indices to permute x2
+                indices = []
+                for i in range(C):
+                    indices.extend(range(i, i + C * (C-1) + 1, C))
+                indices = torch.tensor(indices)
+                if x2.is_cuda:
+                    indices = indices.to(x2.get_device())
+                x2 = torch.index_select(x2, dim = 1, index = indices)
 
-            out = torch.einsum('ijkl,ijkl->ijkl', x1, x2)
+                out = torch.einsum('ijkl,ijkl->ijkl', x1, x2)
 
-        del x1, x2
+            del x1, x2
+            out_list.append(out)
 
         if self.concat_d:
             # append abs(i - j)
             if out.is_cuda:
                 self.d = self.d.to(out.get_device())
-            out = torch.cat((out, torch.tile(self.d, (N, 1, 1, 1))), dim = 1)
+            out_list.append(torch.tile(self.d, (N, 1, 1, 1)))
+
+        out = torch.cat(out_list, dim = 1)
         return out
 
 def testAverageTo2dOuter():
-    avg = AverageTo2d(mode = 'outer')
+    avg = AverageTo2d(mode = 'outer', concat_d = False, n = 10)
     verbose = True
     N = 1
     m = 10
-    C_list = [2]
+    C_list = [3]
     for C in C_list:
         t0 = time.time()
         input = np.random.randint(low = 1, high = 10, size = (N, C, m))
@@ -411,7 +427,7 @@ def testAverageTo2dOuter():
         deltaT = np.round(tf - t0, 3)
         print("For loop time: {}".format(deltaT))
 
-        assert np.array_equal(out1, out)
+        assert np.array_equal(out1, out), print(out1)
 
 def main():
     sym = Symmetrize2D()

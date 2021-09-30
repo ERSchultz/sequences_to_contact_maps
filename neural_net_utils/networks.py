@@ -437,7 +437,8 @@ class ContactGNN(nn.Module):
     '''
     def __init__(self, m, input_size, hidden_sizes_list, act, inner_act, out_act,
                 message_passing, use_edge_weights,
-                head_architecture, head_hidden_sizes_list, head_act, use_bias):
+                head_architecture, head_hidden_sizes_list, head_act, use_bias,
+                ofile = sys.stdout):
         '''
         Inputs:
             m: number of nodes
@@ -458,12 +459,19 @@ class ContactGNN(nn.Module):
         if head_architecture is not None:
             head_architecture = head_architecture.lower()
         self.head_architecture = head_architecture
+        self.to2D = AverageTo2d(mode = None)
 
+        # set up activations
         self.act = actToModule(act)
-        self.inner_act = actToModule(inner_act, none_mode = True, in_place = False) # added this, none_mode should prevent older models from breaking when reloading
+        self.inner_act = actToModule(inner_act, none_mode = True, in_place = False) # added this, none_mode 'should' prevent older models from breaking when reloading
         self.out_act = actToModule(out_act)
-        self.head_act = actToModule(head_act)
+        if len(head_hidden_sizes_list) > 1:
+            self.head_act = actToModule(head_act)
+            # only want this to show up as a parameter if actually needed
+        else:
+            self.head_act = None
 
+        ### Trunk Architecture ###
         model = []
         if self.message_passing == 'identity':
             # debugging option to skip message passing
@@ -510,7 +518,8 @@ class ContactGNN(nn.Module):
             self.model = None
         else:
             raise Exception("Unkown message_passing {}".format(message_passing))
-        print(self.model)
+        print("#### ARCHITECTURE ####", file = ofile)
+        print(self.model, file = ofile)
 
         ### Head Architecture ###
         head = []
@@ -538,13 +547,20 @@ class ContactGNN(nn.Module):
                 input_size = output_size
 
             self.head = gnn.Sequential('x, edge_index', head)
-        elif self.head_architecture in {'avg', 'concat', 'outer'}:
-            # Uses linear layers according to head_hidden_sizes_list after averaging to 2D
-            self.to2D = AverageTo2d(mode = self.head_architecture)
+        elif self.head_architecture in self.to2D.mode_options:
+            # Uses linear layers according to head_hidden_sizes_list after converting to 2D
+            self.to2D.mode = self.head_architecture # change mode
+
+            # determine input_size
             if self.head_architecture == 'concat':
                 input_size *= 2 # concat doubles size
-            if self.head_architecture == 'outer':
+            elif self.head_architecture == 'outer':
                 input_size *= input_size # outer squares size
+            elif self.head_architecture == 'concat-outer':
+                input_size = input_size**2 + 2 * input_size
+            elif self.head_architecture == 'avg-outer':
+                input_size += input_size**2
+
             for i, output_size in enumerate(head_hidden_sizes_list):
                 if i == len(head_hidden_sizes_list) - 1:
                     act = self.out_act
@@ -554,12 +570,10 @@ class ContactGNN(nn.Module):
                 input_size = output_size
 
             self.head = nn.Sequential(*head)
-            # TODO delete below
-            # self.head[0].linear.weight = nn.Parameter(torch.tensor([-1, 1, 1, 0], dtype = torch.float32))
-            # self.head[0].linear.weight.requires_grad = False
         else:
             raise Exception("Unkown head_architecture {}".format(head_architecture))
-        print(self.head)
+
+        print(self.head, '\n', file = ofile)
 
     def forward(self, graph):
         if self.message_passing == 'identity':
@@ -600,7 +614,7 @@ class ContactGNN(nn.Module):
             out = self.head(latent, graph.edge_index)
         elif self.head_architecture == 'fc':
             out = self.head(latent)
-        elif self.head_architecture in {'avg', 'concat', 'outer'}:
+        elif self.head_architecture in self.to2D.mode_options:
             _, output_size = latent.shape
             latent = latent.reshape(-1, self.m, output_size)
             latent = latent.permute(0, 2, 1)
@@ -635,7 +649,6 @@ def testGNNAutoencoder():
 
 def main():
     testGNNAutoencoder()
-
 
 if __name__ == '__main__':
     main()

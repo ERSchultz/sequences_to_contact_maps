@@ -17,7 +17,7 @@ def getArgs():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--dir', default=osp.join('chip_seq_data','fold_change_control'), help='directory of chip-seq data')
 	parser.add_argument('-n','--nucl',action="store_true", help = "If True, store nucleosome-resolution data.")
-	parser.add_argument('-r','--res', type=int, default=hic.RES, help='Resolution of map, in bp')
+	parser.add_argument('-r','--res', type=int, default=25000, help='Resolution of map, in bp')
 	args = parser.parse_args()
 	return args
 
