@@ -402,7 +402,6 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
     else:
         plt.savefig(osp.join(imagePath, 'train_val_loss.png'))
     plt.close()
-
 #### End section ####
 
 def contactPlots(dataFolder):
@@ -622,7 +621,7 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
     upper_title = 'Y Preprocessing: {}, Y Norm: {}'.format(preprocessing, y_norm)
 
 
-    loss_arr = np.zeros(opt.valN)
+    loss_arr = np.zeros(min(count, opt.valN))
     for i, data in enumerate(val_dataloader):
         if i == count:
             break
@@ -685,9 +684,7 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         ydif = yhat - y
         plotContactMap(ydif, osp.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
 
-
     print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
-
 
 def plotPredictions(val_dataloader, model, opt, count = 5):
     print('Prediction Results:', file = opt.log_file)
@@ -707,7 +704,7 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
     upper_title = 'Y Preprocessing: {}, Y Norm: {}'.format(preprocessing, y_norm)
 
 
-    loss_arr = np.zeros(opt.valN)
+    loss_arr = np.zeros(min(count, opt.valN))
     for i, data in enumerate(val_dataloader):
         if i == count:
             break

@@ -1,4 +1,4 @@
-from subprocess import Popen,PIPE,STDOUT
+from subprocess import Popen, PIPE, STDOUT
 from time import time
 
 def psub(cmd):

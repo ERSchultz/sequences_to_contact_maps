@@ -9,8 +9,7 @@ import pyBigWig as pbw
 import argparse
 
 from subtool import *
-from aggregate_peaks import get_names
-import threshold_chip as hic
+from utils import *
 
 
 def getArgs():
@@ -43,7 +42,7 @@ def bw_to_npy(fname, args):
 		mode = "max"
 
 	print("Loading chromosome data for {}.".format(fname))
-	for i_c in hic.CHROMS:
+	for i_c in CHROMS:
 		bw_name = "chr" + i_c
 		length = bw.chroms()[bw_name]
 

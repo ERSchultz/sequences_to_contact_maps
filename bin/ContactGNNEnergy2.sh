@@ -25,7 +25,7 @@ yLogTransform='True'
 messagePassing='SignedConv'
 useNodeFeatures='false'
 useEdgeWeights='false'
-hiddenSizesList='8-2'
+hiddenSizesList='8-8-2'
 transforms='none'
 preTransforms='degree'
 split_neg_pos_edges_for_feature_augmentation='true'
@@ -34,14 +34,14 @@ sparsifyThresholdUpper='none'
 sparsifyThreshold=0.176
 loss='mse'
 act='prelu'
-innerAct='sigmoid'
-headAct='none'
+innerAct='prelu'
+headAct='prelu'
 outAct='prelu'
 headArchitecture='concat-outer'
 headHiddenSizesList='10-10-1'
 
 # hyperparameters
-nEpochs=40
+nEpochs=60
 batchSize=4
 numWorkers=4
 milestones='none'

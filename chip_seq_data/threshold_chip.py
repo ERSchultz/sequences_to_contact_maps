@@ -19,16 +19,13 @@ from time import time
 import csv
 
 from subtool import *
-
-#Autologous chroms
-CHROMS = [str(ele) for ele in range(1,23)]
-#Sex chrom: X only
-CHROMS.append("X")
+from utils import CHROMS
 
 def getArgs():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-c','--chip', type=str, default=osp.join('chip_seq_data','fold_change_control'), help="Input Chip-Seq master directory")
 	parser.add_argument('--res', type=int, default=25000, help='resolution')
+    parser.add_argument('--cell_line', default='HTC116', help='cell line')
 
 	args = parser.parse_args()
 	return args
@@ -68,9 +65,9 @@ def save_chip_for_CHROMHMM(chips, names, args):
 			combined_marks[:, j] = mark[:, 1]
 			with open(ofile, 'w', newline = '') as f:
 				wr = csv.writer(f, delimiter = '\t')
-				wr.writerow(["HTC116", "chr{}".format(CHROMS[i])])
+				wr.writerow([args.cell_line, "chr{}".format(CHROMS[i])])
 				wr.writerow(names)
-				wr.writerows(combined_marks)
+				wr.writerows(combined_marks.astype(np.int8))
 
 @timeit
 def threshold_chip(chips, cfl_chips, names, args):
