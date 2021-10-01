@@ -34,65 +34,6 @@ def make_dataset(dir, minSample = 0):
                     data_file_arr.append(data_file)
     return data_file_arr
 
-def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False, cmap = None):
-    """
-    Plotting function for contact maps.
-
-    Inputs:
-        y: contact map numpy array
-        ofile: save location
-        title: plot title
-        vmax: maximum value for color bar, 'mean' to set as mean value
-        size_in: size of figure x,y in inches
-        minVal: values in y less than minVal are set to 0
-        maxVal: values in y greater than maxVal are set to 0
-    """
-    if cmap is None:
-        if prcnt:
-            cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                     [(0,       'white'),
-                                                      (0.25,    'orange'),
-                                                      (0.5,     'red'),
-                                                      (0.74,    'purple'),
-                                                      (1,       'blue')], N=10)
-        else:
-            cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                     [(0,    'white'),
-                                                      (1,    'red')], N=126)
-    if len(y.shape) == 4:
-        N, C, H, W = y.shape
-        assert N == 1 and C == 1
-        y = y.reshape(H,W)
-    elif len(y.shape) == 3:
-        N, H, W = y.shape
-        assert N == 1
-        y = y.reshape(H,W)
-
-    if minVal is not None or maxVal is not None:
-        y = y.copy() # prevent issues from reference type
-    if minVal is not None:
-        ind = y < minVal
-        y[ind] = 0
-    if maxVal is not None:
-        ind = y > maxVal
-        y[ind] = 0
-    plt.figure(figsize = (size_in, size_in))
-    if vmax == 'mean':
-        vmax = np.mean(y)
-    elif vmax == 'max':
-        vmax = np.max(y)
-    if vmin == 'min':
-        vmin = np.min(y)
-    ax = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap)
-    if title is not None:
-        plt.title(title, fontsize = 16)
-    plt.tight_layout()
-    if ofile is not None:
-        plt.savefig(ofile)
-    else:
-        plt.show()
-    plt.close()
-
 class Names(Dataset):
     # TODO make this directly iterable
     "Dataset that only returns names of paths"
@@ -272,21 +213,24 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 graph = torch_geometric.data.Data(x = x, edge_index = edge_index, edge_attr = edge_weight, y = x)
             else:
                 graph = torch_geometric.data.Data(x = None, edge_index = edge_index, edge_attr = edge_weight, y = x)
+
             graph.minmax = torch.tensor([self.ymin, self.ymax])
             graph.path = raw_folder
             graph.num_nodes = self.m
             graph.pos_edge_index = pos_edge_index
             graph.neg_edge_index = neg_edge_index
+
             if self.weighted_LDP:
                 graph = self.weightedLocalDegreeProfile(graph, y)
             if self.degree or self.weighted_degree:
                 self.concatDegree(graph, y, self.weighted_degree)
             if self.pre_transform is not None:
                 graph = self.pre_transform(graph)
+
             if self.output == 'contact':
                 graph.contact_map = y
-                # TODO double check that this works in core test train
-                # y =  torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
+                # TODO double check that this works in core_test_train
+                # y = torch_geometric.utils.to_dense_adj(data.edge_index, edge_attr = data.edge_attr,
                                                         # batch = data.batch,
                                                         # max_num_nodes = opt.n)
             elif self.output == 'energy':
@@ -300,6 +244,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     raise Exception('chi does not exist: {}, {}'.format(chi_path1, chi_path2))
                 chi = torch.tensor(chi, dtype = torch.float32)
                 graph.energy = x @ chi @ x.t()
+
             torch.save(graph, self.processed_paths[i])
 
     def process_x(self, raw_folder):
@@ -326,15 +271,13 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y_path = osp.join(raw_folder, 'y_diag_instance.npy')
         else:
             raise Exception("Unknown preprocessing: {}".format(self.y_preprocessing))
+
         y = np.load(y_path)
         if self.crop is not None:
             y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
 
-        # plotContactMap(y, vmax = 'max', title = 'input')
         if self.y_log_transform:
             y = np.log10(y)
-        # plotContactMap(y, vmax = 'max', vmin = 'min', title = 'log10')
-        # self.plotDegreeProfile(y)
 
         if self.y_norm == 'instance':
             self.ymax = np.max(y)
@@ -355,7 +298,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y = self.filter_to_topk(y)
 
         # self.plotDegreeProfile(y)
-        # plotContactMap(y, vmax = 'max')
         y = torch.tensor(y, dtype = torch.float32)
         return y
 
@@ -470,17 +412,14 @@ class ContactsGraph(torch_geometric.data.Dataset):
         ycopy = y.copy()
         ycopy[y > 0] = 1
         ycopy[y < 0] = 1
-        # plotContactMap(ycopy, vmax = 'max', title = 'all')
 
         ypos = y.copy()
         ypos[y > 0] = 1
         ypos[y < 0] = 0
-        # plotContactMap(ypos, vmax = 'max', title = 'pos')
 
         yneg = y.copy()
         yneg[y > 0] = 0
         yneg[y < 0] = -1
-        # plotContactMap(yneg, vmin = 'min', vmax = 'max', title = 'neg')
 
         deg = np.sum(ycopy, axis = 0)
         degpos = np.sum(ypos, axis = 0)

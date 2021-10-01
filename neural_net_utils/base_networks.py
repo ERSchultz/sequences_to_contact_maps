@@ -275,8 +275,7 @@ class LinearBlock(nn.Module):
                  norm = None, dropout = None, dropout_p = 0.5):
         super(LinearBlock, self).__init__()
 
-        self.linear = nn.Linear(input_size, output_size, bias = bias)
-        model =  [self.linear]
+        model =  [nn.Linear(input_size, output_size, bias = bias)]
 
         if norm == 'batch':
             model.append(nn.BatchNorm1d(output_size))

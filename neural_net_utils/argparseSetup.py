@@ -112,7 +112,18 @@ def getBaseParser():
     return parser
 
 def finalizeOpt(opt, parser, local = False):
-    # local is a flag to overide some commands when working locally
+    '''
+    Helper function to processes command line arguments.
+
+    Inputs:
+        opt (options): parsed command line arguments from parser.parse_args()
+        parser: instance of argparse.ArgumentParser() - used to re-parse if needed
+        local: True to overide some commands when working locally
+
+    Outputs:
+        opt
+    '''
+
     # set up output folders/files
     model_type_folder = osp.join('results', opt.model_type)
     if opt.id is None:
@@ -138,8 +149,6 @@ def finalizeOpt(opt, parser, local = False):
         # by inserting at position 1, the original arguments will override the txt file
         opt.id = id_copy
 
-
-
     opt.ofile_folder = osp.join(model_type_folder, str(opt.id))
     if not osp.exists(opt.ofile_folder):
         os.mkdir(opt.ofile_folder, mode = 0o755)
@@ -157,13 +166,13 @@ def finalizeOpt(opt, parser, local = False):
             opt.use_edge_weights = False
             print('Setting use_edge_weights to False', file = opt.log_file)
 
-
+    # configure loss
     if opt.loss == 'mse':
         opt.criterion = F.mse_loss
         opt.channels = 1
     elif opt.loss == 'cross_entropy':
         assert opt.out_act is None, "Cannot use output activation with cross entropy"
-        assert not opt.GNN_mode, 'cross_entropy not validated for GNN'
+        assert not opt.GNN_mode, 'cross_entropy not tested for GNN'
         assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'
         assert opt.y_norm is None, 'Cannot normalize with cross entropy'
         opt.channels = opt.classes
@@ -277,25 +286,32 @@ def finalizeOpt(opt, parser, local = False):
     return opt
 
 def copy_data_to_scratch(opt):
+    # initialize scratch path
     scratch_path = osp.join('/scratch/midway2/erschultz', osp.split(opt.data_folder)[-1])
     if not osp.exists(scratch_path):
         os.mkdir(scratch_path, mode = 0o700)
 
+    # transfer summary files
     for file in os.listdir(opt.data_folder):
         file_dir = osp.join(opt.data_folder, file)
         scratch_file_dir = osp.join(scratch_path, file)
         if file.endswith('npy') and not osp.exists(scratch_file_dir):
             shutil.copyfile(file_dir, scratch_file_dir)
 
+    # initialize samples folder
     if not osp.exists(osp.join(scratch_path, 'samples')):
         os.mkdir(osp.join(scratch_path, 'samples'), mode = 0o700)
 
+    # transfer sample data
     for sample in os.listdir(osp.join(opt.data_folder, 'samples')):
         sample_dir = osp.join(opt.data_folder, 'samples', sample)
         scratch_sample_dir = osp.join(scratch_path, 'samples', sample)
         if not osp.exists(scratch_sample_dir):
             os.mkdir(scratch_sample_dir, mode = 0o700)
         for file in os.listdir(sample_dir):
+            if file == 'xx.npy' and not opt.toxx:
+                # skip transferring xx.npy if not needed (saves space on scratch)
+                continue
             file_dir = osp.join(sample_dir, file)
             scratch_file_dir = osp.join(scratch_sample_dir, file)
             if file.endswith('npy') and not osp.exists(scratch_file_dir):
