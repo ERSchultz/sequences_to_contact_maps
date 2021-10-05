@@ -205,6 +205,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def process(self):
         for i, raw_folder in enumerate(self.raw_file_names):
+            sample = int(osp.split(raw_folder)[1][6:])
             x = self.process_x(raw_folder)
             y = self.process_y(raw_folder)
             edge_index, pos_edge_index, neg_edge_index, edge_weight = self.sparsify_adj_mat(y)
@@ -244,6 +245,10 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     raise Exception('chi does not exist: {}, {}'.format(chi_path1, chi_path2))
                 chi = torch.tensor(chi, dtype = torch.float32)
                 graph.energy = x @ chi @ x.t()
+                if sample == 40:
+                    print(x)
+                    print(chi)
+                    print(graph.energy)
 
             torch.save(graph, self.processed_paths[i])
 
@@ -465,14 +470,8 @@ class Sequences(Dataset):
 
 
 def main():
-    t2 = torch_geometric.transforms.Constant()
-    t = torch_geometric.transforms.Compose([t2])
-    t0 = time.time()
-    for i in range(1):
-        g = ContactsGraph('dataset_04_18_21', root_name = 'graphs0', top_k = 100, weighted_LDP = True)
-        print(g[0].x[:, 2:])
-        rmtree(g.root)
-    print('tot time', time.time() - t0)
+    g = ContactsGraph('dataset_04_18_21', root_name = 'graphs0', output = 'energy', crop = [0, 15], m = 15)
+    rmtree(g.root)
 
 
 if __name__ == '__main__':
