@@ -1,5 +1,9 @@
+import os
 import os.path as osp
+
 import pandas as pd
+import csv
+import argparse
 
 #Autologous chroms
 CHROMS = [str(ele) for ele in range(1,23)]
@@ -49,3 +53,35 @@ def get_names(dir, files):
         print('Warning: duplicate names')
 
     return names
+
+def make_chromHMM_table(names, files, args):
+    ofile = osp.join(args.dir, 'cell_mark_file_table.tsv')
+    with open(ofile, 'w', newline = '') as f:
+        wr = csv.writer(f, delimiter = '\t')
+        for name, file in zip(names, files):
+            file = osp.split(file)[1]
+            wr.writerow([args.cell_line, name, file])
+
+
+def getArgs():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dir', default=osp.join('chip_seq_data','aligned_reads'), help='directory of chip-seq data')
+    parser.add_argument('--file_type', default='.bam', help='file format')
+    parser.add_argument('--cell_line', default='HTC116', help='cell line')
+    args = parser.parse_args()
+
+    return args
+
+
+def main():
+    args = getArgs()
+
+    files = [osp.join(args.dir, file) for file in os.listdir(args.dir) if file.endswith(args.file_type)]
+    names = get_names(args.dir, files)
+    print(names, len(names))
+
+    make_chromHMM_table(names, files, args)
+
+
+if __name__ == '__main__':
+    main()

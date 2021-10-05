@@ -56,14 +56,6 @@ def aggregate_peaks(ifile, resolution):
 
     return x
 
-def make_chromHMM_table(names, files, args):
-    ofile = osp.join(args.dir, 'cell_mark_file_table.tsv')
-    with open(ofile, 'w', newline = '') as f:
-        wr = csv.writer(f, delimiter = '\t')
-        for name, file in zip(names, files):
-            file = osp.split(file)[1]
-            wr.writerow([args.cell_line, name, file])
-
 
 def main():
     args = getArgs()

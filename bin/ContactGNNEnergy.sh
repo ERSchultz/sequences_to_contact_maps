@@ -8,7 +8,7 @@
 #SBATCH --ntasks-per-node=4
 #SBATCH --mem-per-cpu=2000
 
-dirname="/project2/depablo/erschultz/dataset_08_24_21"
+dirname="/project2/depablo/erschultz/dataset_04_18_21"
 deleteRoot='false'
 
 modelType='ContactGNNEnergy'
@@ -41,13 +41,13 @@ headArchitecture='concat-outer'
 headHiddenSizesList='10-10-1'
 
 # hyperparameters
-nEpochs=60
+nEpochs=1 # todo
 batchSize=4
 numWorkers=4
 milestones='none'
 gamma=0.1
 
-useScratch='true'
+useScratch='false' # todo
 verbose='false'
 plotPredictions='true'
 relabel_11_to_00='false'

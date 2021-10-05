@@ -25,37 +25,10 @@ def getArgs():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-c','--chip', type=str, default=osp.join('chip_seq_data','fold_change_control'), help="Input Chip-Seq master directory")
 	parser.add_argument('--res', type=int, default=25000, help='resolution')
-    parser.add_argument('--cell_line', default='HTC116', help='cell line')
+	parser.add_argument('--cell_line', default='HTC116', help='cell line')
 
 	args = parser.parse_args()
 	return args
-
-def main():
-	'''Perform hic_r_calc.'''
-	args = getArgs()
-
-	#Load Chip vectors
-	print("Loading Chip vectors.")
-	chips, names = load_chipseq(args)
-	print("Chip vectors loaded.")
-
-	# Create chrom_flattened chips along bp
-	chrom_flat_chips = [] # Cross over all chroms, break down only by mark
-	for j_mark in range(len(chips[0])):
-		l = [chrom[j_mark] for chrom in chips]
-		l = np.concatenate(l)
-		chrom_flat_chips.append(l)
-	chrom_flat_chips = np.array(chrom_flat_chips).astype(np.float64)
-	#chrom_flat_chips = np.concatenate(chrom_flat_chips)
-	print("Chromosome flattened chip has shape: %s" % repr(chrom_flat_chips.shape))
-
-
-	#Calculate maxEnt thresholding
-	print("Thresholding chip tracks.")
-	final_chips, threshes = threshold_chip(chips, chrom_flat_chips, names, args)
-	print("Chip tracks thresholded.")
-
-	save_chip_for_CHROMHMM(final_chips, names, args)
 
 def save_chip_for_CHROMHMM(chips, names, args):
 	for i, chrom in enumerate(chips):
@@ -229,6 +202,33 @@ def load_chipseq(args):
 		chrom_chips.append(base_list)
 
 	return chrom_chips, names
+
+def main():
+	'''Perform hic_r_calc.'''
+	args = getArgs()
+
+	#Load Chip vectors
+	print("Loading Chip vectors.")
+	chips, names = load_chipseq(args)
+	print("Chip vectors loaded.")
+
+	# Create chrom_flattened chips along bp
+	chrom_flat_chips = [] # Cross over all chroms, break down only by mark
+	for j_mark in range(len(chips[0])):
+		l = [chrom[j_mark] for chrom in chips]
+		l = np.concatenate(l)
+		chrom_flat_chips.append(l)
+	chrom_flat_chips = np.array(chrom_flat_chips).astype(np.float64)
+	#chrom_flat_chips = np.concatenate(chrom_flat_chips)
+	print("Chromosome flattened chip has shape: %s" % repr(chrom_flat_chips.shape))
+
+
+	#Calculate maxEnt thresholding
+	print("Thresholding chip tracks.")
+	final_chips, threshes = threshold_chip(chips, chrom_flat_chips, names, args)
+	print("Chip tracks thresholded.")
+
+	save_chip_for_CHROMHMM(final_chips, names, args)
 
 if __name__ == '__main__':
 	main()

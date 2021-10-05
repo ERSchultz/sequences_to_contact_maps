@@ -80,7 +80,7 @@ def debugModel(model_type):
     opt.crop = None
     opt.m = 1024
     opt.y_preprocessing = 'diag'
-    opt.split=[0.6,0.2,0.2]
+    opt.split=[0.4,0.4,0.2]
 
     if model_type == 'Akita':
         opt.kernel_w_list=str2list('5-5-5')
@@ -167,7 +167,7 @@ def debugModel(model_type):
         opt.y_log_transform = False
         opt.head_architecture = 'avg-outer'
         opt.head_hidden_sizes_list = [1]
-        # opt.crop=[50,100]
+        # opt.crop=[0,50]
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'SequenceFCAutoencoder':
@@ -185,7 +185,7 @@ def debugModel(model_type):
     # hyperparameters
     opt.n_epochs = 5
     opt.lr = 1e-3
-    opt.batch_size = 2
+    opt.batch_size = 1
     opt.milestones = None
     opt.gamma = 0.1
 
