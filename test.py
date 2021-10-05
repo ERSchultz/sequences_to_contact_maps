@@ -185,7 +185,7 @@ def debugModel(model_type):
     # hyperparameters
     opt.n_epochs = 5
     opt.lr = 1e-3
-    opt.batch_size = 2
+    opt.batch_size = 1
     opt.milestones = None
     opt.gamma = 0.1
 

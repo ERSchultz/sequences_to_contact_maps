@@ -51,8 +51,7 @@ useScratch='false' # todo
 verbose='false'
 plotPredictions='true'
 relabel_11_to_00='false'
-crop='0-15' # todo
-m=15
+crop='none'
 printParams='true'
 
 cd ~/sequences_to_contact_maps
