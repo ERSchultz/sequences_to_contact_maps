@@ -215,43 +215,6 @@ def un_normalize(y, minmax):
     ymax = minmax[1].item()
     return y.copy() * (ymax - ymin) + ymin
 
-def getFrequencies(dataFolder, diag, n, k, chi=None, save=True):
-    # calculates number of times each interaction frequency
-    # was observed
-    freq_path = osp.join(dataFolder, 'freq_arr_diag_{}.npy'.format(diag))
-    if osp.exists(freq_path):
-        return np.load(freq_path)
-
-    converter = InteractionConverter(k)
-    samples = make_dataset(dataFolder)
-    freq_arr = np.zeros((int(n * (n+1) / 2 * len(samples)), 4)) # freq, sample, type, psi_ij
-    ind = 0
-    for sample in samples:
-        print(sample)
-        sampleid = int(osp.split(sample)[-1][6:])
-
-        x = np.load(osp.join(sample, 'x.npy'))
-        if diag:
-            y = np.load(osp.join(sample, 'y_diag.npy'))
-        else:
-            y = np.load(osp.join(sample, 'y.npy'))
-        for i in range(n):
-            xi = x[i]
-            for j in range(i+1):
-                xj = x[j]
-                comb = frozenset({tuple(xi), tuple(xj)})
-                comb_type = converter.comb2Type(comb)
-                if chi is not None:
-                    psi_ij = xi @ chi @ xj
-                else:
-                    psi_ij = None
-                freq_arr[ind] = [y[i,j], sampleid, comb_type, psi_ij]
-                ind += 1
-
-    if save:
-        np.save(freq_path, freq_arr)
-    return freq_arr
-
 def getPercentiles(arr, prcnt_arr, plot = True):
     """Helper function to get multiple percentiles at once."""
     result = np.zeros_like(prcnt_arr).astype(np.float64)
@@ -260,33 +223,6 @@ def getPercentiles(arr, prcnt_arr, plot = True):
         plt.show()
     for i, p in enumerate(prcnt_arr):
         result[i] = np.percentile(arr, p)
-    return result
-
-def generateDistStats(y, mode = 'freq', stat = 'mean'):
-    '''
-    Calculates statistics of contact frequency/probability as a function of genomic distance
-    (i.e. along a give diagonal)
-
-    Inputs:
-        mode: freq for frequencies, prob for probabilities
-        stat: mean to calculate mean, var for variance
-
-    Outputs:
-        result: numpy array where result[d] is the contact frequency/probability stat at distance d
-    '''
-    if mode == 'prob':
-        y = y.copy() / np.max(y)
-
-    if stat == 'mean':
-        npStat = np.mean
-    elif stat == 'var':
-        npStat = np.var
-    n = len(y)
-    distances = range(0, n, 1)
-    result = np.zeros_like(distances).astype(float)
-    for d in distances:
-        result[d] = npStat(np.diagonal(y, offset = d))
-
     return result
 
 def calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson'):
