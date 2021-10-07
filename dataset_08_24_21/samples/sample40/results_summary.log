@@ -6,11 +6,13 @@ Y_diag
 Explained ratio:  [0.224 0.018 0.006 0.005]
 Singular values:  [116.672  32.643  19.464  18.065]
 
+S
+Explained ratio:  [0.604 0.396 0.    0.   ]
+Singular values:  [645.61  522.251   0.      0.   ]
+Corrrelation between PC 1 of y_diag and S:  0.9345774923149474
+
 S_hat
 Explained ratio:  [0.997 0.002 0.    0.   ]
 Singular values:  [545.082  26.916  10.071   5.259]
 Corrrelation between PC 1 of y_diag and S_hat:  0.9813253504105611
-
-S
-Explained ratio:  [0.604 0.396 0.    0.   ]
-Singular values:  [645.61  522.251   0.      0.   ]
+Corrrelation between PC 1 of S and S_hat:  0.9259401071658235

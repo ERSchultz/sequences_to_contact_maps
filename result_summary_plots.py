@@ -13,11 +13,11 @@ from plotting_functions import plotContactMap
 
 def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
-    parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
-    # parser.add_argument('--root', type=str, default='/home/eric/Research/sequences_to_contact_maps')
-    parser.add_argument('--dataset', type=str, default='dataset_04_18_21', help='Location of input data')
+    # parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
+    parser.add_argument('--root', type=str, default='/home/eric/Research/sequences_to_contact_maps')
+    parser.add_argument('--dataset', type=str, default='dataset_08_26_21', help='Location of input data')
     parser.add_argument('--sample', type=int, default=40)
-    parser.add_argument('--model_id', type=int, default=26)
+    parser.add_argument('--model_id', type=int, default=23)
 
     args = parser.parse_args()
     args.data_folder = osp.join(args.root, args.dataset)
@@ -119,10 +119,12 @@ def main():
     plotContactMap(dif, osp.join(args.sample_folder, 's_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
 
     print("\nY_diag", file = args.log_file)
-    comp1y = plot_top_PCs(ydiag, args, 'y_diag')
+    comp1y = plot_top_PCs(ydiag, args, 'y_diag', count = 2)
 
     print("\nS", file = args.log_file)
     comp1e = plot_top_PCs(e, args, 's', count = 2)
+    stat, _ = pearsonr(comp1y, comp1e)
+    print("Corrrelation between PC 1 of y_diag and S: ", stat, file = args.log_file)
 
     print("\nS_hat", file = args.log_file)
     comp1ehat = plot_top_PCs(ehat, args, 's_hat')
