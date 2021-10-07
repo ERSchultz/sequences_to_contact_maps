@@ -1,0 +1,25 @@
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Method & k & Pearson R & Avg Dist Pearson R & SCC \\ 
+\hline\hline
+Random & 2 & 0.974 & 0.021 & 0.021 \\ 
+PCA &  & 0.97 & 0.148 & 0.107 \\ 
+PCA Split &  & 0.97 & 0.06 & 0.082 \\ 
+K-means &  & 0.975 & 0.287 & 0.279 \\ 
+NMF &  & 0.975 & 0.329 & 0.319 \\ 
+\hline
+Random & 4 & 0.975 & 0.07 & 0.043 \\ 
+PCA &  & 0.97 & 0.075 & 0.043 \\ 
+PCA Split &  & 0.971 & -0.096 & -0.077 \\ 
+K-means &  & 0.975 & 0.325 & 0.287 \\ 
+NMF &  & 0.974 & 0.382 & 0.369 \\ 
+\hline
+Random & 6 & 0.975 & 0.005 & 0.0 \\ 
+PCA &  & 0.971 & 0.122 & 0.143 \\ 
+PCA Split &  & 0.971 & -0.125 & -0.133 \\ 
+K-means &  & 0.974 & 0.358 & 0.319 \\ 
+NMF &  & 0.974 & 0.308 & 0.301 \\ 
+\hline
+\end{tabular}
+\end{center}
