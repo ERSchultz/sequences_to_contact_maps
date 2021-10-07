@@ -1,0 +1,3 @@
+HTC116	chr1_KI270714v1_random
+MaxState E
+3

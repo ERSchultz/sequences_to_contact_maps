@@ -1,0 +1,9 @@
+HTC116	chrUn_GL000216v2
+MaxState E
+14
+15
+12
+2
+2
+2
+2

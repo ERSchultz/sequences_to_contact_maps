@@ -1,0 +1,10 @@
+HTC116	chr14_GL000009v2_random
+MaxState E
+3
+3
+2
+2
+2
+3
+3
+3

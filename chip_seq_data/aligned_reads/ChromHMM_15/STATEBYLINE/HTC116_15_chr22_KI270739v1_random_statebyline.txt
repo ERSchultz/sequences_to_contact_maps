@@ -1,0 +1,4 @@
+HTC116	chr22_KI270739v1_random
+MaxState E
+3
+3
