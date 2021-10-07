@@ -8,7 +8,7 @@ maxent*
 test/**
 
 # datasets
-dataset*/*.npy
+dataset*/freq_arr*
 */samples/**
 !*/samples/sample40
 !*/samples/sample40/*
