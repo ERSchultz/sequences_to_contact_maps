@@ -15,9 +15,9 @@ def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
     # parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
     parser.add_argument('--root', type=str, default='/home/eric/Research/sequences_to_contact_maps')
-    parser.add_argument('--dataset', type=str, default='dataset_08_26_21', help='Location of input data')
+    parser.add_argument('--dataset', type=str, default='dataset_04_18_21', help='Location of input data')
     parser.add_argument('--sample', type=int, default=40)
-    parser.add_argument('--model_id', type=int, default=23)
+    parser.add_argument('--model_id', type=int, default=26)
 
     args = parser.parse_args()
     args.data_folder = osp.join(args.root, args.dataset)
@@ -93,7 +93,7 @@ def plot_top_PCs(inp, args, inp_type, count = 1):
         explained = pca.explained_variance_ratio_[i]
         tot_explained += explained
         plt.plot(pca.components_[i])
-        plt.title("Component {}: {}% of variance".format(i, np.round(explained * 100, 3)))
+        plt.title("Component {}: {}% of variance".format(i+1, np.round(explained * 100, 3)))
         plt.savefig(osp.join(args.sample_folder, '{}_PC_{}.png'.format(inp_type, i+1)))
         plt.close()
         i += 1
