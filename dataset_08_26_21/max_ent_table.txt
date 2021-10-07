@@ -1,0 +1,12 @@
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Method & k & Pearson R & Avg Dist Pearson R & SCC \\ 
+\hline\hline
+PCA & 2 & 0.988 & 0.88 & 0.893 \\ 
+\hline
+PCA & 4 & 0.986 & 0.909 & 0.914 \\ 
+PCA Split &  & 0.995 & 0.901 & 0.913 \\ 
+\hline
+\end{tabular}
+\end{center}

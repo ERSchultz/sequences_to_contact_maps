@@ -1,0 +1,16 @@
+Chi:
+ [[-1.  1.]
+ [ 1.  0.]]
+
+Y_diag
+Explained ratio:  [0.544 0.01  0.009 0.006]
+Singular values:  [153.121  20.919  19.71   15.791]
+
+S_hat
+Explained ratio:  [0.885 0.104 0.005 0.004]
+Singular values:  [332.469 113.786  24.457  21.226]
+Corrrelation between PC 1 of y_diag and S_hat:  0.9747883205971265
+
+S
+Explained ratio:  [0.755 0.245 0.    0.   ]
+Singular values:  [421.12  239.594   0.      0.   ]

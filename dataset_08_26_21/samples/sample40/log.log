@@ -1,0 +1,102 @@
+Chi:
+ [[-1.   2.  -1.   1.5]
+ [ 2.  -1.  -1.  -0.5]
+ [-1.  -1.  -1.   1.5]
+ [ 1.5 -0.5  1.5 -1. ]]
+Net interaction matrix:
+ [[ 1.  -0.5  2.5  1.   1.5  0.   3.   1.5 -0.5 -2.   1.  -0.5  0.  -1.5
+   1.5  0. ]
+ [-0.5 -3.   2.5  0.  -0.5 -3.   2.5  0.  -0.5 -3.   2.5  0.  -0.5 -3.
+   2.5  0. ]
+ [ 2.5  2.5  3.   3.   2.   2.   2.5  2.5  0.   0.   0.5  0.5 -0.5 -0.5
+   0.   0. ]
+ [ 1.   0.   3.   2.   0.  -1.   2.   1.   0.  -1.   2.   1.  -1.  -2.
+   1.   0. ]
+ [ 1.5 -0.5  2.   0.   1.  -1.   1.5 -0.5  2.   0.   2.5  0.5  1.5 -0.5
+   2.   0. ]
+ [ 0.  -3.   2.  -1.  -1.  -4.   1.  -2.   2.  -1.   4.   1.   1.  -2.
+   3.   0. ]
+ [ 3.   2.5  2.5  2.   1.5  1.   1.   0.5  2.5  2.   2.   1.5  1.   0.5
+   0.5  0. ]
+ [ 1.5  0.   2.5  1.  -0.5 -2.   0.5 -1.   2.5  1.   3.5  2.   0.5 -1.
+   1.5  0. ]
+ [-0.5 -0.5  0.   0.   2.   2.   2.5  2.5 -3.  -3.  -2.5 -2.5 -0.5 -0.5
+   0.   0. ]
+ [-2.  -3.   0.  -1.   0.  -1.   2.   1.  -3.  -4.  -1.  -2.  -1.  -2.
+   1.   0. ]
+ [ 1.   2.5  0.5  2.   2.5  4.   2.   3.5 -2.5 -1.  -3.  -1.5 -1.   0.5
+  -1.5  0. ]
+ [-0.5  0.   0.5  1.   0.5  1.   1.5  2.  -2.5 -2.  -1.5 -1.  -1.5 -1.
+  -0.5  0. ]
+ [ 0.  -0.5 -0.5 -1.   1.5  1.   1.   0.5 -0.5 -1.  -1.  -1.5  1.   0.5
+   0.5  0. ]
+ [-1.5 -3.  -0.5 -2.  -0.5 -2.   0.5 -1.  -0.5 -2.   0.5 -1.   0.5 -1.
+   1.5  0. ]
+ [ 1.5  2.5  0.   1.   2.   3.   0.5  1.5  0.   1.  -1.5 -0.5  0.5  1.5
+  -1.   0. ]
+ [ 0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.
+   0.   0. ]]
+reading input file ... 
+chiAA -1
+chiAB 2
+chiAC -1
+chiAD 1.5
+chiBB -1
+chiBC -1
+chiBD -0.5
+chiCC -1
+chiCD 1.5
+chiDD -1
+grid move is : 1
+loading production ... loaded: 1
+read successfully
+grid size is : 28.7
+grid.L is: 7
+volume is: 0.00810849
+making output files ... created successfully
+Initializing simulation objects ... 
+load configuratin is 1
+Loading configuration from input1024.xyz
+1024
+checking if nbeads in config.json matches number of beads in the first line of <input>.xyz ... 
+nbeads in config.json matches <input>.xyz
+atoms
+Objects created
+Initializing took 10944 microseconds 
+Initializing cells: 
+Setting active cells
+setting up contacts
+Beginning Simulation
+Sweep number 0
+acceptance rate: 85.0081%
+trans: 57% 	crank: 70% 	pivot: 90% 	rot: 89.1602% 	
+Sweep number 50000
+acceptance rate: 79.9569%
+trans: 42.1538% 	crank: 57.1681% 	pivot: 51.5038% 	rot: 86.152% 	
+Sweep number 100000
+acceptance rate: 79.9186%
+trans: 41.996% 	crank: 56.8915% 	pivot: 50.9339% 	rot: 86.1538% 	
+Sweep number 150000
+acceptance rate: 79.9129%
+trans: 41.9692% 	crank: 56.8199% 	pivot: 51.0915% 	rot: 86.155% 	
+Sweep number 200000
+acceptance rate: 79.9287%
+trans: 42.0242% 	crank: 56.9056% 	pivot: 51.3093% 	rot: 86.1581% 	
+Sweep number 250000
+acceptance rate: 79.9291%
+trans: 42.0187% 	crank: 56.9109% 	pivot: 51.2192% 	rot: 86.1595% 	
+Sweep number 300000
+acceptance rate: 79.9301%
+trans: 42.0183% 	crank: 56.9272% 	pivot: 51.1777% 	rot: 86.1596% 	
+Sweep number 350000
+acceptance rate: 79.9246%
+trans: 41.9975% 	crank: 56.8913% 	pivot: 51.0927% 	rot: 86.1594% 	
+Sweep number 400000
+acceptance rate: 79.9199%
+trans: 41.9785% 	crank: 56.8642% 	pivot: 51.0782% 	rot: 86.1583% 	
+Sweep number 450000
+acceptance rate: 79.9216%
+trans: 41.9846% 	crank: 56.8706% 	pivot: 51.1195% 	rot: 86.1588% 	
+acceptance rate: 79.9246%
+Took 2214seconds 
+Moved 393804923 beads 
