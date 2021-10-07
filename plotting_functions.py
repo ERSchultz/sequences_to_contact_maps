@@ -453,8 +453,8 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         np.savetxt(osp.join(subpath, 'energy.txt'), y, fmt = '%.3f')
 
         # plot dif
-        ydif = yhat - y
-        plotContactMap(ydif, osp.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
+        dif = yhat - y
+        plotContactMap(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
 
     print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
 
