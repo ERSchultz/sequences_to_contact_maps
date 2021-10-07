@@ -13,7 +13,7 @@ from plotting_functions import plotContactMap
 
 def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
-    parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents//Research//sequences_to_contact_maps')
+    parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
     # parser.add_argument('--root', type=str, default='/home/eric/Research/sequences_to_contact_maps')
     parser.add_argument('--dataset', type=str, default='dataset_04_18_21', help='Location of input data')
     parser.add_argument('--sample', type=int, default=40)
@@ -63,6 +63,8 @@ def plot_x_chi(args, minus = False):
         chi = np.load(chi_path1)
     elif osp.exists(chi_path2):
         chi = np.load(chi_path2)
+    else:
+        raise Exception('chi not found at {} or {}'.format(chi_path1, chi_path2))
     chi = chi.astype(np.float64)
     print('Chi:\n', chi, file = args.log_file)
 
@@ -119,14 +121,17 @@ def main():
     print("\nY_diag", file = args.log_file)
     comp1y = plot_top_PCs(ydiag, args, 'y_diag')
 
+    print("\nS", file = args.log_file)
+    comp1e = plot_top_PCs(e, args, 's', count = 2)
+
     print("\nS_hat", file = args.log_file)
     comp1ehat = plot_top_PCs(ehat, args, 's_hat')
 
     stat, _ = pearsonr(comp1y, comp1ehat)
     print("Corrrelation between PC 1 of y_diag and S_hat: ", stat, file = args.log_file)
+    stat, _ = pearsonr(comp1e, comp1ehat)
+    print("Corrrelation between PC 1 of S and S_hat: ", stat, file = args.log_file)
 
-    print("\nS", file = args.log_file)
-    comp1e = plot_top_PCs(e, args, 's', count = 2)
 
 
 if __name__ == '__main__':
