@@ -1,0 +1,10 @@
+HTC116	chr4_GL000008v2_random
+MaxState E
+2
+3
+3
+3
+3
+3
+3
+3

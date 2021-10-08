@@ -1,0 +1,8 @@
+HTC116	chr3_GL000221v1_random
+MaxState E
+3
+3
+3
+3
+3
+3

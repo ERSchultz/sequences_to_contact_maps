@@ -1,0 +1,7 @@
+HTC116	chrUn_KI270519v1
+MaxState E
+3
+2
+2
+2
+2
