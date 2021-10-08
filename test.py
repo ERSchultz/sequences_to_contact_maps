@@ -345,7 +345,7 @@ def testEnergy():
 
 if __name__ == '__main__':
     # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    debugModel('ContactGNN')
     # plot_fixed()
     # test_argpartition(10)
     # to_mat()

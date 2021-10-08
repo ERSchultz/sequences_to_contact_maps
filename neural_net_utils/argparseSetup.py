@@ -11,6 +11,7 @@ import torch_geometric.transforms
 
 import argparse
 import csv
+import time
 
 def getBaseParser():
     '''Helper function that returns base parser'''
@@ -286,6 +287,7 @@ def finalizeOpt(opt, parser, local = False):
     return opt
 
 def copy_data_to_scratch(opt):
+    t0 = time.time()
     # initialize scratch path
     scratch_path = osp.join('/scratch/midway2/erschultz', osp.split(opt.data_folder)[-1])
     if not osp.exists(scratch_path):
@@ -309,15 +311,22 @@ def copy_data_to_scratch(opt):
         if not osp.exists(scratch_sample_dir):
             os.mkdir(scratch_sample_dir, mode = 0o700)
         for file in os.listdir(sample_dir):
+            # skip transferring certain files if not needed (saves space on scratch)
             if file == 'xx.npy' and not opt.toxx:
-                # skip transferring xx.npy if not needed (saves space on scratch)
                 continue
+            if file == 'y_prcnt.npy' and opt.y_preprocessing != 'prcnt':
+                continue
+
             file_dir = osp.join(sample_dir, file)
             scratch_file_dir = osp.join(scratch_sample_dir, file)
             if file.endswith('npy') and not osp.exists(scratch_file_dir):
                 shutil.copyfile(file_dir, scratch_file_dir)
 
     opt.data_folder = scratch_path
+
+    tf = time.time()
+    delta_t = np.round(tf - t0, 0)
+    print("Took {} seconds to move data to scratch".format(delta_t), file = opt.log_file)
 
 def argparseSetup():
     """Helper function set up parser."""
@@ -555,11 +564,11 @@ def float2str(v):
         raise Exception('float value expected.')
     return vstr
 
-def main():
+def test():
     opt = argparseSetup()
     optlist = opt2list(opt)
     optheader = get_opt_header(opt.model_type, opt.GNN_mode)
     assert len(optlist) == len(optheader)
 
 if __name__ == '__main__':
-    main()
+    test()
