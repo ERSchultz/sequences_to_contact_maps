@@ -25,7 +25,7 @@ yLogTransform='false'
 messagePassing='GCN'
 useNodeFeatures='false'
 useEdgeWeights='true'
-hiddenSizesList='16-16-4'
+hiddenSizesList='16-4'
 transforms='none'
 preTransforms='degree'
 split_neg_pos_edges_for_feature_augmentation='false'
@@ -33,21 +33,21 @@ topK='none'
 sparsifyThresholdUpper='none'
 sparsifyThreshold=1.0
 loss='mse'
-act='prelu'
-innerAct='prelu'
-headAct='prelu'
-outAct='prelu'
-headArchitecture='concat-outer'
-headHiddenSizesList='10-10-1'
+act='relu'
+innerAct='sigmoid'
+headAct='none'
+outAct='none'
+headArchitecture='outer'
+headHiddenSizesList='1'
 
 # hyperparameters
-nEpochs=1 # todo
+nEpochs=100
 batchSize=4
 numWorkers=4
 milestones='none'
 gamma=0.1
 
-useScratch='false' # todo
+useScratch='true'
 verbose='false'
 plotPredictions='true'
 relabel_11_to_00='false'
@@ -57,7 +57,7 @@ printParams='true'
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2
 
-for lr in 1e-4
+for lr in 1e-3
 do
   python3 core_test_train.py --data_folder $dirname --root_name $rootName --delete_root $deleteRoot --model_type $modelType --GNN_mode $GNNMode --output_mode $outputMode --k $k --m $m --y_preprocessing ${yPreprocessing} --y_norm $yNorm --y_log_transform $yLogTransform --message_passing $messagePassing --use_node_features $useNodeFeatures --use_edge_weights $useEdgeWeights --hidden_sizes_list $hiddenSizesList --transforms $transforms --pre_transforms $preTransforms --split_neg_pos_edges_for_feature_augmentation $split_neg_pos_edges_for_feature_augmentation --top_k $topK --sparsify_threshold $sparsifyThreshold --sparsify_threshold_upper $sparsifyThresholdUpper --loss $loss --act $act --inner_act $innerAct --head_act $headAct --out_act $outAct --head_architecture $headArchitecture --head_hidden_sizes_list $headHiddenSizesList --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --verbose $verbose --use_scratch $useScratch --plot_predictions $plotPredictions --relabel_11_to_00 $relabel_11_to_00 --crop $crop --print_params $printParams
 done

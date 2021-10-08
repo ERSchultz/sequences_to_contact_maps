@@ -300,7 +300,6 @@ class ContactGNNEnergyTest(nn.Module):
 
         return out
 
-
 def testEnergy():
     dir = "C:/Users/Eric/OneDrive/Documents/Research/Coding/sequences_to_contact_maps"
     ofile = osp.join(dir, "results/test/energy")
@@ -348,7 +347,5 @@ if __name__ == '__main__':
     debugModel('ContactGNN')
     # plot_fixed()
     # test_argpartition(10)
-    # to_mat()
     # downsampling_test()
     # testEnergy()
-    # main()

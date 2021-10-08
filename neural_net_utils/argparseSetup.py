@@ -12,6 +12,7 @@ import torch_geometric.transforms
 import argparse
 import csv
 import time
+import numpy as np
 
 def getBaseParser():
     '''Helper function that returns base parser'''

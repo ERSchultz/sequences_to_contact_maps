@@ -465,7 +465,7 @@ class ContactGNN(nn.Module):
         self.act = actToModule(act)
         self.inner_act = actToModule(inner_act, none_mode = True, in_place = False) # added this, none_mode 'should' prevent older models from breaking when reloading
         self.out_act = actToModule(out_act)
-        if len(head_hidden_sizes_list) > 1:
+        if head_hidden_sizes_list is not None and len(head_hidden_sizes_list) > 1:
             self.head_act = actToModule(head_act)
             # only want this to show up as a parameter if actually needed
         else:
