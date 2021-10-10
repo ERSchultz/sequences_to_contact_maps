@@ -7,8 +7,8 @@
 #SBATCH --output=logFiles/preprocess.log
 #SBATCH --time=02:00:00
 
-input="/project2/depablo/erschultz/dataset_08_29_21"
-output="/project2/depablo/erschultz/dataset_08_29_21"
+input="/project2/depablo/erschultz/dataset_09_02_21"
+output="/project2/depablo/erschultz/dataset_09_02_21"
 numWorkers=20
 k=2
 n=1024
