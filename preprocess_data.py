@@ -6,15 +6,15 @@ import numpy as np
 import time
 import argparse
 
-from neural_net_utils.utils import getDataLoaders, x2xx, generateDistStats, diagonal_preprocessing, percentile_preprocessing, getPercentiles
+from neural_net_utils.utils import getDataLoaders, x2xx, diagonal_preprocessing, percentile_preprocessing, getPercentiles
 from neural_net_utils.argparseSetup import str2bool, str2list
 from neural_net_utils.dataset_classes import Names, make_dataset
-
+from data_summary_plots import genomic_distance_statistics
 
 def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
-    parser.add_argument('--input_folder', type=str, default='dataset_08_18_21', help='Location of input data')
-    parser.add_argument('--output_folder', type=str, default='dataset_08_18_21', help='Location to write data to')
+    parser.add_argument('--input_folder', type=str, default='dataset_08_26_21', help='Location of input data')
+    parser.add_argument('--output_folder', type=str, default='test', help='Location to write data to')
     parser.add_argument('--min_sample', type=int, default=0, help='minimum sample id')
 
     # dataloader args
@@ -102,7 +102,7 @@ def process_diag(args, out_paths):
             if i < args.sample_size: # dataloader shuffles so this is a random sample
                 path = path[0]
                 y = np.load(osp.join(path, 'y.npy'))
-                meanDist += generateDistStats(y)
+                meanDist += genomic_distance_statistics(y)
         meanDist = meanDist / args.sample_size
         print('meanDist: ', meanDist)
         np.save(meanDist_path, meanDist)
@@ -129,7 +129,7 @@ def process_sample_diag(path, meanDist, overwrite):
     y_diag_instance_path = osp.join(path, 'y_diag_instance.npy')
     if not osp.exists(y_diag_instance_path) or overwrite:
         y = np.load(osp.join(path, 'y.npy')).astype(np.float64)
-        meanDist = generateDistStats(y)
+        meanDist = genomic_distance_statistics(y)
         y_diag_instance = diagonal_preprocessing(y, meanDist)
         np.save(y_diag_instance_path, y_diag_instance)
 
