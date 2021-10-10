@@ -134,7 +134,5 @@ def main():
     stat, _ = pearsonr(comp1e, comp1ehat)
     print("Corrrelation between PC 1 of S and S_hat: ", stat, file = args.log_file)
 
-
-
 if __name__ == '__main__':
     main()
