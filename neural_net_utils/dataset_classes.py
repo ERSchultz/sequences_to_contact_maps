@@ -245,10 +245,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     raise Exception('chi does not exist: {}, {}'.format(chi_path1, chi_path2))
                 chi = torch.tensor(chi, dtype = torch.float32)
                 graph.energy = x @ chi @ x.t()
-                if sample == 40:
-                    print(x)
-                    print(chi)
-                    print(graph.energy)
 
             torch.save(graph, self.processed_paths[i])
 
