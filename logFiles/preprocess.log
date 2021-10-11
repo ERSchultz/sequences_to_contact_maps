@@ -1,8 +1,8 @@
-/tmp/slurmd/job13338157/slurm_script: line 21: activate: No such file or directory
-Input folder:  /project2/depablo/erschultz/dataset_08_29_21
-Output folder:  /project2/depablo/erschultz/dataset_08_29_21
+/tmp/slurmd/job13642875/slurm_script: line 21: activate: No such file or directory
+Input folder:  /project2/depablo/erschultz/dataset_09_02_21
+Output folder:  /project2/depablo/erschultz/dataset_09_02_21
 Diagonal Preprocessing
-meanDist:  [5000.         1792.08379277  307.80117906 ...   18.675        17.4475
-   16.15      ]
-y_diag_min_max:  [0.         4.18321742]
-Total time: 1085.905914068222
+meanDist:  [5000.         1809.06221408  322.62372798 ...   20.93833333   19.715
+   18.095     ]
+y_diag_min_max:  [0.         5.93939338]
+Total time: 940.7460832595825
