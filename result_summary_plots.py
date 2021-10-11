@@ -15,9 +15,9 @@ def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
     # parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
     parser.add_argument('--root', type=str, default='/home/eric/Research/sequences_to_contact_maps')
-    parser.add_argument('--dataset', type=str, default='dataset_08_29_21', help='Location of input data')
+    parser.add_argument('--dataset', type=str, default='dataset_09_02_21', help='Location of input data')
     parser.add_argument('--sample', type=int, default=40)
-    parser.add_argument('--model_id', type=int, default=28)
+    parser.add_argument('--model_id', type=int, default=30)
 
     args = parser.parse_args()
     args.data_folder = osp.join(args.root, args.dataset)
