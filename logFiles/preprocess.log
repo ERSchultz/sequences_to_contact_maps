@@ -1,8 +1,0 @@
-/tmp/slurmd/job13642875/slurm_script: line 21: activate: No such file or directory
-Input folder:  /project2/depablo/erschultz/dataset_09_02_21
-Output folder:  /project2/depablo/erschultz/dataset_09_02_21
-Diagonal Preprocessing
-meanDist:  [5000.         1809.06221408  322.62372798 ...   20.93833333   19.715
-   18.095     ]
-y_diag_min_max:  [0.         5.93939338]
-Total time: 940.7460832595825

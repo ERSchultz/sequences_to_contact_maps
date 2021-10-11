@@ -10,7 +10,7 @@
 input="/project2/depablo/erschultz/dataset_10_08_21"
 output="/project2/depablo/erschultz/dataset_10_08_21"
 numWorkers=20
-k=2
+k=4
 n=1024
 sampleSize=200
 minSample=0
