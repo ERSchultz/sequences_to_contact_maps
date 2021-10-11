@@ -171,6 +171,7 @@ def process_sample_percentile(path, prcntDist, overwrite):
 def main():
     t0 = time.time()
     args = getArgs()
+    print(args)
 
     print('Input folder: ', args.input_folder)
     print('Output folder: ', args.output_folder)
@@ -191,27 +192,27 @@ def main():
 
     train_dataloader, _, _ = getDataLoaders(Names(args.output_folder, args.min_sample), args)
 
-    # diag
-    print('Diagonal Preprocessing')
-    process_diag(args, out_paths)
-    y_diag_min_max = get_min_max(args, train_dataloader, 'y_diag.npy')
-    np.save(osp.join(args.output_folder, 'y_diag_min_max.npy'), y_diag_min_max.astype(np.float64))
-    print('y_diag_min_max: ', y_diag_min_max)
-
-    # percentile
-    if args.percentiles is not None:
-        print('Percentile Preprocessing')
-        process_percentile(args, out_paths)
-        y_prcnt_min_max = get_min_max(args, train_dataloader, 'y_prcnt.npy')
-        np.save(osp.join(args.output_folder, 'y_prcnt_min_max.npy'), y_prcnt_min_max.astype(np.float64))
-        print('y_prcnt_min_max: ', y_prcnt_min_max)
-
-    # copy over chi
-    chis_path = osp.join(args.input_folder, 'chis.txt')
-    if osp.exists(chis_path):
-        chi = np.loadtxt(chis_path)
-        np.save(osp.join(args.output_folder, 'chis.npy'), chi)
-        np.savetxt(osp.join(args.output_folder, 'chis.txt'), chi, fmt='%0.5f')
+    # # diag
+    # print('Diagonal Preprocessing')
+    # process_diag(args, out_paths)
+    # y_diag_min_max = get_min_max(args, train_dataloader, 'y_diag.npy')
+    # np.save(osp.join(args.output_folder, 'y_diag_min_max.npy'), y_diag_min_max.astype(np.float64))
+    # print('y_diag_min_max: ', y_diag_min_max)
+    #
+    # # percentile
+    # if args.percentiles is not None:
+    #     print('Percentile Preprocessing')
+    #     process_percentile(args, out_paths)
+    #     y_prcnt_min_max = get_min_max(args, train_dataloader, 'y_prcnt.npy')
+    #     np.save(osp.join(args.output_folder, 'y_prcnt_min_max.npy'), y_prcnt_min_max.astype(np.float64))
+    #     print('y_prcnt_min_max: ', y_prcnt_min_max)
+    #
+    # # copy over chi
+    # chis_path = osp.join(args.input_folder, 'chis.txt')
+    # if osp.exists(chis_path):
+    #     chi = np.loadtxt(chis_path)
+    #     np.save(osp.join(args.output_folder, 'chis.npy'), chi)
+    #     np.savetxt(osp.join(args.output_folder, 'chis.txt'), chi, fmt='%0.5f')
 
     print('Total time: {}'.format(time.time() - t0))
 
