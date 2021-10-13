@@ -104,6 +104,7 @@ def plot_top_PCs(inp, args, inp_type, count = 1):
 
 def main():
     args = getArgs()
+    print(args)
 
     x, chi = plot_x_chi(args)
     y, ydiag = get_contact(args)
@@ -124,15 +125,15 @@ def main():
     print("\nS", file = args.log_file)
     comp1e = plot_top_PCs(e, args, 's', count = 2)
     stat, _ = pearsonr(comp1y, comp1e)
-    print("Corrrelation between PC 1 of y_diag and S: ", stat, file = args.log_file)
+    print("Correlation between PC 1 of y_diag and S: ", stat, file = args.log_file)
 
     print("\nS_hat", file = args.log_file)
     comp1ehat = plot_top_PCs(ehat, args, 's_hat')
 
     stat, _ = pearsonr(comp1y, comp1ehat)
-    print("Corrrelation between PC 1 of y_diag and S_hat: ", stat, file = args.log_file)
+    print("Correlation between PC 1 of y_diag and S_hat: ", stat, file = args.log_file)
     stat, _ = pearsonr(comp1e, comp1ehat)
-    print("Corrrelation between PC 1 of S and S_hat: ", stat, file = args.log_file)
+    print("Correlation between PC 1 of S and S_hat: ", stat, file = args.log_file)
 
 if __name__ == '__main__':
     main()
