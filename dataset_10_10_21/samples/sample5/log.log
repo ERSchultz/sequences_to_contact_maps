@@ -1,0 +1,68 @@
+Chi:
+ [[-1.  1.]
+ [ 1.  0.]]
+Net interaction matrix:
+ [[ 1.  0.  1.  0.]
+ [ 0. -1.  1.  0.]
+ [ 1.  1.  0.  0.]
+ [ 0.  0.  0.  0.]]
+data out:data_out
+reading input file ... 
+chiAA -1
+chiAB 1
+chiBB 0
+number of bins: 20
+binsize 51
+grid move is : 1
+loading production ... loaded: 1
+read successfully
+grid size is : 28.7
+grid.L is: 7
+volume is: 0.00810849
+making output files ... created successfully
+Initializing simulation objects ... 
+load configuratin is 1
+Loading configuration from input1024.xyz
+1024
+checking if nbeads in config.json matches number of beads in the first line of <input>.xyz ... 
+nbeads in config.json matches <input>.xyz
+atoms
+Objects created
+Initializing took 6292 microseconds 
+Initializing cells: 
+Setting active cells
+setting up contacts
+Beginning Simulation
+Sweep number 0
+acceptance rate: 83.9546%
+trans: 53% 	crank: 63% 	pivot: 90% 	rot: 88.9648% 	
+Sweep number 50000
+acceptance rate: 81.5764%
+trans: 50.0858% 	crank: 68.6123% 	pivot: 59.6976% 	rot: 86.1314% 	
+Sweep number 100000
+acceptance rate: 81.5856%
+trans: 50.1261% 	crank: 68.6816% 	pivot: 59.9173% 	rot: 86.1296% 	
+Sweep number 150000
+acceptance rate: 81.5853%
+trans: 50.1198% 	crank: 68.6532% 	pivot: 60.0111% 	rot: 86.1317% 	
+Sweep number 200000
+acceptance rate: 81.5873%
+trans: 50.1214% 	crank: 68.6703% 	pivot: 59.9744% 	rot: 86.1326% 	
+Sweep number 250000
+acceptance rate: 81.5901%
+trans: 50.1259% 	crank: 68.6961% 	pivot: 59.9666% 	rot: 86.1331% 	
+Sweep number 300000
+acceptance rate: 81.5917%
+trans: 50.1258% 	crank: 68.703% 	pivot: 59.9731% 	rot: 86.1344% 	
+Sweep number 350000
+acceptance rate: 81.5919%
+trans: 50.1248% 	crank: 68.7116% 	pivot: 59.9687% 	rot: 86.1339% 	
+Sweep number 400000
+acceptance rate: 81.591%
+trans: 50.1241% 	crank: 68.7064% 	pivot: 59.9941% 	rot: 86.1331% 	
+Sweep number 450000
+acceptance rate: 81.5906%
+trans: 50.1205% 	crank: 68.7082% 	pivot: 59.9793% 	rot: 86.133% 	
+acceptance rate: 81.5935%
+Took 3284seconds 
+Moved 557535907 beads 
