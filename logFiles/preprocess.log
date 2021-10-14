@@ -1,4 +1,4 @@
 Namespace(GNN_mode=False, batch_size=1, input_folder='/project2/depablo/erschultz/dataset_10_08_21', k=4, min_sample=0, n=1024, num_workers=20, output_folder='/project2/depablo/erschultz/dataset_10_08_21', overwrite=True, percentiles=None, sample_size=200, seed=42, shuffle=True, split=[0.8, 0.1, 0.1])
 Input folder:  /project2/depablo/erschultz/dataset_10_08_21
 Output folder:  /project2/depablo/erschultz/dataset_10_08_21
-Total time: 505.08478808403015
+Total time: 478.54659032821655
