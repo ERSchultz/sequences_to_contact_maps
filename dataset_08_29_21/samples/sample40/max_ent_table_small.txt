@@ -1,0 +1,9 @@
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Method & k & SCC \\ 
+\hline\hline
+GNN & 2 & 0.479 \\ 
+\hline
+\end{tabular}
+\end{center}

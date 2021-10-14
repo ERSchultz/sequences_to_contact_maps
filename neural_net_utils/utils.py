@@ -85,7 +85,6 @@ def getDataLoaders(dataset, opt):
         dataloader_fn = torch_geometric.data.DataLoader
     else:
         dataloader_fn = DataLoader
-
     train_dataloader = dataloader_fn(train_dataset, batch_size = opt.batch_size,
                                     shuffle = opt.shuffle, num_workers = opt.num_workers)
     if len(val_dataset) > 0:

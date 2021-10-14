@@ -1,0 +1,9 @@
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Method & k & Pearson R & Avg Dist Pearson R & SCC \\ 
+\hline\hline
+GNN & 2 & 0.999 & 0.541 & 0.479 \\ 
+\hline
+\end{tabular}
+\end{center}

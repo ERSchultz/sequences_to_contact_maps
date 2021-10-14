@@ -41,14 +41,14 @@ headArchitecture='concat-outer'
 headHiddenSizesList='10-10-1'
 
 # hyperparameters
-nEpochs=100
+nEpochs=1
 batchSize=4
 numWorkers=4
 milestones='none'
 gamma=0.1
 
 useScratch='true'
-verbose='false'
+verbose='true'
 plotPredictions='true'
 relabel_11_to_00='false'
 crop='none'
