@@ -15,9 +15,9 @@ def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
     parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
     # parser.add_argument('--root', type=str, default='/home/eric/Research/sequences_to_contact_maps')
-    parser.add_argument('--dataset', type=str, default='dataset_10_08_21', help='Location of input data')
-    parser.add_argument('--sample', type=int, default=132)
-    parser.add_argument('--model_id', type=int, default=34)
+    parser.add_argument('--dataset', type=str, default='dataset_08_26_21', help='Location of input data')
+    parser.add_argument('--sample', type=int, default=40)
+    parser.add_argument('--model_id', type=int, default=23)
 
     args = parser.parse_args()
     args.data_folder = osp.join(args.root, args.dataset)
@@ -100,7 +100,12 @@ def plot_top_PCs(inp, args, inp_type, count = 1):
 
     plt.show()
 
-    return pca.components_[0]
+    return pca.components_
+
+def pearsonround(x, y):
+    "Wrapper function that combines np.round and pearsonr."
+    stat, _ = pearsonr(x, y)
+    return np.round(stat, 2)
 
 def main():
     args = getArgs()
@@ -120,20 +125,22 @@ def main():
     plotContactMap(dif, osp.join(args.sample_folder, 's_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
 
     print("\nY_diag", file = args.log_file)
-    comp1y = plot_top_PCs(ydiag, args, 'y_diag', count = 2)
+    PC_y = plot_top_PCs(ydiag, args, 'y_diag', count = 2)
 
     print("\nS", file = args.log_file)
-    comp1e = plot_top_PCs(e, args, 's', count = 2)
-    stat, _ = pearsonr(comp1y, comp1e)
+    PC_e = plot_top_PCs(e, args, 's', count = 2)
+    stat = pearsonround(PC_y[0], PC_e[0])
     print("Correlation between PC 1 of y_diag and S: ", stat, file = args.log_file)
 
     print("\nS_hat", file = args.log_file)
-    comp1ehat = plot_top_PCs(ehat, args, 's_hat')
+    PC_ehat = plot_top_PCs(ehat, args, 's_hat', count = 2)
 
-    stat, _ = pearsonr(comp1y, comp1ehat)
+    stat = pearsonround(PC_y[0], PC_ehat[0])
     print("Correlation between PC 1 of y_diag and S_hat: ", stat, file = args.log_file)
-    stat, _ = pearsonr(comp1e, comp1ehat)
+    stat = pearsonround(PC_e[0], PC_ehat[0])
     print("Correlation between PC 1 of S and S_hat: ", stat, file = args.log_file)
+    stat = pearsonround(PC_e[1], PC_ehat[1])
+    print("Correlation between PC 2 of S and S_hat: ", stat, file = args.log_file)
 
 if __name__ == '__main__':
     main()

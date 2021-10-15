@@ -1,0 +1,23 @@
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Method & k & SCC \\ 
+\hline\hline
+Random & 2 & -0.025 $\pm$ 0.023 \\ 
+PCA &  & 0.886 $\pm$ 0.005 \\ 
+K-means &  & 0.613 $\pm$ 0.091 \\ 
+NMF &  & 0.863 $\pm$ 0.014 \\ 
+\hline
+Ground Truth & 4 & 0.958 \\ 
+Random &  & 0.028 $\pm$ 0.061 \\ 
+PCA &  & 0.901 $\pm$ 0.01 \\ 
+K-means &  & 0.841 $\pm$ 0.023 \\ 
+NMF &  & 0.886 $\pm$ 0.017 \\ 
+\hline
+Random & 6 & 0.142 $\pm$ 0.034 \\ 
+PCA &  & 0.905 $\pm$ 0.021 \\ 
+K-means &  & 0.887 $\pm$ 0.011 \\ 
+NMF &  & 0.909 $\pm$ 0.014 \\ 
+\hline
+\end{tabular}
+\end{center}

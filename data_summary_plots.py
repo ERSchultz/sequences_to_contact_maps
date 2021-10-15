@@ -142,10 +142,10 @@ def plotFrequenciesForSample(freq_arr, dataFolder, preprocessing, k, sampleid, s
     bigax.set_ylabel('count ', fontsize = 16)
 
     fig.tight_layout()
-    if preprocessing == 'none':
-        fig.suptitle('sample{}'.format(sampleid), fontsize = 16, y = 1)
-    else:
-        fig.suptitle('sample{} {} preprocessing'.format(sampleid, preprocessing), fontsize = 16, y = 1)
+    # if preprocessing == 'none':
+    #     fig.suptitle('sample{}'.format(sampleid), fontsize = 16, y = 1)
+    # else:
+    #     fig.suptitle('sample{} {} preprocessing'.format(sampleid, preprocessing), fontsize = 16, y = 1)
 
     if xmax is not None:
         plt.xlim(right = xmax)
@@ -216,7 +216,7 @@ def plotFrequenciesSampleSubplot(freq_arr, dataFolder, preprocessing, k, split =
     plt.savefig(osp.join(dataFolder, 'freq_count_multisample_preprocessing_{}_split_{}.png'.format(preprocessing, split)))
     plt.close()
 
-def freqSampleDistributionPlots(dataFolder, sample_id, m = 1024, k = None):
+def freqSampleDistributionPlots(dataFolder, sample_id, m = 1024, k = None, splits = [None, 'psi']):
     '''Wrapper function for plotFrequenciesForSample and plotFrequenciesSampleSubplot.'''
     chi_path1 = osp.join(dataFolder, 'chis.npy')
     chi_path2 = osp.join(dataFolder, 'samples/sample{}'.format(sample_id), 'chis.npy')
@@ -237,9 +237,9 @@ def freqSampleDistributionPlots(dataFolder, sample_id, m = 1024, k = None):
         if freq_arr is None:
             continue
 
-        for split in [None, 'psi']:
+        for split in splits:
             print('\t', split)
-            plotFrequenciesSampleSubplot(freq_arr, dataFolder, preprocessing, k, split)
+            # plotFrequenciesSampleSubplot(freq_arr, dataFolder, preprocessing, k, split)
             plotFrequenciesForSample(freq_arr, dataFolder, preprocessing, k, sampleid = sample_id, split = split)
 
 
@@ -370,8 +370,8 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, chi = None):
 
 
 if __name__ == '__main__':
-    dataset = 'dataset_10_08_21'
+    dataset = 'dataset_08_29_21'
     sample = 40
-    basic_plots(dataset)
+    # basic_plots(dataset)
     # plot_genomic_distance_statistics(dataset)
-    # freqSampleDistributionPlots(dataset, sample)
+    freqSampleDistributionPlots(dataset, sample, splits = [None])
