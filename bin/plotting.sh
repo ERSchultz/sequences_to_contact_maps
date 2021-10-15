@@ -7,7 +7,7 @@
 #SBATCH --output=logFiles/plotting.log
 #SBATCH --time=06:00:00
 
-dirname="/project2/depablo/erschultz/dataset_08_29_21"
+dirname="/project2/depablo/erschultz/dataset_08_26_21"
 
 # partition
 gpus=1
@@ -25,7 +25,7 @@ useScratch='false'
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2
 
-for id in 8
+for id in 23
 do
   python3 plotting_functions.py --data_folder $dirname --model_type $modelType --id $id --gpus $gpus --pretrained $pretrained --plot_predictions $plotPredictions --use_scratch $useScratch
 done

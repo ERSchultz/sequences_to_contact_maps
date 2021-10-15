@@ -392,7 +392,6 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
          y_norm = 'None'
     upper_title = 'Y Preprocessing: {}, Y Norm: {}'.format(preprocessing, y_norm)
 
-
     loss_arr = np.zeros(min(count, opt.valN))
     for i, data in enumerate(val_dataloader):
         if i == count:
