@@ -962,3 +962,43 @@ results/ContactGNNEnergy/23/sample1751
 results/ContactGNNEnergy/23/sample1718
 Loss: 2.1134994506835936 +- 0.6512495762264238
 
+Warning: falling back to cpu
+#### ARCHITECTURE ####
+Sequential(
+  (0): SignedConv(3, 8, first_aggr=True)
+  (1): PReLU(num_parameters=1)
+  (2): SignedConv(8, 8, first_aggr=False)
+  (3): PReLU(num_parameters=1)
+  (4): SignedConv(8, 2, first_aggr=False)
+)
+Sequential(
+  (0): LinearBlock(
+    (model): Sequential(
+      (0): Linear(in_features=24, out_features=10, bias=True)
+      (1): PReLU(num_parameters=1)
+    )
+  )
+  (1): LinearBlock(
+    (model): Sequential(
+      (0): Linear(in_features=10, out_features=10, bias=True)
+      (1): PReLU(num_parameters=1)
+    )
+  )
+  (2): LinearBlock(
+    (model): Sequential(
+      (0): Linear(in_features=10, out_features=1, bias=True)
+      (1): PReLU(num_parameters=1)
+    )
+  )
+) 
+
+Model is loaded: results/ContactGNNEnergy/23/model.pt
+#### Plotting Script ####
+Prediction Results:
+results/ContactGNNEnergy/23/sample1230: 2.363224506378174
+results/ContactGNNEnergy/23/sample1761: 1.6642932891845703
+results/ContactGNNEnergy/23/sample40: 1.763718843460083
+results/ContactGNNEnergy/23/sample1751: 1.6279141902923584
+results/ContactGNNEnergy/23/sample1718: 1.6235575675964355
+Loss: 1.8085416793823241 +- 0.28189896583244967
+
