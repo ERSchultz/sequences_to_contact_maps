@@ -118,7 +118,7 @@ def main():
 
     ehat = np.loadtxt(osp.join(args.root, 'results/ContactGNNEnergy/{}/sample{}/energy_hat.txt'.format(args.model_id, args.sample)))
     mse = np.round(mean_squared_error(e, ehat), 3)
-    plotContactMap(ehat, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(args.sample_folder, 's_hat.png'), title = 'Model ID = {}\nMSE = {}'.format(args.model_id, mse))
+    plotContactMap(ehat, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(args.sample_folder, 's_hat.png'), title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{S}$', mse))
 
     dif = ehat - e
     v_max = np.max(e)

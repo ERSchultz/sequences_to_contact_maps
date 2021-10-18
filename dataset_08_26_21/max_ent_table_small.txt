@@ -3,10 +3,13 @@
 \hline
 Method & k & SCC \\ 
 \hline\hline
+GNN-23 & 1 & -0.002 $\pm$ 0.001 \\ 
+\hline
 Random & 2 & -0.025 $\pm$ 0.023 \\ 
 PCA &  & 0.886 $\pm$ 0.005 \\ 
 K-means &  & 0.613 $\pm$ 0.091 \\ 
 NMF &  & 0.863 $\pm$ 0.014 \\ 
+GNN-23 &  & 0.705 $\pm$ 0.054 \\ 
 \hline
 Ground Truth & 4 & 0.958 \\ 
 Random &  & 0.028 $\pm$ 0.061 \\ 
