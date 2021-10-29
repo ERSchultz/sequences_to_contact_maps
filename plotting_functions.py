@@ -1084,8 +1084,8 @@ def main():
 if __name__ == '__main__':
     # contactPlots('dataset_04_18_21')
     # updateResultTables('ContactGNN', 'GNN', 'sequence')
-    # updateResultTables('ContactGNNEnergy', 'GNN', 'energy')
+    updateResultTables('ContactGNNEnergy', 'GNN', 'energy')
     # plotCombinedModels('ContactGNN', [202, 203, 204])
-    main()
+    # main()
     # freqSampleDistributionPlots('dataset_04_18_21', sample_id=40, k=2)
     # freqDistDistriutionPlots('dataset_08_24_21')

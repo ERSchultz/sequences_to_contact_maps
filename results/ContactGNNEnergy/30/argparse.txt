@@ -1,5 +1,5 @@
 --data_folder
-/project2/depablo/erschultz/dataset_09_02_21
+/project2/depablo/erschultz/dataset_10_25_21
 --root_name
 ContactGNNEnergy2
 --delete_root
@@ -11,7 +11,7 @@ true
 --output_mode
 energy
 --k
-2
+4
 --m
 1024
 --y_preprocessing
