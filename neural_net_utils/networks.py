@@ -435,7 +435,9 @@ class ContactGNN(nn.Module):
     Primary use is to map contact data (formatted as graph) to particle type vector
     where particle type vector is not given as node feature in graph.
     '''
-    def __init__(self, m, input_size, hidden_sizes_list, act, inner_act, out_act,
+    def __init__(self, m, input_size, MP_hidden_sizes_list,
+                act, inner_act, out_act,
+                encoder_hidden_sizes_list, update_hidden_sizes_list,
                 message_passing, use_edge_weights,
                 head_architecture, head_hidden_sizes_list, head_act, use_bias,
                 ofile = sys.stdout):
@@ -443,7 +445,9 @@ class ContactGNN(nn.Module):
         Inputs:
             m: number of nodes
             input_size: size of input node feature vector
-            hidden_sizes_list: list of node feature vector hidden sizes (final value is output size)
+            MP_hidden_sizes_list: list of node feature vector hidden sizes during message passing
+            encoder_hidden_sizes_list: list of hidden sizes for MLP encoder
+            update_hidden_sizes_list: list of hidden sizes for MLP for update during message passing
             out_act: output activation
             message_passing: type of message passing algorithm to use
             use_edge_weights: True to use edge weights
@@ -463,13 +467,22 @@ class ContactGNN(nn.Module):
 
         # set up activations
         self.act = actToModule(act)
-        self.inner_act = actToModule(inner_act, none_mode = True, in_place = False) # added this, none_mode 'should' prevent older models from breaking when reloading
+        self.inner_act = actToModule(inner_act)
         self.out_act = actToModule(out_act)
         if head_hidden_sizes_list is not None and len(head_hidden_sizes_list) > 1:
             self.head_act = actToModule(head_act)
             # only want this to show up as a parameter if actually needed
         else:
             self.head_act = None
+
+        ### Encoder Architecture ###
+        encoder = []
+        self.encoder = None
+        if encoder_hidden_sizes_list is not None:
+            for output_size in encoder_hidden_sizes_list:
+                encoder.extend([(gnn.Linear(input_size, output_size, bias = use_bias), 'x -> x'), self.act])
+                input_size = output_size
+            self.encoder = gnn.Sequential('x', encoder)
 
         ### Trunk Architecture ###
         model = []
@@ -482,11 +495,11 @@ class ContactGNN(nn.Module):
             else:
                 fn_header = 'x, edge_index -> x'
 
-            for i, output_size in enumerate(hidden_sizes_list):
+            for i, output_size in enumerate(MP_hidden_sizes_list):
                 module = (gnn.GCNConv(input_size, output_size, bias = use_bias),
                             fn_header)
 
-                if i == len(hidden_sizes_list) - 1:
+                if i == len(MP_hidden_sizes_list) - 1:
                     model.extend([module]) # no act on last layer of message passing, use inner act
                 else:
                     model.extend([module, self.act])
@@ -497,20 +510,29 @@ class ContactGNN(nn.Module):
             assert not self.use_edge_weights and self.head_architecture is not None
             first_layer = True
 
-            for i, output_size in enumerate(hidden_sizes_list):
-                module = (gnn.SignedConv(input_size, output_size, first_aggr = first_layer, bias = use_bias),
-                            'x, pos_edge_index, neg_edge_index -> x')
-                if i == len(hidden_sizes_list) - 1:
-                    model.extend([module]) # no act on last layer of message passing, use inner act
-                else:
-                    model.extend([module, self.act])
-                first_layer = False
+            for output_size in MP_hidden_sizes_list:
+                model.append((gnn.SignedConv(input_size, output_size, first_aggr = first_layer, bias = use_bias),
+                            'x, pos_edge_index, neg_edge_index -> x'))
                 input_size = output_size
-            input_size *= 2
-            # SignedConv convention that output_size is the size of the
-            # negative representation and positive representation respectively,
-            # so the total length is 2 * output_size
+                input_size *= 2
+                # SignedConv convention that output_size is the size of the
+                # negative representation and positive representation respectively,
+                # so the total length is 2 * output_size
 
+                if update_hidden_sizes_list is not None:
+                    for update_output_size in update_hidden_sizes_list:
+                        model.extend([gnn.Linear(input_size, update_output_size, bias = use_bias), self.act])
+                        input_size = update_output_size
+                else:
+                    model.append(self.act)
+                input_size //= 2
+                first_layer = False
+
+            # replace final act with inner_act
+            model.pop()
+            model.append(self.inner_act)
+
+            input_size *= 2
             self.model = gnn.Sequential('x, pos_edge_index, neg_edge_index', model)
         elif self.message_passing == 'z':
             # uses prior model to predict particle types
@@ -518,8 +540,6 @@ class ContactGNN(nn.Module):
             self.model = None
         else:
             raise Exception("Unkown message_passing {}".format(message_passing))
-        print("#### ARCHITECTURE ####", file = ofile)
-        print(self.model, file = ofile)
 
         ### Head Architecture ###
         head = []
@@ -535,18 +555,6 @@ class ContactGNN(nn.Module):
                 input_size = output_size
 
             self.head = nn.Sequential(*head)
-        elif self.head_architecture == 'gcn':
-            # TODO not sure if I ever tested this
-            for i, output_size in enumerate(head_hidden_sizes_list):
-                module = (gnn.GCNConv(input_size, output_size, bias = use_bias),
-                            'x, edge_index -> x')
-                if i == len(head_hidden_sizes_list) - 1:
-                    head.extend([module, self.out_act])
-                else:
-                    head.extend([module, self.head_act])
-                input_size = output_size
-
-            self.head = gnn.Sequential('x, edge_index', head)
         elif self.head_architecture in self.to2D.mode_options:
             # Uses linear layers according to head_hidden_sizes_list after converting to 2D
             self.to2D.mode = self.head_architecture # change mode
@@ -573,9 +581,15 @@ class ContactGNN(nn.Module):
         else:
             raise Exception("Unkown head_architecture {}".format(head_architecture))
 
+        print("#### ARCHITECTURE ####", file = ofile)
+        print(self.encoder, file = ofile)
+        print(self.model, file = ofile)
         print(self.head, '\n', file = ofile)
 
     def forward(self, graph):
+        if self.encoder is not None:
+            self.encoder(graph.x)
+
         if self.message_passing == 'identity':
             latent = graph.x
         elif self.message_passing == 'z':
@@ -600,18 +614,13 @@ class ContactGNN(nn.Module):
             if opt.loss == 'BCE':
                 latent = torch.sigmoid(latent)
             print(latent, latent.shape)
-        if self.message_passing == 'gcn':
+        elif self.message_passing == 'gcn':
             latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
         elif self.message_passing == 'signedconv':
             latent = self.model(graph.x, graph.edge_index, graph.neg_edge_index)
 
-        if self.inner_act is not None:
-            latent = self.inner_act(latent)
-
         if self.head_architecture is None:
             out = latent
-        elif self.head_architecture == 'gcn':
-            out = self.head(latent, graph.edge_index)
         elif self.head_architecture == 'fc':
             out = self.head(latent)
         elif self.head_architecture in self.to2D.mode_options:

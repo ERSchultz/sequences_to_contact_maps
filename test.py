@@ -73,7 +73,7 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    opt.data_folder = "dataset_10_10_21"
+    opt.data_folder = "/home/eric/dataset_test"
 
     # architecture
     opt.k = 2
@@ -151,7 +151,10 @@ def debugModel(model_type):
         opt.message_passing='SignedConv'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
+        opt.encoder_hidden_sizes_list=[100, 100, 8]
+        # opt.update_hidden_sizes_list=[100, 100, 16]
         opt.hidden_sizes_list=str2list('8-8-2')
+        opt.act = 'relu'
         opt.inner_act = 'prelu'
         opt.out_act = 'prelu'
         opt.head_act = 'prelu'
@@ -192,8 +195,8 @@ def debugModel(model_type):
     # other
     opt.plot = True
     opt.plot_predictions = False
-    opt.verbose = True
-    opt.print_params = True
+    opt.verbose = False
+    opt.print_params = False
     opt.gpus = 1
 
     opt = finalizeOpt(opt, parser, True)

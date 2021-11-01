@@ -48,7 +48,9 @@ def getModel(opt):
     elif opt.model_type == 'SequenceConvAutoencoder':
         model = networks.ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, conv1d = True)
     elif opt.model_type.startswith('ContactGNN'):
-        model = networks.ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.inner_act, opt.out_act,
+        model = networks.ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list,
+        opt.act, opt.inner_act, opt.out_act,
+        opt.encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
         opt.message_passing, opt.use_edge_weights,
         opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act, opt.use_bias,
         ofile = opt.log_file)
