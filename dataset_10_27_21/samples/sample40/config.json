@@ -39,6 +39,14 @@
   "kappa": 0,
   "density_cap_on": true,
   "compressibility_on": false,
+  "chiAA": -1.0,
+  "chiAB": 1.0,
+  "chiBB": 0.0,
+  "chipseq_files": [
+    "seq0.txt",
+    "seq1.txt"
+  ],
+  "nspecies": 2,
   "diagonal_on": true,
   "diag_chis": [
     0.0,
@@ -62,14 +70,6 @@
     0.09473684210526316,
     0.1
   ],
-  "chiAA": -1.0,
-  "chiAB": 1.0,
-  "chiBB": 0.0,
   "nbeads": 1024,
-  "chipseq_files": [
-    "seq0.txt",
-    "seq1.txt"
-  ],
-  "nspecies": 2,
   "load_configuration_filename": "input1024.xyz"
 }

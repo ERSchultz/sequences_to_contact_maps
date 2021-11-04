@@ -588,7 +588,8 @@ class ContactGNN(nn.Module):
 
     def forward(self, graph):
         if self.encoder is not None:
-            self.encoder(graph.x)
+            graph.x = self.encoder(graph.x)
+
 
         if self.message_passing == 'identity':
             latent = graph.x

@@ -1,4 +1,5 @@
 import os.path as osp
+import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,18 +7,22 @@ import argparse
 
 from scipy.stats import pearsonr
 
+from sklearn.linear_model import LinearRegression
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
 
 from plotting_functions import plotContactMap
 
-def getArgs():
+sys.path.insert(1, '/home/eric/TICG-chromatin/scripts')
+from get_seq import relabel_seq
+
+def getArgs(dataset = None, model_id = None):
     parser = argparse.ArgumentParser(description='Base parser')
-    parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
-    # parser.add_argument('--root', type=str, default='/home/eric/Research/sequences_to_contact_maps')
-    parser.add_argument('--dataset', type=str, default='dataset_08_26_21', help='Location of input data')
+    # parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
+    parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
+    parser.add_argument('--dataset', type=str, default=dataset, help='Location of input data')
     parser.add_argument('--sample', type=int, default=40)
-    parser.add_argument('--model_id', type=int, default=23)
+    parser.add_argument('--model_id', type=int, default=model_id)
 
     args = parser.parse_args()
     args.data_folder = osp.join(args.root, args.dataset)
@@ -76,7 +81,7 @@ def plot_x_chi(args, minus = False):
 def get_contact(args):
     y = np.load(osp.join(args.sample_folder, 'y.npy'))
 
-    ydiag = np.load(osp.join(args.sample_folder, 'y_diag_instance.npy'))
+    ydiag = np.load(osp.join(args.sample_folder, 'y_diag.npy'))
 
     return y, ydiag
 
@@ -107,8 +112,25 @@ def pearsonround(x, y):
     stat, _ = pearsonr(x, y)
     return np.round(stat, 2)
 
-def main():
-    args = getArgs()
+def find_linear_combination(x, y, args):
+    reg = LinearRegression()
+    reg.fit(x, y)
+    score = reg.score(x, y)
+    print(score, file = args.log_file)
+    print(reg.coef_, file = args.log_file)
+
+def inner(x, args, PC):
+    m, k = x.shape
+    for j in range(2):
+        print('PC {}'.format(j+1), file = args.log_file)
+        for i in range(k):
+            stat = pearsonround(x[:, i], PC[j])
+            print('\tCorrelation with particle type {}: {}'.format(i, stat), file = args.log_file)
+        find_linear_combination(x, PC[j], args)
+
+
+def main(dataset, model_id):
+    args = getArgs(dataset, model_id)
     print(args)
 
     x, chi = plot_x_chi(args)
@@ -142,5 +164,21 @@ def main():
     stat = pearsonround(PC_e[1], PC_ehat[1])
     print("Correlation between PC 2 of S and S_hat: ", stat, file = args.log_file)
 
+    # correlation between S and x
+    print("\nS_hat vs X", file = args.log_file)
+    print(x)
+    inner(x, args, PC_e)
+
+    print('\nNon-linear system', file = args.log_file)
+    x_relabel = relabel_seq(x, 'D-AB')
+    inner(x_relabel, args, PC_e)
+    print(x_relabel)
+
+    for old in ['AB', 'BC', 'AC']:
+        print("\nWhat if '{}' -> 'D'".format(old), file = args.log_file)
+        x_new = relabel_seq(x_relabel, '{}-D'.format(old))
+        print(np.array_equal(x, x_new), file = args.log_file)
+        inner(x_new, args, PC_e)
+
 if __name__ == '__main__':
-    main()
+    main('dataset_10_25_21', 30)

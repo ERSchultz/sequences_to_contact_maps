@@ -152,8 +152,8 @@ def debugModel(model_type):
         opt.GNN_mode = True
         opt.output_mode = 'energy'
         opt.encoder_hidden_sizes_list=[100, 100, 8]
-        # opt.update_hidden_sizes_list=[100, 100, 16]
-        opt.hidden_sizes_list=str2list('8-8-2')
+        opt.update_hidden_sizes_list=[100, 100, 16]
+        opt.hidden_sizes_list=[8, 8, 2]
         opt.act = 'relu'
         opt.inner_act = 'prelu'
         opt.out_act = 'prelu'
@@ -169,9 +169,9 @@ def debugModel(model_type):
         opt.relabel_11_to_00 = False
         opt.y_log_transform = False
         opt.head_architecture = 'concat-outer'
-        opt.head_hidden_sizes_list = [10,10,1]
-        opt.crop=[0,50]
-        opt.m = 50
+        opt.head_hidden_sizes_list = [20,20,1]
+        # opt.crop=[0,50]
+        # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'

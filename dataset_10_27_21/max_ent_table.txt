@@ -1,0 +1,23 @@
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Method & k & Pearson R & Avg Dist Pearson R & SCC \\ 
+\hline\hline
+Ground Truth-gt_chi & 2 & nan & nan & nan \\ 
+Ground Truth &  & 0.883 $\pm$ 0.012 & 0.004 $\pm$ 0.009 & 0.002 $\pm$ 0.005 \\ 
+Ground Truth-fixed &  & 0.91 $\pm$ 0.001 & 0.009 $\pm$ 0.001 & 0.007 $\pm$ 0.001 \\ 
+Random &  & 0.883 $\pm$ 0.011 & 0.002 $\pm$ 0.004 & 0.001 $\pm$ 0.004 \\ 
+PCA &  & 0.887 $\pm$ 0.002 & 0.001 $\pm$ 0.002 & -0.001 $\pm$ 0.004 \\ 
+PCA Split &  & 0.81 $\pm$ 0.116 & 0.039 $\pm$ 0.052 & 0.03 $\pm$ 0.043 \\ 
+K-means &  & 0.886 $\pm$ 0.011 & 0.01 $\pm$ 0.003 & 0.008 $\pm$ 0.003 \\ 
+NMF &  & 0.878 $\pm$ 0.037 & 0.014 $\pm$ 0.01 & 0.01 $\pm$ 0.007 \\ 
+\hline
+Ground Truth & 4 & nan $\pm$ nan & nan $\pm$ nan & nan $\pm$ nan \\ 
+Random &  & 0.621 $\pm$ 0.086 & 0.003 $\pm$ 0.001 & 0.002 $\pm$ 0.003 \\ 
+PCA &  & 0.623 $\pm$ 0.073 & 0.004 $\pm$ 0.001 & 0.003 $\pm$ 0.002 \\ 
+PCA Split &  & 0.569 $\pm$ 0.002 & 0.003 $\pm$ 0.002 & 0.002 $\pm$ 0.002 \\ 
+K-means &  & 0.604 $\pm$ 0.051 & 0.003 $\pm$ 0.0 & 0.002 $\pm$ 0.001 \\ 
+NMF &  & 0.58 $\pm$ 0.012 & 0.008 $\pm$ 0.006 & 0.005 $\pm$ 0.003 \\ 
+\hline
+\end{tabular}
+\end{center}

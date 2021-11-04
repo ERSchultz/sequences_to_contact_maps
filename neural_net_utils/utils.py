@@ -53,7 +53,7 @@ def getModel(opt):
         opt.encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
         opt.message_passing, opt.use_edge_weights,
         opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act, opt.use_bias,
-        ofile = opt.log_file)
+        opt.log_file)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -68,7 +68,8 @@ def getDataset(opt, names = False, minmax = False):
                                             opt.weighted_LDP, opt.split_neg_pos_edges, opt.degree, opt.weighted_degree,
                                             opt.split_neg_pos_edges_for_feature_augmentation,
                                             opt.transforms_processed, opt.pre_transforms_processed,
-                                            opt.relabel_11_to_00, opt.output_mode, opt.crop)
+                                            opt.relabel_11_to_00, opt.output_mode, opt.crop,
+                                            opt.log_file)
         opt.root = dataset.root
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
         dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)

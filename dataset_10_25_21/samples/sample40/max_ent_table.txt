@@ -1,0 +1,17 @@
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Method & k & Pearson R & Avg Dist Pearson R & SCC \\ 
+\hline\hline
+Ground Truth-S & S & 0.999 & 0.959 & 0.938 \\ 
+GNN-30 &  & 0.994 & 0.878 & 0.853 \\ 
+\hline
+Ground Truth-gt_chi & 4 & 0.999 & 0.959 & 0.938 \\ 
+Random &  & 0.972 & 0.007 & 0.05 \\ 
+PCA &  & 0.996 & 0.925 & 0.903 \\ 
+PCA Split &  & 0.993 & 0.876 & 0.865 \\ 
+K-means &  & 0.994 & 0.881 & 0.865 \\ 
+NMF &  & 0.994 & 0.912 & 0.89 \\ 
+\hline
+\end{tabular}
+\end{center}

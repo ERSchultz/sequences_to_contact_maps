@@ -1,5 +1,6 @@
 import os
 import os.path as osp
+import sys
 from shutil import rmtree
 
 import torch
@@ -143,7 +144,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 weighted_LDP = False, split_neg_pos_edges = False, degree = False, weighted_degree = False,
                 split_neg_pos_edges_for_feature_augmentation = False,
                 transform = None, pre_transform = None,
-                relabel_11_to_00 = False, output = 'contact', crop = None):
+                relabel_11_to_00 = False, output = 'contact', crop = None,
+                ofile = sys.stdout):
         t0 = time.time()
         self.m = m
         self.dirname = dirname
@@ -164,6 +166,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.relabel_11_to_00 = relabel_11_to_00
         self.output = output
         self.crop = crop
+        self.degree_list = []
         if self.weighted_LDP and self.top_k is None and self.sparsify_threshold is None and self.sparsify_threshold_upper is None:
             print('Warning: using LDP without any sparsification')
 
@@ -193,7 +196,12 @@ class ContactsGraph(torch_geometric.data.Dataset):
             # use exsting graph data folder
             self.root = osp.join(dirname, root_name)
         super(ContactsGraph, self).__init__(self.root, transform, pre_transform)
-        print('graph init time: {}\n'.format(np.round(time.time() - t0, 3)))
+        print('Dataset construction time: {} minutes'.format(np.round((time.time() - t0) / 60, 3)), file = ofile)
+
+        self.degree_list = np.array(self.degree_list)
+        mean_deg = np.round(np.mean(self.degree_list, axis = 1), 2)
+        std_deg = np.round(np.std(self.degree_list, axis = 1), 2)
+        print('Mean degree: {} +- {}\n'.format(mean_deg, std_deg), file = ofile)
 
     @property
     def raw_file_names(self):
@@ -247,6 +255,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 graph.energy = x @ chi @ x.t()
 
             torch.save(graph, self.processed_paths[i])
+
+            # record degree
+            self.degree_list.append(np.array(torch_geometric.utils.degree(graph.edge_index[0], num_nodes = self.m)))
 
     def process_x(self, raw_folder):
         '''Helper function to load the appropriate particle type matrix and apply any necessary preprocessing.'''
@@ -410,6 +421,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         return data
 
     def plotDegreeProfile(self, y):
+        # y is weighted adjacency matrix
         ycopy = y.copy()
         ycopy[y > 0] = 1
         ycopy[y < 0] = 1
@@ -429,12 +441,10 @@ class ContactsGraph(torch_geometric.data.Dataset):
         print('min: ', np.min(degpos), 'max: ', np.max(degpos), ss.mode(degpos))
         print('min: ', np.min(degneg), 'max: ', np.max(degneg), ss.mode(degneg))
         plt.hist(deg, bins = 100, label = 'deg')
-        # plt.hist(degpos, bins = 50, label = 'pos')
-        # plt.hist(degneg, bins = 50, label = 'neg')
         plt.ylabel('count', fontsize=16)
         plt.xlabel('degree', fontsize=16)
         plt.legend()
-        # plt.show()
+        plt.show()
         plt.close()
 
 class Sequences(Dataset):
