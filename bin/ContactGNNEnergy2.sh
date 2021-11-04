@@ -17,7 +17,7 @@ GNNMode='true'
 outputMode='energy'
 
 # architecture
-k=2
+k=4
 m=1024
 yPreprocessing='diag'
 yNorm='none'

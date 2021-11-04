@@ -169,7 +169,7 @@ def debugModel(model_type):
         opt.relabel_11_to_00 = False
         opt.y_log_transform = False
         opt.head_architecture = 'concat-outer'
-        opt.head_hidden_sizes_list = [20,20,1]
+        opt.head_hidden_sizes_list = [100,100,1]
         # opt.crop=[0,50]
         # opt.m = 50
         # opt.use_bias = False
@@ -188,7 +188,7 @@ def debugModel(model_type):
     # hyperparameters
     opt.n_epochs = 1
     opt.lr = 1e-3
-    opt.batch_size = 2
+    opt.batch_size = 1
     opt.milestones = None
     opt.gamma = 0.1
 

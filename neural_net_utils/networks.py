@@ -620,6 +620,8 @@ class ContactGNN(nn.Module):
         elif self.message_passing == 'signedconv':
             latent = self.model(graph.x, graph.edge_index, graph.neg_edge_index)
 
+        print(latent.shape)
+
         if self.head_architecture is None:
             out = latent
         elif self.head_architecture == 'fc':
