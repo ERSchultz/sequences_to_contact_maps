@@ -57,7 +57,7 @@ crop='none'
 printParams='true'
 
 cd ~/sequences_to_contact_maps
-source activate python3.8_pytorch1.8.1_cuda10.2
+source activate python3.8_pytorch1.8.1_cuda10.2_2
 
 for lr in 1e-4
 do
