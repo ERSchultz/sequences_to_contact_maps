@@ -3,7 +3,7 @@
 # cd ~/sequences_to_contact_maps
 # conda create --name seq2contact_pytorch -y
 # source activate seq2contact_pytorch
-# conda install -y pytorch=1.8.1 torchvision cudatoolkit=10.2 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy gcc-5 -c psi4 -c pytorch -c conda-forge &>> \logFiles\conda_env.log
+# conda install -y pytorch=1.8.1 torchvision cudatoolkit=10.2 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy gcc-5 -c psi4 -c pytorch -c conda-forge &>> logFiles\conda_env.log
 # python3 -m pip install pynvml hic-straw &>> \logFiles\conda_env.log
 # python3 -m pip install torch-scatter -f https://pytorch-geometric.com/whl/torch-1.8.0+cu102.html
 # python3 -m pip install torch-sparse -f https://pytorch-geometric.com/whl/torch-1.8.0+cu102.html
@@ -22,9 +22,9 @@
 # conda deactivate
 
 envName=python3.8_pytorch1.8.1_cuda10.2_2
-ofile=conda_env10.2.log
+ofile=logFiles/conda_env10.2.log
 conda create --name $envName -y
 source activate $envName
-conda install -y python=3.8 pytorch=1.8.1 pyg torchvision cudatoolkit=10.2 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy pybigwig pybind11 -c pytorch -c conda-forge -c bioconda -c pyg &>> \logFiles\conda_env.log
+conda install -y python=3.8 pytorch=1.8.1 pyg torchvision cudatoolkit=10.2 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy pybigwig pybind11 -c pytorch -c conda-forge -c bioconda -c pyg &>> $ofile
 python3 -m pip install pynvml hic-straw &>> $ofile
 conda deactivate
