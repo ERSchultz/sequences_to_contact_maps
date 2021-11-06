@@ -14,12 +14,13 @@ from sklearn.metrics import mean_squared_error
 from plotting_functions import plotContactMap
 
 sys.path.insert(1, '/home/eric/TICG-chromatin/scripts')
+sys.path.insert(1, 'C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\TICG-chromatin\\scripts')
 from get_seq import relabel_seq
 
 def getArgs(dataset = None, model_id = None):
     parser = argparse.ArgumentParser(description='Base parser')
-    # parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
-    parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
+    parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
+    # parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
     parser.add_argument('--dataset', type=str, default=dataset, help='Location of input data')
     parser.add_argument('--sample', type=int, default=40)
     parser.add_argument('--model_id', type=int, default=model_id)
@@ -181,4 +182,4 @@ def main(dataset, model_id):
         inner(x_new, args, PC_e)
 
 if __name__ == '__main__':
-    main('dataset_10_25_21', 30)
+    main('dataset_10_27_21', 34)

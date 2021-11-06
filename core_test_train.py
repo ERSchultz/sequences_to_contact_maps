@@ -60,11 +60,11 @@ def core_test_train(model, opt):
         model.to(opt.device)
 
     if opt.print_params:
-        print('#### INITIAL PARAMETERS ####', file = opt.log_file)
+        print('#### INITIAL PARAMETERS ####', file = opt.param_file)
         for k,p in model.named_parameters():
-            print(k, p.shape, file = opt.log_file)
-            print(p, '\n', file = opt.log_file)
-        print('\n', file = opt.log_file)
+            print(k, p.shape, file = opt.param_file)
+            print(p, '\n', file = opt.param_file)
+        print('\n', file = opt.param_file)
 
     t0 = time.time()
     print("#### TRAINING/VALIDATION ####", file = opt.log_file)
@@ -72,12 +72,15 @@ def core_test_train(model, opt):
 
     tot_pars = 0
     if opt.print_params:
-        print('#### FINAL PARAMETERS ####', file = opt.log_file)
+        print('#### FINAL PARAMETERS ####', file = opt.param_file)
     for k,p in model.named_parameters():
         tot_pars += p.numel()
-        if opt.verbose or opt.print_params:
+        if opt.verbose:
             print(k, p.numel(), p.shape, file = opt.log_file)
             print(p, '\ngrad: ', p.grad, '\n', file = opt.log_file)
+        if opt.print_params:
+            print(k, p.numel(), p.shape, file = opt.print_params)
+            print(p, '\ngrad: ', p.grad, '\n', file = opt.print_params)            
     print('\nTotal parameters: {}'.format(locale.format_string("%d", tot_pars, grouping = True)), file = opt.log_file)
     tot_time = (time.time() - t0) / 60 / 60 # hours
     print('Total training + validation time: {} hours'.format(np.round(tot_time), 2), file = opt.log_file)

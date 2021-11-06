@@ -65,7 +65,7 @@ def getBaseParser():
     parser.add_argument('--loss', type=str, default='mse', help='Type of loss to use: options: {"mse", "cross_entropy"}')
     parser.add_argument('--autoencoder_mode', type=str2bool, default=False, help='True to use input as target output (i.e. autoencoder)')
     parser.add_argument('--verbose', type=str2bool, default=False)
-    parser.add_argument('--print_params', type=str2bool, default=False, help='True to print parameters after training')
+    parser.add_argument('--print_params', type=str2bool, default=True, help='True to print parameters after training')
     parser.add_argument('--output_mode', type=str, default='contact', help='data structure of output {"contact", "sequence", "energy"}')
 
     # model args
@@ -158,6 +158,9 @@ def finalizeOpt(opt, parser, local = False):
         os.mkdir(opt.ofile_folder, mode = 0o755)
     log_file_path = osp.join(opt.ofile_folder, 'out.log')
     opt.log_file = open(log_file_path, 'a')
+
+    param_file_path = osp.join(opt.ofile_folder, 'params.log')
+    opt.param_file = open(param_file_path, 'a')
 
     # configure other model params
     if opt.y_log_transform:
