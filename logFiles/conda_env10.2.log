@@ -1,0 +1,572 @@
+Collecting package metadata (current_repodata.json): ...working... done
+Solving environment: ...working... 
+Warning: 2 possible package resolutions (only showing differing packages):
+  - conda-forge/noarch::packaging-21.0-pyhd8ed1ab_0, conda-forge/noarch::pyparsing-3.0.4-pyhd8ed1ab_0
+  - conda-forge/noarch::packaging-21.2-pyhd8ed1ab_1, conda-forge/noarch::pyparsing-2.4.7-pyhd8ed1ab_1done
+
+## Package Plan ##
+
+  environment location: /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2
+
+  added / updated specs:
+    - cudatoolkit=10.2
+    - imageio
+    - jupyterlab
+    - matplotlib
+    - numba
+    - numpy
+    - pandas
+    - pillow
+    - pybigwig
+    - pybind11
+    - pyg
+    - python=3.8
+    - pytorch=1.8.1
+    - scikit-learn
+    - scipy
+    - seaborn
+    - torchvision
+
+
+The following packages will be downloaded:
+
+    package                    |            build
+    ---------------------------|-----------------
+    _libgcc_mutex-0.1          |      conda_forge           3 KB  conda-forge
+    _openmp_mutex-4.5          |           1_llvm           5 KB  conda-forge
+    anyio-3.3.4                |   py38h578d9bd_0         148 KB  conda-forge
+    argon2-cffi-21.1.0         |   py38h497a2fe_2          46 KB  conda-forge
+    blas-2.112                 |              mkl          12 KB  conda-forge
+    blas-devel-3.9.0           |   12_linux64_mkl          11 KB  conda-forge
+    bleach-4.1.0               |     pyhd8ed1ab_0         121 KB  conda-forge
+    brotlipy-0.7.0             |py38h497a2fe_1003         342 KB  conda-forge
+    c-ares-1.18.1              |       h7f98852_0         113 KB  conda-forge
+    ca-certificates-2021.10.8  |       ha878542_0         139 KB  conda-forge
+    certifi-2021.10.8          |   py38h578d9bd_1         145 KB  conda-forge
+    cffi-1.15.0                |   py38h3931269_0         226 KB  conda-forge
+    chardet-4.0.0              |   py38h578d9bd_2         198 KB  conda-forge
+    charset-normalizer-2.0.0   |     pyhd8ed1ab_0          32 KB  conda-forge
+    colorama-0.4.4             |     pyh9f0ad1d_0          18 KB  conda-forge
+    cryptography-35.0.0        |   py38h3e25421_2         1.6 MB  conda-forge
+    cudatoolkit-10.2.89        |       h8f6ccaa_9       451.1 MB  conda-forge
+    cycler-0.11.0              |     pyhd8ed1ab_0          10 KB  conda-forge
+    debugpy-1.5.1              |   py38h709712a_0         2.0 MB  conda-forge
+    decorator-5.1.0            |     pyhd8ed1ab_0          11 KB  conda-forge
+    gettext-0.19.8.1           |    h73d1719_1008         3.6 MB  conda-forge
+    glib-2.70.0                |       h780b84a_1         430 KB  conda-forge
+    glib-tools-2.70.0          |       h780b84a_1         107 KB  conda-forge
+    googledrivedownloader-0.4  |     pyhd3deb0d_1           7 KB  conda-forge
+    gst-plugins-base-1.18.5    |       hf529b03_1         2.6 MB  conda-forge
+    gstreamer-1.18.5           |       h9f60fe5_1         2.0 MB  conda-forge
+    icu-68.2                   |       h9c3ff4c_0        13.1 MB  conda-forge
+    idna-3.1                   |     pyhd3deb0d_0          52 KB  conda-forge
+    importlib-metadata-4.8.1   |   py38h578d9bd_1          32 KB  conda-forge
+    ipykernel-6.4.2            |   py38he5a9106_0         174 KB  conda-forge
+    ipython-7.29.0             |   py38he5a9106_1         1.1 MB  conda-forge
+    jedi-0.18.0                |   py38h578d9bd_3         920 KB  conda-forge
+    jinja2-3.0.2               |     pyhd8ed1ab_0          99 KB  conda-forge
+    joblib-1.1.0               |     pyhd8ed1ab_0         210 KB  conda-forge
+    jsonschema-4.1.2           |     pyhd8ed1ab_0          54 KB  conda-forge
+    jupyter_client-7.0.6       |     pyhd8ed1ab_0          87 KB  conda-forge
+    jupyter_core-4.9.1         |   py38h578d9bd_0          80 KB  conda-forge
+    jupyter_server-1.11.2      |     pyhd8ed1ab_0         257 KB  conda-forge
+    jupyterlab-3.2.2           |     pyhd8ed1ab_0         5.9 MB  conda-forge
+    jupyterlab_server-2.8.2    |     pyhd8ed1ab_0          45 KB  conda-forge
+    kiwisolver-1.3.2           |   py38h1fd1430_1          80 KB  conda-forge
+    krb5-1.19.2                |       hcc1bbae_3         1.4 MB  conda-forge
+    ld_impl_linux-64-2.36.1    |       hea4e1c9_2         667 KB  conda-forge
+    lerc-3.0                   |       h9c3ff4c_0         216 KB  conda-forge
+    libblas-3.9.0              |   12_linux64_mkl          12 KB  conda-forge
+    libcblas-3.9.0             |   12_linux64_mkl          12 KB  conda-forge
+    libclang-11.1.0            |default_ha53f305_1        19.2 MB  conda-forge
+    libcurl-7.79.1             |       h2574ce0_1         335 KB  conda-forge
+    libdeflate-1.8             |       h7f98852_0          67 KB  conda-forge
+    libevent-2.1.10            |       h9b69904_4         1.1 MB  conda-forge
+    libffi-3.4.2               |       h9c3ff4c_4          57 KB  conda-forge
+    libgcc-ng-11.2.0           |      h1d223b6_11         887 KB  conda-forge
+    libgfortran-ng-11.2.0      |      h69a702a_11          19 KB  conda-forge
+    libgfortran5-11.2.0        |      h5c6108e_11         1.7 MB  conda-forge
+    libglib-2.70.0             |       h174f98d_1         3.0 MB  conda-forge
+    liblapack-3.9.0            |   12_linux64_mkl          12 KB  conda-forge
+    liblapacke-3.9.0           |   12_linux64_mkl          12 KB  conda-forge
+    libnghttp2-1.43.0          |       h812cca2_1         790 KB  conda-forge
+    libnsl-2.0.0               |       h7f98852_0          31 KB  conda-forge
+    libpq-13.3                 |       hd57d9b9_3         2.7 MB  conda-forge
+    libssh2-1.10.0             |       ha56f1ee_2         233 KB  conda-forge
+    libstdcxx-ng-11.2.0        |      he4da1e4_11         4.2 MB  conda-forge
+    libtiff-4.3.0              |       h6f004c6_2         614 KB  conda-forge
+    libuv-1.42.0               |       h7f98852_0         1.0 MB  conda-forge
+    libwebp-base-1.2.1         |       h7f98852_0         845 KB  conda-forge
+    libxml2-2.9.12             |       h72842e0_0         772 KB  conda-forge
+    libzlib-1.2.11             |    h36c2ea0_1013          59 KB  conda-forge
+    llvm-openmp-12.0.1         |       h4bd325d_1         2.8 MB  conda-forge
+    llvmlite-0.37.0            |   py38h4630a5e_0         2.9 MB  conda-forge
+    lz4-c-1.9.3                |       h9c3ff4c_1         179 KB  conda-forge
+    markupsafe-2.0.1           |   py38h497a2fe_1          22 KB  conda-forge
+    matplotlib-3.4.3           |   py38h578d9bd_1           7 KB  conda-forge
+    matplotlib-base-3.4.3      |   py38hf4fb855_1         7.3 MB  conda-forge
+    matplotlib-inline-0.1.3    |     pyhd8ed1ab_0          11 KB  conda-forge
+    mistune-0.8.4              |py38h497a2fe_1005          54 KB  conda-forge
+    mkl-2021.4.0               |     h8d4b97c_729       219.1 MB  conda-forge
+    mkl-devel-2021.4.0         |     ha770c72_730          25 KB  conda-forge
+    mkl-include-2021.4.0       |     h8d4b97c_729         694 KB  conda-forge
+    mysql-common-8.0.27        |       ha770c72_1         1.8 MB  conda-forge
+    mysql-libs-8.0.27          |       hfa10184_1         1.9 MB  conda-forge
+    nbclassic-0.3.4            |     pyhd8ed1ab_0          22 KB  conda-forge
+    nbclient-0.5.4             |     pyhd8ed1ab_0          60 KB  conda-forge
+    nbconvert-6.2.0            |   py38h578d9bd_0         531 KB  conda-forge
+    networkx-2.6.3             |     pyhd8ed1ab_1         1.5 MB  conda-forge
+    ninja-1.10.2               |       h4bd325d_1         2.4 MB  conda-forge
+    notebook-6.4.5             |     pyha770c72_0         6.3 MB  conda-forge
+    nspr-4.32                  |       h9c3ff4c_0         231 KB  conda-forge
+    nss-3.71                   |       hb5efdd6_0         2.1 MB  conda-forge
+    numba-0.54.1               |   py38h4bf6c61_0         3.7 MB  conda-forge
+    openssl-1.1.1l             |       h7f98852_0         2.1 MB  conda-forge
+    packaging-21.0             |     pyhd8ed1ab_0          35 KB  conda-forge
+    pandas-1.3.4               |   py38h43a58ef_0        13.0 MB  conda-forge
+    pandoc-2.16.1              |       h7f98852_0        12.6 MB  conda-forge
+    pandocfilters-1.5.0        |     pyhd8ed1ab_0          11 KB  conda-forge
+    patsy-0.5.2                |     pyhd8ed1ab_0         188 KB  conda-forge
+    pcre-8.45                  |       h9c3ff4c_0         253 KB  conda-forge
+    pillow-8.3.2               |   py38h8e6f84c_0         693 KB  conda-forge
+    pip-21.3.1                 |     pyhd8ed1ab_0         1.2 MB  conda-forge
+    prometheus_client-0.12.0   |     pyhd8ed1ab_0          47 KB  conda-forge
+    prompt-toolkit-3.0.22      |     pyha770c72_0         249 KB  conda-forge
+    pthread-stubs-0.4          |    h36c2ea0_1001           5 KB  conda-forge
+    pybind11-2.8.1             |   py38h1fd1430_1         160 KB  conda-forge
+    pybind11-global-2.8.1      |   py38h1fd1430_1         195 KB  conda-forge
+    pyg-2.0.1                  |py38_torch_1.8.0_cu102         603 KB  pyg
+    pygments-2.10.0            |     pyhd8ed1ab_0         760 KB  conda-forge
+    pyopenssl-21.0.0           |     pyhd8ed1ab_0          48 KB  conda-forge
+    pyparsing-3.0.4            |     pyhd8ed1ab_0          78 KB  conda-forge
+    pyqt-5.12.3                |   py38h578d9bd_7          21 KB  conda-forge
+    pyqt-impl-5.12.3           |   py38h7400c14_7         5.9 MB  conda-forge
+    pyqt5-sip-4.19.18          |   py38h709712a_7         310 KB  conda-forge
+    pyqtchart-5.12             |   py38h7400c14_7         257 KB  conda-forge
+    pyqtwebengine-5.12.1       |   py38h7400c14_7         175 KB  conda-forge
+    pyrsistent-0.18.0          |   py38h497a2fe_0          90 KB  conda-forge
+    pysocks-1.7.1              |   py38h578d9bd_4          28 KB  conda-forge
+    python-3.8.12              |hb7a2778_2_cpython        26.2 MB  conda-forge
+    python-dateutil-2.8.2      |     pyhd8ed1ab_0         240 KB  conda-forge
+    python-louvain-0.15        |     pyhd3deb0d_0          12 KB  conda-forge
+    python_abi-3.8             |           2_cp38           4 KB  conda-forge
+    pytorch-cluster-1.5.9      |py38_torch_1.8.0_cu102         1.1 MB  pyg
+    pytorch-scatter-2.0.8      |py38_torch_1.8.0_cu102         4.7 MB  pyg
+    pytorch-sparse-0.6.12      |py38_torch_1.8.0_cu102         2.3 MB  pyg
+    pytorch-spline-conv-1.2.1  |py38_torch_1.8.0_cu102         587 KB  pyg
+    pytz-2021.3                |     pyhd8ed1ab_0         242 KB  conda-forge
+    pyyaml-6.0                 |   py38h497a2fe_2         191 KB  conda-forge
+    pyzmq-22.3.0               |   py38h2035c66_1         515 KB  conda-forge
+    requests-2.26.0            |     pyhd8ed1ab_0          52 KB  conda-forge
+    scikit-learn-1.0.1         |   py38hacb3eff_1         8.1 MB  conda-forge
+    scipy-1.7.1                |   py38h56a6a73_0        21.9 MB  conda-forge
+    seaborn-0.11.2             |       hd8ed1ab_0           4 KB  conda-forge
+    seaborn-base-0.11.2        |     pyhd8ed1ab_0         223 KB  conda-forge
+    send2trash-1.8.0           |     pyhd8ed1ab_0          17 KB  conda-forge
+    setuptools-58.5.3          |   py38h578d9bd_0         1.0 MB  conda-forge
+    sniffio-1.2.0              |   py38h578d9bd_2          15 KB  conda-forge
+    sqlite-3.36.0              |       h9cd32fc_2         1.4 MB  conda-forge
+    statsmodels-0.13.0         |   py38h6c62de6_0        11.5 MB  conda-forge
+    tbb-2021.4.0               |       h4bd325d_1         2.0 MB  conda-forge
+    terminado-0.12.1           |   py38h578d9bd_1          28 KB  conda-forge
+    threadpoolctl-3.0.0        |     pyh8a188c0_0          17 KB  conda-forge
+    tk-8.6.11                  |       h27826a3_1         3.3 MB  conda-forge
+    tornado-6.1                |   py38h497a2fe_2         647 KB  conda-forge
+    tqdm-4.62.3                |     pyhd8ed1ab_0          80 KB  conda-forge
+    traitlets-5.1.1            |     pyhd8ed1ab_0          82 KB  conda-forge
+    typing_extensions-3.10.0.2 |     pyha770c72_0          28 KB  conda-forge
+    urllib3-1.26.7             |     pyhd8ed1ab_0         100 KB  conda-forge
+    websocket-client-0.57.0    |   py38h578d9bd_6          59 KB  conda-forge
+    wheel-0.37.0               |     pyhd8ed1ab_1          31 KB  conda-forge
+    yacs-0.1.6                 |             py_0          11 KB  conda-forge
+    yaml-0.2.5                 |       h516909a_0          82 KB  conda-forge
+    zeromq-4.3.4               |       h9c3ff4c_1         351 KB  conda-forge
+    zipp-3.6.0                 |     pyhd8ed1ab_0          12 KB  conda-forge
+    zlib-1.2.11                |    h36c2ea0_1013          86 KB  conda-forge
+    ------------------------------------------------------------
+                                           Total:       906.9 MB
+
+The following NEW packages will be INSTALLED:
+
+  _libgcc_mutex      conda-forge/linux-64::_libgcc_mutex-0.1-conda_forge
+  _openmp_mutex      conda-forge/linux-64::_openmp_mutex-4.5-1_llvm
+  alsa-lib           conda-forge/linux-64::alsa-lib-1.2.3-h516909a_0
+  anyio              conda-forge/linux-64::anyio-3.3.4-py38h578d9bd_0
+  argon2-cffi        conda-forge/linux-64::argon2-cffi-21.1.0-py38h497a2fe_2
+  async_generator    conda-forge/noarch::async_generator-1.10-py_0
+  attrs              conda-forge/noarch::attrs-21.2.0-pyhd8ed1ab_0
+  babel              conda-forge/noarch::babel-2.9.1-pyh44b312d_0
+  backcall           conda-forge/noarch::backcall-0.2.0-pyh9f0ad1d_0
+  backports          conda-forge/noarch::backports-1.0-py_2
+  backports.functoo~ conda-forge/noarch::backports.functools_lru_cache-1.6.4-pyhd8ed1ab_0
+  blas               conda-forge/linux-64::blas-2.112-mkl
+  blas-devel         conda-forge/linux-64::blas-devel-3.9.0-12_linux64_mkl
+  bleach             conda-forge/noarch::bleach-4.1.0-pyhd8ed1ab_0
+  brotlipy           conda-forge/linux-64::brotlipy-0.7.0-py38h497a2fe_1003
+  c-ares             conda-forge/linux-64::c-ares-1.18.1-h7f98852_0
+  ca-certificates    conda-forge/linux-64::ca-certificates-2021.10.8-ha878542_0
+  certifi            conda-forge/linux-64::certifi-2021.10.8-py38h578d9bd_1
+  cffi               conda-forge/linux-64::cffi-1.15.0-py38h3931269_0
+  chardet            conda-forge/linux-64::chardet-4.0.0-py38h578d9bd_2
+  charset-normalizer conda-forge/noarch::charset-normalizer-2.0.0-pyhd8ed1ab_0
+  colorama           conda-forge/noarch::colorama-0.4.4-pyh9f0ad1d_0
+  cryptography       conda-forge/linux-64::cryptography-35.0.0-py38h3e25421_2
+  cudatoolkit        conda-forge/linux-64::cudatoolkit-10.2.89-h8f6ccaa_9
+  cycler             conda-forge/noarch::cycler-0.11.0-pyhd8ed1ab_0
+  dbus               conda-forge/linux-64::dbus-1.13.6-h48d8840_2
+  debugpy            conda-forge/linux-64::debugpy-1.5.1-py38h709712a_0
+  decorator          conda-forge/noarch::decorator-5.1.0-pyhd8ed1ab_0
+  defusedxml         conda-forge/noarch::defusedxml-0.7.1-pyhd8ed1ab_0
+  entrypoints        conda-forge/noarch::entrypoints-0.3-pyhd8ed1ab_1003
+  expat              conda-forge/linux-64::expat-2.4.1-h9c3ff4c_0
+  fontconfig         conda-forge/linux-64::fontconfig-2.13.1-hba837de_1005
+  freetype           conda-forge/linux-64::freetype-2.10.4-h0708190_1
+  gettext            conda-forge/linux-64::gettext-0.19.8.1-h73d1719_1008
+  glib               conda-forge/linux-64::glib-2.70.0-h780b84a_1
+  glib-tools         conda-forge/linux-64::glib-tools-2.70.0-h780b84a_1
+  googledrivedownlo~ conda-forge/noarch::googledrivedownloader-0.4-pyhd3deb0d_1
+  gst-plugins-base   conda-forge/linux-64::gst-plugins-base-1.18.5-hf529b03_1
+  gstreamer          conda-forge/linux-64::gstreamer-1.18.5-h9f60fe5_1
+  icu                conda-forge/linux-64::icu-68.2-h9c3ff4c_0
+  idna               conda-forge/noarch::idna-3.1-pyhd3deb0d_0
+  imageio            conda-forge/noarch::imageio-2.9.0-py_0
+  importlib-metadata conda-forge/linux-64::importlib-metadata-4.8.1-py38h578d9bd_1
+  ipykernel          conda-forge/linux-64::ipykernel-6.4.2-py38he5a9106_0
+  ipython            conda-forge/linux-64::ipython-7.29.0-py38he5a9106_1
+  ipython_genutils   conda-forge/noarch::ipython_genutils-0.2.0-py_1
+  jbig               conda-forge/linux-64::jbig-2.1-h7f98852_2003
+  jedi               conda-forge/linux-64::jedi-0.18.0-py38h578d9bd_3
+  jinja2             conda-forge/noarch::jinja2-3.0.2-pyhd8ed1ab_0
+  joblib             conda-forge/noarch::joblib-1.1.0-pyhd8ed1ab_0
+  jpeg               conda-forge/linux-64::jpeg-9d-h36c2ea0_0
+  json5              conda-forge/noarch::json5-0.9.5-pyh9f0ad1d_0
+  jsonschema         conda-forge/noarch::jsonschema-4.1.2-pyhd8ed1ab_0
+  jupyter_client     conda-forge/noarch::jupyter_client-7.0.6-pyhd8ed1ab_0
+  jupyter_core       conda-forge/linux-64::jupyter_core-4.9.1-py38h578d9bd_0
+  jupyter_server     conda-forge/noarch::jupyter_server-1.11.2-pyhd8ed1ab_0
+  jupyterlab         conda-forge/noarch::jupyterlab-3.2.2-pyhd8ed1ab_0
+  jupyterlab_pygmen~ conda-forge/noarch::jupyterlab_pygments-0.1.2-pyh9f0ad1d_0
+  jupyterlab_server  conda-forge/noarch::jupyterlab_server-2.8.2-pyhd8ed1ab_0
+  kiwisolver         conda-forge/linux-64::kiwisolver-1.3.2-py38h1fd1430_1
+  krb5               conda-forge/linux-64::krb5-1.19.2-hcc1bbae_3
+  lcms2              conda-forge/linux-64::lcms2-2.12-hddcbb42_0
+  ld_impl_linux-64   conda-forge/linux-64::ld_impl_linux-64-2.36.1-hea4e1c9_2
+  lerc               conda-forge/linux-64::lerc-3.0-h9c3ff4c_0
+  libblas            conda-forge/linux-64::libblas-3.9.0-12_linux64_mkl
+  libcblas           conda-forge/linux-64::libcblas-3.9.0-12_linux64_mkl
+  libclang           conda-forge/linux-64::libclang-11.1.0-default_ha53f305_1
+  libcurl            conda-forge/linux-64::libcurl-7.79.1-h2574ce0_1
+  libdeflate         conda-forge/linux-64::libdeflate-1.8-h7f98852_0
+  libedit            conda-forge/linux-64::libedit-3.1.20191231-he28a2e2_2
+  libev              conda-forge/linux-64::libev-4.33-h516909a_1
+  libevent           conda-forge/linux-64::libevent-2.1.10-h9b69904_4
+  libffi             conda-forge/linux-64::libffi-3.4.2-h9c3ff4c_4
+  libgcc-ng          conda-forge/linux-64::libgcc-ng-11.2.0-h1d223b6_11
+  libgfortran-ng     conda-forge/linux-64::libgfortran-ng-11.2.0-h69a702a_11
+  libgfortran5       conda-forge/linux-64::libgfortran5-11.2.0-h5c6108e_11
+  libglib            conda-forge/linux-64::libglib-2.70.0-h174f98d_1
+  libiconv           conda-forge/linux-64::libiconv-1.16-h516909a_0
+  liblapack          conda-forge/linux-64::liblapack-3.9.0-12_linux64_mkl
+  liblapacke         conda-forge/linux-64::liblapacke-3.9.0-12_linux64_mkl
+  libllvm11          conda-forge/linux-64::libllvm11-11.1.0-hf817b99_2
+  libnghttp2         conda-forge/linux-64::libnghttp2-1.43.0-h812cca2_1
+  libnsl             conda-forge/linux-64::libnsl-2.0.0-h7f98852_0
+  libogg             conda-forge/linux-64::libogg-1.3.4-h7f98852_1
+  libopus            conda-forge/linux-64::libopus-1.3.1-h7f98852_1
+  libpng             conda-forge/linux-64::libpng-1.6.37-h21135ba_2
+  libpq              conda-forge/linux-64::libpq-13.3-hd57d9b9_3
+  libsodium          conda-forge/linux-64::libsodium-1.0.18-h36c2ea0_1
+  libssh2            conda-forge/linux-64::libssh2-1.10.0-ha56f1ee_2
+  libstdcxx-ng       conda-forge/linux-64::libstdcxx-ng-11.2.0-he4da1e4_11
+  libtiff            conda-forge/linux-64::libtiff-4.3.0-h6f004c6_2
+  libuuid            conda-forge/linux-64::libuuid-2.32.1-h7f98852_1000
+  libuv              conda-forge/linux-64::libuv-1.42.0-h7f98852_0
+  libvorbis          conda-forge/linux-64::libvorbis-1.3.7-h9c3ff4c_0
+  libwebp-base       conda-forge/linux-64::libwebp-base-1.2.1-h7f98852_0
+  libxcb             conda-forge/linux-64::libxcb-1.13-h7f98852_1003
+  libxkbcommon       conda-forge/linux-64::libxkbcommon-1.0.3-he3ba5ed_0
+  libxml2            conda-forge/linux-64::libxml2-2.9.12-h72842e0_0
+  libzlib            conda-forge/linux-64::libzlib-1.2.11-h36c2ea0_1013
+  llvm-openmp        conda-forge/linux-64::llvm-openmp-12.0.1-h4bd325d_1
+  llvmlite           conda-forge/linux-64::llvmlite-0.37.0-py38h4630a5e_0
+  lz4-c              conda-forge/linux-64::lz4-c-1.9.3-h9c3ff4c_1
+  markupsafe         conda-forge/linux-64::markupsafe-2.0.1-py38h497a2fe_1
+  matplotlib         conda-forge/linux-64::matplotlib-3.4.3-py38h578d9bd_1
+  matplotlib-base    conda-forge/linux-64::matplotlib-base-3.4.3-py38hf4fb855_1
+  matplotlib-inline  conda-forge/noarch::matplotlib-inline-0.1.3-pyhd8ed1ab_0
+  mistune            conda-forge/linux-64::mistune-0.8.4-py38h497a2fe_1005
+  mkl                conda-forge/linux-64::mkl-2021.4.0-h8d4b97c_729
+  mkl-devel          conda-forge/linux-64::mkl-devel-2021.4.0-ha770c72_730
+  mkl-include        conda-forge/linux-64::mkl-include-2021.4.0-h8d4b97c_729
+  mysql-common       conda-forge/linux-64::mysql-common-8.0.27-ha770c72_1
+  mysql-libs         conda-forge/linux-64::mysql-libs-8.0.27-hfa10184_1
+  nbclassic          conda-forge/noarch::nbclassic-0.3.4-pyhd8ed1ab_0
+  nbclient           conda-forge/noarch::nbclient-0.5.4-pyhd8ed1ab_0
+  nbconvert          conda-forge/linux-64::nbconvert-6.2.0-py38h578d9bd_0
+  nbformat           conda-forge/noarch::nbformat-5.1.3-pyhd8ed1ab_0
+  ncurses            conda-forge/linux-64::ncurses-6.2-h58526e2_4
+  nest-asyncio       conda-forge/noarch::nest-asyncio-1.5.1-pyhd8ed1ab_0
+  networkx           conda-forge/noarch::networkx-2.6.3-pyhd8ed1ab_1
+  ninja              conda-forge/linux-64::ninja-1.10.2-h4bd325d_1
+  notebook           conda-forge/noarch::notebook-6.4.5-pyha770c72_0
+  nspr               conda-forge/linux-64::nspr-4.32-h9c3ff4c_0
+  nss                conda-forge/linux-64::nss-3.71-hb5efdd6_0
+  numba              conda-forge/linux-64::numba-0.54.1-py38h4bf6c61_0
+  numpy              conda-forge/linux-64::numpy-1.20.3-py38h9894fe3_1
+  olefile            conda-forge/noarch::olefile-0.46-pyh9f0ad1d_1
+  openjpeg           conda-forge/linux-64::openjpeg-2.4.0-hb52868f_1
+  openssl            conda-forge/linux-64::openssl-1.1.1l-h7f98852_0
+  packaging          conda-forge/noarch::packaging-21.0-pyhd8ed1ab_0
+  pandas             conda-forge/linux-64::pandas-1.3.4-py38h43a58ef_0
+  pandoc             conda-forge/linux-64::pandoc-2.16.1-h7f98852_0
+  pandocfilters      conda-forge/noarch::pandocfilters-1.5.0-pyhd8ed1ab_0
+  parso              conda-forge/noarch::parso-0.8.2-pyhd8ed1ab_0
+  patsy              conda-forge/noarch::patsy-0.5.2-pyhd8ed1ab_0
+  pcre               conda-forge/linux-64::pcre-8.45-h9c3ff4c_0
+  pexpect            conda-forge/noarch::pexpect-4.8.0-pyh9f0ad1d_2
+  pickleshare        conda-forge/noarch::pickleshare-0.7.5-py_1003
+  pillow             conda-forge/linux-64::pillow-8.3.2-py38h8e6f84c_0
+  pip                conda-forge/noarch::pip-21.3.1-pyhd8ed1ab_0
+  prometheus_client  conda-forge/noarch::prometheus_client-0.12.0-pyhd8ed1ab_0
+  prompt-toolkit     conda-forge/noarch::prompt-toolkit-3.0.22-pyha770c72_0
+  pthread-stubs      conda-forge/linux-64::pthread-stubs-0.4-h36c2ea0_1001
+  ptyprocess         conda-forge/noarch::ptyprocess-0.7.0-pyhd3deb0d_0
+  pybigwig           bioconda/linux-64::pybigwig-0.3.18-py38h5ebd311_1
+  pybind11           conda-forge/linux-64::pybind11-2.8.1-py38h1fd1430_1
+  pybind11-global    conda-forge/linux-64::pybind11-global-2.8.1-py38h1fd1430_1
+  pycparser          conda-forge/noarch::pycparser-2.20-pyh9f0ad1d_2
+  pyg                pyg/linux-64::pyg-2.0.1-py38_torch_1.8.0_cu102
+  pygments           conda-forge/noarch::pygments-2.10.0-pyhd8ed1ab_0
+  pyopenssl          conda-forge/noarch::pyopenssl-21.0.0-pyhd8ed1ab_0
+  pyparsing          conda-forge/noarch::pyparsing-3.0.4-pyhd8ed1ab_0
+  pyqt               conda-forge/linux-64::pyqt-5.12.3-py38h578d9bd_7
+  pyqt-impl          conda-forge/linux-64::pyqt-impl-5.12.3-py38h7400c14_7
+  pyqt5-sip          conda-forge/linux-64::pyqt5-sip-4.19.18-py38h709712a_7
+  pyqtchart          conda-forge/linux-64::pyqtchart-5.12-py38h7400c14_7
+  pyqtwebengine      conda-forge/linux-64::pyqtwebengine-5.12.1-py38h7400c14_7
+  pyrsistent         conda-forge/linux-64::pyrsistent-0.18.0-py38h497a2fe_0
+  pysocks            conda-forge/linux-64::pysocks-1.7.1-py38h578d9bd_4
+  python             conda-forge/linux-64::python-3.8.12-hb7a2778_2_cpython
+  python-dateutil    conda-forge/noarch::python-dateutil-2.8.2-pyhd8ed1ab_0
+  python-louvain     conda-forge/noarch::python-louvain-0.15-pyhd3deb0d_0
+  python_abi         conda-forge/linux-64::python_abi-3.8-2_cp38
+  pytorch            pytorch/linux-64::pytorch-1.8.1-py3.8_cuda10.2_cudnn7.6.5_0
+  pytorch-cluster    pyg/linux-64::pytorch-cluster-1.5.9-py38_torch_1.8.0_cu102
+  pytorch-scatter    pyg/linux-64::pytorch-scatter-2.0.8-py38_torch_1.8.0_cu102
+  pytorch-sparse     pyg/linux-64::pytorch-sparse-0.6.12-py38_torch_1.8.0_cu102
+  pytorch-spline-co~ pyg/linux-64::pytorch-spline-conv-1.2.1-py38_torch_1.8.0_cu102
+  pytz               conda-forge/noarch::pytz-2021.3-pyhd8ed1ab_0
+  pyyaml             conda-forge/linux-64::pyyaml-6.0-py38h497a2fe_2
+  pyzmq              conda-forge/linux-64::pyzmq-22.3.0-py38h2035c66_1
+  qt                 conda-forge/linux-64::qt-5.12.9-hda022c4_4
+  readline           conda-forge/linux-64::readline-8.1-h46c0cb4_0
+  requests           conda-forge/noarch::requests-2.26.0-pyhd8ed1ab_0
+  scikit-learn       conda-forge/linux-64::scikit-learn-1.0.1-py38hacb3eff_1
+  scipy              conda-forge/linux-64::scipy-1.7.1-py38h56a6a73_0
+  seaborn            conda-forge/noarch::seaborn-0.11.2-hd8ed1ab_0
+  seaborn-base       conda-forge/noarch::seaborn-base-0.11.2-pyhd8ed1ab_0
+  send2trash         conda-forge/noarch::send2trash-1.8.0-pyhd8ed1ab_0
+  setuptools         conda-forge/linux-64::setuptools-58.5.3-py38h578d9bd_0
+  six                conda-forge/noarch::six-1.16.0-pyh6c4a22f_0
+  sniffio            conda-forge/linux-64::sniffio-1.2.0-py38h578d9bd_2
+  sqlite             conda-forge/linux-64::sqlite-3.36.0-h9cd32fc_2
+  statsmodels        conda-forge/linux-64::statsmodels-0.13.0-py38h6c62de6_0
+  tbb                conda-forge/linux-64::tbb-2021.4.0-h4bd325d_1
+  terminado          conda-forge/linux-64::terminado-0.12.1-py38h578d9bd_1
+  testpath           conda-forge/noarch::testpath-0.5.0-pyhd8ed1ab_0
+  threadpoolctl      conda-forge/noarch::threadpoolctl-3.0.0-pyh8a188c0_0
+  tk                 conda-forge/linux-64::tk-8.6.11-h27826a3_1
+  torchvision        pytorch/noarch::torchvision-0.2.2-py_3
+  tornado            conda-forge/linux-64::tornado-6.1-py38h497a2fe_2
+  tqdm               conda-forge/noarch::tqdm-4.62.3-pyhd8ed1ab_0
+  traitlets          conda-forge/noarch::traitlets-5.1.1-pyhd8ed1ab_0
+  typing_extensions  conda-forge/noarch::typing_extensions-3.10.0.2-pyha770c72_0
+  urllib3            conda-forge/noarch::urllib3-1.26.7-pyhd8ed1ab_0
+  wcwidth            conda-forge/noarch::wcwidth-0.2.5-pyh9f0ad1d_2
+  webencodings       conda-forge/noarch::webencodings-0.5.1-py_1
+  websocket-client   conda-forge/linux-64::websocket-client-0.57.0-py38h578d9bd_6
+  wheel              conda-forge/noarch::wheel-0.37.0-pyhd8ed1ab_1
+  xorg-libxau        conda-forge/linux-64::xorg-libxau-1.0.9-h7f98852_0
+  xorg-libxdmcp      conda-forge/linux-64::xorg-libxdmcp-1.1.3-h7f98852_0
+  xz                 conda-forge/linux-64::xz-5.2.5-h516909a_1
+  yacs               conda-forge/noarch::yacs-0.1.6-py_0
+  yaml               conda-forge/linux-64::yaml-0.2.5-h516909a_0
+  zeromq             conda-forge/linux-64::zeromq-4.3.4-h9c3ff4c_1
+  zipp               conda-forge/noarch::zipp-3.6.0-pyhd8ed1ab_0
+  zlib               conda-forge/linux-64::zlib-1.2.11-h36c2ea0_1013
+  zstd               conda-forge/linux-64::zstd-1.5.0-ha95c52a_0
+
+
+
+Downloading and Extracting Packages
+ld_impl_linux-64-2.3 | 667 KB    |            |   0% ld_impl_linux-64-2.3 | 667 KB    | 2          |   2% ld_impl_linux-64-2.3 | 667 KB    | ########## | 100% ld_impl_linux-64-2.3 | 667 KB    | ########## | 100% 
+packaging-21.0       | 35 KB     |            |   0% packaging-21.0       | 35 KB     | ########## | 100% 
+pygments-2.10.0      | 760 KB    |            |   0% pygments-2.10.0      | 760 KB    | ########## | 100% pygments-2.10.0      | 760 KB    | ########## | 100% 
+pytorch-cluster-1.5. | 1.1 MB    |            |   0% pytorch-cluster-1.5. | 1.1 MB    | ########## | 100% pytorch-cluster-1.5. | 1.1 MB    | ########## | 100% 
+libglib-2.70.0       | 3.0 MB    |            |   0% libglib-2.70.0       | 3.0 MB    | ########## | 100% libglib-2.70.0       | 3.0 MB    | ########## | 100% 
+libuv-1.42.0         | 1.0 MB    |            |   0% libuv-1.42.0         | 1.0 MB    | ########## | 100% libuv-1.42.0         | 1.0 MB    | ########## | 100% 
+pyqtchart-5.12       | 257 KB    |            |   0% pyqtchart-5.12       | 257 KB    | ########## | 100% pyqtchart-5.12       | 257 KB    | ########## | 100% 
+jupyter_client-7.0.6 | 87 KB     |            |   0% jupyter_client-7.0.6 | 87 KB     | ########## | 100% jupyter_client-7.0.6 | 87 KB     | ########## | 100% 
+libzlib-1.2.11       | 59 KB     |            |   0% libzlib-1.2.11       | 59 KB     | ########## | 100% 
+cycler-0.11.0        | 10 KB     |            |   0% cycler-0.11.0        | 10 KB     | ########## | 100% 
+jupyter_server-1.11. | 257 KB    |            |   0% jupyter_server-1.11. | 257 KB    | ########## | 100% jupyter_server-1.11. | 257 KB    | ########## | 100% 
+jupyterlab-3.2.2     | 5.9 MB    |            |   0% jupyterlab-3.2.2     | 5.9 MB    | #########3 |  94% jupyterlab-3.2.2     | 5.9 MB    | ########## | 100% 
+notebook-6.4.5       | 6.3 MB    |            |   0% notebook-6.4.5       | 6.3 MB    | ########7  |  88% notebook-6.4.5       | 6.3 MB    | ########## | 100% 
+libcblas-3.9.0       | 12 KB     |            |   0% libcblas-3.9.0       | 12 KB     | ########## | 100% 
+patsy-0.5.2          | 188 KB    |            |   0% patsy-0.5.2          | 188 KB    | ########## | 100% patsy-0.5.2          | 188 KB    | ########## | 100% 
+glib-2.70.0          | 430 KB    |            |   0% glib-2.70.0          | 430 KB    | ########## | 100% glib-2.70.0          | 430 KB    | ########## | 100% 
+nbconvert-6.2.0      | 531 KB    |            |   0% nbconvert-6.2.0      | 531 KB    | ########## | 100% nbconvert-6.2.0      | 531 KB    | ########## | 100% 
+pip-21.3.1           | 1.2 MB    |            |   0% pip-21.3.1           | 1.2 MB    | ########## | 100% pip-21.3.1           | 1.2 MB    | ########## | 100% 
+chardet-4.0.0        | 198 KB    |            |   0% chardet-4.0.0        | 198 KB    | ########## | 100% chardet-4.0.0        | 198 KB    | ########## | 100% 
+liblapack-3.9.0      | 12 KB     |            |   0% liblapack-3.9.0      | 12 KB     | ########## | 100% 
+jupyter_core-4.9.1   | 80 KB     |            |   0% jupyter_core-4.9.1   | 80 KB     | ########## | 100% 
+kiwisolver-1.3.2     | 80 KB     |            |   0% kiwisolver-1.3.2     | 80 KB     | ########## | 100% kiwisolver-1.3.2     | 80 KB     | ########## | 100% 
+jsonschema-4.1.2     | 54 KB     |            |   0% jsonschema-4.1.2     | 54 KB     | ########## | 100% 
+mysql-common-8.0.27  | 1.8 MB    |            |   0% mysql-common-8.0.27  | 1.8 MB    | ########## | 100% mysql-common-8.0.27  | 1.8 MB    | ########## | 100% 
+sniffio-1.2.0        | 15 KB     |            |   0% sniffio-1.2.0        | 15 KB     | ########## | 100% sniffio-1.2.0        | 15 KB     | ########## | 100% 
+icu-68.2             | 13.1 MB   |            |   0% icu-68.2             | 13.1 MB   | ######     |  61% icu-68.2             | 13.1 MB   | ########## | 100% 
+scipy-1.7.1          | 21.9 MB   |            |   0% scipy-1.7.1          | 21.9 MB   | ##3        |  24% scipy-1.7.1          | 21.9 MB   | ####7      |  47% scipy-1.7.1          | 21.9 MB   | ########## | 100% scipy-1.7.1          | 21.9 MB   | ########## | 100% 
+pcre-8.45            | 253 KB    |            |   0% pcre-8.45            | 253 KB    | ########## | 100% 
+libnghttp2-1.43.0    | 790 KB    |            |   0% libnghttp2-1.43.0    | 790 KB    | ########## | 100% libnghttp2-1.43.0    | 790 KB    | ########## | 100% 
+libdeflate-1.8       | 67 KB     |            |   0% libdeflate-1.8       | 67 KB     | ########## | 100% 
+jinja2-3.0.2         | 99 KB     |            |   0% jinja2-3.0.2         | 99 KB     | ########## | 100% 
+libpq-13.3           | 2.7 MB    |            |   0% libpq-13.3           | 2.7 MB    | ########## | 100% libpq-13.3           | 2.7 MB    | ########## | 100% 
+numba-0.54.1         | 3.7 MB    |            |   0% numba-0.54.1         | 3.7 MB    | ########## | 100% numba-0.54.1         | 3.7 MB    | ########## | 100% 
+yacs-0.1.6           | 11 KB     |            |   0% yacs-0.1.6           | 11 KB     | ########## | 100% 
+pandocfilters-1.5.0  | 11 KB     |            |   0% pandocfilters-1.5.0  | 11 KB     | ########## | 100% 
+typing_extensions-3. | 28 KB     |            |   0% typing_extensions-3. | 28 KB     | ########## | 100% typing_extensions-3. | 28 KB     | ########## | 100% 
+ipython-7.29.0       | 1.1 MB    |            |   0% ipython-7.29.0       | 1.1 MB    | ########## | 100% ipython-7.29.0       | 1.1 MB    | ########## | 100% 
+pyqt5-sip-4.19.18    | 310 KB    |            |   0% pyqt5-sip-4.19.18    | 310 KB    | ########## | 100% pyqt5-sip-4.19.18    | 310 KB    | ########## | 100% 
+setuptools-58.5.3    | 1.0 MB    |            |   0% setuptools-58.5.3    | 1.0 MB    | ########## | 100% setuptools-58.5.3    | 1.0 MB    | ########## | 100% 
+tornado-6.1          | 647 KB    |            |   0% tornado-6.1          | 647 KB    | ########## | 100% tornado-6.1          | 647 KB    | ########## | 100% 
+pybind11-2.8.1       | 160 KB    |            |   0% pybind11-2.8.1       | 160 KB    | ########## | 100% pybind11-2.8.1       | 160 KB    | ########## | 100% 
+send2trash-1.8.0     | 17 KB     |            |   0% send2trash-1.8.0     | 17 KB     | ########## | 100% 
+wheel-0.37.0         | 31 KB     |            |   0% wheel-0.37.0         | 31 KB     | ########## | 100% wheel-0.37.0         | 31 KB     | ########## | 100% 
+mkl-include-2021.4.0 | 694 KB    |            |   0% mkl-include-2021.4.0 | 694 KB    | ########## | 100% mkl-include-2021.4.0 | 694 KB    | ########## | 100% 
+pyqt-impl-5.12.3     | 5.9 MB    |            |   0% pyqt-impl-5.12.3     | 5.9 MB    | ########## | 100% pyqt-impl-5.12.3     | 5.9 MB    | ########## | 100% 
+libgcc-ng-11.2.0     | 887 KB    |            |   0% libgcc-ng-11.2.0     | 887 KB    | ########## | 100% libgcc-ng-11.2.0     | 887 KB    | ########## | 100% 
+libblas-3.9.0        | 12 KB     |            |   0% libblas-3.9.0        | 12 KB     | ########## | 100% libblas-3.9.0        | 12 KB     | ########## | 100% 
+statsmodels-0.13.0   | 11.5 MB   |            |   0% statsmodels-0.13.0   | 11.5 MB   | ####1      |  41% statsmodels-0.13.0   | 11.5 MB   | ########## | 100% statsmodels-0.13.0   | 11.5 MB   | ########## | 100% 
+python-3.8.12        | 26.2 MB   |            |   0% python-3.8.12        | 26.2 MB   | 9          |   9% python-3.8.12        | 26.2 MB   | ##8        |  28% python-3.8.12        | 26.2 MB   | ####3      |  43% python-3.8.12        | 26.2 MB   | #####5     |  56% python-3.8.12        | 26.2 MB   | ######7    |  67% python-3.8.12        | 26.2 MB   | #######8   |  79% python-3.8.12        | 26.2 MB   | ########## | 100% python-3.8.12        | 26.2 MB   | ########## | 100% 
+prompt-toolkit-3.0.2 | 249 KB    |            |   0% prompt-toolkit-3.0.2 | 249 KB    | ########## | 100% prompt-toolkit-3.0.2 | 249 KB    | ########## | 100% 
+urllib3-1.26.7       | 100 KB    |            |   0% urllib3-1.26.7       | 100 KB    | ########## | 100% urllib3-1.26.7       | 100 KB    | ########## | 100% 
+brotlipy-0.7.0       | 342 KB    |            |   0% brotlipy-0.7.0       | 342 KB    | ########## | 100% 
+traitlets-5.1.1      | 82 KB     |            |   0% traitlets-5.1.1      | 82 KB     | ########## | 100% 
+pyzmq-22.3.0         | 515 KB    |            |   0% pyzmq-22.3.0         | 515 KB    | ########## | 100% pyzmq-22.3.0         | 515 KB    | ########## | 100% 
+matplotlib-inline-0. | 11 KB     |            |   0% matplotlib-inline-0. | 11 KB     | ########## | 100% 
+krb5-1.19.2          | 1.4 MB    |            |   0% krb5-1.19.2          | 1.4 MB    | ########## | 100% krb5-1.19.2          | 1.4 MB    | ########## | 100% 
+libwebp-base-1.2.1   | 845 KB    |            |   0% libwebp-base-1.2.1   | 845 KB    | ########## | 100% libwebp-base-1.2.1   | 845 KB    | ########## | 100% 
+mistune-0.8.4        | 54 KB     |            |   0% mistune-0.8.4        | 54 KB     | ########## | 100% mistune-0.8.4        | 54 KB     | ########## | 100% 
+python_abi-3.8       | 4 KB      |            |   0% python_abi-3.8       | 4 KB      | ########## | 100% 
+matplotlib-base-3.4. | 7.3 MB    |            |   0% matplotlib-base-3.4. | 7.3 MB    | #######8   |  78% matplotlib-base-3.4. | 7.3 MB    | ########## | 100% 
+mkl-devel-2021.4.0   | 25 KB     |            |   0% mkl-devel-2021.4.0   | 25 KB     | ########## | 100% 
+glib-tools-2.70.0    | 107 KB    |            |   0% glib-tools-2.70.0    | 107 KB    | ########## | 100% glib-tools-2.70.0    | 107 KB    | ########## | 100% 
+argon2-cffi-21.1.0   | 46 KB     |            |   0% argon2-cffi-21.1.0   | 46 KB     | ########## | 100% 
+libffi-3.4.2         | 57 KB     |            |   0% libffi-3.4.2         | 57 KB     | ########## | 100% 
+zlib-1.2.11          | 86 KB     |            |   0% zlib-1.2.11          | 86 KB     | ########## | 100% 
+ninja-1.10.2         | 2.4 MB    |            |   0% ninja-1.10.2         | 2.4 MB    | ########## | 100% ninja-1.10.2         | 2.4 MB    | ########## | 100% 
+liblapacke-3.9.0     | 12 KB     |            |   0% liblapacke-3.9.0     | 12 KB     | ########## | 100% liblapacke-3.9.0     | 12 KB     | ########## | 100% 
+pyparsing-3.0.4      | 78 KB     |            |   0% pyparsing-3.0.4      | 78 KB     | ########## | 100% 
+bleach-4.1.0         | 121 KB    |            |   0% bleach-4.1.0         | 121 KB    | ########## | 100% 
+joblib-1.1.0         | 210 KB    |            |   0% joblib-1.1.0         | 210 KB    | ########## | 100% joblib-1.1.0         | 210 KB    | ########## | 100% 
+_libgcc_mutex-0.1    | 3 KB      |            |   0% _libgcc_mutex-0.1    | 3 KB      | ########## | 100% 
+nbclient-0.5.4       | 60 KB     |            |   0% nbclient-0.5.4       | 60 KB     | ########## | 100% 
+jupyterlab_server-2. | 45 KB     |            |   0% jupyterlab_server-2. | 45 KB     | ########## | 100% jupyterlab_server-2. | 45 KB     | ########## | 100% 
+pyqtwebengine-5.12.1 | 175 KB    |            |   0% pyqtwebengine-5.12.1 | 175 KB    | ########## | 100% pyqtwebengine-5.12.1 | 175 KB    | ########## | 100% 
+ipykernel-6.4.2      | 174 KB    |            |   0% ipykernel-6.4.2      | 174 KB    | ########## | 100% ipykernel-6.4.2      | 174 KB    | ########## | 100% 
+libgfortran-ng-11.2. | 19 KB     |            |   0% libgfortran-ng-11.2. | 19 KB     | ########## | 100% 
+zeromq-4.3.4         | 351 KB    |            |   0% zeromq-4.3.4         | 351 KB    | ########## | 100% zeromq-4.3.4         | 351 KB    | ########## | 100% 
+idna-3.1             | 52 KB     |            |   0% idna-3.1             | 52 KB     | ########## | 100% 
+pytorch-sparse-0.6.1 | 2.3 MB    |            |   0% pytorch-sparse-0.6.1 | 2.3 MB    | ########## | 100% pytorch-sparse-0.6.1 | 2.3 MB    | ########## | 100% 
+libevent-2.1.10      | 1.1 MB    |            |   0% libevent-2.1.10      | 1.1 MB    | ########## | 100% libevent-2.1.10      | 1.1 MB    | ########## | 100% 
+terminado-0.12.1     | 28 KB     |            |   0% terminado-0.12.1     | 28 KB     | ########## | 100% 
+libnsl-2.0.0         | 31 KB     |            |   0% libnsl-2.0.0         | 31 KB     | ########## | 100% 
+c-ares-1.18.1        | 113 KB    |            |   0% c-ares-1.18.1        | 113 KB    | ########## | 100% c-ares-1.18.1        | 113 KB    | ########## | 100% 
+libcurl-7.79.1       | 335 KB    |            |   0% libcurl-7.79.1       | 335 KB    | ########## | 100% libcurl-7.79.1       | 335 KB    | ########## | 100% 
+googledrivedownloade | 7 KB      |            |   0% googledrivedownloade | 7 KB      | ########## | 100% 
+markupsafe-2.0.1     | 22 KB     |            |   0% markupsafe-2.0.1     | 22 KB     | ########## | 100% 
+websocket-client-0.5 | 59 KB     |            |   0% websocket-client-0.5 | 59 KB     | ########## | 100% 
+blas-2.112           | 12 KB     |            |   0% blas-2.112           | 12 KB     | ########## | 100% blas-2.112           | 12 KB     | ########## | 100% 
+pandoc-2.16.1        | 12.6 MB   |            |   0% pandoc-2.16.1        | 12.6 MB   | ##4        |  25% pandoc-2.16.1        | 12.6 MB   | ####9      |  50% pandoc-2.16.1        | 12.6 MB   | ########## | 100% pandoc-2.16.1        | 12.6 MB   | ########## | 100% 
+cudatoolkit-10.2.89  | 451.1 MB  |            |   0% cudatoolkit-10.2.89  | 451.1 MB  |            |   1% cudatoolkit-10.2.89  | 451.1 MB  | 3          |   3% cudatoolkit-10.2.89  | 451.1 MB  | 5          |   5% cudatoolkit-10.2.89  | 451.1 MB  | 7          |   7% cudatoolkit-10.2.89  | 451.1 MB  | 9          |   9% cudatoolkit-10.2.89  | 451.1 MB  | #1         |  11% cudatoolkit-10.2.89  | 451.1 MB  | #3         |  13% cudatoolkit-10.2.89  | 451.1 MB  | #4         |  15% cudatoolkit-10.2.89  | 451.1 MB  | #6         |  17% cudatoolkit-10.2.89  | 451.1 MB  | #8         |  19% cudatoolkit-10.2.89  | 451.1 MB  | #9         |  20% cudatoolkit-10.2.89  | 451.1 MB  | ##1        |  22% cudatoolkit-10.2.89  | 451.1 MB  | ##3        |  23% cudatoolkit-10.2.89  | 451.1 MB  | ##5        |  26% cudatoolkit-10.2.89  | 451.1 MB  | ##7        |  27% cudatoolkit-10.2.89  | 451.1 MB  | ##9        |  30% cudatoolkit-10.2.89  | 451.1 MB  | ###2       |  32% cudatoolkit-10.2.89  | 451.1 MB  | ###4       |  35% cudatoolkit-10.2.89  | 451.1 MB  | ###7       |  38% cudatoolkit-10.2.89  | 451.1 MB  | ####       |  40% cudatoolkit-10.2.89  | 451.1 MB  | ####2      |  42% cudatoolkit-10.2.89  | 451.1 MB  | ####4      |  45% cudatoolkit-10.2.89  | 451.1 MB  | ####7      |  47% cudatoolkit-10.2.89  | 451.1 MB  | ####9      |  50% cudatoolkit-10.2.89  | 451.1 MB  | #####2     |  52% cudatoolkit-10.2.89  | 451.1 MB  | #####4     |  54% cudatoolkit-10.2.89  | 451.1 MB  | #####5     |  56% cudatoolkit-10.2.89  | 451.1 MB  | #####7     |  58% cudatoolkit-10.2.89  | 451.1 MB  | #####9     |  59% cudatoolkit-10.2.89  | 451.1 MB  | ######     |  60% cudatoolkit-10.2.89  | 451.1 MB  | ######2    |  63% cudatoolkit-10.2.89  | 451.1 MB  | ######4    |  65% cudatoolkit-10.2.89  | 451.1 MB  | ######7    |  68% cudatoolkit-10.2.89  | 451.1 MB  | #######    |  70% cudatoolkit-10.2.89  | 451.1 MB  | #######3   |  73% cudatoolkit-10.2.89  | 451.1 MB  | #######5   |  76% cudatoolkit-10.2.89  | 451.1 MB  | #######8   |  78% cudatoolkit-10.2.89  | 451.1 MB  | ########   |  81% cudatoolkit-10.2.89  | 451.1 MB  | ########3  |  83% cudatoolkit-10.2.89  | 451.1 MB  | ########4  |  85% cudatoolkit-10.2.89  | 451.1 MB  | ########7  |  88% cudatoolkit-10.2.89  | 451.1 MB  | #########  |  90% cudatoolkit-10.2.89  | 451.1 MB  | #########2 |  93% cudatoolkit-10.2.89  | 451.1 MB  | #########5 |  95% cudatoolkit-10.2.89  | 451.1 MB  | #########7 |  97% cudatoolkit-10.2.89  | 451.1 MB  | #########9 | 100% cudatoolkit-10.2.89  | 451.1 MB  | ########## | 100% 
+colorama-0.4.4       | 18 KB     |            |   0% colorama-0.4.4       | 18 KB     | ########## | 100% 
+llvmlite-0.37.0      | 2.9 MB    |            |   0% llvmlite-0.37.0      | 2.9 MB    | ########## | 100% llvmlite-0.37.0      | 2.9 MB    | ########## | 100% 
+jedi-0.18.0          | 920 KB    |            |   0% jedi-0.18.0          | 920 KB    | ########## | 100% jedi-0.18.0          | 920 KB    | ########## | 100% 
+mkl-2021.4.0         | 219.1 MB  |            |   0% mkl-2021.4.0         | 219.1 MB  | 3          |   4% mkl-2021.4.0         | 219.1 MB  | 8          |   8% mkl-2021.4.0         | 219.1 MB  | #3         |  14% mkl-2021.4.0         | 219.1 MB  | #8         |  18% mkl-2021.4.0         | 219.1 MB  | ##2        |  23% mkl-2021.4.0         | 219.1 MB  | ##6        |  26% mkl-2021.4.0         | 219.1 MB  | ###1       |  31% mkl-2021.4.0         | 219.1 MB  | ###6       |  36% mkl-2021.4.0         | 219.1 MB  | ####1      |  41% mkl-2021.4.0         | 219.1 MB  | ####6      |  47% mkl-2021.4.0         | 219.1 MB  | #####2     |  52% mkl-2021.4.0         | 219.1 MB  | #####8     |  58% mkl-2021.4.0         | 219.1 MB  | ######3    |  63% mkl-2021.4.0         | 219.1 MB  | ######7    |  68% mkl-2021.4.0         | 219.1 MB  | #######2   |  73% mkl-2021.4.0         | 219.1 MB  | #######7   |  77% mkl-2021.4.0         | 219.1 MB  | ########   |  81% mkl-2021.4.0         | 219.1 MB  | ########3  |  84% mkl-2021.4.0         | 219.1 MB  | ########7  |  88% mkl-2021.4.0         | 219.1 MB  | #########2 |  93% mkl-2021.4.0         | 219.1 MB  | #########6 |  97% mkl-2021.4.0         | 219.1 MB  | ########## | 100% 
+pyrsistent-0.18.0    | 90 KB     |            |   0% pyrsistent-0.18.0    | 90 KB     | ########## | 100% 
+scikit-learn-1.0.1   | 8.1 MB    |            |   0% scikit-learn-1.0.1   | 8.1 MB    | ########## | 100% scikit-learn-1.0.1   | 8.1 MB    | ########## | 100% 
+blas-devel-3.9.0     | 11 KB     |            |   0% blas-devel-3.9.0     | 11 KB     | ########## | 100% 
+tk-8.6.11            | 3.3 MB    |            |   0% tk-8.6.11            | 3.3 MB    | ########## | 100% tk-8.6.11            | 3.3 MB    | ########## | 100% 
+libtiff-4.3.0        | 614 KB    |            |   0% libtiff-4.3.0        | 614 KB    | ########## | 100% libtiff-4.3.0        | 614 KB    | ########## | 100% 
+pybind11-global-2.8. | 195 KB    |            |   0% pybind11-global-2.8. | 195 KB    | ########## | 100% pybind11-global-2.8. | 195 KB    | ########## | 100% 
+prometheus_client-0. | 47 KB     |            |   0% prometheus_client-0. | 47 KB     | ########## | 100% 
+_openmp_mutex-4.5    | 5 KB      |            |   0% _openmp_mutex-4.5    | 5 KB      | ########## | 100% 
+requests-2.26.0      | 52 KB     |            |   0% requests-2.26.0      | 52 KB     | ########## | 100% 
+python-dateutil-2.8. | 240 KB    |            |   0% python-dateutil-2.8. | 240 KB    | ########## | 100% python-dateutil-2.8. | 240 KB    | ########## | 100% 
+gstreamer-1.18.5     | 2.0 MB    |            |   0% gstreamer-1.18.5     | 2.0 MB    | ########## | 100% gstreamer-1.18.5     | 2.0 MB    | ########## | 100% 
+nss-3.71             | 2.1 MB    |            |   0% nss-3.71             | 2.1 MB    | ########## | 100% nss-3.71             | 2.1 MB    | ########## | 100% 
+cryptography-35.0.0  | 1.6 MB    |            |   0% cryptography-35.0.0  | 1.6 MB    | ########## | 100% cryptography-35.0.0  | 1.6 MB    | ########## | 100% 
+ca-certificates-2021 | 139 KB    |            |   0% ca-certificates-2021 | 139 KB    | ########## | 100% 
+importlib-metadata-4 | 32 KB     |            |   0% importlib-metadata-4 | 32 KB     | ########## | 100% 
+mysql-libs-8.0.27    | 1.9 MB    |            |   0% mysql-libs-8.0.27    | 1.9 MB    | ########## | 100% mysql-libs-8.0.27    | 1.9 MB    | ########## | 100% 
+python-louvain-0.15  | 12 KB     |            |   0% python-louvain-0.15  | 12 KB     | ########## | 100% 
+matplotlib-3.4.3     | 7 KB      |            |   0% matplotlib-3.4.3     | 7 KB      | ########## | 100% 
+pyqt-5.12.3          | 21 KB     |            |   0% pyqt-5.12.3          | 21 KB     | ########## | 100% 
+tbb-2021.4.0         | 2.0 MB    |            |   0% tbb-2021.4.0         | 2.0 MB    |            |   1% tbb-2021.4.0         | 2.0 MB    | ########## | 100% tbb-2021.4.0         | 2.0 MB    | ########## | 100% 
+threadpoolctl-3.0.0  | 17 KB     |            |   0% threadpoolctl-3.0.0  | 17 KB     | ########## | 100% 
+libssh2-1.10.0       | 233 KB    |            |   0% libssh2-1.10.0       | 233 KB    | ########## | 100% libssh2-1.10.0       | 233 KB    | ########## | 100% 
+yaml-0.2.5           | 82 KB     |            |   0% yaml-0.2.5           | 82 KB     | ########## | 100% 
+seaborn-0.11.2       | 4 KB      |            |   0% seaborn-0.11.2       | 4 KB      | ########## | 100% 
+llvm-openmp-12.0.1   | 2.8 MB    |            |   0% llvm-openmp-12.0.1   | 2.8 MB    | ########## | 100% llvm-openmp-12.0.1   | 2.8 MB    | ########## | 100% 
+gst-plugins-base-1.1 | 2.6 MB    |            |   0% gst-plugins-base-1.1 | 2.6 MB    | ########## | 100% gst-plugins-base-1.1 | 2.6 MB    | ########## | 100% 
+openssl-1.1.1l       | 2.1 MB    |            |   0% openssl-1.1.1l       | 2.1 MB    | ########## | 100% openssl-1.1.1l       | 2.1 MB    | ########## | 100% 
+tqdm-4.62.3          | 80 KB     |            |   0% tqdm-4.62.3          | 80 KB     | ########## | 100% tqdm-4.62.3          | 80 KB     | ########## | 100% 
+pytorch-spline-conv- | 587 KB    |            |   0% pytorch-spline-conv- | 587 KB    | ########## | 100% pytorch-spline-conv- | 587 KB    | ########## | 100% 
+lerc-3.0             | 216 KB    |            |   0% lerc-3.0             | 216 KB    | ########## | 100% 
+zipp-3.6.0           | 12 KB     |            |   0% zipp-3.6.0           | 12 KB     | ########## | 100% 
+anyio-3.3.4          | 148 KB    |            |   0% anyio-3.3.4          | 148 KB    | ########## | 100% anyio-3.3.4          | 148 KB    | ########## | 100% 
+pthread-stubs-0.4    | 5 KB      |            |   0% pthread-stubs-0.4    | 5 KB      | ########## | 100% 
+nspr-4.32            | 231 KB    |            |   0% nspr-4.32            | 231 KB    | ########## | 100% nspr-4.32            | 231 KB    | ########## | 100% 
+gettext-0.19.8.1     | 3.6 MB    |            |   0% gettext-0.19.8.1     | 3.6 MB    | ########## | 100% gettext-0.19.8.1     | 3.6 MB    | ########## | 100% 
+sqlite-3.36.0        | 1.4 MB    |            |   0% sqlite-3.36.0        | 1.4 MB    | ########## | 100% sqlite-3.36.0        | 1.4 MB    | ########## | 100% 
+pandas-1.3.4         | 13.0 MB   |            |   0% pandas-1.3.4         | 13.0 MB   | ####6      |  46% pandas-1.3.4         | 13.0 MB   | ########## | 100% pandas-1.3.4         | 13.0 MB   | ########## | 100% 
+decorator-5.1.0      | 11 KB     |            |   0% decorator-5.1.0      | 11 KB     | ########## | 100% 
+charset-normalizer-2 | 32 KB     |            |   0% charset-normalizer-2 | 32 KB     | ########## | 100% 
+pysocks-1.7.1        | 28 KB     |            |   0% pysocks-1.7.1        | 28 KB     | ########## | 100% 
+debugpy-1.5.1        | 2.0 MB    |            |   0% debugpy-1.5.1        | 2.0 MB    | ########## | 100% debugpy-1.5.1        | 2.0 MB    | ########## | 100% 
+cffi-1.15.0          | 226 KB    |            |   0% cffi-1.15.0          | 226 KB    | ########## | 100% cffi-1.15.0          | 226 KB    | ########## | 100% 
+libxml2-2.9.12       | 772 KB    |            |   0% libxml2-2.9.12       | 772 KB    | ########## | 100% libxml2-2.9.12       | 772 KB    | ########## | 100% 
+pytz-2021.3          | 242 KB    |            |   0% pytz-2021.3          | 242 KB    | ########## | 100% pytz-2021.3          | 242 KB    | ########## | 100% 
+networkx-2.6.3       | 1.5 MB    |            |   0% networkx-2.6.3       | 1.5 MB    | ########## | 100% networkx-2.6.3       | 1.5 MB    | ########## | 100% 
+libgfortran5-11.2.0  | 1.7 MB    |            |   0% libgfortran5-11.2.0  | 1.7 MB    | ########## | 100% libgfortran5-11.2.0  | 1.7 MB    | ########## | 100% 
+seaborn-base-0.11.2  | 223 KB    |            |   0% seaborn-base-0.11.2  | 223 KB    | ########## | 100% seaborn-base-0.11.2  | 223 KB    | ########## | 100% 
+pytorch-scatter-2.0. | 4.7 MB    |            |   0% pytorch-scatter-2.0. | 4.7 MB    | ########## | 100% pytorch-scatter-2.0. | 4.7 MB    | ########## | 100% 
+pyg-2.0.1            | 603 KB    |            |   0% pyg-2.0.1            | 603 KB    | ########## | 100% pyg-2.0.1            | 603 KB    | ########## | 100% 
+nbclassic-0.3.4      | 22 KB     |            |   0% nbclassic-0.3.4      | 22 KB     | ########## | 100% 
+lz4-c-1.9.3          | 179 KB    |            |   0% lz4-c-1.9.3          | 179 KB    | ########## | 100% 
+pillow-8.3.2         | 693 KB    |            |   0% pillow-8.3.2         | 693 KB    | ########## | 100% pillow-8.3.2         | 693 KB    | ########## | 100% 
+libclang-11.1.0      | 19.2 MB   |            |   0% libclang-11.1.0      | 19.2 MB   | #6         |  17% libclang-11.1.0      | 19.2 MB   | ###1       |  31% libclang-11.1.0      | 19.2 MB   | #######3   |  73% libclang-11.1.0      | 19.2 MB   | ########## | 100% 
+pyopenssl-21.0.0     | 48 KB     |            |   0% pyopenssl-21.0.0     | 48 KB     | ########## | 100% pyopenssl-21.0.0     | 48 KB     | ########## | 100% 
+libstdcxx-ng-11.2.0  | 4.2 MB    |            |   0% libstdcxx-ng-11.2.0  | 4.2 MB    | ########## | 100% libstdcxx-ng-11.2.0  | 4.2 MB    | ########## | 100% 
+pyyaml-6.0           | 191 KB    |            |   0% pyyaml-6.0           | 191 KB    | ########## | 100% 
+certifi-2021.10.8    | 145 KB    |            |   0% certifi-2021.10.8    | 145 KB    | ########## | 100% 
+Preparing transaction: ...working... done
+Verifying transaction: ...working... done
+Executing transaction: ...working... By downloading and using the CUDA Toolkit conda packages, you accept the terms and conditions of the CUDA End User License Agreement (EULA): https://docs.nvidia.com/cuda/eula/index.html
+
+done
+Collecting pynvml
+  Using cached pynvml-11.0.0-py3-none-any.whl (46 kB)
+Collecting hic-straw
+  Downloading hic-straw-1.0.0.1.tar.gz (15 kB)
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'done'
+Requirement already satisfied: pybind11>=2.4 in /home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/site-packages (from hic-straw) (2.8.1)
+Building wheels for collected packages: hic-straw
+  Building wheel for hic-straw (setup.py): started
+  Building wheel for hic-straw (setup.py): finished with status 'done'
+  Created wheel for hic-straw: filename=hic_straw-1.0.0.1-cp38-cp38-linux_x86_64.whl size=892418 sha256=b36b147ea8c0b9d4bd7b63805771c4391e5b11733296ab81a63128c65d438f21
+  Stored in directory: /home/erschultz/.cache/pip/wheels/24/a5/52/6372fc080f72d80ec1f2a85ba40a570a95b3df88ffeaf359af
+Successfully built hic-straw
+Installing collected packages: pynvml, hic-straw
+Successfully installed hic-straw-1.0.0.1 pynvml-11.0.0

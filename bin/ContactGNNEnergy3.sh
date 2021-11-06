@@ -44,7 +44,7 @@ headHiddenSizesList='100-100-1'
 
 # hyperparameters
 nEpochs=20
-batchSize=4
+batchSize=1
 numWorkers=4
 milestones='none'
 gamma=0.1
