@@ -614,13 +614,11 @@ class ContactGNN(nn.Module):
             latent = z_model(graph)
             if opt.loss == 'BCE':
                 latent = torch.sigmoid(latent)
-            print(latent, latent.shape)
         elif self.message_passing == 'gcn':
             latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
         elif self.message_passing == 'signedconv':
             latent = self.model(graph.x, graph.edge_index, graph.neg_edge_index)
 
-        print(latent.shape)
 
         if self.head_architecture is None:
             out = latent
