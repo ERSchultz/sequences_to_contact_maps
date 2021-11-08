@@ -74,6 +74,7 @@ def debugModel(model_type):
 
     # dataset
     opt.data_folder = "/home/eric/dataset_test"
+    opt.data_folder = ''
 
     # architecture
     opt.k = 2
@@ -170,8 +171,8 @@ def debugModel(model_type):
         opt.y_log_transform = False
         opt.head_architecture = 'concat-outer'
         opt.head_hidden_sizes_list = [100,100,1]
-        # opt.crop=[0,50]
-        # opt.m = 50
+        opt.crop=[0,50]
+        opt.m = 50
         # opt.use_bias = False
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
@@ -347,7 +348,7 @@ def testEnergy():
 
 if __name__ == '__main__':
     # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    debugModel('ContactGNN')
     # plot_fixed()
     # test_argpartition(10)
     # downsampling_test()

@@ -1,0 +1,33 @@
+Chi:
+ [[-1.  1.]
+ [ 0.  0.]]
+
+Y_diag
+Explained ratio:  [0.292 0.027 0.009 0.007]
+Singular values:  [122.851  37.285  21.422  19.022]
+
+S
+Explained ratio:  [1. 0. 0. 0.]
+Singular values:  [356.121   0.      0.      0.   ]
+Correlation between PC 1 of y_diag and S:  0.85
+
+S_hat
+Explained ratio:  [0.994 0.003 0.001 0.001]
+Singular values:  [288.515  16.255  10.107   6.947]
+Correlation between PC 1 of y_diag and S_hat:  0.95
+Correlation between PC 1 of S and S_hat:  0.9
+Correlation between PC 2 of S and S_hat:  -0.06
+
+S_hat vs X
+PC 1
+	Correlation with particle type 0: 0.7
+	Correlation with particle type 1: -0.69
+1.0
+[ 0.04481107 -0.04481107]
+PC 2
+	Correlation with particle type 0: -0.01
+	Correlation with particle type 1: -0.0
+7.605669799060077e-05
+[-0.00051073 -0.0001767 ]
+
+Non-linear system
