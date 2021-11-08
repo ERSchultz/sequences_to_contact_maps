@@ -4,13 +4,13 @@
 \multicolumn{5}{|c|}{dataset\_10\_27\_21} \\ 
 \hline
 \hline
-Method & k & Pearson R & Avg Dist Pearson R & SCC \\ 
+Method & k & Pearson R & $\Delta$ Avg Dist Pearson R & $\Delta$  SCC \\ 
 \hline\hline
 Ground Truth-S & S & 0.0 $\pm$ 0.0 & 0.0 $\pm$ 0.0 & 0.0 $\pm$ 0.0 \\ 
-GNN-34 &  & -0.0 $\pm$ 0.0 & 0.009 $\pm$ 0.033 & 0.005 $\pm$ 0.024 \\ 
+GNN-34-S &  & -0.0 $\pm$ 0.0 & 0.009 $\pm$ 0.033 & 0.005 $\pm$ 0.024 \\ 
 \hline
 Ground Truth & 2 & -0.0 $\pm$ 0.0 & 0.173 $\pm$ 0.073 & 0.147 $\pm$ 0.086 \\ 
-Ground Truth-fixed &  & -0.001 $\pm$ 0.0 & 0.109 $\pm$ 0.03 & 0.077 $\pm$ 0.038 \\ 
+Ground Truth-fixed-chi &  & -0.001 $\pm$ 0.0 & 0.109 $\pm$ 0.03 & 0.077 $\pm$ 0.038 \\ 
 Random &  & -0.0 $\pm$ 0.0 & 0.407 $\pm$ 0.147 & 0.305 $\pm$ 0.13 \\ 
 PCA &  & -0.0 $\pm$ 0.0 & 0.211 $\pm$ 0.061 & 0.181 $\pm$ 0.082 \\ 
 PCA Split &  & -0.0 $\pm$ 0.0 & 0.453 $\pm$ 0.102 & 0.33 $\pm$ 0.105 \\ 
@@ -31,13 +31,13 @@ NMF &  & -0.001 $\pm$ 0.0 & 0.125 $\pm$ 0.051 & 0.099 $\pm$ 0.052 \\
 \hline
 \multicolumn{3}{|c|}{dataset\_10\_27\_21} \\ 
 \hline
-Method & k & SCC \\ 
+Method & k & $\Delta$ SCC \\ 
 \hline\hline
 Ground Truth-S & S & 0.0 $\pm$ 0.0 \\ 
-GNN-34 &  & 0.005 $\pm$ 0.024 \\ 
+GNN-34-S &  & 0.005 $\pm$ 0.024 \\ 
 \hline
 Ground Truth & 2 & 0.147 $\pm$ 0.086 \\ 
-Ground Truth-fixed &  & 0.077 $\pm$ 0.038 \\ 
+Ground Truth-fixed-chi &  & 0.077 $\pm$ 0.038 \\ 
 Random &  & 0.305 $\pm$ 0.13 \\ 
 PCA &  & 0.181 $\pm$ 0.082 \\ 
 K-means &  & 0.113 $\pm$ 0.025 \\ 

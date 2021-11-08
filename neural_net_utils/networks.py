@@ -637,6 +637,13 @@ class ContactGNN(nn.Module):
 
         return out
 
+class seq2Energy(nn.Module):
+    def __init__(self, k):
+        self.chi = nn.Parameter(torch.randn(k, k)
+
+    def forward(self, seq):
+        return seq @ self.chi @ seq.t()
+
 def testFullyConnectedAutoencoder():
     model = FullyConnectedAutoencoder(12, [2], 'relu', False)
     criterion = torch.nn.MSELoss()

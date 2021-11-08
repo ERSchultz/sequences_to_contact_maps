@@ -474,6 +474,8 @@ class Sequences(Dataset):
     def __len__(self):
         return len(self.paths)
 
+class Sequences2Energies(Dataset):
+
 
 def main():
     g = ContactsGraph('dataset_04_18_21', root_name = 'graphs0', output = 'energy', crop = [0, 15], m = 15)
