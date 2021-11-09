@@ -54,6 +54,8 @@ def getModel(opt):
         opt.message_passing, opt.use_edge_weights,
         opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act, opt.use_bias,
         opt.log_file)
+    elif opt.model_type == 'seq2Energy':
+        model = newtorks.seq2Energy(args.k)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -73,6 +75,10 @@ def getDataset(opt, names = False, minmax = False):
         opt.root = dataset.root
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
         dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)
+        opt.root = None
+    elif opt.output_mode == 'energy':
+        # opt.GNN_mode guaranteed to be False
+        dataset = Sequences2Energies(opt.data_folder)
         opt.root = None
     else:
         dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,

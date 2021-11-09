@@ -19,8 +19,8 @@ from get_seq import relabel_seq
 
 def getArgs(dataset = None, model_id = None):
     parser = argparse.ArgumentParser(description='Base parser')
-    parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
-    # parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
+    # parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
+    parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
     parser.add_argument('--dataset', type=str, default=dataset, help='Location of input data')
     parser.add_argument('--sample', type=int, default=40)
     parser.add_argument('--model_id', type=int, default=model_id)
@@ -160,10 +160,9 @@ def main(dataset, model_id):
 
     stat = pearsonround(PC_y[0], PC_ehat[0])
     print("Correlation between PC 1 of y_diag and S_hat: ", stat, file = args.log_file)
-    stat = pearsonround(PC_e[0], PC_ehat[0])
-    print("Correlation between PC 1 of S and S_hat: ", stat, file = args.log_file)
-    stat = pearsonround(PC_e[1], PC_ehat[1])
-    print("Correlation between PC 2 of S and S_hat: ", stat, file = args.log_file)
+    for zero_index, one_index in enumerate([1,2,3]):
+        stat = pearsonround(PC_e[zero_index], PC_ehat[zero_index])
+        print(f"Correlation between PC {one_index} of S and S_hat: ", stat, file = args.log_file)
 
     # correlation between S and x
     print("\nS_hat vs X", file = args.log_file)
@@ -178,8 +177,7 @@ def main(dataset, model_id):
     for old in ['AB', 'BC', 'AC']:
         print("\nWhat if '{}' -> 'D'".format(old), file = args.log_file)
         x_new = relabel_seq(x_relabel, '{}-D'.format(old))
-        print(np.array_equal(x, x_new), file = args.log_file)
         inner(x_new, args, PC_e)
 
 if __name__ == '__main__':
-    main('dataset_10_27_21', 34)
+    main('dataset_11_03_21', 42)
