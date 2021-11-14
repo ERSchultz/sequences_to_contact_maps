@@ -1,5 +1,5 @@
 #! /bin/bash
-#SBATCH --job-name=CGNNE3
+#SBATCH --job-name=CGNNE4
 #SBATCH --output=logFiles/ContactGNNEnergy4.out
 #SBATCH --time=24:00:00
 #SBATCH --partition=depablo-gpu
