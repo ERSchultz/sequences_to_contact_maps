@@ -22,7 +22,7 @@ def main(data_folder = 'dataset_04_18_21', root_name = None, root = None):
         print('Removing {}'.format(opt.root))
         rmtree(opt.root)
     else:
-        print('{} does not exist'.format(opt.root))
+        print('{} does not exist - cannot remove'.format(opt.root))
 
 
 if __name__ == '__main__':

@@ -346,9 +346,18 @@ def testEnergy():
     plotContactMap(energy_hat, osp.join(ofile, 'energy_hat.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$\hat{S}$')
     plotContactMap(energy, osp.join(ofile, 'energy.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$S$')
 
+def main():
+    dir = '/home/eric/sequences_to_contact_maps/dataset_11_03_21/samples/sample40'
+    chi = np.loadtxt(osp.join(dir, 'chis.txt'))
+    x = np.load(osp.join(dir, 'x.npy'))
+    s = x @ chi @ x.T
+
+    
+
 if __name__ == '__main__':
+    main()
     # edit_argparse()
-    debugModel('ContactGNN')
+    # debugModel('ContactGNN')
     # plot_fixed()
     # test_argpartition(10)
     # downsampling_test()

@@ -48,7 +48,7 @@ class Names(Dataset):
     def __len__(self):
         return len(self.paths)
 
-class Sequences2Contacts(Dataset):
+class SequencesContacts(Dataset):
     def __init__(self, dirname, toxx, toxx_mode, y_preprocessing, y_norm, x_reshape, ydtype,
                 y_reshape, crop, min_subtraction, names = False, minmax = False, min_sample = 0):
         super(Sequences2Contacts, self).__init__()
@@ -71,7 +71,7 @@ class Sequences2Contacts(Dataset):
         self.y_reshape = y_reshape
         self.crop = crop
         self.names = names
-        self.minmax = minmax
+        self.append_minmax = minmax
         self.paths = sorted(make_dataset(dirname, minSample = min_sample))
 
     def __getitem__(self, index):
@@ -128,7 +128,7 @@ class Sequences2Contacts(Dataset):
         result = [x, y]
         if self.names:
             result.append(self.paths[index])
-        if self.minmax:
+        if self.append_minmax:
             result.append([self.ymin, self.ymax])
 
         return result
@@ -145,7 +145,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 split_neg_pos_edges_for_feature_augmentation = False,
                 transform = None, pre_transform = None,
                 relabel_11_to_00 = False, output = 'contact', crop = None,
-                ofile = sys.stdout):
+                ofile = sys.stdout, verbose = True):
         t0 = time.time()
         self.m = m
         self.dirname = dirname
@@ -196,12 +196,15 @@ class ContactsGraph(torch_geometric.data.Dataset):
             # use exsting graph data folder
             self.root = osp.join(dirname, root_name)
         super(ContactsGraph, self).__init__(self.root, transform, pre_transform)
-        print('Dataset construction time: {} minutes'.format(np.round((time.time() - t0) / 60, 3)), file = ofile)
 
-        self.degree_list = np.array(self.degree_list)
-        mean_deg = np.round(np.mean(self.degree_list, axis = 1), 2)
-        std_deg = np.round(np.std(self.degree_list, axis = 1), 2)
-        print('Mean degree: {} +- {}\n'.format(mean_deg, std_deg), file = ofile)
+        if verbose:
+            print('Dataset construction time: {} minutes'.format(np.round((time.time() - t0) / 60, 3)), file = ofile)
+
+        if self.degree_list and verbose:
+            self.degree_list = np.array(self.degree_list)
+            mean_deg = np.round(np.mean(self.degree_list, axis = 1), 2)
+            std_deg = np.round(np.std(self.degree_list, axis = 1), 2)
+            print('Mean degree: {} +- {}\n'.format(mean_deg, std_deg), file = ofile)
 
     @property
     def raw_file_names(self):
@@ -473,9 +476,6 @@ class Sequences(Dataset):
 
     def __len__(self):
         return len(self.paths)
-
-class Sequences2Energies(Dataset):
-
 
 def main():
     g = ContactsGraph('dataset_04_18_21', root_name = 'graphs0', output = 'energy', crop = [0, 15], m = 15)

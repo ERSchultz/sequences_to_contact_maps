@@ -6,3 +6,56 @@
 \hline
 Method & k & Pearson R & $\Delta$ Avg Dist Pearson R & $\Delta$  SCC \\ 
 \hline\hline
+Ground Truth-S & S & 0.0 $\pm$ 0.0 & 0.0 $\pm$ 0.0 & 0.0 $\pm$ 0.0 \\ 
+GNN-42-fixed-chi-S &  & -0.007 $\pm$ 0.003 & 0.058 $\pm$ 0.023 & 0.059 $\pm$ 0.038 \\ 
+GNN-37-S &  & -0.005 $\pm$ 0.002 & 0.047 $\pm$ 0.059 & 0.06 $\pm$ 0.062 \\ 
+GNN-40-S &  & -0.005 $\pm$ 0.003 & -0.008 $\pm$ 0.028 & -0.001 $\pm$ 0.024 \\ 
+GNN-42-S &  & -0.002 $\pm$ 0.003 & -0.023 $\pm$ 0.036 & -0.023 $\pm$ 0.033 \\ 
+GNN-40-fixed-chi-S &  & -0.007 $\pm$ 0.003 & 0.133 $\pm$ 0.019 & 0.133 $\pm$ 0.036 \\ 
+\hline
+Random & 2 & -0.006 $\pm$ 0.002 & 0.743 $\pm$ 0.021 & 0.65 $\pm$ 0.079 \\ 
+PCA &  & -0.007 $\pm$ 0.003 & 0.187 $\pm$ 0.146 & 0.203 $\pm$ 0.132 \\ 
+PCA Split &  & -0.006 $\pm$ 0.003 & 0.382 $\pm$ 0.248 & 0.355 $\pm$ 0.182 \\ 
+K-means &  & -0.006 $\pm$ 0.003 & 0.241 $\pm$ 0.126 & 0.239 $\pm$ 0.128 \\ 
+NMF &  & -0.006 $\pm$ 0.003 & 0.225 $\pm$ 0.099 & 0.23 $\pm$ 0.097 \\ 
+\hline
+Ground Truth & 4 & -0.007 $\pm$ 0.003 & 0.127 $\pm$ 0.062 & 0.186 $\pm$ 0.065 \\ 
+Ground Truth-fixed-chi &  & -0.007 $\pm$ 0.003 & 0.03 $\pm$ 0.066 & 0.042 $\pm$ 0.078 \\ 
+Random &  & -0.006 $\pm$ 0.002 & 0.746 $\pm$ 0.026 & 0.656 $\pm$ 0.066 \\ 
+PCA &  & -0.007 $\pm$ 0.003 & 0.14 $\pm$ 0.097 & 0.179 $\pm$ 0.102 \\ 
+PCA Split &  & -0.006 $\pm$ 0.003 & 0.313 $\pm$ 0.222 & 0.293 $\pm$ 0.193 \\ 
+K-means &  & -0.007 $\pm$ 0.003 & 0.14 $\pm$ 0.078 & 0.145 $\pm$ 0.079 \\ 
+NMF &  & -0.007 $\pm$ 0.003 & 0.055 $\pm$ 0.063 & 0.067 $\pm$ 0.079 \\ 
+\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\multicolumn{3}{|c|}{dataset\_11\_03\_21} \\ 
+\hline
+Method & k & $\Delta$ SCC \\ 
+\hline\hline
+Ground Truth-S & S & 0.0 $\pm$ 0.0 \\ 
+GNN-42-fixed-chi-S &  & 0.059 $\pm$ 0.038 \\ 
+GNN-37-S &  & 0.06 $\pm$ 0.062 \\ 
+GNN-40-S &  & -0.001 $\pm$ 0.024 \\ 
+GNN-42-S &  & -0.023 $\pm$ 0.033 \\ 
+GNN-40-fixed-chi-S &  & 0.133 $\pm$ 0.036 \\ 
+\hline
+Random & 2 & 0.65 $\pm$ 0.079 \\ 
+PCA &  & 0.203 $\pm$ 0.132 \\ 
+K-means &  & 0.239 $\pm$ 0.128 \\ 
+NMF &  & 0.23 $\pm$ 0.097 \\ 
+\hline
+Ground Truth & 4 & 0.186 $\pm$ 0.065 \\ 
+Ground Truth-fixed-chi &  & 0.042 $\pm$ 0.078 \\ 
+Random &  & 0.656 $\pm$ 0.066 \\ 
+PCA &  & 0.179 $\pm$ 0.102 \\ 
+K-means &  & 0.145 $\pm$ 0.079 \\ 
+NMF &  & 0.067 $\pm$ 0.079 \\ 
+\hline
+\end{tabular}
+\end{center}
+

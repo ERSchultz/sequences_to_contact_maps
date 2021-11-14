@@ -22,7 +22,7 @@ import csv
 import networks
 from dataset_classes import *
 
-def getModel(opt):
+def getModel(opt, verbose = True):
     if opt.model_type == 'SimpleEpiNet':
         model = networks.SimpleEpiNet(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
     if opt.model_type == 'UNet':
@@ -53,16 +53,14 @@ def getModel(opt):
         opt.encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
         opt.message_passing, opt.use_edge_weights,
         opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act, opt.use_bias,
-        opt.log_file)
-    elif opt.model_type == 'seq2Energy':
-        model = newtorks.seq2Energy(args.k)
+        opt.log_file, verbose = verbose)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
     return model
 
 ## dataset functions ##
-def getDataset(opt, names = False, minmax = False):
+def getDataset(opt, names = False, minmax = False, verbose = True):
     if opt.GNN_mode:
         dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.m, opt.y_preprocessing, opt.y_log_transform,
                                             opt.y_norm, opt.min_subtraction, opt.use_node_features, opt.use_edge_weights,
@@ -71,17 +69,13 @@ def getDataset(opt, names = False, minmax = False):
                                             opt.split_neg_pos_edges_for_feature_augmentation,
                                             opt.transforms_processed, opt.pre_transforms_processed,
                                             opt.relabel_11_to_00, opt.output_mode, opt.crop,
-                                            opt.log_file)
+                                            opt.log_file, verbose = verbose)
         opt.root = dataset.root
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
         dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)
         opt.root = None
-    elif opt.output_mode == 'energy':
-        # opt.GNN_mode guaranteed to be False
-        dataset = Sequences2Energies(opt.data_folder)
-        opt.root = None
     else:
-        dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
+        dataset = SequencesContacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
                                             opt.y_norm, opt.x_reshape, opt.ydtype,
                                             opt.y_reshape, opt.crop, opt.min_subtraction, names, minmax)
         opt.root = None
@@ -91,7 +85,7 @@ def getDataLoaders(dataset, opt):
     train_dataset, val_dataset, test_dataset = splitDataset(dataset, opt)
 
     if opt.GNN_mode:
-        dataloader_fn = torch_geometric.data.DataLoader
+        dataloader_fn = torch_geometric.loader.DataLoader
     else:
         dataloader_fn = DataLoader
     train_dataloader = dataloader_fn(train_dataset, batch_size = opt.batch_size,

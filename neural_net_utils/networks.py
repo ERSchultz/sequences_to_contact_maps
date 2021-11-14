@@ -440,7 +440,7 @@ class ContactGNN(nn.Module):
                 encoder_hidden_sizes_list, update_hidden_sizes_list,
                 message_passing, use_edge_weights,
                 head_architecture, head_hidden_sizes_list, head_act, use_bias,
-                ofile = sys.stdout):
+                ofile = sys.stdout, verbose = True):
         '''
         Inputs:
             m: number of nodes
@@ -581,10 +581,11 @@ class ContactGNN(nn.Module):
         else:
             raise Exception("Unkown head_architecture {}".format(head_architecture))
 
-        print("#### ARCHITECTURE ####", file = ofile)
-        print(self.encoder, file = ofile)
-        print(self.model, file = ofile)
-        print(self.head, '\n', file = ofile)
+        if verbose:
+            print("#### ARCHITECTURE ####", file = ofile)
+            print(self.encoder, file = ofile)
+            print(self.model, file = ofile)
+            print(self.head, '\n', file = ofile)
 
     def forward(self, graph):
         if self.encoder is not None:
@@ -638,11 +639,15 @@ class ContactGNN(nn.Module):
         return out
 
 class seq2Energy(nn.Module):
-    def __init__(self, k):
-        self.chi = nn.Parameter(torch.randn(k, k)
+    def __init__(self, k, init=None):
+        super(seq2Energy, self).__init__()
+        if init is None:
+            init = torch.randn((k, k))
+            init = torch.triu(init)
+        self.chi = nn.Parameter(init)
 
     def forward(self, seq):
-        return seq @ self.chi @ seq.t()
+        return seq @ torch.triu(self.chi) @ seq.t()
 
 def testFullyConnectedAutoencoder():
     model = FullyConnectedAutoencoder(12, [2], 'relu', False)
