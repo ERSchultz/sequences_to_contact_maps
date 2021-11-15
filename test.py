@@ -352,12 +352,12 @@ def main():
     x = np.load(osp.join(dir, 'x.npy'))
     s = x @ chi @ x.T
 
-    
+
 
 if __name__ == '__main__':
-    main()
+    # main()
     # edit_argparse()
-    # debugModel('ContactGNN')
+    debugModel('ContactGNN')
     # plot_fixed()
     # test_argpartition(10)
     # downsampling_test()
