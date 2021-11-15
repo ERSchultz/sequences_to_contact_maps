@@ -25,8 +25,8 @@ yLogTransform='True'
 messagePassing='SignedConv'
 useNodeFeatures='false'
 useEdgeWeights='false'
-hiddenSizesList='8-8-2'
-EncoderHiddenSizesList='100-100-8'
+hiddenSizesList='8-8-8'
+EncoderHiddenSizesList='100-100-16'
 updateHiddenSizesList='100-100-16'
 transforms='none'
 preTransforms='degree'
@@ -44,7 +44,7 @@ headHiddenSizesList='100-100-1'
 
 # hyperparameters
 nEpochs=100
-batchSize=2
+batchSize=4
 numWorkers=4
 milestones='none'
 gamma=0.1
