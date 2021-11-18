@@ -74,6 +74,8 @@ def debugModel(model_type):
 
     # dataset
     opt.data_folder = "/home/eric/dataset_test"
+    opt.scratch = '/home/eric/scratch'
+    opt.use_scratch=True
 
     # architecture
     opt.k = 2
@@ -186,7 +188,7 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 1
+    opt.n_epochs = 2
     opt.lr = 1e-3
     opt.batch_size = 1
     opt.milestones = None
@@ -199,7 +201,7 @@ def debugModel(model_type):
     opt.print_params = False
     opt.gpus = 1
 
-    opt = finalizeOpt(opt, parser, True)
+    opt = finalizeOpt(opt, parser, False)
 
     opt.model_type = model_type
 

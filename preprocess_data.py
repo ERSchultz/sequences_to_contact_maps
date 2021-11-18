@@ -13,8 +13,8 @@ from data_summary_plots import genomic_distance_statistics
 
 def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
-    parser.add_argument('--input_folder', type=str, default='dataset_test', help='Location of input data')
-    parser.add_argument('--output_folder', type=str, default='test', help='Location to write data to')
+    parser.add_argument('--input_folder', type=str, default='/home/eric/dataset_test', help='Location of input data')
+    parser.add_argument('--output_folder', type=str, default='/home/eric/dataset_test2', help='Location to write data to')
     parser.add_argument('--min_sample', type=int, default=0, help='minimum sample id')
 
     # dataloader args
@@ -54,7 +54,7 @@ def make_paths(args, in_paths):
             os.mkdir(out_path, mode = 0o755)
 
 def get_min_max(args, dataloader, ifile):
-    '''Helper function to get min and max'''
+    '''Helper function to get min and max values of all contact maps.'''
     min_max = np.array([float('inf'), -float('inf')])
     for i, path in enumerate(dataloader):
         if i < args.sample_size: # dataloader shuffles so this is a random sample
@@ -95,7 +95,7 @@ def process_sample_save(in_path, out_path, k, n, overwrite, use_x2xx):
     s_source_file = osp.join(in_path, 's_matrix.txt')
     if osp.exists(s_source_file):
         s_output_file = osp.join(out_path, 's.npy')
-        if not osp.exits(s_output_file) or overwrite:
+        if not osp.exists(s_output_file) or overwrite:
             s = np.loadtxt(s_source_file)
             np.save(s_output_file, s)
 
@@ -124,7 +124,7 @@ def process_diag(args, out_paths):
         else:
             meanDist = np.load(meanDist_path)
     else:
-        meanDist = None # not needed
+        meanDist = np.array(None) # not needed
 
     # set up for multiprocessing
     mapping = []

@@ -31,8 +31,7 @@ def make_dataset(dir, minSample = 0):
                 print("Skipping {}".format(file))
             else:
                 data_file = osp.join(samples_dir, file)
-                if os.listdir(data_file): # not empty
-                    data_file_arr.append(data_file)
+                data_file_arr.append(data_file)
     return data_file_arr
 
 class Names(Dataset):

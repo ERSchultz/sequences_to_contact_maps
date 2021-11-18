@@ -32,6 +32,7 @@ def getBaseParser():
 
     # pre-processing args
     parser.add_argument('--data_folder', type=str, default='dataset_04_18_21', help='Location of data')
+    parser.add_argument('--scratch', type=str, default='/scratch/midway2/erschultz', help='Location of scratch dir')
     parser.add_argument('--root_name', type=str2None, help='name of file to save graph data (leave as None to create root automatically) (root is the directory path - defined later)')
     parser.add_argument('--delete_root', type=str2bool, default=True, help='True to delete root directory after runtime')
     parser.add_argument('--toxx', type=str2bool, default=False, help='True if x should be converted to 2D image')
@@ -295,7 +296,7 @@ def finalizeOpt(opt, parser, local = False):
 def copy_data_to_scratch(opt):
     t0 = time.time()
     # initialize scratch path
-    scratch_path = osp.join('/scratch/midway2/erschultz', osp.split(opt.data_folder)[-1])
+    scratch_path = osp.join(opt.scratch, osp.split(opt.data_folder)[-1])
     if not osp.exists(scratch_path):
         os.mkdir(scratch_path, mode = 0o700)
 
@@ -317,15 +318,21 @@ def copy_data_to_scratch(opt):
         if not osp.exists(scratch_sample_dir):
             os.mkdir(scratch_sample_dir, mode = 0o700)
         for file in os.listdir(sample_dir):
-            # skip transferring certain files if not needed (saves space on scratch)
+            # skip transferring certain files if not needed (saves space on scratch and move time)
             if file == 'xx.npy' and not opt.toxx:
+                # only need xx.npy if toxx is True
                 pass
             elif file == 'y_prcnt.npy' and opt.y_preprocessing != 'prcnt':
+                # only need y_prcnt.npy if using percentile preprocessing
                 pass
-            else:
+            elif file == 's.npy' and opt.output_mode != 'energy':
+                # only need s.npy if neural net output is energy
+                pass
+            elif file.endswith('npy'):
+                # only move .npy files
                 source_file = osp.join(sample_dir, file)
                 destination_file = osp.join(scratch_sample_dir, file)
-                if file.endswith('npy') and not osp.exists(destination_file):
+                if not osp.exists(destination_file):
                     shutil.copyfile(source_file, destination_file)
 
     opt.data_folder = scratch_path
