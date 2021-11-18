@@ -13,7 +13,7 @@ from data_summary_plots import genomic_distance_statistics
 
 def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
-    parser.add_argument('--input_folder', type=str, default='dataset_08_26_21', help='Location of input data')
+    parser.add_argument('--input_folder', type=str, default='dataset_test', help='Location of input data')
     parser.add_argument('--output_folder', type=str, default='test', help='Location to write data to')
     parser.add_argument('--min_sample', type=int, default=0, help='minimum sample id')
 
@@ -31,7 +31,9 @@ def getArgs():
     parser.add_argument('--sample_size', type=int, default=2, help='Size of sample for preprocessing statistics')
     parser.add_argument('--seed', type=int, default=42, help='Random seed to use. Default: 42')
     parser.add_argument('--overwrite', type=str2bool, default=False, help='Whether or not to overwrite existing preprocessing files')
-    parser.add_argument('--percentiles', type=str2list, default=[20, 40, 50, 60, 70, 80, 85, 90, 95, 100], help='Percentiles to use for percentile preprocessing (None to skip)')
+    parser.add_argument('--percentiles', type=str2list, help='Percentiles to use for percentile preprocessing (None to skip)')
+    parser.add_argument('--use_batch_for_diag', type=str2bool, default=False, help='True to use batch for diag norm (in addition to instance)')
+    parser.add_argument('--use_x2xx', type=str2bool, default=False, help='True to calculate x2xx')
 
     args = parser.parse_args()
     args.GNN_mode = False # used in getDataLoaders
@@ -66,7 +68,7 @@ def get_min_max(args, dataloader, ifile):
                 min_max[1] = max_val
     return min_max
 
-def process_sample_save(in_path, out_path, k, n, overwrite):
+def process_sample_save(in_path, out_path, k, n, overwrite, use_x2xx):
     '''Saves relevant files as .npy files'''
     # check if sample needs to be processed
     x_npy_file = osp.join(out_path, 'x.npy')
@@ -82,8 +84,12 @@ def process_sample_save(in_path, out_path, k, n, overwrite):
             x[:, i-1] = xi
         np.save(x_npy_file, x.astype(np.int8))
 
-        xx = x2xx(x)
-        np.save(osp.join(out_path, 'xx.npy'), xx.astype(np.int8))
+    if use_x2xx:
+        # check if sample needs to be processed
+        xx_file = osp.join(out_path, 'xx.npy')
+        if not osp.exists(xx_file) or overwrite:
+            xx = x2xx(x)
+            np.save(osp.join(out_path, 'xx.npy'), xx.astype(np.int8))
 
     y_npy_file = osp.join(out_path, 'y.npy')
     if not osp.exists(y_npy_file) or overwrite:
@@ -92,7 +98,7 @@ def process_sample_save(in_path, out_path, k, n, overwrite):
         np.save(y_npy_file, y.astype(np.int16))
 
 def process_diag(args, out_paths):
-    # determine mean_dist for diagonal preprocessing
+    # determine mean_dist for batch diagonal preprocessing
     meanDist_path = osp.join(args.output_folder, 'meanDist.npy')
     if not osp.exists(meanDist_path) or args.overwrite:
         train_dataloader, _, _ = getDataLoaders(Names(args.output_folder, args.min_sample), args)
@@ -112,21 +118,22 @@ def process_diag(args, out_paths):
     # set up for multiprocessing
     mapping = []
     for out_path in out_paths:
-        mapping.append((out_path, meanDist.copy(), args.overwrite))
+        mapping.append((out_path, meanDist.copy(), args.overwrite, args.use_batch_for_diag))
 
     with multiprocessing.Pool(args.num_workers) as p:
         p.starmap(process_sample_diag, mapping)
 
-def process_sample_diag(path, meanDist, overwrite):
+def process_sample_diag(path, meanDist, overwrite, use_batch):
     '''Inner function for process_diag.'''
-    # check if sample needs to be processed
-    y_diag_path = osp.join(path, 'y_diag.npy')
-    if not osp.exists(y_diag_path) or overwrite:
-        y = np.load(osp.join(path, 'y.npy')).astype(np.float64)
-        y_diag = diagonal_preprocessing(y, meanDist)
-        np.save(y_diag_path, y_diag)
+    if use_batch:
+        y_diag_batch_path = osp.join(path, 'y_diag_batch.npy')
+        # check if sample needs to be processed
+        if not osp.exists(y_diag_batch_path) or overwrite:
+            y = np.load(osp.join(path, 'y.npy')).astype(np.float64)
+            y_diag_batch = diagonal_preprocessing(y, meanDist)
+            np.save(y_diag_batch_path, y_diag_batch)
 
-    y_diag_instance_path = osp.join(path, 'y_diag_instance.npy')
+    y_diag_instance_path = osp.join(path, 'y_diag.npy')
     if not osp.exists(y_diag_instance_path) or overwrite:
         y = np.load(osp.join(path, 'y.npy')).astype(np.float64)
         meanDist = genomic_distance_statistics(y)
@@ -192,27 +199,27 @@ def main():
 
     train_dataloader, _, _ = getDataLoaders(Names(args.output_folder, args.min_sample), args)
 
-    # # diag
-    # print('Diagonal Preprocessing')
-    # process_diag(args, out_paths)
-    # y_diag_min_max = get_min_max(args, train_dataloader, 'y_diag.npy')
-    # np.save(osp.join(args.output_folder, 'y_diag_min_max.npy'), y_diag_min_max.astype(np.float64))
-    # print('y_diag_min_max: ', y_diag_min_max)
-    #
-    # # percentile
-    # if args.percentiles is not None:
-    #     print('Percentile Preprocessing')
-    #     process_percentile(args, out_paths)
-    #     y_prcnt_min_max = get_min_max(args, train_dataloader, 'y_prcnt.npy')
-    #     np.save(osp.join(args.output_folder, 'y_prcnt_min_max.npy'), y_prcnt_min_max.astype(np.float64))
-    #     print('y_prcnt_min_max: ', y_prcnt_min_max)
-    #
-    # # copy over chi
-    # chis_path = osp.join(args.input_folder, 'chis.txt')
-    # if osp.exists(chis_path):
-    #     chi = np.loadtxt(chis_path)
-    #     np.save(osp.join(args.output_folder, 'chis.npy'), chi)
-    #     np.savetxt(osp.join(args.output_folder, 'chis.txt'), chi, fmt='%0.5f')
+    # diag
+    print('Diagonal Preprocessing')
+    process_diag(args, out_paths)
+    y_diag_min_max = get_min_max(args, train_dataloader, 'y_diag.npy')
+    np.save(osp.join(args.output_folder, 'y_diag_min_max.npy'), y_diag_min_max.astype(np.float64))
+    print('y_diag_min_max: ', y_diag_min_max)
+
+    # percentile
+    if args.percentiles is not None:
+        print('Percentile Preprocessing')
+        process_percentile(args, out_paths)
+        y_prcnt_min_max = get_min_max(args, train_dataloader, 'y_prcnt.npy')
+        np.save(osp.join(args.output_folder, 'y_prcnt_min_max.npy'), y_prcnt_min_max.astype(np.float64))
+        print('y_prcnt_min_max: ', y_prcnt_min_max)
+
+    # copy over chi
+    chis_path = osp.join(args.input_folder, 'chis.txt')
+    if osp.exists(chis_path):
+        chi = np.loadtxt(chis_path)
+        np.save(osp.join(args.output_folder, 'chis.npy'), chi)
+        np.savetxt(osp.join(args.output_folder, 'chis.txt'), chi, fmt='%0.5f')
 
     print('Total time: {}'.format(time.time() - t0))
 
