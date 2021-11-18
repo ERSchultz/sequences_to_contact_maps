@@ -1,6 +1,6 @@
 #! /bin/bash
 #SBATCH --job-name=preprocess
-#SBATCH --partition=depablo-gpu
+#SBATCH --partition=broadwl
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=20
 #SBATCH --mem-per-cpu=2000
