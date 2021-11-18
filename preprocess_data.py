@@ -80,8 +80,9 @@ def process_sample_save(in_path, out_path, k, n, overwrite, use_x2xx):
             rangefn = range(1, k + 1)
         for i in rangefn:
             xi_path = osp.join(in_path, 'seq{}.txt'.format(i))
-            xi = np.loadtxt(xi_path)
-            x[:, i-1] = xi
+            if osp.exists(xi_path):
+                xi = np.loadtxt(xi_path)
+                x[:, i-1] = xi
         np.save(x_npy_file, x.astype(np.int8))
 
     if use_x2xx:
@@ -91,6 +92,13 @@ def process_sample_save(in_path, out_path, k, n, overwrite, use_x2xx):
             xx = x2xx(x)
             np.save(osp.join(out_path, 'xx.npy'), xx.astype(np.int8))
 
+    s_source_file = osp.join(in_path, 's_matrix.txt')
+    if osp.exists(s_source_file):
+        s_output_file = osp.join(out_path, 's.npy')
+        if not osp.exits(s_output_file) or overwrite:
+            s = np.loadtxt(s_source_file)
+            np.save(s_output_file, s)
+
     y_npy_file = osp.join(out_path, 'y.npy')
     if not osp.exists(y_npy_file) or overwrite:
         y_path = osp.join(in_path, 'data_out/contacts.txt')
@@ -99,21 +107,24 @@ def process_sample_save(in_path, out_path, k, n, overwrite, use_x2xx):
 
 def process_diag(args, out_paths):
     # determine mean_dist for batch diagonal preprocessing
-    meanDist_path = osp.join(args.output_folder, 'meanDist.npy')
-    if not osp.exists(meanDist_path) or args.overwrite:
-        train_dataloader, _, _ = getDataLoaders(Names(args.output_folder, args.min_sample), args)
-        assert args.sample_size <= args.trainN, "Sample size too large - max {}".format(args.trainN)
-        meanDist = np.zeros(args.n)
-        for i, path in enumerate(train_dataloader):
-            if i < args.sample_size: # dataloader shuffles so this is a random sample
-                path = path[0]
-                y = np.load(osp.join(path, 'y.npy'))
-                meanDist += genomic_distance_statistics(y)
-        meanDist = meanDist / args.sample_size
-        print('meanDist: ', meanDist)
-        np.save(meanDist_path, meanDist)
+    if args.use_batch_for_diag:
+        meanDist_path = osp.join(args.output_folder, 'meanDist.npy')
+        if not osp.exists(meanDist_path) or args.overwrite:
+            train_dataloader, _, _ = getDataLoaders(Names(args.output_folder, args.min_sample), args)
+            assert args.sample_size <= args.trainN, "Sample size too large - max {}".format(args.trainN)
+            meanDist = np.zeros(args.n)
+            for i, path in enumerate(train_dataloader):
+                if i < args.sample_size: # dataloader shuffles so this is a random sample
+                    path = path[0]
+                    y = np.load(osp.join(path, 'y.npy'))
+                    meanDist += genomic_distance_statistics(y)
+            meanDist = meanDist / args.sample_size
+            print('meanDist: ', meanDist)
+            np.save(meanDist_path, meanDist)
+        else:
+            meanDist = np.load(meanDist_path)
     else:
-        meanDist = np.load(meanDist_path)
+        meanDist = None # not needed
 
     # set up for multiprocessing
     mapping = []
@@ -192,7 +203,7 @@ def main():
     # set up for multiprocessing
     mapping = []
     for in_path, out_path in zip(in_paths, out_paths):
-        mapping.append((in_path, out_path, args.k, args.n, args.overwrite))
+        mapping.append((in_path, out_path, args.k, args.n, args.overwrite, args.use_x2xx))
 
     with multiprocessing.Pool(args.num_workers) as p:
         p.starmap(process_sample_save, mapping)

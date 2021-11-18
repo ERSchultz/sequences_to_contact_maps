@@ -20,3 +20,9 @@ percentiles='none' # none skips percentiles
 cd ~/sequences_to_contact_maps
 source activate activate python3.8_pytorch1.8.1_cuda10.2
 python3 preprocess_data.py --input_folder $input --output_folder $output --num_workers $numWorkers --k $k --n $n --sample_size $sampleSize --min_sample $minSample --overwrite $overwrite --percentiles $percentiles
+
+input="/project2/depablo/erschultz/dataset_11_14_21"
+output="/project2/depablo/erschultz/dataset_11_14_21"
+k=10
+overwrite="false"
+python3 preprocess_data.py --input_folder $input --output_folder $output --num_workers $numWorkers --k $k --n $n --sample_size $sampleSize --min_sample $minSample --overwrite $overwrite --percentiles $percentiles

@@ -249,10 +249,14 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 # first look for s
                 s_path1 = osp.join(raw_folder, 's.npy')
                 s_path2 = osp.join(raw_folder, 's_matrix.txt')
-                if osp.exists(s_path1):
-                    graph.energy = np.load(s_path1)
-                elif osp.exists(s_path2):
-                    graph.energy = np.loadtxt(s_path2)
+                if osp.exists(s_path1) or osp.exists(s_path2):
+                    if osp.exists(s_path1):
+                        s = np.load(s_path1)
+                    else:
+                        s = np.loadtxt(s_path2)
+                    if self.crop is not None:
+                        s = s[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
+                    graph.energy = torch.tensor(s, dtype = torch.float32)
                 else:
                     # look for chi
                     chi_path1 = osp.join(raw_folder, 'chis.npy')
