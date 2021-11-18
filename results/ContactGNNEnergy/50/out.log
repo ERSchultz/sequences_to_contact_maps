@@ -1,0 +1,224 @@
+Took 1082.0 seconds to move data to scratch
+#### ARCHITECTURE ####
+Sequential(
+  (0): Linear(3, 100, bias=True)
+  (1): PReLU(num_parameters=1)
+  (2): Linear(100, 100, bias=True)
+  (3): PReLU(num_parameters=1)
+  (4): Linear(100, 16, bias=True)
+  (5): PReLU(num_parameters=1)
+)
+Sequential(
+  (0): SignedConv(16, 8, first_aggr=True)
+  (1): Linear(16, 100, bias=True)
+  (2): PReLU(num_parameters=1)
+  (3): Linear(100, 100, bias=True)
+  (4): PReLU(num_parameters=1)
+  (5): Linear(100, 16, bias=True)
+  (6): PReLU(num_parameters=1)
+  (7): SignedConv(8, 8, first_aggr=False)
+  (8): Linear(16, 100, bias=True)
+  (9): PReLU(num_parameters=1)
+  (10): Linear(100, 100, bias=True)
+  (11): PReLU(num_parameters=1)
+  (12): Linear(100, 16, bias=True)
+  (13): PReLU(num_parameters=1)
+  (14): SignedConv(8, 8, first_aggr=False)
+  (15): Linear(16, 100, bias=True)
+  (16): PReLU(num_parameters=1)
+  (17): Linear(100, 100, bias=True)
+  (18): PReLU(num_parameters=1)
+  (19): Linear(100, 16, bias=True)
+  (20): PReLU(num_parameters=1)
+)
+Sequential(
+  (0): LinearBlock(
+    (model): Sequential(
+      (0): Linear(in_features=32, out_features=100, bias=True)
+      (1): PReLU(num_parameters=1)
+    )
+  )
+  (1): LinearBlock(
+    (model): Sequential(
+      (0): Linear(in_features=100, out_features=100, bias=True)
+      (1): PReLU(num_parameters=1)
+    )
+  )
+  (2): LinearBlock(
+    (model): Sequential(
+      (0): Linear(in_features=100, out_features=1, bias=True)
+      (1): PReLU(num_parameters=1)
+    )
+  )
+) 
+
+Namespace(GNN_mode=True, act='prelu', autoencoder_mode=False, batch_size=2, bottleneck=None, channels=1, classes=10, criterion=<function mse_loss at 0x7f5d90fe8dc0>, crop=None, cuda=True, data_folder='/scratch/midway2/erschultz/dataset_11_14_21', degree=True, delete_root=False, device=device(type='cuda'), dilation_list=None, dilation_list_head=None, dilation_list_trunk=None, down_sampling=None, encoder_hidden_sizes_list=[100, 100, 16], gamma=0.1, gpus=1, head_act='prelu', head_architecture='concat', head_hidden_sizes_list=[100, 100, 1], hidden_sizes_list=[8, 8, 8], id=50, ifile=None, ifile_folder=None, inner_act='prelu', k=2, kernel_w_list=None, log_file=<_io.TextIOWrapper name='results/ContactGNNEnergy/50/out.log' mode='a' encoding='UTF-8'>, loss='mse', lr=0.0001, m=1024, message_passing='SignedConv', milestones=None, min_subtraction=True, model_type='ContactGNNEnergy', n_epochs=100, nf=None, node_feature_size=3, num_workers=4, ofile_folder='results/ContactGNNEnergy/50', out_act='prelu', output_mode='energy', param_file=<_io.TextIOWrapper name='results/ContactGNNEnergy/50/params.log' mode='a' encoding='UTF-8'>, parameter_sharing=False, plot=True, plot_predictions=True, pre_transforms=['degree'], pre_transforms_processed=None, pretrained=False, print_mod=2, print_params=True, relabel_11_to_00=False, resume_training=False, root_name='ContactGNNEnergy4', save_mod=5, scratch='/scratch/midway2/erschultz', seed=42, shuffle=True, sparsify_threshold=0.176, sparsify_threshold_upper=None, split=[0.8, 0.1, 0.1], split_neg_pos_edges=True, split_neg_pos_edges_for_feature_augmentation=True, start_epoch=1, top_k=None, toxx=False, toxx_mode='mean', training_norm=None, transforms=None, transforms_processed=None, update_hidden_sizes_list=[100, 100, 16], use_bias=True, use_edge_weights=False, use_node_features=False, use_parallel=False, use_scratch=True, verbose=False, weighted_LDP=False, weighted_degree=False, x_reshape=True, y_log_transform=True, y_norm=None, y_preprocessing='diag', y_reshape=True, ydtype=torch.float32)
+
+Dataset construction time: 17.149 minutes
+Mean degree: [308.85 326.1  341.5  ... 348.04 352.85 328.51] +- [64.06 67.87 68.24 ... 72.57 76.24 72.96]
+
+#### TRAINING/VALIDATION ####
+Epoch 2, loss = 18.4746
+Mean test/val loss: 18.4630
+
+Epoch 4, loss = 17.8722
+Mean test/val loss: 17.7994
+
+Epoch 6, loss = 17.5633
+Mean test/val loss: 17.7335
+
+Epoch 8, loss = 16.6971
+Mean test/val loss: 16.5898
+
+Epoch 10, loss = 16.2026
+Mean test/val loss: 16.1824
+
+Epoch 12, loss = 15.9263
+Mean test/val loss: 15.8421
+
+Epoch 14, loss = 15.5834
+Mean test/val loss: 15.5219
+
+Epoch 16, loss = 15.2868
+Mean test/val loss: 15.2265
+
+Epoch 18, loss = 15.0606
+Mean test/val loss: 15.1263
+
+Epoch 20, loss = 14.8731
+Mean test/val loss: 14.8291
+
+Epoch 22, loss = 14.6999
+Mean test/val loss: 14.8215
+
+Epoch 24, loss = 14.5432
+Mean test/val loss: 14.4491
+
+Epoch 26, loss = 14.4452
+Mean test/val loss: 14.2828
+
+Epoch 28, loss = 14.2600
+Mean test/val loss: 14.1447
+
+Epoch 30, loss = 14.1489
+Mean test/val loss: 14.3389
+
+Epoch 32, loss = 14.0482
+Mean test/val loss: 14.1629
+
+Epoch 34, loss = 13.9192
+Mean test/val loss: 14.0554
+
+Epoch 36, loss = 13.8076
+Mean test/val loss: 13.6779
+
+Epoch 38, loss = 13.6932
+Mean test/val loss: 13.9007
+
+Epoch 40, loss = 13.5752
+Mean test/val loss: 13.4947
+
+Epoch 42, loss = 13.5062
+Mean test/val loss: 13.5256
+
+Epoch 44, loss = 13.3903
+Mean test/val loss: 13.4765
+
+Epoch 46, loss = 13.2821
+Mean test/val loss: 13.2029
+
+Epoch 48, loss = 13.2171
+Mean test/val loss: 13.1186
+
+Epoch 50, loss = 13.1533
+Mean test/val loss: 13.1196
+
+Epoch 52, loss = 13.0465
+Mean test/val loss: 13.0279
+
+Epoch 54, loss = 12.9566
+Mean test/val loss: 12.9532
+
+Epoch 56, loss = 12.8067
+Mean test/val loss: 12.8854
+
+Epoch 58, loss = 12.7745
+Mean test/val loss: 12.6990
+
+Epoch 60, loss = 12.6412
+Mean test/val loss: 12.6333
+
+Epoch 62, loss = 12.5772
+Mean test/val loss: 12.5734
+
+Epoch 64, loss = 12.4964
+Mean test/val loss: 12.4611
+
+Epoch 66, loss = 12.4121
+Mean test/val loss: 12.4837
+
+Epoch 68, loss = 12.3360
+Mean test/val loss: 12.3174
+
+Epoch 70, loss = 12.2964
+Mean test/val loss: 12.4957
+
+Epoch 72, loss = 12.2251
+Mean test/val loss: 12.2668
+
+Epoch 74, loss = 12.2123
+Mean test/val loss: 12.2207
+
+Epoch 76, loss = 12.1162
+Mean test/val loss: 12.1721
+
+Epoch 78, loss = 12.0710
+Mean test/val loss: 12.4651
+
+Epoch 80, loss = 11.9977
+Mean test/val loss: 12.0480
+
+Epoch 82, loss = 11.9721
+Mean test/val loss: 12.0739
+
+Epoch 84, loss = 11.8931
+Mean test/val loss: 12.0462
+
+Epoch 86, loss = 11.8439
+Mean test/val loss: 11.9049
+
+Epoch 88, loss = 11.8117
+Mean test/val loss: 11.7914
+
+Epoch 90, loss = 11.7457
+Mean test/val loss: 11.7210
+
+Epoch 92, loss = 11.6968
+Mean test/val loss: 12.1165
+
+Epoch 94, loss = 11.6566
+Mean test/val loss: 11.9392
+
+Epoch 96, loss = 11.6309
+Mean test/val loss: 11.6684
+
+Epoch 98, loss = 11.6102
+Mean test/val loss: 11.8954
+
+Epoch 100, loss = 11.5425
+Mean test/val loss: 11.7247
+
+
+Total parameters: 67,197
+Total training + validation time: 7.0 hours
+Final val loss: 11.724660091400146
+
+#### Plotting Script ####
+Prediction Results:
+results/ContactGNNEnergy/50/sample1230: 9.775947570800781
+results/ContactGNNEnergy/50/sample1761: 13.935239791870117
+results/ContactGNNEnergy/50/sample40: 11.44815444946289
+results/ContactGNNEnergy/50/sample1751: 16.212993621826172
+results/ContactGNNEnergy/50/sample1718: 12.191401481628418
+Loss: 12.712747383117676 +- 2.2019083266804786
+
