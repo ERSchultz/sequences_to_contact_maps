@@ -9,7 +9,7 @@
 
 input="/project2/depablo/erschultz/dataset_08_29_21"
 output="/project2/depablo/erschultz/dataset_08_29_21"
-numWorkers=1
+numWorkers=20
 k=2
 n=1024
 sampleSize=200 # not used since use_batch_for_diag defaults to False

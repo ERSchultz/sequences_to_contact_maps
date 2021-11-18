@@ -74,7 +74,6 @@ def debugModel(model_type):
 
     # dataset
     opt.data_folder = "/home/eric/dataset_test"
-    opt.data_folder = ''
 
     # architecture
     opt.k = 2
@@ -357,7 +356,7 @@ def main():
 if __name__ == '__main__':
     # main()
     # edit_argparse()
-    debugModel('ContactGNN')
+    debugModel('ContactGNNEnergy')
     # plot_fixed()
     # test_argpartition(10)
     # downsampling_test()

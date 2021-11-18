@@ -246,16 +246,25 @@ class ContactsGraph(torch_geometric.data.Dataset):
                                                         # batch = data.batch,
                                                         # max_num_nodes = opt.n)
             elif self.output == 'energy':
-                chi_path1 = osp.join(raw_folder, 'chis.npy')
-                chi_path2 = osp.join(osp.split(osp.split(raw_folder)[0])[0], 'chis.npy')
-                if osp.exists(chi_path1):
-                    chi = np.load(chi_path1)
-                elif osp.exists(chi_path2):
-                    chi = np.load(chi_path2)
+                # first look for s
+                s_path1 = osp.join(raw_folder, 's.npy')
+                s_path2 = osp.join(raw_folder, 's_matrix.txt')
+                if osp.exists(s_path1):
+                    graph.energy = np.load(s_path1)
+                elif osp.exists(s_path2):
+                    graph.energy = np.loadtxt(s_path2)
                 else:
-                    raise Exception('chi does not exist: {}, {}'.format(chi_path1, chi_path2))
-                chi = torch.tensor(chi, dtype = torch.float32)
-                graph.energy = x @ chi @ x.t()
+                    # look for chi
+                    chi_path1 = osp.join(raw_folder, 'chis.npy')
+                    chi_path2 = osp.join(osp.split(osp.split(raw_folder)[0])[0], 'chis.npy')
+                    if osp.exists(chi_path1):
+                        chi = np.load(chi_path1)
+                    elif osp.exists(chi_path2):
+                        chi = np.load(chi_path2)
+                    else:
+                        raise Exception('chi does not exist: {}, {}'.format(chi_path1, chi_path2))
+                    chi = torch.tensor(chi, dtype = torch.float32)
+                    graph.energy = x @ chi @ x.t()
 
             torch.save(graph, self.processed_paths[i])
 

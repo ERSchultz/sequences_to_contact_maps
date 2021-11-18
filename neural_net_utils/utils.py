@@ -489,7 +489,6 @@ class InteractionConverter():
 
 def main():
     aggregate_peaks('chip_seq_data/ENCFF101KOJ.bed')
-    # copy_data_to_scratch(opt)
     # plotPerClassAccuracy(None, None, 5)
 
 if __name__ == '__main__':

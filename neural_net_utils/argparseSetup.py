@@ -319,14 +319,14 @@ def copy_data_to_scratch(opt):
         for file in os.listdir(sample_dir):
             # skip transferring certain files if not needed (saves space on scratch)
             if file == 'xx.npy' and not opt.toxx:
-                continue
-            if file == 'y_prcnt.npy' and opt.y_preprocessing != 'prcnt':
-                continue
-
-            file_dir = osp.join(sample_dir, file)
-            scratch_file_dir = osp.join(scratch_sample_dir, file)
-            if file.endswith('npy') and not osp.exists(scratch_file_dir):
-                shutil.copyfile(file_dir, scratch_file_dir)
+                pass
+            elif file == 'y_prcnt.npy' and opt.y_preprocessing != 'prcnt':
+                pass
+            else:
+                source_file = osp.join(sample_dir, file)
+                destination_file = osp.join(scratch_sample_dir, file)
+                if file.endswith('npy') and not osp.exists(destination_file):
+                    shutil.copyfile(source_file, destination_file)
 
     opt.data_folder = scratch_path
 
