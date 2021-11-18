@@ -1,15 +1,15 @@
 #! /bin/bash
 #SBATCH --job-name=preprocess
-#SBATCH --partition=broadwl
+#SBATCH --partition=depablo-gpu
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=20
+#SBATCH --ntasks-per-node=10
 #SBATCH --mem-per-cpu=2000
 #SBATCH --output=logFiles/preprocess.log
 #SBATCH --time=02:00:00
 
 input="/project2/depablo/erschultz/dataset_08_29_21"
 output="/project2/depablo/erschultz/dataset_08_29_21"
-numWorkers=20
+numWorkers=10
 k=2
 n=1024
 sampleSize=200 # not used since use_batch_for_diag defaults to False
