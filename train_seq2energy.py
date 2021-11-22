@@ -39,14 +39,23 @@ def train_seq2energy(gnn_opt):
         path = data.path[0]
         chis = np.load(osp.join(path, 'chis.npy'))
         chis = torch.Tensor(chis)
+        chis = chis.to(gnn_opt.device)
         print(chis)
         x = np.load(osp.join(path, 'x.npy'))
         x = torch.Tensor(x)
 
         seq = data.y
-        # seq = torch.tensor(relabel_seq(seq.cpu().detach().numpy(), 'D-AB')).to(gnn_opt.device)
-
+        seq = relabel_seq(seq.cpu().detach().numpy(), 'D-AB')
+        #
         m, k = seq.shape
+        # k_new = int(k*(k+1)/2)
+        k_new = k
+        seq_new = np.zeros((m, k_new))
+        ind = np.triu_indices(k)
+        for i in range(m):
+            seq_new[i] = np.outer(seq[i], seq[i])[ind]
+
+        seq_new = torch.tensor(seq, dtype = torch.float32).to(gnn_opt.device)
 
         s = gnn_model(data)
         if gnn_opt.loss == 'BCE':
@@ -55,10 +64,12 @@ def train_seq2energy(gnn_opt):
             s = torch.sigmoid(s)
         s = s.detach()
         s = torch.reshape(s, (m, m))
+
+
         # s = seq @ chis @ seq.T
         # s = s.to(gnn_opt.device)
 
-        model = seq2Energy(k)
+        model = seq2Energy(k_new)
         model.to(gnn_opt.device)
         model.train()
         optimizer = optim.Adam(model.parameters(), lr = 1e-1)
@@ -66,7 +77,7 @@ def train_seq2energy(gnn_opt):
         loss_arr = []
         for _ in range(1000):
             optimizer.zero_grad()
-            s_hat = model.forward(seq)
+            s_hat = model.forward(seq_new)
             loss = criterion(s_hat, s)
             loss.backward()
             loss_arr.append(loss.item())
@@ -75,7 +86,7 @@ def train_seq2energy(gnn_opt):
         print('Final parameters: ')
         for name, p in model.named_parameters():
             print(name, p, p.shape)
-            print(p.grad)
+            # print(p.grad)
         print('Final loss: {}\n'.format(loss_arr[-1]))
 
 

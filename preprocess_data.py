@@ -78,11 +78,11 @@ def process_sample_save(in_path, out_path, k, n, overwrite, use_x2xx):
             rangefn = range(k)
         else:
             rangefn = range(1, k + 1)
-        for i in rangefn:
-            xi_path = osp.join(in_path, 'seq{}.txt'.format(i))
+        for i, seq_i in enumerate(rangefn):
+            xi_path = osp.join(in_path, 'seq{}.txt'.format(seq_i))
             if osp.exists(xi_path):
                 xi = np.loadtxt(xi_path)
-                x[:, i-1] = xi
+                x[:, i] = xi
         np.save(x_npy_file, x.astype(np.int8))
 
     if use_x2xx:

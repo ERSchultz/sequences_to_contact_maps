@@ -12,6 +12,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
 
+import statsmodels.api as sm
+
 from plotting_functions import plotContactMap
 
 sys.path.insert(1, '/home/eric/TICG-chromatin/scripts')
@@ -51,7 +53,7 @@ def getArgs(dataset = None, model_id = None):
 
     return args
 
-def get_x_chi(args, plot=True):
+def get_x_s(args, plot=True):
     x = np.load(osp.join(args.sample_folder, 'x.npy'))
     x = x.astype(np.float64)
     m, k = x.shape
@@ -63,18 +65,24 @@ def get_x_chi(args, plot=True):
             plt.savefig(osp.join(args.sample_folder, 'x_{}'.format(i)))
             plt.close()
 
-    chi_path1 = osp.join(args.data_folder, 'chis.npy')
-    chi_path2 = osp.join(args.sample_folder, 'chis.npy')
-    if osp.exists(chi_path1):
-        chi = np.load(chi_path1)
-    elif osp.exists(chi_path2):
-        chi = np.load(chi_path2)
+    s_file = osp.join(args.sample_folder, 's.npy')
+    if osp.exists(s_file):
+        s = np.load(s_file)
     else:
-        raise Exception('chi not found at {} or {}'.format(chi_path1, chi_path2))
-    chi = chi.astype(np.float64)
-    print('Chi:\n', chi, file = args.log_file)
+        chi_path1 = osp.join(args.data_folder, 'chis.npy')
+        chi_path2 = osp.join(args.sample_folder, 'chis.npy')
+        if osp.exists(chi_path1):
+            chi = np.load(chi_path1)
+        elif osp.exists(chi_path2):
+            chi = np.load(chi_path2)
+        else:
+            raise Exception('chi not found at {} or {}'.format(chi_path1, chi_path2))
+        chi = chi.astype(np.float64)
+        print('Chi:\n', chi, file = args.log_file)
 
-    return x, chi
+        s = x @ chi @ x.T
+
+    return x, s
 
 def get_contact(args):
     y = np.load(osp.join(args.sample_folder, 'y.npy'))
@@ -124,7 +132,7 @@ def pearsonround(x, y):
     stat, _ = pearsonr(x, y)
     return np.round(stat, 2)
 
-def find_linear_combinations(x, args, PC):
+def find_linear_combinations(x, args, PC, verbose = False):
     m, k = x.shape
     for j in range(2):
         print('PC {}'.format(j+1), file = args.log_file)
@@ -135,21 +143,25 @@ def find_linear_combinations(x, args, PC):
             print('\tCorrelation with particle type {}: {}'.format(i, stat), file = args.log_file)
 
         # linear regression
-        reg = LinearRegression()
-        reg.fit(x, PC[j])
-        score = reg.score(x, PC[j])
-        print(score, file = args.log_file)
-        print(reg.coef_, file = args.log_file)
-
+        if verbose:
+            x2 = sm.add_constant(x)
+            est = sm.OLS(PC[j], x2)
+            est2 = est.fit()
+            print(est2.summary(), '\n', file = args.log_file)
+        else:
+            reg = LinearRegression()
+            reg.fit(x, PC[j])
+            score = reg.score(x, PC[j])
+            print('\n\tLinear Regression', file = args.log_file)
+            print(f'\tR^2: {score}', file = args.log_file)
+            print(f'\tcoefficients: {reg.coef_}', file = args.log_file)
 
 def main(dataset, model_id):
     args = getArgs(dataset, model_id)
     print(args)
 
-    x, chi = get_x_chi(args)
+    x, e = get_x_s(args)
     y, ydiag = get_contact(args)
-
-    e = x @ chi @ x.T
 
     ehat = np.loadtxt(osp.join(args.root, 'results/ContactGNNEnergy/{}/sample{}/energy_hat.txt'.format(args.model_id, args.sample)))
     mse = np.round(mean_squared_error(e, ehat), 3)
@@ -182,15 +194,46 @@ def main(dataset, model_id):
     find_linear_combinations(x, args, PC_e)
 
     print('\nNon-linear system', file = args.log_file)
-    x_relabel = relabel_seq(x, 'D-AB')
-    find_linear_combinations(x_relabel, args, PC_e)
-    print(x_relabel)
+    x = relabel_seq(x, 'D-AB')
+    find_linear_combinations(x, args, PC_e)
 
-    for old in ['AB', 'BC', 'AC']:
-        print("\nWhat if '{}' -> 'D'".format(old), file = args.log_file)
-        x_new = relabel_seq(x_relabel, '{}-D'.format(old))
-        find_linear_combinations(x_new, args, PC_e)
+    # for old in ['AB', 'BC', 'AC']:
+    #     print("\nWhat if '{}' -> 'D'".format(old), file = args.log_file)
+    #     x_new = relabel_seq(x_relabel, '{}-D'.format(old))
+    #     find_linear_combinations(x_new, args, PC_e)
+
+    print('\nAll possible pairwise interactions', file = args.log_file)
+    m, k = x.shape
+    k_new = int(k*(k+1)/2)
+    x_new = np.zeros((m, k_new))
+    ind = np.triu_indices(k)
+    for i in range(m):
+        x_new[i] = np.outer(x[i], x[i])[ind]
+
+    find_linear_combinations(x_new, args, PC_e)
+
+
+    rows = int(m*(m+1)/2)
+    k_newer = int(k_new*(k_new+1)/2)
+    X = np.zeros((rows, k_newer))
+    Y = np.zeros(rows)
+    ind = np.triu_indices(k_new)
+    row = 0
+    for i in range(m):
+        for j in range(i, m):
+            outer = np.outer(x_new[i], x_new[j])
+            X[row] = outer[ind]
+
+            Y[row] = e[i,j]
+            row += 1
+    print(Y.shape)
+    print(X.shape)
+
+    X2 = sm.add_constant(X)
+    est = sm.OLS(Y, X2)
+    est2 = est.fit()
+    print(est2.summary(), '\n', file = args.log_file)
 
 if __name__ == '__main__':
-    for id in [37, 40, 41, 42]:
+    for id in [42]:
         main('dataset_11_03_21', id)
