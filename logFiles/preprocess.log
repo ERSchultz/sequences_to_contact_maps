@@ -1,13 +1,13 @@
-/tmp/slurmd/job14385022/slurm_script: line 21: activate: No such file or directory
+/tmp/slurmd/job14539047/slurm_script: line 21: activate: No such file or directory
 Namespace(GNN_mode=False, batch_size=1, input_folder='/project2/depablo/erschultz/dataset_08_29_21', k=2, min_sample=0, n=1024, num_workers=10, output_folder='/project2/depablo/erschultz/dataset_08_29_21', overwrite=True, percentiles=None, sample_size=200, seed=42, shuffle=True, split=[0.8, 0.1, 0.1], use_batch_for_diag=False, use_x2xx=False)
 Input folder:  /project2/depablo/erschultz/dataset_08_29_21
 Output folder:  /project2/depablo/erschultz/dataset_08_29_21
 Diagonal Preprocessing
-y_diag_min_max:  [0.       3.894081]
-Total time: 583.7809784412384
+y_diag_min_max:  [0.         3.93155187]
+Total time: 506.44284081459045
 Namespace(GNN_mode=False, batch_size=1, input_folder='/project2/depablo/erschultz/dataset_11_14_21', k=10, min_sample=0, n=1024, num_workers=10, output_folder='/project2/depablo/erschultz/dataset_11_14_21', overwrite=False, percentiles=None, sample_size=200, seed=42, shuffle=True, split=[0.8, 0.1, 0.1], use_batch_for_diag=False, use_x2xx=False)
 Input folder:  /project2/depablo/erschultz/dataset_11_14_21
 Output folder:  /project2/depablo/erschultz/dataset_11_14_21
 Diagonal Preprocessing
-y_diag_min_max:  [ 0.         36.12860455]
-Total time: 660.5385117530823
+y_diag_min_max:  [ 0.         30.96945781]
+Total time: 41.54978370666504
