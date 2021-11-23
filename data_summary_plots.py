@@ -359,13 +359,19 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, chi = None):
 
         if plot_s:
             x = np.load(osp.join(path, 'x.npy'))
+            seq0 = np.loadtxt(osp.join(path, 'seq0.txt'))
+            assert np.array_equal(x[:, 0], seq0)
+
             if chi is None:
                 chi_path = osp.join(path, 'chis.npy')
                 if osp.exists(chi_path):
-                    chi = np.load(chi_path)
+                    chi_sample = np.load(chi_path)
+                    # chi_sample = np.triu(chi_sample) + np.tril(chi_sample.T, -1)
+                    # print(chi_sample)
                 else:
                     raise Exception('chi not found at ', chi_path)
-            s = x @ chi @ x.T
+
+            s = x @ chi_sample @ x.T
             plotContactMap(s, osp.join(path, 's.png'), title = 'S', vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
 

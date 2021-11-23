@@ -8,7 +8,7 @@
 #SBATCH --ntasks-per-node=4
 #SBATCH --mem-per-cpu=2000
 
-dirname="/project2/depablo/erschultz/dataset_11_14_21"
+dirname="/project2/depablo/erschultz/dataset_08_29_21"
 deleteRoot='false'
 
 modelType='ContactGNNEnergy'
@@ -25,8 +25,8 @@ messagePassing='SignedConv'
 useNodeFeatures='false'
 useEdgeWeights='false'
 hiddenSizesList='8-8-8'
-EncoderHiddenSizesList='100-100-16'
-updateHiddenSizesList='100-100-16'
+EncoderHiddenSizesList='none'
+updateHiddenSizesList='10-10-16'
 transforms='none'
 preTransforms='degree'
 split_neg_pos_edges_for_feature_augmentation='true'
@@ -39,11 +39,11 @@ innerAct='prelu'
 headAct='prelu'
 outAct='prelu'
 headArchitecture='concat'
-headHiddenSizesList='100-100-1'
+headHiddenSizesList='10-10-1'
 
 # hyperparameters
 nEpochs=100
-batchSize=2
+batchSize=1
 numWorkers=4
 milestones='none'
 gamma=0.1
@@ -56,7 +56,6 @@ crop='none'
 printParams='true'
 
 cd ~/sequences_to_contact_maps
-conda env list
 source activate python3.8_pytorch1.8.1_cuda10.2_2
 
 for lr in 1e-4
