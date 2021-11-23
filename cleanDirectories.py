@@ -14,15 +14,16 @@ def main(data_folder = 'dataset_04_18_21', root_name = None, root = None):
 
     if opt.use_scratch:
         opt.data_folder = osp.join('/scratch/midway2/erschultz', osp.split(opt.data_folder)[-1])
-
-    if opt.root is None:
-        opt.root = osp.join(opt.data_folder, opt.root_name)
-
-    if osp.exists(opt.root):
-        print('Removing {}'.format(opt.root))
-        rmtree(opt.root)
+        rmtree(opt.data_folder)
     else:
-        print('{} does not exist - cannot remove'.format(opt.root))
+        if opt.root is None:
+            opt.root = osp.join(opt.data_folder, opt.root_name)
+
+        if osp.exists(opt.root):
+            print('Removing {}'.format(opt.root))
+            rmtree(opt.root)
+        else:
+            print('{} does not exist - cannot remove'.format(opt.root))
 
 
 if __name__ == '__main__':
