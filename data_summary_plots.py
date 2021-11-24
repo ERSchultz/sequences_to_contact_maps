@@ -376,7 +376,7 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, chi = None):
 
 
 if __name__ == '__main__':
-    dataset = 'dataset_08_29_21'
+    dataset = 'dataset_08_26_21'
     sample = 40
     basic_plots(dataset, plot_y = False)
     # plot_genomic_distance_statistics(dataset)
