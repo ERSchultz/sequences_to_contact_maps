@@ -348,17 +348,36 @@ def testEnergy():
     plotContactMap(energy, osp.join(ofile, 'energy.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$S$')
 
 def main():
-    dir = '/home/eric/sequences_to_contact_maps/dataset_11_03_21/samples/sample40'
+    dir = '/home/eric/sequences_to_contact_maps/dataset_10_27_21/samples/sample40'
     chi = np.loadtxt(osp.join(dir, 'chis.txt'))
-    x = np.load(osp.join(dir, 'x.npy'))
+    chi = chi + np.triu(chi, 1).T
+    print(chi)
+    x = np.array([[0,0],
+                [0,1],
+                [1,0],
+                [1,1]])
+
+
+    s = x @ np.triu(chi.copy()) @ x.T
+    print('triu chi\n', s)
+    s_new = s + s.T
+    print('s sT\n', s_new)
+    e = s + s.T - np.diag(np.diagonal(s.copy()))
+    print('e\n', e)
+
+    chi = chi * 1/2 + 1/2 * np.diag(np.diagonal(chi.copy()))
+    print(chi)
     s = x @ chi @ x.T
+    print('snew\n', s)
+
+
 
 
 
 if __name__ == '__main__':
-    # main()
+    main()
     # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
     # plot_fixed()
     # test_argpartition(10)
     # downsampling_test()

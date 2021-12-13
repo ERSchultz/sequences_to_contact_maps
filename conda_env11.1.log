@@ -1,0 +1,447 @@
+Collecting package metadata (current_repodata.json): ...working... done
+Solving environment: ...working... failed with initial frozen solve. Retrying with flexible solve.
+Solving environment: ...working... failed with repodata from current_repodata.json, will retry with next repodata source.
+Collecting package metadata (repodata.json): ...working... done
+Solving environment: ...working... failed with initial frozen solve. Retrying with flexible solve.
+Solving environment: ...working... Building graph of deps:   0%|          | 0/20 [00:00<?, ?it/s]Examining @/linux-64::__glibc==2.31=0:   0%|          | 0/20 [00:00<?, ?it/s]Examining scikit-learn:   5%|▌         | 1/20 [00:00<00:00, 8160.12it/s]     Examining jupyterlab:  10%|█         | 2/20 [00:23<03:31, 11.74s/it]    Examining jupyterlab:  15%|█▌        | 3/20 [00:23<02:13,  7.83s/it]Examining numba:  15%|█▌        | 3/20 [00:57<02:13,  7.83s/it]     Examining numba:  20%|██        | 4/20 [00:57<04:12, 15.76s/it]Examining @/linux-64::__cuda==11.4=0:  20%|██        | 4/20 [01:09<04:12, 15.76s/it]Examining @/linux-64::__cuda==11.4=0:  25%|██▌       | 5/20 [01:09<03:36, 14.46s/it]Examining seaborn:  25%|██▌       | 5/20 [01:09<03:36, 14.46s/it]                   Examining @/linux-64::__unix==0=0:  30%|███       | 6/20 [01:14<03:22, 14.46s/it]Examining @/linux-64::__unix==0=0:  35%|███▌      | 7/20 [01:14<02:22, 10.97s/it]Examining pillow:  35%|███▌      | 7/20 [01:14<02:22, 10.97s/it]                 Examining scipy:  40%|████      | 8/20 [01:18<02:11, 10.97s/it] Examining scipy:  45%|████▌     | 9/20 [01:18<01:30,  8.25s/it]Examining imageio:  45%|████▌     | 9/20 [01:33<01:30,  8.25s/it]Examining imageio:  50%|█████     | 10/20 [01:33<01:42, 10.22s/it]Examining numpy:  50%|█████     | 10/20 [01:39<01:42, 10.22s/it]  Examining numpy:  55%|█████▌    | 11/20 [01:39<01:20,  8.92s/it]Examining nomkl:  55%|█████▌    | 11/20 [01:50<01:20,  8.92s/it]Examining nomkl:  60%|██████    | 12/20 [01:50<01:17,  9.73s/it]Examining cudatoolkit=11.1:  60%|██████    | 12/20 [01:50<01:17,  9.73s/it]Examining pandas:  65%|██████▌   | 13/20 [01:50<01:08,  9.73s/it]          Examining @/linux-64::__archspec==1=x86_64:  70%|███████   | 14/20 [02:04<00:58,  9.73s/it]Examining @/linux-64::__archspec==1=x86_64:  75%|███████▌  | 15/20 [02:04<00:40,  8.16s/it]Examining @/linux-64::__linux==5.11.0=0:  75%|███████▌  | 15/20 [02:04<00:40,  8.16s/it]   Examining torchvision:  80%|████████  | 16/20 [02:04<00:32,  8.16s/it]                  Examining matplotlib:  85%|████████▌ | 17/20 [02:42<00:24,  8.16s/it] Examining matplotlib:  90%|█████████ | 18/20 [02:42<00:19,  9.55s/it]Examining pytorch=1.8.1:  90%|█████████ | 18/20 [02:49<00:19,  9.55s/it]Examining pytorch=1.8.1:  95%|█████████▌| 19/20 [02:49<00:08,  8.77s/it]Examining pyg:  95%|█████████▌| 19/20 [02:50<00:08,  8.77s/it]          Examining pyg: 100%|██████████| 20/20 [02:50<00:00,  6.30s/it]                                                              Determining conflicts:   0%|          | 0/20 [00:00<?, ?it/s]Examining conflict for cudatoolkit pandas __glibc scikit-learn numba torchvision matplotlib pillow scipy pytorch numpy pyg:   0%|          | 0/20 [00:00<?, ?it/s]Examining conflict for pyg scikit-learn:   5%|▌         | 1/20 [00:16<05:12, 16.45s/it]                                                                           Examining conflict for pyg scikit-learn:  10%|█         | 2/20 [00:16<02:28,  8.22s/it]Examining conflict for pandas scikit-learn nomkl numba torchvision seaborn matplotlib scipy imageio pytorch numpy pyg:  10%|█         | 2/20 [00:16<02:28,  8.22s/it]Examining conflict for pandas scikit-learn jupyterlab numba torchvision seaborn matplotlib pillow scipy imageio pytorch numpy pyg:  15%|█▌        | 3/20 [00:46<02:19,  8.22s/it]Examining conflict for pandas scikit-learn jupyterlab numba torchvision seaborn matplotlib pillow scipy imageio pytorch numpy pyg:  20%|██        | 4/20 [00:46<02:44, 10.28s/it]Examining conflict for pandas scikit-learn numba torchvision seaborn matplotlib scipy imageio pytorch numpy pyg:  20%|██        | 4/20 [01:54<02:44, 10.28s/it]                  Examining conflict for pandas scikit-learn numba torchvision seaborn matplotlib scipy imageio pytorch numpy pyg:  25%|██▌       | 5/20 [01:54<06:52, 27.49s/it]Examining conflict for seaborn scipy scikit-learn pyg:  25%|██▌       | 5/20 [02:10<06:52, 27.49s/it]                                                          Examining conflict for seaborn scipy scikit-learn pyg:  30%|███       | 6/20 [02:10<05:36, 24.03s/it]Examining conflict for pytorch numba scikit-learn:  30%|███       | 6/20 [02:14<05:36, 24.03s/it]    Examining conflict for pytorch numba scikit-learn:  35%|███▌      | 7/20 [02:14<03:56, 18.15s/it]Examining conflict for cudatoolkit pandas scikit-learn jupyterlab numba torchvision seaborn matplotlib pillow scipy imageio pytorch numpy pyg:  35%|███▌      | 7/20 [02:18<03:56, 18.15s/it]Examining conflict for cudatoolkit pandas scikit-learn jupyterlab numba torchvision seaborn matplotlib pillow scipy imageio pytorch numpy pyg:  40%|████      | 8/20 [02:18<02:47, 13.96s/it]Examining conflict for pandas scikit-learn nomkl numba torchvision seaborn matplotlib scipy imageio numpy pyg:  40%|████      | 8/20 [02:38<02:47, 13.96s/it]                                Examining conflict for pandas scikit-learn nomkl numba torchvision seaborn matplotlib scipy imageio numpy pyg:  45%|████▌     | 9/20 [02:38<02:52, 15.66s/it]Examining conflict for numpy scikit-learn scipy pytorch nomkl:  45%|████▌     | 9/20 [02:57<02:52, 15.66s/it]                                                Examining conflict for numpy scikit-learn scipy pytorch nomkl:  50%|█████     | 10/20 [02:57<02:45, 16.54s/it]Examining conflict for scikit-learn nomkl numba scipy pytorch numpy:  50%|█████     | 10/20 [03:06<02:45, 16.54s/it]Examining conflict for scikit-learn nomkl numba scipy pytorch numpy:  55%|█████▌    | 11/20 [03:06<02:09, 14.41s/it]Examining conflict for numpy scipy scikit-learn:  55%|█████▌    | 11/20 [03:15<02:09, 14.41s/it]                    Examining conflict for numpy scipy scikit-learn:  60%|██████    | 12/20 [03:15<01:42, 12.81s/it]Examining conflict for pandas scikit-learn jupyterlab torchvision seaborn matplotlib pillow scipy imageio numpy:  60%|██████    | 12/20 [03:22<01:42, 12.81s/it]Examining conflict for pandas scikit-learn jupyterlab torchvision seaborn matplotlib pillow scipy imageio numpy:  65%|██████▌   | 13/20 [03:22<01:17, 11.02s/it]Examining conflict for cudatoolkit pandas scikit-learn nomkl jupyterlab numba torchvision seaborn matplotlib pillow scipy imageio pytorch numpy pyg:  65%|██████▌   | 13/20 [03:39<01:17, 11.02s/it]Examining conflict for cudatoolkit pandas scikit-learn nomkl jupyterlab numba torchvision seaborn matplotlib pillow scipy imageio pytorch numpy pyg:  70%|███████   | 14/20 [03:39<01:16, 12.74s/it]Examining conflict for cudatoolkit pandas scikit-learn numba torchvision matplotlib pillow scipy pytorch numpy:  70%|███████   | 14/20 [03:58<01:16, 12.74s/it]                                     Examining conflict for cudatoolkit pandas scikit-learn numba torchvision matplotlib pillow scipy pytorch numpy:  75%|███████▌  | 15/20 [03:58<01:14, 14.84s/it]Examining conflict for pandas numpy scikit-learn scipy nomkl:  75%|███████▌  | 15/20 [04:15<01:14, 14.84s/it]                                                  Examining conflict for pandas numpy scikit-learn scipy nomkl:  80%|████████  | 16/20 [04:15<01:01, 15.37s/it]Examining conflict for pandas scikit-learn matplotlib pillow scipy numpy:  80%|████████  | 16/20 [04:25<01:01, 15.37s/it]Examining conflict for pandas scikit-learn matplotlib pillow scipy numpy:  85%|████████▌ | 17/20 [04:25<00:40, 13.66s/it]Examining conflict for pytorch numpy scipy scikit-learn:  85%|████████▌ | 17/20 [04:39<00:40, 13.66s/it]                 Examining conflict for pytorch numpy scipy scikit-learn:  90%|█████████ | 18/20 [04:39<00:27, 13.82s/it]Examining conflict for cudatoolkit pandas scikit-learn nomkl numba torchvision matplotlib pillow scipy pytorch numpy pyg:  90%|█████████ | 18/20 [04:46<00:27, 13.82s/it]Examining conflict for cudatoolkit pandas scikit-learn nomkl numba torchvision matplotlib pillow scipy pytorch numpy pyg:  95%|█████████▌| 19/20 [04:46<00:11, 11.82s/it]Examining conflict for pandas scikit-learn jupyterlab numba torchvision seaborn matplotlib pyg:  95%|█████████▌| 19/20 [05:01<00:11, 11.82s/it]                          Examining conflict for pandas scikit-learn jupyterlab numba torchvision seaborn matplotlib pyg: 100%|██████████| 20/20 [05:01<00:00, 12.70s/it]Examining conflict for pandas scikit-learn jupyterlab numba torchvision seaborn matplotlib pillow scipy imageio numpy: 100%|██████████| 20/20 [05:11<00:00, 12.70s/it]Examining conflict for pandas scikit-learn jupyterlab numba torchvision seaborn matplotlib pillow scipy imageio numpy: : 21it [05:11, 11.90s/it]                      Examining conflict for scikit-learn nomkl seaborn scipy pytorch numpy: : 21it [05:30, 11.90s/it]                                                Examining conflict for scikit-learn nomkl seaborn scipy pytorch numpy: : 22it [05:30, 13.99s/it]Examining conflict for pandas scikit-learn jupyterlab numba torchvision seaborn matplotlib scipy numpy: : 22it [05:41, 13.99s/it]Examining conflict for pandas scikit-learn jupyterlab numba torchvision seaborn matplotlib scipy numpy: : 23it [05:41, 13.10s/it]Examining conflict for pandas scikit-learn numba torchvision seaborn matplotlib scipy imageio numpy pyg: : 23it [05:56, 13.10s/it]Examining conflict for pandas scikit-learn numba torchvision seaborn matplotlib scipy imageio numpy pyg: : 24it [05:56, 13.80s/it]Examining conflict for scikit-learn torchvision seaborn matplotlib scipy: : 24it [06:15, 13.80s/it]                               Examining conflict for scikit-learn torchvision seaborn matplotlib scipy: : 25it [06:15, 15.26s/it]Examining conflict for jupyterlab pyg: : 25it [06:22, 15.26s/it]                                   Examining conflict for jupyterlab pyg: : 26it [06:22, 12.97s/it]Examining conflict for jupyterlab numba seaborn matplotlib pyg: : 26it [06:24, 12.97s/it]Examining conflict for jupyterlab numba seaborn matplotlib pyg: : 27it [06:24,  9.58s/it]Examining conflict for jupyterlab seaborn matplotlib: : 27it [06:30,  9.58s/it]          Examining conflict for jupyterlab seaborn matplotlib: : 28it [06:30,  8.58s/it]Examining conflict for jupyterlab seaborn matplotlib pyg: : 28it [06:34,  8.58s/it]Examining conflict for jupyterlab seaborn matplotlib pyg: : 29it [06:34,  7.13s/it]Examining conflict for jupyterlab matplotlib: : 29it [06:38,  7.13s/it]            Examining conflict for jupyterlab matplotlib: : 30it [06:38,  6.11s/it]Examining conflict for jupyterlab numba matplotlib: : 30it [06:40,  6.11s/it]Examining conflict for jupyterlab numba matplotlib: : 31it [06:40,  4.96s/it]Examining conflict for pytorch jupyterlab pyg torchvision: : 31it [06:42,  4.96s/it]Examining conflict for pytorch jupyterlab pyg torchvision: : 32it [06:42,  4.03s/it]Examining conflict for imageio jupyterlab matplotlib: : 32it [06:45,  4.03s/it]     Examining conflict for imageio jupyterlab matplotlib: : 33it [06:45,  3.84s/it]Examining conflict for numpy numba scipy pytorch: : 33it [06:47,  3.84s/it]    Examining conflict for numpy numba scipy pytorch: : 34it [06:47,  3.12s/it]Examining conflict for imageio numba matplotlib: : 34it [06:54,  3.12s/it] Examining conflict for imageio numba matplotlib: : 35it [06:54,  4.34s/it]Examining conflict for seaborn matplotlib pillow torchvision: : 35it [06:55,  4.34s/it]Examining conflict for seaborn matplotlib pillow torchvision: : 36it [06:55,  3.47s/it]Examining conflict for pandas seaborn matplotlib pyg: : 36it [07:01,  3.47s/it]        Examining conflict for pandas seaborn matplotlib pyg: : 37it [07:01,  4.23s/it]Examining conflict for torchvision seaborn matplotlib pillow imageio: : 37it [07:11,  4.23s/it]Examining conflict for torchvision seaborn matplotlib pillow imageio: : 38it [07:11,  5.83s/it]Examining conflict for seaborn matplotlib pyg: : 38it [07:18,  5.83s/it]                       Examining conflict for seaborn matplotlib pyg: : 39it [07:18,  6.03s/it]Examining conflict for seaborn matplotlib: : 39it [07:20,  6.03s/it]    Examining conflict for seaborn matplotlib: : 40it [07:20,  4.96s/it]Examining conflict for pandas seaborn pyg: : 40it [07:35,  4.96s/it]Examining conflict for pandas seaborn pyg: : 41it [07:35,  7.85s/it]Examining conflict for imageio pillow torchvision: : 41it [07:37,  7.85s/it]Examining conflict for imageio pillow torchvision: : 42it [07:37,  6.23s/it]Examining conflict for numpy scipy: : 42it [07:44,  6.23s/it]               Examining conflict for numpy scipy: : 43it [07:44,  6.59s/it]Examining conflict for scipy torchvision: : 43it [07:49,  6.59s/it]Examining conflict for scipy torchvision: : 44it [07:49,  6.08s/it]Examining conflict for cudatoolkit pyg torchvision pytorch: : 44it [07:54,  6.08s/it]Examining conflict for cudatoolkit pyg torchvision pytorch: : 45it [07:54,  5.77s/it]Examining conflict for pytorch pyg torchvision: : 45it [07:58,  5.77s/it]            Examining conflict for pytorch pyg torchvision: : 46it [07:58,  5.01s/it]Examining conflict for pyg torchvision: : 46it [08:01,  5.01s/it]        Examining conflict for pyg torchvision: : 47it [08:01,  4.41s/it]Examining conflict for pytorch torchvision: : 47it [08:07,  4.41s/it]Examining conflict for pytorch torchvision: : 48it [08:07,  5.06s/it]                                                                     
+Found conflicts! Looking for incompatible packages.
+This can take several minutes.  Press CTRL-C to abort.
+failed
+
+UnsatisfiableError: The following specifications were found to be incompatible with each other:
+
+Output in format: Requested package -> Available versions
+
+Package futures conflicts for:
+jupyterlab -> futures
+imageio -> futures
+matplotlib -> tornado -> futures
+
+Package cudatoolkit conflicts for:
+torchvision -> pytorch==1.10.0 -> cudatoolkit[version='10.0.*|10.0|10.0.*|10.1|10.1.*|>=11.2,<12|9.2|9.2.*|>=10.1.243,<10.2.0a0|9.2.*|>=8.0,<8.1|>=8.0,<8.1.0a0|8.*|9.*|9.0.*|8.0.*|7.5.*|11.*|10.2.*']
+torchvision -> cudatoolkit[version='10.2|10.2.*|11.0|11.0.*|11.1|11.1.*|>=10.0,<10.1|>=10.1,<10.2|>=10.2,<10.3|>=11.1,<11.2|>=11.3,<11.4|>=11.0,<11.1|>=9.2,<9.3|>=9.0,<9.1|>=11.2,<12.0a0|>=10.0.130,<10.1.0a0|>=9.2,<9.3.0a0|>=9.0,<9.1.0a0']
+pyg -> pytorch=1.9 -> cudatoolkit[version='10.2|10.2.*|11.0|11.0.*|>=10.2,<10.3|>=11.1,<11.2|11.1|11.1.*|>=11.2,<12.0a0|>=11.3,<11.4|>=11.2,<12|>=10.1,<10.2']
+cudatoolkit=11.1
+pyg -> cudatoolkit[version='10.1.*|10.2.*|11.1.*|11.3.*']
+pytorch=1.8.1 -> cudatoolkit[version='>=10.1,<10.2|>=11.1,<11.2|>=10.2,<10.3']
+
+Package packaging conflicts for:
+seaborn -> matplotlib-base[version='>=2.1.2'] -> packaging[version='>=20.0']
+matplotlib -> matplotlib-base[version='>=3.5.0,<3.5.1.0a0'] -> packaging[version='>=20.0']
+jupyterlab -> packaging
+
+Package libgcc-ng conflicts for:
+pyg -> cudatoolkit=11.1 -> libgcc-ng[version='>=4.9|>=7.3.0|>=9.3.0|>=9.4.0|>=7.5.0|>=7.2.0']
+seaborn -> statsmodels[version='>=0.8.0'] -> libgcc-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+scipy -> libopenblas[version='>=0.3.2,<0.3.3.0a0'] -> libgcc-ng[version='>=8.2.0']
+pytorch=1.8.1 -> libgcc-ng[version='>=7.5.0']
+jupyterlab -> python[version='>=3.6'] -> libgcc-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+cudatoolkit=11.1 -> libgcc-ng[version='>=7.3.0|>=9.3.0|>=9.4.0']
+scikit-learn -> libgcc-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+torchvision -> libgcc-ng[version='>=5.4.0|>=7.3.0|>=7.5.0']
+numpy -> libopenblas[version='>=0.3.2,<0.3.3.0a0'] -> libgcc-ng[version='>=8.2.0']
+pillow -> libgcc-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+pytorch=1.8.1 -> blas=[build=mkl] -> libgcc-ng[version='>=4.9|>=7.2.0|>=7.3.0|>=9.3.0|>=9.4.0']
+matplotlib -> matplotlib-base[version='>=3.5.0,<3.5.1.0a0'] -> libgcc-ng[version='>=4.9|>=7.5.0|>=9.4.0|>=9.3.0']
+matplotlib -> libgcc-ng[version='>=7.2.0|>=7.3.0']
+pandas -> libgcc-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+torchvision -> cudatoolkit[version='>=11.1,<11.2'] -> libgcc-ng[version='>=3.0|>=4.9|>=7.2.0|>=9.3.0|>=9.4.0']
+nomkl -> blas=[build=openblas] -> libgcc-ng[version='>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0']
+scipy -> libgcc-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+numpy -> libgcc-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+imageio -> numpy -> libgcc-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+numba -> libgcc-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+
+Package libgfortran conflicts for:
+numba -> numpy[version='>=1.14.6,<2.0a0'] -> libgfortran[version='>=3.0']
+pandas -> numpy[version='>=1.15.4,<2.0a0'] -> libgfortran[version='>=3.0']
+seaborn -> numpy[version='>=1.13.3'] -> libgfortran[version='>=3.0']
+matplotlib -> numpy=1.11 -> libgfortran[version='>=3.0']
+imageio -> numpy -> libgfortran[version='>=3.0']
+scikit-learn -> scipy -> libgfortran[version='>=3.0']
+numpy -> openblas[version='>=0.2.20,<0.2.21.0a0'] -> libgfortran
+scipy -> libgfortran[version='>=3.0']
+numpy -> libgfortran[version='>=3.0']
+pyg -> numpy -> libgfortran[version='>=3.0']
+torchvision -> numpy[version='>=1.11'] -> libgfortran[version='>=3.0']
+
+Package libtiff conflicts for:
+imageio -> pillow[version='>=8.3.2'] -> libtiff[version='4.*|4.0.*|>=4.0.10,<5.0a0|>=4.1.0,<5.0a0|>=4.3.0,<5.0a0|>=4.2.0,<5.0a0|>=4.0.9,<5.0a0|>=4.0.8,<4.0.10|>=4.0.3,<4.0.8|4.0.6|>=4.0.8,<5.0a0']
+torchvision -> pillow[version='>=5.3.0'] -> libtiff[version='4.0.*|>=4.0.10,<5.0a0|>=4.1.0,<5.0a0|>=4.2.0,<5.0a0|>=4.3.0,<5.0a0|>=4.0.9,<5.0a0|>=4.0.8,<4.0.10|>=4.0.3,<4.0.8|>=4.0.8,<5.0a0']
+pillow -> libtiff[version='4.*|4.0.*|>=4.0.10,<5.0a0|>=4.1.0,<5.0a0|>=4.2.0,<5.0a0|>=4.3.0,<5.0a0|>=4.0.9,<5.0a0|>=4.0.8,<4.0.10|>=4.0.3,<4.0.8|4.0.6|>=4.0.8,<5.0a0']
+pillow -> libwebp[version='>=0.3.0'] -> libtiff
+
+Package llvm-openmp conflicts for:
+numpy -> openblas[version='>=0.2.15'] -> llvm-openmp[version='>=10.0.0|>=10.0.1|>=11.0.0|>=11.1.0|>=12.0.1|>=9.0.1|>=11.0.1']
+numba -> _openmp_mutex[version='>=4.5'] -> llvm-openmp[version='>=9.0.1']
+scikit-learn -> _openmp_mutex -> llvm-openmp[version='>=10.0.0|>=11.0.0|>=11.0.1|>=11.1.0|>=12.0.1|>=9.0.1|>=10.0.1']
+scipy -> mkl[version='>=2021.3.0,<2022.0a0'] -> llvm-openmp[version='>=10.0.0|>=11.0.0|>=11.0.1|>=11.1.0|>=12.0.1|>=9.0.1|>=10.0.1']
+nomkl -> blas=[build=openblas] -> llvm-openmp[version='>=10.0.0|>=11.0.0|>=11.0.1|>=11.1.0|>=12.0.1|>=9.0.1']
+pytorch=1.8.1 -> blas=[build=mkl] -> llvm-openmp[version='>=10.0.0|>=11.0.0|>=11.0.1|>=11.1.0|>=12.0.1|>=9.0.1']
+
+Package pypy3.7 conflicts for:
+pandas -> python[version='>=3.7,<3.8.0a0'] -> pypy3.7[version='7.3.*|7.3.3.*|7.3.4.*|7.3.5.*|7.3.7.*']
+pandas -> pypy3.7[version='>=7.3.3|>=7.3.4|>=7.3.5|>=7.3.7']
+
+Package liblapacke conflicts for:
+numpy -> blas=[build=openblas] -> liblapacke[version='3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0',build='5_mkl|7_mkl|11_mkl|14_mkl|19_mkl|20_mkl|21_mkl|9_mkl|10_mkl|12_linux64_mkl|2_openblas|4_openblas|5_openblas|6_openblas|8_openblas|11_openblas|12_openblas|13_openblas|14_openblas|6_openblas|8_openblas|10_openblas|12_linux64_openblas|11_linux64_openblas|9_openblas|7_openblas|5_openblas|17_openblas|16_openblas|15_openblas|10_openblas|9_openblas|7_openblas|3_openblas|0_openblas|11_linux64_mkl|8_mkl|7_mkl|6_mkl|5_mkl|18_mkl|16_mkl|15_mkl|13_mkl|12_mkl|10_mkl|9_mkl|8_mkl|6_mkl|4_mkl']
+pytorch=1.8.1 -> blas=[build=mkl] -> liblapacke[version='3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.9.0',build='10_mkl|11_mkl|12_mkl|13_mkl|14_mkl|16_mkl|20_mkl|21_mkl|5_mkl|7_mkl|9_mkl|10_mkl|12_linux64_mkl|11_linux64_mkl|8_mkl|6_mkl|19_mkl|18_mkl|15_mkl|9_mkl|8_mkl|7_mkl|6_mkl|5_mkl|4_mkl']
+scikit-learn -> blas=[build=openblas] -> liblapacke[version='3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0',build='5_mkl|7_mkl|11_mkl|14_mkl|19_mkl|20_mkl|21_mkl|9_mkl|10_mkl|12_linux64_mkl|2_openblas|4_openblas|5_openblas|6_openblas|8_openblas|11_openblas|12_openblas|13_openblas|14_openblas|6_openblas|8_openblas|10_openblas|12_linux64_openblas|11_linux64_openblas|9_openblas|7_openblas|5_openblas|17_openblas|16_openblas|15_openblas|10_openblas|9_openblas|7_openblas|3_openblas|0_openblas|11_linux64_mkl|8_mkl|7_mkl|6_mkl|5_mkl|18_mkl|16_mkl|15_mkl|13_mkl|12_mkl|10_mkl|9_mkl|8_mkl|6_mkl|4_mkl']
+nomkl -> blas=[build=openblas] -> liblapacke[version='3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.9.0|3.9.0|3.9.0|3.9.0',build='2_openblas|4_openblas|5_openblas|6_openblas|8_openblas|11_openblas|12_openblas|13_openblas|14_openblas|6_openblas|8_openblas|10_openblas|12_linux64_openblas|11_linux64_openblas|9_openblas|7_openblas|5_openblas|17_openblas|16_openblas|15_openblas|10_openblas|9_openblas|7_openblas|3_openblas|0_openblas']
+scipy -> blas=[build=openblas] -> liblapacke[version='3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0',build='5_mkl|7_mkl|11_mkl|14_mkl|19_mkl|20_mkl|21_mkl|9_mkl|10_mkl|12_linux64_mkl|2_openblas|4_openblas|5_openblas|6_openblas|8_openblas|11_openblas|12_openblas|13_openblas|14_openblas|6_openblas|8_openblas|10_openblas|12_linux64_openblas|11_linux64_openblas|9_openblas|7_openblas|5_openblas|17_openblas|16_openblas|15_openblas|10_openblas|9_openblas|7_openblas|3_openblas|0_openblas|11_linux64_mkl|8_mkl|7_mkl|6_mkl|5_mkl|18_mkl|16_mkl|15_mkl|13_mkl|12_mkl|10_mkl|9_mkl|8_mkl|6_mkl|4_mkl']
+
+Package gmp conflicts for:
+scipy -> libgcc -> gmp[version='>=4.2']
+torchvision -> ffmpeg[version='>=4.2'] -> gmp[version='>=6.1.2,<7.0a0|>=6.1.2|>=6.2.1,<7.0a0|>=6.2.0,<7.0a0']
+
+Package scipy conflicts for:
+scikit-learn -> scipy[version='>=0.19.1|>=1.1.0']
+scipy
+pyg -> networkx[version='>=2.4'] -> scipy[version='>=0.19.1|>=1.1.0|>=1.5,!=1.6.1']
+seaborn -> statsmodels[version='>=0.8.0'] -> scipy[version='>=0.14|>=1.2|>=1.3']
+seaborn -> scipy[version='>=0.15.2|>=1.0.1|>=1.0']
+
+Package numpy conflicts for:
+imageio -> numpy
+scikit-learn -> numpy[version='1.10.*|1.11.*|1.12.*|1.13.*|>=1.11.3,<2.0a0|>=1.14.6,<2.0a0|>=1.16.5,<2.0a0|>=1.16.6,<2.0a0|>=1.17.5,<2.0a0|>=1.18.5,<2.0a0|>=1.19.5,<2.0a0|>=1.21.4,<2.0a0|>=1.19.4,<2.0a0|>=1.19.2,<2.0a0|>=1.9.3,<2.0a0|>=1.9']
+torchvision -> pytorch==1.8.1 -> numpy[version='>=1.11.3,<2.0a0|>=1.19|>=1.19.4,<2.0a0|>=1.14.6,<2.0a0|>=1.9.3,<2.0a0|>=1.9|>=1.16.5,<2.0a0']
+matplotlib -> numpy[version='1.10.*|1.11.*|>=1.14.6,<2.0a0']
+pyg -> networkx[version='>=2.4'] -> numpy[version='1.10.*|1.11.*|1.12.*|1.13.*|>=1.11|>=1.11.*|>=1.12.1,<2.0a0|>=1.14.6,<2.0a0|>=1.15.4,<2.0a0|>=1.16.5,<2.0a0|>=1.16.6,<2.0a0|>=1.17.5,<2.0a0|>=1.18.5,<2.0a0|>=1.19|>=1.19.5,<2.0a0|>=1.21.4,<2.0a0|>=1.19.4,<2.0a0|>=1.19.2,<2.0a0|>=1.18.4,<2.0a0|>=1.18.1,<2.0a0|>=1.9.3,<2.0a0|>=1.9.*|>=1.9|>=1.8|>=1.7|>=1.20.3,<2.0a0|>=1.20.2,<2.0a0|>=1.13.3,<2.0a0|>=1.11.3,<2.0a0']
+torchvision -> numpy[version='>1.11|>=1.11|>=1.19.5,<2.0a0|>=1.18.5,<2.0a0|>=1.17.5,<2.0a0|>=1.16.6,<2.0a0']
+pandas -> numpy[version='1.10.*|1.11.*|1.12.*|1.13.*|>=1.11|>=1.11.*|>=1.12.1,<2.0a0|>=1.14.6,<2.0a0|>=1.15.4,<2.0a0|>=1.16.5,<2.0a0|>=1.16.6,<2.0a0|>=1.17.5,<2.0a0|>=1.18.5,<2.0a0|>=1.19.5,<2.0a0|>=1.21.4,<2.0a0|>=1.19.4,<2.0a0|>=1.19.2,<2.0a0|>=1.18.4,<2.0a0|>=1.18.1,<2.0a0|>=1.9.3,<2.0a0|>=1.9.*|>=1.9|>=1.8|>=1.7|>=1.20.3,<2.0a0|>=1.20.2,<2.0a0|>=1.13.3,<2.0a0|>=1.11.3,<2.0a0']
+pytorch=1.8.1 -> numpy[version='>=1.16.6,<2.0a0|>=1.19']
+numpy
+seaborn -> numpy[version='>=1.13.3|>=1.9.3|>=1.15']
+scipy -> numpy[version='1.10.*|1.11.*|1.12.*|1.13.*|>=1.11|>=1.11.3,<2.0a0|>=1.14.6,<2.0a0|>=1.16.5,<2.0a0|>=1.16.6,<2.0a0|>=1.17.5,<2.0a0|>=1.18.5,<2.0a0|>=1.19.5,<2.0a0|>=1.21.4,<2.0a0|>=1.19.4,<2.0a0|>=1.19.2,<2.0a0|>=1.18.1,<2.0a0|>=1.9.3,<2.0a0|>=1.9|>=1.15.1,<2.0a0']
+pandas -> bottleneck[version='>=1.2.1'] -> numpy[version='>=1.16.4,<2.0a0|>=1.21.3,<2.0a0']
+seaborn -> statsmodels[version='>=0.8.0'] -> numpy[version='1.10.*|1.11.*|1.12.*|1.13.*|>=1.11.*|>=1.11.3,<2.0a0|>=1.11|>=1.14.6,<2.0a0|>=1.15.4,<2.0a0|>=1.16.5,<2.0a0|>=1.16.6,<2.0a0|>=1.18.5,<2.0a0|>=1.21.4,<2.0a0|>=1.19.5,<2.0a0|>=1.19.2,<2.0a0|>=1.18.1,<2.0a0|>=1.17.5,<2.0a0|>=1.9.3,<2.0a0|>=1.21.2,<2.0a0|>=1.17.0,<2.0a0|>=1.19.1,<2.0a0|>=1.17|>=1.19.4,<2.0a0|>=1.18.4,<2.0a0|>=1.12.1,<2.0a0|>=1.9.*|>=1.20.3,<2.0a0|>=1.20.2,<2.0a0|>=1.13.3,<2.0a0|>=1.9|>=1.15.1,<2.0a0|>=1.8|>=1.7|>=1.4.0']
+numba -> numpy[version='1.13.*|1.15.*|>=1.14.6,<1.18.0|>=1.14.6,<2.0a0|>=1.16.5,<2.0a0|>=1.16.6,<2.0a0|>=1.17.5,<2.0a0|>=1.18.5,<2.0a0|>=1.19.5,<2.0a0|>=1.9.3,<2.0a0|>=1.15.4,<2.0a0|>=1.11|>=1.11.3,<2.0a0|>=1.12,<1.13.0a0|>=1.14,<1.15.0a0|>=1.13,<1.14.0a0|>=1.10,<1.11.0a0|>=1.11,<1.12.0a0']
+scikit-learn -> scipy -> numpy[version='>=1.11|>=1.18.1,<2.0a0|>=1.15.1,<2.0a0']
+matplotlib -> matplotlib-base[version='>=3.5.0,<3.5.1.0a0'] -> numpy[version='>=1.11.3,<2.0a0|>=1.15.4,<2.0a0|>=1.16.5,<2.0a0|>=1.16.6,<2.0a0|>=1.17|>=1.21.4,<2.0a0|>=1.18.5,<2.0a0|>=1.19.5,<2.0a0|>=1.19.2,<2.0a0|>=1.17.5,<2.0a0|>=1.19.4,<2.0a0|>=1.9.3,<2.0a0']
+pyg -> numpy
+
+Package ca-certificates conflicts for:
+torchvision -> python[version='>=2.7,<2.8.0a0'] -> ca-certificates
+pandas -> python[version='>=2.7,<2.8.0a0'] -> ca-certificates
+jupyterlab -> python[version='>=2.7,<2.8.0a0'] -> ca-certificates
+pillow -> python[version='>=2.7,<2.8.0a0'] -> ca-certificates
+imageio -> python[version='>=2.7,<2.8.0a0'] -> ca-certificates
+numba -> python[version='>=2.7,<2.8.0a0'] -> ca-certificates
+numpy -> python[version='>=2.7,<2.8.0a0'] -> ca-certificates
+seaborn -> python -> ca-certificates
+matplotlib -> python[version='>=2.7,<2.8.0a0'] -> ca-certificates
+scipy -> python[version='>=2.7,<2.8.0a0'] -> ca-certificates
+scikit-learn -> python[version='>=2.7,<2.8.0a0'] -> ca-certificates
+
+Package libuuid conflicts for:
+imageio -> python[version='>=3'] -> libuuid[version='>=1.0.3,<2.0a0|>=2.32.1,<3.0a0']
+seaborn -> python[version='>=3.6'] -> libuuid[version='>=1.0.3,<2.0a0|>=2.32.1,<3.0a0']
+pillow -> python[version='>=3.10,<3.11.0a0'] -> libuuid[version='>=1.0.3,<2.0a0|>=2.32.1,<3.0a0']
+scipy -> python[version='>=3.10,<3.11.0a0'] -> libuuid[version='>=1.0.3,<2.0a0|>=2.32.1,<3.0a0']
+pandas -> python[version='>=3.10,<3.11.0a0'] -> libuuid[version='>=1.0.3,<2.0a0|>=2.32.1,<3.0a0']
+jupyterlab -> python[version='>=3.6'] -> libuuid[version='>=1.0.3,<2.0a0|>=2.32.1,<3.0a0']
+scikit-learn -> python[version='>=3.10,<3.11.0a0'] -> libuuid[version='>=1.0.3,<2.0a0|>=2.32.1,<3.0a0']
+numpy -> python[version='>=3.10,<3.11.0a0'] -> libuuid[version='>=1.0.3,<2.0a0|>=2.32.1,<3.0a0']
+torchvision -> python -> libuuid[version='>=1.0.3,<2.0a0|>=2.32.1,<3.0a0']
+matplotlib -> python[version='>=3.10,<3.11.0a0'] -> libuuid[version='>=1.0.3,<2.0a0|>=2.32.1,<3.0a0']
+
+Package libgcc conflicts for:
+seaborn -> scipy[version='>=0.15.2'] -> libgcc
+matplotlib -> pyqt -> libgcc
+torchvision -> pytorch -> libgcc
+scikit-learn -> scipy -> libgcc
+scipy -> libgcc
+
+Package openblas conflicts for:
+nomkl -> blas=[build=openblas] -> openblas
+scipy -> libblas[version='>=3.8.0,<4.0a0'] -> openblas[version='0.3.5.*|>=0.3.6,<0.3.7.0a0|>=0.2.15']
+scikit-learn -> openblas[version='0.2.18.*|0.2.18|0.2.18.*|0.2.19|0.2.19.*|0.2.20|0.2.20.*|>=0.2.20,<0.2.21.0a0|>=0.3.3,<0.3.4.0a0']
+numba -> numpy[version='>=1.14.6,<2.0a0'] -> openblas[version='0.2.18.*|0.2.18|0.2.18.*|0.2.19|0.2.19.*|0.2.20|0.2.20.*|>=0.2.20,<0.2.21.0a0|>=0.3.3,<0.3.4.0a0|>=0.2.15']
+scipy -> openblas[version='0.2.18.*|0.2.18|0.2.18.*|0.2.19|0.2.19.*|0.2.20|0.2.20.*|>=0.2.20,<0.2.21.0a0|>=0.3.3,<0.3.4.0a0']
+seaborn -> numpy[version='>=1.13.3'] -> openblas[version='0.2.18.*|0.2.18|0.2.18.*|0.2.19|0.2.19.*|0.2.20|0.2.20.*|>=0.2.20,<0.2.21.0a0|>=0.3.3,<0.3.4.0a0|>=0.2.15']
+numpy -> libblas[version='>=3.8.0,<4.0a0'] -> openblas[version='0.3.5.*|>=0.3.6,<0.3.7.0a0']
+matplotlib -> numpy=1.11 -> openblas[version='0.2.18.*|0.2.18|0.2.18.*|0.2.19|0.2.19.*|0.2.20|0.2.20.*|>=0.2.20,<0.2.21.0a0|>=0.3.3,<0.3.4.0a0|>=0.2.15']
+pyg -> numpy -> openblas[version='0.2.18.*|0.2.18|0.2.18.*|0.2.19|0.2.19.*|0.2.20|0.2.20.*|>=0.2.20,<0.2.21.0a0|>=0.3.3,<0.3.4.0a0|>=0.2.15']
+scikit-learn -> numpy[version='>=1.11.3,<2.0a0'] -> openblas[version='>=0.2.15']
+pandas -> numpy[version='>=1.15.4,<2.0a0'] -> openblas[version='0.2.18.*|0.2.18|0.2.18.*|0.2.19|0.2.19.*|0.2.20|0.2.20.*|>=0.2.20,<0.2.21.0a0|>=0.3.3,<0.3.4.0a0|>=0.2.15']
+numpy -> openblas[version='0.2.18.*|0.2.18|0.2.18.*|0.2.19|0.2.19.*|0.2.20|0.2.20.*|>=0.2.20,<0.2.21.0a0|>=0.3.3,<0.3.4.0a0|>=0.2.15']
+imageio -> numpy -> openblas[version='0.2.18.*|0.2.18|0.2.18.*|0.2.19|0.2.19.*|0.2.20|0.2.20.*|>=0.2.20,<0.2.21.0a0|>=0.3.3,<0.3.4.0a0|>=0.2.15']
+torchvision -> numpy[version='>=1.11'] -> openblas[version='0.2.18.*|0.2.18|0.2.18.*|0.2.19|0.2.19.*|0.2.20|0.2.20.*|>=0.2.20,<0.2.21.0a0|>=0.3.3,<0.3.4.0a0|>=0.2.15']
+
+Package intel-openmp conflicts for:
+scikit-learn -> mkl[version='>=2019.4,<2021.0a0'] -> intel-openmp
+pytorch=1.8.1 -> mkl[version='>=2018'] -> intel-openmp[version='2018.0.3.*|2019.*|2021.*']
+scipy -> mkl[version='>=2021.3.0,<2022.0a0'] -> intel-openmp=2021
+numpy -> mkl[version='>=2021.3.0,<2022.0a0'] -> intel-openmp=2021
+
+Package libgfortran5 conflicts for:
+scipy -> libgfortran-ng -> libgfortran5[version='10.3.0|10.3.0|10.3.0|10.3.0|10.3.0|10.3.0|10.3.0|10.3.0|11.1.0|11.1.0|11.1.0|11.1.0|11.1.0|11.2.0|9.4.0|9.4.0|9.4.0|9.4.0|9.4.0|9.4.0|9.4.0|9.4.0|9.3.0.*|8.5.0|8.5.0|8.5.0|8.5.0|8.4.0.*',build='h0ffbd86_8|h0ffbd86_9|h0ffbd86_10|h0ffbd86_11|h62347ff_5|h62347ff_6|h62347ff_7|h62347ff_8|h62347ff_10|hb56cab1_4|hb56cab1_5|hb56cab1_6|hb56cab1_7|hb56cab1_10|hb56cab1_11|h6c583b3_4|h6c583b3_5|h6c583b3_7|h5c6108e_10|h5c6108e_11|h5c6108e_9|h5c6108e_8|h6c583b3_8|h6c583b3_6|hb56cab1_9|hb56cab1_8|h62347ff_11|h62347ff_9|h62347ff_4']
+nomkl -> blas=[build=openblas] -> libgfortran5[version='>=9.3.0|>=9.4.0']
+pytorch=1.8.1 -> blas=[build=mkl] -> libgfortran5[version='>=9.3.0|>=9.4.0']
+scipy -> libgfortran5[version='>=9.3.0|>=9.4.0']
+scikit-learn -> libcblas[version='>=3.8.0,<4.0a0'] -> libgfortran5[version='>=9.3.0|>=9.4.0']
+numpy -> libblas[version='>=3.8.0,<4.0a0'] -> libgfortran5[version='10.3.0|10.3.0|10.3.0|10.3.0|10.3.0|10.3.0|10.3.0|10.3.0|11.1.0|11.1.0|11.1.0|11.1.0|11.1.0|11.2.0|11.2.0|11.2.0|11.2.0|>=9.3.0|9.4.0|9.4.0|9.4.0|9.4.0|9.4.0|9.4.0|9.4.0|9.4.0|9.3.0.*|8.5.0|8.5.0|8.5.0|8.5.0|8.4.0.*|>=9.4.0',build='h0ffbd86_8|h0ffbd86_9|h0ffbd86_10|h0ffbd86_11|h62347ff_5|h62347ff_6|h62347ff_7|h62347ff_8|h62347ff_10|hb56cab1_4|hb56cab1_5|hb56cab1_6|hb56cab1_7|hb56cab1_10|hb56cab1_11|h6c583b3_4|h6c583b3_5|h6c583b3_7|h5c6108e_10|h5c6108e_11|h5c6108e_9|h5c6108e_8|h6c583b3_8|h6c583b3_6|hb56cab1_9|hb56cab1_8|h62347ff_11|h62347ff_9|h62347ff_4']
+seaborn -> scipy[version='>=1.0.1'] -> libgfortran5[version='>=9.3.0|>=9.4.0']
+
+Package libstdcxx-ng conflicts for:
+imageio -> numpy -> libstdcxx-ng[version='>=4.9|>=7.3.0|>=9.3.0|>=7.5.0|>=9.4.0|>=7.2.0']
+matplotlib -> libstdcxx-ng[version='>=7.2.0|>=7.3.0']
+cudatoolkit=11.1 -> libstdcxx-ng[version='>=7.3.0|>=9.3.0|>=9.4.0']
+seaborn -> matplotlib-base[version='>=2.1.2'] -> libstdcxx-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+torchvision -> libstdcxx-ng[version='>=5.4.0|>=7.3.0|>=7.5.0']
+scikit-learn -> libstdcxx-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+pandas -> libstdcxx-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+pytorch=1.8.1 -> cudatoolkit[version='>=11.1,<11.2'] -> libstdcxx-ng[version='>=4.9|>=7.3.0|>=9.3.0|>=9.4.0|>=7.2.0']
+pytorch=1.8.1 -> libstdcxx-ng[version='>=7.5.0']
+torchvision -> cudatoolkit[version='>=11.1,<11.2'] -> libstdcxx-ng[version='>=3.4|>=4.9|>=9.3.0|>=9.4.0|>=7.2.0']
+numpy -> python[version='>=3.7,<3.8.0a0'] -> libstdcxx-ng[version='>=7.2.0|>=7.5.0|>=9.3.0|>=9.4.0']
+pyg -> cudatoolkit=11.1 -> libstdcxx-ng[version='>=4.9|>=7.3.0|>=9.3.0|>=9.4.0|>=7.5.0|>=7.2.0']
+pillow -> libtiff[version='>=4.3.0,<5.0a0'] -> libstdcxx-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+scipy -> libstdcxx-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+numpy -> libstdcxx-ng[version='>=4.9|>=7.3.0']
+matplotlib -> matplotlib-base[version='>=3.5.0,<3.5.1.0a0'] -> libstdcxx-ng[version='>=4.9|>=7.5.0|>=9.4.0|>=9.3.0']
+numba -> libstdcxx-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+jupyterlab -> python[version='>=3.6'] -> libstdcxx-ng[version='>=4.9|>=7.3.0|>=7.5.0|>=9.3.0|>=9.4.0|>=7.2.0']
+
+Package gdbm conflicts for:
+pillow -> pypy3.7[version='>=7.3.7'] -> gdbm[version='>=1.18,<1.19.0a0']
+pandas -> pypy3.7[version='>=7.3.7'] -> gdbm[version='>=1.18,<1.19.0a0']
+matplotlib -> pypy3.7[version='>=7.3.7'] -> gdbm[version='>=1.18,<1.19.0a0']
+scipy -> pypy3.7[version='>=7.3.7'] -> gdbm[version='>=1.18,<1.19.0a0']
+numpy -> pypy3.7[version='>=7.3.7'] -> gdbm[version='>=1.18,<1.19.0a0']
+scikit-learn -> pypy3.7[version='>=7.3.7'] -> gdbm[version='>=1.18,<1.19.0a0']
+
+Package ncurses conflicts for:
+scikit-learn -> pypy3.7[version='>=7.3.7'] -> ncurses[version='5.9.*|5.9|>=6.1,<6.3.0a0|>=6.2,<6.3.0a0|>=6.2,<7.0a0|>=6.1,<7.0a0|>=6.3,<7.0a0|>=6.0,<7.0a0|6.0.*']
+pytorch=1.8.1 -> python[version='>=3.8,<3.9.0a0'] -> ncurses[version='5.9.*|5.9|>=6.1,<6.3.0a0|>=6.2,<6.3.0a0|>=6.2,<7.0a0|>=6.1,<7.0a0|>=6.0,<7.0a0|6.0.*']
+jupyterlab -> python[version='>=3.6'] -> ncurses[version='5.9.*|5.9|>=6.1,<6.3.0a0|>=6.2,<6.3.0a0|>=6.3,<7.0a0|>=6.2,<7.0a0|>=6.1,<7.0a0|>=6.0,<7.0a0|6.0.*']
+scipy -> python[version='>=3.10,<3.11.0a0'] -> ncurses[version='5.9.*|5.9|>=6.1,<6.3.0a0|>=6.2,<6.3.0a0|>=6.3,<7.0a0|>=6.2,<7.0a0|>=6.1,<7.0a0|>=6.0,<7.0a0|6.0.*']
+torchvision -> python[version='>=3.6,<3.7.0a0'] -> ncurses[version='5.9.*|5.9|>=6.1,<6.3.0a0|>=6.2,<6.3.0a0|>=6.2,<7.0a0|>=6.1,<7.0a0|>=6.0,<7.0a0|6.0.*|>=6.3,<7.0a0']
+pandas -> pypy3.7[version='>=7.3.7'] -> ncurses[version='5.9.*|5.9|>=6.1,<6.3.0a0|>=6.2,<6.3.0a0|>=6.2,<7.0a0|>=6.1,<7.0a0|>=6.3,<7.0a0|>=6.0,<7.0a0|6.0.*']
+numpy -> python[version='>=3.10,<3.11.0a0'] -> ncurses[version='5.9.*|5.9|>=6.1,<6.3.0a0|>=6.2,<6.3.0a0|>=6.3,<7.0a0|>=6.2,<7.0a0|>=6.1,<7.0a0|>=6.0,<7.0a0|6.0.*']
+numba -> python[version='>=3.7,<3.8.0a0'] -> ncurses[version='5.9.*|5.9|>=6.1,<6.3.0a0|>=6.2,<6.3.0a0|>=6.2,<7.0a0|>=6.1,<7.0a0|>=6.0,<7.0a0|6.0.*']
+matplotlib -> python[version='>=3.10,<3.11.0a0'] -> ncurses[version='5.9.*|5.9|>=6.1,<6.3.0a0|>=6.2,<6.3.0a0|>=6.3,<7.0a0|>=6.2,<7.0a0|>=6.1,<7.0a0|>=6.0,<7.0a0|6.0.*']
+imageio -> python[version='>=3'] -> ncurses[version='5.9.*|5.9|>=6.1,<6.3.0a0|>=6.2,<6.3.0a0|>=6.3,<7.0a0|>=6.2,<7.0a0|>=6.1,<7.0a0|>=6.0,<7.0a0|6.0.*']
+pillow -> python[version='>=3.10,<3.11.0a0'] -> ncurses[version='5.9.*|5.9|>=6.1,<6.3.0a0|>=6.2,<6.3.0a0|>=6.3,<7.0a0|>=6.2,<7.0a0|>=6.1,<7.0a0|>=6.0,<7.0a0|6.0.*']
+pyg -> python[version='>=3.9,<3.10.0a0'] -> ncurses[version='5.9.*|5.9|>=6.1,<6.3.0a0|>=6.2,<6.3.0a0|>=6.2,<7.0a0|>=6.1,<7.0a0|>=6.0,<7.0a0|6.0.*']
+seaborn -> python[version='>=3.6'] -> ncurses[version='5.9.*|5.9|>=6.1,<6.3.0a0|>=6.2,<6.3.0a0|>=6.3,<7.0a0|>=6.2,<7.0a0|>=6.1,<7.0a0|>=6.0,<7.0a0|6.0.*']
+
+Package setuptools conflicts for:
+seaborn -> matplotlib-base[version='>=2.1.2'] -> setuptools
+jupyterlab -> ipython -> setuptools[version='>=18.5|>=46.4.0']
+pyg -> jinja2 -> setuptools
+numba -> setuptools
+torchvision -> pytorch==1.10.0 -> setuptools
+pandas -> numexpr[version='>=2.7.0'] -> setuptools
+scikit-learn -> joblib[version='>=0.11'] -> setuptools
+matplotlib -> setuptools
+
+Package blis conflicts for:
+numpy -> libblas[version='>=3.8.0,<4.0a0'] -> blis[version='0.5.1.*|>=0.5.2,<0.5.3.0a0|>=0.6.0,<0.6.1.0a0|>=0.6.1,<0.6.2.0a0|>=0.7.0,<0.7.1.0a0|>=0.8.0,<0.8.1.0a0|>=0.8.1,<0.8.2.0a0']
+scipy -> libblas[version='>=3.8.0,<4.0a0'] -> blis[version='0.5.1.*|>=0.5.2,<0.5.3.0a0|>=0.6.0,<0.6.1.0a0|>=0.6.1,<0.6.2.0a0|>=0.7.0,<0.7.1.0a0|>=0.8.0,<0.8.1.0a0|>=0.8.1,<0.8.2.0a0']
+
+Package _libgcc_mutex conflicts for:
+pillow -> libgcc-ng[version='>=9.4.0'] -> _libgcc_mutex[version='*|0.1',build='main|main|conda_forge']
+numba -> libgcc-ng[version='>=9.4.0'] -> _libgcc_mutex[version='*|0.1',build='main|main|conda_forge']
+pytorch=1.8.1 -> _openmp_mutex -> _libgcc_mutex[version='*|0.1',build='main|main|conda_forge']
+cudatoolkit=11.1 -> libgcc-ng[version='>=9.4.0'] -> _libgcc_mutex[version='*|0.1',build='main|main|conda_forge']
+scipy -> libgcc-ng[version='>=9.4.0'] -> _libgcc_mutex[version='*|0.1',build='main|main|conda_forge']
+pandas -> libgcc-ng[version='>=9.4.0'] -> _libgcc_mutex[version='*|0.1',build='main|main|conda_forge']
+numpy -> libgcc-ng[version='>=9.4.0'] -> _libgcc_mutex[version='*|0.1',build='main|main|conda_forge']
+matplotlib -> libgcc-ng[version='>=7.3.0'] -> _libgcc_mutex[version='*|0.1|0.1',build='main|main|conda_forge']
+scikit-learn -> libgcc-ng[version='>=9.4.0'] -> _libgcc_mutex[version='*|0.1',build='main|main|conda_forge']
+torchvision -> libgcc-ng[version='>=7.5.0'] -> _libgcc_mutex[version='*|0.1|0.1',build='main|main|conda_forge']
+
+Package pillow conflicts for:
+imageio -> pillow[version='>=8.3.2']
+matplotlib -> matplotlib-base[version='>=3.5.0,<3.5.1.0a0'] -> pillow[version='>=6.2.0']
+pillow
+torchvision -> pillow[version='>=4.1.1,<8.3|>=4.1.1|>=5.3.0|>=5.3.0,!=8.3.0']
+seaborn -> matplotlib-base[version='>=2.1.2'] -> pillow[version='>=6.2.0']
+
+Package nomkl conflicts for:
+scipy -> openblas[version='>=0.3.3,<0.3.4.0a0'] -> nomkl==3.0=0
+scikit-learn -> openblas[version='>=0.3.3,<0.3.4.0a0'] -> nomkl==3.0=0
+nomkl
+numpy -> openblas[version='>=0.3.3,<0.3.4.0a0'] -> nomkl==3.0=0
+pandas -> numexpr[version='>=2.7.0'] -> nomkl
+
+Package pytorch conflicts for:
+pyg -> pytorch[version='1.10.*|1.9.*|1.8.*']
+torchvision -> pytorch-gpu -> pytorch[version='1.10.0|1.10.0|1.10.0|1.10.0|1.9.1|1.9.1|1.9.1|1.9.1|1.9.1|1.9.1|1.9.1|1.9.1|1.9.1|1.9.1|1.9.1|1.9.1|1.9.1|1.9.1|1.9.1|1.9.1|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.6.0|1.6.0|1.6.0|1.6.0|1.6.0|1.6.0|1.6.0|1.6.0|1.6.0|1.6.0|1.6.0|1.6.0|1.6.0|1.6.0|1.6.0|1.6.0|1.9.1|1.9.1|1.9.1|1.9.1|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.9.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.8.0|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.7.1|1.6.0|1.6.0|1.6.0|1.6',build='cpu_py37hf1c21f6_1|cpu_py36h63cae03_1|cpu_py38h36eccb8_1|cpu_py38h36eccb8_1|cpu_py37hf1c21f6_1|cpu_py39h0fbb4fb_0|cpu_py36h2d15a6b_1|cpu_py39hfbcbfe4_2|cpu_py36h95c28ec_0|cpu_py36h3564fbe_1|cpu_py39h818de69_1|cpu_py36h1c7b8ea_2|cpu_py37hb06efa0_2|cpu_py37hf3cc979_3|cpu_py36ha8b20dc_3|cuda100py36hd82b6f9_1|cuda102py36h8620ce9_1|cuda101py36h42dc283_1|cuda102py37h4d98c68_1|cuda100py37h50b9e00_1|cuda100py39h2b73809_1|cuda101py39h41d04a9_1|cuda102py38h9f8c3ab_1|cuda100py36hd82b6f9_1|cuda92py37hc3ec645_1|cuda102py37h4d98c68_1|cuda100py37h50b9e00_1|cuda92py39hde86683_1|cuda102py39h09d0254_1|cuda100py39h2b73809_1|cuda101py36h42dc283_1|cuda101py39h41d04a9_1|cuda102py38h9f8c3ab_1|cuda102py38h540557e_0|cuda102py39hf89b2ab_0|cuda110py36h7ef7e1d_0|cuda110py39hbc72f07_0|cuda111py38he2736ed_1|cuda112py38h3bc52bc_1|cuda111py39h37e5b68_1|cuda112py36h5fea6e2_1|cuda112py37h946b90b_1|cuda102py36he3537ca_1|cuda110py36h768fbb7_1|cuda102py39h9bf10ef_1|cuda110py38hc2289b8_1|cuda112py36h755b813_1|cuda112py37hcb91bf2_1|cuda102py37h92fd811_1|cuda111py37h78388d7_1|cuda111py36h8a2106e_3|cuda112py39h4e14dd4_3|cuda111py38h2f85826_3|cuda102py38ha031fbe_3|cuda102py39h2fcd037_3|cuda110py38hf84197b_3|cuda112py37h3bec1eb_0|cuda111py39hb4a4491_0|cuda112py39h4e14dd4_0|cuda110py39h5cf7045_0|cuda102py37h98b7ee3_0|cuda112py38h4f2a933_0|cuda110py37h4a33b93_0|cuda102py38ha031fbe_0|cuda111py38h2f85826_0|cuda111py37he371307_0|cuda102py39h2fcd037_0|cuda110py38hf84197b_0|cuda110py39h5cf7045_3|cuda110py37h4a33b93_3|cuda110py36he570edd_3|cuda102py37h98b7ee3_3|cuda102py36h3d4679f_3|cuda112py37h3bec1eb_3|cuda111py37he371307_3|cuda111py39hb4a4491_3|cuda112py36h36e649e_3|cuda112py38h4f2a933_3|cuda112py38h3d13190_1|cuda110py39hd6acddb_1|cuda110py37h00edf66_1|cuda111py36hc5445e6_1|cuda111py38h5169e65_1|cuda112py39hbeb36f3_1|cuda102py38hf03d9dd_1|cuda111py39hc274426_1|cuda111py37h50e976f_1|cuda111py36h3cb1cac_1|cuda112py39h716d6ff_1|cuda110py38h65e529b_0|cuda110py37h5fb8b0b_0|cuda102py37h4454d97_0|cuda102py36hf4eb8d7_0|cuda100py38h679e3f5_1|cuda92py38hb6ed0dd_1|cuda101py38h2499a06_1|cuda101py37h7589291_1|cuda102py36h8620ce9_1|cuda92py36h7ecc001_1|cuda92py39hde86683_1|cuda102py39h09d0254_1|cuda100py38h679e3f5_1|cuda101py38h2499a06_1|cuda92py38hb6ed0dd_1|cuda101py37h7589291_1|cuda92py37hc3ec645_1|cuda92py36h7ecc001_1|cpu_py38h1ee18c8_0|cpu_py37hf3cc979_0|cpu_py39hc5866cc_0|cpu_py38h1ee18c8_3|cpu_py39hc5866cc_3|cpu_py38h4bbe6ce_2|cpu_py39h818de69_2|cpu_py37hff829bd_1|cpu_py38hfb3baa6_1|cpu_py37hd5260e0_0|cpu_py39hfbcbfe4_0|cpu_py38h91ab35c_0|cpu_py39hfbcbfe4_3|cpu_py36h95c28ec_3|cpu_py38h91ab35c_3|cpu_py37hd5260e0_3|cpu_py38h91ab35c_2|cpu_py37hd5260e0_2|cpu_py36h95c28ec_2|cpu_py38hd248515_1|cpu_py39h0fbb4fb_1|cpu_py37ha70c682_1|cpu_py38he614459_0|cpu_py37hafa7651_0|cpu_py36h2ecc29a_0|cpu_py37hf1c21f6_2|cpu_py38h36eccb8_2|cpu_py39h714fb45_2|cpu_py36h63cae03_2|cpu_py36h63cae03_1|cpu_py39h714fb45_1']
+pytorch=1.8.1
+torchvision -> pytorch[version='*|*|1.10.0|1.9.1|1.9.0|1.8.1|1.8.0|1.7.1|1.7.0|1.6.0|1.5.1|1.5.0|1.4.0|1.3.1|1.3.0|1.2.0|1.2.0+cu92|>=1.1.0|>=1.0.0|>=0.4|>=0.3|>=1.8.0|>=1.8.0|1.7.1.*|1.3.1.*|1.2.0.*|1.1.*',build='cpu*|cuda*|cuda*|cpu*']
+
+Package six conflicts for:
+numpy -> mkl-service[version='>=2.3.0,<3.0a0'] -> six
+pandas -> python-dateutil[version='>=2.7.3'] -> six[version='>=1.5']
+jupyterlab -> packaging -> six
+scikit-learn -> mkl-service[version='>=2,<3.0a0'] -> six
+numba -> singledispatch -> six
+matplotlib -> cycler -> six[version='>=1.5']
+scipy -> mkl-service[version='>=2.3.0,<3.0a0'] -> six
+seaborn -> patsy -> six
+torchvision -> six
+
+Package pandas conflicts for:
+seaborn -> statsmodels[version='>=0.8.0'] -> pandas[version='>=0.14|>=0.21|>=1.0']
+seaborn -> pandas[version='>=0.14.0|>=0.22.0|>=0.23']
+pyg -> pandas
+pyg -> networkx[version='>=2.4'] -> pandas[version='>=1.1']
+pandas
+
+Package python-dateutil conflicts for:
+pyg -> pandas -> python-dateutil[version='>=2.5.*|>=2.6.1|>=2.7.3']
+seaborn -> matplotlib-base[version='>=2.1.2'] -> python-dateutil[version='>=2.1|>=2.7|>=2.7.3|>=2.6.1|>=2.5.*']
+matplotlib -> python-dateutil
+pandas -> python-dateutil[version='>=2.5.*|>=2.6.1|>=2.7.3']
+matplotlib -> matplotlib-base[version='>=3.5.0,<3.5.1.0a0'] -> python-dateutil[version='>=2.1|>=2.7']
+
+Package requests conflicts for:
+jupyterlab -> jupyterlab_server[version='>=2.3,<3'] -> requests
+pyg -> requests
+
+Package libblas conflicts for:
+pytorch=1.8.1 -> blas=[build=mkl] -> libblas[version='3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.9.0|>=3.8.0,<4.0a0',build='10_mkl|11_mkl|12_mkl|13_mkl|14_mkl|16_mkl|20_mkl|21_mkl|5_mkl|7_mkl|9_mkl|10_mkl|12_linux64_mkl|11_linux64_mkl|8_mkl|6_mkl|19_mkl|18_mkl|15_mkl|9_mkl|8_mkl|7_mkl|6_mkl|5_mkl|4_mkl']
+numba -> numpy[version='>=1.18.5,<2.0a0'] -> libblas[version='>=3.8.0,<4.0a0']
+scipy -> libcblas[version='>=3.8.0,<4.0a0'] -> libblas[version='3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0.*|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0.*',build='4_blis|4_openblas|5_openblas|5_mkl|7_openblas|7_mkl|8_blis|8_openblas|9_blis|10_openblas|11_openblas|12_blis|12_openblas|12_mkl|13_openblas|14_openblas|14_mkl|15_blis|16_blis|16_mkl|21_mkl|0_blis|1_blis|1_openblas|2_openblas|2_blis|3_blis|4_blis|4_openblas|5_openblas|5_mkl|7_mkl|8_blis|8_openblas|9_openblas|10_openblas|10_mkl|11_linux64_blis|12_linux64_openblas|12_linux64_mkl|12_linux64_blis|11_linux64_mkl|11_linux64_openblas|10_blis|9_mkl|9_blis|8_mkl|7_openblas|7_blis|6_mkl|6_openblas|6_blis|5_blis|4_mkl|3_openblas|0_openblas|20_mkl|19_mkl|18_mkl|17_openblas|16_openblas|15_openblas|15_mkl|14_blis|13_blis|13_mkl|11_mkl|11_blis|10_mkl|10_blis|9_mkl|9_openblas|8_mkl|7_blis|6_mkl|6_openblas|6_blis|5_blis|4_mkl']
+seaborn -> numpy[version='>=1.13.3'] -> libblas[version='>=3.8.0,<4.0a0']
+matplotlib -> numpy=1.11 -> libblas[version='>=3.8.0,<4.0a0']
+imageio -> numpy -> libblas[version='>=3.8.0,<4.0a0']
+pandas -> numpy[version='>=1.19.5,<2.0a0'] -> libblas[version='*|>=3.8.0,<4.0a0',build=*mkl]
+numpy -> libcblas[version='>=3.8.0,<4.0a0'] -> libblas[version='3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0.*|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0.*',build='4_blis|4_openblas|5_openblas|5_mkl|7_openblas|7_mkl|8_blis|8_openblas|9_blis|10_openblas|11_openblas|12_blis|12_openblas|12_mkl|13_openblas|14_openblas|14_mkl|15_blis|16_blis|16_mkl|21_mkl|0_blis|1_blis|1_openblas|2_openblas|2_blis|3_blis|4_blis|4_openblas|5_openblas|5_mkl|7_mkl|8_blis|8_openblas|9_openblas|10_openblas|10_mkl|11_linux64_blis|12_linux64_openblas|12_linux64_mkl|12_linux64_blis|11_linux64_mkl|11_linux64_openblas|10_blis|9_mkl|9_blis|8_mkl|7_openblas|7_blis|6_mkl|6_openblas|6_blis|5_blis|4_mkl|3_openblas|0_openblas|20_mkl|19_mkl|18_mkl|17_openblas|16_openblas|15_openblas|15_mkl|14_blis|13_blis|13_mkl|11_mkl|11_blis|10_mkl|10_blis|9_mkl|9_openblas|8_mkl|7_blis|6_mkl|6_openblas|6_blis|5_blis|4_mkl']
+scipy -> libblas[version='>=3.8.0,<4.0a0']
+torchvision -> numpy[version='>=1.11'] -> libblas[version='*|>=3.8.0,<4.0a0|>=3.9.0,<4.0a0',build=*_mkl]
+pyg -> numpy -> libblas[version='*|>=3.8.0,<4.0a0|>=3.9.0,<4.0a0',build=*_mkl]
+scikit-learn -> libcblas[version='>=3.8.0,<4.0a0'] -> libblas[version='3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0.*|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0|3.9.0.*|>=3.8.0,<4.0a0',build='4_blis|4_openblas|5_openblas|5_mkl|7_openblas|7_mkl|8_blis|8_openblas|9_blis|10_openblas|11_openblas|12_blis|12_openblas|12_mkl|13_openblas|14_openblas|14_mkl|15_blis|16_blis|16_mkl|21_mkl|0_blis|1_blis|1_openblas|2_openblas|2_blis|3_blis|4_blis|4_openblas|5_openblas|5_mkl|7_mkl|8_blis|8_openblas|9_openblas|10_openblas|10_mkl|11_linux64_blis|12_linux64_openblas|12_linux64_mkl|12_linux64_blis|11_linux64_mkl|11_linux64_openblas|10_blis|9_mkl|9_blis|8_mkl|7_openblas|7_blis|6_mkl|6_openblas|6_blis|5_blis|4_mkl|3_openblas|0_openblas|20_mkl|19_mkl|18_mkl|17_openblas|16_openblas|15_openblas|15_mkl|14_blis|13_blis|13_mkl|11_mkl|11_blis|10_mkl|10_blis|9_mkl|9_openblas|8_mkl|7_blis|6_mkl|6_openblas|6_blis|5_blis|4_mkl']
+nomkl -> blas=[build=openblas] -> libblas[version='3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.8.0|3.9.0|3.9.0|3.9.0|3.9.0',build='2_openblas|4_openblas|5_openblas|6_openblas|8_openblas|11_openblas|12_openblas|13_openblas|14_openblas|6_openblas|8_openblas|10_openblas|12_linux64_openblas|11_linux64_openblas|9_openblas|7_openblas|5_openblas|17_openblas|16_openblas|15_openblas|10_openblas|9_openblas|7_openblas|3_openblas|0_openblas']
+numpy -> libblas[version='>=3.8.0,<4.0a0']
+
+Package ssl_match_hostname conflicts for:
+matplotlib -> tornado -> ssl_match_hostname
+jupyterlab -> tornado[version='!=6.0.0,!=6.0.1,!=6.0.2'] -> ssl_match_hostname
+
+Package enum34 conflicts for:
+numba -> enum34
+imageio -> enum34
+matplotlib -> pyqt -> enum34
+
+Package libgomp conflicts for:
+scikit-learn -> _openmp_mutex -> libgomp[version='>=7.3.0|>=7.5.0']
+numba -> _openmp_mutex[version='>=4.5'] -> libgomp[version='>=7.3.0|>=7.5.0']
+pytorch=1.8.1 -> _openmp_mutex -> libgomp[version='>=7.3.0|>=7.5.0']
+
+Package _openmp_mutex conflicts for:
+nomkl -> blas=[build=openblas] -> _openmp_mutex[version='*|>=4.5',build=*_llvm]
+scipy -> libgcc-ng[version='>=9.4.0'] -> _openmp_mutex[version='*|>=4.5',build=*_llvm]
+pytorch=1.8.1 -> _openmp_mutex
+pytorch=1.8.1 -> blas=[build=mkl] -> _openmp_mutex[version='*|>=4.5',build=*_llvm]
+pyg -> pytorch=1.9 -> _openmp_mutex[version='>=4.5']
+numpy -> libgcc-ng[version='>=9.4.0'] -> _openmp_mutex[version='*|>=4.5',build=*_llvm]
+scikit-learn -> _openmp_mutex
+scikit-learn -> libgcc-ng[version='>=9.4.0'] -> _openmp_mutex[version='*|>=4.5',build=*_llvm]
+pillow -> libgcc-ng[version='>=9.4.0'] -> _openmp_mutex[version='>=4.5']
+numba -> _openmp_mutex[version='>=4.5']
+cudatoolkit=11.1 -> libgcc-ng[version='>=9.4.0'] -> _openmp_mutex[version='>=4.5']
+matplotlib -> libgcc-ng[version='>=7.3.0'] -> _openmp_mutex[version='>=4.5']
+pandas -> libgcc-ng[version='>=9.4.0'] -> _openmp_mutex[version='>=4.5']
+torchvision -> pytorch==1.10.0 -> _openmp_mutex[version='>=4.5']
+
+Package typing conflicts for:
+torchvision -> pytorch==1.4.0 -> typing
+pytorch=1.8.1 -> typing_extensions -> typing[version='>=3.6.2|>=3.7.4']
+
+Package libpng conflicts for:
+torchvision -> libpng[version='>=1.6.37,<1.7.0a0']
+matplotlib -> freetype=2.6 -> libpng[version='1.6.*|>=1.6.21,<1.7|>=1.6.32,<1.6.35']
+pillow -> freetype[version='>=2.10.4,<3.0a0'] -> libpng[version='1.6.*|>=1.6.21,<1.7|>=1.6.22,<1.6.31|>=1.6.32,<1.6.35|>=1.6.34,<1.7.0a0|>=1.6.35,<1.7.0a0|>=1.6.37,<1.7.0a0|>=1.6.32,<1.7.0a0|>=1.6.28,<1.7|>=1.6.23,<1.7']
+matplotlib -> libpng[version='>=1.6.23,<1.7|>=1.6.37,<1.7.0a0|>=1.6.36,<1.7.0a0|>=1.6.35,<1.7.0a0|>=1.6.34,<1.7.0a0|>=1.6.32,<1.7.0a0']
+seaborn -> matplotlib-base[version='>=2.1.2'] -> libpng[version='>=1.6.23,<1.7|>=1.6.32,<1.7.0a0|>=1.6.34,<1.7.0a0|>=1.6.35,<1.7.0a0|>=1.6.37,<1.7.0a0|>=1.6.36,<1.7.0a0']
+
+Package tornado conflicts for:
+jupyterlab -> notebook[version='>=4.3.1'] -> tornado[version='>=4|>=4,<6|>=4.1,<7|>=5.0|>=5.0,<7']
+jupyterlab -> tornado[version='!=6.0.0,!=6.0.1,!=6.0.2|>=6.1|>=6.1.0']
+
+Package tbb conflicts for:
+numba -> tbb[version='>=2019.0|>=2019.1|>=2019.4|>=2019.8|>=2020.0|>=2020.2|>=2020.3|>=2021.4.0']
+numpy -> mkl[version='>=2021.3.0,<2022.0a0'] -> tbb=2021
+pytorch=1.8.1 -> mkl[version='>=2018'] -> tbb=2021
+scipy -> mkl[version='>=2021.3.0,<2022.0a0'] -> tbb=2021
+
+Package certifi conflicts for:
+matplotlib -> matplotlib-base[version='>=3.5.0,<3.5.1.0a0'] -> certifi[version='>=2016.09|>=2016.9.26|>=2020.06.20']
+pyg -> requests -> certifi[version='>=2017.4.17']
+jupyterlab -> tornado[version='!=6.0.0,!=6.0.1,!=6.0.2'] -> certifi
+numba -> setuptools -> certifi[version='>=2016.09|>=2016.9.26']
+seaborn -> matplotlib-base[version='>=2.1.2'] -> certifi[version='>=2020.06.20']
+
+Package openblas-devel conflicts for:
+scikit-learn -> openblas[version='>=0.3.3,<0.3.4.0a0'] -> openblas-devel[version='0.3.3|>=0.2.20,<0.2.21.0a0',build='2|3|1']
+scipy -> openblas[version='>=0.3.3,<0.3.4.0a0'] -> openblas-devel[version='0.3.3|>=0.2.20,<0.2.21.0a0',build='2|3|1']
+numpy -> openblas[version='>=0.3.3,<0.3.4.0a0'] -> openblas-devel[version='0.3.10|0.3.13|0.3.3|>=0.2.20,<0.2.21.0a0|0.3.6|0.3.6|0.3.6|>=0.3.2,<0.3.3.0a0',build='0|2|0|h06a4308_0|2|3|1|1']
+
+Package libprotobuf conflicts for:
+pyg -> pytorch=1.9 -> libprotobuf[version='>=3.15.5,<3.16.0a0|>=3.15.6,<3.16.0a0|>=3.15.8,<3.16.0a0|>=3.16.0,<3.17.0a0|>=3.18.0,<3.19.0a0|>=3.18.1,<3.19.0a0']
+torchvision -> pytorch==1.10.0 -> libprotobuf[version='>=3.15.5,<3.16.0a0|>=3.15.6,<3.16.0a0|>=3.15.8,<3.16.0a0|>=3.16.0,<3.17.0a0|>=3.18.0,<3.19.0a0|>=3.18.1,<3.19.0a0']
+
+Package dataclasses conflicts for:
+torchvision -> pytorch==1.10.0 -> dataclasses
+pyg -> pytorch=1.9 -> dataclasses
+jupyterlab -> jupyter_server[version='>=1.4,<2'] -> dataclasses
+pytorch=1.8.1 -> dataclasses
+
+Package scikit-learn conflicts for:
+pyg -> scikit-learn
+scikit-learn
+
+Package jinja2 conflicts for:
+jupyterlab -> jinja2[version='>=2.10']
+jupyterlab -> jupyter_server[version='>=1.4,<2'] -> jinja2[version='>2.10*']
+
+Package pyparsing conflicts for:
+jupyterlab -> packaging -> pyparsing[version='<3,>=2.0.2|>=2.0.2,!=3.0.5|>=2.0.2,<3|>=2.0.2']
+seaborn -> matplotlib-base[version='>=2.1.2'] -> pyparsing[version='>=2.0.3,!=2.0.4,!=2.1.2,!=2.1.6|>=2.2.1']
+matplotlib -> pyparsing
+matplotlib -> matplotlib-base[version='>=3.5.0,<3.5.1.0a0'] -> pyparsing[version='>=2.0.3,!=2.0.4,!=2.1.2,!=2.1.6|>=2.2.1']
+pyg -> pyparsing
+
+Package pypy3.6 conflicts for:
+pandas -> pypy3.6[version='>=7.3.1|>=7.3.2']
+pandas -> numpy[version='>=1.19.5,<2.0a0'] -> pypy3.6[version='7.3.*|7.3.0.*|7.3.1.*|7.3.2.*|7.3.3.*|>=7.3.3']
+
+Package matplotlib conflicts for:
+seaborn -> matplotlib[version='>=1.4.3|>=2.1.2|>=2.2']
+matplotlib
+pyg -> networkx[version='>=2.4'] -> matplotlib[version='>=3.3']
+
+Package pyqt conflicts for:
+seaborn -> matplotlib[version='>=2.1.2'] -> pyqt[version='4.11.*|5.*|5.9.*|>=5.12.3,<5.13.0a0|>=5.6.0,<5.7.0a0|>=5.9.2,<5.10.0a0|>=5.6,<6.0a0|5.6.*']
+matplotlib -> pyqt[version='4.11.*|>=5.12.3,<5.13.0a0|>=5.6.0,<5.7.0a0|>=5.9.2,<5.10.0a0|5.9.*|>=5.6,<6.0a0|5.*|5.6.*']
+
+Package singledispatch conflicts for:
+matplotlib -> tornado -> singledispatch
+jupyterlab -> tornado[version='!=6.0.0,!=6.0.1,!=6.0.2'] -> singledispatch
+numba -> singledispatch
+
+Package python conflicts for:
+pandas -> python-dateutil[version='>=2.7.3'] -> python[version='3.10.*|3.9.*|>=3|>=3.6|3.7.*|3.8.*']
+pandas -> python[version='2.7.*|3.5.*|3.6.*|>=2.7,<2.8.0a0|>=3.10,<3.11.0a0|>=3.7,<3.8.0a0|>=3.9,<3.10.0a0|>=3.8,<3.9.0a0|>=3.6,<3.7.0a0|>=3.5,<3.6.0a0|3.4.*|>=3.7.1,<3.8.0a0']The following specifications were found to be incompatible with your system:
+
+  - feature:/linux-64::__glibc==2.31=0
+  - cudatoolkit=11.1 -> __glibc[version='>=2.17,<3.0.a0']
+  - cudatoolkit=11.1 -> libgcc-ng[version='>=9.3.0'] -> __glibc[version='>=2.17']
+  - matplotlib -> libgcc-ng[version='>=7.3.0'] -> __glibc[version='>=2.17']
+  - numba -> libgcc-ng[version='>=9.3.0'] -> __glibc[version='>=2.17']
+  - numpy -> libgcc-ng[version='>=9.3.0'] -> __glibc[version='>=2.17']
+  - pandas -> libgcc-ng[version='>=9.3.0'] -> __glibc[version='>=2.17']
+  - pillow -> libgcc-ng[version='>=9.3.0'] -> __glibc[version='>=2.17']
+  - pyg -> cudatoolkit=11.1 -> __glibc[version='>=2.17|>=2.17,<3.0.a0']
+  - pytorch=1.8.1 -> cudatoolkit[version='>=11.1,<11.2'] -> __glibc[version='>=2.17|>=2.17,<3.0.a0']
+  - scikit-learn -> libgcc-ng[version='>=9.3.0'] -> __glibc[version='>=2.17']
+  - scipy -> libgfortran-ng -> __glibc[version='>=2.17']
+  - torchvision -> __glibc[version='>=2.17|>=2.17,<3.0.a0']
+
+Your installed version is: 2.31
+
+
+/usr/bin/python3: No module named pip
