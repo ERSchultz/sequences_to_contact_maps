@@ -8,7 +8,7 @@
 #SBATCH --ntasks-per-node=4
 #SBATCH --mem-per-cpu=2000
 
-dirname="/project2/depablo/erschultz/dataset_12_11_21"
+dirname="/project2/depablo/erschultz/dataset_12_12_21"
 deleteRoot='false'
 
 modelType='ContactGNNEnergy'
@@ -21,15 +21,15 @@ m=1024
 yPreprocessing='diag'
 yNorm='none'
 yLogTransform='true'
-messagePassing='GCN'
+messagePassing='SignedConv'
 useNodeFeatures='false'
-useEdgeWeights='true'
+useEdgeWeights='false'
 hiddenSizesList='8-8-8'
 EncoderHiddenSizesList='100-100-16'
 updateHiddenSizesList='100-100-16'
 transforms='none'
 preTransforms='degree'
-split_neg_pos_edges_for_feature_augmentation='false'
+split_neg_pos_edges_for_feature_augmentation='true'
 topK='none'
 sparsifyThresholdUpper='none'
 sparsifyThreshold=0.176
