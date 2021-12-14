@@ -150,7 +150,7 @@ def debugModel(model_type):
     elif model_type == 'ContactGNNEnergy':
         opt.loss = 'mse'
         opt.y_norm = None
-        opt.message_passing='SignedConv'
+        opt.message_passing='gcn'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
         opt.encoder_hidden_sizes_list=[100, 100, 8]
@@ -161,16 +161,16 @@ def debugModel(model_type):
         opt.out_act = 'prelu'
         opt.head_act = 'prelu'
         opt.use_node_features = False
-        opt.use_edge_weights = False
+        opt.use_edge_weights = True
         opt.transforms=str2list('none')
         opt.pre_transforms=str2list('degree')
-        opt.split_neg_pos_edges_for_feature_augmentation = True
+        opt.split_neg_pos_edges_for_feature_augmentation = False
         opt.top_k = None
         opt.sparsify_threshold = 0.176
         opt.sparsify_threshold_upper = None
         opt.relabel_11_to_00 = False
         opt.y_log_transform = False
-        opt.head_architecture = 'concat-outer'
+        opt.head_architecture = 'concat'
         opt.head_hidden_sizes_list = [100,100,1]
         opt.crop=[0,50]
         opt.m = 50
@@ -372,12 +372,10 @@ def main():
 
 
 
-
-
 if __name__ == '__main__':
-    main()
+    # main()
     # edit_argparse()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # plot_fixed()
     # test_argpartition(10)
     # downsampling_test()

@@ -2,51 +2,24 @@
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 \multicolumn{5}{|c|}{dataset\_10\_27\_21} \\ 
+\multicolumn{5}{|c|}{sample 40} \\ 
 \hline
-\hline
-Method & k & Pearson R & Avg Dist Pearson R & SCC \\ 
+Method & k & SCC & $\Delta$ SCC & MSE-S \\ 
 \hline\hline
-Ground Truth-S & S & 0.999 & 0.482 & 0.357 \\ 
-GNN-34 &  & 0.999 & 0.499 & 0.375 \\ 
-\hline
-Ground Truth & 2 & 0.999 & 0.245 & 0.15 \\ 
-Ground Truth-fixed &  & 1.0 & 0.339 & 0.244 \\ 
-Random &  & 0.999 & 0.054 & 0.022 \\ 
-PCA &  & 0.999 & 0.195 & 0.093 \\ 
-PCA Split &  & 0.999 & -0.021 & -0.02 \\ 
-K-means &  & 1.0 & 0.31 & 0.223 \\ 
-NMF &  & 1.0 & 0.338 & 0.233 \\ 
-\hline
-Random & 4 & 0.999 & 0.029 & 0.022 \\ 
-PCA &  & 0.999 & 0.151 & 0.119 \\ 
-PCA Split &  & 0.999 & 0.279 & 0.204 \\ 
-K-means &  & 1.0 & 0.371 & 0.247 \\ 
-NMF &  & 1.0 & 0.322 & 0.234 \\ 
+Ground Truth-S & - & 0.358 $\pm$ 0.003 & 0.0 $\pm$ 0.003 & 0.0 $\pm$ 0.0 \\ 
 \hline
 \end{tabular}
 \end{center}
 
 \begin{center}
-\begin{tabular}{|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{dataset\_10\_27\_21} \\ 
+\multicolumn{7}{|c|}{dataset\_10\_27\_21} \\ 
+\multicolumn{7}{|c|}{sample 40} \\ 
 \hline
-Method & k & SCC \\ 
+Method & k & Pearson R & Avg Dist Pearson R & SCC & $\Delta$  SCC & MSE-S \\ 
 \hline\hline
-Ground Truth-S & S & 0.357 \\ 
-GNN-34 &  & 0.375 \\ 
-\hline
-Ground Truth & 2 & 0.15 \\ 
-Ground Truth-fixed &  & 0.244 \\ 
-Random &  & 0.022 \\ 
-PCA &  & 0.093 \\ 
-K-means &  & 0.223 \\ 
-NMF &  & 0.233 \\ 
-\hline
-Random & 4 & 0.022 \\ 
-PCA &  & 0.119 \\ 
-K-means &  & 0.247 \\ 
-NMF &  & 0.234 \\ 
+Ground Truth-S & - & 0.999 $\pm$ 0.0 & 0.484 $\pm$ 0.003 & 0.358 $\pm$ 0.003 & 0.0 $\pm$ 0.003 & 0.0 $\pm$ 0.0 \\ 
 \hline
 \end{tabular}
 \end{center}
