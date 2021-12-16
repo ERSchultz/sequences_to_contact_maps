@@ -20,6 +20,7 @@ from core_test_train import core_test_train
 from plotting_functions import *
 import cleanDirectories
 
+
 def test_num_workers():
     opt = argparseSetup() # get default args
     opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
@@ -348,34 +349,49 @@ def testEnergy():
     plotContactMap(energy, osp.join(ofile, 'energy.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$S$')
 
 def main():
-    dir = '/home/eric/sequences_to_contact_maps/dataset_10_27_21/samples/sample40'
+    dir = '/home/eric/sequences_to_contact_maps/dataset_12_11_21/samples/sample1230'
     chi = np.loadtxt(osp.join(dir, 'chis.txt'))
-    chi = chi + np.triu(chi, 1).T
+    # chi = np.array([[-0.6,-0.6,1.5],[0,-0.1,0.9],[0,0,-1.5]])
+
     print(chi)
-    x = np.array([[0,0],
-                [0,1],
-                [1,0],
-                [1,1]])
+    k, _ = chi.shape
+    conv = InteractionConverter(k, chi)
+    conv.allStrings = np.array([[1,0,0,0,0,0], # A
+                                [1,1,0,1,0,0], # AB
+                                [1,0,1,0,0,1], # AC
+                                [0,0,0,1,0,0], # B
+                                [0,0,0,1,1,1], # BC
+                                [1,1,1,1,1,1], # ABC
+                                [0,0,0,0,0,1]]) # C
+    E = conv.getE()
+    print(E)
+    print(np.min(E), np.max(E))
+    print('-'*10)
 
+    #
+    # chi[1:3,1:3] = 0
+    # chi[4, 1:3] = 0
+    # chi[1:3, 4] = 0
+    # chi[4, 4] = 0
+    # print(chi)
+    # print(conv.getE())
+    #
+    # print('_'*10)
+    # chi[:, 1:3] = 0
+    # chi[:, 4] = 0
+    # chi[1:3] = 0
+    # chi[4] = 0
+    # print(chi)
+    # print(conv.getE())
 
-    s = x @ np.triu(chi.copy()) @ x.T
-    print('triu chi\n', s)
-    s_new = s + s.T
-    print('s sT\n', s_new)
-    e = s + s.T - np.diag(np.diagonal(s.copy()))
-    print('e\n', e)
-
-    chi = chi * 1/2 + 1/2 * np.diag(np.diagonal(chi.copy()))
-    print(chi)
-    s = x @ chi @ x.T
-    print('snew\n', s)
+    # print(conv.allStrings)
 
 
 
 if __name__ == '__main__':
-    # main()
+    main()
     # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
     # plot_fixed()
     # test_argpartition(10)
     # downsampling_test()

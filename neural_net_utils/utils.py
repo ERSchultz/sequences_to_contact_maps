@@ -409,6 +409,25 @@ def roundUpBy10(val):
         mult *= 10
     return mult
 
+## energy functions ##
+def calculate_E_S(x, chi):
+    s = calculate_S(x, chi)
+    e = s + s.T - np.diag(np.diagonal(s).copy())
+    return e, s
+
+def calculate_E(x, chi):
+    s = calculate_S(x, chi)
+    e = s + s.T - np.diag(np.diagonal(s).copy())
+    return e
+
+def calculate_S(x, chi):
+    # zero lower triangle (double check)
+    chi = np.triu(chi)
+
+    s = x @ chi @ x.T
+    return s
+
+## interaction converter ##
 class InteractionConverter():
     """Class that allows conversion between epigenetic mark bit string pairs and integer type id"""
     def __init__(self, k, chi = None):
@@ -432,19 +451,22 @@ class InteractionConverter():
 
         self.types = np.arange(0, curr_type, 1)
 
-        if self.chi is not None:
-            self.setPsi()
+        if chi is not None:
+            self.E, self.S = calculate_E_S(self.allStrings, self.chi)
+        else:
+            self.S = None
+            self.E = None
 
     def setChi(self, chi):
         self.chi = chi
 
-    def setPsi(self):
-        assert self.chi is not None, "set chi first"
-        self.Psi = self.allStrings @ self.chi @ self.allStrings.T
+    def getE(self):
+        self.E, self.S = calculate_E_S(self.allStrings, self.chi)
+        return self.E
 
-    def getPsi_ij(self, xi, xj):
-        assert self.chi is not None, "set chi first"
-        return xi @ self.chi @ xj
+    def getS(self):
+        self.E, self.S = calculate_E_S(self.allStrings, self.chi)
+        return self.S
 
     def comb2Type(self, comb):
         # input comb must be a frozenset

@@ -55,7 +55,7 @@ def getArgs(dataset = None, model_id = None):
 
     return args
 
-def reshape_chi(chi, letters):
+def reshape_chi(chi, letters): # deprecated
     '''
     Reshapes chi to match order of letters.
 
@@ -207,9 +207,6 @@ def find_all_pairs(x, energy, letters):
 
 def regression_on_all_pairs(x_new, letters_new, chi, s, s_hat, args):
     _, k_new = x_new.shape
-    chi_reshaped = reshape_chi(chi, letters_new)
-    print('Reshaped chi', file = args.log_file)
-    print(chi_reshaped, file = args.log_file)
 
     for energy, text in zip([s, s_hat], ['S', 's_hat']):
         X, Y, letters_newer = find_all_pairs(x_new, (energy + energy.T)/2, letters_new)
@@ -331,11 +328,6 @@ def main(dataset, model_id, plot = True):
 
     ## load data ##
     x, chi, s, e, y, ydiag = get_ground_truth(args)
-    # convert back to nonlinear space
-    x = relabel_seq(x, 'D-AB')
-    comb = x[:, 0] * x[:, 1]
-    x_linear = np.append(x, comb.reshape(len(x), 1), axis = 1)
-    s = x_linear @ chi @ x_linear.T
 
     s_hat = np.loadtxt(osp.join(args.root, 'results/ContactGNNEnergy/{}/sample{}/energy_hat.txt'.format(args.model_id, args.sample)))
 
@@ -387,5 +379,5 @@ def main(dataset, model_id, plot = True):
     regression_on_all_pairs(x_new, letters_new, chi, s, s_hat, args)
 
 if __name__ == '__main__':
-    for id in [42]:
-        main('dataset_11_03_21', id, False)
+    for id in [64]:
+        main('dataset_12_11_21', id, False)

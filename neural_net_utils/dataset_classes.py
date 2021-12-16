@@ -19,16 +19,18 @@ import time
 import numpy as np
 import scipy.stats as ss
 
-def make_dataset(dir, minSample = 0):
+def make_dataset(dir, minSample = 0, verbose = True):
     data_file_arr = []
     samples_dir = osp.join(dir, 'samples')
     for file in os.listdir(samples_dir):
         if not file.startswith('sample'):
-            print("Skipping {}".format(file))
+            if verbose:
+                print("Skipping {}".format(file))
         else:
             sample_id = int(file[6:])
             if sample_id < minSample:
-                print("Skipping {}".format(file))
+                if verbose:
+                    print("Skipping {}".format(file))
             else:
                 data_file = osp.join(samples_dir, file)
                 data_file_arr.append(data_file)

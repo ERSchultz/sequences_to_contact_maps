@@ -5,8 +5,29 @@ import pandas as pd
 import math
 import matplotlib.pyplot as plt
 
-from neural_net_utils.utils import make_dataset, InteractionConverter
+from neural_net_utils.dataset_classes import make_dataset
+from neural_net_utils.utils import InteractionConverter
 from plotting_functions import plotContactMap
+
+### Finding count for each type of pairwise interaction ###
+def getPairwiseContacts(data_folder):
+    samples = make_dataset(data_folder)
+    for sample in samples:
+        print(sample)
+        x_linear_file = osp.join(sample, 'x_linear.npy')
+        x_linear = np.load(x_linear_file)
+        m, k = x_linear.shape
+        label_count = np.sum(x_linear, axis = 0)
+        print(label_count)
+
+        label_pair_count = np.zeros((k, k))
+        for i in range(k):
+            for j in range(i, k):
+                val = np.sum(np.logical_and(x_linear[:, i] == 1, x_linear[:, j] == 1))
+                label_pair_count[i, j] = val
+        print(label_pair_count)
+
+        print('')
 
 ### Plotting contact frequency histograms
 def getFrequencies(dataFolder, preprocessing, m, k, chi = None, save = True):
@@ -242,7 +263,6 @@ def freqSampleDistributionPlots(dataFolder, sample_id, m = 1024, k = None, split
             # plotFrequenciesSampleSubplot(freq_arr, dataFolder, preprocessing, k, split)
             plotFrequenciesForSample(freq_arr, dataFolder, preprocessing, k, sampleid = sample_id, split = split)
 
-
 ### Plotting contact frequency as function of genomic distance
 def genomic_distance_statistics(y, mode = 'freq', stat = 'mean'):
     '''
@@ -378,6 +398,7 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, chi = None):
 if __name__ == '__main__':
     dataset = 'dataset_08_26_21'
     sample = 40
-    basic_plots(dataset, plot_y = False)
+    # basic_plots(dataset, plot_y = False)
     # plot_genomic_distance_statistics(dataset)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
+    getPairwiseContacts('/home/eric/sequences_to_contact_maps/dataset_12_11_21')

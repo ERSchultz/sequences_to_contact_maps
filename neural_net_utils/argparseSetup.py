@@ -476,9 +476,9 @@ def str2Float(v):
     elif isinstance(v, str):
         if v.lower() == 'none':
             return None
-        try:
+        elif v.isnumeric():
             return float(v)
-        except ValueError:
+        else:
             raise argparse.ArgumentTypeError('none or float expected not {}'.format(v))
     else:
         raise argparse.ArgumentTypeError('String value expected.')
@@ -520,6 +520,31 @@ def str2list(v, sep = '-'):
             for i, val in enumerate(result):
                 if val.isnumeric():
                     result[i] = int(val)
+            return result
+    else:
+        raise argparse.ArgumentTypeError('str value expected.')
+
+def str2list2D(v, sep1 = '\\', sep2 = '&'):
+    """
+    Helper function for argparser, converts str to list by splitting on sep1, then on sep2.
+
+    Example for sep1 = '\\', sep2 = '&': "i & j \\ k & l" -> [[i, j], [k, l]]
+
+    Inputs:
+        v: string (any spaces will be ignored)
+        sep: separator
+    """
+    if v is None:
+        return None
+    elif isinstance(v, str):
+        if v.lower() == 'none':
+            return None
+        elif v.lower() in {'nonlinear', 'polynomial'}:
+            return v.lower()
+        else:
+            v = v.replace(' ', '') # get rid of spaces
+            result = [i.split(sep2) for i in v.split(sep1)]
+            result = np.array(result, dtype=float)
             return result
     else:
         raise argparse.ArgumentTypeError('str value expected.')

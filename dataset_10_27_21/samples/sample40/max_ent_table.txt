@@ -2,6 +2,7 @@
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 \multicolumn{5}{|c|}{dataset\_10\_27\_21} \\ 
+\hline
 \multicolumn{5}{|c|}{sample 40} \\ 
 \hline
 Method & k & SCC & $\Delta$ SCC & MSE-S \\ 
@@ -15,6 +16,7 @@ Ground Truth-S & - & 0.358 $\pm$ 0.003 & 0.0 $\pm$ 0.003 & 0.0 $\pm$ 0.0 \\
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
 \multicolumn{7}{|c|}{dataset\_10\_27\_21} \\ 
+\hline
 \multicolumn{7}{|c|}{sample 40} \\ 
 \hline
 Method & k & Pearson R & Avg Dist Pearson R & SCC & $\Delta$  SCC & MSE-S \\ 
