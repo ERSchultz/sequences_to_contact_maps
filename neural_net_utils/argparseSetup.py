@@ -22,9 +22,9 @@ def getBaseParser():
     parser.add_argument('--GNN_mode', type=str2bool, default=False, help='True to use GNNs (uses pytorch_geometric in core_test_train)')
     parser.add_argument('--transforms', type=str2list, help='list of transforms to use for GNN')
     parser.add_argument('--pre_transforms', type=str2list, help='list of pre-transforms to use for GNN')
-    parser.add_argument('--sparsify_threshold', type=str2Float, help='remove all edges with weight < threshold (None to do nothing)')
-    parser.add_argument('--sparsify_threshold_upper', type=str2Float, help='remove all edges with weight < threshold (None to do nothing)')
-    parser.add_argument('--top_k', type=str2Int, help='filter to top k largest edges per node (None to do nothing)')
+    parser.add_argument('--sparsify_threshold', type=str2float, help='remove all edges with weight < threshold (None to do nothing)')
+    parser.add_argument('--sparsify_threshold_upper', type=str2float, help='remove all edges with weight < threshold (None to do nothing)')
+    parser.add_argument('--top_k', type=str2int, help='filter to top k largest edges per node (None to do nothing)')
     parser.add_argument('--use_node_features', type=str2bool, default=False, help='True to use node features for GNN models')
     parser.add_argument('--use_edge_weights', type=str2bool, default=True, help='True to use edge weights in GNN')
     parser.add_argument('--relabel_11_to_00',type=str2bool, default=False, help='True to relabel [1,1] particles as [0,0] particles')
@@ -445,7 +445,7 @@ def str2None(v):
     else:
         raise argparse.ArgumentTypeError('String value expected.')
 
-def str2Int(v):
+def str2int(v):
     """
     Helper function for argparser, converts str to int if possible.
 
@@ -464,7 +464,7 @@ def str2Int(v):
     else:
         raise argparse.ArgumentTypeError('String value expected.')
 
-def str2Float(v):
+def str2float(v):
     """
     Helper function for argparser, converts str to float if possible.
 
