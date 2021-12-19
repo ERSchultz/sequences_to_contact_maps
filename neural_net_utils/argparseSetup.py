@@ -476,7 +476,7 @@ def str2float(v):
     elif isinstance(v, str):
         if v.lower() == 'none':
             return None
-        elif v.isnumeric():
+        elif v.replace('.', '').isnumeric():
             return float(v)
         else:
             raise argparse.ArgumentTypeError('none or float expected not {}'.format(v))
@@ -603,10 +603,9 @@ def float2str(v):
     return vstr
 
 def test():
-    opt = argparseSetup()
-    optlist = opt2list(opt)
-    optheader = get_opt_header(opt.model_type, opt.GNN_mode)
-    assert len(optlist) == len(optheader)
+    s = '0.176'
+    f = str2float(s)
+    print(f)
 
 if __name__ == '__main__':
     test()
