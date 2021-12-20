@@ -16,16 +16,12 @@ from sklearn.metrics import mean_squared_error
 
 from plotting_functions import plotContactMap
 
-sys.path.insert(1, '/home/eric/TICG-chromatin/scripts')
-sys.path.insert(1, 'C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\TICG-chromatin\\scripts')
-from get_seq import relabel_seq
-
 LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 def getArgs(dataset = None, model_id = None):
     parser = argparse.ArgumentParser(description='Base parser')
-    # parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
-    parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
+    parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
+    # parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
     parser.add_argument('--dataset', type=str, default=dataset, help='Location of input data')
     parser.add_argument('--sample', type=int, default=40)
     parser.add_argument('--model_id', type=int, default=model_id)
@@ -379,5 +375,5 @@ def main(dataset, model_id, plot = True):
     regression_on_all_pairs(x_new, letters_new, chi, s, s_hat, args)
 
 if __name__ == '__main__':
-    for id in [64]:
-        main('dataset_12_11_21', id, False)
+    for id in [66]:
+        main('dataset_12_17_21', id, False)
