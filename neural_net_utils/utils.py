@@ -424,7 +424,12 @@ def calculate_S(x, chi):
     # zero lower triangle (double check)
     chi = np.triu(chi)
 
-    s = x @ chi @ x.T
+    try:
+        s = x @ chi @ x.T
+    except ValueError as e:
+        print('x', x, x.shape)
+        print('chi', chi, chi.shape)
+        raise
     return s
 
 ## interaction converter ##
