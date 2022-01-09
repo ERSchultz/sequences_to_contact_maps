@@ -95,7 +95,7 @@ def reshape_chi(chi, letters): # deprecated
 
     return chi_reshaped
 
-def run_regression(X, Y, k_new, args):
+def run_regression(X, Y, k_new, args, ofile):
     est = sm.OLS(Y, X)
     est = est.fit()
     print(est.summary(), '\n', file = args.log_file)
@@ -116,7 +116,7 @@ def run_regression(X, Y, k_new, args):
             col += 1
 
     print(np.round(hat_chi, 2), '\n', file = args.log_file)
-    return hat_chi
+    np.save(osp.join(args.odir, ofile + '.npy'), hat_chi)
 
 def relabel_x(x):
     '''
@@ -150,7 +150,7 @@ def relabel_x(x):
                 pair = LETTERS[i] + LETTERS[j]
             letters_outer[i,j] = pair
     letters_new = letters_outer[ind]
-    print(letters_new)
+    print('letters 1', letters_new)
 
     return x_new, letters_new
 
@@ -197,18 +197,18 @@ def find_all_pairs(x, energy, letters):
         for j in range(k):
             letters_outer[i,j] = letters[i] + '-' + letters[j]
     letters_new = letters_outer[ind]
-    print(letters_new)
+    print('letters 2', letters_new)
 
     return X, Y, letters_new
 
 def regression_on_all_pairs(x_new, letters_new, chi, s, s_hat, args):
     _, k_new = x_new.shape
 
-    for energy, text in zip([s, s_hat], ['S', 's_hat']):
+    for energy, text in zip([s, s_hat], ['chi', 'chi_hat']):
         X, Y, letters_newer = find_all_pairs(x_new, (energy + energy.T)/2, letters_new)
 
         # run linear regression
-        hat_chi = run_regression(X, Y, k_new, args)
+        run_regression(X, Y, k_new, args, text)
 
 def get_ground_truth(args, plot=True):
     x = np.load(osp.join(args.sample_folder, 'x.npy'))
@@ -337,43 +337,74 @@ def main(dataset, model_id, plot = True):
         plotContactMap(dif, osp.join(args.odir, 's_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
 
     ## Compare PCs ##
-    print("\nY_diag", file = args.log_file)
-    PC_y = plot_top_PCs(ydiag, 'y_diag', args.sample_folder, args.log_file, count = 2, plot = plot)
-
-    print("\nS", file = args.log_file)
-    print(f'Rank: {np.linalg.matrix_rank(s)}', file = args.log_file)
-    PC_s = plot_top_PCs(s, 's', args.sample_folder, args.log_file, count = 2, plot = plot)
-    stat = pearsonround(PC_y[0], PC_s[0])
-    print("Correlation between PC 1 of y_diag and S: ", stat, file = args.log_file)
+    # print("\nY_diag", file = args.log_file)
+    # PC_y = plot_top_PCs(ydiag, 'y_diag', args.sample_folder, args.log_file, count = 2, plot = plot)
+    #
+    # print("\nS", file = args.log_file)
+    # print(f'Rank: {np.linalg.matrix_rank(s)}', file = args.log_file)
+    # PC_s = plot_top_PCs(s, 's', args.sample_folder, args.log_file, count = 2, plot = plot)
+    # stat = pearsonround(PC_y[0], PC_s[0])
+    # print("Correlation between PC 1 of y_diag and S: ", stat, file = args.log_file)
 
     ## Compare MSE in PCA space ##
-    print("\nS_hat", file = args.log_file)
-    print(f'S - MSE: {mse}', file = args.log_file)
-    for i in range(1, 4):
-        # get e top i PCs
-        pca = PCA(n_components = i)
-        s_transform = pca.fit_transform(s)
-        s_i = pca.inverse_transform(s_transform)
-
-        # compare ehat to projection of e onto top PCs
-        mse = np.round(mean_squared_error(s_i, s_hat), 3)
-        print(f'S top {i} PCs - MSE: {mse}', file = args.log_file)
-    PC_s_hat = plot_top_PCs(s_hat, 's_hat', args.odir, args.log_file, count = 2)
+    # print("\nS_hat", file = args.log_file)
+    # print(f'S - MSE: {mse}', file = args.log_file)
+    # for i in range(1, 4):
+    #     # get e top i PCs
+    #     pca = PCA(n_components = i)
+    #     s_transform = pca.fit_transform(s)
+    #     s_i = pca.inverse_transform(s_transform)
+    #
+    #     # compare ehat to projection of e onto top PCs
+    #     mse = np.round(mean_squared_error(s_i, s_hat), 3)
+    #     print(f'S top {i} PCs - MSE: {mse}', file = args.log_file)
+    # PC_s_hat = plot_top_PCs(s_hat, 's_hat', args.odir, args.log_file, count = 2)
 
     ## Compare y_diag and ehat ##
-    stat = pearsonround(PC_y[0], PC_s_hat[0])
-    print("Correlation between PC 1 of y_diag and S_hat: ", stat, file = args.log_file)
-    for zero_index, one_index in enumerate([1,2,3]):
-        stat = pearsonround(PC_s[zero_index], PC_s_hat[zero_index])
-        print(f"Correlation between PC {one_index} of S and S_hat: ", stat, file = args.log_file)
+    # stat = pearsonround(PC_y[0], PC_s_hat[0])
+    # print("Correlation between PC 1 of y_diag and S_hat: ", stat, file = args.log_file)
+    # for zero_index, one_index in enumerate([1,2,3]):
+    #     stat = pearsonround(PC_s[zero_index], PC_s_hat[zero_index])
+    #     print(f"Correlation between PC {one_index} of S and S_hat: ", stat, file = args.log_file)
 
     ## All pairs of bead types for all pairs of particles ##
     print('\nAll possible pairwise interactions', file = args.log_file)
     # first relabel marks with all possible pairs of marks for each bead
     x_new, letters_new = relabel_x(x)
 
-    regression_on_all_pairs(x_new, letters_new, chi, s, s_hat, args)
+    # regression_on_all_pairs(x_new, letters_new, chi, s, s_hat, args)
+
+    post_analysis_chi(args, letters_new)
+
+def post_analysis_chi(args, letters):
+    chi = np.load(osp.join(args.odir, 'chi.npy'))
+    k, _ = chi.shape
+    chi_sign = np.zeros_like(chi)
+    chi_sign[chi > 0] = 1
+    chi_sign[chi < 0] = -1
+
+    chi_hat = np.load(osp.join(args.odir, 'chi_hat.npy'))
+    chi_hat_sign = np.zeros_like(chi_hat)
+    chi_hat_sign[chi_hat > 0] = 1
+    chi_hat_sign[chi_hat < 0] = -1
+
+    sign_matches = np.sum(chi_hat_sign == chi_sign) # count number of times sign matches
+    sign_matches -=  k * (k - 1) / 2 # subtract off lower diagonal
+    possible_matches = k * (k + 1) / 2 # size of upper triangle
+    print(sign_matches)
+    print(f'% of time sign matches: {np.round(sign_matches / possible_matches, 3)}')
+
+    dif = chi_hat - chi
+    mse = mean_squared_error(chi, chi_hat)
+    print(f'MSE: {np.round(mse, 3)}', file = args.log_file)
+    print(f'RMSE: {np.round(mse**0.5, 3)}', file = args.log_file)
+
+    plotContactMap(chi_hat, vmin=-2, vmax=2, cmap='blue-red', ofile = osp.join(args.odir, 'chi_hat.png'), x_ticks = letters, y_ticks = letters)
+    plotContactMap(chi, vmin=-2, vmax=2, cmap='blue-red', ofile = osp.join(args.odir, 'chi.png'), x_ticks = letters, y_ticks = letters)
+    plotContactMap(dif, vmin=-2, vmax=2, cmap='blue-red', ofile = osp.join(args.odir, 'dif.png'), x_ticks = letters, y_ticks = letters)
+
+
 
 if __name__ == '__main__':
-    for id in [66]:
-        main('dataset_12_17_21', id, False)
+    for id in [67]:
+        main('dataset_12_29_21', id, False)

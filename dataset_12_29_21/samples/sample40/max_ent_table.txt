@@ -1,0 +1,60 @@
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multicolumn{5}{|c|}{dataset\_12\_29\_21} \\ 
+\hline
+\multicolumn{5}{|c|}{sample 40} \\ 
+\hline
+Method & k & SCC & $\Delta$ SCC & MSE-S \\ 
+\hline\hline
+Ground Truth-E & - & 0.985 $\pm$ 0.0 & 0.0 $\pm$ 0.0 & 0.0 $\pm$ 0.0 \\ 
+Ground Truth-S &  & 0.985 $\pm$ 0.0 & 0.0 $\pm$ 0.0 & 0.0 $\pm$ 0.0 \\ 
+GNN-67$-S &  & 0.932 $\pm$ 0.0 & 0.053 $\pm$ 0.0 & 1.185 $\pm$ 0.0 \\ 
+\hline
+Random & 4 & 0.045 $\pm$ 0.003 & 0.94 $\pm$ 0.003 & 2.488 $\pm$ 0.005 \\ 
+PCA &  & 0.96 $\pm$ 0.001 & 0.025 $\pm$ 0.001 & 1.974 $\pm$ 0.001 \\ 
+NMF &  & 0.911 $\pm$ 0.067 & 0.075 $\pm$ 0.067 & 6.564 $\pm$ 6.492 \\ 
+\hline
+Random & 6 & 0.063 $\pm$ 0.002 & 0.922 $\pm$ 0.002 & 2.494 $\pm$ 0.004 \\ 
+PCA &  & 0.959 $\pm$ 0.002 & 0.026 $\pm$ 0.002 & 1.975 $\pm$ 0.001 \\ 
+NMF &  & 0.858 $\pm$ 0.024 & 0.128 $\pm$ 0.024 & 6.94 $\pm$ 2.291 \\ 
+\hline
+Ground Truth-psi-chi & 10 & 0.985 $\pm$ 0.0 & 0.0 $\pm$ 0.0 & 0.0 $\pm$ 0.0 \\ 
+Ground Truth-psi &  & 0.97 $\pm$ 0.01 & 0.015 $\pm$ 0.01 & 2.286 $\pm$ 1.658 \\ 
+\hline
+Ground Truth-psi+random & 12 & 0.985 & 0.001 & 0.062 \\ 
+\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\multicolumn{7}{|c|}{dataset\_12\_29\_21} \\ 
+\hline
+\multicolumn{7}{|c|}{sample 40} \\ 
+\hline
+Method & k & Pearson R & Avg Dist Pearson R & SCC & $\Delta$  SCC & MSE-S \\ 
+\hline\hline
+Ground Truth-E & - & 1.0 $\pm$ 0.0 & 0.96 $\pm$ 0.003 & 0.985 $\pm$ 0.0 & 0.0 $\pm$ 0.0 & 0.0 $\pm$ 0.0 \\ 
+Ground Truth-S &  & 1.0 $\pm$ 0.0 & 0.961 $\pm$ 0.001 & 0.985 $\pm$ 0.0 & 0.0 $\pm$ 0.0 & 0.0 $\pm$ 0.0 \\ 
+GNN-67$-S &  & 0.998 $\pm$ 0.0 & 0.905 $\pm$ 0.002 & 0.932 $\pm$ 0.0 & 0.053 $\pm$ 0.0 & 1.185 $\pm$ 0.0 \\ 
+\hline
+Random & 4 & 0.985 $\pm$ 0.0 & 0.04 $\pm$ 0.009 & 0.045 $\pm$ 0.003 & 0.94 $\pm$ 0.003 & 2.488 $\pm$ 0.005 \\ 
+PCA &  & 0.999 $\pm$ 0.0 & 0.888 $\pm$ 0.002 & 0.96 $\pm$ 0.001 & 0.025 $\pm$ 0.001 & 1.974 $\pm$ 0.001 \\ 
+PCA Split &  & 0.996 $\pm$ 0.003 & 0.854 $\pm$ 0.031 & 0.923 $\pm$ 0.038 & 0.062 $\pm$ 0.038 & 2.366 $\pm$ 0.31 \\ 
+NMF &  & 0.991 $\pm$ 0.011 & 0.851 $\pm$ 0.049 & 0.911 $\pm$ 0.067 & 0.075 $\pm$ 0.067 & 6.564 $\pm$ 6.492 \\ 
+\hline
+Random & 6 & 0.985 $\pm$ 0.0 & 0.067 $\pm$ 0.001 & 0.063 $\pm$ 0.002 & 0.922 $\pm$ 0.002 & 2.494 $\pm$ 0.004 \\ 
+PCA &  & 0.999 $\pm$ 0.0 & 0.889 $\pm$ 0.003 & 0.959 $\pm$ 0.002 & 0.026 $\pm$ 0.002 & 1.975 $\pm$ 0.001 \\ 
+PCA Split &  & 0.991 $\pm$ 0.003 & 0.793 $\pm$ 0.027 & 0.875 $\pm$ 0.032 & 0.111 $\pm$ 0.032 & 5.657 $\pm$ 3.002 \\ 
+NMF &  & 0.985 $\pm$ 0.004 & 0.786 $\pm$ 0.025 & 0.858 $\pm$ 0.024 & 0.128 $\pm$ 0.024 & 6.94 $\pm$ 2.291 \\ 
+\hline
+Ground Truth-psi-chi & 10 & 1.0 $\pm$ 0.0 & 0.96 $\pm$ 0.002 & 0.985 $\pm$ 0.0 & 0.0 $\pm$ 0.0 & 0.0 $\pm$ 0.0 \\ 
+Ground Truth-psi &  & 0.998 $\pm$ 0.001 & 0.94 $\pm$ 0.009 & 0.97 $\pm$ 0.01 & 0.015 $\pm$ 0.01 & 2.286 $\pm$ 1.658 \\ 
+\hline
+Ground Truth-psi+random & 12 & 1.0 & 0.96 & 0.985 & 0.001 & 0.062 \\ 
+\hline
+\end{tabular}
+\end{center}
+
