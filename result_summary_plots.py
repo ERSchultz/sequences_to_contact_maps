@@ -20,8 +20,8 @@ LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 def getArgs(dataset = None, model_id = None):
     parser = argparse.ArgumentParser(description='Base parser')
-    parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
-    # parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
+    # parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
+    parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
     parser.add_argument('--dataset', type=str, default=dataset, help='Location of input data')
     parser.add_argument('--sample', type=int, default=40)
     parser.add_argument('--model_id', type=int, default=model_id)
@@ -51,55 +51,14 @@ def getArgs(dataset = None, model_id = None):
 
     return args
 
-def reshape_chi(chi, letters): # deprecated
-    '''
-    Reshapes chi to match order of letters.
-
-    Any bead type in letters but not in chi is assigned 0 in chi_reshaped.
-
-    Inputs:
-        chi: upper triangular chi matrix
-        letters: new bead type labels
-    Outputs:
-        chi_reshaped: reshaped chi matrix
-    '''
-    # switch to symmetric chi
-    chi = chi + chi.T - np.diag(np.diagonal(chi))
-
-    k_new = len(letters)
-    chi_reshaped = np.zeros((k_new, k_new))
-    hat_chi = np.zeros((k_new, k_new))
-    for i in range(k_new):
-        for j in range(i, k_new):
-            label_i = letters[i]
-            if len(label_i) == 1:
-                ind_i = LETTERS.find(label_i)
-            elif label_i == 'AB':
-                ind_i = 3
-            else:
-                ind_i = None
-
-            label_j = letters[j]
-            if len(label_j) == 1:
-                ind_j = LETTERS.find(label_j)
-            elif label_j == 'AB':
-                ind_j = 3
-            else:
-                ind_j = None
-
-            if ind_i is not None and ind_j is not None:
-                chi_truth = chi[ind_i, ind_j]
-            else:
-                chi_truth = 0
-            chi_reshaped[i, j] = chi_truth
-
-    return chi_reshaped
-
-def run_regression(X, Y, k_new, args):
+def run_regression(X, Y, k_new, args, verbose = True):
+    # fit regression
     est = sm.OLS(Y, X)
     est = est.fit()
-    print(est.summary(), '\n', file = args.log_file)
+    if verbose:
+        print(est.summary(), '\n', file = args.log_file)
 
+    # construct chi
     hat_chi = np.zeros((k_new, k_new))
     row = 0
     col = 0
@@ -204,11 +163,11 @@ def find_all_pairs(x, energy, letters):
 def regression_on_all_pairs(x_new, letters_new, chi, s, s_hat, args):
     _, k_new = x_new.shape
 
-    for energy, text in zip([s, s_hat], ['S', 's_hat']):
+    for energy, text, verbose in zip([s, s_hat], ['S', 's_hat'], [False, True]):
         X, Y, letters_newer = find_all_pairs(x_new, (energy + energy.T)/2, letters_new)
 
         # run linear regression
-        hat_chi = run_regression(X, Y, k_new, args)
+        hat_chi = run_regression(X, Y, k_new, args, verbose)
 
 def get_ground_truth(args, plot=True):
     x = np.load(osp.join(args.sample_folder, 'x.npy'))

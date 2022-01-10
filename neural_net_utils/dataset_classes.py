@@ -144,8 +144,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 sparsify_threshold = None, sparsify_threshold_upper = None, top_k = None,
                 weighted_LDP = False, split_neg_pos_edges = False, degree = False, weighted_degree = False,
                 split_neg_pos_edges_for_feature_augmentation = False,
-                transform = None, pre_transform = None,
-                relabel_11_to_00 = False, output = 'contact', crop = None,
+                transform = None, pre_transform = None, output = 'contact', crop = None,
                 ofile = sys.stdout, verbose = True):
         t0 = time.time()
         self.m = m
@@ -164,7 +163,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.degree = degree
         self.weighted_degree = weighted_degree
         self.split_neg_pos_edges_for_feature_augmentation = split_neg_pos_edges_for_feature_augmentation
-        self.relabel_11_to_00 = relabel_11_to_00
         self.output = output
         self.crop = crop
         self.degree_list = []
@@ -276,17 +274,23 @@ class ContactsGraph(torch_geometric.data.Dataset):
             # record degree
             self.degree_list.append(np.array(torch_geometric.utils.degree(graph.edge_index[0], num_nodes = self.m)))
 
-    def process_x(self, raw_folder):
+    def process_x_psi(self, raw_folder):
         '''Helper function to load the appropriate particle type matrix and apply any necessary preprocessing.'''
         x = np.load(osp.join(raw_folder, 'x.npy'))
-        if self.relabel_11_to_00:
-            m, k = x.shape
-            ind = np.where((x == np.ones(k)).all(axis = 1))
-            x[ind] = 0
         if self.crop is not None:
             x = x[self.crop[0]:self.crop[1], :]
         x = torch.tensor(x, dtype = torch.float32)
-        return x
+
+        psi_file = osp.join(raw_folder, 'psi.npy')
+        if osp.exits(psi_file):
+            psi = np.load(psi_file)
+            if self.crop is not None:
+                psi = psi[self.crop[0]:self.crop[1], :]
+        else:
+            psi = x
+        x = torch.tensor(x, dtype = torch.float32)
+        psi = torch.tensor(psi, dtype = torch.float32)
+        return x, psi
 
     def process_y(self, raw_folder):
         '''Helper function to load the appropriate contact map and apply any necessary preprocessing.'''

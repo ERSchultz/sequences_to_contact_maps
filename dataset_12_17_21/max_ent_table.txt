@@ -1,0 +1,28 @@
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multicolumn{5}{|c|}{dataset\_12\_17\_21} \\ 
+\hline
+Method & k & SCC & $\Delta$ SCC & MSE-S \\ 
+\hline\hline
+GNN-66-S-S-S & - & 0.133 & None \\ 
+GNN-66-S-S &  & 0.123 & None \\ 
+GNN-66-S &  & 0.116 & None \\ 
+\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\multicolumn{7}{|c|}{dataset\_12\_17\_21} \\ 
+\hline
+Method & k & Pearson R & Avg Dist Pearson R & SCC & $\Delta$  SCC & MSE-S \\ 
+\hline\hline
+GNN-66-S-S-S & - & 0.802 & 0.131 & 0.133 & None \\ 
+GNN-66-S-S &  & 0.806 & 0.121 & 0.123 & None \\ 
+GNN-66-S &  & 0.813 & 0.114 & 0.116 & None \\ 
+\hline
+\end{tabular}
+\end{center}
+
