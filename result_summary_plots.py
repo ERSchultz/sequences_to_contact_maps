@@ -20,8 +20,8 @@ LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 def getArgs(dataset = None, model_id = None):
     parser = argparse.ArgumentParser(description='Base parser')
-    parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
-    # parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
+    # parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
+    parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
     parser.add_argument('--dataset', type=str, default=dataset, help='Location of input data')
     parser.add_argument('--sample', type=int, default=40)
     parser.add_argument('--model_id', type=int, default=model_id)
@@ -98,8 +98,10 @@ def reshape_chi(chi, letters): # deprecated
 def run_regression(X, Y, k_new, args, ofile):
     est = sm.OLS(Y, X)
     est = est.fit()
-    print(est.summary(), '\n', file = args.log_file)
+    if verbose:
+        print(est.summary(), '\n', file = args.log_file)
 
+    # construct chi
     hat_chi = np.zeros((k_new, k_new))
     row = 0
     col = 0
