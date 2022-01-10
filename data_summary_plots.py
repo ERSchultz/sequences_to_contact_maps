@@ -6,6 +6,7 @@ import math
 
 import matplotlib
 import matplotlib.pyplot as plt
+plt.rcParams["font.family"] = "Times New Roman"
 
 from neural_net_utils.dataset_classes import make_dataset
 from neural_net_utils.utils import InteractionConverter
@@ -362,7 +363,7 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True, chi = N
         print(path)
         if plot_y:
             y = np.load(osp.join(path, 'y.npy'))
-            plotContactMap(y, osp.join(path, 'y.png'), title = 'pre normalization', vmax = 'mean')
+            plotContactMap(y, osp.join(path, 'y.png'), vmax = 'mean')
 
             y_diag_path = osp.join(path, 'y_diag.npy')
             if osp.exists(y_diag_path):
@@ -387,14 +388,21 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True, chi = N
             if chi is None:
                 chi_path = osp.join(path, 'chis.npy')
                 if osp.exists(chi_path):
-                    chi_sample = np.load(chi_path)
-                    # chi_sample = np.triu(chi_sample) + np.tril(chi_sample.T, -1)
-                    # print(chi_sample)
+                    chi = np.load(chi_path)
                 else:
                     raise Exception('chi not found at ', chi_path)
 
-            s = x @ chi_sample @ x.T
-            plotContactMap(s, osp.join(path, 's.png'), title = 'S', vmax = 'max', vmin = 'min', cmap = 'blue-red')
+            s_path = osp.join(path, 's.npy')
+            if osp.exists(s_path):
+                s = np.load(s_path)
+            else:
+                psi_path = osp.join(path, 'psi.npy')
+                if osp.exists(psi_path):
+                    psi = np.load(psi_path)
+                    s = psi @ chi @ psi.T
+                else:
+                    s = None
+            plotContactMap(s, osp.join(path, 's.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
         if plot_x:
             x_path = osp.join(path, 'x.npy')
@@ -408,14 +416,24 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True, chi = N
             ind = np.arange(k) % cmap.N
             colors = plt.cycler('color', cmap(ind))
 
+            # fig, ax = plt.subplots(k)
+            # for i, c in enumerate(colors):
+            #     # ax[i].plot(range(m), x[:, i], color = c['color'])
+            #     vals = np.argwhere(x[:, i] == 1)
+            #     ax[i].scatter(vals, np.ones_like(vals), color = c['color'])
+            #     ax[i].axes.get_yaxis().set_visible(False)
+            #     ax[i].axes.get_xaxis().set_visible(False)
+            plt.figure(figsize=(6, 3))
             for i, c in enumerate(colors):
                 vals = np.argwhere(x[:, i] == 1)
-                plt.scatter(vals, np.ones_like(vals) * i, label = i, color = c['color'], s = 1)
+                plt.scatter(vals, np.ones_like(vals) * i* 0.2, label = i, color = c['color'], s = 3)
 
-            plt.legend()
             ax = plt.gca()
-            ax.axes.get_yaxis().set_visible(False)
-            ax.axes.get_xaxis().set_visible(False)
+            ax.set_xticks(range(0, 1040, 40))
+            ax.axes.set_xticklabels(labels = range(0, 1040, 40), rotation=-90)
+            ax.set_yticks([i*0.2 for i in range(4)])
+            ax.axes.set_yticklabels(labels = [f'mark {i}' for i in range(1,5)], rotation='horizontal', fontsize=16)
+            plt.tight_layout()
             plt.savefig(osp.join(path, 'x.png'))
             plt.close()
 
