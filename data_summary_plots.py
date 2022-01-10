@@ -3,6 +3,8 @@ import os.path as osp
 import numpy as np
 import pandas as pd
 import math
+
+import matplotlib
 import matplotlib.pyplot as plt
 
 from neural_net_utils.dataset_classes import make_dataset
@@ -348,7 +350,7 @@ def plot_genomic_distance_statistics(dataFolder):
             plot_genomic_distance_statistics_inner(dataFolder, diag, ofile, stat = stat)
 
 ### basic plots
-def basic_plots(dataFolder, plot_y = True, plot_s = True, chi = None):
+def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True, chi = None):
     '''Generate basic plots of data in dataFolder.'''
     if chi is None:
         chi_path = osp.join(dataFolder, 'chis.npy')
@@ -394,11 +396,35 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, chi = None):
             s = x @ chi_sample @ x.T
             plotContactMap(s, osp.join(path, 's.png'), title = 'S', vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
+        if plot_x:
+            x_path = osp.join(path, 'x.npy')
+            if osp.exists(x_path):
+                x = np.load(x_path)
+            else:
+                continue
+
+            m, k = x.shape
+            cmap = matplotlib.cm.get_cmap('tab10')
+            ind = np.arange(k) % cmap.N
+            colors = plt.cycler('color', cmap(ind))
+
+            for i, c in enumerate(colors):
+                vals = np.argwhere(x[:, i] == 1)
+                plt.scatter(vals, np.ones_like(vals) * i, label = i, color = c['color'], s = 1)
+
+            plt.legend()
+            ax = plt.gca()
+            ax.axes.get_yaxis().set_visible(False)
+            ax.axes.get_xaxis().set_visible(False)
+            plt.savefig(osp.join(path, 'x.png'))
+            plt.close()
+
+
 
 if __name__ == '__main__':
-    dataset = 'dataset_08_26_21'
+    dataset = 'dataset_12_29_21'
     sample = 40
-    # basic_plots(dataset, plot_y = False)
+    basic_plots(dataset, plot_y = False, plot_s = False)
     # plot_genomic_distance_statistics(dataset)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
-    getPairwiseContacts('/home/eric/sequences_to_contact_maps/dataset_12_11_21')
+    # getPairwiseContacts('/home/eric/sequences_to_contact_maps/dataset_12_11_21')

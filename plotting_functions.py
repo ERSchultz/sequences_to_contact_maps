@@ -189,7 +189,7 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
     plt.close()
 #### End section ####
 
-def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False, cmap = None):
+def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False, cmap = None, x_ticks = None, y_ticks = None):
     """
     Plotting function for contact maps.
 
@@ -230,6 +230,8 @@ def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 
         N, H, W = y.shape
         assert N == 1
         y = y.reshape(H,W)
+    else:
+        H, W = y.shape
 
     if minVal is not None or maxVal is not None:
         y = y.copy() # prevent issues from reference type
@@ -247,6 +249,22 @@ def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 
     elif vmax == 'max':
         vmax = np.max(y)
     ax = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap)
+    if x_ticks is None:
+        pass
+    elif len(x_ticks) == 0:
+        ax.axes.get_xaxis().set_visible(False)
+    else:
+        ax.set_xticks([i+0.5 for i in range(W)])
+        ax.axes.set_xticklabels(x_ticks)
+
+    if y_ticks is None:
+        pass
+    elif len(y_ticks) == 0:
+        ax.axes.get_yaxis().set_visible(False)
+    else:
+        ax.set_yticks([i+0.5 for i in range(H)])
+        ax.axes.set_yticklabels(y_ticks, rotation='horizontal')
+
     if title is not None:
         plt.title(title, fontsize = 16)
     plt.tight_layout()
