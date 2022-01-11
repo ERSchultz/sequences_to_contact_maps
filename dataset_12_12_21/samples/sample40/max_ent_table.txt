@@ -1,0 +1,44 @@
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multicolumn{5}{|c|}{dataset\_12\_12\_21} \\ 
+\hline
+\multicolumn{5}{|c|}{sample 40} \\ 
+\hline
+Method & k & SCC & $\Delta$ SCC & MSE-S \\ 
+\hline\hline
+Ground Truth-S & - & 0.982 $\pm$ 0.0 & 0.0 $\pm$ 0.0 & 0.0 $\pm$ 0.0 \\ 
+\hline
+PCA & 2 & 0.005 $\pm$ 0.004 & 0.977 $\pm$ 0.004 & 6.697 $\pm$ 0.001 \\ 
+\hline
+PCA & 4 & -0.009 $\pm$ 0.007 & 0.991 $\pm$ 0.007 & 6.698 $\pm$ 0.001 \\ 
+\hline
+PCA & 6 & -0.004 $\pm$ 0.003 & 0.986 $\pm$ 0.003 & 6.698 $\pm$ 0.001 \\ 
+\hline
+Ground Truth-psi-chi & 10 & 0.981 $\pm$ 0.001 & 0.0 $\pm$ 0.001 & 0.0 $\pm$ 0.0 \\ 
+\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\multicolumn{7}{|c|}{dataset\_12\_12\_21} \\ 
+\hline
+\multicolumn{7}{|c|}{sample 40} \\ 
+\hline
+Method & k & Pearson R & Avg Dist Pearson R & SCC & $\Delta$  SCC & MSE-S \\ 
+\hline\hline
+Ground Truth-S & - & 0.999 $\pm$ 0.0 & 0.978 $\pm$ 0.001 & 0.982 $\pm$ 0.0 & 0.0 $\pm$ 0.0 & 0.0 $\pm$ 0.0 \\ 
+\hline
+PCA & 2 & 0.964 $\pm$ 0.0 & 0.009 $\pm$ 0.004 & 0.005 $\pm$ 0.004 & 0.977 $\pm$ 0.004 & 6.697 $\pm$ 0.001 \\ 
+\hline
+PCA & 4 & 0.964 $\pm$ 0.0 & -0.004 $\pm$ 0.004 & -0.009 $\pm$ 0.007 & 0.991 $\pm$ 0.007 & 6.698 $\pm$ 0.001 \\ 
+\hline
+PCA & 6 & 0.964 $\pm$ 0.0 & -0.004 $\pm$ 0.004 & -0.004 $\pm$ 0.003 & 0.986 $\pm$ 0.003 & 6.698 $\pm$ 0.001 \\ 
+\hline
+Ground Truth-psi-chi & 10 & 0.999 $\pm$ 0.0 & 0.978 $\pm$ 0.001 & 0.981 $\pm$ 0.001 & 0.0 $\pm$ 0.001 & 0.0 $\pm$ 0.0 \\ 
+\hline
+\end{tabular}
+\end{center}
+

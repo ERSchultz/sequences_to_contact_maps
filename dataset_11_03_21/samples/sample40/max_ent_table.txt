@@ -1,0 +1,61 @@
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multicolumn{5}{|c|}{dataset\_11\_03\_21} \\ 
+\hline
+\hline
+Method & k & Pearson R & $\Delta$ Avg Dist Pearson R & $\Delta$  SCC \\ 
+\hline\hline
+Ground Truth-S & S & 0.0 & 0.0 & 0.0 \\ 
+GNN-42-fixed-chi-S &  & -0.004 & 0.065 & 0.078 \\ 
+GNN-37-S &  & -0.003 & 0.071 & 0.079 \\ 
+GNN-40-S &  & -0.002 & -0.001 & 0.01 \\ 
+GNN-42-S &  & 0.0 & -0.002 & -0.002 \\ 
+GNN-40-fixed-chi-S &  & -0.004 & 0.143 & 0.155 \\ 
+\hline
+Random & 2 & -0.004 & 0.713 & 0.572 \\ 
+PCA &  & -0.004 & 0.337 & 0.326 \\ 
+PCA Split &  & -0.004 & 0.477 & 0.422 \\ 
+K-means &  & -0.004 & 0.35 & 0.356 \\ 
+NMF &  & -0.004 & 0.351 & 0.35 \\ 
+\hline
+Ground Truth & 4 & -0.004 & 0.19 & 0.264 \\ 
+Ground Truth-fixed-chi &  & -0.004 & 0.084 & 0.098 \\ 
+Random &  & -0.004 & 0.709 & 0.587 \\ 
+PCA &  & -0.004 & 0.217 & 0.257 \\ 
+PCA Split &  & -0.004 & 0.318 & 0.328 \\ 
+K-means &  & -0.004 & 0.202 & 0.207 \\ 
+NMF &  & -0.004 & 0.097 & 0.125 \\ 
+\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\multicolumn{3}{|c|}{dataset\_11\_03\_21} \\ 
+\hline
+Method & k & $\Delta$ SCC \\ 
+\hline\hline
+Ground Truth-S & S & 0.0 \\ 
+GNN-42-fixed-chi-S &  & 0.078 \\ 
+GNN-37-S &  & 0.079 \\ 
+GNN-40-S &  & 0.01 \\ 
+GNN-42-S &  & -0.002 \\ 
+GNN-40-fixed-chi-S &  & 0.155 \\ 
+\hline
+Random & 2 & 0.572 \\ 
+PCA &  & 0.326 \\ 
+K-means &  & 0.356 \\ 
+NMF &  & 0.35 \\ 
+\hline
+Ground Truth & 4 & 0.264 \\ 
+Ground Truth-fixed-chi &  & 0.098 \\ 
+Random &  & 0.587 \\ 
+PCA &  & 0.257 \\ 
+K-means &  & 0.207 \\ 
+NMF &  & 0.125 \\ 
+\hline
+\end{tabular}
+\end{center}
+

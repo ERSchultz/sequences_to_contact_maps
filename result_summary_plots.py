@@ -20,8 +20,8 @@ LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 def getArgs(dataset = None, model_id = None):
     parser = argparse.ArgumentParser(description='Base parser')
-    # parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
-    parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
+    parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
+    # parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
     parser.add_argument('--dataset', type=str, default=dataset, help='Location of input data')
     parser.add_argument('--sample', type=int, default=40)
     parser.add_argument('--model_id', type=int, default=model_id)
@@ -95,7 +95,7 @@ def reshape_chi(chi, letters): # deprecated
 
     return chi_reshaped
 
-def run_regression(X, Y, k_new, args, ofile):
+def run_regression(X, Y, k_new, args, ofile, verbose = True):
     est = sm.OLS(Y, X)
     est = est.fit()
     if verbose:
@@ -214,13 +214,14 @@ def regression_on_all_pairs(x_new, letters_new, chi, s, s_hat, args):
 
 def get_ground_truth(args, plot=True):
     x = np.load(osp.join(args.sample_folder, 'x.npy'))
+    psi = np.load(osp.join(args.sample_folder, 'psi.npy'))
     x = x.astype(np.float64)
     m, k = x.shape
 
     if plot:
         for i in range(k):
             plt.plot(x[:, i])
-            plt.title(r'$\Psi$[:, {}]'.format(i))
+            plt.title(r'$X$[:, {}]'.format(i))
             plt.savefig(osp.join(args.sample_folder, 'x_{}'.format(i)))
             plt.close()
 
@@ -239,7 +240,7 @@ def get_ground_truth(args, plot=True):
     if osp.exists(s_file):
         s = np.load(s_file)
     else:
-        s = x @ chi @ x.T
+        s = psi @ chi @ psi.T
 
     e_file = osp.join(args.sample_folder, 'e.npy')
     if osp.exists(e_file):
@@ -338,43 +339,50 @@ def main(dataset, model_id, plot = True):
         v_max = np.max(s)
         plotContactMap(dif, osp.join(args.odir, 's_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
 
-    ## Compare PCs ##
-    # print("\nY_diag", file = args.log_file)
-    # PC_y = plot_top_PCs(ydiag, 'y_diag', args.sample_folder, args.log_file, count = 2, plot = plot)
-    #
-    # print("\nS", file = args.log_file)
-    # print(f'Rank: {np.linalg.matrix_rank(s)}', file = args.log_file)
-    # PC_s = plot_top_PCs(s, 's', args.sample_folder, args.log_file, count = 2, plot = plot)
-    # stat = pearsonround(PC_y[0], PC_s[0])
-    # print("Correlation between PC 1 of y_diag and S: ", stat, file = args.log_file)
+    # Compare PCs ##
+    print("\nY_diag", file = args.log_file)
+    PC_y = plot_top_PCs(ydiag, 'y_diag', args.sample_folder, args.log_file, count = 2, plot = plot)
 
-    ## Compare MSE in PCA space ##
-    # print("\nS_hat", file = args.log_file)
-    # print(f'S - MSE: {mse}', file = args.log_file)
-    # for i in range(1, 4):
-    #     # get e top i PCs
-    #     pca = PCA(n_components = i)
-    #     s_transform = pca.fit_transform(s)
-    #     s_i = pca.inverse_transform(s_transform)
-    #
-    #     # compare ehat to projection of e onto top PCs
-    #     mse = np.round(mean_squared_error(s_i, s_hat), 3)
-    #     print(f'S top {i} PCs - MSE: {mse}', file = args.log_file)
-    # PC_s_hat = plot_top_PCs(s_hat, 's_hat', args.odir, args.log_file, count = 2)
+    print("\nS", file = args.log_file)
+    print(f'Rank: {np.linalg.matrix_rank(s)}', file = args.log_file)
+    PC_s = plot_top_PCs(s, 's', args.sample_folder, args.log_file, count = 2, plot = plot)
+    stat = pearsonround(PC_y[0], PC_s[0])
+    print("Correlation between PC 1 of y_diag and S: ", stat, file = args.log_file)
 
-    ## Compare y_diag and ehat ##
-    # stat = pearsonround(PC_y[0], PC_s_hat[0])
-    # print("Correlation between PC 1 of y_diag and S_hat: ", stat, file = args.log_file)
-    # for zero_index, one_index in enumerate([1,2,3]):
-    #     stat = pearsonround(PC_s[zero_index], PC_s_hat[zero_index])
-    #     print(f"Correlation between PC {one_index} of S and S_hat: ", stat, file = args.log_file)
+    s_sym = (s + s.T)/2
+    print("\nS_sym", file = args.log_file)
+    print(f'Rank: {np.linalg.matrix_rank(s_sym)}', file = args.log_file)
+    PC_s_sym = plot_top_PCs(s_sym, 's_sym', args.sample_folder, args.log_file, count = 2, plot = plot)
+    stat = pearsonround(PC_y[0], PC_s_sym[0])
+    print("Correlation between PC 1 of y_diag and S_sym: ", stat, file = args.log_file)
+
+    # Compare MSE in PCA space ##
+    print("\nS_hat", file = args.log_file)
+    print(f'S - MSE: {mse}', file = args.log_file)
+    for i in range(1, 4):
+        # get e top i PCs
+        pca = PCA(n_components = i)
+        s_transform = pca.fit_transform(s)
+        s_i = pca.inverse_transform(s_transform)
+
+        # compare ehat to projection of e onto top PCs
+        mse = np.round(mean_squared_error(s_i, s_hat), 3)
+        print(f'S top {i} PCs - MSE: {mse}', file = args.log_file)
+    PC_s_hat = plot_top_PCs(s_hat, 's_hat', args.odir, args.log_file, count = 2)
+
+    # Compare y_diag and ehat ##
+    stat = pearsonround(PC_y[0], PC_s_hat[0])
+    print("Correlation between PC 1 of y_diag and S_hat: ", stat, file = args.log_file)
+    for zero_index, one_index in enumerate([1,2,3]):
+        stat = pearsonround(PC_s[zero_index], PC_s_hat[zero_index])
+        print(f"Correlation between PC {one_index} of S and S_hat: ", stat, file = args.log_file)
 
     ## All pairs of bead types for all pairs of particles ##
     print('\nAll possible pairwise interactions', file = args.log_file)
     # first relabel marks with all possible pairs of marks for each bead
     x_new, letters_new = relabel_x(x)
 
-    # regression_on_all_pairs(x_new, letters_new, chi, s, s_hat, args)
+    regression_on_all_pairs(x_new, letters_new, chi, s, s_hat, args)
 
     post_analysis_chi(args, letters_new)
 
