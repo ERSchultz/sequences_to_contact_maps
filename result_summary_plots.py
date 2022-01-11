@@ -330,7 +330,7 @@ def main(dataset, model_id, plot = True):
 
     s_hat = np.loadtxt(osp.join(args.root, 'results/ContactGNNEnergy/{}/sample{}/energy_hat.txt'.format(args.model_id, args.sample)))
 
-    ## plot ehat and edif ##
+    ## plot s_hat and s_dif ##
     mse = np.round(mean_squared_error(s, s_hat), 3)
     if plot:
         plotContactMap(s_hat, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(args.odir, 's_hat.png'), title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{S}$', mse))
