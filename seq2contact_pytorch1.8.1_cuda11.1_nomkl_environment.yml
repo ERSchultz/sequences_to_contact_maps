@@ -1,4 +1,0 @@
-name: python3.8_pytorch1.8.1_cuda11.1_nomkl
-channels:
-  - defaults
-prefix: /home/eric/anaconda3/envs/python3.8_pytorch1.8.1_cuda11.1_nomkl

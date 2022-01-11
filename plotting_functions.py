@@ -11,6 +11,7 @@ import math
 import seaborn as sns
 import pandas as pd
 from scipy.stats import pearsonr
+import imageio
 
 from sklearn import metrics
 from sklearn.decomposition import PCA
@@ -18,6 +19,7 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import matplotlib.colors
 import matplotlib.cm
+from mpl_toolkits.mplot3d import Axes3D
 
 from neural_net_utils.utils import *
 from neural_net_utils.argparseSetup import *
@@ -920,6 +922,103 @@ def plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath):
     plt.close()
 #### End section ####
 
+#### Functions for plotting xyz files ####
+def xyzLoad(xyz_file, delim = '\t', multiple_timesteps=False):
+    xyz = []
+    with open(xyz_file, 'r') as f:
+        N = int(f.readline())
+        reader = csv.reader(f, delimiter = delim)
+        xyz_timestep = []
+        for line in reader:
+            if len(line) > 1:
+                i = int(line[0])
+                xyz_i = [float(j) for j in line[1:4]]
+                xyz_timestep.append(xyz_i)
+                if i == N-1:
+                    xyz.append(xyz_timestep)
+                    xyz_timestep=[]
+
+    xyz = np.array(xyz)
+    if not multiple_timesteps:
+        xyz = xyz[0]
+    xyz = np.divide(xyz, 10) # undo angstroms
+    return xyz
+
+def plot_config(xyz, L, x = None, ofile = None, show = True, title = None, legend=True):
+    '''
+    Plots particles in xyz as 3D scatter plot.
+    Only supports mutually exclusive bead types for coloring. # TODO
+    Inputs:
+        xyz: shape (N,3) array of all particle positions
+        L: side of LxLxL box (nm), if None the plot will be fit to the input
+        x: bead types to color
+        LJ: True if Lennard Jones particles
+        ofile: location to save image
+        show: if False fig, ax are returned
+        title: title of plot
+    '''
+    fig = plt.figure()
+    ax = plt.axes(projection = '3d')
+
+    # connect particles if polymer
+    ax.plot(xyz[:,0], xyz[:,1], xyz[:,2], color= '0.8')
+
+    if x is None:
+        ax.scatter(xyz[:,0], xyz[:,1], xyz[:,2])
+    else:
+        # color unique types if x is not None
+        types = np.argmax(x, axis = 1)
+        n_types = np.max(types) + 1
+        for t in range(n_types):
+            condition = types == t
+            ax.scatter(xyz[condition,0], xyz[condition,1], xyz[condition,2], label = t)
+        if legend:
+            plt.legend()
+
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+
+    if L is not None:
+        #
+        ax.set_xlim(0, L)
+        ax.set_ylim(0, L)
+        ax.set_zlim(0, L)
+    plt.axis('off')
+    if title is not None:
+        plt.title(title)
+    if ofile is not None:
+        plt.savefig(ofile)
+    if show:
+        plt.show()
+    plt.close()
+
+def plot_xyz_gif():
+    dir='/home/eric/dataset_test/samples/sample80'
+    file = osp.join(dir, 'data_out/output.xyz')
+
+    m=200
+
+    x = np.load(osp.join(dir, 'x.npy'))[:m, :]
+    xyz = xyzLoad(file, multiple_timesteps=True)[:, :m, :]
+    print(xyz.shape)
+
+    filenames = []
+    for i in range(len(xyz)):
+        fname=osp.join(dir, f'{i}.png')
+        filenames.append(fname)
+        plot_config(xyz[i, :, :], None, x = x, ofile = fname, show = False, title = None, legend = False)
+
+    # build gif
+    with imageio.get_writer(osp.join(dir,'output.gif'), mode='I') as writer:
+        for filename in filenames:
+            image = imageio.imread(filename)
+            writer.append_data(image)
+
+    # remove files
+    for filename in set(filenames):
+        os.remove(filename)
+
 def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
     if model_type is None:
         model_types = ['Akita', 'DeepC', 'UNet', 'GNNAutoencoder', 'GNNAutoencoder2', 'ContactGNN', 'ContactGNNEnergy']
@@ -1100,9 +1199,10 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
+    plot_xyz_gif()
     # contactPlots('dataset_04_18_21')
     # updateResultTables('ContactGNN', 'GNN', 'sequence')
-    updateResultTables('ContactGNNEnergy', 'GNN', 'energy')
+    # updateResultTables('ContactGNNEnergy', 'GNN', 'energy')
     # plotCombinedModels('ContactGNN', [202, 203, 204])
     # main()
     # freqSampleDistributionPlots('dataset_04_18_21', sample_id=40, k=2)
