@@ -6,7 +6,7 @@ import math
 
 import matplotlib
 import matplotlib.pyplot as plt
-plt.rcParams["font.family"] = "Times New Roman"
+# plt.rcParams["font.family"] = "Times New Roman"
 
 from neural_net_utils.dataset_classes import make_dataset
 from neural_net_utils.utils import InteractionConverter
