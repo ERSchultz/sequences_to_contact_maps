@@ -20,8 +20,8 @@ LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 def getArgs(dataset = None, model_id = None):
     parser = argparse.ArgumentParser(description='Base parser')
-    parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
-    # parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
+    # parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
+    parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
     parser.add_argument('--dataset', type=str, default=dataset, help='Location of input data')
     parser.add_argument('--sample', type=int, default=40)
     parser.add_argument('--model_id', type=int, default=model_id)
@@ -50,50 +50,6 @@ def getArgs(dataset = None, model_id = None):
     args.log_file = open(log_file_path, 'w')
 
     return args
-
-def reshape_chi(chi, letters): # deprecated
-    '''
-    Reshapes chi to match order of letters.
-
-    Any bead type in letters but not in chi is assigned 0 in chi_reshaped.
-
-    Inputs:
-        chi: upper triangular chi matrix
-        letters: new bead type labels
-    Outputs:
-        chi_reshaped: reshaped chi matrix
-    '''
-    # switch to symmetric chi
-    chi = chi + chi.T - np.diag(np.diagonal(chi))
-
-    k_new = len(letters)
-    chi_reshaped = np.zeros((k_new, k_new))
-    hat_chi = np.zeros((k_new, k_new))
-    for i in range(k_new):
-        for j in range(i, k_new):
-            label_i = letters[i]
-            if len(label_i) == 1:
-                ind_i = LETTERS.find(label_i)
-            elif label_i == 'AB':
-                ind_i = 3
-            else:
-                ind_i = None
-
-            label_j = letters[j]
-            if len(label_j) == 1:
-                ind_j = LETTERS.find(label_j)
-            elif label_j == 'AB':
-                ind_j = 3
-            else:
-                ind_j = None
-
-            if ind_i is not None and ind_j is not None:
-                chi_truth = chi[ind_i, ind_j]
-            else:
-                chi_truth = 0
-            chi_reshaped[i, j] = chi_truth
-
-    return chi_reshaped
 
 def run_regression(X, Y, k_new, args, ofile, verbose = True):
     est = sm.OLS(Y, X)
@@ -125,22 +81,22 @@ def relabel_x(x):
     Relabels x to contains all pairs of bead types.
 
     E.g. if x[i, :] = [A, B, C] where A, B, C are binary numbers
-    x_new[i, :] := [A, AB, AC, B, BC, C]
-    ['A', 'AB', 'AC', 'B', 'BC', 'C'] will be returned as letters_new
+    psi[i, :] := [A, AB, AC, B, BC, C]
+    ['A', 'AB', 'AC', 'B', 'BC', 'C'] will be returned as psi_letters
 
     Inputs:
         x: binary bead type array
     Outputs:
-        x_new: relabled bead type array
-        letters_new: bead type labels corresponding to new bead types (see example)
+        psi: relabled bead type array
+        psi_letters: bead type labels corresponding to new bead types (see example)
     '''
     assert np.count_nonzero((x != 0) & (x != 1)) == 0, "x must be binary"
     m, k = x.shape
-    k_new = int(k*(k+1)/2) # number of pairs of marks (including self-self)
-    x_new = np.zeros((m, k_new)) # contains all pairs of marks for each bead
+    ell = int(k*(k+1)/2) # number of pairs of marks (including self-self)
+    psi = np.zeros((m, ell)) # contains all pairs of marks for each bead
     ind = np.triu_indices(k)
     for i in range(m):
-        x_new[i] = np.outer(x[i], x[i])[ind]
+        psi[i] = np.outer(x[i], x[i])[ind]
 
     # determine letters for x_new
     letters_outer = np.empty((k, k), dtype=np.dtype('U2'))
@@ -151,10 +107,10 @@ def relabel_x(x):
             else:
                 pair = LETTERS[i] + LETTERS[j]
             letters_outer[i,j] = pair
-    letters_new = letters_outer[ind]
-    print('letters 1', letters_new)
+    psi_letters = letters_outer[ind]
+    print('letters 1', psi_letters)
 
-    return x_new, letters_new
+    return psi, psi_letters
 
 def find_all_pairs(x, energy, letters):
     '''
@@ -203,14 +159,14 @@ def find_all_pairs(x, energy, letters):
 
     return X, Y, letters_new
 
-def regression_on_all_pairs(x_new, letters_new, chi, s, s_hat, args):
-    _, k_new = x_new.shape
+def regression_on_all_pairs(psi, psi_letters, chi, s, s_hat, args):
+    _, ell = psi.shape
 
     for energy, text in zip([s, s_hat], ['chi', 'chi_hat']):
-        X, Y, letters_newer = find_all_pairs(x_new, (energy + energy.T)/2, letters_new)
+        X, Y, letters_newer = find_all_pairs(psi, (energy + energy.T)/2, psi_letters)
 
         # run linear regression
-        run_regression(X, Y, k_new, args, text)
+        run_regression(X, Y, ell, args, text)
 
 def get_ground_truth(args, plot=True):
     x = np.load(osp.join(args.sample_folder, 'x.npy'))
@@ -355,6 +311,8 @@ def main(dataset, model_id, plot = True):
     PC_s_sym = plot_top_PCs(s_sym, 's_sym', args.sample_folder, args.log_file, count = 2, plot = plot)
     stat = pearsonround(PC_y[0], PC_s_sym[0])
     print("Correlation between PC 1 of y_diag and S_sym: ", stat, file = args.log_file)
+    stat = pearsonround(PC_y[1], PC_s_sym[1])
+    print("Correlation between PC 2 of y_diag and S_sym: ", stat, file = args.log_file)
 
     # Compare MSE in PCA space ##
     print("\nS_hat", file = args.log_file)
@@ -380,11 +338,11 @@ def main(dataset, model_id, plot = True):
     ## All pairs of bead types for all pairs of particles ##
     print('\nAll possible pairwise interactions', file = args.log_file)
     # first relabel marks with all possible pairs of marks for each bead
-    x_new, letters_new = relabel_x(x)
+    psi_tilde, psi_letters = relabel_x(x)
 
-    regression_on_all_pairs(x_new, letters_new, chi, s, s_hat, args)
+    regression_on_all_pairs(psi_tilde, psi_letters, chi, s, s_hat, args)
 
-    post_analysis_chi(args, letters_new)
+    post_analysis_chi(args, psi_letters)
 
 def post_analysis_chi(args, letters):
     chi = np.load(osp.join(args.odir, 'chi.npy'))

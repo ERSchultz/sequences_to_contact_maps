@@ -1010,10 +1010,11 @@ def plot_xyz_gif():
         plot_config(xyz[i, :, :], None, x = x, ofile = fname, show = False, title = None, legend = False)
 
     # build gif
-    with imageio.get_writer(osp.join(dir,'output.gif'), mode='I') as writer:
-        for filename in filenames:
-            image = imageio.imread(filename)
-            writer.append_data(image)
+    frames = []
+    for filename in filenames:
+        frames.append(imageio.imread(filename))
+
+    imageio.mimsave(osp.join(dir,'output.gif'), frames, format='GIF', fps=2)
 
     # remove files
     for filename in set(filenames):
@@ -1139,54 +1140,6 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
                 plotParticleDistribution(val_dataloader, model, opt, use_latent = True)
         elif opt.output_mode == 'energy':
             plotEnergyPredictions(val_dataloader, model, opt)
-
-def interogateParams(model, opt):
-    if model is None:
-        model = getModel(opt)
-        model.to(opt.device)
-        model_name = osp.join(opt.ofile_folder, 'model.pt')
-        if osp.exists(model_name):
-            save_dict = torch.load(model_name, map_location=torch.device('cpu'))
-            model.load_state_dict(save_dict['model_state_dict'])
-            train_loss_arr = save_dict['train_loss']
-            val_loss_arr = save_dict['val_loss']
-            print('Model is loaded: {}'.format(model_name), file = opt.log_file)
-        else:
-            raise Exception('Model does not exist: {}'.format(model_name))
-        model.eval()
-
-    opt.batch_size = 1 # batch size must be 1
-    opt.shuffle = False # for reproducibility
-    dataset = getDataset(opt, True, True)
-    _, val_dataloader, _ = getDataLoaders(dataset, opt)
-
-    imagePath = opt.ofile_folder
-    tot_pars = 0
-    for k,p in model.named_parameters():
-        tot_pars += p.numel()
-        print(k, p, p.numel(), p.shape, '\n', p.grad, '\n\n')
-
-    for i, data in enumerate(val_dataloader):
-        assert opt.GNN_mode and not opt.autoencoder_mode
-        data = data.to(opt.device)
-        path = data.path[0]
-        print(path)
-        y = data.y
-        yhat = model(data)
-        loss = opt.criterion(yhat, y).item()
-        if opt.loss == 'BCE':
-            # using BCE with logits loss, which combines sigmoid into loss
-            # so need to do sigmoid here
-            yhat = torch.sigmoid(yhat)
-        print('yhat', yhat)
-        layer1 = model.get_first_layer(data)
-        print(layer1)
-
-        minmax = data.minmax
-        path = data.path[0]
-
-
-        print(loss)
 
 def main():
     opt = argparseSetup()
