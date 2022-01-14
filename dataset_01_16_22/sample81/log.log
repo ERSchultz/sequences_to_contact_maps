@@ -1,0 +1,98 @@
+Namespace(TICG_seed=81, chi='polynomial', chi_seed=29, default_config='default_config.json', diag=False, dump_frequency=50000, dump_stats_frequency=None, ensure_distinguishable=True, fill_diag=None, fill_offdiag=None, format='%.3e', goal_specified=True, k=4, load_configuration_filename='input1024.xyz', m=1024, max_chi=1.0, max_diag_chi=0.2, min_chi=-1.0, n_sweeps=1000000, ofile='config.json', relabel=None, sample_folder=None, save_chi=True, save_chi_for_max_ent=False, use_ematrix=True, use_ground_truth_TICG_seed=None, use_ground_truth_chi=False, use_ground_truth_diag_chi=False, use_smatrix=False)
+Rank of chi: 9
+psi loaded with shape (1024, 10)
+Rank of S: 9
+Rank of E: 930
+
+
+data out:data_out
+reading input file ... 
+grid move is : 1
+loading production ... loaded: 1
+read successfully
+loaded Ematrix, first element:-0.4
+grid size is : 28.7
+grid.L is: 7
+volume is: 0.00810849
+volume fraction is: 0.0656695
+grid.L is: 7
+volume is: 0.00810849
+volume fraction is: 0.0656695
+making output files ... created successfully
+Initializing simulation objects ... 
+load configuratin is 1
+Loading configuration from input1024.xyz
+1024
+checking if nbeads in config.json matches number of beads in the first line of <input>.xyz ... 
+nbeads in config.json matches <input>.xyz
+atoms
+Objects created
+Initializing took 7729 microseconds 
+Initializing cells: 
+Setting active cells
+setting up contacts
+contactmap size: 1024
+Beginning Simulation
+Sweep number 0
+acceptance rate: 83.9546%
+trans: 40% 	crank: 80% 	pivot: 80% 	rot: 88.6719% 	
+Sweep number 50000
+acceptance rate: 81.2335%
+trans: 48.2713% 	crank: 66.1641% 	pivot: 59.3678% 	rot: 86.1376% 	
+Sweep number 100000
+acceptance rate: 81.227%
+trans: 48.2368% 	crank: 66.1382% 	pivot: 59.3299% 	rot: 86.136% 	
+Sweep number 150000
+acceptance rate: 81.2142%
+trans: 48.2064% 	crank: 66.0742% 	pivot: 59.1835% 	rot: 86.1313% 	
+Sweep number 200000
+acceptance rate: 81.2258%
+trans: 48.2556% 	crank: 66.1615% 	pivot: 59.2559% 	rot: 86.1312% 	
+Sweep number 250000
+acceptance rate: 81.2216%
+trans: 48.2417% 	crank: 66.1264% 	pivot: 59.1693% 	rot: 86.1318% 	
+Sweep number 300000
+acceptance rate: 81.2131%
+trans: 48.2017% 	crank: 66.0593% 	pivot: 59.1045% 	rot: 86.1326% 	
+Sweep number 350000
+acceptance rate: 81.2059%
+trans: 48.1745% 	crank: 66.0143% 	pivot: 59.0277% 	rot: 86.1317% 	
+Sweep number 400000
+acceptance rate: 81.2048%
+trans: 48.1678% 	crank: 66.0095% 	pivot: 58.9891% 	rot: 86.132% 	
+Sweep number 450000
+acceptance rate: 81.2058%
+trans: 48.1713% 	crank: 66.0121% 	pivot: 59.0212% 	rot: 86.1323% 	
+Sweep number 500000
+acceptance rate: 81.206%
+trans: 48.1715% 	crank: 66.0199% 	pivot: 59.0114% 	rot: 86.1318% 	
+Sweep number 550000
+acceptance rate: 81.204%
+trans: 48.1651% 	crank: 66.0067% 	pivot: 58.9734% 	rot: 86.1316% 	
+Sweep number 600000
+acceptance rate: 81.2054%
+trans: 48.1698% 	crank: 66.0119% 	pivot: 58.9535% 	rot: 86.1326% 	
+Sweep number 650000
+acceptance rate: 81.205%
+trans: 48.1678% 	crank: 66.0127% 	pivot: 58.938% 	rot: 86.1324% 	
+Sweep number 700000
+acceptance rate: 81.2051%
+trans: 48.1718% 	crank: 66.0177% 	pivot: 58.9465% 	rot: 86.1315% 	
+Sweep number 750000
+acceptance rate: 81.205%
+trans: 48.1698% 	crank: 66.0163% 	pivot: 58.9501% 	rot: 86.1317% 	
+Sweep number 800000
+acceptance rate: 81.2032%
+trans: 48.163% 	crank: 66.0056% 	pivot: 58.9344% 	rot: 86.1314% 	
+Sweep number 850000
+acceptance rate: 81.2062%
+trans: 48.1761% 	crank: 66.0288% 	pivot: 58.9684% 	rot: 86.1311% 	
+Sweep number 900000
+acceptance rate: 81.206%
+trans: 48.1756% 	crank: 66.0258% 	pivot: 58.9786% 	rot: 86.1312% 	
+Sweep number 950000
+acceptance rate: 81.2062%
+trans: 48.1734% 	crank: 66.0234% 	pivot: 58.9731% 	rot: 86.1319% 	
+acceptance rate: 81.2064%
+Took 3600seconds 
+Moved 1033434547 beads 
