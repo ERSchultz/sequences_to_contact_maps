@@ -514,6 +514,15 @@ class InteractionConverter():
         np_arr = np.array(arr).astype(np.int8)
         return np_arr
 
+
+def chi_to_latex(chi, ofile = sys.stdout):
+    # TODO
+    with open(ofile, 'w') as f:
+        f.write('\begin{bmatrix}')
+        for row in len(chi):
+            f.write([f'{np.round(i, 1) &}' for i in chi[row]], '\\') # might not work
+        f.write('\end{bmatrix}')
+
 def main():
     aggregate_peaks('chip_seq_data/ENCFF101KOJ.bed')
     # plotPerClassAccuracy(None, None, 5)
