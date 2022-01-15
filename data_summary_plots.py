@@ -12,6 +12,15 @@ from neural_net_utils.dataset_classes import make_dataset
 from neural_net_utils.utils import InteractionConverter
 from plotting_functions import plotContactMap
 
+def chi_to_latex(chi, ofile):
+    # TODO
+    with open(ofile, 'w') as f:
+        f.write('\\begin{bmatrix}\n')
+        for row in range(len(chi)):
+            chi_row = [str(np.round(i, 1)) for i in chi[row]]
+            f.write(' & '.join(chi_row) + ' \\\ \n')
+        f.write('\\end{bmatrix}\n')
+
 ### Finding count for each type of pairwise interaction ###
 def getPairwiseContacts(data_folder):
     samples = make_dataset(data_folder)
@@ -380,17 +389,19 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True, chi = N
                 y_prcnt = np.load(y_prcnt_path)
                 plotContactMap(y_prcnt, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
+        if chi is None:
+            chi_path = osp.join(path, 'chis.npy')
+            if osp.exists(chi_path):
+                chi = np.load(chi_path)
+            else:
+                raise Exception('chi not found at ', chi_path)
+
+        chi_to_latex(chi, ofile = osp.join(path, 'chis.tek'))
+
         if plot_s:
             x = np.load(osp.join(path, 'x.npy'))
             seq0 = np.loadtxt(osp.join(path, 'seq0.txt'))
             assert np.array_equal(x[:, 0], seq0)
-
-            if chi is None:
-                chi_path = osp.join(path, 'chis.npy')
-                if osp.exists(chi_path):
-                    chi = np.load(chi_path)
-                else:
-                    raise Exception('chi not found at ', chi_path)
 
             s_path = osp.join(path, 's.npy')
             if osp.exists(s_path):
@@ -440,9 +451,11 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True, chi = N
 
 
 if __name__ == '__main__':
-    dataset = 'dataset_12_29_21'
-    sample = 40
-    basic_plots(dataset, plot_y = False, plot_s = False)
+    dir = '/home/eric/sequences_to_contact_maps'
+    dataset = 'dataset_01_16_22'
+    data_dir = osp.join(dir, dataset)
+    sample = 81
+    basic_plots(data_dir, plot_y = False, plot_s = False, plot_x = False)
     # plot_genomic_distance_statistics(dataset)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts('/home/eric/sequences_to_contact_maps/dataset_12_11_21')

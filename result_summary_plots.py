@@ -210,7 +210,7 @@ def get_ground_truth(args, plot=True):
 
     return x, chi, s, e, y, ydiag
 
-def plot_top_PCs(inp, inp_type, odir, log_file, count = 1, plot=True):
+def plot_top_PCs(inp, inp_type=None, odir = None, log_file = sys.stdout, count = 2, plot = False):
     '''
     Plots top PCs of inp.
 
@@ -220,6 +220,7 @@ def plot_top_PCs(inp, inp_type, odir, log_file, count = 1, plot=True):
         odir: output directory to save plots to
         log_file: output file to write results to
         count: number of PCs to plot
+        plot: True to plot
 
     Outputs:
         pca.components_: all PCs of inp
@@ -228,8 +229,8 @@ def plot_top_PCs(inp, inp_type, odir, log_file, count = 1, plot=True):
     pca = PCA()
     pca = pca.fit(inp)
 
-    print("Explained ratio: ", np.round(pca.explained_variance_ratio_[0:4], 3), file = log_file)
-    print("Singular values: ", np.round(pca.singular_values_[0:4], 3), file = log_file)
+    print("% of total variance explained for first 4 PCs: ", np.round(pca.explained_variance_ratio_[0:4], 3), file = log_file)
+    print("Singular values for first 4 PCs: ", np.round(pca.singular_values_[0:4], 3), file = log_file)
 
     if plot:
         i = 0
@@ -374,5 +375,5 @@ def post_analysis_chi(args, letters):
 
 
 if __name__ == '__main__':
-    for id in [67]:
-        main('dataset_12_29_21', id, False)
+    for id in [42]:
+        main('dataset_11_03_21', id, False)
