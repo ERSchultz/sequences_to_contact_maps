@@ -392,11 +392,13 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True, chi = N
         if chi is None:
             chi_path = osp.join(path, 'chis.npy')
             if osp.exists(chi_path):
-                chi = np.load(chi_path)
+                chi_sample = np.load(chi_path)
             else:
                 raise Exception('chi not found at ', chi_path)
+        else:
+            chi_sample = chi
 
-        chi_to_latex(chi, ofile = osp.join(path, 'chis.tek'))
+        chi_to_latex(chi_sample, ofile = osp.join(path, 'chis.tek'))
 
         if plot_s:
             x = np.load(osp.join(path, 'x.npy'))
@@ -410,7 +412,7 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True, chi = N
                 psi_path = osp.join(path, 'psi.npy')
                 if osp.exists(psi_path):
                     psi = np.load(psi_path)
-                    s = psi @ chi @ psi.T
+                    s = psi @ chi_sample @ psi.T
                 else:
                     s = None
             plotContactMap(s, osp.join(path, 's.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
@@ -449,10 +451,9 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True, chi = N
             plt.close()
 
 
-
 if __name__ == '__main__':
-    dir = '/home/eric/sequences_to_contact_maps'
-    dataset = 'dataset_01_16_22'
+    dir = '/home/eric/'
+    dataset = 'dataset_test'
     data_dir = osp.join(dir, dataset)
     sample = 81
     basic_plots(data_dir, plot_y = False, plot_s = False, plot_x = False)

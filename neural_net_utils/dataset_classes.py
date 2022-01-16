@@ -144,7 +144,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 sparsify_threshold = None, sparsify_threshold_upper = None, top_k = None,
                 weighted_LDP = False, split_neg_pos_edges = False, degree = False, weighted_degree = False,
                 split_neg_pos_edges_for_feature_augmentation = False,
-                transform = None, pre_transform = None, output = 'contact', crop = None,
+                transform = None, pre_transform = None,
+                output = 'contact', crop = None,
                 ofile = sys.stdout, verbose = True):
         t0 = time.time()
         self.m = m
@@ -216,7 +217,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def process(self):
         for i, raw_folder in enumerate(self.raw_file_names):
             sample = int(osp.split(raw_folder)[1][6:])
-            x = self.process_x(raw_folder)
+            x = self.process_x_psi(raw_folder)
             y = self.process_y(raw_folder)
             edge_index, pos_edge_index, neg_edge_index, edge_weight = self.sparsify_adj_mat(y)
 
@@ -282,7 +283,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         x = torch.tensor(x, dtype = torch.float32)
 
         psi_file = osp.join(raw_folder, 'psi.npy')
-        if osp.exits(psi_file):
+        if osp.exists(psi_file):
             psi = np.load(psi_file)
             if self.crop is not None:
                 psi = psi[self.crop[0]:self.crop[1], :]

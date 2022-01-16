@@ -68,7 +68,7 @@ def getDataset(opt, names = False, minmax = False, verbose = True):
                                             opt.weighted_LDP, opt.split_neg_pos_edges, opt.degree, opt.weighted_degree,
                                             opt.split_neg_pos_edges_for_feature_augmentation,
                                             opt.transforms_processed, opt.pre_transforms_processed,
-                                            opt.relabel_11_to_00, opt.output_mode, opt.crop,
+                                            opt.output_mode, opt.crop,
                                             opt.log_file, verbose = verbose)
         opt.root = dataset.root
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
