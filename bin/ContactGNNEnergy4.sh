@@ -2,13 +2,13 @@
 #SBATCH --job-name=CGNNE4
 #SBATCH --output=logFiles/ContactGNNEnergy4.out
 #SBATCH --time=24:00:00
-#SBATCH --partition=depablo-gpu
+#SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
 #SBATCH --mem-per-cpu=2000
 
-dirname="/project2/depablo/erschultz/dataset_01_15_21"
+dirname="/project2/depablo/erschultz/dataset_01_15_22"
 deleteRoot='false'
 
 modelType='ContactGNNEnergy'
