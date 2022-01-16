@@ -1,18 +1,24 @@
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Method & k & Pearson R & Avg Dist Pearson R & SCC \\ 
+\multicolumn{5}{|c|}{dataset\_09\_21\_21} \\ 
+\hline
+\multicolumn{5}{|c|}{sample 1} \\ 
+\hline
+Method & $\ell$ & SCC & $\Delta$ SCC & MSE-S \\ 
 \hline\hline
-Epigenetic & 2 & 0.974 & 0.091 & 0.08 \\ 
-\hline
-PCA & 4 & 0.97 & 0.075 & 0.043 \\ 
-Epigenetic &  & 0.975 & 0.129 & 0.122 \\ 
-\hline
-PCA & 6 & 0.971 & 0.122 & 0.143 \\ 
-NMF &  & 0.974 & 0.308 & 0.327 \\ 
-\hline
-Epigenetic & 9 & 0.975 & 0.173 & 0.161 \\ 
-ChromHMM &  & 0.976 & 0.251 & 0.274 \\ 
-\hline
 \end{tabular}
 \end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\multicolumn{7}{|c|}{dataset\_09\_21\_21} \\ 
+\hline
+\multicolumn{7}{|c|}{sample 1} \\ 
+\hline
+Method & k & Pearson R & Avg Dist Pearson R & SCC & $\Delta$  SCC & MSE-S \\ 
+\hline\hline
+\end{tabular}
+\end{center}
+

@@ -130,7 +130,9 @@ def finalizeOpt(opt, parser, local = False):
     '''
 
     # set up output folders/files
-    model_type_folder = osp.join('results', opt.model_type)
+    model_type_folder = osp.join('/home/eric/sequences_to_contact_maps/results', opt.model_type)
+
+
     if opt.id is None:
         if not osp.exists(model_type_folder):
             os.mkdir(model_type_folder, mode = 0o755)
@@ -147,8 +149,8 @@ def finalizeOpt(opt, parser, local = False):
         txt_file = osp.join(model_type_folder, str(opt.id), 'argparse.txt')
         assert osp.exists(txt_file), "{} does not exist".format(txt_file)
         id_copy = opt.id
-        args = sys.argv.copy()
-        args.insert(1, '@{}'.format(txt_file)) # need to copy if running finalizeOpt multiple times
+        args = sys.argv.copy() # need to copy if running finalizeOpt multiple times
+        args.insert(1, '@{}'.format(txt_file))
         args.pop(0) # remove program name
         opt = parser.parse_args(args) # parse again
         # by inserting at position 1, the original arguments will override the txt file

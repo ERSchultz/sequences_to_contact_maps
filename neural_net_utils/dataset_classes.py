@@ -19,7 +19,19 @@ import time
 import numpy as np
 import scipy.stats as ss
 
-def make_dataset(dir, minSample = 0, verbose = True):
+def make_dataset(dir, minSample = 0, verbose = True, samples = None):
+    """
+    Make list data file paths.
+
+    Inputs:
+        dir: data source directory
+        minSample: ignore samples < minSample
+        verbose: True for verbose mode
+        samples: list/set of samples to include, None for all samples
+
+    Outputs:
+        data_file_arr: list of data file paths
+    """
     data_file_arr = []
     samples_dir = osp.join(dir, 'samples')
     for file in os.listdir(samples_dir):
@@ -28,12 +40,12 @@ def make_dataset(dir, minSample = 0, verbose = True):
                 print("Skipping {}".format(file))
         else:
             sample_id = int(file[6:])
-            if sample_id < minSample:
-                if verbose:
-                    print("Skipping {}".format(file))
-            else:
+            if sample_id >= minSample and (samples is None or sample_id in samples):
                 data_file = osp.join(samples_dir, file)
                 data_file_arr.append(data_file)
+            elif verbose:
+                    print("Skipping {}".format(file))
+
     return data_file_arr
 
 class Names(Dataset):
@@ -145,7 +157,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 weighted_LDP = False, split_neg_pos_edges = False, degree = False, weighted_degree = False,
                 split_neg_pos_edges_for_feature_augmentation = False,
                 transform = None, pre_transform = None,
-                output = 'contact', crop = None,
+                output = 'contact', crop = None, samples = None,
                 ofile = sys.stdout, verbose = True):
         t0 = time.time()
         self.m = m
@@ -166,6 +178,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.split_neg_pos_edges_for_feature_augmentation = split_neg_pos_edges_for_feature_augmentation
         self.output = output
         self.crop = crop
+        self.samples = None
         self.degree_list = []
         if self.weighted_LDP and self.top_k is None and self.sparsify_threshold is None and self.sparsify_threshold_upper is None:
             print('Warning: using LDP without any sparsification')
@@ -208,7 +221,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     @property
     def raw_file_names(self):
-        return make_dataset(self.dirname)
+        return make_dataset(self.dirname, samples = self.samples)
 
     @property
     def processed_file_names(self):
@@ -217,7 +230,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def process(self):
         for i, raw_folder in enumerate(self.raw_file_names):
             sample = int(osp.split(raw_folder)[1][6:])
-            x = self.process_x_psi(raw_folder)
+            x, psi = self.process_x_psi(raw_folder)
             y = self.process_y(raw_folder)
             edge_index, pos_edge_index, neg_edge_index, edge_weight = self.sparsify_adj_mat(y)
 
@@ -277,20 +290,24 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def process_x_psi(self, raw_folder):
         '''Helper function to load the appropriate particle type matrix and apply any necessary preprocessing.'''
-        x = np.load(osp.join(raw_folder, 'x.npy'))
-        if self.crop is not None:
-            x = x[self.crop[0]:self.crop[1], :]
-        x = torch.tensor(x, dtype = torch.float32)
-
-        psi_file = osp.join(raw_folder, 'psi.npy')
-        if osp.exists(psi_file):
-            psi = np.load(psi_file)
+        x_file = osp.join(raw_folder, 'x.npy')
+        if osp.exists(x_file):
+            x = np.load()
             if self.crop is not None:
-                psi = psi[self.crop[0]:self.crop[1], :]
+                x = x[self.crop[0]:self.crop[1], :]
+
+            psi_file = osp.join(raw_folder, 'psi.npy')
+            if osp.exists(psi_file):
+                psi = np.load(psi_file)
+                if self.crop is not None:
+                    psi = psi[self.crop[0]:self.crop[1], :]
+            else:
+                psi = x.copy()
+            x = torch.tensor(x, dtype = torch.float32)
+            psi = torch.tensor(psi, dtype = torch.float32)
         else:
-            psi = x
-        x = torch.tensor(x, dtype = torch.float32)
-        psi = torch.tensor(psi, dtype = torch.float32)
+            x = None
+            psi = None
         return x, psi
 
     def process_y(self, raw_folder):

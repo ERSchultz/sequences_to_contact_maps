@@ -1092,18 +1092,7 @@ def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
 
 def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, dataset = None):
     if model is None:
-        model = getModel(opt)
-        model.to(opt.device)
-        model_name = osp.join(opt.ofile_folder, 'model.pt')
-        if osp.exists(model_name):
-            save_dict = torch.load(model_name, map_location=torch.device('cpu'))
-            model.load_state_dict(save_dict['model_state_dict'])
-            train_loss_arr = save_dict['train_loss']
-            val_loss_arr = save_dict['val_loss']
-            print('Model is loaded: {}'.format(model_name), file = opt.log_file)
-        else:
-            raise Exception('Model does not exist: {}'.format(model_name))
-        model.eval()
+        model, train_loss_arr, val_loss_arr = loadSavedModel(opt, verbose = True)
 
     opt.batch_size = 1 # batch size must be 1
     opt.shuffle = False # for reproducibility

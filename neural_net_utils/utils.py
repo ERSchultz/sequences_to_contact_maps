@@ -22,6 +22,7 @@ import csv
 import networks
 from dataset_classes import *
 
+## model functions ##
 def getModel(opt, verbose = True):
     if opt.model_type == 'SimpleEpiNet':
         model = networks.SimpleEpiNet(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
@@ -59,8 +60,25 @@ def getModel(opt, verbose = True):
 
     return model
 
+def loadSavedModel(opt, verbose = True):
+    model = getModel(opt, verbose)
+    model.to(opt.device)
+    model_name = osp.join(opt.ofile_folder, 'model.pt')
+    if osp.exists(model_name):
+        save_dict = torch.load(model_name, map_location=torch.device('cpu'))
+        model.load_state_dict(save_dict['model_state_dict'])
+        train_loss_arr = save_dict['train_loss']
+        val_loss_arr = save_dict['val_loss']
+        if verbose:
+            print('Model is loaded: {}'.format(model_name), file = opt.log_file)
+    else:
+        raise Exception('Model does not exist: {}'.format(model_name))
+    model.eval()
+
+    return model, train_loss_arr, val_loss_arr
+
 ## dataset functions ##
-def getDataset(opt, names = False, minmax = False, verbose = True):
+def getDataset(opt, names = False, minmax = False, verbose = True, samples = None):
     if opt.GNN_mode:
         dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.m, opt.y_preprocessing, opt.y_log_transform,
                                             opt.y_norm, opt.min_subtraction, opt.use_node_features, opt.use_edge_weights,
@@ -68,8 +86,8 @@ def getDataset(opt, names = False, minmax = False, verbose = True):
                                             opt.weighted_LDP, opt.split_neg_pos_edges, opt.degree, opt.weighted_degree,
                                             opt.split_neg_pos_edges_for_feature_augmentation,
                                             opt.transforms_processed, opt.pre_transforms_processed,
-                                            opt.output_mode, opt.crop,
-                                            opt.log_file, verbose = verbose)
+                                            opt.output_mode, opt.crop, samples,
+                                            opt.log_file, verbose)
         opt.root = dataset.root
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
         dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)
@@ -412,11 +430,15 @@ def roundUpBy10(val):
 ## energy functions ##
 def calculate_E_S(x, chi):
     s = calculate_S(x, chi)
-    e = s + s.T - np.diag(np.diagonal(s).copy())
+    e = s_to_E(s)
     return e, s
 
 def calculate_E(x, chi):
     s = calculate_S(x, chi)
+    e = s_to_E(s)
+    return e
+
+def s_to_E(s):
     e = s + s.T - np.diag(np.diagonal(s).copy())
     return e
 

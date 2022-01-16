@@ -341,7 +341,7 @@ def main(dataset, model_id, plot = True):
     # first relabel marks with all possible pairs of marks for each bead
     psi_tilde, psi_letters = relabel_x(x)
 
-    regression_on_all_pairs(psi_tilde, psi_letters, chi, s, s_hat, args)
+    # regression_on_all_pairs(psi_tilde, psi_letters, chi, s, s_hat, args)
 
     post_analysis_chi(args, psi_letters)
 
@@ -368,12 +368,12 @@ def post_analysis_chi(args, letters):
     print(f'MSE: {np.round(mse, 3)}', file = args.log_file)
     print(f'RMSE: {np.round(mse**0.5, 3)}', file = args.log_file)
 
-    plotContactMap(chi_hat, vmin=-2, vmax=2, cmap='blue-red', ofile = osp.join(args.odir, 'chi_hat.png'), x_ticks = letters, y_ticks = letters)
-    plotContactMap(chi, vmin=-2, vmax=2, cmap='blue-red', ofile = osp.join(args.odir, 'chi.png'), x_ticks = letters, y_ticks = letters)
-    plotContactMap(dif, vmin=-2, vmax=2, cmap='blue-red', ofile = osp.join(args.odir, 'dif.png'), x_ticks = letters, y_ticks = letters)
-
-
+    max = np.max(np.abs(chi))
+    min = -1 * max
+    plotContactMap(chi_hat, vmin=min, vmax=max, cmap='blue-red', ofile = osp.join(args.odir, 'chi_hat.png'), x_ticks = letters, y_ticks = letters)
+    plotContactMap(chi, vmin=min, vmax=max, cmap='blue-red', ofile = osp.join(args.odir, 'chi.png'), x_ticks = letters, y_ticks = letters)
+    plotContactMap(dif, vmin=min, vmax=max, cmap='blue-red', ofile = osp.join(args.odir, 'dif.png'), x_ticks = letters, y_ticks = letters)
 
 if __name__ == '__main__':
-    for id in [42]:
-        main('dataset_11_03_21', id, False)
+    for id in [70]:
+        main('dataset_01_15_22', id, False)
