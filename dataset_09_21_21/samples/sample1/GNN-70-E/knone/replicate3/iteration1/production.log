@@ -1,0 +1,91 @@
+data out:data_out
+reading input file ... 
+grid move is : 1
+loading production ... loaded: 1
+read successfully
+loaded Ematrix, first element:2.193
+grid size is : 28.7
+grid.L is: 7
+volume is: 0.00810849
+volume fraction is: 0.0656695
+grid.L is: 7
+volume is: 0.00810849
+volume fraction is: 0.0656695
+making output files ... created successfully
+Initializing simulation objects ... 
+load configuratin is 1
+Loading configuration from input1024.xyz
+1024
+checking if nbeads in config.json matches number of beads in the first line of <input>.xyz ... 
+nbeads in config.json matches <input>.xyz
+atoms
+Objects created
+Initializing took 2079 microseconds 
+Initializing cells: 
+Setting active cells
+setting up contacts
+contactmap size: 1024
+Beginning Simulation
+Sweep number 0
+acceptance rate: 85.0081%
+trans: 52% 	crank: 74% 	pivot: 70% 	rot: 89.4531% 	
+Sweep number 50000
+acceptance rate: 81.8551%
+trans: 50.6568% 	crank: 70.6929% 	pivot: 66.5439% 	rot: 86.1413% 	
+Sweep number 100000
+acceptance rate: 81.8454%
+trans: 50.6305% 	crank: 70.6554% 	pivot: 66.5117% 	rot: 86.1362% 	
+Sweep number 150000
+acceptance rate: 81.8498%
+trans: 50.6399% 	crank: 70.7009% 	pivot: 66.4949% 	rot: 86.1364% 	
+Sweep number 200000
+acceptance rate: 81.857%
+trans: 50.6625% 	crank: 70.7527% 	pivot: 66.5674% 	rot: 86.1371% 	
+Sweep number 250000
+acceptance rate: 81.8574%
+trans: 50.6722% 	crank: 70.7653% 	pivot: 66.6013% 	rot: 86.1351% 	
+Sweep number 300000
+acceptance rate: 81.857%
+trans: 50.6691% 	crank: 70.7554% 	pivot: 66.5896% 	rot: 86.1359% 	
+Sweep number 350000
+acceptance rate: 81.8604%
+trans: 50.6821% 	crank: 70.7792% 	pivot: 66.634% 	rot: 86.136% 	
+Sweep number 400000
+acceptance rate: 81.8603%
+trans: 50.6791% 	crank: 70.7847% 	pivot: 66.6368% 	rot: 86.1357% 	
+Sweep number 450000
+acceptance rate: 81.8584%
+trans: 50.677% 	crank: 70.7734% 	pivot: 66.6135% 	rot: 86.1349% 	
+Sweep number 500000
+acceptance rate: 81.8586%
+trans: 50.6766% 	crank: 70.7769% 	pivot: 66.6163% 	rot: 86.1348% 	
+Sweep number 550000
+acceptance rate: 81.8594%
+trans: 50.6819% 	crank: 70.786% 	pivot: 66.617% 	rot: 86.1343% 	
+Sweep number 600000
+acceptance rate: 81.8592%
+trans: 50.6831% 	crank: 70.7874% 	pivot: 66.5887% 	rot: 86.1341% 	
+Sweep number 650000
+acceptance rate: 81.8573%
+trans: 50.678% 	crank: 70.7771% 	pivot: 66.5776% 	rot: 86.1334% 	
+Sweep number 700000
+acceptance rate: 81.8554%
+trans: 50.6735% 	crank: 70.7658% 	pivot: 66.5437% 	rot: 86.133% 	
+Sweep number 750000
+acceptance rate: 81.856%
+trans: 50.6782% 	crank: 70.7714% 	pivot: 66.5562% 	rot: 86.1326% 	
+Sweep number 800000
+acceptance rate: 81.8559%
+trans: 50.681% 	crank: 70.7717% 	pivot: 66.5427% 	rot: 86.1323% 	
+Sweep number 850000
+acceptance rate: 81.857%
+trans: 50.6835% 	crank: 70.7755% 	pivot: 66.5638% 	rot: 86.1328% 	
+Sweep number 900000
+acceptance rate: 81.8582%
+trans: 50.6881% 	crank: 70.7823% 	pivot: 66.5855% 	rot: 86.1329% 	
+Sweep number 950000
+acceptance rate: 81.8584%
+trans: 50.6884% 	crank: 70.7851% 	pivot: 66.5914% 	rot: 86.1329% 	
+acceptance rate: 81.8582%
+Took 1118seconds 
+Moved 1174396781 beads 

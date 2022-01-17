@@ -1,33 +1,24 @@
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Method & k & Pearson R & Avg Dist Pearson R & SCC \\ 
+\multicolumn{5}{|c|}{dataset\_09\_21\_21} \\ 
+\hline
+Method & $\ell$ & SCC & $\Delta$ SCC & MSE-S \\ 
 \hline\hline
-Random & 2 & 0.974 & 0.021 & 0.024 \\ 
-PCA &  & 0.97 & 0.148 & 0.165 \\ 
-PCA Split &  & 0.97 & 0.06 & 0.091 \\ 
-K-means &  & 0.975 & 0.287 & 0.311 \\ 
-NMF &  & 0.975 & 0.329 & 0.358 \\ 
-Epigenetic &  & 0.974 & 0.091 & 0.089 \\ 
-\hline
-Random & 4 & 0.975 & 0.07 & 0.048 \\ 
-PCA &  & 0.97 & 0.075 & 0.075 \\ 
-PCA Split &  & 0.971 & -0.096 & -0.106 \\ 
-K-means &  & 0.975 & 0.325 & 0.323 \\ 
-NMF &  & 0.974 & 0.382 & 0.404 \\ 
-Epigenetic &  & 0.975 & 0.129 & 0.141 \\ 
-\hline
-Random & 6 & 0.975 & 0.005 & -0.001 \\ 
-PCA &  & 0.971 & 0.122 & 0.139 \\ 
-PCA Split &  & 0.971 & -0.125 & -0.149 \\ 
-K-means &  & 0.974 & 0.358 & 0.354 \\ 
-NMF &  & 0.974 & 0.308 & 0.327 \\ 
-Epigenetic &  & 0.975 & 0.179 & 0.195 \\ 
-\hline
-Epigenetic & 8 & 0.975 & 0.162 & 0.166 \\ 
-\hline
-Epigenetic & 9 & 0.975 & 0.173 & 0.185 \\ 
-ChromHMM &  & 0.976 & 0.251 & 0.274 \\ 
+GNN-70-E & - & 0.255 & None \\ 
 \hline
 \end{tabular}
 \end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\multicolumn{7}{|c|}{dataset\_09\_21\_21} \\ 
+\hline
+Method & k & Pearson R & Avg Dist Pearson R & SCC & $\Delta$  SCC & MSE-S \\ 
+\hline\hline
+GNN-70-E & - & 0.968 & 0.203 & 0.255 & None \\ 
+\hline
+\end{tabular}
+\end{center}
+
