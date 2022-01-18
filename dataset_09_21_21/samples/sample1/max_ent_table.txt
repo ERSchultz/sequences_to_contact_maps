@@ -7,6 +7,8 @@
 \hline
 Method & $\ell$ & SCC & $\Delta$ SCC & MSE-S \\ 
 \hline\hline
+GNN-70-E & - & 0.255 $\pm$ 0.001 & None $\pm$ None \\ 
+\hline
 \end{tabular}
 \end{center}
 
@@ -19,6 +21,8 @@ Method & $\ell$ & SCC & $\Delta$ SCC & MSE-S \\
 \hline
 Method & k & Pearson R & Avg Dist Pearson R & SCC & $\Delta$  SCC & MSE-S \\ 
 \hline\hline
+GNN-70-E & - & 0.968 $\pm$ 0.0 & 0.203 $\pm$ 0.001 & 0.255 $\pm$ 0.001 & None $\pm$ None \\ 
+\hline
 \end{tabular}
 \end{center}
 

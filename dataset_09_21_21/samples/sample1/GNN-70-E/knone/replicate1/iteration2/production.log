@@ -1,0 +1,46 @@
+data out:data_out
+reading input file ... 
+grid move is : 1
+loading production ... loaded: 1
+read successfully
+loaded Ematrix, first element:2.193
+grid size is : 28.7
+grid.L is: 7
+volume is: 0.00810849
+volume fraction is: 0.0656695
+grid.L is: 7
+volume is: 0.00810849
+volume fraction is: 0.0656695
+making output files ... created successfully
+Initializing simulation objects ... 
+load configuratin is 1
+Loading configuration from equilibrated.xyz
+1024
+checking if nbeads in config.json matches number of beads in the first line of <input>.xyz ... 
+nbeads in config.json matches <input>.xyz
+atoms
+Objects created
+Initializing took 2036 microseconds 
+Initializing cells: 
+Setting active cells
+setting up contacts
+contactmap size: 1024
+Beginning Simulation
+Sweep number 0
+acceptance rate: 83.5494%
+trans: 46% 	crank: 74% 	pivot: 50% 	rot: 88.4766% 	
+Sweep number 10000
+acceptance rate: 81.8653%
+trans: 50.6162% 	crank: 70.7327% 	pivot: 66.5563% 	rot: 86.1536% 	
+Sweep number 20000
+acceptance rate: 81.8987%
+trans: 50.7724% 	crank: 70.9377% 	pivot: 66.6952% 	rot: 86.1573% 	
+Sweep number 30000
+acceptance rate: 81.8806%
+trans: 50.7099% 	crank: 70.8329% 	pivot: 66.6681% 	rot: 86.1521% 	
+Sweep number 40000
+acceptance rate: 81.8755%
+trans: 50.7173% 	crank: 70.8091% 	pivot: 66.7303% 	rot: 86.1469% 	
+acceptance rate: 81.8778%
+Took 51seconds 
+Moved 58766601 beads 

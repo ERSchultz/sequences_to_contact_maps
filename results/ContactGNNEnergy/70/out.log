@@ -222,6 +222,7 @@ results/ContactGNNEnergy/70/sample1751: 1.171934962272644
 results/ContactGNNEnergy/70/sample1718: 1.9506323337554932
 Loss: 1.2102401494979858 +- 0.3796519283789652
 
+<<<<<<< HEAD
 Dataset construction time: 0.001 minutes
 Mean degree: [555.23] +- [68.75]
 
@@ -240,4 +241,6 @@ Mean degree: [555.23] +- [68.75]
 
 Dataset construction time: 0.036 minutes
 Mean degree: [555.23] +- [68.75]
+=======
+>>>>>>> 43263875078b2689bd7f38468c69a61a5a9d0ed5
 
