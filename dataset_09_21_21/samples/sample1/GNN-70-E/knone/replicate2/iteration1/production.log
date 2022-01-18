@@ -14,78 +14,33 @@ volume fraction is: 0.0656695
 making output files ... created successfully
 Initializing simulation objects ... 
 load configuratin is 1
-Loading configuration from input1024.xyz
+Loading configuration from equilibrated.xyz
 1024
 checking if nbeads in config.json matches number of beads in the first line of <input>.xyz ... 
 nbeads in config.json matches <input>.xyz
 atoms
 Objects created
-Initializing took 2150 microseconds 
+Initializing took 2054 microseconds 
 Initializing cells: 
 Setting active cells
 setting up contacts
 contactmap size: 1024
 Beginning Simulation
 Sweep number 0
-acceptance rate: 82.577%
-trans: 43% 	crank: 75% 	pivot: 90% 	rot: 87.1094% 	
-Sweep number 50000
-acceptance rate: 81.8596%
-trans: 50.705% 	crank: 70.8257% 	pivot: 66.6019% 	rot: 86.1285% 	
-Sweep number 100000
-acceptance rate: 81.8548%
-trans: 50.6971% 	crank: 70.8265% 	pivot: 66.5702% 	rot: 86.1238% 	
-Sweep number 150000
-acceptance rate: 81.8568%
-trans: 50.6959% 	crank: 70.8217% 	pivot: 66.6694% 	rot: 86.1258% 	
-Sweep number 200000
-acceptance rate: 81.8613%
-trans: 50.7078% 	crank: 70.8395% 	pivot: 66.6971% 	rot: 86.1281% 	
-Sweep number 250000
-acceptance rate: 81.8606%
-trans: 50.7053% 	crank: 70.8314% 	pivot: 66.6728% 	rot: 86.1286% 	
-Sweep number 300000
-acceptance rate: 81.8617%
-trans: 50.7071% 	crank: 70.8334% 	pivot: 66.6845% 	rot: 86.1294% 	
-Sweep number 350000
-acceptance rate: 81.8623%
-trans: 50.7032% 	crank: 70.8253% 	pivot: 66.6378% 	rot: 86.1317% 	
-Sweep number 400000
-acceptance rate: 81.8647%
-trans: 50.7108% 	crank: 70.833% 	pivot: 66.6339% 	rot: 86.1331% 	
-Sweep number 450000
-acceptance rate: 81.8639%
-trans: 50.7092% 	crank: 70.8253% 	pivot: 66.6468% 	rot: 86.1329% 	
-Sweep number 500000
-acceptance rate: 81.8607%
-trans: 50.6934% 	crank: 70.8002% 	pivot: 66.6108% 	rot: 86.1335% 	
-Sweep number 550000
-acceptance rate: 81.8611%
-trans: 50.6946% 	crank: 70.8023% 	pivot: 66.6201% 	rot: 86.1335% 	
-Sweep number 600000
-acceptance rate: 81.8608%
-trans: 50.6925% 	crank: 70.7967% 	pivot: 66.6192% 	rot: 86.1339% 	
-Sweep number 650000
-acceptance rate: 81.8595%
-trans: 50.6861% 	crank: 70.7897% 	pivot: 66.6215% 	rot: 86.1336% 	
-Sweep number 700000
-acceptance rate: 81.8596%
-trans: 50.6826% 	crank: 70.7889% 	pivot: 66.6122% 	rot: 86.1343% 	
-Sweep number 750000
-acceptance rate: 81.8581%
-trans: 50.6809% 	crank: 70.7809% 	pivot: 66.6012% 	rot: 86.1335% 	
-Sweep number 800000
-acceptance rate: 81.8599%
-trans: 50.6856% 	crank: 70.794% 	pivot: 66.6152% 	rot: 86.1338% 	
-Sweep number 850000
-acceptance rate: 81.86%
-trans: 50.6851% 	crank: 70.7947% 	pivot: 66.6079% 	rot: 86.134% 	
-Sweep number 900000
-acceptance rate: 81.8603%
-trans: 50.686% 	crank: 70.7958% 	pivot: 66.6089% 	rot: 86.1341% 	
-Sweep number 950000
-acceptance rate: 81.8602%
-trans: 50.687% 	crank: 70.796% 	pivot: 66.6131% 	rot: 86.1338% 	
-acceptance rate: 81.8581%
-Took 1107seconds 
-Moved 1174581668 beads 
+acceptance rate: 84.9271%
+trans: 49% 	crank: 73% 	pivot: 80% 	rot: 89.6484% 	
+Sweep number 10000
+acceptance rate: 81.903%
+trans: 50.7778% 	crank: 71.0306% 	pivot: 67.1893% 	rot: 86.1481% 	
+Sweep number 20000
+acceptance rate: 81.879%
+trans: 50.6771% 	crank: 70.8348% 	pivot: 66.7207% 	rot: 86.1526% 	
+Sweep number 30000
+acceptance rate: 81.8667%
+trans: 50.6436% 	crank: 70.7911% 	pivot: 66.4591% 	rot: 86.1479% 	
+Sweep number 40000
+acceptance rate: 81.869%
+trans: 50.6525% 	crank: 70.8022% 	pivot: 66.5598% 	rot: 86.1477% 	
+acceptance rate: 81.8717%
+Took 51seconds 
+Moved 58740066 beads 

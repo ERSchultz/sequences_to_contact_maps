@@ -130,7 +130,10 @@ def finalizeOpt(opt, parser, local = False):
     '''
 
     # set up output folders/files
-    model_type_folder = osp.join('/home/erschultz/sequences_to_contact_maps/results', opt.model_type)
+    if local:
+        model_type_folder = osp.join('/home/eric/sequences_to_contact_maps/results', opt.model_type)
+    else:
+        model_type_folder = osp.join('/home/erschultz/sequences_to_contact_maps/results', opt.model_type)
 
     if opt.id is None:
         if not osp.exists(model_type_folder):

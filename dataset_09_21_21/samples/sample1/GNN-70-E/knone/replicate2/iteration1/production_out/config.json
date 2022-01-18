@@ -1,9 +1,9 @@
 {
-    "seed": 12609,
+    "seed": 16563,
     "production": true,
     "decay_length": 100,
-    "nSweeps": 1000000,
-    "dump_frequency": 50000,
+    "nSweeps": 50000,
+    "dump_frequency": 10000,
     "dump_stats_frequency": 100,
     "nEquilibSweeps": 1,
     "bonded_on": true,
@@ -45,5 +45,5 @@
     "bead_types": null,
     "nspecies": 0,
     "nbeads": 1024,
-    "load_configuration_filename": "input1024.xyz"
+    "load_configuration_filename": "equilibrated.xyz"
 }
