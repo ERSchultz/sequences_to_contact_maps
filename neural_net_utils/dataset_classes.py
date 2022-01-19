@@ -292,7 +292,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         '''Helper function to load the appropriate particle type matrix and apply any necessary preprocessing.'''
         x_file = osp.join(raw_folder, 'x.npy')
         if osp.exists(x_file):
-            x = np.load()
+            x = np.load(x_file)
             if self.crop is not None:
                 x = x[self.crop[0]:self.crop[1], :]
 
