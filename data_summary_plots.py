@@ -395,10 +395,12 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True, chi = N
                 chi_sample = np.load(chi_path)
             else:
                 raise Exception('chi not found at ', chi_path)
+                # pass
         else:
             chi_sample = chi
 
-        chi_to_latex(chi_sample, ofile = osp.join(path, 'chis.tek'))
+        if chi is not None:
+            chi_to_latex(chi_sample, ofile = osp.join(path, 'chis.tek'))
 
         if plot_s:
             x = np.load(osp.join(path, 'x.npy'))
@@ -453,10 +455,10 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True, chi = N
 
 if __name__ == '__main__':
     dir = '/home/eric/sequences_to_contact_maps'
-    dataset = 'dataset_01_15_22'
+    dataset = 'dataset_09_21_21'
     data_dir = osp.join(dir, dataset)
-    sample = 40
-    basic_plots(data_dir, plot_y = False, plot_s = False, plot_x = True)
+    sample = 2
+    basic_plots(data_dir, plot_y = True, plot_s = False, plot_x = False)
     # plot_genomic_distance_statistics(dataset)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts('/home/eric/sequences_to_contact_maps/dataset_12_11_21')

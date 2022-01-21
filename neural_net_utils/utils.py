@@ -454,6 +454,87 @@ def calculate_S(x, chi):
         raise
     return s
 
+## load data functions ##
+def load_X_psi(sample_folder):
+    x_file = osp.join(sample_folder, 'x.npy')
+    psi_file = osp.join(sample_folder, 'psi.npy')
+    if osp.exists(x_file):
+        x = np.load(x_file)
+        print(f'x loaded with shape {x.shape}')
+    else:
+        raise Exception(f'x not found for {sample_folder}')
+
+    if osp.exists(psi_file):
+        psi = np.load(psi_file)[:args.m, :]
+        print(f'psi loaded with shape {psi.shape}')
+    else:
+        psi = x
+        print(f'Warning: assuming x == psi for {sample_folder}')
+
+    return x, psi
+
+def load_E_S(sample_folder, psi = None):
+    calc = False # TRUE if need to calculate e or s matrix
+    s_file1 = osp.join(sample_folder, 's_matrix.txt')
+    s_file2 = osp.join(sample_folder, 's.npy')
+    if osp.exists(s_file1):
+        s = np.loadtxt(s_file1)
+    elif osp.exists(s_file2):
+        s = np.load(s_file2)
+    else:
+        calc = True
+
+    e_file1 = osp.join(sample_folder, 'e_matrix.txt')
+    e_file2 = osp.join(sample_folder, 'e.npy')
+    if osp.exists(e_file1):
+        e = np.loadtxt(e_file1)
+    elif osp.exists(e_file2):
+        e = np.load(e_file2)
+    else:
+        calc = True
+
+    if calc:
+        if psi is None:
+            psi = np.load(osp.join(sample_folder, 'psi.npy'))
+        chi = np.load(osp.join(sample_folder, 'chis.npy'))
+        e, s = calculate_E_S(psi, chi)
+
+    return e, s
+
+def load_all(sample_folder, plot = False, data_folder = None, log_file = None):
+    '''Loads x, psi, chi, e, s, y, ydiag.'''
+    x, psi = load_X_psi(sample_folder)
+    x = x.astype(np.float64)
+
+    if plot:
+        m, k = x.shape
+        for i in range(k):
+            plt.plot(x[:, i])
+            plt.title(r'$X$[:, {}]'.format(i))
+            plt.savefig(osp.join(sample_folder, 'x_{}'.format(i)))
+            plt.close()
+
+    if data_folder is not None:
+        chi_path1 = osp.join(data_folder, 'chis.npy')
+    chi_path2 = osp.join(sample_folder, 'chis.npy')
+    if data_folder is not None and osp.exists(chi_path1):
+        chi = np.load(chi_path1)
+    elif osp.exists(chi_path2):
+        chi = np.load(chi_path2)
+    else:
+        raise Exception('chi not found at {} or {}'.format(chi_path1, chi_path2))
+    chi = chi.astype(np.float64)
+    if log_file is not None:
+        print('Chi:\n', chi, file = log_file)
+
+    e, s = load_E_S(sample_folder, psi)
+
+    y = np.load(osp.join(sample_folder, 'y.npy'))
+
+    ydiag = np.load(osp.join(sample_folder, 'y_diag.npy'))
+
+    return x, psi, chi, e, s, y, ydiag
+
 ## interaction converter ##
 class InteractionConverter():
     """Class that allows conversion between epigenetic mark bit string pairs and integer type id"""

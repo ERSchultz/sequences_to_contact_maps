@@ -349,42 +349,17 @@ def testEnergy():
     plotContactMap(energy, osp.join(ofile, 'energy.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$S$')
 
 def main():
-    dir = '/home/eric/sequences_to_contact_maps/dataset_12_11_21/samples/sample1230'
-    chi = np.loadtxt(osp.join(dir, 'chis.txt'))
-    # chi = np.array([[-0.6,-0.6,1.5],[0,-0.1,0.9],[0,0,-1.5]])
+    dir = '/home/eric/sequences_to_contact_maps/dataset_09_21_21/samples/sample2'
+    y = np.load(osp.join(dir, 'y.npy'))
+    yhat2 = np.load(osp.join(dir, 'yhat-2.npy'))
+    yhat5 = np.load(osp.join(dir, 'yhat-5.npy'))
 
-    print(chi)
-    k, _ = chi.shape
-    conv = InteractionConverter(k, chi)
-    conv.allStrings = np.array([[1,0,0,0,0,0], # A
-                                [1,1,0,1,0,0], # AB
-                                [1,0,1,0,0,1], # AC
-                                [0,0,0,1,0,0], # B
-                                [0,0,0,1,1,1], # BC
-                                [1,1,1,1,1,1], # ABC
-                                [0,0,0,0,0,1]]) # C
-    E = conv.getE()
-    print(E)
-    print(np.min(E), np.max(E))
-    print('-'*10)
 
-    #
-    # chi[1:3,1:3] = 0
-    # chi[4, 1:3] = 0
-    # chi[1:3, 4] = 0
-    # chi[4, 4] = 0
-    # print(chi)
-    # print(conv.getE())
-    #
-    # print('_'*10)
-    # chi[:, 1:3] = 0
-    # chi[:, 4] = 0
-    # chi[1:3] = 0
-    # chi[4] = 0
-    # print(chi)
-    # print(conv.getE())
+    for arr, ofile in zip([y, yhat2, yhat5], ['y.png', 'yhat-2.png', 'yhat-5.png']):
+        plotContactMap(arr, osp.join(dir, ofile), vmax = 'mean')
 
-    # print(conv.allStrings)
+
+
 
 
 

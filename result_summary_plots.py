@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 import math
+import json
 
 from scipy.stats import pearsonr
 import statsmodels.api as sm
@@ -15,6 +16,7 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
 
 from plotting_functions import plotContactMap
+from neural_net_utils.utils import calculate_S, load_all
 
 LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -168,48 +170,6 @@ def regression_on_all_pairs(psi, psi_letters, chi, s, s_hat, args):
         # run linear regression
         run_regression(X, Y, ell, args, text)
 
-def get_ground_truth(args, plot=True):
-    x = np.load(osp.join(args.sample_folder, 'x.npy'))
-    psi = np.load(osp.join(args.sample_folder, 'psi.npy'))
-    x = x.astype(np.float64)
-    m, k = x.shape
-
-    if plot:
-        for i in range(k):
-            plt.plot(x[:, i])
-            plt.title(r'$X$[:, {}]'.format(i))
-            plt.savefig(osp.join(args.sample_folder, 'x_{}'.format(i)))
-            plt.close()
-
-    chi_path1 = osp.join(args.data_folder, 'chis.npy')
-    chi_path2 = osp.join(args.sample_folder, 'chis.npy')
-    if osp.exists(chi_path1):
-        chi = np.load(chi_path1)
-    elif osp.exists(chi_path2):
-        chi = np.load(chi_path2)
-    else:
-        raise Exception('chi not found at {} or {}'.format(chi_path1, chi_path2))
-    chi = chi.astype(np.float64)
-    print('Chi:\n', chi, file = args.log_file)
-
-    s_file = osp.join(args.sample_folder, 's.npy')
-    if osp.exists(s_file):
-        s = np.load(s_file)
-    else:
-        s = psi @ chi @ psi.T
-
-    e_file = osp.join(args.sample_folder, 'e.npy')
-    if osp.exists(e_file):
-        e = np.load(e_file)
-    else:
-        e = s + s.T - np.diag(np.diagonal(s.copy()))
-
-    y = np.load(osp.join(args.sample_folder, 'y.npy'))
-
-    ydiag = np.load(osp.join(args.sample_folder, 'y_diag.npy'))
-
-    return x, chi, s, e, y, ydiag
-
 def plot_top_PCs(inp, inp_type=None, odir = None, log_file = sys.stdout, count = 2, plot = False):
     '''
     Plots top PCs of inp.
@@ -278,14 +238,64 @@ def find_linear_combinations(x, args, PC, verbose = False):
             print(f'\tR^2: {score}', file = args.log_file)
             print(f'\tcoefficients: {reg.coef_}', file = args.log_file)
 
+def load_chi(replicate_folder, k):
+    # find final it
+    max_it = -1
+    for file in os.listdir(replicate_folder):
+        if osp.isdir(osp.join(replicate_folder, file)) and file.startswith('iteration'):
+            it = int(file[9:])
+            if it > max_it:
+                max_it = it
+
+    if max_it < 0:
+        raise Exception(f'max it not found for {replicate_folder}')
+
+    config_file = osp.join(replicate_folder, f'iteration{max_it}', 'config.json')
+    if osp.exists(config_file):
+        with open(config_file, 'rb') as f:
+            config = json.load(f)
+    else:
+        return None
+
+    chi = np.zeros((k,k))
+    for i, bead_i in enumerate(LETTERS[:k]):
+        for j in range(i,k):
+            bead_j = LETTERS[j]
+            chi[i,j] = config[f'chi{bead_i}{bead_j}']
+
+    return chi
+
 def main(dataset, model_id, plot = True):
     args = getArgs(dataset, model_id)
-    print(args)
 
     ## load data ##
-    x, chi, s, e, y, ydiag = get_ground_truth(args)
+    x, _, chi, e, s, y, ydiag = load_all(args.sample_folder, True, args.data_folder, args.log_file)
 
     s_hat = np.loadtxt(osp.join(args.root, 'results/ContactGNNEnergy/{}/sample{}/energy_hat.txt'.format(args.model_id, args.sample)))
+
+    # look for PCA
+    s_PCA = None
+    for method in os.listdir(args.sample_folder):
+        method_path = osp.join(args.sample_folder, method)
+        if method == 'PCA' and osp.isdir(method_path):
+            for k_file in os.listdir(method_path):
+                k_path = osp.join(method_path, k_file)
+                k = int(k_file[1:])
+                if osp.isdir(k_path):
+                    for replicate in os.listdir(k_path):
+                        replicate_path = osp.join(k_path, replicate)
+                        if osp.isdir(replicate_path):
+                            # load x
+                            x_file = osp.join(replicate_path, 'resources', 'x.npy')
+                            if osp.exists(x_file):
+                                x = np.load(x_file2)
+
+                            # load chi
+                            chi = load_chi(replicate_path, k)
+
+                            # caculate s
+                            s_PCA = calculate_S(x, chi)
+
 
     ## plot s_hat and s_dif ##
     mse = np.round(mean_squared_error(s, s_hat), 3)
@@ -295,6 +305,10 @@ def main(dataset, model_id, plot = True):
         dif = s_hat - s
         v_max = np.max(s)
         plotContactMap(dif, osp.join(args.odir, 's_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
+
+        if s_PCA is not None:
+            plotContactMap(s_PCA, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(args.odir, 's_PCA.png'))
+
 
     # Compare PCs ##
     print("\nY_diag", file = args.log_file)
@@ -314,6 +328,13 @@ def main(dataset, model_id, plot = True):
     print("Correlation between PC 1 of y_diag and S_sym: ", stat, file = args.log_file)
     stat = pearsonround(PC_y[1], PC_s_sym[1])
     print("Correlation between PC 2 of y_diag and S_sym: ", stat, file = args.log_file)
+
+    if s_PCA is not None:
+        print("\nS_PCA", file = args.log_file)
+        print(f'Rank: {np.linalg.matrix_rank(s)}', file = args.log_file)
+        PC_s_PCA = plot_top_PCs(s_PCA, 's_PCA', args.sample_folder, args.log_file, count = 2, plot = plot)
+        stat = pearsonround(PC_y[0], PC_s_PCA[0])
+        print("Correlation between PC 1 of y_diag and S_PCA: ", stat, file = args.log_file)
 
     # Compare MSE in PCA space ##
     print("\nS_hat", file = args.log_file)
@@ -341,7 +362,7 @@ def main(dataset, model_id, plot = True):
     # first relabel marks with all possible pairs of marks for each bead
     psi_tilde, psi_letters = relabel_x(x)
 
-    # regression_on_all_pairs(psi_tilde, psi_letters, chi, s, s_hat, args)
+    regression_on_all_pairs(psi_tilde, psi_letters, chi, s, s_PCA, args)
 
     post_analysis_chi(args, psi_letters)
 
@@ -376,4 +397,4 @@ def post_analysis_chi(args, letters):
 
 if __name__ == '__main__':
     for id in [70]:
-        main('dataset_01_15_22', id, False)
+        main('dataset_01_15_22', id, True)
