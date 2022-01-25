@@ -18,9 +18,13 @@ from sklearn.decomposition import PCA
 from scipy.stats import spearmanr, pearsonr
 import matplotlib.pyplot as plt
 import csv
+import json
 
 import networks
 from dataset_classes import *
+
+LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
 
 ## model functions ##
 def getModel(opt, verbose = True):
@@ -465,7 +469,7 @@ def load_X_psi(sample_folder):
         raise Exception(f'x not found for {sample_folder}')
 
     if osp.exists(psi_file):
-        psi = np.load(psi_file)[:args.m, :]
+        psi = np.load(psi_file)
         print(f'psi loaded with shape {psi.shape}')
     else:
         psi = x
@@ -504,7 +508,7 @@ def load_E_S(sample_folder, psi = None):
 def load_all(sample_folder, plot = False, data_folder = None, log_file = None):
     '''Loads x, psi, chi, e, s, y, ydiag.'''
     x, psi = load_X_psi(sample_folder)
-    x = x.astype(np.float64)
+    # x = x.astype(float)
 
     if plot:
         m, k = x.shape
@@ -534,6 +538,47 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None):
     ydiag = np.load(osp.join(sample_folder, 'y_diag.npy'))
 
     return x, psi, chi, e, s, y, ydiag
+
+def load_final_max_ent_chi(replicate_folder, k):
+    # find final it
+    max_it = -1
+    for file in os.listdir(replicate_folder):
+        if osp.isdir(osp.join(replicate_folder, file)) and file.startswith('iteration'):
+            it = int(file[9:])
+            if it > max_it:
+                max_it = it
+
+    if max_it < 0:
+        raise Exception(f'max it not found for {replicate_folder}')
+
+    config_file = osp.join(replicate_folder, f'iteration{max_it}', 'config.json')
+    if osp.exists(config_file):
+        with open(config_file, 'rb') as f:
+            config = json.load(f)
+    else:
+        return None
+
+    chi = np.zeros((k,k))
+    for i, bead_i in enumerate(LETTERS[:k]):
+        for j in range(i,k):
+            bead_j = LETTERS[j]
+            chi[i,j] = config[f'chi{bead_i}{bead_j}']
+
+    return chi
+
+def load_final_max_ent_S(replicate_path, k):
+    # load x
+    x_file = osp.join(replicate_path, 'resources', 'x.npy')
+    if osp.exists(x_file):
+        x = np.load(x_file)
+
+    # load chi
+    chi = load_final_max_ent_chi(replicate_path, k)
+
+    # calculate s
+    s = calculate_S(x, chi)
+
+    return s
 
 ## interaction converter ##
 class InteractionConverter():

@@ -17,6 +17,8 @@ dataset*/freq_arr*
 !dataset_01_18_22/samples/sample21
 !dataset_01_18_22/samples/sample21/**
 !dataset_09_21_21/**
+!dataset_test/**
+
 
 __pycache__
 neural_net_utils/__pycache_

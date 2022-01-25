@@ -16,17 +16,19 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
 
 from plotting_functions import plotContactMap
-from neural_net_utils.utils import calculate_S, load_all
+from neural_net_utils.utils import calculate_S, load_all, load_final_max_ent_S, LETTERS
+from neural_net_utils.argparseSetup import str2int, str2bool
 
-LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
-def getArgs(dataset = None, model_id = None):
+def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
     # parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
     parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
-    parser.add_argument('--dataset', type=str, default=dataset, help='Location of input data')
+    parser.add_argument('--dataset', type=str, help='Location of input data')
     parser.add_argument('--sample', type=int, default=40)
-    parser.add_argument('--model_id', type=int, default=model_id)
+    parser.add_argument('--method', type=str, default='GNN', help = 'parametrization method')
+    parser.add_argument('--model_id', type=int, help='model ID if method == GNN')
+    parser.add_argument('--k', type=str2int, help='k for method')
+    parser.add_argument('--plot', type=str2bool, default=False, help='True to plot s and s_hat')
 
     args = parser.parse_args()
     args.data_folder = osp.join(args.root, args.dataset)
@@ -43,7 +45,12 @@ def getArgs(dataset = None, model_id = None):
         assert dataset == args.dataset, 'Dataset mismatch: {} vs {}'.format(dataset, args.dataset)
 
     # create output directory
-    args.odir = osp.join(args.sample_folder, str(args.model_id))
+    if args.method == 'GNN':
+        args.odir = osp.join(args.sample_folder, f'results_GNN-{args.model_id}')
+    else:
+        args.odir = osp.join(args.sample_folder, f'results_{args.method}-{args.k}')
+
+
     if not osp.exists(args.odir):
         os.mkdir(args.odir, mode = 0o755)
 
@@ -238,103 +245,67 @@ def find_linear_combinations(x, args, PC, verbose = False):
             print(f'\tR^2: {score}', file = args.log_file)
             print(f'\tcoefficients: {reg.coef_}', file = args.log_file)
 
-def load_chi(replicate_folder, k):
-    # find final it
-    max_it = -1
-    for file in os.listdir(replicate_folder):
-        if osp.isdir(osp.join(replicate_folder, file)) and file.startswith('iteration'):
-            it = int(file[9:])
-            if it > max_it:
-                max_it = it
+def load_method_S(root, sample_folder, sample, method, k, model_id):
+    if method == 'GNN':
+        # look in results
+        gnn_path = osp.join(root, f'results/ContactGNNEnergy/{model_id}/sample{sample}/energy_hat.txt')
+        if osp.exists(gnn_path):
+            return np.loadtxt(gnn_path)
+        else:
+            k = 'knone'
 
-    if max_it < 0:
-        raise Exception(f'max it not found for {replicate_folder}')
+    # Not GNN or gnn_path not found
+    for method_file in os.listdir(sample_folder):
+        method_path = osp.join(sample_folder, method)
+        if method_file == method and osp.isdir(method_path):
+            for k_file in os.listdir(method_path):
+                k_path = osp.join(method_path, k_file)
+                if int(k_file[1:]) == k and osp.isdir(k_path):
+                    for replicate_file in os.listdir(k_path):
+                        replicate_path = osp.join(k_path, replicate_file)
+                        if osp.isdir(replicate_path):
+                            s_hat = load_final_max_ent_S(replicate_path, k)
+                            return s_hat # return first replicate
 
-    config_file = osp.join(replicate_folder, f'iteration{max_it}', 'config.json')
-    if osp.exists(config_file):
-        with open(config_file, 'rb') as f:
-            config = json.load(f)
-    else:
-        return None
+    raise Exception('s_hat not found')
 
-    chi = np.zeros((k,k))
-    for i, bead_i in enumerate(LETTERS[:k]):
-        for j in range(i,k):
-            bead_j = LETTERS[j]
-            chi[i,j] = config[f'chi{bead_i}{bead_j}']
-
-    return chi
-
-def main(dataset, model_id, plot = True):
-    args = getArgs(dataset, model_id)
+def main():
+    args = getArgs()
 
     ## load data ##
     x, _, chi, e, s, y, ydiag = load_all(args.sample_folder, True, args.data_folder, args.log_file)
 
-    s_hat = np.loadtxt(osp.join(args.root, 'results/ContactGNNEnergy/{}/sample{}/energy_hat.txt'.format(args.model_id, args.sample)))
-
-    # look for PCA
-    s_PCA = None
-    for method in os.listdir(args.sample_folder):
-        method_path = osp.join(args.sample_folder, method)
-        if method == 'PCA' and osp.isdir(method_path):
-            for k_file in os.listdir(method_path):
-                k_path = osp.join(method_path, k_file)
-                k = int(k_file[1:])
-                if osp.isdir(k_path):
-                    for replicate in os.listdir(k_path):
-                        replicate_path = osp.join(k_path, replicate)
-                        if osp.isdir(replicate_path):
-                            # load x
-                            x_file = osp.join(replicate_path, 'resources', 'x.npy')
-                            if osp.exists(x_file):
-                                x = np.load(x_file2)
-
-                            # load chi
-                            chi = load_chi(replicate_path, k)
-
-                            # caculate s
-                            s_PCA = calculate_S(x, chi)
-
+    s_hat = load_method_S(args.root, args.sample_folder, args.sample, args.method, args.k, args.model_id)
+    print(s_hat)
 
     ## plot s_hat and s_dif ##
     mse = np.round(mean_squared_error(s, s_hat), 3)
-    if plot:
+    if args.plot:
         plotContactMap(s_hat, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(args.odir, 's_hat.png'), title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{S}$', mse))
 
         dif = s_hat - s
         v_max = np.max(s)
         plotContactMap(dif, osp.join(args.odir, 's_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
 
-        if s_PCA is not None:
-            plotContactMap(s_PCA, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(args.odir, 's_PCA.png'))
-
 
     # Compare PCs ##
     print("\nY_diag", file = args.log_file)
-    PC_y = plot_top_PCs(ydiag, 'y_diag', args.sample_folder, args.log_file, count = 2, plot = plot)
+    PC_y = plot_top_PCs(ydiag, 'y_diag', args.sample_folder, args.log_file, count = 2, plot = args.plot)
 
     print("\nS", file = args.log_file)
     print(f'Rank: {np.linalg.matrix_rank(s)}', file = args.log_file)
-    PC_s = plot_top_PCs(s, 's', args.sample_folder, args.log_file, count = 2, plot = plot)
+    PC_s = plot_top_PCs(s, 's', args.sample_folder, args.log_file, count = 2, plot = args.plot)
     stat = pearsonround(PC_y[0], PC_s[0])
     print("Correlation between PC 1 of y_diag and S: ", stat, file = args.log_file)
 
     s_sym = (s + s.T)/2
     print("\nS_sym", file = args.log_file)
     print(f'Rank: {np.linalg.matrix_rank(s_sym)}', file = args.log_file)
-    PC_s_sym = plot_top_PCs(s_sym, 's_sym', args.sample_folder, args.log_file, count = 2, plot = plot)
+    PC_s_sym = plot_top_PCs(s_sym, 's_sym', args.sample_folder, args.log_file, count = 2, plot = args.plot)
     stat = pearsonround(PC_y[0], PC_s_sym[0])
     print("Correlation between PC 1 of y_diag and S_sym: ", stat, file = args.log_file)
     stat = pearsonround(PC_y[1], PC_s_sym[1])
     print("Correlation between PC 2 of y_diag and S_sym: ", stat, file = args.log_file)
-
-    if s_PCA is not None:
-        print("\nS_PCA", file = args.log_file)
-        print(f'Rank: {np.linalg.matrix_rank(s)}', file = args.log_file)
-        PC_s_PCA = plot_top_PCs(s_PCA, 's_PCA', args.sample_folder, args.log_file, count = 2, plot = plot)
-        stat = pearsonround(PC_y[0], PC_s_PCA[0])
-        print("Correlation between PC 1 of y_diag and S_PCA: ", stat, file = args.log_file)
 
     # Compare MSE in PCA space ##
     print("\nS_hat", file = args.log_file)
@@ -362,7 +333,7 @@ def main(dataset, model_id, plot = True):
     # first relabel marks with all possible pairs of marks for each bead
     psi_tilde, psi_letters = relabel_x(x)
 
-    regression_on_all_pairs(psi_tilde, psi_letters, chi, s, s_PCA, args)
+    regression_on_all_pairs(psi_tilde, psi_letters, chi, s, s_hat, args)
 
     post_analysis_chi(args, psi_letters)
 
@@ -381,8 +352,7 @@ def post_analysis_chi(args, letters):
     sign_matches = np.sum(chi_hat_sign == chi_sign) # count number of times sign matches
     sign_matches -=  k * (k - 1) / 2 # subtract off lower diagonal
     possible_matches = k * (k + 1) / 2 # size of upper triangle
-    print(sign_matches)
-    print(f'% of time sign matches: {np.round(sign_matches / possible_matches, 3)}')
+    print(f'% of time sign matches: {np.round(sign_matches / possible_matches, 3)}', file = args.log_file)
 
     dif = chi_hat - chi
     mse = mean_squared_error(chi, chi_hat)
@@ -396,5 +366,4 @@ def post_analysis_chi(args, letters):
     plotContactMap(dif, vmin=min, vmax=max, cmap='blue-red', ofile = osp.join(args.odir, 'dif.png'), x_ticks = letters, y_ticks = letters)
 
 if __name__ == '__main__':
-    for id in [70]:
-        main('dataset_01_15_22', id, True)
+    main()
