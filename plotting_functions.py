@@ -923,6 +923,31 @@ def plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath):
 #### End section ####
 
 #### Functions for plotting xyz files ####
+def bondWrite(N, outfile):
+    with open(outfile, 'w') as f:
+        for i in range(N):
+            f.write(f'{i} {i}-{i+1}\n')
+
+
+def xyzWrite(xyz, outfile, writestyle, comment = '', x = None):
+    '''
+    Write the coordinates of all particle to a file in .xyz format.
+    Inputs:
+        xyz: shape (T, N, 3) or (N, 3) array of all particle positions (angstroms)
+        outfile: name of file
+        writestyle: 'w' (write) or 'a' (append)
+    '''
+    if len(xyz.shape) == 3:
+        T, N, _ = xyz.shape
+        for i in range(T):
+            xyzWrite(xyz[i, :, :], outfile, 'a', comment = comment, x = x)
+    else:
+        N = len(xyz)
+        with open(outfile, writestyle) as f:
+            f.write('{}\n{}\n'.format(N, comment))
+            for i in range(N):
+                f.write(f'{i} {xyz[i,0]} {xyz[i,1]} {xyz[i,2]}\n')
+
 def xyzLoad(xyz_file, delim = '\t', multiple_timesteps=False):
     xyz = []
     with open(xyz_file, 'r') as f:
@@ -941,7 +966,6 @@ def xyzLoad(xyz_file, delim = '\t', multiple_timesteps=False):
     xyz = np.array(xyz)
     if not multiple_timesteps:
         xyz = xyz[0]
-    xyz = np.divide(xyz, 10) # undo angstroms
     return xyz
 
 def plot_config(xyz, L, x = None, ofile = None, show = True, title = None, legend=True):
@@ -994,27 +1018,30 @@ def plot_config(xyz, L, x = None, ofile = None, show = True, title = None, legen
     plt.close()
 
 def plot_xyz_gif():
-    dir='/home/eric/dataset_test/samples/sample80'
+    dir='/home/eric/dataset_test/samples/sample82'
     file = osp.join(dir, 'data_out/output.xyz')
 
-    m=200
+    # m=200
+    #
+    # x = np.load(osp.join(dir, 'x.npy'))[:m, :]
+    # xyz = xyzLoad(file, multiple_timesteps=True)[:, :m, :]
+    # print(xyz.shape)
+    # xyzWrite(xyz, osp.join(dir, 'data_out/output_x.xyz'), 'w', x = x)
+    # bondWrite(1024, osp.join(dir, 'data_out/bonds.xyz'))
 
-    x = np.load(osp.join(dir, 'x.npy'))[:m, :]
-    xyz = xyzLoad(file, multiple_timesteps=True)[:, :m, :]
-    print(xyz.shape)
-
-    filenames = []
-    for i in range(len(xyz)):
-        fname=osp.join(dir, f'{i}.png')
-        filenames.append(fname)
-        plot_config(xyz[i, :, :], None, x = x, ofile = fname, show = False, title = None, legend = False)
+    # filenames = []
+    # for i in range(len(xyz)):
+    #     fname=osp.join(dir, f'{i}.png')
+    #     filenames.append(fname)
+    #     plot_config(xyz[i, :, :], None, x = x, ofile = fname, show = False, title = None, legend = False)
 
     # build gif
+    filenames = [osp.join(dir, f'ovito0{i}.png') for i in range(100, 900)]
     frames = []
     for filename in filenames:
         frames.append(imageio.imread(filename))
 
-    imageio.mimsave(osp.join(dir,'output.gif'), frames, format='GIF', fps=2)
+    imageio.mimsave(osp.join(dir,'ovito.gif'), frames, format='GIF', fps=2)
 
     # remove files
     for filename in set(filenames):
