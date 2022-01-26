@@ -1,0 +1,72 @@
+reading input file ... 
+chiAA 24.7846
+chiAB 1.8936
+chiAC 47.7416
+chiAD 24.3677
+chiAE 24.3171
+chiAF 58.1458
+chiAG 16.8234
+chiAH 8.89535
+chiAI 26.7692
+chiBB 5.83944
+chiBC -10.343
+chiBD 3.47365
+chiBE 7.21208
+chiBF 44.423
+chiBG 4.98807
+chiBH -1.10392
+chiBI -35.0948
+chiCC 17.8207
+chiCD -11.1989
+chiCE 28.5545
+chiCF 69.9709
+chiCG 54.6419
+chiCH 28.2289
+chiCI 74.0173
+chiDD 16.2856
+chiDE 0.49018
+chiDF 46.5131
+chiDG 97.9678
+chiDH 65.7357
+chiDI 30.7809
+chiEE -1.2407
+chiEF -1.0938
+chiEG 39.5763
+chiEH 41.4057
+chiEI 6.2312
+chiFF 117.939
+chiFG 48.6126
+chiFH 90.1972
+chiFI 108.695
+chiGG -6.59399
+chiGH 77.4519
+chiGI 89.1329
+chiHH -4.80951
+chiHI -150.348
+chiII 500.96
+grid move is : 1
+loading production ... loaded: 1
+read successfully
+grid size is : 28.7
+grid.L is: 7
+volume is: 0.00810849
+making output files ... created successfully
+Initializing simulation objects ... 
+load configuratin is 1
+Loading configuration from input1024.xyz
+1024
+checking if nbeads in config.json matches number of beads in the first line of <input>.xyz ... 
+nbeads in config.json matches <input>.xyz
+atoms
+Objects created
+Initializing took 14166 microseconds 
+Initializing cells: 
+Setting active cells
+setting up contacts
+Beginning Simulation
+Sweep number 0
+acceptance rate: 83.4684%
+trans: 51% 	crank: 65% 	pivot: 70% 	rot: 88.5742% 	
+acceptance rate: 79.3299%
+Took 20seconds 
+Moved 7845300 beads 

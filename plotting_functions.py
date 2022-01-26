@@ -994,7 +994,8 @@ def plot_config(xyz, L, x = None, ofile = None, show = True, title = None, legen
     plt.close()
 
 def plot_xyz_gif():
-    dir='/home/eric/dataset_test/samples/sample80'
+    dir = 'C:/Users/Eric/OneDrive/Documents/Research/Coding/sequences_to_contact_maps/dataset_test/samples/sample82'
+    dir='/home/eric/dataset_test/samples/sample82'
     file = osp.join(dir, 'data_out/output.xyz')
 
     m=200
