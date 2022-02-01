@@ -268,7 +268,7 @@ def calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson'):
         stat = spearmanr
 
     assert len(y.shape) == 2
-    n, n = y.shape
+    n, _ = y.shape
     triu_ind = np.triu_indices(n)
 
     overall_corr, _ = stat(y[triu_ind], yhat[triu_ind])
