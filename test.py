@@ -349,14 +349,27 @@ def testEnergy():
     plotContactMap(energy, osp.join(ofile, 'energy.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$S$')
 
 def main():
-    dir = '/home/eric/sequences_to_contact_maps/dataset_09_21_21/samples/sample2'
+    dir = 'C:/Users/Eric/OneDrive/Documents/Research/Coding/sequences_to_contact_maps/dataset_01_15_22/samples/sample1230'
+    y_diag = np.load(osp.join(dir, 'y_diag.npy'))
     y = np.load(osp.join(dir, 'y.npy'))
-    yhat2 = np.load(osp.join(dir, 'yhat-2.npy'))
-    yhat5 = np.load(osp.join(dir, 'yhat-5.npy'))
+    # plotContactMap(y_diag, osp.join(dir, 'y_diag_blue_red.png'), vmax = 2, cmap = 'blue-red')
+    # plotContactMap(y, osp.join(dir, 'y_120.png'), vmax = 120)
+
+    y_diag[[np.logical_and(y_diag < 1.5, y_diag > 0.5)]] = 1
+    print(y_diag)
+    plotContactMap(y_diag, osp.join(dir, 'y_diag_cut.png'), vmax = 2, cmap = 'blue-red')
+
+def main2():
+    dir = 'C:/Users/Eric/OneDrive/Documents/Research/Coding/sequences_to_contact_maps/dataset_test/samples'
+    for sample in ['sample82', 'sample83']:
+        sample_dir = osp.join(dir, sample)
+        y= np.load(osp.join(dir, sample, 'y.npy'))
+        s = np.load(osp.join(dir, sample, 's.npy'))
+        plotContactMap(y, osp.join(dir, sample, 'y_100.png'), vmax = 100)
+        plotContactMap(s, osp.join(dir, sample, 's_-1_1.png'), vmin = -1, vmax = 1, cmap = 'blue-red')
 
 
-    for arr, ofile in zip([y, yhat2, yhat5], ['y.png', 'yhat-2.png', 'yhat-5.png']):
-        plotContactMap(arr, osp.join(dir, ofile), vmax = 'mean')
+
 
 
 
@@ -364,7 +377,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main2()
     # edit_argparse()
     # debugModel('ContactGNNEnergy')
     # plot_fixed()
