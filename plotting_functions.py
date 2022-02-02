@@ -22,6 +22,7 @@ import matplotlib.cm
 from mpl_toolkits.mplot3d import Axes3D
 
 from neural_net_utils.utils import *
+from neural_net_utils.xyz_utils import *
 from neural_net_utils.argparseSetup import *
 
 #### Functions for plotting loss ####
@@ -923,51 +924,6 @@ def plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath):
 #### End section ####
 
 #### Functions for plotting xyz files ####
-def bondWrite(N, outfile):
-    with open(outfile, 'w') as f:
-        for i in range(N):
-            f.write(f'{i} {i}-{i+1}\n')
-
-
-def xyzWrite(xyz, outfile, writestyle, comment = '', x = None):
-    '''
-    Write the coordinates of all particle to a file in .xyz format.
-    Inputs:
-        xyz: shape (T, N, 3) or (N, 3) array of all particle positions (angstroms)
-        outfile: name of file
-        writestyle: 'w' (write) or 'a' (append)
-    '''
-    if len(xyz.shape) == 3:
-        T, N, _ = xyz.shape
-        for i in range(T):
-            xyzWrite(xyz[i, :, :], outfile, 'a', comment = comment, x = x)
-    else:
-        N = len(xyz)
-        with open(outfile, writestyle) as f:
-            f.write('{}\n{}\n'.format(N, comment))
-            for i in range(N):
-                f.write(f'{i} {xyz[i,0]} {xyz[i,1]} {xyz[i,2]}\n')
-
-def xyzLoad(xyz_file, delim = '\t', multiple_timesteps=False):
-    xyz = []
-    with open(xyz_file, 'r') as f:
-        N = int(f.readline())
-        reader = csv.reader(f, delimiter = delim)
-        xyz_timestep = []
-        for line in reader:
-            if len(line) > 1:
-                i = int(line[0])
-                xyz_i = [float(j) for j in line[1:4]]
-                xyz_timestep.append(xyz_i)
-                if i == N-1:
-                    xyz.append(xyz_timestep)
-                    xyz_timestep=[]
-
-    xyz = np.array(xyz)
-    if not multiple_timesteps:
-        xyz = xyz[0]
-    return xyz
-
 def plot_config(xyz, L, x = None, ofile = None, show = True, title = None, legend=True):
     '''
     Plots particles in xyz as 3D scatter plot.
@@ -995,6 +951,7 @@ def plot_config(xyz, L, x = None, ofile = None, show = True, title = None, legen
         n_types = np.max(types) + 1
         for t in range(n_types):
             condition = types == t
+            # print(condition)
             ax.scatter(xyz[condition,0], xyz[condition,1], xyz[condition,2], label = t)
         if legend:
             plt.legend()
@@ -1018,30 +975,29 @@ def plot_config(xyz, L, x = None, ofile = None, show = True, title = None, legen
     plt.close()
 
 def plot_xyz_gif():
-    dir='/home/eric/dataset_test/samples/sample82'
+    dir='/home/eric/dataset_test/samples/sample100'
     file = osp.join(dir, 'data_out/output.xyz')
 
-    # m=200
-    #
-    # x = np.load(osp.join(dir, 'x.npy'))[:m, :]
-    # xyz = xyzLoad(file, multiple_timesteps=True)[:, :m, :]
-    # print(xyz.shape)
-    # xyzWrite(xyz, osp.join(dir, 'data_out/output_x.xyz'), 'w', x = x)
-    # bondWrite(1024, osp.join(dir, 'data_out/bonds.xyz'))
+    m=200
 
-    # filenames = []
-    # for i in range(len(xyz)):
-    #     fname=osp.join(dir, f'{i}.png')
-    #     filenames.append(fname)
-    #     plot_config(xyz[i, :, :], None, x = x, ofile = fname, show = False, title = None, legend = False)
+    x = np.load(osp.join(dir, 'x.npy'))[:m, :]
+    xyz = xyzLoad(file, multiple_timesteps=True)[:, :m, :]
+    print(xyz.shape)
+    xyzWrite(xyz, osp.join(dir, 'data_out/output_x.xyz'), 'w', x = x)
+
+    filenames = []
+    for i in range(2, len(xyz)):
+        fname=osp.join(dir, f'{i}.png')
+        filenames.append(fname)
+        plot_config(xyz[i, :, :], None, x = x, ofile = fname, show = False, title = None, legend = False)
 
     # build gif
-    filenames = [osp.join(dir, f'ovito0{i}.png') for i in range(100, 900)]
+    # filenames = [osp.join(dir, f'ovito0{i}.png') for i in range(100, 900)]
     frames = []
     for filename in filenames:
         frames.append(imageio.imread(filename))
 
-    imageio.mimsave(osp.join(dir,'ovito.gif'), frames, format='GIF', fps=2)
+    imageio.mimsave(osp.join(dir,'ovito.gif'), frames, format='GIF', fps=1)
 
     # remove files
     for filename in set(filenames):

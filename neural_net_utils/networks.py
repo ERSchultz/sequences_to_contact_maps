@@ -1,8 +1,8 @@
 import os
 import os.path as osp
 import sys
-abspath = os.path.abspath(__file__)
-dname = os.path.dirname(abspath)
+abspath = osp.abspath(__file__)
+dname = osp.dirname(abspath)
 sys.path.insert(0, dname)
 
 import time
