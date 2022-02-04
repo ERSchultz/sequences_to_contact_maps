@@ -22,7 +22,6 @@ import matplotlib.cm
 from mpl_toolkits.mplot3d import Axes3D
 
 from neural_net_utils.utils import *
-from neural_net_utils.xyz_utils import *
 from neural_net_utils.argparseSetup import *
 
 #### Functions for plotting loss ####

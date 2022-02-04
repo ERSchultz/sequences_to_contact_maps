@@ -477,7 +477,7 @@ def load_X_psi(sample_folder):
 
     return x, psi
 
-def load_E_S(sample_folder, psi = None):
+def load_E_S(sample_folder, psi = None, save = False):
     calc = False # TRUE if need to calculate e or s matrix
     s_file1 = osp.join(sample_folder, 's_matrix.txt')
     s_file2 = osp.join(sample_folder, 's.npy')
@@ -503,9 +503,12 @@ def load_E_S(sample_folder, psi = None):
         chi = np.load(osp.join(sample_folder, 'chis.npy'))
         e, s = calculate_E_S(psi, chi)
 
+        if save:
+            np.save(osp.join(sample_folder, 's.npy'), s)
+
     return e, s
 
-def load_all(sample_folder, plot = False, data_folder = None, log_file = None):
+def load_all(sample_folder, plot = False, data_folder = None, log_file = None, save = False):
     '''Loads x, psi, chi, e, s, y, ydiag.'''
     x, psi = load_X_psi(sample_folder)
     # x = x.astype(float)
@@ -531,7 +534,7 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None):
     if log_file is not None:
         print('Chi:\n', chi, file = log_file)
 
-    e, s = load_E_S(sample_folder, psi)
+    e, s = load_E_S(sample_folder, psi, save = save)
 
     y = np.load(osp.join(sample_folder, 'y.npy'))
 
@@ -539,19 +542,22 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None):
 
     return x, psi, chi, e, s, y, ydiag
 
-def load_final_max_ent_chi(replicate_folder, k):
-    # find final it
-    max_it = -1
-    for file in os.listdir(replicate_folder):
-        if osp.isdir(osp.join(replicate_folder, file)) and file.startswith('iteration'):
-            it = int(file[9:])
-            if it > max_it:
-                max_it = it
+def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None):
+    if max_it_folder is None:
+        # find final it
+        max_it = -1
+        for file in os.listdir(replicate_folder):
+            if osp.isdir(osp.join(replicate_folder, file)) and file.startswith('iteration'):
+                it = int(file[9:])
+                if it > max_it:
+                    max_it = it
 
-    if max_it < 0:
-        raise Exception(f'max it not found for {replicate_folder}')
+        if max_it < 0:
+            raise Exception(f'max it not found for {replicate_folder}')
 
-    config_file = osp.join(replicate_folder, f'iteration{max_it}', 'config.json')
+        max_it_folder = osp.join(replicate_folder, f'iteration{max_it}')
+
+    config_file = osp.join(max_it_folder, 'config.json')
     if osp.exists(config_file):
         with open(config_file, 'rb') as f:
             config = json.load(f)
@@ -566,14 +572,18 @@ def load_final_max_ent_chi(replicate_folder, k):
 
     return chi
 
-def load_final_max_ent_S(replicate_path, k):
+
+def load_final_max_ent_S(k, replicate_path = None, max_it_path = None):
     # load x
     x_file = osp.join(replicate_path, 'resources', 'x.npy')
     if osp.exists(x_file):
         x = np.load(x_file)
 
     # load chi
-    chi = load_final_max_ent_chi(replicate_path, k)
+    chi = load_final_max_ent_chi(k, replicate_path, max_it_path)
+
+    if chi is None:
+        raise Exception(f'chi not found: {replicate_path}, {max_it_path}')
 
     # calculate s
     s = calculate_S(x, chi)

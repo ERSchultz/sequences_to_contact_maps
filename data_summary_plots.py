@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 # plt.rcParams["font.family"] = "Times New Roman"
 
 from neural_net_utils.dataset_classes import make_dataset
-from neural_net_utils.utils import InteractionConverter
+from neural_net_utils.utils import InteractionConverter, load_all
 from plotting_functions import plotContactMap
 
 def chi_to_latex(chi, ofile):
@@ -360,63 +360,26 @@ def plot_genomic_distance_statistics(dataFolder):
             plot_genomic_distance_statistics_inner(dataFolder, diag, ofile, stat = stat)
 
 ### basic plots
-def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True, chi = None):
+def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True):
     '''Generate basic plots of data in dataFolder.'''
-    if chi is None:
-        chi_path = osp.join(dataFolder, 'chis.npy')
-        if osp.exists(chi_path):
-            chi = np.load(chi_path)
-
     in_paths = sorted(make_dataset(dataFolder))
     for path in in_paths:
         print(path)
+
+        x, psi, chi, e, s, y, ydiag = load_all(path, data_folder = dataFolder, save = True)
+
         if plot_y:
-            y = np.load(osp.join(path, 'y.npy'))
             plotContactMap(y, osp.join(path, 'y.png'), vmax = 'mean')
-
-            y_diag_path = osp.join(path, 'y_diag.npy')
-            if osp.exists(y_diag_path):
-                y_diag = np.load(y_diag_path)
-                plotContactMap(y_diag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
-
-            y_diag_instance_path = osp.join(path, 'y_diag_instance.npy')
-            if osp.exists(y_diag_instance_path):
-                y_diag_instance = np.load(y_diag_instance_path)
-                plotContactMap(y_diag_instance, osp.join(path, 'y_diag_instance.png'), title = 'diag instance normalization', vmax = 'max')
+            plotContactMap(y_diag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
 
             y_prcnt_path = osp.join(path, 'y_prcnt.npy')
             if osp.exists(y_prcnt_path):
                 y_prcnt = np.load(y_prcnt_path)
                 plotContactMap(y_prcnt, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
-        if chi is None:
-            chi_path = osp.join(path, 'chis.npy')
-            if osp.exists(chi_path):
-                chi_sample = np.load(chi_path)
-            else:
-                raise Exception('chi not found at ', chi_path)
-                # pass
-        else:
-            chi_sample = chi
-
-        if chi is not None:
-            chi_to_latex(chi_sample, ofile = osp.join(path, 'chis.tek'))
+        chi_to_latex(chi, ofile = osp.join(path, 'chis.tek'))
 
         if plot_s:
-            x = np.load(osp.join(path, 'x.npy'))
-            seq0 = np.loadtxt(osp.join(path, 'seq0.txt'))
-            assert np.array_equal(x[:, 0], seq0)
-
-            s_path = osp.join(path, 's.npy')
-            if osp.exists(s_path):
-                s = np.load(s_path)
-            else:
-                psi_path = osp.join(path, 'psi.npy')
-                if osp.exists(psi_path):
-                    psi = np.load(psi_path)
-                    s = psi @ chi_sample @ psi.T
-                else:
-                    s = None
             plotContactMap(s, osp.join(path, 's.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
         if plot_x:
@@ -454,11 +417,11 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True, chi = N
 
 
 if __name__ == '__main__':
-    dir = '/home/eric/sequences_to_contact_maps'
+    dir = '/home/eric'
     dataset = 'dataset_test'
     data_dir = osp.join(dir, dataset)
-    sample = 2
-    basic_plots(data_dir, plot_y = False, plot_s = False, plot_x = False)
+    sample = 91
+    basic_plots(data_dir, plot_y = False, plot_s = True, plot_x = False)
     # plot_genomic_distance_statistics(dataset)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts('/home/eric/sequences_to_contact_maps/dataset_12_11_21')

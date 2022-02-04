@@ -7,12 +7,14 @@
 #SBATCH --mem-per-cpu=2000
 #SBATCH --qos=depablo-debug
 
-dirname="/home/eric/sequences_to_contact_maps"
-dataset="dataset_01_15_22"
-sample=40
-method='GNN'
-modelID=70
+dirname="/home/eric"
+dataset="dataset_test"
+method='none'
+modelID='none'
 k='4'
+plot='true'
 
-
-python ~/sequences_to_contact_maps/result_summary_plots.py --root $dirname --dataset $dataset --sample $sample --method $method --model_id $modelID --k $k
+for sample in 91
+do
+  python ~/sequences_to_contact_maps/result_summary_plots.py --root $dirname --dataset $dataset --sample $sample --method $method --model_id $modelID --k $k --plot $plot
+done
