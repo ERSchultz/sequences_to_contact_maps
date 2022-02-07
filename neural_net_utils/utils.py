@@ -105,6 +105,8 @@ def getDataset(opt, names = False, minmax = False, verbose = True, samples = Non
 
 def getDataLoaders(dataset, opt):
     train_dataset, val_dataset, test_dataset = splitDataset(dataset, opt)
+    if opt.verbose:
+        print('lengths: ', len(train_dataset), len(val_dataset), len(test_dataset))
 
     if opt.GNN_mode:
         dataloader_fn = torch_geometric.loader.DataLoader
@@ -117,7 +119,8 @@ def getDataLoaders(dataset, opt):
                                         shuffle = opt.shuffle, num_workers = opt.num_workers)
     else:
         val_dataloader = None
-    if len(val_dataset) > 0:
+
+    if len(test_dataset) > 0:
         test_dataloader = dataloader_fn(test_dataset, batch_size = opt.batch_size,
                                         shuffle = opt.shuffle, num_workers = opt.num_workers)
     else:
@@ -128,11 +131,34 @@ def getDataLoaders(dataset, opt):
 def splitDataset(dataset, opt):
     """Splits input dataset into proportions specified by split."""
     opt.N = len(dataset)
-    assert sum(opt.split) - 1 < 1e-5, "split doesn't sum to 1: {}".format(opt.split)
-    opt.trainN = math.floor(opt.N * opt.split[0])
-    opt.valN = math.floor(opt.N * opt.split[1])
-    opt.testN = opt.N - opt.trainN - opt.valN
-    return torch.utils.data.random_split(dataset, [opt.trainN, opt.valN, opt.testN], torch.Generator().manual_seed(opt.seed))
+    if opt.split_percents is not None:
+        assert sum(opt.split_percents) - 1 < 1e-5, "split doesn't sum to 1: {}".format(opt.split_percents)
+        opt.testN = math.floor(opt.N * opt.split_percents[2])
+        opt.valN = math.floor(opt.N * opt.split_percents[1])
+        opt.trainN = opt.N - opt.testN - opt.valN
+    else:
+        assert opt.split_counts is not None
+        assert opt.split_counts.count(-1) < 2, "can be at most 1 entry set to -1"
+
+        opt.trainN, opt.valN, opt.testN = opt.split_counts
+        if opt.trainN == -1:
+            opt.trainN = opt.N - opt.testN - opt.valN
+        elif opt.valN == -1:
+            opt.valN = opt.N - opt.trainN - opt.testN
+        elif opt.teN == -1:
+            opt.testN = opt.N - opt.trainN - opt.valN
+
+    if opt.verbose:
+        print(opt.trainN, opt.valN, opt.testN)
+
+    if opt.random_split:
+        return torch.utils.data.random_split(dataset, [opt.trainN, opt.valN, opt.testN], torch.Generator().manual_seed(opt.seed))
+    else:
+        test_dataset = dataset[:opt.testN]
+        val_dataset = dataset[opt.testN:opt.testN+opt.valN]
+        train_dataset = dataset[opt.testN+opt.valN:opt.N]
+        return train_dataset, val_dataset, test_dataset
+
 
 ## data processing functions ##
 def x2xx(x, mode = 'mean'):
@@ -479,27 +505,27 @@ def load_X_psi(sample_folder):
 
 def load_E_S(sample_folder, psi = None, save = False):
     calc = False # TRUE if need to calculate e or s matrix
-    s_file1 = osp.join(sample_folder, 's_matrix.txt')
-    s_file2 = osp.join(sample_folder, 's.npy')
-    if osp.exists(s_file1):
-        s = np.loadtxt(s_file1)
-    elif osp.exists(s_file2):
-        s = np.load(s_file2)
+
+    load_fns = [np.load, np.loadtxt]
+    s_files = [osp.join(sample_folder, i) for i in ['s.npy', 's_matrix.txt']]
+    for s_file, load_fn in zip(s_files, load_fns):
+        if osp.exists(s_file):
+            s = load_fn(s_file)
+            break
     else:
         calc = True
 
-    e_file1 = osp.join(sample_folder, 'e_matrix.txt')
-    e_file2 = osp.join(sample_folder, 'e.npy')
-    if osp.exists(e_file1):
-        e = np.loadtxt(e_file1)
-    elif osp.exists(e_file2):
-        e = np.load(e_file2)
+    e_files = [osp.join(sample_folder, i) for i in ['e.npy', 'e_matrix.txt']]
+    for e_file, load_fn in zip(e_files, load_fns):
+        if osp.exists(e_file):
+            e = load_fn(e_file)
+            break
     else:
         calc = True
 
     if calc:
         if psi is None:
-            psi = np.load(osp.join(sample_folder, 'psi.npy'))
+            _, psi = load_X_psi(sample_folder)
         chi = np.load(osp.join(sample_folder, 'chis.npy'))
         e, s = calculate_E_S(psi, chi)
 
