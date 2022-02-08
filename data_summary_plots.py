@@ -123,7 +123,8 @@ def plotFrequenciesForSample(freq_arr, dataFolder, preprocessing, k, sampleid, s
         xmax: x axis limit
     """
     freq_pd = pd.DataFrame(freq_arr, columns = ['freq', 'sampleID', 'type', 'psi']) # cols = freq, sampleid, interaction_type
-    converter = InteractionConverter(k)
+    if k is not None:
+        converter = InteractionConverter(k)
 
     if split is None:
         fig = plt.figure(figsize=(8, 4))

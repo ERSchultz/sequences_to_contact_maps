@@ -249,7 +249,9 @@ def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 
     if vmax == 'mean':
         vmax = np.mean(y)
     elif vmax == 'max':
-        vmax = np.max(y)
+        vmax = np.percentile(y, 99)
+        # uses 99th percentile instead of absolute max
+        # enter numerical value mannually to override
     ax = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap)
     if x_ticks is None:
         pass
