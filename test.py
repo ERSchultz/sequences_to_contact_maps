@@ -83,7 +83,10 @@ def debugModel(model_type):
     opt.crop = None
     opt.m = 1024
     opt.y_preprocessing = 'diag'
-    opt.split=[0.4,0.4,0.2]
+    # opt.split_percents=[0.6666,0.3333,0.0]
+    opt.split_percents = None
+    opt.split_counts=[2, -1, 0]
+    # opt.split_counts=None
 
     if model_type == 'Akita':
         opt.kernel_w_list=str2list('5-5-5')
@@ -202,7 +205,7 @@ def debugModel(model_type):
     opt.print_params = False
     opt.gpus = 1
 
-    opt = finalizeOpt(opt, parser, False)
+    opt = finalizeOpt(opt, parser, True)
 
     opt.model_type = model_type
 
@@ -360,26 +363,28 @@ def main():
     plotContactMap(y_diag, osp.join(dir, 'y_diag_cut.png'), vmax = 2, cmap = 'blue-red')
 
 def main2():
-    dir = 'C:/Users/Eric/OneDrive/Documents/Research/Coding/sequences_to_contact_maps/dataset_test/samples'
-    for sample in ['sample82', 'sample83']:
+    dir = 'C:/Users/Eric/OneDrive/Documents/Research/Coding/sequences_to_contact_maps/dataset_01_15_22/samples'
+    for sample in ['sample40']:
         sample_dir = osp.join(dir, sample)
         y= np.load(osp.join(dir, sample, 'y.npy'))
-        s = np.load(osp.join(dir, sample, 's.npy'))
-        plotContactMap(y, osp.join(dir, sample, 'y_100.png'), vmax = 100)
-        plotContactMap(s, osp.join(dir, sample, 's_-1_1.png'), vmin = -1, vmax = 1, cmap = 'blue-red')
+        # s = np.load(osp.join(dir, sample, 's.npy'))
+        # plotContactMap(y, osp.join(dir, sample, 'y_1000.png'), vmax = 1000)
 
-
-
-
+        # y = y / np.max(y)
+        max = np.max(np.triu(y, 1))
+        print(max)
+        print(np.triu(y,1))
+        plotContactMap(y, osp.join(dir, sample, 'y_max_off_diag.png'), vmax = max)
+        # plotContactMap(s, osp.join(dir, sample, 's_-1_1.png'), vmin = -1, vmax = 1, cmap = 'blue-red')
 
 
 
 
 
 if __name__ == '__main__':
-    main2()
+    # main2()
     # edit_argparse()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # plot_fixed()
     # test_argpartition(10)
     # downsampling_test()

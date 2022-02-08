@@ -49,7 +49,9 @@ def getBaseParser():
     parser.add_argument('--use_scratch', type=str2bool, default=False, help='True to move data to scratch')
 
     # dataloader args
-    parser.add_argument('--split', type=str2list, default=[0.8, 0.1, 0.1], help='Train, val, test split for dataset')
+    parser.add_argument('--split_percents', type=str2list, help='Train, val, test split for dataset (percents)')
+    parser.add_argument('--split_sizes', type=str2list, default=[-1, 200, 0], help='Train, val, test split for dataset (counts), -1 for remainder')
+    parser.add_argument('--random_split', type=str2bool, default=False, help='True to use random train, val, test split')
     parser.add_argument('--shuffle', type=str2bool, default=True, help='Whether or not to shuffle dataset')
     parser.add_argument('--batch_size', type=int, default=16, help='Training batch size')
     parser.add_argument('--num_workers', type=int, default=1, help='Number of threads for data loader to use')
@@ -168,6 +170,9 @@ def finalizeOpt(opt, parser, local = False):
     opt.param_file = open(param_file_path, 'a')
 
     # configure other model params
+    assert opt.split_percents is not None or opt.split_counts is not None, "both can't be None"
+    assert opt.split_percents is None or opt.split_counts is None, "one must be None"
+
     if opt.y_log_transform:
         assert opt.y_norm is None, "don't use log transform with y norm"
 
@@ -345,11 +350,11 @@ def copy_data_to_scratch(opt):
     delta_t = np.round(tf - t0, 0)
     print("Took {} seconds to move data to scratch".format(delta_t), file = opt.log_file)
 
-def argparseSetup():
+def argparseSetup(local = False):
     """Helper function set up parser."""
     parser = getBaseParser()
     opt = parser.parse_args()
-    return finalizeOpt(opt, parser)
+    return finalizeOpt(opt, parser, local)
 
 def save_args(opt):
     with open(osp.join(opt.ofile_folder, 'argparse.txt'), 'w') as f:
@@ -358,7 +363,7 @@ def save_args(opt):
 
 def opt2list(opt):
     opt_list = [opt.model_type, opt.id, opt.data_folder, opt.y_preprocessing,
-        opt.y_norm, opt.min_subtraction, opt.y_log_transform, opt.crop, opt.split, opt.shuffle,
+        opt.y_norm, opt.min_subtraction, opt.y_log_transform, opt.crop, opt.split_percents, opt.shuffle,
         opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr, opt.gpus, opt.milestones,
         opt.gamma, opt.loss, opt.pretrained, opt.resume_training, opt.ifile_folder, opt.ifile, opt.k, opt.m,
         opt.seed, opt.act, opt.inner_act, opt.head_act, opt.out_act,

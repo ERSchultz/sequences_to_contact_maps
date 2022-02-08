@@ -19,13 +19,14 @@ import time
 import numpy as np
 import scipy.stats as ss
 
-def make_dataset(dir, minSample = 0, verbose = True, samples = None):
+def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False, samples = None):
     """
     Make list data file paths.
 
     Inputs:
         dir: data source directory
         minSample: ignore samples < minSample
+        maxSample: ignore samples > maxSample
         verbose: True for verbose mode
         samples: list/set of samples to include, None for all samples
 
@@ -40,11 +41,14 @@ def make_dataset(dir, minSample = 0, verbose = True, samples = None):
                 print("Skipping {}".format(file))
         else:
             sample_id = int(file[6:])
-            if sample_id >= minSample and (samples is None or sample_id in samples):
+            if sample_id < minSample:
+                continue
+            if sample_id > maxSample:
+                continue
+            if samples is None or sample_id in samples:
                 data_file = osp.join(samples_dir, file)
                 data_file_arr.append(data_file)
-            elif verbose:
-                    print("Skipping {}".format(file))
+
 
     return data_file_arr
 
