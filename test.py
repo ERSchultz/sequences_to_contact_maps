@@ -377,10 +377,6 @@ def main2():
         plotContactMap(y, osp.join(dir, sample, 'y_max_off_diag.png'), vmax = max)
         # plotContactMap(s, osp.join(dir, sample, 's_-1_1.png'), vmin = -1, vmax = 1, cmap = 'blue-red')
 
-
-
-
-
 if __name__ == '__main__':
     # main2()
     # edit_argparse()
