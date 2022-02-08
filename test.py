@@ -363,17 +363,19 @@ def main():
     plotContactMap(y_diag, osp.join(dir, 'y_diag_cut.png'), vmax = 2, cmap = 'blue-red')
 
 def main2():
-    dir = 'C:/Users/Eric/OneDrive/Documents/Research/Coding/sequences_to_contact_maps/dataset_test/samples'
-    for sample in ['sample82', 'sample83']:
+    dir = 'C:/Users/Eric/OneDrive/Documents/Research/Coding/sequences_to_contact_maps/dataset_01_15_22/samples'
+    for sample in ['sample40']:
         sample_dir = osp.join(dir, sample)
         y= np.load(osp.join(dir, sample, 'y.npy'))
-        s = np.load(osp.join(dir, sample, 's.npy'))
-        plotContactMap(y, osp.join(dir, sample, 'y_100.png'), vmax = 100)
-        plotContactMap(s, osp.join(dir, sample, 's_-1_1.png'), vmin = -1, vmax = 1, cmap = 'blue-red')
+        # s = np.load(osp.join(dir, sample, 's.npy'))
+        # plotContactMap(y, osp.join(dir, sample, 'y_1000.png'), vmax = 1000)
 
-
-
-
+        # y = y / np.max(y)
+        max = np.max(np.triu(y, 1))
+        print(max)
+        print(np.triu(y,1))
+        plotContactMap(y, osp.join(dir, sample, 'y_max_off_diag.png'), vmax = max)
+        # plotContactMap(s, osp.join(dir, sample, 's_-1_1.png'), vmin = -1, vmax = 1, cmap = 'blue-red')
 
 if __name__ == '__main__':
     # main2()
