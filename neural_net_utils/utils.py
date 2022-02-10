@@ -14,13 +14,13 @@ import torch_geometric.data
 
 import numpy as np
 import math
-from sklearn.decomposition import PCA
 from scipy.stats import spearmanr, pearsonr
 import matplotlib.pyplot as plt
 import csv
 import json
 
 import networks
+from PCA import PCA
 from dataset_classes import *
 
 LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -156,7 +156,7 @@ def splitDataset(dataset, opt):
     else:
         test_dataset = dataset[:opt.testN]
         val_dataset = dataset[opt.testN:opt.testN+opt.valN]
-        train_dataset = dataset[opt.testN+opt.valN:opt.N]
+        train_dataset = dataset[opt.testN+opt.valN:opt.testN+opt.valN+opt.trainN]
         return train_dataset, val_dataset, test_dataset
 
 
@@ -407,12 +407,12 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
         yhat = yhat.reshape((opt.m, opt.m))
 
         # y
-        pca.fit(y)
+        pca.fit(y/np.std(y, axis = 0))
         comp1_y = pca.components_[0]
         sign1_y = np.sign(comp1_y)
 
         # yhat
-        pca.fit(yhat)
+        pca.fit(yhat/np.std(yhat, axis = 0))
         comp1_yhat = pca.components_[0]
         sign1_yhat = np.sign(comp1_yhat)
 
@@ -534,8 +534,15 @@ def load_E_S(sample_folder, psi = None, save = False):
 
     return e, s
 
-def load_all(sample_folder, plot = False, data_folder = None, log_file = None, save = False):
+def load_all(sample_folder, plot = False, data_folder = None, log_file = None, save = False, experimental = False):
     '''Loads x, psi, chi, e, s, y, ydiag.'''
+    y = np.load(osp.join(sample_folder, 'y.npy'))
+    ydiag = np.load(osp.join(sample_folder, 'y_diag.npy'))
+
+    if experimental:
+        # everything else is None
+        return None, None, None, None, None, y, ydiag
+
     x, psi = load_X_psi(sample_folder)
     # x = x.astype(float)
 
@@ -561,10 +568,6 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None, s
         print('Chi:\n', chi, file = log_file)
 
     e, s = load_E_S(sample_folder, psi, save = save)
-
-    y = np.load(osp.join(sample_folder, 'y.npy'))
-
-    ydiag = np.load(osp.join(sample_folder, 'y_diag.npy'))
 
     return x, psi, chi, e, s, y, ydiag
 
@@ -594,25 +597,33 @@ def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None):
     for i, bead_i in enumerate(LETTERS[:k]):
         for j in range(i,k):
             bead_j = LETTERS[j]
-            chi[i,j] = config[f'chi{bead_i}{bead_j}']
+            try:
+                chi[i,j] = config[f'chi{bead_i}{bead_j}']
+            except KeyError:
+                print(f'config_file: {config_file}')
+                print(config)
+                raise
 
     return chi
 
+def load_final_max_ent_S(k, replicate_path, max_it_path = None):
+    s_path = osp.join(replicate_path, 'resources', 's.npy')
+    if osp.exists(s_path):
+        s = np.load(s_path)
+    else:
+        # load x
+        x_file = osp.join(replicate_path, 'resources', 'x.npy')
+        if osp.exists(x_file):
+            x = np.load(x_file)
 
-def load_final_max_ent_S(k, replicate_path = None, max_it_path = None):
-    # load x
-    x_file = osp.join(replicate_path, 'resources', 'x.npy')
-    if osp.exists(x_file):
-        x = np.load(x_file)
+        # load chi
+        chi = load_final_max_ent_chi(k, replicate_path, max_it_path)
 
-    # load chi
-    chi = load_final_max_ent_chi(k, replicate_path, max_it_path)
+        if chi is None:
+            raise Exception(f'chi not found: {replicate_path}, {max_it_path}')
 
-    if chi is None:
-        raise Exception(f'chi not found: {replicate_path}, {max_it_path}')
-
-    # calculate s
-    s = calculate_S(x, chi)
+        # calculate s
+        s = calculate_S(x, chi)
 
     return s
 

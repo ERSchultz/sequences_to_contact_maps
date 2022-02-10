@@ -16,7 +16,7 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
 
 from plotting_functions import plotContactMap
-from neural_net_utils.utils import calculate_S, load_all, load_final_max_ent_S, LETTERS
+from neural_net_utils.utils import load_all, load_final_max_ent_S, s_to_E, LETTERS
 from neural_net_utils.argparseSetup import str2int, str2bool, str2None
 
 def getArgs():
@@ -28,11 +28,21 @@ def getArgs():
     parser.add_argument('--method', type=str2None, default='GNN', help = 'parametrization method')
     parser.add_argument('--model_id', type=str2int, help='model ID if method == GNN')
     parser.add_argument('--k', type=str2int, help='k for method')
-    parser.add_argument('--plot', type=str2bool, default=False, help='True to plot s and s_hat')
+    parser.add_argument('--plot', type=str2bool, default=False, help='True to plot s_hat and s_dif')
+    parser.add_argument('--experimental', type=str2bool, default=False, help='True if using experimental data (ground truth data missing)')
 
     args = parser.parse_args()
     args.data_folder = osp.join(args.root, args.dataset)
     args.sample_folder = osp.join(args.data_folder, 'samples/sample{}'.format(args.sample))
+
+    # determine what to plot
+    if args.method is None:
+        args.plot_baseline = True
+        args.plot = False # override
+        args.verbose = True
+    else:
+        args.plot_baseline = False
+        args.verbose = False
 
     # check that model_id matches
     if args.model_id is not None:
@@ -52,8 +62,6 @@ def getArgs():
         args.odir = osp.join(args.sample_folder, f'results_GNN-{args.model_id}')
     else:
         args.odir = osp.join(args.sample_folder, f'results_{args.method}-{args.k}')
-
-
     if not osp.exists(args.odir):
         os.mkdir(args.odir, mode = 0o755)
 
@@ -63,13 +71,44 @@ def getArgs():
 
     return args
 
-def run_regression(X, Y, k_new, args, ofile, verbose = True):
+def project_S_to_psi_basis(s, psi):
+    '''
+    Projects energy into basis of psi.
+
+    Inputs:
+        s: s matrix (symmetric or asymmetric s, cannot be e)
+        psi: bead labels
+
+    Outputs:
+        s_proj: s matrix in basis of psi
+        e_proj: e matrix in basis of psi
+    '''
+    hat_chi = predict_chi_in_psi_basis(psi, s)
+    s_proj = psi @ hat_chi @ psi.T
+    e_proj = s_to_E(s_proj)
+    return s_proj, e_proj
+
+def run_regression(X, Y, k_new, args, verbose = True):
+    '''
+    Linear regression to estimate chi given psi and Y (Y = X @ chi @ X.T).
+
+    Inputs:
+        X: bead labels, reformatted to allow for linear regression
+        Y: contact map, reformated to allow for linear regression
+        k_new: number of bead label pairs
+        args: command line arguments (None overrides verbose)
+        verbose: True to print
+
+    Outputs:
+        hat_chi: estimated chi matrix of shape (k_new, k_new)
+    '''
     est = sm.OLS(Y, X)
     est = est.fit()
-    if verbose:
+    if verbose and args is not None:
         print(est.summary(), '\n', file = args.log_file)
 
     # construct chi
+    # converts chi back to matrix format
     hat_chi = np.zeros((k_new, k_new))
     row = 0
     col = 0
@@ -85,10 +124,9 @@ def run_regression(X, Y, k_new, args, ofile, verbose = True):
         else:
             col += 1
 
-    print(np.round(hat_chi, 2), '\n', file = args.log_file)
-    np.save(osp.join(args.odir, ofile + '.npy'), hat_chi)
+    return hat_chi
 
-def relabel_x(x):
+def x_to_psi(x, mode = 'all_pairs'):
     '''
     Relabels x to contains all pairs of bead types.
 
@@ -97,14 +135,16 @@ def relabel_x(x):
     ['A', 'AB', 'AC', 'B', 'BC', 'C'] will be returned as psi_letters
 
     Inputs:
-        x: binary bead type array
+        x: binary epigenetic mark array
+        mode: mapping strategy (only all_pairs supported)
     Outputs:
         psi: relabled bead type array
         psi_letters: bead type labels corresponding to new bead types (see example)
     '''
     assert np.count_nonzero((x != 0) & (x != 1)) == 0, "x must be binary"
+    assert mode == 'all_pairs'
     m, k = x.shape
-    ell = int(k*(k+1)/2) # number of pairs of marks (including self-self)
+    ell = int(k*(k+1)/2) # number of pairs of marks (including self-self) (i.e. number of labels in psi)
     psi = np.zeros((m, ell)) # contains all pairs of marks for each bead
     ind = np.triu_indices(k)
     for i in range(m):
@@ -124,25 +164,26 @@ def relabel_x(x):
 
     return psi, psi_letters
 
-def find_all_pairs(x, energy, letters):
+def find_all_pairs(psi, energy, letters):
     '''
     Finds all pairs of of particles and emumerates the pairs of bead types for each pair.
+    Simulataneously finds corresponding energy values.
 
     E.g. If x[i,:] = [A_i, AB_i, B_i] and x[j,:] = [A_j, AB_j, B_j],
     then X[row, :] = [A_i*A_j, A_i*AB_j, A_i*B_j, AB_i*AB_j, AB_i*B_j, B_i*B_j]
     ['A-A', 'A-AB', 'A-B', 'AB-AB' 'AB-B', 'B-B'] will be returned as letters_new
 
     Inputs:
-        x: binary bead type array
-        energy: matrix such that x \chi x^T = energy for some \chi
-        letters: bead type labels corresponding to x
+        psi: binary bead label array
+        energy: matrix such that psi \chi psi^T = energy for some \chi
+        letters: bead type labels corresponding to psi
 
     Outputs:
         X: x for linear regression
         Y: y for linear regression
         letters_new: bead type labels corresponding to new bead types (see example)
     '''
-    m, k = x.shape
+    m, k = psi.shape
     rows = int(m*(m+1)/2) # number of pairs of particles (including self-self)
     k_new = int(k*(k+1)/2) # number of pairs of bead types (including self-self)
     X = np.zeros((rows, k_new))
@@ -152,7 +193,7 @@ def find_all_pairs(x, energy, letters):
     for i in range(m):
         for j in range(i, m):
             # get all pairs of marks
-            outer = np.outer(x[i], x[j])
+            outer = np.outer(psi[i], psi[j])
             outer = np.triu(outer) + np.triu(outer.T, 1)
             outer = outer[ind] # flatten
             X[row] = outer
@@ -162,25 +203,41 @@ def find_all_pairs(x, energy, letters):
             row += 1
 
     # determine letters for X
-    letters_outer = np.empty((k, k), dtype=np.dtype('U5'))
-    for i in range(k):
-        for j in range(k):
-            letters_outer[i,j] = letters[i] + '-' + letters[j]
-    letters_new = letters_outer[ind]
-    print('letters 2', letters_new)
+    if letters is not None:
+        letters_outer = np.empty((k, k), dtype=np.dtype('U5'))
+        for i in range(k):
+            for j in range(k):
+                letters_outer[i,j] = letters[i] + '-' + letters[j]
+        letters_new = letters_outer[ind]
+        print('letters 2', letters_new)
+    else:
+        letters_new = None
 
     return X, Y, letters_new
 
-def regression_on_all_pairs(psi, psi_letters, chi, s, s_hat, args):
+def predict_chi_in_psi_basis(psi, s, psi_letters = None, args = None):
+    '''
+    Wrapper function to predict hat_chi given psi.
+    '''
     _, ell = psi.shape
 
-    for energy, text in zip([s, s_hat], ['chi', 'chi_hat']):
-        X, Y, letters_newer = find_all_pairs(psi, (energy + energy.T)/2, psi_letters)
+    # use symmetric s
+    s_sym = (s + s.T)/2
 
-        # run linear regression
-        run_regression(X, Y, ell, args, text)
+    # find pairs of rows in psi
+    X, Y, letters_newer = find_all_pairs(psi, s_sym, psi_letters)
 
-def plot_top_PCs(inp, inp_type=None, odir = None, log_file = sys.stdout, count = 2, plot = False):
+    # run linear regression
+    hat_chi = run_regression(X, Y, ell, args)
+
+    # save results
+    if args is not None:
+        print(np.round(hat_chi, 2), '\n', file = args.log_file)
+        np.save(osp.join(args.odir, args.save_file), hat_chi)
+
+    return hat_chi
+
+def plot_top_PCs(inp, inp_type=None, odir = None, log_file = sys.stdout, count = 2, plot = False, verbose = False):
     '''
     Plots top PCs of inp.
 
@@ -191,16 +248,22 @@ def plot_top_PCs(inp, inp_type=None, odir = None, log_file = sys.stdout, count =
         log_file: output file to write results to
         count: number of PCs to plot
         plot: True to plot
+        verbose: True to print
 
     Outputs:
         pca.components_: all PCs of inp
     '''
 
     pca = PCA()
-    pca = pca.fit(inp)
+    try:
+        pca = pca.fit(inp/np.std(inp, axis = 0))
+    except ValueError:
+        pca = pca.fit(inp)
 
-    print("% of total variance explained for first 4 PCs: ", np.round(pca.explained_variance_ratio_[0:4], 3), file = log_file)
-    print("Singular values for first 4 PCs: ", np.round(pca.singular_values_[0:4], 3), file = log_file)
+    if verbose:
+        print(f'\n{inp_type.upper()}', file = log_file)
+        print("% of total variance explained for first 4 PCs: ", np.round(pca.explained_variance_ratio_[0:4], 3), file = log_file)
+        print("Singular values for first 4 PCs: ", np.round(pca.singular_values_[0:4], 3), file = log_file)
 
     if plot:
         i = 0
@@ -272,92 +335,160 @@ def load_method_S(root, sample_folder, sample, method, k, model_id):
 
     raise Exception('s_hat not found')
 
-def pca_corr_analysis(args, y, ydiag, s, s_hat):
-    # Compare correlation between PCs ##
-    print("\nY", file = args.log_file)
-    PC_y = plot_top_PCs(y, 'y', args.odir, args.log_file, count = 2, plot = args.plot)
+def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
+    # calculate PCA
+    PC_y = plot_top_PCs(y, 'y', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+    PC_y_diag = plot_top_PCs(ydiag, 'y_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
 
-    print("\nY_diag", file = args.log_file)
-    PC_y_diag = plot_top_PCs(ydiag, 'y_diag', args.odir, args.log_file, count = 2, plot = args.plot)
+    if args.method is None:
+        ## Plot projection of y in lower rank space
+        for i in range(2, 20, 3):
+            # get y top i PCs
+            pca = PCA(n_components = i)
+            y_transform = pca.fit_transform(y/np.std(y, axis = 0))
+            y_i = pca.inverse_transform(y_transform)
+            plotContactMap(y_i, osp.join(args.odir, f'y_rank_{i}.png'), vmax = np.mean(y), title = f'Y rank {i}')
 
-    print("\nS", file = args.log_file)
-    print(f'Rank: {np.linalg.matrix_rank(s)}', file = args.log_file)
-    PC_s = plot_top_PCs(s, 's', args.odir, args.log_file, count = 2, plot = args.plot)
-    stat = pearsonround(PC_y[0], PC_s[0])
-    print("Correlation between PC 1 of y and S: ", stat, file = args.log_file)
-    stat = pearsonround(PC_y_diag[0], PC_s[0])
-    print("Correlation between PC 1 of y_diag and S: ", stat, file = args.log_file)
+        ## Plot projection of y_diag in lower rank space
+        for i in range(2, 20, 3):
+            # get y_diag top i PCs
+            pca = PCA(n_components = i)
+            y_transform = pca.fit_transform(ydiag/np.std(ydiag, axis = 0))
+            y_i = pca.inverse_transform(y_transform)
+            plotContactMap(y_i, osp.join(args.odir, f'y_diag_rank_{i}.png'), vmax = np.percentile(ydiag, 99), title = f'Y_diag rank {i}')
 
-    s_sym = (s + s.T)/2
-    print("\nS_sym", file = args.log_file)
-    print(f'Rank: {np.linalg.matrix_rank(s_sym)}', file = args.log_file)
-    PC_s_sym = plot_top_PCs(s_sym, 's_sym', args.odir, args.log_file, count = 2, plot = args.plot)
-    stat = pearsonround(PC_y[0], PC_s_sym[0])
-    print("Correlation between PC 1 of y and S_sym: ", stat, file = args.log_file)
-    stat = pearsonround(PC_y_diag[0], PC_s_sym[0])
-    print("Correlation between PC 1 of y_diag and S_sym: ", stat, file = args.log_file)
-    stat = pearsonround(PC_y_diag[1], PC_s_sym[1])
-    print("Correlation between PC 2 of y_diag and S_sym: ", stat, file = args.log_file)
+
+    if s is not None:
+        PC_s = plot_top_PCs(s, 's', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+        print(f'Rank of S: {np.linalg.matrix_rank(s)}', file = args.log_file)
+        if args.method is None:
+            stat = pearsonround(PC_y[0], PC_s[0])
+            print("Correlation between PC 1 of y and S: ", stat, file = args.log_file)
+            stat = pearsonround(PC_y_diag[0], PC_s[0])
+            print("Correlation between PC 1 of y_diag and S: ", stat, file = args.log_file)
+            stat = pearsonround(PC_y_diag[1], PC_s[1])
+            print("Correlation between PC 2 of y_diag and S: ", stat, file = args.log_file)
+
+            s_sym = (s + s.T) / 2
+            PC_s_sym = plot_top_PCs(s_sym, 's_sym', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+            print(f'Rank: {np.linalg.matrix_rank(s)}', file = args.log_file)
+            stat = pearsonround(PC_y[0], PC_s_sym[0])
+            print("Correlation between PC 1 of y and S_sym: ", stat, file = args.log_file)
+            stat = pearsonround(PC_y_diag[0], PC_s[0])
+            print("Correlation between PC 1 of y_diag and S_sym: ", stat, file = args.log_file)
+            stat = pearsonround(PC_y_diag[1], PC_s[1])
+            print("Correlation between PC 2 of y_diag and S_sym: ", stat, file = args.log_file)
+
+    if e is not None:
+        PC_e = plot_top_PCs(e, 'e', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+        print(f'Rank of E: {np.linalg.matrix_rank(e)}', file = args.log_file)
+        if args.method is None:
+            stat = pearsonround(PC_y[0], PC_e[0])
+            print("Correlation between PC 1 of y and E: ", stat, file = args.log_file)
+            stat = pearsonround(PC_y_diag[0], PC_e[0])
+            print("Correlation between PC 1 of y_diag and E: ", stat, file = args.log_file)
+            stat = pearsonround(PC_y_diag[1], PC_e[1])
+            print("Correlation between PC 2 of y_diag and E: ", stat, file = args.log_file)
+            stat = pearsonround(PC_s[0], PC_e[0])
+            print("Correlation between PC 1 of S and E: ", stat, file = args.log_file)
 
     if s_hat is not None:
-        print("\nS_hat", file = args.log_file)
-        PC_s_hat = plot_top_PCs(s_hat, 's_hat', args.odir, args.log_file, count = 2)
+        PC_s_hat = plot_top_PCs(s_hat, 's_hat', args.odir, args.log_file, count = 2, plot = True, verbose = True)
         stat = pearsonround(PC_y_diag[0], PC_s_hat[0])
         print("Correlation between PC 1 of y_diag and S_hat: ", stat, file = args.log_file)
         for zero_index, one_index in enumerate([1,2,3]):
             stat = pearsonround(PC_s[zero_index], PC_s_hat[zero_index])
             print(f"Correlation between PC {one_index} of S and S_hat: ", stat, file = args.log_file)
 
+    if e_hat is not None:
+        PC_e_hat = plot_top_PCs(e_hat, 'e_hat', args.odir, args.log_file, count = 2, plot = True, verbose = True)
+        stat = pearsonround(PC_y_diag[0], PC_e_hat[0])
+        print("Correlation between PC 1 of y_diag and E: ", stat, file = args.log_file)
+        for zero_index, one_index in enumerate([1,2,3]):
+            stat = pearsonround(PC_e[zero_index], PC_e_hat[zero_index])
+            print(f"Correlation between PC {one_index} of E and E_hat: ", stat, file = args.log_file)
+
 def main():
     args = getArgs()
 
     ## load data ##
-    x, _, chi, e, s, y, ydiag = load_all(args.sample_folder, True, args.data_folder, args.log_file)
+    x, _, chi, e, s, y, ydiag = load_all(args.sample_folder, True, args.data_folder, args.log_file, experimental = args.experimental)
 
     if args.method is not None:
         s_hat = load_method_S(args.root, args.sample_folder, args.sample, args.method, args.k, args.model_id)
-        print(s_hat)
+        e_hat = s_to_E(s_hat)
     else:
         s_hat = None
+        e_hat = None
 
     # pairwise PC correlation
-    pca_corr_analysis(args, y, ydiag, s, s_hat)
+    pca_analysis(args, y, ydiag, s, s_hat, e, e_hat)
 
 
-    if s_hat is not None:
+    if e_hat is not None:
         ## Compare MSE in PCA space ##
-        print(f'S - MSE: {mse}', file = args.log_file)
         for i in range(1, 4):
             # get e top i PCs
             pca = PCA(n_components = i)
-            s_transform = pca.fit_transform(s)
-            s_i = pca.inverse_transform(s_transform)
+            e_transform = pca.fit_transform(e)
+            e_i = pca.inverse_transform(e_transform)
 
             # compare ehat to projection of e onto top PCs
-            mse = np.round(mean_squared_error(s_i, s_hat), 3)
-            print(f'S top {i} PCs - MSE: {mse}', file = args.log_file)
+            mse = np.round(mean_squared_error(e_i, e_hat), 3)
+            print(f'E top {i} PCs - MSE: {mse}', file = args.log_file)
 
-        ## plot s_hat and s_dif ##
-        mse = np.round(mean_squared_error(s, s_hat), 3)
+        ## plot e_hat and e_dif ##
+        mse_e = np.round(mean_squared_error(e, e_hat), 3)
+        mse_s = np.round(mean_squared_error(s, s_hat), 3)
+        print(f'E - MSE: {mse_e}', file = args.log_file)
+        print(f'S - MSE: {mse_s}', file = args.log_file)
         if args.plot:
-            plotContactMap(s_hat, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(args.odir, 's_hat.png'), title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{S}$', mse))
+            # e
+            if args.method == 'GNN':
+                plot_title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{E}$', mse_e)
+            else:
+                plot_title = '{} (MSE Loss = {})'.format(r'$\hat{E}$', mse_e)
+            plotContactMap(e_hat, osp.join(args.odir, 'e_hat.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = plot_title)
+
+            dif = e_hat - e
+            v_max = np.max(e)
+            plotContactMap(dif, osp.join(args.odir, 'e_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{E}$ - E', cmap = 'blue-red')
+
+            # s
+            if args.method == 'GNN':
+                plot_title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{S}$', mse_s)
+            else:
+                plot_title = '{} (MSE Loss = {})'.format(r'$\hat{S}$', mse_s)
+            plotContactMap(s_hat, osp.join(args.odir, 's_hat.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = plot_title)
 
             dif = s_hat - s
             v_max = np.max(s)
             plotContactMap(dif, osp.join(args.odir, 's_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
 
 
+
         ## All pairs of bead types for all pairs of particles ##
         print('\nAll possible pairwise interactions', file = args.log_file)
         # first relabel marks with all possible pairs of marks for each bead
-        psi_tilde, psi_letters = relabel_x(x)
+        psi_tilde, psi_letters = x_to_psi(x)
 
-        regression_on_all_pairs(psi_tilde, psi_letters, chi, s, s_hat, args)
+        args.save_file = 'chi_hat.npy'
+        hat_chi = predict_chi_in_psi_basis(psi_tilde, s_hat, psi_letters, args)
+        if args.plot:
+            s_hat_psi_basis = psi_tilde @ hat_chi @ psi_tilde.T
+            e_hat_psi_basis = s_to_E(s_hat_psi_basis)
+
+            mse = np.round(mean_squared_error(e, e_hat_psi_basis), 3)
+            if args.method == 'GNN':
+                plot_title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{E}_{\Psi-basis}$', mse)
+            else:
+                plot_title = '{} (MSE Loss = {})'.format(r'$\hat{E}_{\Psi-basis}$', mse)
+            plotContactMap(e_hat_psi_basis, vmin = np.min(e), vmax = np.max(e), cmap = 'blue-red', ofile = osp.join(args.odir, 'e_hat_psi_basis.png'), title = plot_title)
 
         post_analysis_chi(args, psi_letters)
 
 def post_analysis_chi(args, letters):
-    chi = np.load(osp.join(args.odir, 'chi.npy'))
+    chi = np.load(osp.join(args.sample_folder, 'chis.npy'))
     k, _ = chi.shape
     chi_sign = np.zeros_like(chi)
     chi_sign[chi > 0] = 1
@@ -384,5 +515,24 @@ def post_analysis_chi(args, letters):
     plotContactMap(chi, vmin=min, vmax=max, cmap='blue-red', ofile = osp.join(args.odir, 'chi.png'), x_ticks = letters, y_ticks = letters)
     plotContactMap(dif, vmin=min, vmax=max, cmap='blue-red', ofile = osp.join(args.odir, 'dif.png'), x_ticks = letters, y_ticks = letters)
 
+def test_project():
+    dir = '/home/eric/sequences_to_contact_maps/dataset_01_15_22/samples/sample40'
+    replicate_dir = osp.join(dir, 'PCA/k4/replicate1')
+    s_pca = load_final_max_ent_S(4, replicate_dir)
+    e_pca = s_to_E(s_pca)
+
+    x, psi, chi, e, s, y, ydiag = load_all(dir)
+
+    # s_pca_proj, e_pca_proj = project_S_to_psi_basis(s_pca, psi)
+    # plotContactMap(s_pca_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(replicate_dir, 's_pca_proj.png'))
+    # plotContactMap(e_pca_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(replicate_dir, 'e_pca_proj.png'))
+
+    s_proj, e_proj = project_S_to_psi_basis(s, psi)
+    assert np.allclose(s, s_proj)
+    assert np.allclose(e, e_proj)
+
+
+
 if __name__ == '__main__':
-    main()
+    # main()
+    test_project()
