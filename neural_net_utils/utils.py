@@ -467,6 +467,8 @@ def roundUpBy10(val):
 
 ## energy functions ##
 def calculate_E_S(x, chi):
+    if x is None or chi is None:
+        return None, None
     s = calculate_S(x, chi)
     e = s_to_E(s)
     return e, s
@@ -493,14 +495,16 @@ def calculate_S(x, chi):
     return s
 
 ## load data functions ##
-def load_X_psi(sample_folder):
+def load_X_psi(sample_folder, throw_exception = True):
     x_file = osp.join(sample_folder, 'x.npy')
     psi_file = osp.join(sample_folder, 'psi.npy')
     if osp.exists(x_file):
         x = np.load(x_file)
         print(f'x loaded with shape {x.shape}')
-    else:
+    elif throw_exception:
         raise Exception(f'x not found for {sample_folder}')
+    else:
+        x = None
 
     if osp.exists(psi_file):
         psi = np.load(psi_file)
@@ -511,7 +515,37 @@ def load_X_psi(sample_folder):
 
     return x, psi
 
-def load_E_S(sample_folder, psi = None, save = False):
+def load_Y(sample_folder, throw_exception = True):
+    y_file = osp.join(osp.join(sample_folder, 'y.npy'))
+    if osp.exists(y_file):
+        y = np.load(y_file)
+    elif throw_exception:
+        raise Exception(f'y not found for {sample_folder}')
+    else:
+        y = None
+
+    ydiag_file = osp.join(sample_folder, 'y_diag.npy')
+    if osp.exists(ydiag_file):
+        ydiag = np.load(ydiag_file)
+    elif throw_exception:
+        raise Exception(f'ydiag not found for {sample_folder}')
+    else:
+        ydiag = None
+
+    return y, ydiag
+
+
+def load_E_S(sample_folder, psi = None, chi = None, save = False, throw_exception=True):
+    '''
+    Load E and S.
+
+    Inputs:
+        sample_folder: path to sample
+        psi: psi np array (None to load if needed)
+        chi: chi np array (None to load if needed)
+        save: True to save s.npy
+        throw_exception: True to throw exception if E and S missing
+    '''
     calc = False # TRUE if need to calculate e or s matrix
 
     load_fns = [np.load, np.loadtxt]
@@ -537,25 +571,29 @@ def load_E_S(sample_folder, psi = None, save = False):
 
     if calc:
         if psi is None:
-            _, psi = load_X_psi(sample_folder)
-        chi = np.load(osp.join(sample_folder, 'chis.npy'))
+            _, psi = load_X_psi(sample_folder, throw_exception=throw_exception)
+        if chi is None:
+            chi_path = osp.join(sample_folder, 'chis.npy')
+            if osp.exists(chi_path):
+                chi = np.load(chi_path)
+            else:
+                chi = None
         e, s = calculate_E_S(psi, chi)
 
-        if save:
+        if save and s is not None:
             np.save(osp.join(sample_folder, 's.npy'), s)
 
     return e, s
 
-def load_all(sample_folder, plot = False, data_folder = None, log_file = None, save = False, experimental = False):
+def load_all(sample_folder, plot = False, data_folder = None, log_file = None, save = False, experimental = False, throw_exception = True):
     '''Loads x, psi, chi, e, s, y, ydiag.'''
-    y = np.load(osp.join(sample_folder, 'y.npy'))
-    ydiag = np.load(osp.join(sample_folder, 'y_diag.npy'))
+    y, ydiag = load_Y(sample_folder, throw_exception = throw_exception)
 
     if experimental:
         # everything else is None
         return None, None, None, None, None, y, ydiag
 
-    x, psi = load_X_psi(sample_folder)
+    x, psi = load_X_psi(sample_folder, throw_exception = throw_exception)
     # x = x.astype(float)
 
     if plot:
