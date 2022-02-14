@@ -11,7 +11,7 @@ import json
 from scipy.stats import pearsonr
 import statsmodels.api as sm
 
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
 
@@ -27,6 +27,8 @@ def getArgs():
     parser.add_argument('--sample', type=int, default=40)
     parser.add_argument('--method', type=str2None, default='GNN', help = 'parametrization method')
     parser.add_argument('--model_id', type=str2int, help='model ID if method == GNN')
+    parser.add_argument('--linear_model', type=str, default='ols', help='type of linear model {ols, ridge, lasso}')
+    parser.add_argument('--alpha', type=float, default=1.0, help='alpha for linear model')
     parser.add_argument('--k', type=str2int, help='k for method')
     parser.add_argument('--plot', type=str2bool, default=False, help='True to plot s_hat and s_dif')
     parser.add_argument('--experimental', type=str2bool, default=False, help='True if using experimental data (ground truth data missing)')
@@ -262,8 +264,8 @@ def plot_top_PCs(inp, inp_type=None, odir = None, log_file = sys.stdout, count =
 
     if verbose:
         print(f'\n{inp_type.upper()}', file = log_file)
-        print("% of total variance explained for first 4 PCs: ", np.round(pca.explained_variance_ratio_[0:4], 3), file = log_file)
-        print("Singular values for first 4 PCs: ", np.round(pca.singular_values_[0:4], 3), file = log_file)
+        print(f"% of total variance explained for first 4 PCs: {np.round(pca.explained_variance_ratio_[0:4], 3)}\n\tSum of first 4: {np.sum(pca.explained_variance_ratio_[0:4])}", file = log_file)
+        print(f"Singular values for first 4 PCs: {np.round(pca.singular_values_[0:4], 3)}\n\tSum of all: {np.sum(pca.singular_values_)}", file = log_file)
 
     if plot:
         i = 0
@@ -304,7 +306,12 @@ def find_linear_combinations(x, args, PC, verbose = False):
             est2 = est.fit()
             print(est2.summary(), '\n', file = args.log_file)
         else:
-            reg = LinearRegression()
+            if args.linear_model == 'ols':
+                reg = LinearRegression()
+            elif args.linear_model == 'ridge':
+                reg = Ridge(args.alpha)
+            elif args.linear_model == 'lasso':
+                reg = Lasso(args.alpha)
             reg.fit(x, PC[j])
             score = reg.score(x, PC[j])
             print('\n\tLinear Regression', file = args.log_file)
@@ -392,6 +399,15 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
             stat = pearsonround(PC_s[0], PC_e[0])
             print("Correlation between PC 1 of S and E: ", stat, file = args.log_file)
 
+        for i in range(1, 4):
+            # get e top i PCs
+            pca = PCA(n_components = i)
+            e_transform = pca.fit_transform(e)
+            e_i = pca.inverse_transform(e_transform)
+            np.save(osp.join(args.odir, f'e_{i}.npy'), e_i)
+            plotContactMap(e_i, osp.join(args.odir, f'e_{i}.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = f"E rank {i}")
+
+
     if s_hat is not None:
         PC_s_hat = plot_top_PCs(s_hat, 's_hat', args.odir, args.log_file, count = 2, plot = True, verbose = True)
         stat = pearsonround(PC_y_diag[0], PC_s_hat[0])
@@ -410,6 +426,7 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
 
 def main():
     args = getArgs()
+    print(args)
 
     ## load data ##
     x, _, chi, e, s, y, ydiag = load_all(args.sample_folder, True, args.data_folder, args.log_file, experimental = args.experimental)
@@ -432,6 +449,9 @@ def main():
             pca = PCA(n_components = i)
             e_transform = pca.fit_transform(e)
             e_i = pca.inverse_transform(e_transform)
+            np.save(osp.join(args.odir, f'e_{i}.npy'), e_i)
+            plotContactMap(e_i, osp.join(args.odir, f'e_{i}.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = f"E rank {i}")
+
 
             # compare ehat to projection of e onto top PCs
             mse = np.round(mean_squared_error(e_i, e_hat), 3)
@@ -448,7 +468,7 @@ def main():
                 plot_title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{E}$', mse_e)
             else:
                 plot_title = '{} (MSE Loss = {})'.format(r'$\hat{E}$', mse_e)
-            plotContactMap(e_hat, osp.join(args.odir, 'e_hat.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = plot_title)
+            plotContactMap(e_hat, osp.join(args.odir, 'e_hat.png'), vmin = np.min(e), vmax = np.max(e), cmap = 'blue-red', title = plot_title)
 
             dif = e_hat - e
             v_max = np.max(e)
@@ -523,16 +543,26 @@ def test_project():
 
     x, psi, chi, e, s, y, ydiag = load_all(dir)
 
+    # visualize pca s projection
     # s_pca_proj, e_pca_proj = project_S_to_psi_basis(s_pca, psi)
     # plotContactMap(s_pca_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(replicate_dir, 's_pca_proj.png'))
     # plotContactMap(e_pca_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(replicate_dir, 'e_pca_proj.png'))
 
-    s_proj, e_proj = project_S_to_psi_basis(s, psi)
-    assert np.allclose(s, s_proj)
-    assert np.allclose(e, e_proj)
+    # confirm that projecting s returns s
+    # s_proj, e_proj = project_S_to_psi_basis(s, psi)
+    # assert np.allclose(s, s_proj)
+    # assert np.allclose(e, e_proj)
+
+    # what if you project s into noise basis
+    m, k = psi.shape
+    s_noise_proj, e_noise_proj = project_S_to_psi_basis(s, np.random.rand(m,k))
+    # plotContactMap(s_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(dir, 's_pca_proj.png'))
+    plotContactMap(e_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(dir, 'e_noise_proj.png'))
+    np.save(osp.join(dir, 'e_noise_proj.npy'), e_noise_proj)
+
 
 
 
 if __name__ == '__main__':
-    # main()
-    test_project()
+    main()
+    # test_project()

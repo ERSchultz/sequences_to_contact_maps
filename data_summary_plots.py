@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 from neural_net_utils.dataset_classes import make_dataset
 from neural_net_utils.utils import InteractionConverter, load_all
-from plotting_functions import plotContactMap
+from plotting_functions import plotContactMap, plot_seq_binary
 
 def chi_to_latex(chi, ofile):
     # TODO
@@ -390,31 +390,8 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True):
             else:
                 continue
 
-            m, k = x.shape
-            cmap = matplotlib.cm.get_cmap('tab10')
-            ind = np.arange(k) % cmap.N
-            colors = plt.cycler('color', cmap(ind))
+            plot_seq_binary(x, ofile = osp.join(path, 'x.png'))
 
-            # fig, ax = plt.subplots(k)
-            # for i, c in enumerate(colors):
-            #     # ax[i].plot(range(m), x[:, i], color = c['color'])
-            #     vals = np.argwhere(x[:, i] == 1)
-            #     ax[i].scatter(vals, np.ones_like(vals), color = c['color'])
-            #     ax[i].axes.get_yaxis().set_visible(False)
-            #     ax[i].axes.get_xaxis().set_visible(False)
-            plt.figure(figsize=(6, 3))
-            for i, c in enumerate(colors):
-                vals = np.argwhere(x[:, i] == 1)
-                plt.scatter(vals, np.ones_like(vals) * i* 0.2, label = i, color = c['color'], s = 3)
-
-            ax = plt.gca()
-            ax.set_xticks(range(0, 1040, 40))
-            ax.axes.set_xticklabels(labels = range(0, 1040, 40), rotation=-90)
-            ax.set_yticks([i*0.2 for i in range(4)])
-            ax.axes.set_yticklabels(labels = [f'mark {i}' for i in range(1,5)], rotation='horizontal', fontsize=16)
-            plt.tight_layout()
-            plt.savefig(osp.join(path, 'x.png'))
-            plt.close()
 
 
 if __name__ == '__main__':
@@ -422,7 +399,7 @@ if __name__ == '__main__':
     dataset = 'dataset_test'
     data_dir = osp.join(dir, dataset)
     sample = 91
-    basic_plots(data_dir, plot_y = False, plot_s = True, plot_x = False)
+    basic_plots(data_dir, plot_y = False, plot_s = False, plot_x = True)
     # plot_genomic_distance_statistics(dataset)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts('/home/eric/sequences_to_contact_maps/dataset_12_11_21')

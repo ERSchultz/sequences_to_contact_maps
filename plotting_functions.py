@@ -191,6 +191,41 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
     plt.close()
 #### End section ####
 
+def plot_seq_binary(seq, show = False, save = True, title = None, labels = None, x_axis = True, ofile = 'seq.png'):
+    '''Plotting function for *non* mutually exclusive binary particle types'''
+    m, k = seq.shape
+    cmap = matplotlib.cm.get_cmap('tab10')
+    ind = np.arange(k) % cmap.N
+    colors = plt.cycler('color', cmap(ind))
+
+    plt.figure(figsize=(6, 3))
+    for i, c in enumerate(colors):
+        x = np.argwhere(seq[:, i] == 1)
+        if labels is None:
+            label_i = i
+        else:
+            label_i = labels[i]
+        plt.scatter(x, np.ones_like(x) * i * 0.2, label = label_i, color = c['color'], s=3)
+
+    plt.legend()
+    ax = plt.gca()
+    # ax.axes.get_yaxis().set_visible(False)
+    if not x_axis:
+        ax.axes.get_xaxis().set_visible(False)
+    # else:
+    #     ax.set_xticks(range(0, 1040, 40))
+    #     ax.axes.set_xticklabels(labels = range(0, 1040, 40), rotation=-90)
+    ax.set_yticks([i*0.2 for i in range(k)])
+    ax.axes.set_yticklabels(labels = [f'mark {i}' for i in range(1,k+1)], rotation='horizontal', fontsize=16)
+    if title is not None:
+        plt.title(title, fontsize=16)
+    plt.tight_layout()
+    if save:
+        plt.savefig(ofile)
+    if show:
+        plt.show()
+    plt.close()
+
 def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False, cmap = None, x_ticks = None, y_ticks = None):
     """
     Plotting function for contact maps.

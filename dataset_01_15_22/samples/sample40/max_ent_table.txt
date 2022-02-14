@@ -1,0 +1,48 @@
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multicolumn{5}{|c|}{dataset\_01\_15\_22} \\ 
+\hline
+\multicolumn{5}{|c|}{sample 40} \\ 
+\hline
+Method & $\ell$ & SCC & $\Delta$ SCC & MSE-S \\ 
+\hline\hline
+Ground Truth-E & - & 0.751 & -0.074 & 0.0 \\ 
+GNN-70-E &  & 0.676 & 0.0 & 0.606 \\ 
+GNN-70-project-E &  & 0.659 & 0.017 & 0.368 \\ 
+\hline
+PCA & 1 & -0.006 & 0.683 & 1.994 \\ 
+\hline
+Random & 2 & 0.245 & 0.431 & nan \\ 
+\hline
+PCA-load_chi-project-E & 4 & 0.691 & -0.014 & 0.86 \\ 
+PCA &  & 0.676 & 0.001 & 1.547 \\ 
+PCA-load_chi-E &  & 0.686 & -0.009 & 1.547 \\ 
+\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\multicolumn{7}{|c|}{dataset\_01\_15\_22} \\ 
+\hline
+\multicolumn{7}{|c|}{sample 40} \\ 
+\hline
+Method & k & Pearson R & Avg Dist Pearson R & SCC & $\Delta$  SCC & MSE-S \\ 
+\hline\hline
+Ground Truth-E & - & 1.0 & 0.586 & 0.751 & -0.074 & 0.0 \\ 
+GNN-70-E &  & 1.0 & 0.527 & 0.676 & 0.0 & 0.606 \\ 
+GNN-70-project-E &  & 1.0 & 0.542 & 0.659 & 0.017 & 0.368 \\ 
+\hline
+PCA & 1 & 0.898 & -0.007 & -0.006 & 0.683 & 1.994 \\ 
+\hline
+Random & 2 & 0.999 & 0.21 & 0.245 & 0.431 & nan \\ 
+\hline
+PCA-load_chi-project-E & 4 & 1.0 & 0.525 & 0.691 & -0.014 & 0.86 \\ 
+PCA &  & 1.0 & 0.545 & 0.676 & 0.001 & 1.547 \\ 
+PCA-load_chi-E &  & 1.0 & 0.551 & 0.686 & -0.009 & 1.547 \\ 
+\hline
+\end{tabular}
+\end{center}
+

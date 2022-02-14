@@ -159,7 +159,6 @@ def splitDataset(dataset, opt):
         train_dataset = dataset[opt.testN+opt.valN:opt.testN+opt.valN+opt.trainN]
         return train_dataset, val_dataset, test_dataset
 
-
 ## data processing functions ##
 def x2xx(x, mode = 'mean'):
     # TODO better explanation here
@@ -258,6 +257,15 @@ def percentile_preprocessing(y, percentiles):
             result[j,i] = p
 
     return result
+
+def crop(input, size):
+    '''
+    Crop input np array to have ncols and nrows (size < 0 returns original input).
+    '''
+    if size > 0:
+        return input[:size, :size]
+    else:
+        return input
 
 ## plotting helper functions ##
 def un_normalize(y, minmax):
@@ -513,6 +521,7 @@ def load_E_S(sample_folder, psi = None, save = False):
             s = load_fn(s_file)
             break
     else:
+        s = None
         calc = True
 
     e_files = [osp.join(sample_folder, i) for i in ['e.npy', 'e_matrix.txt']]
@@ -521,7 +530,10 @@ def load_E_S(sample_folder, psi = None, save = False):
             e = load_fn(e_file)
             break
     else:
-        calc = True
+        if s is not None:
+            e = s_to_E(s)
+        else:
+            calc = True
 
     if calc:
         if psi is None:

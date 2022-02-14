@@ -1,0 +1,60 @@
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multicolumn{5}{|c|}{dataset\_11\_14\_21} \\ 
+\hline
+\multicolumn{5}{|c|}{sample 40} \\ 
+\hline
+Method & $\ell$ & SCC & $\Delta$ SCC & MSE-S \\ 
+\hline\hline
+Ground Truth-E & - & 0.635 & -0.138 & 0.0 \\ 
+GNN-50-E &  & 0.497 & 0.0 & 3.838 \\ 
+\hline
+PCA & 1 & 0.005 & 0.492 & 86.561 \\ 
+NMF &  & -0.01 & 0.507 & 83.695 \\ 
+\hline
+PCA & 2 & 0.0 & 0.497 & 86.554 \\ 
+\hline
+PCA & 4 & 0.096 & 0.401 & 43.186 \\ 
+K-means &  & 0.472 & 0.026 & 12.883 \\ 
+NMF &  & 0.317 & 0.18 & 37.208 \\ 
+\hline
+PCA & 6 & 0.125 & 0.372 & 46.289 \\ 
+K-means &  & 0.526 & -0.028 & 10.851 \\ 
+NMF &  & 0.345 & 0.152 & 36.212 \\ 
+\hline
+Ground Truth-x & 12 & 0.523 & -0.026 & 10.59 \\ 
+\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\multicolumn{7}{|c|}{dataset\_11\_14\_21} \\ 
+\hline
+\multicolumn{7}{|c|}{sample 40} \\ 
+\hline
+Method & k & Pearson R & Avg Dist Pearson R & SCC & $\Delta$  SCC & MSE-S \\ 
+\hline\hline
+Ground Truth-E & - & 1.0 & 0.579 & 0.635 & -0.138 & 0.0 \\ 
+GNN-50-E &  & 1.0 & 0.447 & 0.497 & 0.0 & 3.838 \\ 
+\hline
+PCA & 1 & 0.935 & 0.008 & 0.005 & 0.492 & 86.561 \\ 
+NMF &  & 0.934 & -0.014 & -0.01 & 0.507 & 83.695 \\ 
+\hline
+PCA & 2 & 0.935 & 0.001 & 0.0 & 0.497 & 86.554 \\ 
+\hline
+PCA & 4 & 1.0 & 0.079 & 0.096 & 0.401 & 43.186 \\ 
+K-means &  & 1.0 & 0.401 & 0.472 & 0.026 & 12.883 \\ 
+NMF &  & 1.0 & 0.192 & 0.317 & 0.18 & 37.208 \\ 
+\hline
+PCA & 6 & 0.999 & 0.073 & 0.125 & 0.372 & 46.289 \\ 
+K-means &  & 1.0 & 0.454 & 0.526 & -0.028 & 10.851 \\ 
+NMF &  & 1.0 & 0.227 & 0.345 & 0.152 & 36.212 \\ 
+\hline
+Ground Truth-x & 12 & 1.0 & 0.474 & 0.523 & -0.026 & 10.59 \\ 
+\hline
+\end{tabular}
+\end{center}
+
