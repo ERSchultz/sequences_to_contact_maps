@@ -239,7 +239,7 @@ def predict_chi_in_psi_basis(psi, s, psi_letters = None, args = None):
 
     return hat_chi
 
-def plot_top_PCs(inp, inp_type=None, odir = None, log_file = sys.stdout, count = 2, plot = False, verbose = False):
+def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2, plot = False, verbose = False):
     '''
     Plots top PCs of inp.
 
@@ -263,9 +263,10 @@ def plot_top_PCs(inp, inp_type=None, odir = None, log_file = sys.stdout, count =
         pca = pca.fit(inp)
 
     if verbose:
-        print(f'\n{inp_type.upper()}', file = log_file)
-        print(f"% of total variance explained for first 4 PCs: {np.round(pca.explained_variance_ratio_[0:4], 3)}\n\tSum of first 4: {np.sum(pca.explained_variance_ratio_[0:4])}", file = log_file)
-        print(f"Singular values for first 4 PCs: {np.round(pca.singular_values_[0:4], 3)}\n\tSum of all: {np.sum(pca.singular_values_)}", file = log_file)
+        if log_file is not None:
+            print(f'\n{inp_type.upper()}', file = log_file)
+            print(f"% of total variance explained for first 4 PCs: {np.round(pca.explained_variance_ratio_[0:4], 3)}\n\tSum of first 4: {np.sum(pca.explained_variance_ratio_[0:4])}", file = log_file)
+            print(f"Singular values for first 4 PCs: {np.round(pca.singular_values_[0:4], 3)}\n\tSum of all: {np.sum(pca.singular_values_)}", file = log_file)
 
     if plot:
         i = 0
@@ -349,20 +350,22 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
 
     if args.method is None:
         ## Plot projection of y in lower rank space
-        for i in range(2, 20, 3):
+        for i in [1,2,5,10,15,100]:
             # get y top i PCs
             pca = PCA(n_components = i)
             y_transform = pca.fit_transform(y/np.std(y, axis = 0))
             y_i = pca.inverse_transform(y_transform)
-            plotContactMap(y_i, osp.join(args.odir, f'y_rank_{i}.png'), vmax = np.mean(y), title = f'Y rank {i}')
+            plotContactMap(y_i, osp.join(args.odir, f'y_rank_{i}.png'), vmax = 'max', title = f'Y rank {i}')
 
         ## Plot projection of y_diag in lower rank space
-        for i in range(2, 20, 3):
+        for i in [1,2,5,10,15,100]:
             # get y_diag top i PCs
             pca = PCA(n_components = i)
             y_transform = pca.fit_transform(ydiag/np.std(ydiag, axis = 0))
             y_i = pca.inverse_transform(y_transform)
-            plotContactMap(y_i, osp.join(args.odir, f'y_diag_rank_{i}.png'), vmax = np.percentile(ydiag, 99), title = f'Y_diag rank {i}')
+            plotContactMap(y_i, osp.join(args.odir, f'y_diag_rank_{i}.png'), vmax = 'max', title = f'Y_diag rank {i}')
+            if i == 1:
+                np.save(osp.join(args.odir, f'y_diag_rank_{i}.npy'), y_i)
 
 
     if s is not None:
@@ -431,10 +434,15 @@ def main():
     ## load data ##
     x, _, chi, e, s, y, ydiag = load_all(args.sample_folder, True, args.data_folder, args.log_file, experimental = args.experimental)
 
+
+
     if args.method is not None:
         s_hat = load_method_S(args.root, args.sample_folder, args.sample, args.method, args.k, args.model_id)
         e_hat = s_to_E(s_hat)
     else:
+        p = y / ydiag
+        # p = p / np.max(p)
+        plotContactMap(p, osp.join(args.odir,'p.png'), vmax = 'mean')
         s_hat = None
         e_hat = None
 

@@ -1,8 +1,12 @@
 
 Y
-% of total variance explained for first 4 PCs:  [0.006 0.006 0.006 0.006]
-Singular values for first 4 PCs:  [82.547 80.747 78.79  76.37 ]
+% of total variance explained for first 4 PCs: [0.006 0.006 0.006 0.006]
+	Sum of first 4: 0.024198679393625966
+Singular values for first 4 PCs: [82.547 80.747 78.79  76.37 ]
+	Sum of all: 31920.214805271047
 
 Y_DIAG
-% of total variance explained for first 4 PCs:  [0.213 0.069 0.037 0.031]
-Singular values for first 4 PCs:  [472.286 268.352 196.92  181.625]
+% of total variance explained for first 4 PCs: [0.213 0.069 0.037 0.031]
+	Sum of first 4: 0.34983824249456585
+Singular values for first 4 PCs: [472.286 268.352 196.92  181.625]
+	Sum of all: 22029.328275382322
