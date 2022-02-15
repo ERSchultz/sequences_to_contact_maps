@@ -280,7 +280,9 @@ def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 
         y[ind] = 0
     plt.figure(figsize = (size_in, size_in))
     if vmin == 'min':
-        vmin = np.min(y)
+        vmin = np.percentile(y, 1)
+        # uses 91st percentile instead of absolute min
+        # enter numerical value mannually to override
     if vmax == 'mean':
         vmax = np.mean(y)
     elif vmax == 'max':

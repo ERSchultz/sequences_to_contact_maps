@@ -16,8 +16,18 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
 
 from plotting_functions import plotContactMap
-from neural_net_utils.utils import load_all, load_final_max_ent_S, s_to_E, LETTERS
+from neural_net_utils.utils import load_all, load_final_max_ent_S, s_to_E, LETTERS, diagonal_preprocessing
 from neural_net_utils.argparseSetup import str2int, str2bool, str2None
+from data_summary_plots import genomic_distance_statistics
+
+paths = ['/home/erschultz/TICG-chromatin',
+        '/home/eric/TICG-chromatin',
+        'C:/Users/Eric/OneDrive/Documents/Research/Coding/TICG-chromatin']
+for p in paths:
+    if osp.exists(p):
+        sys.path.insert(1, p)
+
+from scripts.r_pca import R_pca
 
 def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
@@ -270,11 +280,15 @@ def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2
 
     if plot:
         i = 0
-        tot_explained = 0
         while i < count:
             explained = pca.explained_variance_ratio_[i]
-            tot_explained += explained
-            plt.plot(pca.components_[i])
+            if np.mean(pca.components_[i][:100]) < 0:
+                PC = pca.components_[i] * -1
+                # PCs are sign invariant, so this doesn't matter mathematically
+                # goal is to help compare PCs visually by aligning them
+            else:
+                PC = pca.components_[i]
+            plt.plot(PC)
             plt.title("Component {}: {}% of variance".format(i+1, np.round(explained * 100, 3)))
             plt.savefig(osp.join(odir, '{}_PC_{}.png'.format(inp_type, i+1)))
             plt.close()
@@ -347,6 +361,39 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
     # calculate PCA
     PC_y = plot_top_PCs(y, 'y', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
     PC_y_diag = plot_top_PCs(ydiag, 'y_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+
+    y_log = np.log(y + 1e-8)
+    L_log_file = osp.join(args.odir, 'L_log.npy')
+    if osp.exists(L_log_file):
+        L_log = np.load(L_log_file)
+    else:
+        L_log, _ = R_pca(y_log).fit(max_iter=2000)
+        plotContactMap(L_log, osp.join(args.odir, 'L_log.png'), vmin = 'min', vmax = 'max', title = 'L_log')
+        np.save(osp.join(args.odir, 'L_log.npy'), L_log)
+    PC_L_log = plot_top_PCs(L_log, 'L_log', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+    stat = pearsonround(PC_L_log[0], PC_y[0])
+    print("Correlation between PC 1 of L_log and Y: ", stat, file = args.log_file)
+    stat = pearsonround(PC_L_log[1], PC_y[1])
+    print("Correlation between PC 2 of L_log and Y: ", stat, file = args.log_file)
+    stat = pearsonround(PC_L_log[0], PC_y_diag[0])
+    print("Correlation between PC 1 of L_log and Y_diag: ", stat, file = args.log_file)
+    stat = pearsonround(PC_L_log[1], PC_y_diag[1])
+    print("Correlation between PC 2 of L_log and Y_diag: ", stat, file = args.log_file)
+
+    meanDist = genomic_distance_statistics(L_log)
+    L_log_diag_file = osp.join(args.odir, 'L_log_diag.npy')
+    if osp.exists(L_log_diag_file):
+        L_log_diag = np.load(L_log_diag_file)
+    else:
+        L_log_diag = diagonal_preprocessing(L_log, meanDist)
+        plotContactMap(L_log_diag, osp.join(args.odir, 'L_log_diag.png'), vmin = 'min', vmax = 'max', title = 'L_log_diag')
+        np.save(osp.join(args.odir, 'L_log_diag.npy'), L_log_diag)
+    PC_L_log_diag = plot_top_PCs(L_log_diag, 'L_log_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+    stat = pearsonround(PC_L_log_diag[0], PC_y_diag[0])
+    print("Correlation between PC 1 of L_log_diag and Y_diag: ", stat, file = args.log_file)
+    stat = pearsonround(PC_L_log_diag[1], PC_y_diag[1])
+    print("Correlation between PC 2 of L_log_diag and Y_diag: ", stat, file = args.log_file)
+
 
     if args.method is None:
         ## Plot projection of y in lower rank space

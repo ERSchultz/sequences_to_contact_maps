@@ -5,43 +5,43 @@
 \hline
 \multicolumn{5}{|c|}{sample 40} \\ 
 \hline
-Method & $\ell$ & SCC & $\Delta$ SCC & MSE-S \\ 
+Method & $\ell$ & SCC & $\Delta$ SCC & RMSE-E \\ 
 \hline\hline
 Ground Truth-E & - & 0.751 & -0.074 & 0.0 \\ 
-GNN-70-E &  & 0.676 & 0.0 & 0.606 \\ 
-GNN-70-project-E &  & 0.659 & 0.017 & 0.368 \\ 
+GNN-70-E &  & 0.676 & 0.0 & 1.449 \\ 
+GNN-70-project-E &  & 0.659 & 0.017 & 1.114 \\ 
 \hline
-PCA & 1 & -0.006 & 0.683 & 1.994 \\ 
+PCA & 1 & -0.006 & 0.683 & 2.554 \\ 
 \hline
 Random & 2 & 0.245 & 0.431 & nan \\ 
 \hline
-PCA-load_chi-project-E & 4 & 0.691 & -0.014 & 0.86 \\ 
-PCA &  & 0.676 & 0.001 & 1.547 \\ 
-PCA-load_chi-E &  & 0.686 & -0.009 & 1.547 \\ 
+PCA-load_chi-project-E & 4 & 0.691 & -0.014 & 1.606 \\ 
+PCA &  & 0.676 & 0.001 & 2.286 \\ 
+PCA-load_chi-E &  & 0.686 & -0.009 & 2.286 \\ 
 \hline
 \end{tabular}
 \end{center}
 
 \begin{center}
-\begin{tabular}{|c|c|c|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
 \hline
-\multicolumn{7}{|c|}{dataset\_01\_15\_22} \\ 
+\multicolumn{8}{|c|}{dataset\_01\_15\_22} \\ 
 \hline
-\multicolumn{7}{|c|}{sample 40} \\ 
+\multicolumn{8}{|c|}{sample 40} \\ 
 \hline
-Method & k & Pearson R & Avg Dist Pearson R & SCC & $\Delta$  SCC & MSE-S \\ 
+Method & k & Pearson R & Avg Dist Pearson R & SCC & $\Delta$  SCC & RMSE-E & RMSE-Y \\ 
 \hline\hline
-Ground Truth-E & - & 1.0 & 0.586 & 0.751 & -0.074 & 0.0 \\ 
-GNN-70-E &  & 1.0 & 0.527 & 0.676 & 0.0 & 0.606 \\ 
-GNN-70-project-E &  & 1.0 & 0.542 & 0.659 & 0.017 & 0.368 \\ 
+Ground Truth-E & - & 1.0 & 0.586 & 0.751 & -0.074 & 0.0 & 9.754 \\ 
+GNN-70-E &  & 1.0 & 0.527 & 0.676 & 0.0 & 1.449 & 11.079 \\ 
+GNN-70-project-E &  & 1.0 & 0.542 & 0.659 & 0.017 & 1.114 & 11.542 \\ 
 \hline
-PCA & 1 & 0.898 & -0.007 & -0.006 & 0.683 & 1.994 \\ 
+PCA & 1 & 0.898 & -0.007 & -0.006 & 0.683 & 2.554 & 40.21 \\ 
 \hline
-Random & 2 & 0.999 & 0.21 & 0.245 & 0.431 & nan \\ 
+Random & 2 & 0.999 & 0.21 & 0.245 & 0.431 & nan & nan \\ 
 \hline
-PCA-load_chi-project-E & 4 & 1.0 & 0.525 & 0.691 & -0.014 & 0.86 \\ 
-PCA &  & 1.0 & 0.545 & 0.676 & 0.001 & 1.547 \\ 
-PCA-load_chi-E &  & 1.0 & 0.551 & 0.686 & -0.009 & 1.547 \\ 
+PCA-load_chi-project-E & 4 & 1.0 & 0.525 & 0.691 & -0.014 & 1.606 & 10.979 \\ 
+PCA &  & 1.0 & 0.545 & 0.676 & 0.001 & 2.286 & nan \\ 
+PCA-load_chi-E &  & 1.0 & 0.551 & 0.686 & -0.009 & 2.286 & 12.74 \\ 
 \hline
 \end{tabular}
 \end{center}

@@ -12,6 +12,8 @@ from torch.utils.data import DataLoader
 import torch_geometric.utils
 import torch_geometric.data
 
+from sklearn.decomposition import PCA
+
 import numpy as np
 import math
 from scipy.stats import spearmanr, pearsonr
@@ -20,7 +22,6 @@ import csv
 import json
 
 import networks
-from PCA import PCA
 from dataset_classes import *
 
 LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -202,9 +203,11 @@ def diagonal_preprocessing(y, meanDist):
     """
     Removes diagonal effect from contact map y.
 
+    meanDist is output of genomic_distance_statistics in data_summary_plots.py
+
     Inputs:
         y: contact map numpy array
-        mean: mean contact frequency where mean[dist] is the mean at a given distance
+        meanDist: mean contact frequency distribution where meanDist[distance] is the mean at a given distance
 
     Outputs:
         result: new contact map
@@ -621,7 +624,7 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None, s
 
     return x, psi, chi, e, s, y, ydiag
 
-def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None):
+def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None, throw_exception = True):
     if max_it_folder is None:
         # find final it
         max_it = -1
@@ -650,9 +653,12 @@ def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None):
             try:
                 chi[i,j] = config[f'chi{bead_i}{bead_j}']
             except KeyError:
-                print(f'config_file: {config_file}')
-                print(config)
-                raise
+                if throw_exception:
+                    print(f'config_file: {config_file}')
+                    print(config)
+                    raise
+                else:
+                    return None
 
     return chi
 
