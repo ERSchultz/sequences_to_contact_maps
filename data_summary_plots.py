@@ -361,7 +361,7 @@ def plot_genomic_distance_statistics(dataFolder):
             plot_genomic_distance_statistics_inner(dataFolder, diag, ofile, stat = stat)
 
 ### basic plots
-def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True):
+def basic_plots(dataFolder, plot_y = False, plot_s = True, plot_x = True):
     '''Generate basic plots of data in dataFolder.'''
     in_paths = sorted(make_dataset(dataFolder))
     for path in in_paths:
@@ -395,11 +395,11 @@ def basic_plots(dataFolder, plot_y = True, plot_s = True, plot_x = True):
 
 
 if __name__ == '__main__':
-    dir = '/home/eric'
-    dataset = 'dataset_test'
+    dir = '/home/eric/sequences_to_contact_maps'
+    dataset = 'dataset_11_14_21'
     data_dir = osp.join(dir, dataset)
     sample = 91
-    basic_plots(data_dir, plot_y = False, plot_s = False, plot_x = True)
+    basic_plots(data_dir, plot_y = False, plot_s = False, plot_x = False)
     # plot_genomic_distance_statistics(dataset)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts('/home/eric/sequences_to_contact_maps/dataset_12_11_21')

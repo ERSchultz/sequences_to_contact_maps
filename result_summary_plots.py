@@ -42,6 +42,7 @@ def getArgs():
     parser.add_argument('--k', type=str2int, help='k for method')
     parser.add_argument('--plot', type=str2bool, default=False, help='True to plot s_hat and s_dif')
     parser.add_argument('--experimental', type=str2bool, default=False, help='True if using experimental data (ground truth data missing)')
+    parser.add_argument('--overwrite', type=str2bool, default=False, help='True to overwrite existing results')
 
     args = parser.parse_args()
     args.data_folder = osp.join(args.root, args.dataset)
@@ -362,14 +363,31 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
     PC_y = plot_top_PCs(y, 'y', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
     PC_y_diag = plot_top_PCs(ydiag, 'y_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
 
-    y_log = np.log(y + 1e-8)
+    # robust PCA
     L_log_file = osp.join(args.odir, 'L_log.npy')
-    if osp.exists(L_log_file):
+    L_file = osp.join(args.odir, 'L.npy')
+    S_log_file = osp.join(args.odir, 'S_log.npy')
+    S_file = osp.join(args.odir, 'S.npy')
+    if osp.exists(L_log_file) and not args.overwrite:
         L_log = np.load(L_log_file)
+        L = np.load(L_file)
+        S_log = np.load(S_log_file)
+        S = np.load(S_file)
     else:
-        L_log, _ = R_pca(y_log).fit(max_iter=2000)
-        plotContactMap(L_log, osp.join(args.odir, 'L_log.png'), vmin = 'min', vmax = 'max', title = 'L_log')
-        np.save(osp.join(args.odir, 'L_log.npy'), L_log)
+        y_log = np.log(y + 1e-8)
+        L_log, S_log = R_pca(y_log).fit(max_iter=2000)
+        np.save(L_log_file, L_log)
+        np.save(S_log_file, S_log)
+        L = np.exp(L_log)
+        S = np.exp(S_log)
+        np.save(L_file, L)
+        np.save(S_file, S)
+    plotContactMap(L_log, osp.join(args.odir, 'L_log.png'), vmin = 'min', vmax = 'max', title = 'L_log')
+    plotContactMap(L, osp.join(args.odir, 'L.png'), vmin = 'min', vmax = 'max', title = 'L')
+    plotContactMap(S_log, osp.join(args.odir, 'S_log.png'), vmin = 'min', vmax = 'max', title = 'S_log')
+    plotContactMap(S, osp.join(args.odir, 'S.png'), vmin = 'min', vmax = 'max', title = 'S')
+
+
     PC_L_log = plot_top_PCs(L_log, 'L_log', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
     stat = pearsonround(PC_L_log[0], PC_y[0])
     print("Correlation between PC 1 of L_log and Y: ", stat, file = args.log_file)
@@ -380,22 +398,32 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
     stat = pearsonround(PC_L_log[1], PC_y_diag[1])
     print("Correlation between PC 2 of L_log and Y_diag: ", stat, file = args.log_file)
 
-    meanDist = genomic_distance_statistics(L_log)
-    L_log_diag_file = osp.join(args.odir, 'L_log_diag.npy')
-    if osp.exists(L_log_diag_file):
-        L_log_diag = np.load(L_log_diag_file)
-    else:
-        L_log_diag = diagonal_preprocessing(L_log, meanDist)
-        plotContactMap(L_log_diag, osp.join(args.odir, 'L_log_diag.png'), vmin = 'min', vmax = 'max', title = 'L_log_diag')
-        np.save(osp.join(args.odir, 'L_log_diag.npy'), L_log_diag)
-    PC_L_log_diag = plot_top_PCs(L_log_diag, 'L_log_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
-    stat = pearsonround(PC_L_log_diag[0], PC_y_diag[0])
-    print("Correlation between PC 1 of L_log_diag and Y_diag: ", stat, file = args.log_file)
-    stat = pearsonround(PC_L_log_diag[1], PC_y_diag[1])
-    print("Correlation between PC 2 of L_log_diag and Y_diag: ", stat, file = args.log_file)
+    # L_log_diag_file = osp.join(args.odir, 'L_log_diag.npy')
+    # if osp.exists(L_log_diag_file) and not args.overwrite:
+    #     L_log_diag = np.load(L_log_diag_file)
+    # else:
+    #     meanDist = genomic_distance_statistics(L_log)
+    #     L_log_diag = diagonal_preprocessing(L_log, meanDist)
+    #     plotContactMap(L_log_diag, osp.join(args.odir, 'L_log_diag.png'), vmin = 'min', vmax = 'max', title = 'L_log_diag')
+    #     np.save(L_log_diag_file, L_log_diag)
+    # PC_L_log_diag = plot_top_PCs(L_log_diag, 'L_log_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+    # stat = pearsonround(PC_L_log_diag[0], PC_y_diag[0])
+    # print("Correlation between PC 1 of L_log_diag and Y_diag: ", stat, file = args.log_file)
+    # stat = pearsonround(PC_L_log_diag[1], PC_y_diag[1])
+    # print("Correlation between PC 2 of L_log_diag and Y_diag: ", stat, file = args.log_file)
+
+    meanDist = genomic_distance_statistics(L)
+    L_diag = diagonal_preprocessing(L, meanDist)
+    plotContactMap(L_diag, osp.join(args.odir, 'L_diag.png'), vmin = 'min', vmax = 'max', title = 'L_diag')
+    np.save(osp.join(args.odir, 'L_diag.npy'), L_diag)
+    PC_L_diag = plot_top_PCs(L_diag, 'L_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+    stat = pearsonround(PC_L_diag[0], PC_y_diag[0])
+    print("Correlation between PC 1 of L_diag and Y_diag: ", stat, file = args.log_file)
+    stat = pearsonround(PC_L_diag[1], PC_y_diag[1])
+    print("Correlation between PC 2 of L_diag and Y_diag: ", stat, file = args.log_file)
 
 
-    if args.method is None:
+    if args.method is None and args.overwrite:
         ## Plot projection of y in lower rank space
         for i in [1,2,5,10,15,100]:
             # get y top i PCs
