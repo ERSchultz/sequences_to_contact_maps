@@ -17,6 +17,8 @@ linearModel='ols'
 experimental='false'
 overwrite='false'
 
+source activate activate python3.8_pytorch1.8.1_cuda10.2
+
 for sample in 40 1230 1718 1751 1761
 # 1 2 3 4 6 7 8 9 11 12 13 14 15 17 18 19 20 21 23 24
 do
