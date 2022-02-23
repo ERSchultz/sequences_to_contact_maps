@@ -1,18 +1,16 @@
-import os
-import os.path as osp
-import sys
-import shutil
-
-import torch
-import torch.nn.functional as F
-from torch.utils.data import DataLoader
-
-import torch_geometric.transforms
-
 import argparse
 import csv
+import os
+import os.path as osp
+import shutil
+import sys
 import time
+
 import numpy as np
+import torch
+import torch.nn.functional as F
+import torch_geometric.transforms
+
 
 def getBaseParser():
     '''Helper function that returns base parser'''

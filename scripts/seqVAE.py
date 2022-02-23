@@ -1,17 +1,17 @@
 '''deprecated'''
-import numpy as np
-import matplotlib.pyplot as plt
 import time
 
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
 import torch.nn as nn
-from torch.utils.data import Dataset, DataLoader
 import torch.optim as optim
 import torchvision.transforms as transforms
-
 from neural_net_utils.dataset_classes import *
 from neural_net_utils.networks import *
 from neural_net_utils.utils import getDataLoaders
+from torch.utils.data import DataLoader, Dataset
+
 
 def trainVAE(train_loader, model, optimizer, device, save_location,
         epochs, save_mod = 5, print_mod = 2):

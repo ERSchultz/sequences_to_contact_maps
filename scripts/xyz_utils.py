@@ -1,29 +1,15 @@
-import os.path as osp
-import sys
-abspath = osp.abspath(__file__)
-dname = osp.dirname(abspath)
-sys.path.insert(0, dname)
-
-import numpy as np
 import csv
 import json
-import math
-from collections import defaultdict
+import os.path as osp
 import time
-from numba import jit, njit
+from collections import defaultdict
 
 import matplotlib.pyplot as plt
+import numpy as np
 
-from utils import LETTERS, load_X_psi
+from .plotting_functions import plotContactMap
+from .utils import LETTERS
 
-paths = ['/home/erschultz/sequences_to_contact_maps',
-        '/home/eric/sequences_to_contact_maps',
-        'C:/Users/Eric/OneDrive/Documents/Research/Coding/sequences_to_contact_maps']
-for p in paths:
-    if osp.exists(p):
-        sys.path.insert(1, p)
-
-from plotting_functions import plotContactMap
 
 def xyzWrite(xyz, outfile, writestyle, comment = '', x = None):
     '''
@@ -190,54 +176,6 @@ def main():
 
     # print(np.array_equal(y, overall))
 
-def main2():
-    dir = '/home/eric/dataset_test/samples'
-
-    for sample in range(90, 97):
-        if sample != 92:
-            continue
-        sample_dir = osp.join(dir, f'sample{sample}')
-        xyz = xyzLoad(osp.join(sample_dir, 'data_out', 'output.xyz'), multiple_timesteps = True)
-        N, _, _ = xyz.shape
-        _, psi = load_X_psi(osp.join(dir, 'sample83'))
-        _, k = psi.shape
-        distances = np.zeros((N, k, k))
-        for i in range(N):
-            centroids = findLabelCentroid(xyz[i], psi)
-            distances_i = findDistanceBetweenCentroids(centroids)
-            distances[i, :, :] = distances_i
-
-        plt.hist(distances[:, 0, 2])
-        plt.savefig(osp.join(sample_dir, 'AC_dist.png'))
-        plt.close()
-
-        plt.scatter(distances[:, 0, 2], np.linspace(0, N, N))
-        plt.xlabel('A-B distance')
-        plt.ylabel('sample index')
-        plt.savefig(osp.join(sample_dir, 'AC_dist_vs_i.png'))
-        plt.close()
-
-        # y_grid = xyz_to_contact_grid(xyz, 28.7)
-        # np.savetxt(osp.join(sample_dir, 'y_grid.txt'), y_grid)
-        # plotContactMap(y_grid, osp.join(sample_dir, 'y_grid.png'), vmax = 'mean')
-        # y_dist = xyz_to_contact_distance(xyz, 28.7)
-        # plotContactMap(y_dist, osp.join(sample_dir, 'y_dist.png'), vmax = 'mean')
-
-        y_600_800 = xyz_to_contact_grid(xyz[600:800], 28.7)
-        np.savetxt(osp.join(sample_dir, 'y_600_800.txt'), y_600_800)
-        plotContactMap(y_600_800, osp.join(sample_dir, 'y_600_800.png'), vmax = 'mean')
-
-        y_100_300 = xyz_to_contact_grid(xyz[100:300], 28.7)
-        np.savetxt(osp.join(sample_dir, 'y_100_300.txt'), y_100_300)
-        plotContactMap(y_100_300, osp.join(sample_dir, 'y_100_300.png'), vmax = 'mean')
-
-        y_200 = xyz_to_contact_distance(xyz[200], 28.7)
-        np.savetxt(osp.join(sample_dir, 'y_200.txt'), y_200)
-        plotContactMap(y_200, osp.join(sample_dir, 'y_200.png'), vmax = 'max')
-
-        y_700 = xyz_to_contact_distance(xyz[700], 28.7)
-        np.savetxt(osp.join(sample_dir, 'y_700.txt'), y_700)
-        plotContactMap(y_700, osp.join(sample_dir, 'y_700.png'), vmax = 'max')
 
 
 
@@ -245,4 +183,4 @@ def main2():
 
 
 if __name__ == '__main__':
-    main2()
+    main()

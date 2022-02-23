@@ -1,23 +1,22 @@
+import locale
 import os
 import sys
 import time
-from shutil import rmtree
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
 
-import torch_geometric.data
-
-import locale
 locale.setlocale(locale.LC_ALL, '')
 
-from neural_net_utils.networks import *
-from neural_net_utils.utils import getDataLoaders, comparePCA, getModel, getDataset
-from plotting_functions import plotting_script, plotModelFromArrays
-from neural_net_utils.dataset_classes import *
-from neural_net_utils.argparseSetup import argparseSetup, save_args
-import cleanDirectories
+from .argparseSetup import argparseSetup, save_args
+from .cleanDirectories import cleanDirectories
+from .dataset_classes import *
+from .networks import *
+from .plotting_functions import plotModelFromArrays, plotting_script
+from .utils import comparePCA, getDataLoaders, getDataset, getModel
+
 
 def main():
     opt = argparseSetup()
@@ -80,7 +79,7 @@ def core_test_train(model, opt):
             print(p, '\ngrad: ', p.grad, '\n', file = opt.log_file)
         if opt.print_params:
             print(k, p.numel(), p.shape, file = opt.param_file)
-            print(p, '\ngrad: ', p.grad, '\n', file = opt.param_file)            
+            print(p, '\ngrad: ', p.grad, '\n', file = opt.param_file)
     print('\nTotal parameters: {}'.format(locale.format_string("%d", tot_pars, grouping = True)), file = opt.log_file)
     tot_time = (time.time() - t0) / 60 / 60 # hours
     print('Total training + validation time: {} hours'.format(np.round(tot_time), 2), file = opt.log_file)
@@ -96,7 +95,7 @@ def core_test_train(model, opt):
     opt.log_file.close()
     if opt.root is not None and opt.delete_root:
         # opt.root is set in utils.getDataset
-        cleanDirectories.main(root = opt.root)
+        cleanDirectories(root = opt.root)
 
 def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
     train_loss = []

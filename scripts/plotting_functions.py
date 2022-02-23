@@ -1,28 +1,27 @@
+import csv
+import math
 import os
 import os.path as osp
-import sys
 from shutil import rmtree
 
+import imageio
+import matplotlib.cm
+import matplotlib.colors
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
 import torch
 import torch.nn.functional as F
-
-import numpy as np
-import math
-import seaborn as sns
-import pandas as pd
 from scipy.stats import pearsonr
-import imageio
-
 from sklearn import metrics
 from sklearn.decomposition import PCA
 
-import matplotlib.pyplot as plt
-import matplotlib.colors
-import matplotlib.cm
-from mpl_toolkits.mplot3d import Axes3D
+from .argparseSetup import get_opt_header, getBaseParser
+from .InteractionConverter import InteractionConverter
+from .utils import calculateDistanceStratifiedCorrelation
+from .xyz_utils import findDistanceBetweenCentroids
 
-from neural_net_utils.utils import *
-from neural_net_utils.argparseSetup import *
 
 #### Functions for plotting loss ####
 def plotCombinedModels(modelType, ids):
@@ -1013,7 +1012,7 @@ def plot_config(xyz, L, x = None, ofile = None, show = True, title = None, legen
     plt.close()
 
 def plot_xyz_gif():
-    dir='/home/eric/dataset_test/samples/sample100'
+    dir='/home/eric/dataset_test/samples/sample21'
     file = osp.join(dir, 'data_out/output.xyz')
 
     m=200
@@ -1041,6 +1040,66 @@ def plot_xyz_gif():
     for filename in set(filenames):
         os.remove(filename)
 
+def plot_sc_contact_maps():
+    dir = '/home/eric/dataset_test/samples'
+
+    for sample in range(20, 25):
+        if sample != 21:
+            continue
+        sample_dir = osp.join(dir, f'sample{sample}')
+        xyz = xyzLoad(osp.join(sample_dir, 'data_out', 'output.xyz'), multiple_timesteps = True)
+        N, _, _ = xyz.shape
+        _, psi = load_X_psi(osp.join(dir, f'sample{sample}'))
+        _, k = psi.shape
+        distances = np.zeros((N, k, k))
+        for i in range(1, N, 10):
+            y = xyz_to_contact_grid(xyz[i], 28.7)
+            print(np.sum(y))
+            plotContactMap(y, osp.join(sample_dir, 'single_cell', f'y_{i}.png'), vmax = 'max')
+
+def plot_centroid_distance():
+    dir = '/home/eric/dataset_test/samples'
+
+    for sample in range(30, 36):
+        sample_dir = osp.join(dir, f'sample{sample}')
+        xyz = xyzLoad(osp.join(sample_dir, 'data_out', 'output.xyz'), multiple_timesteps = True)
+        N, _, _ = xyz.shape
+        _, psi = load_X_psi(osp.join(dir, f'sample{sample}'))
+        _, k = psi.shape
+        distances = np.zeros((N, k, k))
+        for i in range(N):
+            centroids = findLabelCentroid(xyz[i], psi)
+            distances_i = findDistanceBetweenCentroids(centroids)
+            distances[i, :, :] = distances_i
+
+        plt.hist(distances[:, 0, 2])
+        plt.savefig(osp.join(sample_dir, 'AC_dist.png'))
+        plt.close()
+
+        plt.scatter(distances[:, 0, 2], np.linspace(0, N, N))
+        plt.xlabel('A-B distance')
+        plt.ylabel('sample index')
+        plt.savefig(osp.join(sample_dir, 'AC_dist_vs_i.png'))
+        plt.close()
+
+
+        # y_600_800 = xyz_to_contact_grid(xyz[600:800], 28.7)
+        # np.savetxt(osp.join(sample_dir, 'y_600_800.txt'), y_600_800)
+        # plotContactMap(y_600_800, osp.join(sample_dir, 'y_600_800.png'), vmax = 'mean')
+        #
+        # y_100_300 = xyz_to_contact_grid(xyz[100:300], 28.7)
+        # np.savetxt(osp.join(sample_dir, 'y_100_300.txt'), y_100_300)
+        # plotContactMap(y_100_300, osp.join(sample_dir, 'y_100_300.png'), vmax = 'mean')
+        #
+        # y_200 = xyz_to_contact_distance(xyz[200], 28.7)
+        # np.savetxt(osp.join(sample_dir, 'y_200.txt'), y_200)
+        # plotContactMap(y_200, osp.join(sample_dir, 'y_200.png'), vmax = 'max')
+        #
+        # y_700 = xyz_to_contact_distance(xyz[700], 28.7)
+        # np.savetxt(osp.join(sample_dir, 'y_700.txt'), y_700)
+        # plotContactMap(y_700, osp.join(sample_dir, 'y_700.png'), vmax = 'max')
+
+### Primary scripts ###
 def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
     if model_type is None:
         model_types = ['Akita', 'DeepC', 'UNet', 'GNNAutoencoder', 'GNNAutoencoder2', 'ContactGNN', 'ContactGNNEnergy']
@@ -1162,7 +1221,8 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    plot_xyz_gif()
+    # plot_xyz_gif()
+    plot_sc_contact_maps()
     # contactPlots('dataset_04_18_21')
     # updateResultTables('ContactGNN', 'GNN', 'sequence')
     # updateResultTables('ContactGNNEnergy', 'GNN', 'energy')

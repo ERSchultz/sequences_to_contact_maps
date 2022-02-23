@@ -1,13 +1,12 @@
-import os
+import argparse
 import os.path as osp
 
-import numpy as np
-import networkx as nx
-import argparse
 import matplotlib.pyplot as plt
-
+import networkx as nx
+import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+
 
 def plotDegreeDist(graph, title = None, ofile = None, weighted = False):
     if weighted:

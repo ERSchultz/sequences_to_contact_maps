@@ -1,23 +1,22 @@
 import os
 import os.path as osp
 import sys
+import time
 from shutil import rmtree
 
-import torch
-from torch.utils.data import Dataset
-import torch_geometric.data
-import torch_geometric.transforms
-from torch_scatter import scatter_min, scatter_max, scatter_mean, scatter_std
-import torch_geometric.utils
-
-import matplotlib.pyplot as plt
-import matplotlib.colors
 import matplotlib.cm
-import seaborn as sns
-
-import time
+import matplotlib.colors
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as ss
+import seaborn as sns
+import torch
+import torch_geometric.data
+import torch_geometric.transforms
+import torch_geometric.utils
+from torch.utils.data import Dataset
+from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
+
 
 def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False, samples = None):
     """

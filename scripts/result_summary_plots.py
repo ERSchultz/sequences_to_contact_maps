@@ -1,40 +1,30 @@
+import argparse
 import os
 import os.path as osp
 import sys
 
-import numpy as np
 import matplotlib.pyplot as plt
-import argparse
-import math
-import json
-
-from scipy.stats import pearsonr
+import numpy as np
 import statsmodels.api as sm
-
-from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.decomposition import PCA
+from sklearn.linear_model import Lasso, LinearRegression, Ridge
 from sklearn.metrics import mean_squared_error
 
-from plotting_functions import plotContactMap
-from neural_net_utils.utils import load_all, load_final_max_ent_S, s_to_E, LETTERS, diagonal_preprocessing
-from neural_net_utils.argparseSetup import str2int, str2bool, str2None
-from data_summary_plots import genomic_distance_statistics
+from .argparseSetup import str2bool, str2int, str2None
+from .data_summary_plots import genomic_distance_statistics
+from .plotting_functions import plotContactMap
+from .r_pca import R_pca
+from .utils import (LETTERS, diagonal_preprocessing, load_all,
+                    load_final_max_ent_S, pearsonround, s_to_E)
 
-paths = ['/home/erschultz/TICG-chromatin',
-        '/home/eric/TICG-chromatin',
-        'C:/Users/Eric/OneDrive/Documents/Research/Coding/TICG-chromatin']
-for p in paths:
-    if osp.exists(p):
-        sys.path.insert(1, p)
-
-from scripts.r_pca import R_pca
 
 def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
     # parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
     parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
     parser.add_argument('--dataset', type=str, help='Location of input data')
-    parser.add_argument('--sample', type=int, default=40)
+    parser.add_argument('--sample', type=str2int, default=40)
+    parser.add_argument('--sample_folder', type=str2None, default=None, help='None to infer from --dataset and --sample')
     parser.add_argument('--method', type=str2None, default='GNN', help = 'parametrization method')
     parser.add_argument('--model_id', type=str2int, help='model ID if method == GNN')
     parser.add_argument('--linear_model', type=str, default='ols', help='type of linear model {ols, ridge, lasso}')
@@ -43,10 +33,13 @@ def getArgs():
     parser.add_argument('--plot', type=str2bool, default=False, help='True to plot s_hat and s_dif')
     parser.add_argument('--experimental', type=str2bool, default=False, help='True if using experimental data (ground truth data missing)')
     parser.add_argument('--overwrite', type=str2bool, default=False, help='True to overwrite existing results')
+    parser.add_argument('--robust', type=str2bool, default=False, help='True for robust PCA analysis')
 
     args = parser.parse_args()
     args.data_folder = osp.join(args.root, args.dataset)
-    args.sample_folder = osp.join(args.data_folder, 'samples/sample{}'.format(args.sample))
+    if args.sample_folder is None:
+        assert args.sample is not None
+        args.sample_folder = osp.join(args.data_folder, 'samples/sample{}'.format(args.sample))
 
     # determine what to plot
     if args.method is None:
@@ -299,11 +292,6 @@ def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2
 
     return pca.components_
 
-def pearsonround(x, y):
-    "Wrapper function that combines np.round and pearsonr."
-    stat, _ = pearsonr(x, y)
-    return np.round(stat, 2)
-
 def find_linear_combinations(x, args, PC, verbose = False):
     # deprecated function to calculate PC from linear regression on x
     m, k = x.shape
@@ -373,7 +361,7 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
         L = np.load(L_file)
         S_log = np.load(S_log_file)
         S = np.load(S_file)
-    else:
+    elif args.robust:
         y_log = np.log(y + 1e-8)
         L_log, S_log = R_pca(y_log).fit(max_iter=2000)
         np.save(L_log_file, L_log)
@@ -382,45 +370,47 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
         S = np.exp(S_log)
         np.save(L_file, L)
         np.save(S_file, S)
-    plotContactMap(L_log, osp.join(args.odir, 'L_log.png'), vmin = 'min', vmax = 'max', title = 'L_log')
-    plotContactMap(L, osp.join(args.odir, 'L.png'), vmin = 'min', vmax = 'max', title = 'L')
-    plotContactMap(S_log, osp.join(args.odir, 'S_log.png'), vmin = 'min', vmax = 'max', title = 'S_log')
-    plotContactMap(S, osp.join(args.odir, 'S.png'), vmin = 'min', vmax = 'max', title = 'S')
+
+    if args.robust:
+        plotContactMap(L_log, osp.join(args.odir, 'L_log.png'), vmin = 'min', vmax = 'max', title = 'L_log')
+        plotContactMap(L, osp.join(args.odir, 'L.png'), vmin = 'min', vmax = 'max', title = 'L')
+        plotContactMap(S_log, osp.join(args.odir, 'S_log.png'), vmin = 'min', vmax = 'max', title = 'S_log')
+        plotContactMap(S, osp.join(args.odir, 'S.png'), vmin = 'min', vmax = 'max', title = 'S')
 
 
-    PC_L_log = plot_top_PCs(L_log, 'L_log', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
-    stat = pearsonround(PC_L_log[0], PC_y[0])
-    print("Correlation between PC 1 of L_log and Y: ", stat, file = args.log_file)
-    stat = pearsonround(PC_L_log[1], PC_y[1])
-    print("Correlation between PC 2 of L_log and Y: ", stat, file = args.log_file)
-    stat = pearsonround(PC_L_log[0], PC_y_diag[0])
-    print("Correlation between PC 1 of L_log and Y_diag: ", stat, file = args.log_file)
-    stat = pearsonround(PC_L_log[1], PC_y_diag[1])
-    print("Correlation between PC 2 of L_log and Y_diag: ", stat, file = args.log_file)
+        PC_L_log = plot_top_PCs(L_log, 'L_log', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+        stat = pearsonround(PC_L_log[0], PC_y[0])
+        print("Correlation between PC 1 of L_log and Y: ", stat, file = args.log_file)
+        stat = pearsonround(PC_L_log[1], PC_y[1])
+        print("Correlation between PC 2 of L_log and Y: ", stat, file = args.log_file)
+        stat = pearsonround(PC_L_log[0], PC_y_diag[0])
+        print("Correlation between PC 1 of L_log and Y_diag: ", stat, file = args.log_file)
+        stat = pearsonround(PC_L_log[1], PC_y_diag[1])
+        print("Correlation between PC 2 of L_log and Y_diag: ", stat, file = args.log_file)
 
-    # L_log_diag_file = osp.join(args.odir, 'L_log_diag.npy')
-    # if osp.exists(L_log_diag_file) and not args.overwrite:
-    #     L_log_diag = np.load(L_log_diag_file)
-    # else:
-    #     meanDist = genomic_distance_statistics(L_log)
-    #     L_log_diag = diagonal_preprocessing(L_log, meanDist)
-    #     plotContactMap(L_log_diag, osp.join(args.odir, 'L_log_diag.png'), vmin = 'min', vmax = 'max', title = 'L_log_diag')
-    #     np.save(L_log_diag_file, L_log_diag)
-    # PC_L_log_diag = plot_top_PCs(L_log_diag, 'L_log_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
-    # stat = pearsonround(PC_L_log_diag[0], PC_y_diag[0])
-    # print("Correlation between PC 1 of L_log_diag and Y_diag: ", stat, file = args.log_file)
-    # stat = pearsonround(PC_L_log_diag[1], PC_y_diag[1])
-    # print("Correlation between PC 2 of L_log_diag and Y_diag: ", stat, file = args.log_file)
+        # L_log_diag_file = osp.join(args.odir, 'L_log_diag.npy')
+        # if osp.exists(L_log_diag_file) and not args.overwrite:
+        #     L_log_diag = np.load(L_log_diag_file)
+        # else:
+        #     meanDist = genomic_distance_statistics(L_log)
+        #     L_log_diag = diagonal_preprocessing(L_log, meanDist)
+        #     plotContactMap(L_log_diag, osp.join(args.odir, 'L_log_diag.png'), vmin = 'min', vmax = 'max', title = 'L_log_diag')
+        #     np.save(L_log_diag_file, L_log_diag)
+        # PC_L_log_diag = plot_top_PCs(L_log_diag, 'L_log_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+        # stat = pearsonround(PC_L_log_diag[0], PC_y_diag[0])
+        # print("Correlation between PC 1 of L_log_diag and Y_diag: ", stat, file = args.log_file)
+        # stat = pearsonround(PC_L_log_diag[1], PC_y_diag[1])
+        # print("Correlation between PC 2 of L_log_diag and Y_diag: ", stat, file = args.log_file)
 
-    meanDist = genomic_distance_statistics(L)
-    L_diag = diagonal_preprocessing(L, meanDist)
-    plotContactMap(L_diag, osp.join(args.odir, 'L_diag.png'), vmin = 'min', vmax = 'max', title = 'L_diag')
-    np.save(osp.join(args.odir, 'L_diag.npy'), L_diag)
-    PC_L_diag = plot_top_PCs(L_diag, 'L_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
-    stat = pearsonround(PC_L_diag[0], PC_y_diag[0])
-    print("Correlation between PC 1 of L_diag and Y_diag: ", stat, file = args.log_file)
-    stat = pearsonround(PC_L_diag[1], PC_y_diag[1])
-    print("Correlation between PC 2 of L_diag and Y_diag: ", stat, file = args.log_file)
+        meanDist = genomic_distance_statistics(L)
+        L_diag = diagonal_preprocessing(L, meanDist)
+        plotContactMap(L_diag, osp.join(args.odir, 'L_diag.png'), vmin = 'min', vmax = 'max', title = 'L_diag')
+        np.save(osp.join(args.odir, 'L_diag.npy'), L_diag)
+        PC_L_diag = plot_top_PCs(L_diag, 'L_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+        stat = pearsonround(PC_L_diag[0], PC_y_diag[0])
+        print("Correlation between PC 1 of L_diag and Y_diag: ", stat, file = args.log_file)
+        stat = pearsonround(PC_L_diag[1], PC_y_diag[1])
+        print("Correlation between PC 2 of L_diag and Y_diag: ", stat, file = args.log_file)
 
 
     if args.method is None and args.overwrite:
@@ -507,7 +497,8 @@ def main():
     print(args)
 
     ## load data ##
-    x, _, chi, e, s, y, ydiag = load_all(args.sample_folder, True, args.data_folder, args.log_file, experimental = args.experimental)
+    x, _, chi, e, s, y, ydiag = load_all(args.sample_folder, True, args.data_folder, args.log_file, experimental = args.experimental, throw_exception = False)
+    plotContactMap(e, ofile = osp.join(args.sample_folder, 'e.png'), title = 'E', vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
 
 

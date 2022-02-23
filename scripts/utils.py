@@ -1,28 +1,19 @@
+import math
 import os
 import os.path as osp
-import sys
-import shutil
-abspath = osp.abspath(__file__)
-dname = osp.dirname(abspath)
-sys.path.insert(0, dname)
 
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
+import torch_geometric
+from scipy.stats import pearsonr, spearmanr
+from sklearn.decomposition import PCA
 from torch.utils.data import DataLoader
 
-import torch_geometric.utils
-import torch_geometric.data
-
-from sklearn.decomposition import PCA
-
-import numpy as np
-import math
-from scipy.stats import spearmanr, pearsonr
-import matplotlib.pyplot as plt
-import csv
-import json
-
-import networks
-from dataset_classes import *
+from .dataset_classes import ContactsGraph, Sequences, SequencesContacts
+from .networks import (Akita, ContactGNN, ConvolutionalAutoencoder, DeepC,
+                       FullyConnectedAutoencoder, GNNAutoencoder, SimpleEpiNet,
+                       UNet)
 
 LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -30,14 +21,14 @@ LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 ## model functions ##
 def getModel(opt, verbose = True):
     if opt.model_type == 'SimpleEpiNet':
-        model = networks.SimpleEpiNet(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
+        model = SimpleEpiNet(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
     if opt.model_type == 'UNet':
-        model = networks.UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm, out_act = opt.out_act)
+        model = UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm, out_act = opt.out_act)
     elif opt.model_type == 'DeepC':
-        model = networks.DeepC(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
+        model = DeepC(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list, opt.training_norm, opt.act, opt.out_act)
     elif opt.model_type == 'Akita':
-        model = networks.Akita(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
+        model = Akita(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list_trunk,
                             opt.bottleneck,
                             opt.dilation_list_head,
@@ -47,14 +38,14 @@ def getModel(opt, verbose = True):
                             opt.training_norm,
                             opt.down_sampling)
     elif opt.model_type.startswith('GNNAutoencoder'):
-        model = networks.GNNAutoencoder(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.head_act, opt.out_act,
+        model = GNNAutoencoder(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.head_act, opt.out_act,
                                 opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list, opt.parameter_sharing)
     elif opt.model_type == 'SequenceFCAutoencoder':
-        model = networks.FullyConnectedAutoencoder(opt.m * opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, opt.parameter_sharing)
+        model = FullyConnectedAutoencoder(opt.m * opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, opt.parameter_sharing)
     elif opt.model_type == 'SequenceConvAutoencoder':
-        model = networks.ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, conv1d = True)
+        model = ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, conv1d = True)
     elif opt.model_type.startswith('ContactGNN'):
-        model = networks.ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list,
+        model = ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list,
         opt.act, opt.inner_act, opt.out_act,
         opt.encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
         opt.message_passing, opt.use_edge_weights,
@@ -468,6 +459,12 @@ def roundUpBy10(val):
         mult *= 10
     return mult
 
+def pearsonround(x, y):
+    "Wrapper function that combines np.round and pearsonr."
+    stat, _ = pearsonr(x, y)
+    return np.round(stat, 2)
+
+
 ## energy functions ##
 def calculate_E_S(x, chi):
     if x is None or chi is None:
@@ -496,278 +493,3 @@ def calculate_S(x, chi):
         print('chi', chi, chi.shape)
         raise
     return s
-
-## load data functions ##
-def load_X_psi(sample_folder, throw_exception = True):
-    x_file = osp.join(sample_folder, 'x.npy')
-    psi_file = osp.join(sample_folder, 'psi.npy')
-    if osp.exists(x_file):
-        x = np.load(x_file)
-        print(f'x loaded with shape {x.shape}')
-    elif throw_exception:
-        raise Exception(f'x not found for {sample_folder}')
-    else:
-        x = None
-
-    if osp.exists(psi_file):
-        psi = np.load(psi_file)
-        print(f'psi loaded with shape {psi.shape}')
-    else:
-        psi = x
-        print(f'Warning: assuming x == psi for {sample_folder}')
-
-    return x, psi
-
-def load_Y(sample_folder, throw_exception = True):
-    y_file = osp.join(osp.join(sample_folder, 'y.npy'))
-    if osp.exists(y_file):
-        y = np.load(y_file)
-    elif throw_exception:
-        raise Exception(f'y not found for {sample_folder}')
-    else:
-        y = None
-
-    ydiag_file = osp.join(sample_folder, 'y_diag.npy')
-    if osp.exists(ydiag_file):
-        ydiag = np.load(ydiag_file)
-    elif throw_exception:
-        raise Exception(f'ydiag not found for {sample_folder}')
-    else:
-        ydiag = None
-
-    return y, ydiag
-
-
-def load_E_S(sample_folder, psi = None, chi = None, save = False, throw_exception=True):
-    '''
-    Load E and S.
-
-    Inputs:
-        sample_folder: path to sample
-        psi: psi np array (None to load if needed)
-        chi: chi np array (None to load if needed)
-        save: True to save s.npy
-        throw_exception: True to throw exception if E and S missing
-    '''
-    calc = False # TRUE if need to calculate e or s matrix
-
-    load_fns = [np.load, np.loadtxt]
-    s_files = [osp.join(sample_folder, i) for i in ['s.npy', 's_matrix.txt']]
-    for s_file, load_fn in zip(s_files, load_fns):
-        if osp.exists(s_file):
-            s = load_fn(s_file)
-            break
-    else:
-        s = None
-        calc = True
-
-    e_files = [osp.join(sample_folder, i) for i in ['e.npy', 'e_matrix.txt']]
-    for e_file, load_fn in zip(e_files, load_fns):
-        if osp.exists(e_file):
-            e = load_fn(e_file)
-            break
-    else:
-        if s is not None:
-            e = s_to_E(s)
-        else:
-            calc = True
-
-    if calc:
-        if psi is None:
-            _, psi = load_X_psi(sample_folder, throw_exception=throw_exception)
-        if chi is None:
-            chi_path = osp.join(sample_folder, 'chis.npy')
-            if osp.exists(chi_path):
-                chi = np.load(chi_path)
-            else:
-                chi = None
-        e, s = calculate_E_S(psi, chi)
-
-        if save and s is not None:
-            np.save(osp.join(sample_folder, 's.npy'), s)
-
-    return e, s
-
-def load_all(sample_folder, plot = False, data_folder = None, log_file = None, save = False, experimental = False, throw_exception = True):
-    '''Loads x, psi, chi, e, s, y, ydiag.'''
-    y, ydiag = load_Y(sample_folder, throw_exception = throw_exception)
-
-    if experimental:
-        # everything else is None
-        return None, None, None, None, None, y, ydiag
-
-    x, psi = load_X_psi(sample_folder, throw_exception = throw_exception)
-    # x = x.astype(float)
-
-    if plot:
-        m, k = x.shape
-        for i in range(k):
-            plt.plot(x[:, i])
-            plt.title(r'$X$[:, {}]'.format(i))
-            plt.savefig(osp.join(sample_folder, 'x_{}'.format(i)))
-            plt.close()
-
-    if data_folder is not None:
-        chi_path1 = osp.join(data_folder, 'chis.npy')
-    chi_path2 = osp.join(sample_folder, 'chis.npy')
-    if data_folder is not None and osp.exists(chi_path1):
-        chi = np.load(chi_path1)
-    elif osp.exists(chi_path2):
-        chi = np.load(chi_path2)
-    else:
-        raise Exception('chi not found at {} or {}'.format(chi_path1, chi_path2))
-    chi = chi.astype(np.float64)
-    if log_file is not None:
-        print('Chi:\n', chi, file = log_file)
-
-    e, s = load_E_S(sample_folder, psi, save = save)
-
-    return x, psi, chi, e, s, y, ydiag
-
-def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None, throw_exception = True):
-    if max_it_folder is None:
-        # find final it
-        max_it = -1
-        for file in os.listdir(replicate_folder):
-            if osp.isdir(osp.join(replicate_folder, file)) and file.startswith('iteration'):
-                it = int(file[9:])
-                if it > max_it:
-                    max_it = it
-
-        if max_it < 0:
-            raise Exception(f'max it not found for {replicate_folder}')
-
-        max_it_folder = osp.join(replicate_folder, f'iteration{max_it}')
-
-    config_file = osp.join(max_it_folder, 'config.json')
-    if osp.exists(config_file):
-        with open(config_file, 'rb') as f:
-            config = json.load(f)
-    else:
-        return None
-
-    chi = np.zeros((k,k))
-    for i, bead_i in enumerate(LETTERS[:k]):
-        for j in range(i,k):
-            bead_j = LETTERS[j]
-            try:
-                chi[i,j] = config[f'chi{bead_i}{bead_j}']
-            except KeyError:
-                if throw_exception:
-                    print(f'config_file: {config_file}')
-                    print(config)
-                    raise
-                else:
-                    return None
-
-    return chi
-
-def load_final_max_ent_S(k, replicate_path, max_it_path = None):
-    s_path = osp.join(replicate_path, 'resources', 's.npy')
-    if osp.exists(s_path):
-        s = np.load(s_path)
-    else:
-        # load x
-        x_file = osp.join(replicate_path, 'resources', 'x.npy')
-        if osp.exists(x_file):
-            x = np.load(x_file)
-
-        # load chi
-        chi = load_final_max_ent_chi(k, replicate_path, max_it_path)
-
-        if chi is None:
-            raise Exception(f'chi not found: {replicate_path}, {max_it_path}')
-
-        # calculate s
-        s = calculate_S(x, chi)
-
-    return s
-
-## interaction converter ##
-class InteractionConverter():
-    """Class that allows conversion between epigenetic mark bit string pairs and integer type id"""
-    def __init__(self, k, chi = None):
-        self.k = k
-        self.chi = chi
-        self.allStrings = self.generateAllBinaryStrings()
-        self.comb2TypeDict = {}
-        self.type2CombDict = {}
-
-        curr_type = 0
-        n = len(self.allStrings)
-        for i in range(n):
-            xi = self.allStrings[i]
-            for j in range(n):
-                xj = self.allStrings[j]
-                comb = frozenset({tuple(xi), tuple(xj)})
-                if comb not in self.comb2TypeDict.keys():
-                    self.comb2TypeDict[comb] = curr_type
-                    self.type2CombDict[curr_type] = comb
-                    curr_type += 1
-
-        self.types = np.arange(0, curr_type, 1)
-
-        if chi is not None:
-            self.E, self.S = calculate_E_S(self.allStrings, self.chi)
-        else:
-            self.S = None
-            self.E = None
-
-    def setChi(self, chi):
-        self.chi = chi
-
-    def getE(self):
-        self.E, self.S = calculate_E_S(self.allStrings, self.chi)
-        return self.E
-
-    def getS(self):
-        self.E, self.S = calculate_E_S(self.allStrings, self.chi)
-        return self.S
-
-    def comb2Type(self, comb):
-        # input comb must be a frozenset
-        return self.comb2TypeDict[comb]
-
-    def type2Comb(self, type):
-        # input type must be an integer
-        return self.type2CombDict[type]
-
-    def comb2str(self, comb):
-        combList = sorted(list(comb))
-        if len(combList) == 2:
-            return '{} - {}'.format(combList[0], combList[1])
-        else:
-            return '{} - {}'.format(combList[0], combList[0])
-
-    def fillArrayWithAllBinaryStrings(self, n, arr, temp_arr, i, row = 0):
-        # https://www.geeksforgeeks.org/generate-all-the-binary-strings-of-n-bits/
-        if i == n:
-            arr.append(temp_arr.copy())
-            row += 1
-            return row
-
-        # First assign "1" at ith position
-        # and try for all other permutations
-        # for remaining positions
-        temp_arr[i] = 1
-        self.fillArrayWithAllBinaryStrings(n, arr, temp_arr, i + 1, row)
-
-        # And then assign "0" at ith position
-        # and try for all other permutations
-        # for remaining positions
-        temp_arr[i] = 0
-        self.fillArrayWithAllBinaryStrings(n, arr, temp_arr, i + 1, row)
-
-    def generateAllBinaryStrings(self):
-        arr = []
-        temp_arr = [None]*self.k
-        self.fillArrayWithAllBinaryStrings(self.k, arr, temp_arr, 0)
-        np_arr = np.array(arr).astype(np.int8)
-        return np_arr
-
-def main():
-    aggregate_peaks('chip_seq_data/ENCFF101KOJ.bed')
-    # plotPerClassAccuracy(None, None, 5)
-
-if __name__ == '__main__':
-    main()

@@ -1,10 +1,11 @@
+import argparse
 import os.path as osp
 from shutil import rmtree
 
-from neural_net_utils.argparseSetup import str2bool
-import argparse
+from .argparseSetup import str2bool
 
-def main(data_folder = 'dataset_04_18_21', root_name = None, root = None):
+
+def cleanDirectories(data_folder = 'dataset_04_18_21', root_name = None, root = None):
     parser = argparse.ArgumentParser(description='Simple parser')
     parser.add_argument('--data_folder', type=str, default=data_folder, help='Location of data')
     parser.add_argument('--root_name', type=str, default=str(root_name), help='name of file graph data was saved to')
@@ -27,4 +28,4 @@ def main(data_folder = 'dataset_04_18_21', root_name = None, root = None):
 
 
 if __name__ == '__main__':
-    main()
+    cleanDirectories()

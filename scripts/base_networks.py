@@ -1,8 +1,9 @@
+import time
+
+import numpy as np
 import torch
 import torch.nn as nn
-import math
-import numpy as np
-import time
+
 
 def actToModule(act, none_mode = False, in_place = True):
     '''
@@ -326,7 +327,7 @@ class AverageTo2d(nn.Module):
         self.concat_d = concat_d
         self.mode = mode
         if concat_d:
-            get_positional_encoding(self, n)
+            self.get_positional_encoding(n)
 
     def get_positional_encoding(self, n):
         assert n is not None

@@ -1,20 +1,16 @@
 import os
 import os.path as osp
 import sys
-abspath = osp.abspath(__file__)
-dname = osp.dirname(abspath)
-sys.path.insert(0, dname)
-
 import time
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch_geometric.nn as gnn
-
-from base_networks import *
-from argparseSetup import getBaseParser, finalizeOpt
 import utils
+
+from .argparseSetup import finalizeOpt, getBaseParser
+from .base_networks import *
 
 
 class UNet(nn.Module):

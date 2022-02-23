@@ -1,15 +1,17 @@
+import argparse
+import multiprocessing
 import os
 import os.path as osp
-
-import multiprocessing
-import numpy as np
 import time
-import argparse
 
-from neural_net_utils.utils import getDataLoaders, x2xx, diagonal_preprocessing, percentile_preprocessing, getPercentiles
-from neural_net_utils.argparseSetup import str2bool, str2list
-from neural_net_utils.dataset_classes import Names, make_dataset
+import numpy as np
 from data_summary_plots import genomic_distance_statistics
+
+from .argparseSetup import str2bool, str2list
+from .dataset_classes import Names, make_dataset
+from .utils import (diagonal_preprocessing, getDataLoaders, getPercentiles,
+                    percentile_preprocessing, x2xx)
+
 
 def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')

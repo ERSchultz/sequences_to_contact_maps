@@ -1,24 +1,23 @@
+import csv
 import os
 import os.path as osp
 import sys
+import time
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
-import numpy as np
-import time
-import csv
 from scipy.io import savemat
 
-from neural_net_utils.base_networks import *
-from neural_net_utils.networks import *
-from neural_net_utils.utils import *
-from neural_net_utils.dataset_classes import *
-from neural_net_utils.argparseSetup import *
-from core_test_train import core_test_train
-from plotting_functions import *
-import cleanDirectories
+import .cleanDirectories
+from .argparseSetup import *
+from .base_networks import *
+from .core_test_train import core_test_train
+from .dataset_classes import *
+from .networks import *
+from .plotting_functions import *
+from .utils import *
 
 
 def test_num_workers():

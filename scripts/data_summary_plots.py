@@ -1,16 +1,16 @@
+import math
 import os.path as osp
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import math
 
-import matplotlib
-import matplotlib.pyplot as plt
+from .dataset_classes import make_dataset
+from .InteractionConverter import InteractionConverter
+from .load_utils import load_all
+from .plotting_functions import plot_seq_binary, plotContactMap
+
 # plt.rcParams["font.family"] = "Times New Roman"
-
-from neural_net_utils.dataset_classes import make_dataset
-from neural_net_utils.utils import InteractionConverter, load_all
-from plotting_functions import plotContactMap, plot_seq_binary
 
 def chi_to_latex(chi, ofile):
     # TODO
@@ -361,7 +361,7 @@ def plot_genomic_distance_statistics(dataFolder):
             plot_genomic_distance_statistics_inner(dataFolder, diag, ofile, stat = stat)
 
 ### basic plots
-def basic_plots(dataFolder, plot_y = False, plot_s = True, plot_x = True):
+def basic_plots(dataFolder, plot_y = False, plot_s = True, plot_x = True, plot_chi = True):
     '''Generate basic plots of data in dataFolder.'''
     in_paths = sorted(make_dataset(dataFolder))
     for path in in_paths:
@@ -371,7 +371,7 @@ def basic_plots(dataFolder, plot_y = False, plot_s = True, plot_x = True):
 
         if plot_y:
             plotContactMap(y, osp.join(path, 'y.png'), vmax = 'mean')
-            plotContactMap(y_diag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
+            plotContactMap(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
 
             y_prcnt_path = osp.join(path, 'y_prcnt.npy')
             if osp.exists(y_prcnt_path):
@@ -379,9 +379,12 @@ def basic_plots(dataFolder, plot_y = False, plot_s = True, plot_x = True):
                 plotContactMap(y_prcnt, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
         chi_to_latex(chi, ofile = osp.join(path, 'chis.tek'))
+        if plot_chi:
+            plotContactMap(chi, osp.join(path, 'chi.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
         if plot_s:
             plotContactMap(s, osp.join(path, 's.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
+            plotContactMap(e, osp.join(path, 'e.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
         if plot_x:
             x_path = osp.join(path, 'x.npy')
@@ -392,14 +395,12 @@ def basic_plots(dataFolder, plot_y = False, plot_s = True, plot_x = True):
 
             plot_seq_binary(x, ofile = osp.join(path, 'x.png'))
 
-
-
 if __name__ == '__main__':
     dir = '/home/eric/sequences_to_contact_maps'
     dataset = 'dataset_11_14_21'
     data_dir = osp.join(dir, dataset)
     sample = 91
-    basic_plots(data_dir, plot_y = False, plot_s = False, plot_x = False)
+    basic_plots(data_dir, plot_y = False, plot_s = True, plot_x = False)
     # plot_genomic_distance_statistics(dataset)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts('/home/eric/sequences_to_contact_maps/dataset_12_11_21')
