@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 
 
-def actToModule(act, none_mode = False, in_place = True):
+def act2module(act, none_mode = False, in_place = True):
     '''
     Converts input activation, act, to nn.Module activation.
 
@@ -67,14 +67,14 @@ class UnetBlock(nn.Module):
 
         conv1 = nn.Conv2d(input_size, inner_size, kernel_size, stride, padding, bias)
 
-        act1 = actToModule(activation1)
-        act2 = actToModule(activation2)
+        act1 = act2module(activation1)
+        act2 = act2module(activation2)
 
         if outermost:
             conv2 = nn.ConvTranspose2d(inner_size * 2, output_size, kernel_size, stride, padding)
             down = [conv1]
             if out_act is not None:
-                out_act = actToModule(out_act)
+                out_act = act2module(out_act)
                 up = [act2, conv2, out_act]
             else:
                 up = [act2, conv2]
@@ -122,7 +122,7 @@ class ResnetBlock(nn.Module):
         elif self.drop == 'drop':
             self.drop = nn.Dropout(dropout_p)
 
-        self.act = actToModule(activation)
+        self.act = act2module(activation)
 
     def forward(self, x):
         if self.norm is not None:
@@ -207,7 +207,7 @@ class ConvBlock(nn.Module):
             model2.append(nn.Sigmoid())
             self.model2 = nn.Sequential(*model2)
         else:
-            model.append(actToModule(activation))
+            model.append(act2module(activation))
 
         self.model = nn.Sequential(*model)
 
@@ -264,7 +264,7 @@ class DeconvBlock(nn.Module):
             model2.append(nn.Sigmoid())
             self.model2 = nn.Sequential(*model2)
         else:
-            model.append(actToModule(activation))
+            model.append(act2module(activation))
 
         self.model = nn.Sequential(*model)
 
@@ -287,7 +287,7 @@ class LinearBlock(nn.Module):
             model.append(nn.Dropout(dropout_p))
 
         if activation is not None:
-            model.append(actToModule(activation))
+            model.append(act2module(activation))
 
         self.model = nn.Sequential(*model)
 
@@ -370,7 +370,7 @@ class AverageTo2d(nn.Module):
                 x2 = torch.transpose(x1, 2, 3)
                 out = torch.cat((x1, x2), dim = 1)
             elif mode == 'outer':
-                # see testAverageTo2dOuter for evidence that this works
+                # see test_average_to_2d_outer for evidence that this works
                 x1 = torch.tile(x, (1, C, m))
                 x1 = torch.reshape(x1, (-1, C*C, m, m))
                 x2 = torch.transpose(x1, 2, 3)
@@ -398,7 +398,7 @@ class AverageTo2d(nn.Module):
         out = torch.cat(out_list, dim = 1)
         return out
 
-def testAverageTo2dOuter():
+def test_average_to_2d_outer():
     avg = AverageTo2d(mode = 'outer', concat_d = False, n = 10)
     verbose = True
     N = 1
@@ -445,4 +445,4 @@ def main():
 
 if __name__ == '__main__':
     # main()
-    testAverageTo2dOuter()
+    test_average_to_2d_outer()

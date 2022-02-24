@@ -2,6 +2,7 @@ import csv
 import math
 import os
 import os.path as osp
+import sys
 from shutil import rmtree
 
 import imageio
@@ -17,10 +18,12 @@ from scipy.stats import pearsonr
 from sklearn import metrics
 from sklearn.decomposition import PCA
 
-from .argparseSetup import get_opt_header, getBaseParser
+from .argparse_utils import get_base_parser, get_opt_header
 from .InteractionConverter import InteractionConverter
-from .utils import calculateDistanceStratifiedCorrelation
-from .xyz_utils import findDistanceBetweenCentroids
+from .neural_net_utils import get_data_loaders, load_saved_model
+from .utils import calc_dist_strat_corr, calc_per_class_acc, compare_PCA
+from .xyz_utils import (find_dist_between_centroids, find_label_centroid,
+                        xyz_load, xyz_write)
 
 
 #### Functions for plotting loss ####
@@ -29,7 +32,7 @@ def plotCombinedModels(modelType, ids):
 
     dirs = []
     opts = []
-    parser = getBaseParser()
+    parser = get_base_parser()
     for id in ids:
         id_path = osp.join(path, str(id))
         dirs.append(osp.join(id_path, 'model.pt'))
@@ -320,7 +323,7 @@ def plotPerClassAccuracy(val_dataloader, imagePath, model, opt, title = None):
         return
         # when training on percentile preprocessed data using MSE loss it is impossible to convert back to classes
 
-    acc_arr, freq_arr, acc_result = calculatePerClassAccuracy(val_dataloader, model, opt)
+    acc_arr, freq_arr, acc_result = calc_per_class_acc(val_dataloader, model, opt)
 
     N, C = acc_arr.shape
     width = 0.35
@@ -398,7 +401,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
             yhat = un_normalize(yhat, minmax)
         yhat = yhat.reshape((opt.m,opt.m))
 
-        overall_corr, corr_arr = calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson')
+        overall_corr, corr_arr = calc_dist_strat_corr(y, yhat, mode = 'pearson')
         avg = np.nanmean(corr_arr)
         if opt.verbose:
             print(overall_corr, corr_arr, avg)
@@ -742,6 +745,55 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
     print('Corresponding FPR = {} +- {} and TPR = {} +- {}'.format(fpr_mean_array[max_t], fpr_std_array[max_t],
                                                                     tpr_mean_array[max_t], tpr_std_array[max_t]), file = opt.log_file)
 
+def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2, plot = False, verbose = False):
+    '''
+    Plots top PCs of inp.
+
+    Inputs:
+        inp: np array containing input data
+        inp_type: str representing type of input data
+        odir: output directory to save plots to
+        log_file: output file to write results to
+        count: number of PCs to plot
+        plot: True to plot
+        verbose: True to print
+
+    Outputs:
+        pca.components_: all PCs of inp
+    '''
+
+    pca = PCA()
+    try:
+        pca = pca.fit(inp/np.std(inp, axis = 0))
+    except ValueError:
+        pca = pca.fit(inp)
+
+    if verbose:
+        if log_file is not None:
+            print(f'\n{inp_type.upper()}', file = log_file)
+            print(f"% of total variance explained for first 4 PCs: {np.round(pca.explained_variance_ratio_[0:4], 3)}\n\tSum of first 4: {np.sum(pca.explained_variance_ratio_[0:4])}", file = log_file)
+            print(f"Singular values for first 4 PCs: {np.round(pca.singular_values_[0:4], 3)}\n\tSum of all: {np.sum(pca.singular_values_)}", file = log_file)
+
+    if plot:
+        i = 0
+        while i < count:
+            explained = pca.explained_variance_ratio_[i]
+            if np.mean(pca.components_[i][:100]) < 0:
+                PC = pca.components_[i] * -1
+                # PCs are sign invariant, so this doesn't matter mathematically
+                # goal is to help compare PCs visually by aligning them
+            else:
+                PC = pca.components_[i]
+            plt.plot(PC)
+            plt.title("Component {}: {}% of variance".format(i+1, np.round(explained * 100, 3)))
+            plt.savefig(osp.join(odir, '{}_PC_{}.png'.format(inp_type, i+1)))
+            plt.close()
+            i += 1
+
+        plt.show()
+
+    return pca.components_
+
 #### Functions for plotting predicted particles ####
 def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1), use_latent = False):
     '''
@@ -1018,9 +1070,9 @@ def plot_xyz_gif():
     m=200
 
     x = np.load(osp.join(dir, 'x.npy'))[:m, :]
-    xyz = xyzLoad(file, multiple_timesteps=True)[:, :m, :]
+    xyz = xyz_load(file, multiple_timesteps=True)[:, :m, :]
     print(xyz.shape)
-    xyzWrite(xyz, osp.join(dir, 'data_out/output_x.xyz'), 'w', x = x)
+    xyz_write(xyz, osp.join(dir, 'data_out/output_x.xyz'), 'w', x = x)
 
     filenames = []
     for i in range(2, len(xyz)):
@@ -1041,35 +1093,44 @@ def plot_xyz_gif():
         os.remove(filename)
 
 def plot_sc_contact_maps():
-    dir = '/home/eric/dataset_test/samples'
+    dir='/home/eric/dataset_test/samples/sample82'
+    file = osp.join(dir, 'data_out/output.xyz')
 
-    for sample in range(20, 25):
-        if sample != 21:
-            continue
-        sample_dir = osp.join(dir, f'sample{sample}')
-        xyz = xyzLoad(osp.join(sample_dir, 'data_out', 'output.xyz'), multiple_timesteps = True)
-        N, _, _ = xyz.shape
-        _, psi = load_X_psi(osp.join(dir, f'sample{sample}'))
-        _, k = psi.shape
-        distances = np.zeros((N, k, k))
-        for i in range(1, N, 10):
-            y = xyz_to_contact_grid(xyz[i], 28.7)
-            print(np.sum(y))
-            plotContactMap(y, osp.join(sample_dir, 'single_cell', f'y_{i}.png'), vmax = 'max')
+    config_file = osp.join(dir, 'config.json')
+    with open(config_file, 'rb') as f:
+        config = json.load(f)
+        grid_size = int(config['grid_size'])
+
+
+    x = np.load(osp.join(dir, 'x.npy'))
+    y = np.load(osp.join(dir, 'y.npy'))
+    xyz = xyz_load(file, multiple_timesteps=True)
+    N, m, _ = xyz.shape
+    print(N)
+    overall = np.zeros((m,m))
+    for i in range(N):
+        contact_map = xyz_to_contact(xyz[i], grid_size)
+        plotContactMap(contact_map, osp.join(dir, 'sc_contact', f'{i}.png'), vmax = 'max')
+        overall += contact_map
+    plotContactMap(overall, osp.join(dir, 'sc_contact', 'overall.png'), vmax = 'max')
+    dif = overall - y
+    plotContactMap(dif, osp.join(dir, 'sc_contact', 'dif.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red')
+
+    print(np.array_equal(y, overall))
 
 def plot_centroid_distance():
     dir = '/home/eric/dataset_test/samples'
 
     for sample in range(30, 36):
         sample_dir = osp.join(dir, f'sample{sample}')
-        xyz = xyzLoad(osp.join(sample_dir, 'data_out', 'output.xyz'), multiple_timesteps = True)
+        xyz = xyz_load(osp.join(sample_dir, 'data_out', 'output.xyz'), multiple_timesteps = True)
         N, _, _ = xyz.shape
         _, psi = load_X_psi(osp.join(dir, f'sample{sample}'))
         _, k = psi.shape
         distances = np.zeros((N, k, k))
         for i in range(N):
-            centroids = findLabelCentroid(xyz[i], psi)
-            distances_i = findDistanceBetweenCentroids(centroids)
+            centroids = find_label_centroid(xyz[i], psi)
+            distances_i = find_dist_between_centroids(centroids)
             distances[i, :, :] = distances_i
 
         plt.hist(distances[:, 0, 2])
@@ -1124,7 +1185,7 @@ def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
 
         # get data
         model_path = osp.join('results', model_type)
-        parser = getBaseParser()
+        parser = get_base_parser()
         for id in range(1, 500):
             id_path = osp.join(model_path, str(id))
             if osp.isdir(id_path):
@@ -1172,13 +1233,13 @@ def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
 
 def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, dataset = None):
     if model is None:
-        model, train_loss_arr, val_loss_arr = loadSavedModel(opt, verbose = True)
+        model, train_loss_arr, val_loss_arr = load_saved_model(opt, verbose = True)
 
     opt.batch_size = 1 # batch size must be 1
     opt.shuffle = False # for reproducibility
     if dataset is None:
         dataset = getDataset(opt, True, True)
-    _, val_dataloader, _ = getDataLoaders(dataset, opt)
+    _, val_dataloader, _ = get_data_loaders(dataset, opt)
 
     imagePath = opt.ofile_folder
     print('#### Plotting Script ####', file = opt.log_file)
@@ -1187,7 +1248,7 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
 
     if opt.plot:
         if opt.output_mode == 'contact':
-            comparePCA(val_dataloader, imagePath, model, opt)
+            compare_PCA(val_dataloader, imagePath, model, opt)
             plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, opt)
             plotPerClassAccuracy(val_dataloader, imagePath, model, opt)
         elif opt.output_mode == 'sequence':

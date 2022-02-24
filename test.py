@@ -1,23 +1,18 @@
-import csv
 import os
 import os.path as osp
-import sys
 import time
 
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from scipy.io import savemat
-
-import .cleanDirectories
-from .argparseSetup import *
-from .base_networks import *
-from .core_test_train import core_test_train
-from .dataset_classes import *
-from .networks import *
-from .plotting_functions import *
-from .utils import *
+from core_test_train import core_test_train
+from utils.argparse_utils import finalize_opt, get_base_parser, str2list
+from utils.base_networks import AverageTo2d
+from utils.networks import get_model
+from utils.utils import (calculateDistanceStratifiedCorrelation,
+                         diagonal_preprocessing)
 
 
 def test_num_workers():
@@ -40,7 +35,7 @@ def test_num_workers():
             t0 = time.time()
             opt.batch_size = int(b)
             opt.num_workers = w
-            _, val_dataloader, _ = getDataLoaders(dataset, opt)
+            _, val_dataloader, _ = get_dataLoaders(dataset, opt)
             for x, y in val_dataloader:
                 x = x.to(opt.device)
                 y = y.to(opt.device)
@@ -69,7 +64,7 @@ def edit_argparse():
                             f.write("".join(lines))
 
 def debugModel(model_type):
-    parser = getBaseParser()
+    parser = get_base_parser()
     opt = parser.parse_args()
 
     # dataset
@@ -191,7 +186,7 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 2
+    opt.n_epochs = 3
     opt.lr = 1e-3
     opt.batch_size = 1
     opt.milestones = None
@@ -199,16 +194,16 @@ def debugModel(model_type):
 
     # other
     opt.plot = True
-    opt.plot_predictions = False
+    opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = False
     opt.gpus = 1
 
-    opt = finalizeOpt(opt, parser, True)
+    opt = finalize_opt(opt, parser, True)
 
     opt.model_type = model_type
 
-    model = getModel(opt)
+    model = get_model(opt)
 
     # opt.model_type = 'test'
     core_test_train(model, opt)
@@ -227,25 +222,6 @@ def test_argpartition(k):
     minz = np.min(z, axis = 1)
     print(miny)
     print(minz)
-
-def downsampling_test():
-    y = torch.tensor([[10,3,1,0],[3,10,4,2],[1,4,10,6], [0,2,6,10]], dtype = torch.float32)
-    print(y)
-    meanDist = generateDistkStats(y)
-    y_diag = diagonal_preprocessing(y, meanDist)
-    print(y_diag)
-    print('---')
-    y = torch.reshape(y,(1,1,4,4))
-    y_down = F.avg_pool2d(y, 2)
-    y_down = torch.reshape(y_down,(2,2))
-    print(y_down)
-    meanDist = generateDistStats(y_down)
-    y_down_diag = diagonal_preprocessing(y_down, meanDist)
-    print(y_down_diag)
-    y_diag = torch.tensor(y_diag, dtype = torch.float32)
-    y_diag = torch.reshape(y_diag, (1,1,4,4))
-    y_diag_down = F.avg_pool2d(y_diag, 2)
-    print(y_diag_down)
 
 def plot_fixed():
     samples = [11, 12]
@@ -375,6 +351,7 @@ def main2():
         print(np.triu(y,1))
         plotContactMap(y, osp.join(dir, sample, 'y_max_off_diag.png'), vmax = max)
         # plotContactMap(s, osp.join(dir, sample, 's_-1_1.png'), vmin = -1, vmax = 1, cmap = 'blue-red')
+
 
 if __name__ == '__main__':
     # main2()

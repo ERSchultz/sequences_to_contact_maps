@@ -10,17 +10,16 @@ import torch.optim as optim
 
 locale.setlocale(locale.LC_ALL, '')
 
-from .argparseSetup import argparseSetup, save_args
-from .cleanDirectories import cleanDirectories
-from .dataset_classes import *
-from .networks import *
-from .plotting_functions import plotModelFromArrays, plotting_script
-from .utils import comparePCA, getDataLoaders, getDataset, getModel
+from utils.argparse_utils import argparse_setup, save_args
+from utils.clean_directories import clean_directories
+from utils.networks import get_model
+from utils.neural_net_utils import get_data_loaders, get_dataset
+from utils.plotting_utils import plotting_script
 
 
 def main():
-    opt = argparseSetup()
-    model = getModel(opt)
+    opt = argparse_setup()
+    model = get_model(opt)
 
     core_test_train(model, opt)
 
@@ -31,8 +30,8 @@ def core_test_train(model, opt):
     save_args(opt)
 
     # split dataset
-    dataset = getDataset(opt)
-    train_dataloader, val_dataloader, test_dataloader = getDataLoaders(dataset, opt)
+    dataset = get_dataset(opt)
+    train_dataloader, val_dataloader, test_dataloader = get_data_loaders(dataset, opt)
 
     if opt.pretrained:
         model_name = os.path.join(opt.ifile_folder, opt.ifile + '.pt')
@@ -94,8 +93,8 @@ def core_test_train(model, opt):
     # cleanup
     opt.log_file.close()
     if opt.root is not None and opt.delete_root:
-        # opt.root is set in utils.getDataset
-        cleanDirectories(root = opt.root)
+        # opt.root is set in utils.get_dataset
+        clean_directories(root = opt.root)
 
 def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
     train_loss = []

@@ -5,151 +5,10 @@ import os.path as osp
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-import torch_geometric
 from scipy.stats import pearsonr, spearmanr
 from sklearn.decomposition import PCA
-from torch.utils.data import DataLoader
-
-from .dataset_classes import ContactsGraph, Sequences, SequencesContacts
-from .networks import (Akita, ContactGNN, ConvolutionalAutoencoder, DeepC,
-                       FullyConnectedAutoencoder, GNNAutoencoder, SimpleEpiNet,
-                       UNet)
 
 LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
-
-## model functions ##
-def getModel(opt, verbose = True):
-    if opt.model_type == 'SimpleEpiNet':
-        model = SimpleEpiNet(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
-    if opt.model_type == 'UNet':
-        model = UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm, out_act = opt.out_act)
-    elif opt.model_type == 'DeepC':
-        model = DeepC(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
-                            opt.dilation_list, opt.training_norm, opt.act, opt.out_act)
-    elif opt.model_type == 'Akita':
-        model = Akita(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
-                            opt.dilation_list_trunk,
-                            opt.bottleneck,
-                            opt.dilation_list_head,
-                            opt.act,
-                            opt.out_act,
-                            opt.channels,
-                            opt.training_norm,
-                            opt.down_sampling)
-    elif opt.model_type.startswith('GNNAutoencoder'):
-        model = GNNAutoencoder(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.head_act, opt.out_act,
-                                opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list, opt.parameter_sharing)
-    elif opt.model_type == 'SequenceFCAutoencoder':
-        model = FullyConnectedAutoencoder(opt.m * opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, opt.parameter_sharing)
-    elif opt.model_type == 'SequenceConvAutoencoder':
-        model = ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, conv1d = True)
-    elif opt.model_type.startswith('ContactGNN'):
-        model = ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list,
-        opt.act, opt.inner_act, opt.out_act,
-        opt.encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
-        opt.message_passing, opt.use_edge_weights,
-        opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act, opt.use_bias,
-        opt.log_file, verbose = verbose)
-    else:
-        raise Exception('Invalid model type: {}'.format(opt.model_type))
-
-    return model
-
-def loadSavedModel(opt, verbose = True):
-    model = getModel(opt, verbose)
-    model.to(opt.device)
-    model_name = osp.join(opt.ofile_folder, 'model.pt')
-    if osp.exists(model_name):
-        save_dict = torch.load(model_name, map_location=torch.device('cpu'))
-        model.load_state_dict(save_dict['model_state_dict'])
-        train_loss_arr = save_dict['train_loss']
-        val_loss_arr = save_dict['val_loss']
-        if verbose:
-            print('Model is loaded: {}'.format(model_name), file = opt.log_file)
-    else:
-        raise Exception('Model does not exist: {}'.format(model_name))
-    model.eval()
-
-    return model, train_loss_arr, val_loss_arr
-
-## dataset functions ##
-def getDataset(opt, names = False, minmax = False, verbose = True, samples = None):
-    if opt.GNN_mode:
-        dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.m, opt.y_preprocessing, opt.y_log_transform,
-                                            opt.y_norm, opt.min_subtraction, opt.use_node_features, opt.use_edge_weights,
-                                            opt.sparsify_threshold, opt.sparsify_threshold_upper, opt.top_k,
-                                            opt.weighted_LDP, opt.split_neg_pos_edges, opt.degree, opt.weighted_degree,
-                                            opt.split_neg_pos_edges_for_feature_augmentation,
-                                            opt.transforms_processed, opt.pre_transforms_processed,
-                                            opt.output_mode, opt.crop, samples,
-                                            opt.log_file, verbose)
-        opt.root = dataset.root
-    elif opt.autoencoder_mode and opt.output_mode == 'sequence':
-        dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)
-        opt.root = None
-    else:
-        dataset = SequencesContacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
-                                            opt.y_norm, opt.x_reshape, opt.ydtype,
-                                            opt.y_reshape, opt.crop, opt.min_subtraction, names, minmax)
-        opt.root = None
-    return dataset
-
-def getDataLoaders(dataset, opt):
-    train_dataset, val_dataset, test_dataset = splitDataset(dataset, opt)
-    if opt.verbose:
-        print('lengths: ', len(train_dataset), len(val_dataset), len(test_dataset))
-
-    if opt.GNN_mode:
-        dataloader_fn = torch_geometric.loader.DataLoader
-    else:
-        dataloader_fn = DataLoader
-    train_dataloader = dataloader_fn(train_dataset, batch_size = opt.batch_size,
-                                    shuffle = opt.shuffle, num_workers = opt.num_workers)
-    if len(val_dataset) > 0:
-        val_dataloader = dataloader_fn(val_dataset, batch_size = opt.batch_size,
-                                        shuffle = opt.shuffle, num_workers = opt.num_workers)
-    else:
-        val_dataloader = None
-
-    if len(test_dataset) > 0:
-        test_dataloader = dataloader_fn(test_dataset, batch_size = opt.batch_size,
-                                        shuffle = opt.shuffle, num_workers = opt.num_workers)
-    else:
-        test_dataloader = None
-
-    return train_dataloader, val_dataloader, test_dataloader
-
-def splitDataset(dataset, opt):
-    """Splits input dataset into proportions specified by split."""
-    opt.N = len(dataset)
-    if opt.split_percents is not None:
-        assert sum(opt.split_percents) - 1 < 1e-5, "split doesn't sum to 1: {}".format(opt.split_percents)
-        opt.testN = math.floor(opt.N * opt.split_percents[2])
-        opt.valN = math.floor(opt.N * opt.split_percents[1])
-        opt.trainN = opt.N - opt.testN - opt.valN
-    else:
-        assert opt.split_counts is not None
-        assert opt.split_counts.count(-1) < 2, "can be at most 1 entry set to -1"
-
-        opt.trainN, opt.valN, opt.testN = opt.split_counts
-        if opt.trainN == -1:
-            opt.trainN = opt.N - opt.testN - opt.valN
-        elif opt.valN == -1:
-            opt.valN = opt.N - opt.trainN - opt.testN
-        elif opt.teN == -1:
-            opt.testN = opt.N - opt.trainN - opt.valN
-
-    if opt.verbose:
-        print(opt.trainN, opt.valN, opt.testN)
-
-    if opt.random_split:
-        return torch.utils.data.random_split(dataset, [opt.trainN, opt.valN, opt.testN], torch.Generator().manual_seed(opt.seed))
-    else:
-        test_dataset = dataset[:opt.testN]
-        val_dataset = dataset[opt.testN:opt.testN+opt.valN]
-        train_dataset = dataset[opt.testN+opt.valN:opt.testN+opt.valN+opt.trainN]
-        return train_dataset, val_dataset, test_dataset
 
 ## data processing functions ##
 def x2xx(x, mode = 'mean'):
@@ -261,13 +120,41 @@ def crop(input, size):
     else:
         return input
 
+def genomic_distance_statistics(y, mode = 'freq', stat = 'mean'):
+    '''
+    Calculates statistics of contact frequency/probability as a function of genomic distance
+    (i.e. along a give diagonal)
+
+    Inputs:
+        mode: freq for frequencies, prob for probabilities
+        stat: mean to calculate mean, var for variance
+
+    Outputs:
+        result: numpy array where result[d] is the contact frequency/probability stat at distance d
+    '''
+    if mode == 'prob':
+        y = y.copy() / np.max(y)
+
+    if stat == 'mean':
+        npStat = np.mean
+    elif stat == 'var':
+        npStat = np.var
+    n = len(y)
+    distances = range(0, n, 1)
+    result = np.zeros_like(distances).astype(float)
+    for d in distances:
+        result[d] = npStat(np.diagonal(y, offset = d))
+
+    return result
+
+
 ## plotting helper functions ##
 def un_normalize(y, minmax):
     ymin = minmax[0].item()
     ymax = minmax[1].item()
     return y.copy() * (ymax - ymin) + ymin
 
-def getPercentiles(arr, prcnt_arr, plot = True):
+def get_percentiles(arr, prcnt_arr, plot = True):
     """Helper function to get multiple percentiles at once."""
     result = np.zeros_like(prcnt_arr).astype(np.float64)
     if plot:
@@ -277,7 +164,7 @@ def getPercentiles(arr, prcnt_arr, plot = True):
         result[i] = np.percentile(arr, p)
     return result
 
-def calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson'):
+def calc_dist_strat_corr(y, yhat, mode = 'pearson'):
     """
     Helper function to calculate correlation stratified by distance.
 
@@ -312,7 +199,8 @@ def calculateDistanceStratifiedCorrelation(y, yhat, mode = 'pearson'):
 
     return overall_corr, corr_arr
 
-def calculatePerClassAccuracy(val_dataloader, model, opt):
+def calc_per_class_acc(val_dataloader, model, opt):
+    '''Calculate per class accuracy.'''
     print('Class Accuracy Results:', file = opt.log_file)
     assert opt.y_preprocessing in {'diag', 'prcnt'}, "invalid preprocessing: {}".format(opt.y_preprocessing)
     if opt.y_preprocessing != 'prcnt':
@@ -373,7 +261,7 @@ def calculatePerClassAccuracy(val_dataloader, model, opt):
     print('Loss: {} +- {}'.format(np.round(np.mean(loss_arr), 3), np.round( np.std(loss_arr), 3)), file = opt.log_file)
     return acc_c_arr, freq_c_arr, acc_result
 
-def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
+def compare_PCA(val_dataloader, imagePath, model, opt, count = 5):
     """Computes statistics of 1st PC of contact map"""
     acc_arr = np.zeros(opt.valN)
     rho_arr = np.zeros(opt.valN)
@@ -450,7 +338,8 @@ def comparePCA(val_dataloader, imagePath, model, opt, count = 5):
     with open(osp.join(imagePath, 'PCA_results.txt'), 'w') as f:
         f.write(results)
 
-def roundUpBy10(val):
+## other ##
+def round_up_by_10(val):
     """Rounds value up to the nearst multiple of 10."""
     assert val > 0, "val too small"
     assert val < 10**10, "val too big"
@@ -459,37 +348,7 @@ def roundUpBy10(val):
         mult *= 10
     return mult
 
-def pearsonround(x, y):
+def pearson_round(x, y):
     "Wrapper function that combines np.round and pearsonr."
     stat, _ = pearsonr(x, y)
     return np.round(stat, 2)
-
-
-## energy functions ##
-def calculate_E_S(x, chi):
-    if x is None or chi is None:
-        return None, None
-    s = calculate_S(x, chi)
-    e = s_to_E(s)
-    return e, s
-
-def calculate_E(x, chi):
-    s = calculate_S(x, chi)
-    e = s_to_E(s)
-    return e
-
-def s_to_E(s):
-    e = s + s.T - np.diag(np.diagonal(s).copy())
-    return e
-
-def calculate_S(x, chi):
-    # zero lower triangle (double check)
-    chi = np.triu(chi)
-
-    try:
-        s = x @ chi @ x.T
-    except ValueError as e:
-        print('x', x, x.shape)
-        print('chi', chi, chi.shape)
-        raise
-    return s

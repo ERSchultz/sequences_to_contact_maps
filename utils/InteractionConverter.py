@@ -1,7 +1,7 @@
 ## interaction converter ##
 import numpy as np
 
-from .utils import calculate_E_S
+from .energy_utils import calculate_E_S
 
 
 class InteractionConverter():

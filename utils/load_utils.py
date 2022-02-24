@@ -5,7 +5,8 @@ import os.path as osp
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .utils import LETTERS, calculate_E_S, calculate_S, s_to_E
+from .energy_utils import calculate_E_S, calculate_S, s_to_E
+from .utils import LETTERS
 
 
 ## load data functions ##

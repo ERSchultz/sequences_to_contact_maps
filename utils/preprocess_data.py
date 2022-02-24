@@ -5,12 +5,12 @@ import os.path as osp
 import time
 
 import numpy as np
-from data_summary_plots import genomic_distance_statistics
 
 from .argparseSetup import str2bool, str2list
 from .dataset_classes import Names, make_dataset
-from .utils import (diagonal_preprocessing, getDataLoaders, getPercentiles,
-                    percentile_preprocessing, x2xx)
+from .utils import (diagonal_preprocessing, genomic_distance_statistics,
+                    get_data_loaders, getPercentiles, percentile_preprocessing,
+                    x2xx)
 
 
 def getArgs():

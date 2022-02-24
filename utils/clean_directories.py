@@ -2,10 +2,10 @@ import argparse
 import os.path as osp
 from shutil import rmtree
 
-from .argparseSetup import str2bool
+from .argparse_utils import str2bool
 
 
-def cleanDirectories(data_folder = 'dataset_04_18_21', root_name = None, root = None):
+def clean_directories(data_folder = 'dataset_04_18_21', root_name = None, root = None):
     parser = argparse.ArgumentParser(description='Simple parser')
     parser.add_argument('--data_folder', type=str, default=data_folder, help='Location of data')
     parser.add_argument('--root_name', type=str, default=str(root_name), help='name of file graph data was saved to')

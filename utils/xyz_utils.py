@@ -7,11 +7,10 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .plotting_functions import plotContactMap
 from .utils import LETTERS
 
 
-def xyzWrite(xyz, outfile, writestyle, comment = '', x = None):
+def xyz_write(xyz, outfile, writestyle, comment = '', x = None):
     '''
     Write the coordinates of all particle to a file in .xyz format.
     Inputs:
@@ -22,7 +21,7 @@ def xyzWrite(xyz, outfile, writestyle, comment = '', x = None):
     if len(xyz.shape) == 3:
         T, N, _ = xyz.shape
         for i in range(T):
-            xyzWrite(xyz[i, :, :], outfile, 'a', comment = comment, x = x)
+            xyz_write(xyz[i, :, :], outfile, 'a', comment = comment, x = x)
     else:
         N = len(xyz)
         with open(outfile, writestyle) as f:
@@ -30,7 +29,7 @@ def xyzWrite(xyz, outfile, writestyle, comment = '', x = None):
             for i in range(N):
                 f.write(f'{i} {xyz[i,0]} {xyz[i,1]} {xyz[i,2]}\n')
 
-def xyzLoad(xyz_filepath, delim = '\t', multiple_timesteps=False):
+def xyz_load(xyz_filepath, delim = '\t', multiple_timesteps=False):
     xyz = []
     with open(xyz_filepath, 'r') as f:
         N = int(f.readline())
@@ -50,7 +49,7 @@ def xyzLoad(xyz_filepath, delim = '\t', multiple_timesteps=False):
         xyz = xyz[0]
     return xyz
 
-def findLabelCentroid(xyz, psi):
+def find_label_centroid(xyz, psi):
     '''
     Finds center of mass for each label in psi.
 
@@ -71,7 +70,7 @@ def findLabelCentroid(xyz, psi):
 
     return centroids
 
-def findDistanceBetweenCentroids(centroids):
+def find_dist_between_centroids(centroids):
     '''Computes distance between pairs of centroids (dict).'''
     k = len(centroids.keys())
     distances = np.zeros((k,k))
@@ -153,7 +152,7 @@ def main():
 
     x = np.load(osp.join(dir, 'x.npy'))
     y = np.load(osp.join(dir, 'y.npy'))
-    xyz = xyzLoad(file, multiple_timesteps=True)
+    xyz = xyz_load(file, multiple_timesteps=True)
     N, m, _ = xyz.shape
     N = 5
 

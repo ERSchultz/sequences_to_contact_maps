@@ -1,17 +1,53 @@
-import os
 import os.path as osp
 import sys
-import time
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch_geometric.nn as gnn
-import utils
 
-from .argparseSetup import finalizeOpt, getBaseParser
-from .base_networks import *
+from .argparse_utils import finalize_opt, get_base_parser
+from .base_networks import (AverageTo2d, ConvBlock, DeconvBlock, LinearBlock,
+                            Symmetrize2D, UnetBlock, act2module)
 
+
+## model functions ##
+def get_model(opt, verbose = True):
+    if opt.model_type == 'SimpleEpiNet':
+        model = SimpleEpiNet(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
+    if opt.model_type == 'UNet':
+        model = UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm, out_act = opt.out_act)
+    elif opt.model_type == 'DeepC':
+        model = DeepC(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
+                            opt.dilation_list, opt.training_norm, opt.act, opt.out_act)
+    elif opt.model_type == 'Akita':
+        model = Akita(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
+                            opt.dilation_list_trunk,
+                            opt.bottleneck,
+                            opt.dilation_list_head,
+                            opt.act,
+                            opt.out_act,
+                            opt.channels,
+                            opt.training_norm,
+                            opt.down_sampling)
+    elif opt.model_type.startswith('GNNAutoencoder'):
+        model = GNNAutoencoder(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.head_act, opt.out_act,
+                                opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list, opt.parameter_sharing)
+    elif opt.model_type == 'SequenceFCAutoencoder':
+        model = FullyConnectedAutoencoder(opt.m * opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, opt.parameter_sharing)
+    elif opt.model_type == 'SequenceConvAutoencoder':
+        model = ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, conv1d = True)
+    elif opt.model_type.startswith('ContactGNN'):
+        model = ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list,
+        opt.act, opt.inner_act, opt.out_act,
+        opt.encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
+        opt.message_passing, opt.use_edge_weights,
+        opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act, opt.use_bias,
+        opt.log_file, verbose = verbose)
+    else:
+        raise Exception('Invalid model type: {}'.format(opt.model_type))
+
+    return model
 
 class UNet(nn.Module):
     '''U Net adapted from https://github.com/phillipi/pix2pix.'''
@@ -262,8 +298,8 @@ class GNNAutoencoder(nn.Module):
         else:
             raise Exception("Unkown message_passing {}".format(message_passing))
 
-        self.act = actToModule(act)
-        self.out_act = actToModule(out_act)
+        self.act = act2module(act)
+        self.out_act = act2module(out_act)
 
         self.head_architecture = head_architecture
         if self.head_architecture == 'FCAutoencoder':
@@ -317,8 +353,8 @@ class FullyConnectedAutoencoder(nn.Module):
             parameter_sharing: True to share parameters between encoder and decoder
         '''
         super(FullyConnectedAutoencoder, self).__init__()
-        self.act = actToModule(act)
-        self.out_act = actToModule(out_act)
+        self.act = act2module(act)
+        self.out_act = act2module(out_act)
 
         self.encode_weights = nn.ParameterList()
         self.encode_biases = nn.ParameterList()
@@ -462,11 +498,11 @@ class ContactGNN(nn.Module):
         self.to2D = AverageTo2d(mode = None)
 
         # set up activations
-        self.act = actToModule(act)
-        self.inner_act = actToModule(inner_act)
-        self.out_act = actToModule(out_act)
+        self.act = act2module(act)
+        self.inner_act = act2module(inner_act)
+        self.out_act = act2module(out_act)
         if head_hidden_sizes_list is not None and len(head_hidden_sizes_list) > 1:
-            self.head_act = actToModule(head_act)
+            self.head_act = act2module(head_act)
             # only want this to show up as a parameter if actually needed
         else:
             self.head_act = None
@@ -591,13 +627,13 @@ class ContactGNN(nn.Module):
         if self.message_passing == 'identity':
             latent = graph.x
         elif self.message_passing == 'z':
-            parser = getBaseParser()
+            parser = get_base_parser()
             opt = parser.parse_args()
             opt.id = 159
             opt.model_type = 'ContactGNN'
-            opt = finalizeOpt(opt, parser, local = True)
+            opt = finalize_opt(opt, parser, local = True)
             print(opt)
-            z_model = utils.getModel(opt)
+            z_model = getModel(opt)
             if graph.x.is_cuda:
                 z_model.to(graph.x.get_device())
             model_name = osp.join(opt.ofile_folder, 'model.pt')

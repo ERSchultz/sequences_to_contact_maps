@@ -4,11 +4,11 @@ import os.path as osp
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
-from .dataset_classes import make_dataset
-from .InteractionConverter import InteractionConverter
-from .load_utils import load_all
-from .plotting_functions import plot_seq_binary, plotContactMap
+from utils.dataset_classes import make_dataset
+from utils.InteractionConverter import InteractionConverter
+from utils.load_utils import load_all
+from utils.plotting_utils import plot_seq_binary, plotContactMap
+from utils.utils import genomic_distance_statistics
 
 # plt.rcParams["font.family"] = "Times New Roman"
 
@@ -277,33 +277,6 @@ def freqSampleDistributionPlots(dataFolder, sample_id, m = 1024, k = None, split
             plotFrequenciesForSample(freq_arr, dataFolder, preprocessing, k, sampleid = sample_id, split = split)
 
 ### Plotting contact frequency as function of genomic distance
-def genomic_distance_statistics(y, mode = 'freq', stat = 'mean'):
-    '''
-    Calculates statistics of contact frequency/probability as a function of genomic distance
-    (i.e. along a give diagonal)
-
-    Inputs:
-        mode: freq for frequencies, prob for probabilities
-        stat: mean to calculate mean, var for variance
-
-    Outputs:
-        result: numpy array where result[d] is the contact frequency/probability stat at distance d
-    '''
-    if mode == 'prob':
-        y = y.copy() / np.max(y)
-
-    if stat == 'mean':
-        npStat = np.mean
-    elif stat == 'var':
-        npStat = np.var
-    n = len(y)
-    distances = range(0, n, 1)
-    result = np.zeros_like(distances).astype(float)
-    for d in distances:
-        result[d] = npStat(np.diagonal(y, offset = d))
-
-    return result
-
 def plot_genomic_distance_statistics_inner(datafolder, diag, ofile, mode = 'freq', stat = 'mean'):
     """
     Function to plot expected interaction frequency as a function of genomic distance for all samples in dataFolder.

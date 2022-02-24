@@ -12,7 +12,7 @@ import torch.nn.functional as F
 import torch_geometric.transforms
 
 
-def getBaseParser():
+def get_base_parser():
     '''Helper function that returns base parser'''
     parser = argparse.ArgumentParser(description='Base parser', fromfile_prefix_chars='@')
 
@@ -116,7 +116,7 @@ def getBaseParser():
 
     return parser
 
-def finalizeOpt(opt, parser, local = False):
+def finalize_opt(opt, parser, local = False):
     '''
     Helper function to processes command line arguments.
 
@@ -151,7 +151,7 @@ def finalizeOpt(opt, parser, local = False):
         txt_file = osp.join(model_type_folder, str(opt.id), 'argparse.txt')
         assert osp.exists(txt_file), "{} does not exist".format(txt_file)
         id_copy = opt.id
-        args = sys.argv.copy() # need to copy if running finalizeOpt multiple times
+        args = sys.argv.copy() # need to copy if running finalize_opt multiple times
         args.insert(1, '@{}'.format(txt_file))
         args.pop(0) # remove program name
         opt = parser.parse_args(args) # parse again
@@ -348,11 +348,11 @@ def copy_data_to_scratch(opt):
     delta_t = np.round(tf - t0, 0)
     print("Took {} seconds to move data to scratch".format(delta_t), file = opt.log_file)
 
-def argparseSetup(local = False):
+def argparse_setup(local = False):
     """Helper function set up parser."""
-    parser = getBaseParser()
+    parser = get_base_parser()
     opt = parser.parse_args()
-    return finalizeOpt(opt, parser, local)
+    return finalize_opt(opt, parser, local)
 
 def save_args(opt):
     with open(osp.join(opt.ofile_folder, 'argparse.txt'), 'w') as f:

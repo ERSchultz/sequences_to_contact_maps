@@ -9,13 +9,13 @@ import statsmodels.api as sm
 from sklearn.decomposition import PCA
 from sklearn.linear_model import Lasso, LinearRegression, Ridge
 from sklearn.metrics import mean_squared_error
-
-from .argparseSetup import str2bool, str2int, str2None
-from .data_summary_plots import genomic_distance_statistics
-from .plotting_functions import plotContactMap
-from .r_pca import R_pca
-from .utils import (LETTERS, diagonal_preprocessing, load_all,
-                    load_final_max_ent_S, pearsonround, s_to_E)
+from utils.argparse_utils import str2bool, str2int, str2None
+from utils.energy_utils import s_to_E
+from utils.load_utils import load_all, load_final_max_ent_S
+from utils.plotting_utils import plot_top_PCs, plotContactMap
+from utils.R_pca import R_pca
+from utils.utils import (LETTERS, diagonal_preprocessing,
+                         genomic_distance_statistics, pearson_round)
 
 
 def getArgs():
@@ -243,55 +243,6 @@ def predict_chi_in_psi_basis(psi, s, psi_letters = None, args = None):
 
     return hat_chi
 
-def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2, plot = False, verbose = False):
-    '''
-    Plots top PCs of inp.
-
-    Inputs:
-        inp: np array containing input data
-        inp_type: str representing type of input data
-        odir: output directory to save plots to
-        log_file: output file to write results to
-        count: number of PCs to plot
-        plot: True to plot
-        verbose: True to print
-
-    Outputs:
-        pca.components_: all PCs of inp
-    '''
-
-    pca = PCA()
-    try:
-        pca = pca.fit(inp/np.std(inp, axis = 0))
-    except ValueError:
-        pca = pca.fit(inp)
-
-    if verbose:
-        if log_file is not None:
-            print(f'\n{inp_type.upper()}', file = log_file)
-            print(f"% of total variance explained for first 4 PCs: {np.round(pca.explained_variance_ratio_[0:4], 3)}\n\tSum of first 4: {np.sum(pca.explained_variance_ratio_[0:4])}", file = log_file)
-            print(f"Singular values for first 4 PCs: {np.round(pca.singular_values_[0:4], 3)}\n\tSum of all: {np.sum(pca.singular_values_)}", file = log_file)
-
-    if plot:
-        i = 0
-        while i < count:
-            explained = pca.explained_variance_ratio_[i]
-            if np.mean(pca.components_[i][:100]) < 0:
-                PC = pca.components_[i] * -1
-                # PCs are sign invariant, so this doesn't matter mathematically
-                # goal is to help compare PCs visually by aligning them
-            else:
-                PC = pca.components_[i]
-            plt.plot(PC)
-            plt.title("Component {}: {}% of variance".format(i+1, np.round(explained * 100, 3)))
-            plt.savefig(osp.join(odir, '{}_PC_{}.png'.format(inp_type, i+1)))
-            plt.close()
-            i += 1
-
-        plt.show()
-
-    return pca.components_
-
 def find_linear_combinations(x, args, PC, verbose = False):
     # deprecated function to calculate PC from linear regression on x
     m, k = x.shape
@@ -300,7 +251,7 @@ def find_linear_combinations(x, args, PC, verbose = False):
 
         # correlations
         for i in range(k):
-            stat = pearsonround(x[:, i], PC[j])
+            stat = pearson_round(x[:, i], PC[j])
             print('\tCorrelation with particle type {}: {}'.format(i, stat), file = args.log_file)
 
         # linear regression
@@ -379,13 +330,13 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
 
 
         PC_L_log = plot_top_PCs(L_log, 'L_log', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
-        stat = pearsonround(PC_L_log[0], PC_y[0])
+        stat = pearson_round(PC_L_log[0], PC_y[0])
         print("Correlation between PC 1 of L_log and Y: ", stat, file = args.log_file)
-        stat = pearsonround(PC_L_log[1], PC_y[1])
+        stat = pearson_round(PC_L_log[1], PC_y[1])
         print("Correlation between PC 2 of L_log and Y: ", stat, file = args.log_file)
-        stat = pearsonround(PC_L_log[0], PC_y_diag[0])
+        stat = pearson_round(PC_L_log[0], PC_y_diag[0])
         print("Correlation between PC 1 of L_log and Y_diag: ", stat, file = args.log_file)
-        stat = pearsonround(PC_L_log[1], PC_y_diag[1])
+        stat = pearson_round(PC_L_log[1], PC_y_diag[1])
         print("Correlation between PC 2 of L_log and Y_diag: ", stat, file = args.log_file)
 
         # L_log_diag_file = osp.join(args.odir, 'L_log_diag.npy')
@@ -397,9 +348,9 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
         #     plotContactMap(L_log_diag, osp.join(args.odir, 'L_log_diag.png'), vmin = 'min', vmax = 'max', title = 'L_log_diag')
         #     np.save(L_log_diag_file, L_log_diag)
         # PC_L_log_diag = plot_top_PCs(L_log_diag, 'L_log_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
-        # stat = pearsonround(PC_L_log_diag[0], PC_y_diag[0])
+        # stat = pearson_round(PC_L_log_diag[0], PC_y_diag[0])
         # print("Correlation between PC 1 of L_log_diag and Y_diag: ", stat, file = args.log_file)
-        # stat = pearsonround(PC_L_log_diag[1], PC_y_diag[1])
+        # stat = pearson_round(PC_L_log_diag[1], PC_y_diag[1])
         # print("Correlation between PC 2 of L_log_diag and Y_diag: ", stat, file = args.log_file)
 
         meanDist = genomic_distance_statistics(L)
@@ -407,9 +358,9 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
         plotContactMap(L_diag, osp.join(args.odir, 'L_diag.png'), vmin = 'min', vmax = 'max', title = 'L_diag')
         np.save(osp.join(args.odir, 'L_diag.npy'), L_diag)
         PC_L_diag = plot_top_PCs(L_diag, 'L_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
-        stat = pearsonround(PC_L_diag[0], PC_y_diag[0])
+        stat = pearson_round(PC_L_diag[0], PC_y_diag[0])
         print("Correlation between PC 1 of L_diag and Y_diag: ", stat, file = args.log_file)
-        stat = pearsonround(PC_L_diag[1], PC_y_diag[1])
+        stat = pearson_round(PC_L_diag[1], PC_y_diag[1])
         print("Correlation between PC 2 of L_diag and Y_diag: ", stat, file = args.log_file)
 
 
@@ -437,34 +388,34 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
         PC_s = plot_top_PCs(s, 's', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
         print(f'Rank of S: {np.linalg.matrix_rank(s)}', file = args.log_file)
         if args.method is None:
-            stat = pearsonround(PC_y[0], PC_s[0])
+            stat = pearson_round(PC_y[0], PC_s[0])
             print("Correlation between PC 1 of y and S: ", stat, file = args.log_file)
-            stat = pearsonround(PC_y_diag[0], PC_s[0])
+            stat = pearson_round(PC_y_diag[0], PC_s[0])
             print("Correlation between PC 1 of y_diag and S: ", stat, file = args.log_file)
-            stat = pearsonround(PC_y_diag[1], PC_s[1])
+            stat = pearson_round(PC_y_diag[1], PC_s[1])
             print("Correlation between PC 2 of y_diag and S: ", stat, file = args.log_file)
 
             s_sym = (s + s.T) / 2
             PC_s_sym = plot_top_PCs(s_sym, 's_sym', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
             print(f'Rank: {np.linalg.matrix_rank(s)}', file = args.log_file)
-            stat = pearsonround(PC_y[0], PC_s_sym[0])
+            stat = pearson_round(PC_y[0], PC_s_sym[0])
             print("Correlation between PC 1 of y and S_sym: ", stat, file = args.log_file)
-            stat = pearsonround(PC_y_diag[0], PC_s[0])
+            stat = pearson_round(PC_y_diag[0], PC_s[0])
             print("Correlation between PC 1 of y_diag and S_sym: ", stat, file = args.log_file)
-            stat = pearsonround(PC_y_diag[1], PC_s[1])
+            stat = pearson_round(PC_y_diag[1], PC_s[1])
             print("Correlation between PC 2 of y_diag and S_sym: ", stat, file = args.log_file)
 
     if e is not None:
         PC_e = plot_top_PCs(e, 'e', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
         print(f'Rank of E: {np.linalg.matrix_rank(e)}', file = args.log_file)
         if args.method is None:
-            stat = pearsonround(PC_y[0], PC_e[0])
+            stat = pearson_round(PC_y[0], PC_e[0])
             print("Correlation between PC 1 of y and E: ", stat, file = args.log_file)
-            stat = pearsonround(PC_y_diag[0], PC_e[0])
+            stat = pearson_round(PC_y_diag[0], PC_e[0])
             print("Correlation between PC 1 of y_diag and E: ", stat, file = args.log_file)
-            stat = pearsonround(PC_y_diag[1], PC_e[1])
+            stat = pearson_round(PC_y_diag[1], PC_e[1])
             print("Correlation between PC 2 of y_diag and E: ", stat, file = args.log_file)
-            stat = pearsonround(PC_s[0], PC_e[0])
+            stat = pearson_round(PC_s[0], PC_e[0])
             print("Correlation between PC 1 of S and E: ", stat, file = args.log_file)
 
         for i in range(1, 4):
@@ -478,18 +429,18 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
 
     if s_hat is not None:
         PC_s_hat = plot_top_PCs(s_hat, 's_hat', args.odir, args.log_file, count = 2, plot = True, verbose = True)
-        stat = pearsonround(PC_y_diag[0], PC_s_hat[0])
+        stat = pearson_round(PC_y_diag[0], PC_s_hat[0])
         print("Correlation between PC 1 of y_diag and S_hat: ", stat, file = args.log_file)
         for zero_index, one_index in enumerate([1,2,3]):
-            stat = pearsonround(PC_s[zero_index], PC_s_hat[zero_index])
+            stat = pearson_round(PC_s[zero_index], PC_s_hat[zero_index])
             print(f"Correlation between PC {one_index} of S and S_hat: ", stat, file = args.log_file)
 
     if e_hat is not None:
         PC_e_hat = plot_top_PCs(e_hat, 'e_hat', args.odir, args.log_file, count = 2, plot = True, verbose = True)
-        stat = pearsonround(PC_y_diag[0], PC_e_hat[0])
+        stat = pearson_round(PC_y_diag[0], PC_e_hat[0])
         print("Correlation between PC 1 of y_diag and E: ", stat, file = args.log_file)
         for zero_index, one_index in enumerate([1,2,3]):
-            stat = pearsonround(PC_e[zero_index], PC_e_hat[zero_index])
+            stat = pearson_round(PC_e[zero_index], PC_e_hat[zero_index])
             print(f"Correlation between PC {one_index} of E and E_hat: ", stat, file = args.log_file)
 
 def main():
@@ -633,8 +584,6 @@ def test_project():
     # plotContactMap(s_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(dir, 's_pca_proj.png'))
     plotContactMap(e_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(dir, 'e_noise_proj.png'))
     np.save(osp.join(dir, 'e_noise_proj.npy'), e_noise_proj)
-
-
 
 
 if __name__ == '__main__':

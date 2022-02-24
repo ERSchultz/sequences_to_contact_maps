@@ -7,10 +7,11 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torchvision.transforms as transforms
-from neural_net_utils.dataset_classes import *
-from neural_net_utils.networks import *
-from neural_net_utils.utils import getDataLoaders
 from torch.utils.data import DataLoader, Dataset
+
+from .dataset_classes import *
+from .networks import *
+from .neural_net.utils import get_data_loaders
 
 
 def trainVAE(train_loader, model, optimizer, device, save_location,
