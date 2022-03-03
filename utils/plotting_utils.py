@@ -1,33 +1,36 @@
 import csv
+import json
 import math
+import multiprocessing
 import os
 import os.path as osp
 import sys
-from shutil import rmtree
 
 import imageio
 import matplotlib.cm
 import matplotlib.colors
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import seaborn as sns
 import torch
-import torch.nn.functional as F
+from scipy.ndimage import gaussian_filter
 from scipy.stats import pearsonr
 from sklearn import metrics
 from sklearn.decomposition import PCA
+from sympy import solve, symbols
 
 from .argparse_utils import get_base_parser, get_opt_header
 from .InteractionConverter import InteractionConverter
+from .load_utils import load_sc_contacts, load_X_psi
 from .neural_net_utils import get_data_loaders, load_saved_model
-from .utils import calc_dist_strat_corr, calc_per_class_acc, compare_PCA
+from .utils import (calc_dist_strat_corr, calc_per_class_acc, compare_PCA,
+                    triu_to_full)
 from .xyz_utils import (find_dist_between_centroids, find_label_centroid,
-                        xyz_load, xyz_write)
+                        xyz_load, xyz_to_contact_grid, xyz_write)
 
 
 #### Functions for plotting loss ####
-def plotCombinedModels(modelType, ids):
+def plot_combined_models(modelType, ids):
     path = osp.join('results', modelType)
 
     dirs = []
@@ -193,7 +196,8 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
     plt.close()
 #### End section ####
 
-def plot_seq_binary(seq, show = False, save = True, title = None, labels = None, x_axis = True, ofile = 'seq.png'):
+def plot_seq_binary(seq, show = False, save = True, title = None, labels = None,
+                    x_axis = True, ofile = 'seq.png'):
     '''Plotting function for *non* mutually exclusive binary particle types'''
     m, k = seq.shape
     cmap = matplotlib.cm.get_cmap('tab10')
@@ -218,7 +222,8 @@ def plot_seq_binary(seq, show = False, save = True, title = None, labels = None,
     #     ax.set_xticks(range(0, 1040, 40))
     #     ax.axes.set_xticklabels(labels = range(0, 1040, 40), rotation=-90)
     ax.set_yticks([i*0.2 for i in range(k)])
-    ax.axes.set_yticklabels(labels = [f'mark {i}' for i in range(1,k+1)], rotation='horizontal', fontsize=16)
+    ax.axes.set_yticklabels(labels = [f'mark {i}' for i in range(1,k+1)],
+                            rotation='horizontal', fontsize=16)
     if title is not None:
         plt.title(title, fontsize=16)
     plt.tight_layout()
@@ -228,7 +233,9 @@ def plot_seq_binary(seq, show = False, save = True, title = None, labels = None,
         plt.show()
     plt.close()
 
-def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 6, minVal = None, maxVal = None, prcnt = False, cmap = None, x_ticks = None, y_ticks = None):
+def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1,
+                    size_in = 6, minVal = None, maxVal = None, prcnt = False,
+                    cmap = None, x_ticks = None, y_ticks = None):
     """
     Plotting function for contact maps.
 
@@ -281,16 +288,21 @@ def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1, size_in = 
         ind = y > maxVal
         y[ind] = 0
     plt.figure(figsize = (size_in, size_in))
+
+    # set min and max
     if vmin == 'min':
         vmin = np.percentile(y, 1)
-        # uses 91st percentile instead of absolute min
-        # enter numerical value mannually to override
+        # uses 1st percentile instead of absolute min
+    elif vmin == 'abs_min':
+        vmin = np.min(y)
     if vmax == 'mean':
         vmax = np.mean(y)
     elif vmax == 'max':
         vmax = np.percentile(y, 99)
         # uses 99th percentile instead of absolute max
-        # enter numerical value mannually to override
+    elif vmax == 'abs_max':
+        vmax = np.max(y)
+
     ax = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap)
     if x_ticks is None:
         pass
@@ -321,7 +333,8 @@ def plotPerClassAccuracy(val_dataloader, imagePath, model, opt, title = None):
     """Plots accuracy for each class in percentile normalized contact map."""
     if opt.y_preprocessing == 'prcnt' and opt.loss == 'mse':
         return
-        # when training on percentile preprocessed data using MSE loss it is impossible to convert back to classes
+        # when training on percentile preprocessed data using MSE loss
+        # it is impossible to convert back to classes
 
     acc_arr, freq_arr, acc_result = calc_per_class_acc(val_dataloader, model, opt)
 
@@ -360,7 +373,8 @@ def plotPerClassAccuracy(val_dataloader, imagePath, model, opt, title = None):
         y_norm = opt.y_norm.capitalize()
     else:
          y_norm = 'None'
-    plt.title('Y Preprocessing: {}, Y Norm: {}\n{}'.format(preprocessing, y_norm, acc_result), fontsize = 16)
+    plt.title(f'Y Preprocessing: {preprocessing}, Y Norm: {y_norm}\n{acc_result}',
+                fontsize = 16)
 
     plt.tight_layout()
     plt.savefig(osp.join(imagePath, 'per_class_acc.png'))
@@ -401,7 +415,10 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
             yhat = un_normalize(yhat, minmax)
         yhat = yhat.reshape((opt.m,opt.m))
 
-        overall_corr, corr_arr = calc_dist_strat_corr(y, yhat, mode = 'pearson')
+        triu_ind = np.triu_indices(opt.m)
+        overall_corr, _ = stat(y[triu_ind], yhat[triu_ind])
+
+        corr_arr, avg = calc_dist_strat_corr(y, yhat, mode = 'pearson', return_arr = True)
         avg = np.nanmean(corr_arr)
         if opt.verbose:
             print(overall_corr, corr_arr, avg)
@@ -414,13 +431,16 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
     p_std = np.std(p_arr, axis = 0)
     np.save(osp.join(imagePath, 'distance_pearson_std.npy'), p_std)
 
-    title = r'Overall Pearson R: {} $\pm$ {}'.format(np.round(np.mean(P_arr_overall), 3), np.round(np.std(P_arr_overall),3))
-    title += r'\nAvg Dist Pearson R: {} $\pm$ {}'.format(np.round(np.mean(avg_arr), 3), np.round(np.std(avg_arr),3))
+    title = rf'''Overall Pearson R: {np.round(np.mean(P_arr_overall), 3)}
+                $\pm$ {np.round(np.std(P_arr_overall),3)}'''
+    title += rf'''\nAvg Dist Pearson R: {np.round(np.mean(avg_arr), 3)}
+                $\pm$ {np.round(np.std(avg_arr),3)}'''
     print('Distance Stratified Pearson Correlation Results:', file = opt.log_file)
     print(title, end = '\n\n', file = opt.log_file)
 
     plt.plot(np.arange(opt.m-2), p_mean, color = 'black', label = 'mean')
-    plt.fill_between(np.arange(opt.m-2), p_mean + p_std, p_mean - p_std, color = 'red', alpha = 0.5, label = 'std')
+    plt.fill_between(np.arange(opt.m-2), p_mean + p_std, p_mean - p_std,
+                        color = 'red', alpha = 0.5, label = 'std')
     plt.ylim(-0.5, 1)
     plt.xlabel('Distance', fontsize = 16)
     plt.ylabel('Pearson Correlation Coefficient', fontsize = 16)
@@ -434,7 +454,8 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
         y_norm = opt.y_norm.capitalize()
     else:
          y_norm = 'None'
-    plt.title('Y Preprocessing: {}, Y Norm: {}\n{}'.format(preprocessing, y_norm, title), fontsize = 16)
+    plt.title(f'Y Preprocessing: {preprocessing}, Y Norm: {y_norm}\n{title}',
+                fontsize = 16)
 
     plt.tight_layout()
     plt.savefig(osp.join(imagePath, 'distance_pearson.png'))
@@ -495,7 +516,8 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         yhat = yhat.cpu().detach().numpy()
         yhat = yhat.reshape((opt.m,opt.m))
 
-        yhat_title = '{}\n{} ({}: {})'.format(upper_title, r'$\hat{S}$', loss_title, np.round(loss, 3))
+        yhat_title = '{}\n{} ({}: {})'.format(upper_title, r'$\hat{S}$',
+                                                loss_title, np.round(loss, 3))
 
         loss_arr[i] = loss
         if opt.verbose:
@@ -506,17 +528,21 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         v_min = np.min(y)
 
         # not a contat map but using this plotContactMap function anyways
-        plotContactMap(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min, vmax = v_max, cmap = 'blue-red', title = yhat_title)
+        plotContactMap(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min,
+                        vmax = v_max, cmap = 'blue-red', title = yhat_title)
         np.savetxt(osp.join(subpath, 'energy_hat.txt'), yhat, fmt = '%.3f')
 
-        plotContactMap(y, osp.join(subpath, 'energy.png'), vmin = v_min, vmax = v_max, cmap = 'blue-red', title = r'$S$')
+        plotContactMap(y, osp.join(subpath, 'energy.png'), vmin = v_min,
+                        vmax = v_max, cmap = 'blue-red', title = r'$S$')
         np.savetxt(osp.join(subpath, 'energy.txt'), y, fmt = '%.3f')
 
         # plot dif
         dif = yhat - y
-        plotContactMap(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
+        plotContactMap(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
+                        vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
 
-    print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
+    print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)),
+        file = opt.log_file)
 
 def plotPredictions(val_dataloader, model, opt, count = 5):
     print('Prediction Results:', file = opt.log_file)
@@ -596,29 +622,35 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
             plotContactMap(y, osp.join(subpath, 'y.png'), vmax = 'max', prcnt = True, title = 'Y')
             if opt.loss == 'cross_entropy':
                 yhat = np.argmax(yhat, axis = 1)
-                plotContactMap(yhat, osp.join(subpath, 'yhat.png'), vmax = 'max', prcnt = True, title = yhat_title)
+                plotContactMap(yhat, osp.join(subpath, 'yhat.png'), vmax = 'max',
+                                prcnt = True, title = yhat_title)
             else:
                 yhat = un_normalize(yhat, minmax)
-                plotContactMap(yhat, osp.join(subpath, 'yhat.png'), vmax = 'max', prcnt = False, title = yhat_title)
+                plotContactMap(yhat, osp.join(subpath, 'yhat.png'), vmax = 'max',
+                                prcnt = False, title = yhat_title)
         elif opt.y_preprocessing == 'diag' or opt.y_preprocessing == 'diag_instance':
             v_max = np.max(y)
             plotContactMap(y, osp.join(subpath, 'y.png'), vmax = v_max, prcnt = False, title = 'Y')
             yhat = un_normalize(yhat, minmax)
-            plotContactMap(yhat, osp.join(subpath, 'yhat.png'), vmax = v_max, prcnt = False, title = yhat_title)
+            plotContactMap(yhat, osp.join(subpath, 'yhat.png'), vmax = v_max,
+                            prcnt = False, title = yhat_title)
 
             # plot prcnt
             yhat_prcnt = percentile_preprocessing(yhat, prcntDist)
-            plotContactMap(yhat_prcnt, osp.join(subpath, 'yhat_prcnt.png'), vmax = 'max', prcnt = True, title = r'$\hat{Y}$ prcnt')
+            plotContactMap(yhat_prcnt, osp.join(subpath, 'yhat_prcnt.png'),
+                            vmax = 'max', prcnt = True, title = r'$\hat{Y}$ prcnt')
 
             # plot dif
             ydif_abs = abs(yhat - y)
-            plotContactMap(ydif_abs, osp.join(subpath, 'ydif_abs.png'), vmax = v_max, title = r'|$\hat{Y}$ - Y|')
+            plotContactMap(ydif_abs, osp.join(subpath, 'ydif_abs.png'),
+                            vmax = v_max, title = r'|$\hat{Y}$ - Y|')
             ydif = yhat - y
             cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                      [(0, 'blue'),
                                                      (0.5, 'white'),
                                                       (1, 'red')], N=126)
-            plotContactMap(ydif, osp.join(subpath, 'ydif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{Y}$ - Y', cmap = cmap)
+            plotContactMap(ydif, osp.join(subpath, 'ydif.png'), vmin = -1 * v_max,
+                            vmax = v_max, title = r'$\hat{Y}$ - Y', cmap = cmap)
         else:
             raise Exception("Unsupported preprocessing: {}".format(opt.y_preprocessing))
 
@@ -636,7 +668,10 @@ def plotPCAReconstructions(y, y_torch, subpath, opt, loss_title, minmax):
         loss = opt.criterion(y_pca_torch, y_torch)
 
         y_pca = un_normalize(y_pca, minmax)
-        plotContactMap(y_pca, osp.join(subpath, 'y_pc{}.png'.format(k+1)), vmax = np.max(un_normalize(y, minmax)), prcnt = False, title = 'Yhat Top {} PCs\n{}: {}'.format(k+1, loss_title, np.round(loss, 3)))
+        plotContactMap(y_pca, osp.join(subpath, 'y_pc{}.png'.format(k+1)),
+                    vmax = np.max(un_normalize(y, minmax)), prcnt = False,
+                    title = 'Yhat Top {} PCs\n{}: {}'.format(k+1, loss_title,
+                    np.round(loss, 3)))
 
 def plotROCCurve(val_dataloader, imagePath, model, opt):
     assert opt.output_mode == 'sequence'
@@ -717,8 +752,10 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
         else:
             title += ' '
         plt.plot(fpr_mean_array[:,i], tpr_mean_array[:,i], label = 'particle type {}'.format(i))
-        plt.fill_between(fpr_mean_array[:,i],  tpr_mean_array[:,i] + tpr_std_array[:,i],  tpr_mean_array[:,i] - tpr_std_array[:,i], alpha = 0.5)
-        plt.fill_between(fpr_mean_array[:,i],  tpr_mean_array[:,i] + tpr_std_array[:,i],  tpr_mean_array[:,i] - tpr_std_array[:,i], alpha = 0.5)
+        plt.fill_between(fpr_mean_array[:,i], tpr_mean_array[:,i] + tpr_std_array[:,i],
+                        tpr_mean_array[:,i] - tpr_std_array[:,i], alpha = 0.5)
+        plt.fill_between(fpr_mean_array[:,i], tpr_mean_array[:,i] + tpr_std_array[:,i],
+                        tpr_mean_array[:,i] - tpr_std_array[:,i], alpha = 0.5)
     plt.plot(np.linspace(0,1,100), np.linspace(0,1,100), color = 'gray', linestyle='dashed')
     plt.xlabel('False Positive Rate', fontsize = 16)
     plt.ylabel('True Positive Rate', fontsize = 16)
@@ -732,7 +769,8 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
         y_norm = opt.y_norm.capitalize()
     else:
          y_norm = 'None'
-    plt.title('Y Preprocessing: {}, Y Norm: {}\n{}'.format(preprocessing, y_norm, title.strip()), fontsize = 16)
+    plt.title(f'Y Preprocessing: {preprocessing}, Y Norm: {y_norm}\n{title.strip()}',
+                fontsize = 16)
 
     plt.tight_layout()
     plt.savefig(osp.join(imagePath, 'ROC_curve.png'))
@@ -741,11 +779,15 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
     print('ROC Curve Results:', file = opt.log_file)
     print(title, end = '\n\n', file = opt.log_file)
     max_t = np.argmax(acc_mean_array)
-    print('Max accuracy at t = {}: {} +- {}'.format(thresholds[max_t], acc_mean_array[max_t], acc_std_array[max_t]), file = opt.log_file)
-    print('Corresponding FPR = {} +- {} and TPR = {} +- {}'.format(fpr_mean_array[max_t], fpr_std_array[max_t],
-                                                                    tpr_mean_array[max_t], tpr_std_array[max_t]), file = opt.log_file)
+    print(f'''Max accuracy at t = {thresholds[max_t]}:
+            {acc_mean_array[max_t]} +- {acc_std_array[max_t]}''',
+            file = opt.log_file)
+    print(f'''Corresponding FPR = {fpr_mean_array[max_t]} +- {fpr_std_array[max_t]}
+            and TPR = {tpr_mean_array[max_t]} +- {tpr_std_array[max_t]}''',
+            file = opt.log_file)
 
-def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2, plot = False, verbose = False):
+def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2,
+                plot = False, verbose = False):
     '''
     Plots top PCs of inp.
 
@@ -771,8 +813,14 @@ def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2
     if verbose:
         if log_file is not None:
             print(f'\n{inp_type.upper()}', file = log_file)
-            print(f"% of total variance explained for first 4 PCs: {np.round(pca.explained_variance_ratio_[0:4], 3)}\n\tSum of first 4: {np.sum(pca.explained_variance_ratio_[0:4])}", file = log_file)
-            print(f"Singular values for first 4 PCs: {np.round(pca.singular_values_[0:4], 3)}\n\tSum of all: {np.sum(pca.singular_values_)}", file = log_file)
+            print(f'''% of total variance explained for first 4 PCs:
+                {np.round(pca.explained_variance_ratio_[0:4], 3)}
+                \n\tSum of first 4: {np.sum(pca.explained_variance_ratio_[0:4])}''',
+                file = log_file)
+            print(f'''Singular values for first 4 PCs:
+                {np.round(pca.singular_values_[0:4], 3)}
+                \n\tSum of all: {np.sum(pca.singular_values_)}''',
+                file = log_file)
 
     if plot:
         i = 0
@@ -786,20 +834,23 @@ def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2
                 PC = pca.components_[i]
             plt.plot(PC)
             plt.title("Component {}: {}% of variance".format(i+1, np.round(explained * 100, 3)))
-            plt.savefig(osp.join(odir, '{}_PC_{}.png'.format(inp_type, i+1)))
-            plt.close()
+            if odir is not None:
+                plt.savefig(osp.join(odir, '{}_PC_{}.png'.format(inp_type, i+1)))
+                plt.close()
+            else:
+                plt.show()
             i += 1
 
-        plt.show()
 
     return pca.components_
 
 #### Functions for plotting predicted particles ####
-def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1), use_latent = False):
+def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1),
+                                use_latent = False):
     '''
-    Plots the distribution of particle type predictions for models that attempt to predict particle types.
+    Plots distribution of particle type predictions for models that predict particle types.
 
-    Here, x is the ground truth particle type array and z is the predicted particle type array.
+    Here, x is ground truth particle type array; z is predicted particle type array.
     '''
     assert len(dims) == 2, 'currently only support 2D plots'
     converter = InteractionConverter(opt.k)
@@ -869,7 +920,7 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
         plt.xlim(0,1)
 
         plt.legend(title = 'input particle type vector', title_fontsize = 16)
-        plt.savefig(osp.join(subpath, 'particle_type_{}_{}_distribution_merged.png'.format(dims[0], dims[1])))
+        plt.savefig(osp.join(subpath, f'particle_type_{dims[0]}_{dims[1]}_distribution_merged.png'))
         plt.close()
 
         # plot with subplots
@@ -880,8 +931,10 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
         for vector, c in zip(all_binary_vectors, colors):
             ax = fig.add_subplot(opt.k, opt.k, indplt)
             ind = np.where((x == vector).all(axis = 1))
-            ax.scatter(z[ind, dims[0]].reshape((-1)), z[ind, dims[1]].reshape((-1)), color = c['color'])
-            ax.set_title('particle type vector {}\n{} particles'.format(vector, len(ind[0])), fontsize = 16)
+            ax.scatter(z[ind, dims[0]].reshape((-1)), z[ind, dims[1]].reshape((-1)),
+                        color = c['color'])
+            ax.set_title(f'particle type vector {vector}\n{len(ind[0])} particles',
+                        fontsize = 16)
             ax.set_xlim(0, 1)
             ax.set_ylim(0, 1)
             indplt += 1
@@ -898,7 +951,7 @@ def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1)
 
         fig.tight_layout()
 
-        plt.savefig(osp.join(subpath, 'particle_type_{}_{}_distribution.png'.format(dims[0], dims[1])))
+        plt.savefig(osp.join(subpath, f'particle_type_{dims[0]}_{dims[1]}_distribution.png'))
         plt.close()
 
 def plotPredictedParticlesVsPC(x, z, yhat, opt, subpath):
@@ -939,7 +992,7 @@ def plotPredictedParticlesVsPC(x, z, yhat, opt, subpath):
                 max_corr = corr
         ax.plot(np.arange(opt.m), pca.components_[max_i], ls = styles[1],
                 color = c['color'], label = 'PC {}'.format(max_i))
-        ax.set_title('particle type {}\nPearson R: {}'.format(mark, np.round(max_corr, 3)), fontsize = 16)
+        ax.set_title(f'particle type {mark}\nPearson R: {np.round(max_corr, 3)}', fontsize = 16)
         ax.legend()
         indplt += 1
 
@@ -966,7 +1019,7 @@ def plotPredictedParticlesVsPC(x, z, yhat, opt, subpath):
 
 def plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath):
     '''Plots the predicted particle types as a vector along the polymer.'''
-    # cycler: # https://stackoverflow.com/questions/30079590/use-matplotlib-color-map-for-color-cycle
+    # cycler: stackoverflow.com/questions/30079590/use-matplotlib-color-map-for-color-cycle
     cmap = matplotlib.cm.get_cmap('Set1')
     ind = np.arange(opt.k) % cmap.N
     colors = plt.cycler('color', cmap(ind))
@@ -987,7 +1040,8 @@ def plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath):
         ax = fig.add_subplot(rows, cols, indplt)
         ax.plot(np.arange(opt.m), z[:, mark], ls = styles[0], color = 'k')
         ax.plot(np.arange(opt.m), x[:, mark], ls = styles[1], color = c['color'])
-        ax.set_title('particle type {}\n{} particles'.format(mark, np.sum(x[:, mark]).astype(int)), fontsize = 16)
+        ax.set_title(f'particle type {mark}\n{np.sum(x[:, mark]).astype(int)} particles',
+                        fontsize = 16)
         indplt += 1
 
     ax2 = bigax.twinx()
@@ -1078,7 +1132,8 @@ def plot_xyz_gif():
     for i in range(2, len(xyz)):
         fname=osp.join(dir, f'{i}.png')
         filenames.append(fname)
-        plot_config(xyz[i, :, :], None, x = x, ofile = fname, show = False, title = None, legend = False)
+        plot_config(xyz[i, :, :], None, x = x, ofile = fname, show = False,
+                    title = None, legend = False)
 
     # build gif
     # filenames = [osp.join(dir, f'ovito0{i}.png') for i in range(100, 900)]
@@ -1092,145 +1147,118 @@ def plot_xyz_gif():
     for filename in set(filenames):
         os.remove(filename)
 
-def plot_sc_contact_maps():
-    dir='/home/eric/dataset_test/samples/sample82'
-    file = osp.join(dir, 'data_out/output.xyz')
+def plot_sc_contact_maps(dataset, samples, ofolder = 'sc_contact', count = 20, jobs = 1, overall = True):
+    if isinstance(samples, int):
+        samples = [samples]
 
-    config_file = osp.join(dir, 'config.json')
-    with open(config_file, 'rb') as f:
-        config = json.load(f)
-        grid_size = int(config['grid_size'])
+    for sample in samples:
+        print(f'sample{sample}')
+        dir = osp.join(dataset, 'samples', f'sample{sample}')
+        odir = osp.join(dir, ofolder)
 
+        sc_contacts = load_sc_contacts(dir, zero_diag = True, jobs = jobs, triu = True)
+        plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall)
 
-    x = np.load(osp.join(dir, 'x.npy'))
-    y = np.load(osp.join(dir, 'y.npy'))
-    xyz = xyz_load(file, multiple_timesteps=True)
-    N, m, _ = xyz.shape
-    print(N)
-    overall = np.zeros((m,m))
+def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False):
+    '''
+    Plot sc contact map.
+
+    Inputs:
+        sc_contacts: np array of sc contact maps (in full or flattened upper traingle)
+        odir: directory to write to
+        count: number of plots to make
+    '''
+    if not osp.exists(odir):
+        os.mkdir(odir, mode = 0o775)
+
+    if len(sc_contacts.shape) == 3:
+        triu = False
+        N, m, _ = sc_contacts.shape
+    else:
+        triu = True
+        N, l = sc_contacts.shape
+        # infer m given length of upper triangle
+        x, y = symbols('x y')
+        y=x*(x+1)/2-l
+        result=solve(y)
+        m = int(np.max(result))
+
+    overall_map = np.zeros((m,m))
+    mapping = []
     for i in range(N):
-        contact_map = xyz_to_contact(xyz[i], grid_size)
-        plotContactMap(contact_map, osp.join(dir, 'sc_contact', f'{i}.png'), vmax = 'max')
-        overall += contact_map
-    plotContactMap(overall, osp.join(dir, 'sc_contact', 'overall.png'), vmax = 'max')
-    dif = overall - y
-    plotContactMap(dif, osp.join(dir, 'sc_contact', 'dif.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red')
+        if overall or i % (N // count) == 0:
+            if triu:
+                # need to reconstruct from upper traingle
+                contact_map = triu_to_full(sc_contacts[i, :], m)
+            else:
+                contact_map = sc_contacts[i, :, :]
 
-    print(np.array_equal(y, overall))
+        if i % (N // count) == 0:
+            np.savetxt(osp.join(odir, f'{i}.txt'), contact_map, fmt='%.2f')
+            if jobs > 1:
+                mapping.append((contact_map, osp.join(odir, f'{i}.png'), None, 0, 'abs_max'))
+            else:
+                plotContactMap(contact_map, osp.join(odir, f'{i}.png'), vmax = 'abs_max')
 
-def plot_centroid_distance():
-    dir = '/home/eric/dataset_test/samples'
+        if overall:
+            overall_map += contact_map
 
-    for sample in range(30, 36):
-        sample_dir = osp.join(dir, f'sample{sample}')
-        xyz = xyz_load(osp.join(sample_dir, 'data_out', 'output.xyz'), multiple_timesteps = True)
-        N, _, _ = xyz.shape
-        _, psi = load_X_psi(osp.join(dir, f'sample{sample}'))
-        _, k = psi.shape
-        distances = np.zeros((N, k, k))
-        for i in range(N):
-            centroids = find_label_centroid(xyz[i], psi)
-            distances_i = find_dist_between_centroids(centroids)
-            distances[i, :, :] = distances_i
+    if jobs > 1:
+        with multiprocessing.Pool(jobs) as p:
+            p.starmap(plotContactMap, mapping)
 
-        plt.hist(distances[:, 0, 2])
-        plt.savefig(osp.join(sample_dir, 'AC_dist.png'))
-        plt.close()
-
-        plt.scatter(distances[:, 0, 2], np.linspace(0, N, N))
-        plt.xlabel('A-B distance')
-        plt.ylabel('sample index')
-        plt.savefig(osp.join(sample_dir, 'AC_dist_vs_i.png'))
-        plt.close()
+    if overall:
+        plotContactMap(overall_map, osp.join(odir, 'overall.png'), vmax = 'abs_max')
 
 
-        # y_600_800 = xyz_to_contact_grid(xyz[600:800], 28.7)
-        # np.savetxt(osp.join(sample_dir, 'y_600_800.txt'), y_600_800)
-        # plotContactMap(y_600_800, osp.join(sample_dir, 'y_600_800.png'), vmax = 'mean')
-        #
-        # y_100_300 = xyz_to_contact_grid(xyz[100:300], 28.7)
-        # np.savetxt(osp.join(sample_dir, 'y_100_300.txt'), y_100_300)
-        # plotContactMap(y_100_300, osp.join(sample_dir, 'y_100_300.png'), vmax = 'mean')
-        #
-        # y_200 = xyz_to_contact_distance(xyz[200], 28.7)
-        # np.savetxt(osp.join(sample_dir, 'y_200.txt'), y_200)
-        # plotContactMap(y_200, osp.join(sample_dir, 'y_200.png'), vmax = 'max')
-        #
-        # y_700 = xyz_to_contact_distance(xyz[700], 28.7)
-        # np.savetxt(osp.join(sample_dir, 'y_700.txt'), y_700)
-        # plotContactMap(y_700, osp.join(sample_dir, 'y_700.png'), vmax = 'max')
+def plot_centroid_distance(dir = '/home/eric/dataset_test/samples',
+                            samples = range(30, 36), parallel = False,
+                            num_workers = None):
+    if isinstance(samples, int):
+        samples = [samples]
+    if parallel:
+        mapping = []
+        for sample in samples:
+            mapping.append((dir, sample))
+
+        if num_workers is None:
+            num_workers = len(samples)
+        with multiprocessing.Pool(num_workers) as p:
+            p.starmap(plot_centroid_distance_sample, mapping)
+    else:
+        for sample in samples:
+            plot_centroid_distance_sample(dir, sample)
+
+def plot_centroid_distance_sample(dir, sample):
+    sample_dir = osp.join(dir, f'sample{sample}')
+    xyz = xyz_load(osp.join(sample_dir, 'data_out', 'output.xyz'), multiple_timesteps = True)
+    N, _, _ = xyz.shape
+    _, psi = load_X_psi(osp.join(dir, f'sample{sample}'))
+    m, k = psi.shape
+    # TODO hard coded psi below
+    k=3
+    psi = np.zeros((m, 3))
+    psi[:100, 0] = np.ones(100)
+    psi[100:700, 1] = np.ones(600)
+    psi[700:800, 2] = np.ones(100)
+
+    distances = np.zeros((N, k, k))
+    for i in range(N):
+        centroids = find_label_centroid(xyz[i], psi)
+        distances_i = find_dist_between_centroids(centroids)
+        distances[i, :, :] = distances_i
+
+    plt.hist(distances[:, 0, 2])
+    plt.savefig(osp.join(sample_dir, 'AC_dist.png'))
+    plt.close()
+
+    plt.scatter(distances[:, 0, 2], np.linspace(0, N, N))
+    plt.xlabel('A-C distance')
+    plt.ylabel('sample index')
+    plt.savefig(osp.join(sample_dir, 'AC_dist_vs_i.png'))
+    plt.close()
 
 ### Primary scripts ###
-def updateResultTables(model_type = None, mode = None, output_mode = 'contact'):
-    if model_type is None:
-        model_types = ['Akita', 'DeepC', 'UNet', 'GNNAutoencoder', 'GNNAutoencoder2', 'ContactGNN', 'ContactGNNEnergy']
-        modes = [None, None, None, 'GNN', 'GNN']
-        output_modes = ['contact', 'contact', 'contact', 'contact', 'sequence', 'energy']
-    else:
-        model_types = [model_type]
-        modes = [mode]
-        output_modes = [output_mode]
-    for model_type, mode, output_mode in zip(model_types, modes, output_modes):
-        # set up header row
-        opt_list = get_opt_header(model_type, mode)
-        if output_mode == 'contact':
-            opt_list.extend(['Final Validation Loss', 'PCA Accuracy Mean', 'PCA Accuracy Std', 'PCA Spearman Mean', 'PCA Spearman Std', 'PCA Pearson Mean', 'PCA Pearson Std', 'Overall Pearson Mean', 'Overall Pearson Std'])
-        elif output_mode == 'sequence':
-            opt_list.extend(['Final Validation Loss', 'AUC'])
-        elif output_mode == 'energy':
-            opt_list.extend(['Final Validation Loss'])
-        else:
-            raise Exception('Unknown output_mode {}'.format(output_mode))
-        results = [opt_list]
-
-        # get data
-        model_path = osp.join('results', model_type)
-        parser = get_base_parser()
-        for id in range(1, 500):
-            id_path = osp.join(model_path, str(id))
-            if osp.isdir(id_path):
-                txt_file = osp.join(id_path, 'argparse.txt')
-                if osp.exists(txt_file):
-                    opt = parser.parse_args(['@{}'.format(txt_file)])
-                    opt.id = int(id)
-                    opt = finalizeOpt(opt, parser, True)
-                    opt_list = opt2list(opt)
-                    if output_mode == 'contact':
-                        with open(osp.join(id_path, 'PCA_results.txt'), 'r') as f:
-                            f.readline()
-                            acc = f.readline().split(':')[1].strip().split(' +- ')
-                            spearman = f.readline().split(':')[1].strip().split(' +- ')
-                            pearson = f.readline().split(':')[1].strip().split(' +- ')
-                        with open(osp.join(id_path, 'out.log'), 'r') as f:
-                            for line in f:
-                                if line.startswith('Final val loss: '):
-                                    final_val_loss = line.split(':')[1].strip()
-                                elif line.startswith('Overall Pearson R: '):
-                                    dist_pearson = line.split(':')[1].strip().split(' $\pm$ ')
-                        opt_list.extend([final_val_loss, acc[0], acc[1], spearman[0], spearman[1], pearson[0], pearson[1], dist_pearson[0], dist_pearson[1]])
-                    elif output_mode == 'sequence':
-                        final_val_loss = None; auc = None
-                        with open(osp.join(id_path, 'out.log'), 'r') as f:
-                            for line in f:
-                                if line.startswith('Final val loss: '):
-                                    final_val_loss = line.split(':')[1].strip()
-                                elif line.startswith('AUC: '):
-                                    auc = line.split(':')[1].strip()
-                        opt_list.extend([final_val_loss, auc])
-                    elif output_mode == 'energy':
-                        final_val_loss = None
-                        with open(osp.join(id_path, 'out.log'), 'r') as f:
-                            for line in f:
-                                if line.startswith('Final val loss: '):
-                                    final_val_loss = line.split(':')[1].strip()
-                        opt_list.extend([final_val_loss])
-                    results.append(opt_list)
-
-        ofile = osp.join(model_path, 'results_table.csv')
-        with open(ofile, 'w', newline = '') as f:
-            wr = csv.writer(f)
-            wr.writerows(results)
-
 def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, dataset = None):
     if model is None:
         model, train_loss_arr, val_loss_arr = load_saved_model(opt, verbose = True)
@@ -1270,24 +1298,3 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
                 plotParticleDistribution(val_dataloader, model, opt, use_latent = True)
         elif opt.output_mode == 'energy':
             plotEnergyPredictions(val_dataloader, model, opt)
-
-def main():
-    opt = argparseSetup()
-    print(opt, '\n')
-    plotting_script(None, opt)
-    # interogateParams(None, opt)
-
-    # cleanup
-    if opt.root is not None and opt.delete_root:
-        rmtree(opt.root)
-
-if __name__ == '__main__':
-    # plot_xyz_gif()
-    plot_sc_contact_maps()
-    # contactPlots('dataset_04_18_21')
-    # updateResultTables('ContactGNN', 'GNN', 'sequence')
-    # updateResultTables('ContactGNNEnergy', 'GNN', 'energy')
-    # plotCombinedModels('ContactGNN', [202, 203, 204])
-    # main()
-    # freqSampleDistributionPlots('dataset_04_18_21', sample_id=40, k=2)
-    # freqDistDistriutionPlots('dataset_08_24_21')

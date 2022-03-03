@@ -29,22 +29,27 @@ def xyz_write(xyz, outfile, writestyle, comment = '', x = None):
             for i in range(N):
                 f.write(f'{i} {xyz[i,0]} {xyz[i,1]} {xyz[i,2]}\n')
 
-def xyz_load(xyz_filepath, delim = '\t', multiple_timesteps=False):
-    xyz = []
-    with open(xyz_filepath, 'r') as f:
-        N = int(f.readline())
-        reader = csv.reader(f, delimiter = delim)
-        xyz_timestep = []
-        for line in reader:
-            if len(line) > 1:
-                i = int(line[0])
-                xyz_i = [float(j) for j in line[1:4]]
-                xyz_timestep.append(xyz_i)
-                if i == N-1:
-                    xyz.append(xyz_timestep)
-                    xyz_timestep=[]
+def xyz_load(xyz_filepath, delim = '\t', multiple_timesteps = False, save = False):
+    xyz_npy_file = osp.join(osp.split(xyz_filepath)[0], 'xyz.npy')
+    if osp.exists(xyz_npy_file):
+        xyz = np.load(xyz_npy_file)
+    else:
+        xyz = []
+        with open(xyz_filepath, 'r') as f:
+            N = int(f.readline())
+            reader = csv.reader(f, delimiter = delim)
+            xyz_timestep = np.empty((N, 3))
+            for line in reader:
+                if len(line) > 1:
+                    i = int(line[0])
+                    xyz_timestep[i, :] = [float(j) for j in line[1:4]]
+                    if i == N-1:
+                        xyz.append(xyz_timestep)
+                        xyz_timestep=np.empty((N, 3))
 
-    xyz = np.array(xyz)
+        xyz = np.array(xyz)
+        if save:
+            np.save(xyz_npy_file, xyz)
     if not multiple_timesteps:
         xyz = xyz[0]
     return xyz
@@ -100,7 +105,7 @@ def xyz_to_contact_grid(xyz, grid_size):
         m, _ = xyz.shape
         xyz = xyz.reshape(-1, m, 3)
 
-    contact_map = np.zeros((m,m))
+    contact_map = np.zeros((m, m))
     for n in range(N):
         # use dictionary to find contacts
         grid_dict = defaultdict(list) # grid (x, y, z) : bead id list

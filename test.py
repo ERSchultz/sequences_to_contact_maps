@@ -10,9 +10,11 @@ import torch.nn.functional as F
 from core_test_train import core_test_train
 from utils.argparse_utils import finalize_opt, get_base_parser, str2list
 from utils.base_networks import AverageTo2d
+from utils.load_utils import load_sc_contacts
 from utils.networks import get_model
-from utils.utils import (calculateDistanceStratifiedCorrelation,
-                         diagonal_preprocessing)
+from utils.plotting_utils import plotContactMap
+from utils.utils import (calc_dist_strat_corr, crop, diagonal_preprocessing,
+                         genomic_distance_statistics, print_time, triu_to_full)
 
 
 def test_num_workers():
@@ -236,7 +238,7 @@ def plot_fixed():
             x2 = np.load('dataset_fixed/samples/sample{}/x.npy'.format(j))
             assert np.array_equal(x1, x2)
 
-            overall_corr, corr_arr = calculateDistanceStratifiedCorrelation(y1, y2, mode = 'pearson')
+            overall_corr, corr_arr = calc_dist_strat_corr(y1, y2, mode = 'pearson')
             avg = np.nanmean(corr_arr)
             title = 'Overall Pearson R: {}\nAverage Dist Pearson R: {}'.format(np.round(overall_corr, 3), np.round(avg, 3))
 
@@ -338,25 +340,31 @@ def main():
     plotContactMap(y_diag, osp.join(dir, 'y_diag_cut.png'), vmax = 2, cmap = 'blue-red')
 
 def main2():
-    dir = 'C:/Users/Eric/OneDrive/Documents/Research/Coding/sequences_to_contact_maps/dataset_01_15_22/samples'
-    for sample in ['sample40']:
-        sample_dir = osp.join(dir, sample)
-        y= np.load(osp.join(dir, sample, 'y.npy'))
-        # s = np.load(osp.join(dir, sample, 's.npy'))
-        # plotContactMap(y, osp.join(dir, sample, 'y_1000.png'), vmax = 1000)
+    dir = '/home/eric/dataset_test/samples'
+    sample = 'sample91'
+    sample_dir = osp.join(dir, sample)
+    y = crop(np.load(osp.join(dir, sample, 'y.npy')), 2000)
+    y_diag = crop(np.load(osp.join(dir, sample, 'y_diag.npy')), 2000)
+    mean_dist = genomic_distance_statistics(y, mode = 'freq')
+    # print(mean_dist)
+    # plt.plot(mean_dist[10:])
+    # plt.show()
 
-        # y = y / np.max(y)
-        max = np.max(np.triu(y, 1))
-        print(max)
-        print(np.triu(y,1))
-        plotContactMap(y, osp.join(dir, sample, 'y_max_off_diag.png'), vmax = max)
-        # plotContactMap(s, osp.join(dir, sample, 's_-1_1.png'), vmin = -1, vmax = 1, cmap = 'blue-red')
+    y_diag1 = diagonal_preprocessing(y, mean_dist)
+    # plotContactMap(y_diag, vmax = 'max')
+
+    y_diag2 = diagonal_preprocessing(y[np.triu_indices(len(y))], mean_dist, triu = True)
+    y_diag3 = triu_to_full(y_diag2)
+    print(np.allclose(y_diag1, y_diag3))
+    print(np.allclose(y_diag, y_diag1))
+
 
 
 if __name__ == '__main__':
+    sc_contacts = load_sc_contacts('/home/eric/dataset_test/samples/sample91', N_max = None, gaussian = True, jobs = 8, triu = True, down_sampling = 1)
     # main2()
     # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
     # plot_fixed()
     # test_argpartition(10)
     # downsampling_test()

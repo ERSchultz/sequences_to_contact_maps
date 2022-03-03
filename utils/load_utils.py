@@ -1,12 +1,17 @@
 import json
+import multiprocessing
 import os
 import os.path as osp
+import time
 
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.ndimage import gaussian_filter
 
 from .energy_utils import calculate_E_S, calculate_S, s_to_E
-from .utils import LETTERS
+from .utils import (LETTERS, diagonal_preprocessing,
+                    genomic_distance_statistics, print_time, triu_to_full)
+from .xyz_utils import xyz_load, xyz_to_contact_grid
 
 
 ## load data functions ##
@@ -99,7 +104,8 @@ def load_E_S(sample_folder, psi = None, chi = None, save = False, throw_exceptio
 
     return e, s
 
-def load_all(sample_folder, plot = False, data_folder = None, log_file = None, save = False, experimental = False, throw_exception = True):
+def load_all(sample_folder, plot = False, data_folder = None, log_file = None,
+                save = False, experimental = False, throw_exception = True):
     '''Loads x, psi, chi, e, s, y, ydiag.'''
     y, ydiag = load_Y(sample_folder, throw_exception = throw_exception)
 
@@ -137,7 +143,8 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None, s
 
     return x, psi, chi, e, s, y, ydiag
 
-def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None, throw_exception = True):
+def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None,
+                throw_exception = True):
     if max_it_folder is None:
         # find final it
         max_it = -1
@@ -195,3 +202,78 @@ def load_final_max_ent_S(k, replicate_path, max_it_path = None):
         s = calculate_S(x, chi)
 
     return s
+
+def load_sc_contacts(sample_folder, N_min = 0, N_max = None, triu = False,
+                    gaussian = False, zero_diag = False, jobs = 1, down_sampling = 1,
+                    diagonal_preprocessing = False):
+    '''
+    Load single cell contacts from sample_folder/data_out/output.xyz.
+
+    Inputs:
+        sample_foler: sample to load data for
+        N_min: minimum sc_contact to load (because early sweeps may not be equillibrated)
+        N_max: maximum sc_contact to load (for computational efficiency)
+        triu: True to flatten and upper triangularize sc_contact maps
+        gaussian: True to apply gaussian filter
+        zero_diag: True to zero diagonal
+        down_sampling (int): down sample by given value
+        diagonal_preprocessing: process diagonal based on overall contact map
+
+    Outputs:
+        sc_contacts: (N, (m+1)*m/2) if triu, else (N, m, m)
+    '''
+    config_file = osp.join(sample_folder, 'config.json')
+    with open(config_file, 'rb') as f:
+        config = json.load(f)
+        grid_size = float(config['grid_size'])
+
+    # load xyz
+    xyz = xyz_load(osp.join(sample_folder, 'data_out/output.xyz'),
+                    multiple_timesteps=True, save = True)
+
+    # set up N, m, and xyz
+    N, m, _ = xyz.shape
+    if N_max is None or N_max > N:
+        N_max = N
+    if N_min is None:
+        N_min = 0
+    xyz = xyz[N_min:N_max:down_sampling]
+    N, _, _ = xyz.shape
+
+    if diagonal_preprocessing:
+        overall = np.load(osp.join(sample_folder, 'y.npy'))
+        mean_per_diag = genomic_distance_statistics(overall, mode = 'prob')
+        # TODO
+
+    # process sc_contacts
+    t0 = time.time()
+    if jobs > 1:
+        mapping = []
+        for i in range(N):
+            mapping.append((xyz[i], grid_size, triu, gaussian, zero_diag))
+        with multiprocessing.Pool(jobs) as p:
+            sc_contacts = p.starmap(load_sc_contacts_xyz, mapping)
+    else:
+        sc_contacts = list(map(load_sc_contacts_xyz, xyz, [grid_size]*N, [triu]*N, [gaussian]*N, [zero_diag]*N))
+    sc_contacts = np.array(sc_contacts)
+    tf = time.time()
+    print_time(t0, tf, 'load')
+
+
+
+    print(f'Loaded {len(sc_contacts)} sc contacts')
+
+    return sc_contacts
+
+def load_sc_contacts_xyz(xyz, grid_size, triu, gaussian, zero_diag):
+    m, _ = xyz.shape
+
+    contact_map = xyz_to_contact_grid(xyz, grid_size)
+    if zero_diag:
+        np.fill_diagonal(contact_map, 0)
+    if gaussian:
+        contact_map = gaussian_filter(contact_map, sigma = 4)
+    if triu:
+        contact_map = contact_map[np.triu_indices(m)]
+
+    return contact_map

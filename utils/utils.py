@@ -1,12 +1,14 @@
 import math
 import os
 import os.path as osp
+import time
 
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from scipy.stats import pearsonr, spearmanr
 from sklearn.decomposition import PCA
+from sympy import solve, symbols
 
 LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -49,30 +51,40 @@ def x2xx(x, mode = 'mean'):
                 xx[:, j, i] = np.add(x[j], x[i]) / 2
     return xx
 
-def diagonal_preprocessing(y, meanDist):
+def diagonal_preprocessing(y, mean_per_diagonal, triu = False):
     """
     Removes diagonal effect from contact map y.
 
-    meanDist is output of genomic_distance_statistics in data_summary_plots.py
+    mean_per_diagonal is output of genomic_distance_statistics with default args
 
     Inputs:
         y: contact map numpy array
-        meanDist: mean contact frequency distribution where meanDist[distance] is the mean at a given distance
+        mean_per_diagonal: mean contact frequency distribution where mean_per_diagonal[distance] is the mean at a given distance
+        triu: True if y is 1d array of upper traingle instead of full 2d contact map
 
     Outputs:
         result: new contact map
     """
+    y = y.astype('float64')
+    if triu:
+        y = triu_to_full(y)
+
+    m = len(y)
     result = np.zeros_like(y)
-    for i in range(len(y)):
+    for i in range(m):
         for j in range(i + 1):
             distance = i - j
-            exp_d = meanDist[distance]
-            if exp_d == 0:
+            expected = mean_per_diagonal[distance]
+            if expected == 0:
                 # this is unlikely to happen
+                print(f'WARNING: 0 contacts expected at distance {distance}')
                 pass
             else:
-                result[i,j] = y[i,j] / exp_d
+                result[i,j] = y[i,j] / expected
                 result[j,i] = result[i,j]
+
+    if triu:
+        result = result[np.triu_indices(m)]
 
     return result
 
@@ -136,17 +148,33 @@ def genomic_distance_statistics(y, mode = 'freq', stat = 'mean'):
         y = y.copy() / np.max(y)
 
     if stat == 'mean':
-        npStat = np.mean
+        np_stat = np.mean
     elif stat == 'var':
-        npStat = np.var
-    n = len(y)
-    distances = range(0, n, 1)
-    result = np.zeros_like(distances).astype(float)
+        np_stat = np.var
+    m = len(y)
+    distances = range(0, m, 1)
+    stat_per_diagonal = np.zeros_like(distances).astype(float)
     for d in distances:
-        result[d] = npStat(np.diagonal(y, offset = d))
+        stat_per_diagonal[d] = np_stat(np.diagonal(y, offset = d))
 
-    return result
+    return stat_per_diagonal
 
+def triu_to_full(arr, m = None):
+    '''Convert array of upper triangle to symmetric matrix.'''
+    # infer m given length of upper triangle
+    if m is None:
+        l, = arr.shape
+        x, y = symbols('x y')
+        y=x*(x+1)/2-l
+        result=solve(y)
+        m = int(np.max(result))
+
+    # need to reconstruct from upper traingle
+    y = np.zeros((m, m))
+    y[np.triu_indices(m)] = arr
+    y += np.triu(y, 1).T
+
+    return y
 
 ## plotting helper functions ##
 def un_normalize(y, minmax):
@@ -164,7 +192,7 @@ def get_percentiles(arr, prcnt_arr, plot = True):
         result[i] = np.percentile(arr, p)
     return result
 
-def calc_dist_strat_corr(y, yhat, mode = 'pearson'):
+def calc_dist_strat_corr(y, yhat, mode = 'pearson', return_arr = False):
     """
     Helper function to calculate correlation stratified by distance.
 
@@ -197,7 +225,10 @@ def calc_dist_strat_corr(y, yhat, mode = 'pearson'):
         corr, _ = stat(y_diag, yhat_diag)
         corr_arr[d] = corr
 
-    return overall_corr, corr_arr
+    if return_arr:
+        return corr_arr, np.nanmean(corr_arr)
+    else:
+        return np.nanmean(corr_arr)
 
 def calc_per_class_acc(val_dataloader, model, opt):
     '''Calculate per class accuracy.'''
@@ -348,7 +379,27 @@ def round_up_by_10(val):
         mult *= 10
     return mult
 
-def pearson_round(x, y):
+def pearson_round(x, y, stat = 'pearson'):
     "Wrapper function that combines np.round and pearsonr."
-    stat, _ = pearsonr(x, y)
+    if stat == 'pearson':
+        fn = pearsonr
+    elif stat == 'spearman':
+        fn = spearmanr
+    stat, _ = fn(x, y)
     return np.round(stat, 2)
+
+def print_time(t0, tf, name = ''):
+    print(f'{name} time: {np.round(tf - t0, 3)} s')
+
+def print_size(arr, name = ''):
+    size_b = arr.nbytes
+    size_kb = size_b / 1000
+    size_mb = size_kb / 1000
+    size_gb = size_mb / 1000
+
+    size_names = ['Gigabytes', 'Megabytes', 'kilobytes', 'bytes']
+    sizes = [size_gb, size_mb, size_kb, size_b]
+    for size, size_name in zip(sizes, size_names):
+        if size > 1:
+            print(f'{name} size: {np.round(size, 1)} {size_name}')
+            return
