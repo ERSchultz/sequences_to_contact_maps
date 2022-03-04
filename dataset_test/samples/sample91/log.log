@@ -1,0 +1,3030 @@
+data out:data_out
+reading input file ... 
+chiAA -2.5
+chiAB 0
+chiBB -2.5
+number of bins: 20
+binsize 75
+grid move is : 1
+loading production ... loaded: 1
+read successfully
+grid size is : 28.7
+grid.L is: 8
+volume is: 0.0121036
+volume fraction is: 0.0644435
+grid.L is: 8
+volume is: 0.0121036
+volume fraction is: 0.0644435
+making output files ... created successfully
+Initializing simulation objects ... 
+load configuratin is 0
+Objects created
+Initializing took 2677 microseconds 
+Initializing cells: 
+Setting active cells
+setting up contacts
+contactmap size: 1500
+Beginning Simulation
+Sweep number 0
+acceptance rate: 70.0585%
+trans: 38% 	crank: 62% 	pivot: 40% 	rot: 72.9333% 	
+Sweep number 1000
+acceptance rate: 80.2046%
+trans: 39.0849% 	crank: 51.8422% 	pivot: 54.6154% 	rot: 85.0074% 	
+Sweep number 2000
+acceptance rate: 80.2828%
+trans: 36.5227% 	crank: 48.3873% 	pivot: 49.3603% 	rot: 85.5327% 	
+Sweep number 3000
+acceptance rate: 80.2893%
+trans: 35.4315% 	crank: 46.9507% 	pivot: 47.6075% 	rot: 85.7202% 	
+Sweep number 4000
+acceptance rate: 80.273%
+trans: 34.6303% 	crank: 45.9163% 	pivot: 46.4309% 	rot: 85.8319% 	
+Sweep number 5000
+acceptance rate: 80.2355%
+trans: 34.1514% 	crank: 45.1782% 	pivot: 45.2729% 	rot: 85.8781% 	
+Sweep number 6000
+acceptance rate: 80.1796%
+trans: 33.5239% 	crank: 44.3461% 	pivot: 44.9825% 	rot: 85.9135% 	
+Sweep number 7000
+acceptance rate: 80.1389%
+trans: 33.0451% 	crank: 43.7438% 	pivot: 45.3221% 	rot: 85.937% 	
+Sweep number 8000
+acceptance rate: 80.1013%
+trans: 32.5719% 	crank: 43.1511% 	pivot: 45.5206% 	rot: 85.9638% 	
+Sweep number 9000
+acceptance rate: 80.0513%
+trans: 32.1331% 	crank: 42.5898% 	pivot: 44.7906% 	rot: 85.9784% 	
+Sweep number 10000
+acceptance rate: 80.0256%
+trans: 31.8491% 	crank: 42.2124% 	pivot: 44.0526% 	rot: 85.9981% 	
+Sweep number 11000
+acceptance rate: 80.001%
+trans: 31.5832% 	crank: 41.8646% 	pivot: 43.6197% 	rot: 86.0139% 	
+Sweep number 12000
+acceptance rate: 79.9769%
+trans: 31.3188% 	crank: 41.5816% 	pivot: 43.4214% 	rot: 86.0242% 	
+Sweep number 13000
+acceptance rate: 79.9687%
+trans: 31.1991% 	crank: 41.416% 	pivot: 43.5497% 	rot: 86.033% 	
+Sweep number 14000
+acceptance rate: 79.9481%
+trans: 31.0249% 	crank: 41.1768% 	pivot: 43.2019% 	rot: 86.0393% 	
+Sweep number 15000
+acceptance rate: 79.9346%
+trans: 30.8712% 	crank: 40.9844% 	pivot: 43.2584% 	rot: 86.0467% 	
+Sweep number 16000
+acceptance rate: 79.9292%
+trans: 30.7797% 	crank: 40.8522% 	pivot: 43.281% 	rot: 86.0553% 	
+Sweep number 17000
+acceptance rate: 79.9279%
+trans: 30.7161% 	crank: 40.7721% 	pivot: 43.4433% 	rot: 86.0623% 	
+Sweep number 18000
+acceptance rate: 79.9216%
+trans: 30.6646% 	crank: 40.6857% 	pivot: 43.1032% 	rot: 86.0666% 	
+Sweep number 19000
+acceptance rate: 79.9144%
+trans: 30.5883% 	crank: 40.5567% 	pivot: 42.9493% 	rot: 86.0731% 	
+Sweep number 20000
+acceptance rate: 79.908%
+trans: 30.52% 	crank: 40.441% 	pivot: 42.7599% 	rot: 86.0793% 	
+Sweep number 21000
+acceptance rate: 79.899%
+trans: 30.4325% 	crank: 40.3153% 	pivot: 42.5485% 	rot: 86.0847% 	
+Sweep number 22000
+acceptance rate: 79.8939%
+trans: 30.3853% 	crank: 40.2283% 	pivot: 42.5608% 	rot: 86.0877% 	
+Sweep number 23000
+acceptance rate: 79.8863%
+trans: 30.3159% 	crank: 40.1416% 	pivot: 42.5499% 	rot: 86.0895% 	
+Sweep number 24000
+acceptance rate: 79.8773%
+trans: 30.2608% 	crank: 40.0659% 	pivot: 42.382% 	rot: 86.0891% 	
+Sweep number 25000
+acceptance rate: 79.875%
+trans: 30.2399% 	crank: 40.0129% 	pivot: 42.2739% 	rot: 86.0921% 	
+Sweep number 26000
+acceptance rate: 79.8692%
+trans: 30.186% 	crank: 39.9461% 	pivot: 42.1776% 	rot: 86.0942% 	
+Sweep number 27000
+acceptance rate: 79.8651%
+trans: 30.1427% 	crank: 39.8713% 	pivot: 42.0873% 	rot: 86.098% 	
+Sweep number 28000
+acceptance rate: 79.8607%
+trans: 30.096% 	crank: 39.8121% 	pivot: 42.0135% 	rot: 86.1005% 	
+Sweep number 29000
+acceptance rate: 79.8538%
+trans: 30.0529% 	crank: 39.7578% 	pivot: 41.9199% 	rot: 86.0999% 	
+Sweep number 30000
+acceptance rate: 79.8502%
+trans: 30.0097% 	crank: 39.6933% 	pivot: 41.8756% 	rot: 86.1032% 	
+Sweep number 31000
+acceptance rate: 79.8444%
+trans: 29.9412% 	crank: 39.6147% 	pivot: 41.877% 	rot: 86.1064% 	
+Sweep number 32000
+acceptance rate: 79.8416%
+trans: 29.9248% 	crank: 39.5781% 	pivot: 41.889% 	rot: 86.1066% 	
+Sweep number 33000
+acceptance rate: 79.8379%
+trans: 29.8885% 	crank: 39.5346% 	pivot: 41.8351% 	rot: 86.1081% 	
+Sweep number 34000
+acceptance rate: 79.8346%
+trans: 29.8601% 	crank: 39.4935% 	pivot: 41.7899% 	rot: 86.1092% 	
+Sweep number 35000
+acceptance rate: 79.8343%
+trans: 29.8504% 	crank: 39.4724% 	pivot: 41.8154% 	rot: 86.1108% 	
+Sweep number 36000
+acceptance rate: 79.8347%
+trans: 29.8504% 	crank: 39.4601% 	pivot: 41.8455% 	rot: 86.1119% 	
+Sweep number 37000
+acceptance rate: 79.8327%
+trans: 29.8402% 	crank: 39.4347% 	pivot: 41.7545% 	rot: 86.1126% 	
+Sweep number 38000
+acceptance rate: 79.8283%
+trans: 29.813% 	crank: 39.3892% 	pivot: 41.6492% 	rot: 86.1131% 	
+Sweep number 39000
+acceptance rate: 79.8246%
+trans: 29.7911% 	crank: 39.3472% 	pivot: 41.6212% 	rot: 86.1134% 	
+Sweep number 40000
+acceptance rate: 79.8247%
+trans: 29.7822% 	crank: 39.3314% 	pivot: 41.616% 	rot: 86.1151% 	
+Sweep number 41000
+acceptance rate: 79.8212%
+trans: 29.7517% 	crank: 39.2942% 	pivot: 41.5844% 	rot: 86.1159% 	
+Sweep number 42000
+acceptance rate: 79.8211%
+trans: 29.7515% 	crank: 39.2827% 	pivot: 41.6097% 	rot: 86.1163% 	
+Sweep number 43000
+acceptance rate: 79.8189%
+trans: 29.7263% 	crank: 39.2406% 	pivot: 41.5069% 	rot: 86.119% 	
+Sweep number 44000
+acceptance rate: 79.8144%
+trans: 29.7002% 	crank: 39.2096% 	pivot: 41.4695% 	rot: 86.118% 	
+Sweep number 45000
+acceptance rate: 79.8136%
+trans: 29.6873% 	crank: 39.2055% 	pivot: 41.4662% 	rot: 86.1182% 	
+Sweep number 46000
+acceptance rate: 79.813%
+trans: 29.6811% 	crank: 39.2036% 	pivot: 41.4176% 	rot: 86.1184% 	
+Sweep number 47000
+acceptance rate: 79.8114%
+trans: 29.6677% 	crank: 39.1934% 	pivot: 41.5483% 	rot: 86.1173% 	
+Sweep number 48000
+acceptance rate: 79.8101%
+trans: 29.6514% 	crank: 39.1765% 	pivot: 41.6277% 	rot: 86.1175% 	
+Sweep number 49000
+acceptance rate: 79.8056%
+trans: 29.6246% 	crank: 39.1424% 	pivot: 41.654% 	rot: 86.1163% 	
+Sweep number 50000
+acceptance rate: 79.8027%
+trans: 29.5959% 	crank: 39.1075% 	pivot: 41.633% 	rot: 86.1173% 	
+Sweep number 51000
+acceptance rate: 79.7973%
+trans: 29.5574% 	crank: 39.0545% 	pivot: 41.5529% 	rot: 86.1178% 	
+Sweep number 52000
+acceptance rate: 79.7944%
+trans: 29.5434% 	crank: 39.0282% 	pivot: 41.4879% 	rot: 86.1176% 	
+Sweep number 53000
+acceptance rate: 79.7926%
+trans: 29.5286% 	crank: 39.0056% 	pivot: 41.4545% 	rot: 86.1183% 	
+Sweep number 54000
+acceptance rate: 79.7906%
+trans: 29.5071% 	crank: 38.9813% 	pivot: 41.4383% 	rot: 86.1192% 	
+Sweep number 55000
+acceptance rate: 79.7871%
+trans: 29.4851% 	crank: 38.9493% 	pivot: 41.3605% 	rot: 86.1193% 	
+Sweep number 56000
+acceptance rate: 79.7864%
+trans: 29.4725% 	crank: 38.936% 	pivot: 41.3553% 	rot: 86.1203% 	
+Sweep number 57000
+acceptance rate: 79.785%
+trans: 29.4548% 	crank: 38.9153% 	pivot: 41.3677% 	rot: 86.1211% 	
+Sweep number 58000
+acceptance rate: 79.7836%
+trans: 29.4467% 	crank: 38.9048% 	pivot: 41.3714% 	rot: 86.1208% 	
+Sweep number 59000
+acceptance rate: 79.7844%
+trans: 29.4426% 	crank: 38.9013% 	pivot: 41.4217% 	rot: 86.1218% 	
+Sweep number 60000
+acceptance rate: 79.7814%
+trans: 29.4209% 	crank: 38.8737% 	pivot: 41.4165% 	rot: 86.1217% 	
+Sweep number 61000
+acceptance rate: 79.7792%
+trans: 29.4032% 	crank: 38.8492% 	pivot: 41.376% 	rot: 86.1223% 	
+Sweep number 62000
+acceptance rate: 79.778%
+trans: 29.3898% 	crank: 38.8364% 	pivot: 41.3469% 	rot: 86.1228% 	
+Sweep number 63000
+acceptance rate: 79.7782%
+trans: 29.3866% 	crank: 38.8269% 	pivot: 41.4295% 	rot: 86.1234% 	
+Sweep number 64000
+acceptance rate: 79.7776%
+trans: 29.3784% 	crank: 38.8147% 	pivot: 41.4312% 	rot: 86.1241% 	
+Sweep number 65000
+acceptance rate: 79.7752%
+trans: 29.3635% 	crank: 38.7961% 	pivot: 41.4218% 	rot: 86.1236% 	
+Sweep number 66000
+acceptance rate: 79.7724%
+trans: 29.335% 	crank: 38.7657% 	pivot: 41.4177% 	rot: 86.1244% 	
+Sweep number 67000
+acceptance rate: 79.7702%
+trans: 29.3223% 	crank: 38.7443% 	pivot: 41.4022% 	rot: 86.1242% 	
+Sweep number 68000
+acceptance rate: 79.7683%
+trans: 29.3111% 	crank: 38.7311% 	pivot: 41.3578% 	rot: 86.124% 	
+Sweep number 69000
+acceptance rate: 79.7654%
+trans: 29.2865% 	crank: 38.709% 	pivot: 41.3439% 	rot: 86.1239% 	
+Sweep number 70000
+acceptance rate: 79.764%
+trans: 29.2691% 	crank: 38.6903% 	pivot: 41.3013% 	rot: 86.1249% 	
+Sweep number 71000
+acceptance rate: 79.7627%
+trans: 29.2571% 	crank: 38.673% 	pivot: 41.2883% 	rot: 86.1256% 	
+Sweep number 72000
+acceptance rate: 79.7614%
+trans: 29.2485% 	crank: 38.662% 	pivot: 41.243% 	rot: 86.1256% 	
+Sweep number 73000
+acceptance rate: 79.7605%
+trans: 29.2409% 	crank: 38.6531% 	pivot: 41.2037% 	rot: 86.126% 	
+Sweep number 74000
+acceptance rate: 79.7588%
+trans: 29.2252% 	crank: 38.6375% 	pivot: 41.214% 	rot: 86.1261% 	
+Sweep number 75000
+acceptance rate: 79.7582%
+trans: 29.2231% 	crank: 38.6336% 	pivot: 41.2067% 	rot: 86.1258% 	
+Sweep number 76000
+acceptance rate: 79.7568%
+trans: 29.2151% 	crank: 38.6178% 	pivot: 41.1824% 	rot: 86.1261% 	
+Sweep number 77000
+acceptance rate: 79.7559%
+trans: 29.2091% 	crank: 38.6108% 	pivot: 41.1512% 	rot: 86.126% 	
+Sweep number 78000
+acceptance rate: 79.7553%
+trans: 29.1978% 	crank: 38.603% 	pivot: 41.1111% 	rot: 86.1269% 	
+Sweep number 79000
+acceptance rate: 79.7549%
+trans: 29.1948% 	crank: 38.5946% 	pivot: 41.1005% 	rot: 86.1273% 	
+Sweep number 80000
+acceptance rate: 79.7519%
+trans: 29.1726% 	crank: 38.5677% 	pivot: 41.0956% 	rot: 86.1272% 	
+Sweep number 81000
+acceptance rate: 79.7504%
+trans: 29.1613% 	crank: 38.5531% 	pivot: 41.0763% 	rot: 86.1273% 	
+Sweep number 82000
+acceptance rate: 79.7493%
+trans: 29.1545% 	crank: 38.5445% 	pivot: 41.0571% 	rot: 86.1272% 	
+Sweep number 83000
+acceptance rate: 79.7478%
+trans: 29.1457% 	crank: 38.533% 	pivot: 41.0403% 	rot: 86.127% 	
+Sweep number 84000
+acceptance rate: 79.7463%
+trans: 29.1345% 	crank: 38.5154% 	pivot: 41.0111% 	rot: 86.1273% 	
+Sweep number 85000
+acceptance rate: 79.7457%
+trans: 29.1331% 	crank: 38.5125% 	pivot: 40.9766% 	rot: 86.1272% 	
+Sweep number 86000
+acceptance rate: 79.7438%
+trans: 29.1178% 	crank: 38.4971% 	pivot: 40.951% 	rot: 86.1273% 	
+Sweep number 87000
+acceptance rate: 79.7434%
+trans: 29.108% 	crank: 38.4854% 	pivot: 40.953% 	rot: 86.1282% 	
+Sweep number 88000
+acceptance rate: 79.7425%
+trans: 29.1002% 	crank: 38.4772% 	pivot: 40.9432% 	rot: 86.1283% 	
+Sweep number 89000
+acceptance rate: 79.7418%
+trans: 29.0945% 	crank: 38.4681% 	pivot: 40.9466% 	rot: 86.1285% 	
+Sweep number 90000
+acceptance rate: 79.7423%
+trans: 29.0948% 	crank: 38.4697% 	pivot: 40.9488% 	rot: 86.1289% 	
+Sweep number 91000
+acceptance rate: 79.7424%
+trans: 29.0947% 	crank: 38.469% 	pivot: 40.9347% 	rot: 86.1292% 	
+Sweep number 92000
+acceptance rate: 79.7408%
+trans: 29.079% 	crank: 38.4535% 	pivot: 40.9228% 	rot: 86.1295% 	
+Sweep number 93000
+acceptance rate: 79.7404%
+trans: 29.0755% 	crank: 38.45% 	pivot: 40.9054% 	rot: 86.1296% 	
+Sweep number 94000
+acceptance rate: 79.7389%
+trans: 29.0666% 	crank: 38.4416% 	pivot: 40.8868% 	rot: 86.1292% 	
+Sweep number 95000
+acceptance rate: 79.7388%
+trans: 29.0662% 	crank: 38.4365% 	pivot: 40.8793% 	rot: 86.1295% 	
+Sweep number 96000
+acceptance rate: 79.7399%
+trans: 29.0742% 	crank: 38.4359% 	pivot: 40.8447% 	rot: 86.1305% 	
+Sweep number 97000
+acceptance rate: 79.7408%
+trans: 29.0767% 	crank: 38.4357% 	pivot: 40.8331% 	rot: 86.1315% 	
+Sweep number 98000
+acceptance rate: 79.7412%
+trans: 29.0757% 	crank: 38.4336% 	pivot: 40.8374% 	rot: 86.1321% 	
+Sweep number 99000
+acceptance rate: 79.7412%
+trans: 29.0726% 	crank: 38.4314% 	pivot: 40.8174% 	rot: 86.1326% 	
+Sweep number 100000
+acceptance rate: 79.7405%
+trans: 29.0564% 	crank: 38.4187% 	pivot: 40.8068% 	rot: 86.1337% 	
+Sweep number 101000
+acceptance rate: 79.7395%
+trans: 29.0503% 	crank: 38.4059% 	pivot: 40.7631% 	rot: 86.1342% 	
+Sweep number 102000
+acceptance rate: 79.7387%
+trans: 29.0469% 	crank: 38.4014% 	pivot: 40.757% 	rot: 86.1339% 	
+Sweep number 103000
+acceptance rate: 79.7372%
+trans: 29.0375% 	crank: 38.3898% 	pivot: 40.7398% 	rot: 86.1336% 	
+Sweep number 104000
+acceptance rate: 79.7372%
+trans: 29.0327% 	crank: 38.3874% 	pivot: 40.7556% 	rot: 86.134% 	
+Sweep number 105000
+acceptance rate: 79.7365%
+trans: 29.0288% 	crank: 38.3778% 	pivot: 40.7389% 	rot: 86.1343% 	
+Sweep number 106000
+acceptance rate: 79.7366%
+trans: 29.03% 	crank: 38.3747% 	pivot: 40.7583% 	rot: 86.1343% 	
+Sweep number 107000
+acceptance rate: 79.7362%
+trans: 29.0279% 	crank: 38.3676% 	pivot: 40.7462% 	rot: 86.1346% 	
+Sweep number 108000
+acceptance rate: 79.7357%
+trans: 29.0224% 	crank: 38.3597% 	pivot: 40.745% 	rot: 86.1349% 	
+Sweep number 109000
+acceptance rate: 79.7351%
+trans: 29.0167% 	crank: 38.3554% 	pivot: 40.7614% 	rot: 86.1348% 	
+Sweep number 110000
+acceptance rate: 79.7353%
+trans: 29.0195% 	crank: 38.3592% 	pivot: 40.7891% 	rot: 86.1344% 	
+Sweep number 111000
+acceptance rate: 79.7347%
+trans: 29.0117% 	crank: 38.3504% 	pivot: 40.8202% 	rot: 86.1346% 	
+Sweep number 112000
+acceptance rate: 79.7352%
+trans: 29.0135% 	crank: 38.3515% 	pivot: 40.8058% 	rot: 86.1351% 	
+Sweep number 113000
+acceptance rate: 79.7352%
+trans: 29.0156% 	crank: 38.3571% 	pivot: 40.7916% 	rot: 86.1346% 	
+Sweep number 114000
+acceptance rate: 79.7358%
+trans: 29.0181% 	crank: 38.3617% 	pivot: 40.7917% 	rot: 86.1349% 	
+Sweep number 115000
+acceptance rate: 79.7365%
+trans: 29.0264% 	crank: 38.3674% 	pivot: 40.7883% 	rot: 86.1348% 	
+Sweep number 116000
+acceptance rate: 79.736%
+trans: 29.0223% 	crank: 38.3641% 	pivot: 40.7656% 	rot: 86.1349% 	
+Sweep number 117000
+acceptance rate: 79.7368%
+trans: 29.0255% 	crank: 38.3689% 	pivot: 40.8021% 	rot: 86.135% 	
+Sweep number 118000
+acceptance rate: 79.7369%
+trans: 29.0291% 	crank: 38.3715% 	pivot: 40.7853% 	rot: 86.1348% 	
+Sweep number 119000
+acceptance rate: 79.7369%
+trans: 29.0288% 	crank: 38.3689% 	pivot: 40.7813% 	rot: 86.135% 	
+Sweep number 120000
+acceptance rate: 79.7367%
+trans: 29.0305% 	crank: 38.3666% 	pivot: 40.7664% 	rot: 86.1349% 	
+Sweep number 121000
+acceptance rate: 79.7358%
+trans: 29.0248% 	crank: 38.3583% 	pivot: 40.7388% 	rot: 86.1351% 	
+Sweep number 122000
+acceptance rate: 79.7352%
+trans: 29.021% 	crank: 38.3515% 	pivot: 40.7234% 	rot: 86.1351% 	
+Sweep number 123000
+acceptance rate: 79.7346%
+trans: 29.0166% 	crank: 38.3477% 	pivot: 40.7059% 	rot: 86.1351% 	
+Sweep number 124000
+acceptance rate: 79.7359%
+trans: 29.0253% 	crank: 38.3546% 	pivot: 40.6899% 	rot: 86.1356% 	
+Sweep number 125000
+acceptance rate: 79.7354%
+trans: 29.024% 	crank: 38.3495% 	pivot: 40.7162% 	rot: 86.1354% 	
+Sweep number 126000
+acceptance rate: 79.7341%
+trans: 29.0189% 	crank: 38.3441% 	pivot: 40.7063% 	rot: 86.1346% 	
+Sweep number 127000
+acceptance rate: 79.7335%
+trans: 29.0137% 	crank: 38.3348% 	pivot: 40.6946% 	rot: 86.135% 	
+Sweep number 128000
+acceptance rate: 79.7321%
+trans: 29.0021% 	crank: 38.3218% 	pivot: 40.7029% 	rot: 86.135% 	
+Sweep number 129000
+acceptance rate: 79.732%
+trans: 28.9986% 	crank: 38.3182% 	pivot: 40.7092% 	rot: 86.1353% 	
+Sweep number 130000
+acceptance rate: 79.7315%
+trans: 28.9925% 	crank: 38.3121% 	pivot: 40.6956% 	rot: 86.1356% 	
+Sweep number 131000
+acceptance rate: 79.7308%
+trans: 28.9857% 	crank: 38.3047% 	pivot: 40.6721% 	rot: 86.1359% 	
+Sweep number 132000
+acceptance rate: 79.73%
+trans: 28.9816% 	crank: 38.2972% 	pivot: 40.6491% 	rot: 86.1359% 	
+Sweep number 133000
+acceptance rate: 79.7295%
+trans: 28.9796% 	crank: 38.2945% 	pivot: 40.6285% 	rot: 86.1359% 	
+Sweep number 134000
+acceptance rate: 79.7298%
+trans: 28.9804% 	crank: 38.2962% 	pivot: 40.6205% 	rot: 86.136% 	
+Sweep number 135000
+acceptance rate: 79.7298%
+trans: 28.981% 	crank: 38.2937% 	pivot: 40.6216% 	rot: 86.1362% 	
+Sweep number 136000
+acceptance rate: 79.7285%
+trans: 28.9698% 	crank: 38.2831% 	pivot: 40.6154% 	rot: 86.1363% 	
+Sweep number 137000
+acceptance rate: 79.7289%
+trans: 28.9719% 	crank: 38.2832% 	pivot: 40.5957% 	rot: 86.1366% 	
+Sweep number 138000
+acceptance rate: 79.7288%
+trans: 28.9684% 	crank: 38.2786% 	pivot: 40.5708% 	rot: 86.1372% 	
+Sweep number 139000
+acceptance rate: 79.7284%
+trans: 28.9632% 	crank: 38.2748% 	pivot: 40.5535% 	rot: 86.1375% 	
+Sweep number 140000
+acceptance rate: 79.7283%
+trans: 28.962% 	crank: 38.2721% 	pivot: 40.5431% 	rot: 86.1378% 	
+Sweep number 141000
+acceptance rate: 79.7279%
+trans: 28.9563% 	crank: 38.2657% 	pivot: 40.5472% 	rot: 86.138% 	
+Sweep number 142000
+acceptance rate: 79.7271%
+trans: 28.9499% 	crank: 38.26% 	pivot: 40.5417% 	rot: 86.138% 	
+Sweep number 143000
+acceptance rate: 79.7269%
+trans: 28.9454% 	crank: 38.2575% 	pivot: 40.5405% 	rot: 86.1382% 	
+Sweep number 144000
+acceptance rate: 79.7263%
+trans: 28.9404% 	crank: 38.2541% 	pivot: 40.5633% 	rot: 86.1379% 	
+Sweep number 145000
+acceptance rate: 79.7263%
+trans: 28.937% 	crank: 38.2517% 	pivot: 40.5485% 	rot: 86.1384% 	
+Sweep number 146000
+acceptance rate: 79.7253%
+trans: 28.9326% 	crank: 38.2452% 	pivot: 40.5184% 	rot: 86.1381% 	
+Sweep number 147000
+acceptance rate: 79.7246%
+trans: 28.9297% 	crank: 38.2393% 	pivot: 40.5005% 	rot: 86.1381% 	
+Sweep number 148000
+acceptance rate: 79.7247%
+trans: 28.9283% 	crank: 38.2362% 	pivot: 40.4951% 	rot: 86.1386% 	
+Sweep number 149000
+acceptance rate: 79.7242%
+trans: 28.9216% 	crank: 38.2308% 	pivot: 40.4874% 	rot: 86.1388% 	
+Sweep number 150000
+acceptance rate: 79.7243%
+trans: 28.92% 	crank: 38.2304% 	pivot: 40.4719% 	rot: 86.1392% 	
+Sweep number 151000
+acceptance rate: 79.7247%
+trans: 28.9225% 	crank: 38.232% 	pivot: 40.4889% 	rot: 86.1392% 	
+Sweep number 152000
+acceptance rate: 79.7246%
+trans: 28.9209% 	crank: 38.231% 	pivot: 40.4768% 	rot: 86.1394% 	
+Sweep number 153000
+acceptance rate: 79.7239%
+trans: 28.9142% 	crank: 38.2259% 	pivot: 40.4632% 	rot: 86.1395% 	
+Sweep number 154000
+acceptance rate: 79.7231%
+trans: 28.9098% 	crank: 38.2237% 	pivot: 40.4529% 	rot: 86.1391% 	
+Sweep number 155000
+acceptance rate: 79.7221%
+trans: 28.9025% 	crank: 38.2151% 	pivot: 40.4387% 	rot: 86.1391% 	
+Sweep number 156000
+acceptance rate: 79.7216%
+trans: 28.8957% 	crank: 38.21% 	pivot: 40.4301% 	rot: 86.1394% 	
+Sweep number 157000
+acceptance rate: 79.7204%
+trans: 28.8884% 	crank: 38.1997% 	pivot: 40.4176% 	rot: 86.1393% 	
+Sweep number 158000
+acceptance rate: 79.7196%
+trans: 28.8856% 	crank: 38.1925% 	pivot: 40.4127% 	rot: 86.139% 	
+Sweep number 159000
+acceptance rate: 79.7197%
+trans: 28.8876% 	crank: 38.1929% 	pivot: 40.4367% 	rot: 86.1388% 	
+Sweep number 160000
+acceptance rate: 79.7199%
+trans: 28.886% 	crank: 38.1921% 	pivot: 40.4447% 	rot: 86.1392% 	
+Sweep number 161000
+acceptance rate: 79.7197%
+trans: 28.8862% 	crank: 38.1903% 	pivot: 40.4343% 	rot: 86.1391% 	
+Sweep number 162000
+acceptance rate: 79.7197%
+trans: 28.883% 	crank: 38.1902% 	pivot: 40.4285% 	rot: 86.1393% 	
+Sweep number 163000
+acceptance rate: 79.7199%
+trans: 28.8829% 	crank: 38.1907% 	pivot: 40.4231% 	rot: 86.1396% 	
+Sweep number 164000
+acceptance rate: 79.7193%
+trans: 28.8816% 	crank: 38.1891% 	pivot: 40.413% 	rot: 86.1392% 	
+Sweep number 165000
+acceptance rate: 79.7193%
+trans: 28.8806% 	crank: 38.1893% 	pivot: 40.4025% 	rot: 86.1394% 	
+Sweep number 166000
+acceptance rate: 79.7202%
+trans: 28.8854% 	crank: 38.1936% 	pivot: 40.3876% 	rot: 86.1398% 	
+Sweep number 167000
+acceptance rate: 79.721%
+trans: 28.8907% 	crank: 38.1994% 	pivot: 40.3865% 	rot: 86.14% 	
+Sweep number 168000
+acceptance rate: 79.7214%
+trans: 28.8935% 	crank: 38.2033% 	pivot: 40.3792% 	rot: 86.1401% 	
+Sweep number 169000
+acceptance rate: 79.7216%
+trans: 28.8952% 	crank: 38.2043% 	pivot: 40.3714% 	rot: 86.1401% 	
+Sweep number 170000
+acceptance rate: 79.7214%
+trans: 28.8936% 	crank: 38.2023% 	pivot: 40.3792% 	rot: 86.1402% 	
+Sweep number 171000
+acceptance rate: 79.7218%
+trans: 28.8951% 	crank: 38.2056% 	pivot: 40.3833% 	rot: 86.1402% 	
+Sweep number 172000
+acceptance rate: 79.722%
+trans: 28.8928% 	crank: 38.2063% 	pivot: 40.3825% 	rot: 86.1406% 	
+Sweep number 173000
+acceptance rate: 79.722%
+trans: 28.8913% 	crank: 38.2052% 	pivot: 40.3931% 	rot: 86.1407% 	
+Sweep number 174000
+acceptance rate: 79.7221%
+trans: 28.8919% 	crank: 38.205% 	pivot: 40.3829% 	rot: 86.1408% 	
+Sweep number 175000
+acceptance rate: 79.7221%
+trans: 28.891% 	crank: 38.2071% 	pivot: 40.3699% 	rot: 86.1409% 	
+Sweep number 176000
+acceptance rate: 79.7219%
+trans: 28.8871% 	crank: 38.2039% 	pivot: 40.3642% 	rot: 86.1412% 	
+Sweep number 177000
+acceptance rate: 79.7218%
+trans: 28.8866% 	crank: 38.203% 	pivot: 40.3842% 	rot: 86.141% 	
+Sweep number 178000
+acceptance rate: 79.7217%
+trans: 28.8853% 	crank: 38.2018% 	pivot: 40.3778% 	rot: 86.1411% 	
+Sweep number 179000
+acceptance rate: 79.7216%
+trans: 28.8834% 	crank: 38.1991% 	pivot: 40.3678% 	rot: 86.1413% 	
+Sweep number 180000
+acceptance rate: 79.7216%
+trans: 28.8832% 	crank: 38.1958% 	pivot: 40.3596% 	rot: 86.1416% 	
+Sweep number 181000
+acceptance rate: 79.7212%
+trans: 28.8797% 	crank: 38.1933% 	pivot: 40.3582% 	rot: 86.1416% 	
+Sweep number 182000
+acceptance rate: 79.7216%
+trans: 28.8812% 	crank: 38.1937% 	pivot: 40.3649% 	rot: 86.1418% 	
+Sweep number 183000
+acceptance rate: 79.7215%
+trans: 28.879% 	crank: 38.1918% 	pivot: 40.385% 	rot: 86.1419% 	
+Sweep number 184000
+acceptance rate: 79.7217%
+trans: 28.88% 	crank: 38.192% 	pivot: 40.3853% 	rot: 86.1421% 	
+Sweep number 185000
+acceptance rate: 79.7218%
+trans: 28.8804% 	crank: 38.1914% 	pivot: 40.3987% 	rot: 86.1421% 	
+Sweep number 186000
+acceptance rate: 79.7222%
+trans: 28.8864% 	crank: 38.1956% 	pivot: 40.3972% 	rot: 86.1419% 	
+Sweep number 187000
+acceptance rate: 79.7228%
+trans: 28.8896% 	crank: 38.198% 	pivot: 40.4114% 	rot: 86.142% 	
+Sweep number 188000
+acceptance rate: 79.7234%
+trans: 28.8935% 	crank: 38.2031% 	pivot: 40.4112% 	rot: 86.1422% 	
+Sweep number 189000
+acceptance rate: 79.7241%
+trans: 28.8986% 	crank: 38.2087% 	pivot: 40.4083% 	rot: 86.1423% 	
+Sweep number 190000
+acceptance rate: 79.7244%
+trans: 28.8996% 	crank: 38.2083% 	pivot: 40.412% 	rot: 86.1425% 	
+Sweep number 191000
+acceptance rate: 79.7247%
+trans: 28.9018% 	crank: 38.2101% 	pivot: 40.4135% 	rot: 86.1426% 	
+Sweep number 192000
+acceptance rate: 79.7251%
+trans: 28.9013% 	crank: 38.2082% 	pivot: 40.4156% 	rot: 86.1432% 	
+Sweep number 193000
+acceptance rate: 79.7249%
+trans: 28.8988% 	crank: 38.206% 	pivot: 40.4118% 	rot: 86.1433% 	
+Sweep number 194000
+acceptance rate: 79.7249%
+trans: 28.9011% 	crank: 38.2078% 	pivot: 40.4095% 	rot: 86.1431% 	
+Sweep number 195000
+acceptance rate: 79.7242%
+trans: 28.8968% 	crank: 38.2035% 	pivot: 40.4022% 	rot: 86.1429% 	
+Sweep number 196000
+acceptance rate: 79.7234%
+trans: 28.8899% 	crank: 38.1978% 	pivot: 40.4035% 	rot: 86.1428% 	
+Sweep number 197000
+acceptance rate: 79.7227%
+trans: 28.8864% 	crank: 38.1948% 	pivot: 40.3912% 	rot: 86.1426% 	
+Sweep number 198000
+acceptance rate: 79.7229%
+trans: 28.8868% 	crank: 38.1961% 	pivot: 40.3901% 	rot: 86.1426% 	
+Sweep number 199000
+acceptance rate: 79.7227%
+trans: 28.8837% 	crank: 38.1945% 	pivot: 40.3822% 	rot: 86.1427% 	
+Sweep number 200000
+acceptance rate: 79.7219%
+trans: 28.8766% 	crank: 38.1884% 	pivot: 40.3817% 	rot: 86.1428% 	
+Sweep number 201000
+acceptance rate: 79.7215%
+trans: 28.8739% 	crank: 38.1867% 	pivot: 40.3768% 	rot: 86.1426% 	
+Sweep number 202000
+acceptance rate: 79.7213%
+trans: 28.8744% 	crank: 38.1865% 	pivot: 40.3763% 	rot: 86.1424% 	
+Sweep number 203000
+acceptance rate: 79.7209%
+trans: 28.8693% 	crank: 38.1817% 	pivot: 40.3797% 	rot: 86.1426% 	
+Sweep number 204000
+acceptance rate: 79.7206%
+trans: 28.8673% 	crank: 38.178% 	pivot: 40.3784% 	rot: 86.1426% 	
+Sweep number 205000
+acceptance rate: 79.7209%
+trans: 28.8679% 	crank: 38.1776% 	pivot: 40.3849% 	rot: 86.1428% 	
+Sweep number 206000
+acceptance rate: 79.7205%
+trans: 28.8646% 	crank: 38.1733% 	pivot: 40.376% 	rot: 86.143% 	
+Sweep number 207000
+acceptance rate: 79.7206%
+trans: 28.8632% 	crank: 38.1726% 	pivot: 40.3716% 	rot: 86.1433% 	
+Sweep number 208000
+acceptance rate: 79.7195%
+trans: 28.8544% 	crank: 38.1656% 	pivot: 40.3526% 	rot: 86.1432% 	
+Sweep number 209000
+acceptance rate: 79.7187%
+trans: 28.8478% 	crank: 38.1589% 	pivot: 40.3417% 	rot: 86.1432% 	
+Sweep number 210000
+acceptance rate: 79.7184%
+trans: 28.8451% 	crank: 38.1561% 	pivot: 40.3351% 	rot: 86.1433% 	
+Sweep number 211000
+acceptance rate: 79.7178%
+trans: 28.8422% 	crank: 38.1524% 	pivot: 40.3303% 	rot: 86.1431% 	
+Sweep number 212000
+acceptance rate: 79.717%
+trans: 28.8351% 	crank: 38.1439% 	pivot: 40.3258% 	rot: 86.1433% 	
+Sweep number 213000
+acceptance rate: 79.7161%
+trans: 28.8292% 	crank: 38.1375% 	pivot: 40.3173% 	rot: 86.1431% 	
+Sweep number 214000
+acceptance rate: 79.7155%
+trans: 28.8231% 	crank: 38.1319% 	pivot: 40.3163% 	rot: 86.1433% 	
+Sweep number 215000
+acceptance rate: 79.7141%
+trans: 28.812% 	crank: 38.1218% 	pivot: 40.2987% 	rot: 86.1432% 	
+Sweep number 216000
+acceptance rate: 79.7132%
+trans: 28.8041% 	crank: 38.1132% 	pivot: 40.2931% 	rot: 86.1432% 	
+Sweep number 217000
+acceptance rate: 79.7121%
+trans: 28.7963% 	crank: 38.1057% 	pivot: 40.2816% 	rot: 86.1431% 	
+Sweep number 218000
+acceptance rate: 79.7115%
+trans: 28.7922% 	crank: 38.1012% 	pivot: 40.2699% 	rot: 86.143% 	
+Sweep number 219000
+acceptance rate: 79.7115%
+trans: 28.7907% 	crank: 38.1% 	pivot: 40.267% 	rot: 86.1433% 	
+Sweep number 220000
+acceptance rate: 79.7113%
+trans: 28.7886% 	crank: 38.0978% 	pivot: 40.2621% 	rot: 86.1434% 	
+Sweep number 221000
+acceptance rate: 79.7112%
+trans: 28.7889% 	crank: 38.0956% 	pivot: 40.2548% 	rot: 86.1435% 	
+Sweep number 222000
+acceptance rate: 79.711%
+trans: 28.7882% 	crank: 38.0947% 	pivot: 40.2446% 	rot: 86.1434% 	
+Sweep number 223000
+acceptance rate: 79.7106%
+trans: 28.7866% 	crank: 38.0932% 	pivot: 40.2339% 	rot: 86.1432% 	
+Sweep number 224000
+acceptance rate: 79.7103%
+trans: 28.7847% 	crank: 38.0906% 	pivot: 40.2398% 	rot: 86.1431% 	
+Sweep number 225000
+acceptance rate: 79.7104%
+trans: 28.7859% 	crank: 38.0915% 	pivot: 40.2493% 	rot: 86.143% 	
+Sweep number 226000
+acceptance rate: 79.7103%
+trans: 28.7835% 	crank: 38.0908% 	pivot: 40.25% 	rot: 86.1431% 	
+Sweep number 227000
+acceptance rate: 79.7101%
+trans: 28.7811% 	crank: 38.0888% 	pivot: 40.2476% 	rot: 86.1432% 	
+Sweep number 228000
+acceptance rate: 79.7099%
+trans: 28.78% 	crank: 38.0874% 	pivot: 40.2589% 	rot: 86.143% 	
+Sweep number 229000
+acceptance rate: 79.7093%
+trans: 28.7741% 	crank: 38.0813% 	pivot: 40.255% 	rot: 86.1432% 	
+Sweep number 230000
+acceptance rate: 79.7099%
+trans: 28.7744% 	crank: 38.083% 	pivot: 40.2587% 	rot: 86.1437% 	
+Sweep number 231000
+acceptance rate: 79.7099%
+trans: 28.772% 	crank: 38.081% 	pivot: 40.2606% 	rot: 86.1441% 	
+Sweep number 232000
+acceptance rate: 79.7095%
+trans: 28.7688% 	crank: 38.078% 	pivot: 40.2532% 	rot: 86.144% 	
+Sweep number 233000
+acceptance rate: 79.7094%
+trans: 28.7675% 	crank: 38.0767% 	pivot: 40.2457% 	rot: 86.1441% 	
+Sweep number 234000
+acceptance rate: 79.709%
+trans: 28.7629% 	crank: 38.0736% 	pivot: 40.2351% 	rot: 86.1442% 	
+Sweep number 235000
+acceptance rate: 79.7086%
+trans: 28.7606% 	crank: 38.0708% 	pivot: 40.2227% 	rot: 86.1442% 	
+Sweep number 236000
+acceptance rate: 79.7083%
+trans: 28.7593% 	crank: 38.0695% 	pivot: 40.2153% 	rot: 86.1441% 	
+Sweep number 237000
+acceptance rate: 79.7077%
+trans: 28.7533% 	crank: 38.0647% 	pivot: 40.2031% 	rot: 86.1443% 	
+Sweep number 238000
+acceptance rate: 79.7073%
+trans: 28.7512% 	crank: 38.0613% 	pivot: 40.1972% 	rot: 86.1442% 	
+Sweep number 239000
+acceptance rate: 79.7068%
+trans: 28.7485% 	crank: 38.0594% 	pivot: 40.1979% 	rot: 86.1439% 	
+Sweep number 240000
+acceptance rate: 79.7068%
+trans: 28.7444% 	crank: 38.0555% 	pivot: 40.193% 	rot: 86.1444% 	
+Sweep number 241000
+acceptance rate: 79.7063%
+trans: 28.7397% 	crank: 38.0514% 	pivot: 40.1823% 	rot: 86.1445% 	
+Sweep number 242000
+acceptance rate: 79.7062%
+trans: 28.739% 	crank: 38.0513% 	pivot: 40.1911% 	rot: 86.1444% 	
+Sweep number 243000
+acceptance rate: 79.7063%
+trans: 28.7393% 	crank: 38.0506% 	pivot: 40.1942% 	rot: 86.1446% 	
+Sweep number 244000
+acceptance rate: 79.7064%
+trans: 28.7397% 	crank: 38.0502% 	pivot: 40.1964% 	rot: 86.1446% 	
+Sweep number 245000
+acceptance rate: 79.7065%
+trans: 28.7384% 	crank: 38.0513% 	pivot: 40.1933% 	rot: 86.1448% 	
+Sweep number 246000
+acceptance rate: 79.7063%
+trans: 28.7364% 	crank: 38.0491% 	pivot: 40.1833% 	rot: 86.145% 	
+Sweep number 247000
+acceptance rate: 79.7068%
+trans: 28.7384% 	crank: 38.05% 	pivot: 40.1976% 	rot: 86.1452% 	
+Sweep number 248000
+acceptance rate: 79.7072%
+trans: 28.7397% 	crank: 38.0521% 	pivot: 40.2142% 	rot: 86.1453% 	
+Sweep number 249000
+acceptance rate: 79.7065%
+trans: 28.7383% 	crank: 38.0483% 	pivot: 40.2235% 	rot: 86.1448% 	
+Sweep number 250000
+acceptance rate: 79.7062%
+trans: 28.7351% 	crank: 38.0467% 	pivot: 40.2196% 	rot: 86.1448% 	
+Sweep number 251000
+acceptance rate: 79.706%
+trans: 28.735% 	crank: 38.0466% 	pivot: 40.2084% 	rot: 86.1447% 	
+Sweep number 252000
+acceptance rate: 79.7056%
+trans: 28.7322% 	crank: 38.0446% 	pivot: 40.2104% 	rot: 86.1445% 	
+Sweep number 253000
+acceptance rate: 79.7061%
+trans: 28.7338% 	crank: 38.0478% 	pivot: 40.2005% 	rot: 86.1449% 	
+Sweep number 254000
+acceptance rate: 79.7064%
+trans: 28.7361% 	crank: 38.0503% 	pivot: 40.2011% 	rot: 86.1449% 	
+Sweep number 255000
+acceptance rate: 79.7067%
+trans: 28.738% 	crank: 38.0519% 	pivot: 40.2021% 	rot: 86.145% 	
+Sweep number 256000
+acceptance rate: 79.7064%
+trans: 28.7362% 	crank: 38.0492% 	pivot: 40.1999% 	rot: 86.1449% 	
+Sweep number 257000
+acceptance rate: 79.7059%
+trans: 28.7309% 	crank: 38.043% 	pivot: 40.2015% 	rot: 86.1451% 	
+Sweep number 258000
+acceptance rate: 79.7056%
+trans: 28.7269% 	crank: 38.0384% 	pivot: 40.1947% 	rot: 86.1454% 	
+Sweep number 259000
+acceptance rate: 79.7054%
+trans: 28.7254% 	crank: 38.0352% 	pivot: 40.2084% 	rot: 86.1453% 	
+Sweep number 260000
+acceptance rate: 79.7052%
+trans: 28.7243% 	crank: 38.0337% 	pivot: 40.2075% 	rot: 86.1454% 	
+Sweep number 261000
+acceptance rate: 79.7049%
+trans: 28.7236% 	crank: 38.0318% 	pivot: 40.2048% 	rot: 86.1452% 	
+Sweep number 262000
+acceptance rate: 79.7047%
+trans: 28.7211% 	crank: 38.0299% 	pivot: 40.2042% 	rot: 86.1453% 	
+Sweep number 263000
+acceptance rate: 79.7048%
+trans: 28.721% 	crank: 38.0291% 	pivot: 40.2044% 	rot: 86.1454% 	
+Sweep number 264000
+acceptance rate: 79.7047%
+trans: 28.7218% 	crank: 38.0293% 	pivot: 40.1959% 	rot: 86.1453% 	
+Sweep number 265000
+acceptance rate: 79.7049%
+trans: 28.7216% 	crank: 38.0314% 	pivot: 40.192% 	rot: 86.1454% 	
+Sweep number 266000
+acceptance rate: 79.7047%
+trans: 28.7208% 	crank: 38.0295% 	pivot: 40.1775% 	rot: 86.1455% 	
+Sweep number 267000
+acceptance rate: 79.7046%
+trans: 28.7204% 	crank: 38.03% 	pivot: 40.1764% 	rot: 86.1454% 	
+Sweep number 268000
+acceptance rate: 79.7044%
+trans: 28.7216% 	crank: 38.0298% 	pivot: 40.1794% 	rot: 86.1451% 	
+Sweep number 269000
+acceptance rate: 79.7044%
+trans: 28.7212% 	crank: 38.0291% 	pivot: 40.1828% 	rot: 86.1451% 	
+Sweep number 270000
+acceptance rate: 79.7045%
+trans: 28.7198% 	crank: 38.029% 	pivot: 40.1737% 	rot: 86.1454% 	
+Sweep number 271000
+acceptance rate: 79.7043%
+trans: 28.7176% 	crank: 38.0277% 	pivot: 40.1631% 	rot: 86.1455% 	
+Sweep number 272000
+acceptance rate: 79.7043%
+trans: 28.7153% 	crank: 38.0266% 	pivot: 40.1639% 	rot: 86.1457% 	
+Sweep number 273000
+acceptance rate: 79.7041%
+trans: 28.7137% 	crank: 38.0254% 	pivot: 40.1606% 	rot: 86.1457% 	
+Sweep number 274000
+acceptance rate: 79.7043%
+trans: 28.7136% 	crank: 38.0256% 	pivot: 40.1518% 	rot: 86.1459% 	
+Sweep number 275000
+acceptance rate: 79.7047%
+trans: 28.7144% 	crank: 38.0276% 	pivot: 40.1676% 	rot: 86.1461% 	
+Sweep number 276000
+acceptance rate: 79.7049%
+trans: 28.7149% 	crank: 38.0284% 	pivot: 40.1656% 	rot: 86.1463% 	
+Sweep number 277000
+acceptance rate: 79.7048%
+trans: 28.7134% 	crank: 38.026% 	pivot: 40.183% 	rot: 86.1462% 	
+Sweep number 278000
+acceptance rate: 79.7045%
+trans: 28.7125% 	crank: 38.0237% 	pivot: 40.1639% 	rot: 86.1463% 	
+Sweep number 279000
+acceptance rate: 79.7043%
+trans: 28.7094% 	crank: 38.0215% 	pivot: 40.1648% 	rot: 86.1464% 	
+Sweep number 280000
+acceptance rate: 79.7041%
+trans: 28.7096% 	crank: 38.0211% 	pivot: 40.1723% 	rot: 86.1462% 	
+Sweep number 281000
+acceptance rate: 79.704%
+trans: 28.7081% 	crank: 38.0202% 	pivot: 40.1774% 	rot: 86.1461% 	
+Sweep number 282000
+acceptance rate: 79.7036%
+trans: 28.7059% 	crank: 38.0165% 	pivot: 40.1797% 	rot: 86.1461% 	
+Sweep number 283000
+acceptance rate: 79.7036%
+trans: 28.7056% 	crank: 38.0165% 	pivot: 40.182% 	rot: 86.146% 	
+Sweep number 284000
+acceptance rate: 79.7036%
+trans: 28.7063% 	crank: 38.0181% 	pivot: 40.1844% 	rot: 86.146% 	
+Sweep number 285000
+acceptance rate: 79.7035%
+trans: 28.7035% 	crank: 38.0157% 	pivot: 40.1771% 	rot: 86.1462% 	
+Sweep number 286000
+acceptance rate: 79.7041%
+trans: 28.7082% 	crank: 38.0216% 	pivot: 40.1803% 	rot: 86.1461% 	
+Sweep number 287000
+acceptance rate: 79.7043%
+trans: 28.7094% 	crank: 38.0228% 	pivot: 40.1812% 	rot: 86.1462% 	
+Sweep number 288000
+acceptance rate: 79.7043%
+trans: 28.7087% 	crank: 38.0219% 	pivot: 40.1822% 	rot: 86.1463% 	
+Sweep number 289000
+acceptance rate: 79.7044%
+trans: 28.7107% 	crank: 38.0214% 	pivot: 40.1748% 	rot: 86.1463% 	
+Sweep number 290000
+acceptance rate: 79.7046%
+trans: 28.7127% 	crank: 38.0236% 	pivot: 40.1738% 	rot: 86.1464% 	
+Sweep number 291000
+acceptance rate: 79.7051%
+trans: 28.7154% 	crank: 38.0255% 	pivot: 40.1765% 	rot: 86.1466% 	
+Sweep number 292000
+acceptance rate: 79.7054%
+trans: 28.7151% 	crank: 38.0243% 	pivot: 40.1826% 	rot: 86.1469% 	
+Sweep number 293000
+acceptance rate: 79.7055%
+trans: 28.7165% 	crank: 38.0239% 	pivot: 40.1855% 	rot: 86.147% 	
+Sweep number 294000
+acceptance rate: 79.7058%
+trans: 28.7189% 	crank: 38.024% 	pivot: 40.1804% 	rot: 86.1472% 	
+Sweep number 295000
+acceptance rate: 79.7059%
+trans: 28.7207% 	crank: 38.0247% 	pivot: 40.1795% 	rot: 86.1472% 	
+Sweep number 296000
+acceptance rate: 79.7059%
+trans: 28.7209% 	crank: 38.0247% 	pivot: 40.1745% 	rot: 86.1472% 	
+Sweep number 297000
+acceptance rate: 79.7058%
+trans: 28.7204% 	crank: 38.0246% 	pivot: 40.182% 	rot: 86.1471% 	
+Sweep number 298000
+acceptance rate: 79.7058%
+trans: 28.72% 	crank: 38.0251% 	pivot: 40.182% 	rot: 86.147% 	
+Sweep number 299000
+acceptance rate: 79.7057%
+trans: 28.7188% 	crank: 38.0243% 	pivot: 40.1813% 	rot: 86.1471% 	
+Sweep number 300000
+acceptance rate: 79.7053%
+trans: 28.7169% 	crank: 38.0223% 	pivot: 40.1743% 	rot: 86.147% 	
+Sweep number 301000
+acceptance rate: 79.7054%
+trans: 28.7159% 	crank: 38.0211% 	pivot: 40.1969% 	rot: 86.147% 	
+Sweep number 302000
+acceptance rate: 79.705%
+trans: 28.7116% 	crank: 38.0167% 	pivot: 40.202% 	rot: 86.1471% 	
+Sweep number 303000
+acceptance rate: 79.705%
+trans: 28.7123% 	crank: 38.0173% 	pivot: 40.201% 	rot: 86.1471% 	
+Sweep number 304000
+acceptance rate: 79.7049%
+trans: 28.7123% 	crank: 38.0163% 	pivot: 40.1956% 	rot: 86.147% 	
+Sweep number 305000
+acceptance rate: 79.705%
+trans: 28.7123% 	crank: 38.0165% 	pivot: 40.195% 	rot: 86.1471% 	
+Sweep number 306000
+acceptance rate: 79.7052%
+trans: 28.7132% 	crank: 38.0172% 	pivot: 40.1938% 	rot: 86.1473% 	
+Sweep number 307000
+acceptance rate: 79.7049%
+trans: 28.7095% 	crank: 38.0139% 	pivot: 40.1893% 	rot: 86.1475% 	
+Sweep number 308000
+acceptance rate: 79.7046%
+trans: 28.7066% 	crank: 38.0101% 	pivot: 40.1827% 	rot: 86.1475% 	
+Sweep number 309000
+acceptance rate: 79.7041%
+trans: 28.7043% 	crank: 38.0057% 	pivot: 40.1852% 	rot: 86.1474% 	
+Sweep number 310000
+acceptance rate: 79.7038%
+trans: 28.7023% 	crank: 38.0024% 	pivot: 40.1772% 	rot: 86.1475% 	
+Sweep number 311000
+acceptance rate: 79.7036%
+trans: 28.7001% 	crank: 38.0005% 	pivot: 40.1771% 	rot: 86.1475% 	
+Sweep number 312000
+acceptance rate: 79.7035%
+trans: 28.6981% 	crank: 37.9997% 	pivot: 40.1763% 	rot: 86.1477% 	
+Sweep number 313000
+acceptance rate: 79.7035%
+trans: 28.6959% 	crank: 37.9969% 	pivot: 40.1746% 	rot: 86.1479% 	
+Sweep number 314000
+acceptance rate: 79.7033%
+trans: 28.6941% 	crank: 37.9955% 	pivot: 40.1707% 	rot: 86.148% 	
+Sweep number 315000
+acceptance rate: 79.7028%
+trans: 28.6907% 	crank: 37.9915% 	pivot: 40.1658% 	rot: 86.148% 	
+Sweep number 316000
+acceptance rate: 79.7027%
+trans: 28.6889% 	crank: 37.9898% 	pivot: 40.1612% 	rot: 86.1481% 	
+Sweep number 317000
+acceptance rate: 79.7025%
+trans: 28.6881% 	crank: 37.9886% 	pivot: 40.1705% 	rot: 86.1479% 	
+Sweep number 318000
+acceptance rate: 79.7025%
+trans: 28.6891% 	crank: 37.9898% 	pivot: 40.1747% 	rot: 86.1478% 	
+Sweep number 319000
+acceptance rate: 79.7024%
+trans: 28.6868% 	crank: 37.9881% 	pivot: 40.1775% 	rot: 86.1479% 	
+Sweep number 320000
+acceptance rate: 79.7022%
+trans: 28.6859% 	crank: 37.9869% 	pivot: 40.1773% 	rot: 86.1478% 	
+Sweep number 321000
+acceptance rate: 79.702%
+trans: 28.6845% 	crank: 37.9865% 	pivot: 40.1718% 	rot: 86.1477% 	
+Sweep number 322000
+acceptance rate: 79.7018%
+trans: 28.6826% 	crank: 37.9845% 	pivot: 40.1797% 	rot: 86.1477% 	
+Sweep number 323000
+acceptance rate: 79.7021%
+trans: 28.6824% 	crank: 37.9851% 	pivot: 40.1843% 	rot: 86.148% 	
+Sweep number 324000
+acceptance rate: 79.7022%
+trans: 28.6838% 	crank: 37.9857% 	pivot: 40.1807% 	rot: 86.148% 	
+Sweep number 325000
+acceptance rate: 79.7019%
+trans: 28.6809% 	crank: 37.9838% 	pivot: 40.1737% 	rot: 86.1481% 	
+Sweep number 326000
+acceptance rate: 79.7018%
+trans: 28.6801% 	crank: 37.9834% 	pivot: 40.1728% 	rot: 86.148% 	
+Sweep number 327000
+acceptance rate: 79.7016%
+trans: 28.6802% 	crank: 37.9832% 	pivot: 40.1729% 	rot: 86.1477% 	
+Sweep number 328000
+acceptance rate: 79.7014%
+trans: 28.6798% 	crank: 37.9835% 	pivot: 40.1706% 	rot: 86.1476% 	
+Sweep number 329000
+acceptance rate: 79.7014%
+trans: 28.6799% 	crank: 37.9838% 	pivot: 40.1681% 	rot: 86.1475% 	
+Sweep number 330000
+acceptance rate: 79.7016%
+trans: 28.6813% 	crank: 37.9845% 	pivot: 40.1755% 	rot: 86.1476% 	
+Sweep number 331000
+acceptance rate: 79.7017%
+trans: 28.6812% 	crank: 37.9848% 	pivot: 40.1784% 	rot: 86.1477% 	
+Sweep number 332000
+acceptance rate: 79.7018%
+trans: 28.6808% 	crank: 37.9837% 	pivot: 40.1752% 	rot: 86.1479% 	
+Sweep number 333000
+acceptance rate: 79.7019%
+trans: 28.6807% 	crank: 37.9845% 	pivot: 40.1756% 	rot: 86.1479% 	
+Sweep number 334000
+acceptance rate: 79.7017%
+trans: 28.6797% 	crank: 37.9826% 	pivot: 40.1827% 	rot: 86.1479% 	
+Sweep number 335000
+acceptance rate: 79.701%
+trans: 28.6763% 	crank: 37.9793% 	pivot: 40.1789% 	rot: 86.1476% 	
+Sweep number 336000
+acceptance rate: 79.7012%
+trans: 28.6775% 	crank: 37.9798% 	pivot: 40.1919% 	rot: 86.1476% 	
+Sweep number 337000
+acceptance rate: 79.7009%
+trans: 28.6766% 	crank: 37.9786% 	pivot: 40.1918% 	rot: 86.1474% 	
+Sweep number 338000
+acceptance rate: 79.7009%
+trans: 28.6765% 	crank: 37.9788% 	pivot: 40.183% 	rot: 86.1475% 	
+Sweep number 339000
+acceptance rate: 79.7011%
+trans: 28.6775% 	crank: 37.9794% 	pivot: 40.1895% 	rot: 86.1476% 	
+Sweep number 340000
+acceptance rate: 79.701%
+trans: 28.6763% 	crank: 37.9792% 	pivot: 40.1907% 	rot: 86.1475% 	
+Sweep number 341000
+acceptance rate: 79.701%
+trans: 28.6754% 	crank: 37.979% 	pivot: 40.1947% 	rot: 86.1476% 	
+Sweep number 342000
+acceptance rate: 79.701%
+trans: 28.6755% 	crank: 37.9785% 	pivot: 40.1989% 	rot: 86.1476% 	
+Sweep number 343000
+acceptance rate: 79.7014%
+trans: 28.6777% 	crank: 37.9807% 	pivot: 40.2047% 	rot: 86.1477% 	
+Sweep number 344000
+acceptance rate: 79.7015%
+trans: 28.6779% 	crank: 37.9808% 	pivot: 40.2058% 	rot: 86.1477% 	
+Sweep number 345000
+acceptance rate: 79.7015%
+trans: 28.6776% 	crank: 37.9813% 	pivot: 40.2055% 	rot: 86.1478% 	
+Sweep number 346000
+acceptance rate: 79.7015%
+trans: 28.6788% 	crank: 37.9818% 	pivot: 40.2159% 	rot: 86.1476% 	
+Sweep number 347000
+acceptance rate: 79.7013%
+trans: 28.6771% 	crank: 37.9811% 	pivot: 40.2199% 	rot: 86.1475% 	
+Sweep number 348000
+acceptance rate: 79.7011%
+trans: 28.6769% 	crank: 37.9801% 	pivot: 40.2215% 	rot: 86.1474% 	
+Sweep number 349000
+acceptance rate: 79.701%
+trans: 28.6763% 	crank: 37.9787% 	pivot: 40.22% 	rot: 86.1473% 	
+Sweep number 350000
+acceptance rate: 79.7006%
+trans: 28.6738% 	crank: 37.9755% 	pivot: 40.2151% 	rot: 86.1473% 	
+Sweep number 351000
+acceptance rate: 79.7006%
+trans: 28.6743% 	crank: 37.9758% 	pivot: 40.2049% 	rot: 86.1474% 	
+Sweep number 352000
+acceptance rate: 79.7008%
+trans: 28.6762% 	crank: 37.9772% 	pivot: 40.2095% 	rot: 86.1473% 	
+Sweep number 353000
+acceptance rate: 79.701%
+trans: 28.6785% 	crank: 37.9798% 	pivot: 40.2067% 	rot: 86.1472% 	
+Sweep number 354000
+acceptance rate: 79.7014%
+trans: 28.681% 	crank: 37.9825% 	pivot: 40.2064% 	rot: 86.1473% 	
+Sweep number 355000
+acceptance rate: 79.7015%
+trans: 28.6824% 	crank: 37.9844% 	pivot: 40.2083% 	rot: 86.1472% 	
+Sweep number 356000
+acceptance rate: 79.7016%
+trans: 28.684% 	crank: 37.9863% 	pivot: 40.2087% 	rot: 86.147% 	
+Sweep number 357000
+acceptance rate: 79.7015%
+trans: 28.6824% 	crank: 37.985% 	pivot: 40.2041% 	rot: 86.1472% 	
+Sweep number 358000
+acceptance rate: 79.7014%
+trans: 28.6793% 	crank: 37.9829% 	pivot: 40.2039% 	rot: 86.1475% 	
+Sweep number 359000
+acceptance rate: 79.7018%
+trans: 28.6817% 	crank: 37.9857% 	pivot: 40.2051% 	rot: 86.1475% 	
+Sweep number 360000
+acceptance rate: 79.7017%
+trans: 28.6817% 	crank: 37.9857% 	pivot: 40.2045% 	rot: 86.1474% 	
+Sweep number 361000
+acceptance rate: 79.7016%
+trans: 28.6819% 	crank: 37.9856% 	pivot: 40.2027% 	rot: 86.1473% 	
+Sweep number 362000
+acceptance rate: 79.7017%
+trans: 28.6822% 	crank: 37.9865% 	pivot: 40.2119% 	rot: 86.1473% 	
+Sweep number 363000
+acceptance rate: 79.7021%
+trans: 28.6839% 	crank: 37.9894% 	pivot: 40.2196% 	rot: 86.1473% 	
+Sweep number 364000
+acceptance rate: 79.7023%
+trans: 28.6841% 	crank: 37.9906% 	pivot: 40.2255% 	rot: 86.1474% 	
+Sweep number 365000
+acceptance rate: 79.7025%
+trans: 28.6851% 	crank: 37.9915% 	pivot: 40.2296% 	rot: 86.1476% 	
+Sweep number 366000
+acceptance rate: 79.7024%
+trans: 28.6838% 	crank: 37.9911% 	pivot: 40.2332% 	rot: 86.1476% 	
+Sweep number 367000
+acceptance rate: 79.7025%
+trans: 28.6848% 	crank: 37.9927% 	pivot: 40.2348% 	rot: 86.1475% 	
+Sweep number 368000
+acceptance rate: 79.7024%
+trans: 28.6832% 	crank: 37.9924% 	pivot: 40.2351% 	rot: 86.1474% 	
+Sweep number 369000
+acceptance rate: 79.7026%
+trans: 28.6837% 	crank: 37.9927% 	pivot: 40.2348% 	rot: 86.1476% 	
+Sweep number 370000
+acceptance rate: 79.7027%
+trans: 28.6836% 	crank: 37.9937% 	pivot: 40.2393% 	rot: 86.1477% 	
+Sweep number 371000
+acceptance rate: 79.7031%
+trans: 28.685% 	crank: 37.9951% 	pivot: 40.2412% 	rot: 86.1479% 	
+Sweep number 372000
+acceptance rate: 79.703%
+trans: 28.6839% 	crank: 37.9944% 	pivot: 40.24% 	rot: 86.1479% 	
+Sweep number 373000
+acceptance rate: 79.7029%
+trans: 28.6835% 	crank: 37.9933% 	pivot: 40.2431% 	rot: 86.1479% 	
+Sweep number 374000
+acceptance rate: 79.7028%
+trans: 28.6834% 	crank: 37.9931% 	pivot: 40.2376% 	rot: 86.1478% 	
+Sweep number 375000
+acceptance rate: 79.703%
+trans: 28.6852% 	crank: 37.9949% 	pivot: 40.2372% 	rot: 86.1478% 	
+Sweep number 376000
+acceptance rate: 79.7031%
+trans: 28.6859% 	crank: 37.9947% 	pivot: 40.2367% 	rot: 86.1479% 	
+Sweep number 377000
+acceptance rate: 79.7033%
+trans: 28.6887% 	crank: 37.9961% 	pivot: 40.2314% 	rot: 86.1479% 	
+Sweep number 378000
+acceptance rate: 79.7034%
+trans: 28.6895% 	crank: 37.9976% 	pivot: 40.2352% 	rot: 86.1479% 	
+Sweep number 379000
+acceptance rate: 79.7033%
+trans: 28.6891% 	crank: 37.9976% 	pivot: 40.2324% 	rot: 86.1477% 	
+Sweep number 380000
+acceptance rate: 79.7034%
+trans: 28.6922% 	crank: 37.9995% 	pivot: 40.2278% 	rot: 86.1476% 	
+Sweep number 381000
+acceptance rate: 79.7035%
+trans: 28.6933% 	crank: 37.9999% 	pivot: 40.2169% 	rot: 86.1477% 	
+Sweep number 382000
+acceptance rate: 79.7036%
+trans: 28.6937% 	crank: 38.0004% 	pivot: 40.2084% 	rot: 86.1478% 	
+Sweep number 383000
+acceptance rate: 79.7036%
+trans: 28.6946% 	crank: 38.0004% 	pivot: 40.2101% 	rot: 86.1477% 	
+Sweep number 384000
+acceptance rate: 79.7038%
+trans: 28.6949% 	crank: 38.0022% 	pivot: 40.2167% 	rot: 86.1477% 	
+Sweep number 385000
+acceptance rate: 79.7039%
+trans: 28.6947% 	crank: 38.0021% 	pivot: 40.2138% 	rot: 86.1479% 	
+Sweep number 386000
+acceptance rate: 79.7039%
+trans: 28.6936% 	crank: 38.0021% 	pivot: 40.2162% 	rot: 86.1479% 	
+Sweep number 387000
+acceptance rate: 79.7038%
+trans: 28.6925% 	crank: 38.0008% 	pivot: 40.2136% 	rot: 86.1481% 	
+Sweep number 388000
+acceptance rate: 79.7037%
+trans: 28.6923% 	crank: 37.9994% 	pivot: 40.2162% 	rot: 86.148% 	
+Sweep number 389000
+acceptance rate: 79.7035%
+trans: 28.6911% 	crank: 37.9981% 	pivot: 40.2113% 	rot: 86.1479% 	
+Sweep number 390000
+acceptance rate: 79.7031%
+trans: 28.6891% 	crank: 37.9958% 	pivot: 40.2064% 	rot: 86.1478% 	
+Sweep number 391000
+acceptance rate: 79.7031%
+trans: 28.6888% 	crank: 37.9954% 	pivot: 40.2127% 	rot: 86.1479% 	
+Sweep number 392000
+acceptance rate: 79.7032%
+trans: 28.6898% 	crank: 37.996% 	pivot: 40.2169% 	rot: 86.1478% 	
+Sweep number 393000
+acceptance rate: 79.7032%
+trans: 28.6903% 	crank: 37.9968% 	pivot: 40.2133% 	rot: 86.1478% 	
+Sweep number 394000
+acceptance rate: 79.7033%
+trans: 28.6907% 	crank: 37.9963% 	pivot: 40.2118% 	rot: 86.1478% 	
+Sweep number 395000
+acceptance rate: 79.7032%
+trans: 28.6898% 	crank: 37.9957% 	pivot: 40.2064% 	rot: 86.1479% 	
+Sweep number 396000
+acceptance rate: 79.7034%
+trans: 28.6904% 	crank: 37.9967% 	pivot: 40.2033% 	rot: 86.148% 	
+Sweep number 397000
+acceptance rate: 79.7034%
+trans: 28.6902% 	crank: 37.9977% 	pivot: 40.2068% 	rot: 86.148% 	
+Sweep number 398000
+acceptance rate: 79.7034%
+trans: 28.6907% 	crank: 37.9983% 	pivot: 40.2092% 	rot: 86.1479% 	
+Sweep number 399000
+acceptance rate: 79.7036%
+trans: 28.6913% 	crank: 37.9992% 	pivot: 40.2092% 	rot: 86.148% 	
+Sweep number 400000
+acceptance rate: 79.7036%
+trans: 28.6916% 	crank: 37.9999% 	pivot: 40.2093% 	rot: 86.1479% 	
+Sweep number 401000
+acceptance rate: 79.7036%
+trans: 28.6918% 	crank: 38.0003% 	pivot: 40.2064% 	rot: 86.1479% 	
+Sweep number 402000
+acceptance rate: 79.7035%
+trans: 28.6914% 	crank: 37.9999% 	pivot: 40.2016% 	rot: 86.1478% 	
+Sweep number 403000
+acceptance rate: 79.7037%
+trans: 28.693% 	crank: 38.0018% 	pivot: 40.1979% 	rot: 86.1479% 	
+Sweep number 404000
+acceptance rate: 79.7034%
+trans: 28.6918% 	crank: 38.0005% 	pivot: 40.192% 	rot: 86.1478% 	
+Sweep number 405000
+acceptance rate: 79.7036%
+trans: 28.6928% 	crank: 38.002% 	pivot: 40.1943% 	rot: 86.1478% 	
+Sweep number 406000
+acceptance rate: 79.7034%
+trans: 28.6913% 	crank: 38.0011% 	pivot: 40.193% 	rot: 86.1477% 	
+Sweep number 407000
+acceptance rate: 79.7035%
+trans: 28.6928% 	crank: 38.0016% 	pivot: 40.1877% 	rot: 86.1478% 	
+Sweep number 408000
+acceptance rate: 79.7037%
+trans: 28.6932% 	crank: 38.0028% 	pivot: 40.1822% 	rot: 86.148% 	
+Sweep number 409000
+acceptance rate: 79.7038%
+trans: 28.6925% 	crank: 38.0021% 	pivot: 40.1801% 	rot: 86.1482% 	
+Sweep number 410000
+acceptance rate: 79.7038%
+trans: 28.6925% 	crank: 38.0019% 	pivot: 40.1743% 	rot: 86.1482% 	
+Sweep number 411000
+acceptance rate: 79.7037%
+trans: 28.6925% 	crank: 38.0008% 	pivot: 40.1693% 	rot: 86.1482% 	
+Sweep number 412000
+acceptance rate: 79.7038%
+trans: 28.6937% 	crank: 38.0024% 	pivot: 40.1637% 	rot: 86.1482% 	
+Sweep number 413000
+acceptance rate: 79.7041%
+trans: 28.6958% 	crank: 38.0045% 	pivot: 40.1663% 	rot: 86.1482% 	
+Sweep number 414000
+acceptance rate: 79.7041%
+trans: 28.6962% 	crank: 38.004% 	pivot: 40.1614% 	rot: 86.1482% 	
+Sweep number 415000
+acceptance rate: 79.7041%
+trans: 28.6967% 	crank: 38.004% 	pivot: 40.1541% 	rot: 86.1482% 	
+Sweep number 416000
+acceptance rate: 79.7039%
+trans: 28.6975% 	crank: 38.0033% 	pivot: 40.1491% 	rot: 86.1481% 	
+Sweep number 417000
+acceptance rate: 79.704%
+trans: 28.6994% 	crank: 38.0053% 	pivot: 40.1447% 	rot: 86.148% 	
+Sweep number 418000
+acceptance rate: 79.7041%
+trans: 28.7014% 	crank: 38.0064% 	pivot: 40.1435% 	rot: 86.1479% 	
+Sweep number 419000
+acceptance rate: 79.7042%
+trans: 28.7029% 	crank: 38.0069% 	pivot: 40.145% 	rot: 86.1479% 	
+Sweep number 420000
+acceptance rate: 79.7045%
+trans: 28.7042% 	crank: 38.0082% 	pivot: 40.1508% 	rot: 86.148% 	
+Sweep number 421000
+acceptance rate: 79.7049%
+trans: 28.706% 	crank: 38.0107% 	pivot: 40.1583% 	rot: 86.148% 	
+Sweep number 422000
+acceptance rate: 79.7052%
+trans: 28.7096% 	crank: 38.0138% 	pivot: 40.164% 	rot: 86.148% 	
+Sweep number 423000
+acceptance rate: 79.7052%
+trans: 28.7084% 	crank: 38.012% 	pivot: 40.169% 	rot: 86.1481% 	
+Sweep number 424000
+acceptance rate: 79.7055%
+trans: 28.7104% 	crank: 38.0137% 	pivot: 40.1689% 	rot: 86.1482% 	
+Sweep number 425000
+acceptance rate: 79.7055%
+trans: 28.7108% 	crank: 38.0137% 	pivot: 40.1663% 	rot: 86.1481% 	
+Sweep number 426000
+acceptance rate: 79.7053%
+trans: 28.709% 	crank: 38.0121% 	pivot: 40.1631% 	rot: 86.1483% 	
+Sweep number 427000
+acceptance rate: 79.7052%
+trans: 28.7078% 	crank: 38.0101% 	pivot: 40.1648% 	rot: 86.1484% 	
+Sweep number 428000
+acceptance rate: 79.7051%
+trans: 28.7069% 	crank: 38.0096% 	pivot: 40.1633% 	rot: 86.1483% 	
+Sweep number 429000
+acceptance rate: 79.7049%
+trans: 28.7059% 	crank: 38.008% 	pivot: 40.159% 	rot: 86.1483% 	
+Sweep number 430000
+acceptance rate: 79.7049%
+trans: 28.7067% 	crank: 38.0086% 	pivot: 40.1588% 	rot: 86.1482% 	
+Sweep number 431000
+acceptance rate: 79.705%
+trans: 28.7067% 	crank: 38.0086% 	pivot: 40.1557% 	rot: 86.1483% 	
+Sweep number 432000
+acceptance rate: 79.7048%
+trans: 28.7054% 	crank: 38.0074% 	pivot: 40.1589% 	rot: 86.1482% 	
+Sweep number 433000
+acceptance rate: 79.7049%
+trans: 28.7058% 	crank: 38.0079% 	pivot: 40.1594% 	rot: 86.1483% 	
+Sweep number 434000
+acceptance rate: 79.7048%
+trans: 28.706% 	crank: 38.0081% 	pivot: 40.1599% 	rot: 86.1481% 	
+Sweep number 435000
+acceptance rate: 79.7051%
+trans: 28.7088% 	crank: 38.0113% 	pivot: 40.1637% 	rot: 86.1481% 	
+Sweep number 436000
+acceptance rate: 79.7055%
+trans: 28.7118% 	crank: 38.0135% 	pivot: 40.1646% 	rot: 86.1482% 	
+Sweep number 437000
+acceptance rate: 79.7057%
+trans: 28.7126% 	crank: 38.0148% 	pivot: 40.1694% 	rot: 86.1482% 	
+Sweep number 438000
+acceptance rate: 79.7061%
+trans: 28.7154% 	crank: 38.0179% 	pivot: 40.1713% 	rot: 86.1482% 	
+Sweep number 439000
+acceptance rate: 79.7063%
+trans: 28.7168% 	crank: 38.0202% 	pivot: 40.1751% 	rot: 86.1483% 	
+Sweep number 440000
+acceptance rate: 79.7067%
+trans: 28.7185% 	crank: 38.0217% 	pivot: 40.1803% 	rot: 86.1484% 	
+Sweep number 441000
+acceptance rate: 79.7068%
+trans: 28.7187% 	crank: 38.0224% 	pivot: 40.1853% 	rot: 86.1484% 	
+Sweep number 442000
+acceptance rate: 79.7069%
+trans: 28.7202% 	crank: 38.0237% 	pivot: 40.1888% 	rot: 86.1483% 	
+Sweep number 443000
+acceptance rate: 79.7071%
+trans: 28.7216% 	crank: 38.0251% 	pivot: 40.1998% 	rot: 86.1483% 	
+Sweep number 444000
+acceptance rate: 79.707%
+trans: 28.721% 	crank: 38.0241% 	pivot: 40.1992% 	rot: 86.1483% 	
+Sweep number 445000
+acceptance rate: 79.707%
+trans: 28.7208% 	crank: 38.0234% 	pivot: 40.2048% 	rot: 86.1483% 	
+Sweep number 446000
+acceptance rate: 79.7071%
+trans: 28.7221% 	crank: 38.0243% 	pivot: 40.2084% 	rot: 86.1483% 	
+Sweep number 447000
+acceptance rate: 79.7072%
+trans: 28.7223% 	crank: 38.0247% 	pivot: 40.2037% 	rot: 86.1484% 	
+Sweep number 448000
+acceptance rate: 79.7075%
+trans: 28.7238% 	crank: 38.0257% 	pivot: 40.2043% 	rot: 86.1486% 	
+Sweep number 449000
+acceptance rate: 79.7078%
+trans: 28.7261% 	crank: 38.0276% 	pivot: 40.201% 	rot: 86.1487% 	
+Sweep number 450000
+acceptance rate: 79.708%
+trans: 28.7265% 	crank: 38.0282% 	pivot: 40.2021% 	rot: 86.1488% 	
+Sweep number 451000
+acceptance rate: 79.7081%
+trans: 28.7272% 	crank: 38.0292% 	pivot: 40.1971% 	rot: 86.1488% 	
+Sweep number 452000
+acceptance rate: 79.708%
+trans: 28.7266% 	crank: 38.029% 	pivot: 40.1906% 	rot: 86.1488% 	
+Sweep number 453000
+acceptance rate: 79.7078%
+trans: 28.7263% 	crank: 38.0292% 	pivot: 40.188% 	rot: 86.1486% 	
+Sweep number 454000
+acceptance rate: 79.7075%
+trans: 28.7256% 	crank: 38.0283% 	pivot: 40.1866% 	rot: 86.1484% 	
+Sweep number 455000
+acceptance rate: 79.7077%
+trans: 28.7272% 	crank: 38.031% 	pivot: 40.1839% 	rot: 86.1483% 	
+Sweep number 456000
+acceptance rate: 79.708%
+trans: 28.7298% 	crank: 38.0327% 	pivot: 40.183% 	rot: 86.1484% 	
+Sweep number 457000
+acceptance rate: 79.708%
+trans: 28.7294% 	crank: 38.0331% 	pivot: 40.1833% 	rot: 86.1483% 	
+Sweep number 458000
+acceptance rate: 79.7081%
+trans: 28.7295% 	crank: 38.0344% 	pivot: 40.1862% 	rot: 86.1484% 	
+Sweep number 459000
+acceptance rate: 79.708%
+trans: 28.7287% 	crank: 38.0338% 	pivot: 40.1801% 	rot: 86.1485% 	
+Sweep number 460000
+acceptance rate: 79.708%
+trans: 28.7282% 	crank: 38.0328% 	pivot: 40.1764% 	rot: 86.1485% 	
+Sweep number 461000
+acceptance rate: 79.7076%
+trans: 28.7253% 	crank: 38.0299% 	pivot: 40.1711% 	rot: 86.1485% 	
+Sweep number 462000
+acceptance rate: 79.7073%
+trans: 28.7228% 	crank: 38.0274% 	pivot: 40.1677% 	rot: 86.1485% 	
+Sweep number 463000
+acceptance rate: 79.7072%
+trans: 28.7217% 	crank: 38.0262% 	pivot: 40.1656% 	rot: 86.1486% 	
+Sweep number 464000
+acceptance rate: 79.7068%
+trans: 28.7192% 	crank: 38.0239% 	pivot: 40.1644% 	rot: 86.1485% 	
+Sweep number 465000
+acceptance rate: 79.7068%
+trans: 28.7179% 	crank: 38.0238% 	pivot: 40.1677% 	rot: 86.1485% 	
+Sweep number 466000
+acceptance rate: 79.7067%
+trans: 28.7182% 	crank: 38.0244% 	pivot: 40.163% 	rot: 86.1484% 	
+Sweep number 467000
+acceptance rate: 79.7067%
+trans: 28.7185% 	crank: 38.0248% 	pivot: 40.1585% 	rot: 86.1484% 	
+Sweep number 468000
+acceptance rate: 79.7067%
+trans: 28.719% 	crank: 38.0247% 	pivot: 40.1528% 	rot: 86.1484% 	
+Sweep number 469000
+acceptance rate: 79.7067%
+trans: 28.7198% 	crank: 38.0247% 	pivot: 40.149% 	rot: 86.1483% 	
+Sweep number 470000
+acceptance rate: 79.7067%
+trans: 28.7203% 	crank: 38.026% 	pivot: 40.149% 	rot: 86.1482% 	
+Sweep number 471000
+acceptance rate: 79.7069%
+trans: 28.7201% 	crank: 38.0267% 	pivot: 40.1477% 	rot: 86.1484% 	
+Sweep number 472000
+acceptance rate: 79.7067%
+trans: 28.7189% 	crank: 38.0254% 	pivot: 40.1451% 	rot: 86.1484% 	
+Sweep number 473000
+acceptance rate: 79.7064%
+trans: 28.717% 	crank: 38.0246% 	pivot: 40.1425% 	rot: 86.1482% 	
+Sweep number 474000
+acceptance rate: 79.7061%
+trans: 28.7155% 	crank: 38.0218% 	pivot: 40.1434% 	rot: 86.1482% 	
+Sweep number 475000
+acceptance rate: 79.7062%
+trans: 28.7173% 	crank: 38.0225% 	pivot: 40.1459% 	rot: 86.1482% 	
+Sweep number 476000
+acceptance rate: 79.7065%
+trans: 28.7188% 	crank: 38.0235% 	pivot: 40.1418% 	rot: 86.1483% 	
+Sweep number 477000
+acceptance rate: 79.7066%
+trans: 28.7188% 	crank: 38.0232% 	pivot: 40.1412% 	rot: 86.1485% 	
+Sweep number 478000
+acceptance rate: 79.7066%
+trans: 28.7177% 	crank: 38.0217% 	pivot: 40.139% 	rot: 86.1486% 	
+Sweep number 479000
+acceptance rate: 79.7068%
+trans: 28.7187% 	crank: 38.0229% 	pivot: 40.137% 	rot: 86.1487% 	
+Sweep number 480000
+acceptance rate: 79.7068%
+trans: 28.7196% 	crank: 38.0235% 	pivot: 40.1371% 	rot: 86.1486% 	
+Sweep number 481000
+acceptance rate: 79.7069%
+trans: 28.7201% 	crank: 38.0249% 	pivot: 40.1371% 	rot: 86.1486% 	
+Sweep number 482000
+acceptance rate: 79.7067%
+trans: 28.7185% 	crank: 38.0227% 	pivot: 40.1411% 	rot: 86.1486% 	
+Sweep number 483000
+acceptance rate: 79.7065%
+trans: 28.7162% 	crank: 38.0199% 	pivot: 40.1561% 	rot: 86.1486% 	
+Sweep number 484000
+acceptance rate: 79.7064%
+trans: 28.7154% 	crank: 38.0183% 	pivot: 40.1547% 	rot: 86.1487% 	
+Sweep number 485000
+acceptance rate: 79.7064%
+trans: 28.7167% 	crank: 38.0189% 	pivot: 40.153% 	rot: 86.1486% 	
+Sweep number 486000
+acceptance rate: 79.7063%
+trans: 28.7169% 	crank: 38.0188% 	pivot: 40.1526% 	rot: 86.1484% 	
+Sweep number 487000
+acceptance rate: 79.7063%
+trans: 28.7184% 	crank: 38.0197% 	pivot: 40.1515% 	rot: 86.1483% 	
+Sweep number 488000
+acceptance rate: 79.7063%
+trans: 28.7176% 	crank: 38.0192% 	pivot: 40.1526% 	rot: 86.1483% 	
+Sweep number 489000
+acceptance rate: 79.7063%
+trans: 28.7182% 	crank: 38.0198% 	pivot: 40.1544% 	rot: 86.1483% 	
+Sweep number 490000
+acceptance rate: 79.7065%
+trans: 28.7204% 	crank: 38.0211% 	pivot: 40.1531% 	rot: 86.1483% 	
+Sweep number 491000
+acceptance rate: 79.7068%
+trans: 28.7211% 	crank: 38.0219% 	pivot: 40.1497% 	rot: 86.1486% 	
+Sweep number 492000
+acceptance rate: 79.7069%
+trans: 28.7201% 	crank: 38.0227% 	pivot: 40.1512% 	rot: 86.1487% 	
+Sweep number 493000
+acceptance rate: 79.7071%
+trans: 28.7209% 	crank: 38.0224% 	pivot: 40.1508% 	rot: 86.1489% 	
+Sweep number 494000
+acceptance rate: 79.707%
+trans: 28.7204% 	crank: 38.0221% 	pivot: 40.1527% 	rot: 86.1488% 	
+Sweep number 495000
+acceptance rate: 79.7069%
+trans: 28.7201% 	crank: 38.0222% 	pivot: 40.1523% 	rot: 86.1487% 	
+Sweep number 496000
+acceptance rate: 79.7068%
+trans: 28.7201% 	crank: 38.0223% 	pivot: 40.1432% 	rot: 86.1487% 	
+Sweep number 497000
+acceptance rate: 79.707%
+trans: 28.7202% 	crank: 38.0231% 	pivot: 40.1477% 	rot: 86.1487% 	
+Sweep number 498000
+acceptance rate: 79.7067%
+trans: 28.7199% 	crank: 38.0228% 	pivot: 40.1465% 	rot: 86.1485% 	
+Sweep number 499000
+acceptance rate: 79.7069%
+trans: 28.7209% 	crank: 38.0238% 	pivot: 40.1527% 	rot: 86.1485% 	
+Sweep number 500000
+acceptance rate: 79.707%
+trans: 28.7227% 	crank: 38.0259% 	pivot: 40.1532% 	rot: 86.1484% 	
+Sweep number 501000
+acceptance rate: 79.707%
+trans: 28.7227% 	crank: 38.0263% 	pivot: 40.1497% 	rot: 86.1484% 	
+Sweep number 502000
+acceptance rate: 79.7069%
+trans: 28.7234% 	crank: 38.0265% 	pivot: 40.1432% 	rot: 86.1483% 	
+Sweep number 503000
+acceptance rate: 79.7069%
+trans: 28.7237% 	crank: 38.0262% 	pivot: 40.14% 	rot: 86.1483% 	
+Sweep number 504000
+acceptance rate: 79.707%
+trans: 28.7238% 	crank: 38.026% 	pivot: 40.1389% 	rot: 86.1484% 	
+Sweep number 505000
+acceptance rate: 79.707%
+trans: 28.723% 	crank: 38.026% 	pivot: 40.138% 	rot: 86.1485% 	
+Sweep number 506000
+acceptance rate: 79.7071%
+trans: 28.723% 	crank: 38.0259% 	pivot: 40.1382% 	rot: 86.1485% 	
+Sweep number 507000
+acceptance rate: 79.7069%
+trans: 28.7217% 	crank: 38.0248% 	pivot: 40.1341% 	rot: 86.1486% 	
+Sweep number 508000
+acceptance rate: 79.7068%
+trans: 28.7212% 	crank: 38.0234% 	pivot: 40.1302% 	rot: 86.1486% 	
+Sweep number 509000
+acceptance rate: 79.7067%
+trans: 28.7193% 	crank: 38.0219% 	pivot: 40.13% 	rot: 86.1487% 	
+Sweep number 510000
+acceptance rate: 79.7067%
+trans: 28.7184% 	crank: 38.0207% 	pivot: 40.1293% 	rot: 86.1488% 	
+Sweep number 511000
+acceptance rate: 79.7066%
+trans: 28.7188% 	crank: 38.0206% 	pivot: 40.1221% 	rot: 86.1488% 	
+Sweep number 512000
+acceptance rate: 79.7065%
+trans: 28.7181% 	crank: 38.02% 	pivot: 40.1192% 	rot: 86.1488% 	
+Sweep number 513000
+acceptance rate: 79.7067%
+trans: 28.7192% 	crank: 38.0197% 	pivot: 40.1219% 	rot: 86.1488% 	
+Sweep number 514000
+acceptance rate: 79.7067%
+trans: 28.719% 	crank: 38.0195% 	pivot: 40.1217% 	rot: 86.1489% 	
+Sweep number 515000
+acceptance rate: 79.7065%
+trans: 28.7184% 	crank: 38.0186% 	pivot: 40.1241% 	rot: 86.1488% 	
+Sweep number 516000
+acceptance rate: 79.7068%
+trans: 28.7212% 	crank: 38.0211% 	pivot: 40.1292% 	rot: 86.1487% 	
+Sweep number 517000
+acceptance rate: 79.7069%
+trans: 28.7213% 	crank: 38.0214% 	pivot: 40.1302% 	rot: 86.1488% 	
+Sweep number 518000
+acceptance rate: 79.7069%
+trans: 28.721% 	crank: 38.0214% 	pivot: 40.1314% 	rot: 86.1488% 	
+Sweep number 519000
+acceptance rate: 79.7069%
+trans: 28.7225% 	crank: 38.0223% 	pivot: 40.1312% 	rot: 86.1487% 	
+Sweep number 520000
+acceptance rate: 79.7071%
+trans: 28.7229% 	crank: 38.0234% 	pivot: 40.1323% 	rot: 86.1487% 	
+Sweep number 521000
+acceptance rate: 79.7074%
+trans: 28.725% 	crank: 38.0259% 	pivot: 40.1334% 	rot: 86.1488% 	
+Sweep number 522000
+acceptance rate: 79.7078%
+trans: 28.7282% 	crank: 38.0294% 	pivot: 40.1366% 	rot: 86.1489% 	
+Sweep number 523000
+acceptance rate: 79.7079%
+trans: 28.7287% 	crank: 38.0295% 	pivot: 40.1385% 	rot: 86.1488% 	
+Sweep number 524000
+acceptance rate: 79.7079%
+trans: 28.7287% 	crank: 38.0298% 	pivot: 40.1406% 	rot: 86.1488% 	
+Sweep number 525000
+acceptance rate: 79.7081%
+trans: 28.7298% 	crank: 38.0302% 	pivot: 40.1415% 	rot: 86.1489% 	
+Sweep number 526000
+acceptance rate: 79.7082%
+trans: 28.7311% 	crank: 38.0319% 	pivot: 40.143% 	rot: 86.1489% 	
+Sweep number 527000
+acceptance rate: 79.7083%
+trans: 28.7321% 	crank: 38.0328% 	pivot: 40.1479% 	rot: 86.1488% 	
+Sweep number 528000
+acceptance rate: 79.7083%
+trans: 28.7326% 	crank: 38.0337% 	pivot: 40.15% 	rot: 86.1487% 	
+Sweep number 529000
+acceptance rate: 79.7083%
+trans: 28.7313% 	crank: 38.0334% 	pivot: 40.1513% 	rot: 86.1488% 	
+Sweep number 530000
+acceptance rate: 79.7084%
+trans: 28.7307% 	crank: 38.0336% 	pivot: 40.1566% 	rot: 86.1489% 	
+Sweep number 531000
+acceptance rate: 79.7084%
+trans: 28.7306% 	crank: 38.0343% 	pivot: 40.1623% 	rot: 86.1488% 	
+Sweep number 532000
+acceptance rate: 79.7088%
+trans: 28.734% 	crank: 38.0378% 	pivot: 40.166% 	rot: 86.1488% 	
+Sweep number 533000
+acceptance rate: 79.7087%
+trans: 28.7336% 	crank: 38.0373% 	pivot: 40.1635% 	rot: 86.1487% 	
+Sweep number 534000
+acceptance rate: 79.7089%
+trans: 28.7352% 	crank: 38.0391% 	pivot: 40.1639% 	rot: 86.1488% 	
+Sweep number 535000
+acceptance rate: 79.7091%
+trans: 28.736% 	crank: 38.0407% 	pivot: 40.165% 	rot: 86.1488% 	
+Sweep number 536000
+acceptance rate: 79.7093%
+trans: 28.7374% 	crank: 38.0423% 	pivot: 40.1624% 	rot: 86.1489% 	
+Sweep number 537000
+acceptance rate: 79.7092%
+trans: 28.7365% 	crank: 38.0419% 	pivot: 40.1577% 	rot: 86.1488% 	
+Sweep number 538000
+acceptance rate: 79.7092%
+trans: 28.7367% 	crank: 38.042% 	pivot: 40.1553% 	rot: 86.1488% 	
+Sweep number 539000
+acceptance rate: 79.7092%
+trans: 28.7365% 	crank: 38.0419% 	pivot: 40.1555% 	rot: 86.1489% 	
+Sweep number 540000
+acceptance rate: 79.7092%
+trans: 28.7368% 	crank: 38.0424% 	pivot: 40.1551% 	rot: 86.1488% 	
+Sweep number 541000
+acceptance rate: 79.7092%
+trans: 28.7368% 	crank: 38.0423% 	pivot: 40.1561% 	rot: 86.1488% 	
+Sweep number 542000
+acceptance rate: 79.709%
+trans: 28.7353% 	crank: 38.0412% 	pivot: 40.1502% 	rot: 86.1488% 	
+Sweep number 543000
+acceptance rate: 79.7087%
+trans: 28.7333% 	crank: 38.0392% 	pivot: 40.1524% 	rot: 86.1488% 	
+Sweep number 544000
+acceptance rate: 79.7087%
+trans: 28.7332% 	crank: 38.0383% 	pivot: 40.1502% 	rot: 86.1489% 	
+Sweep number 545000
+acceptance rate: 79.7086%
+trans: 28.7319% 	crank: 38.0366% 	pivot: 40.152% 	rot: 86.1488% 	
+Sweep number 546000
+acceptance rate: 79.7083%
+trans: 28.7301% 	crank: 38.0352% 	pivot: 40.1478% 	rot: 86.1488% 	
+Sweep number 547000
+acceptance rate: 79.708%
+trans: 28.7275% 	crank: 38.0325% 	pivot: 40.1455% 	rot: 86.1488% 	
+Sweep number 548000
+acceptance rate: 79.7082%
+trans: 28.729% 	crank: 38.0339% 	pivot: 40.1438% 	rot: 86.1488% 	
+Sweep number 549000
+acceptance rate: 79.7083%
+trans: 28.7295% 	crank: 38.0345% 	pivot: 40.1368% 	rot: 86.1489% 	
+Sweep number 550000
+acceptance rate: 79.7081%
+trans: 28.7288% 	crank: 38.0337% 	pivot: 40.1302% 	rot: 86.1489% 	
+Sweep number 551000
+acceptance rate: 79.708%
+trans: 28.7284% 	crank: 38.0336% 	pivot: 40.1252% 	rot: 86.1489% 	
+Sweep number 552000
+acceptance rate: 79.708%
+trans: 28.7283% 	crank: 38.0332% 	pivot: 40.1264% 	rot: 86.1489% 	
+Sweep number 553000
+acceptance rate: 79.7078%
+trans: 28.7265% 	crank: 38.0317% 	pivot: 40.1212% 	rot: 86.1488% 	
+Sweep number 554000
+acceptance rate: 79.7074%
+trans: 28.725% 	crank: 38.0299% 	pivot: 40.1201% 	rot: 86.1486% 	
+Sweep number 555000
+acceptance rate: 79.7074%
+trans: 28.725% 	crank: 38.0307% 	pivot: 40.1169% 	rot: 86.1486% 	
+Sweep number 556000
+acceptance rate: 79.7073%
+trans: 28.7237% 	crank: 38.0299% 	pivot: 40.1167% 	rot: 86.1486% 	
+Sweep number 557000
+acceptance rate: 79.7073%
+trans: 28.7233% 	crank: 38.0291% 	pivot: 40.1175% 	rot: 86.1487% 	
+Sweep number 558000
+acceptance rate: 79.7073%
+trans: 28.7239% 	crank: 38.0289% 	pivot: 40.1174% 	rot: 86.1487% 	
+Sweep number 559000
+acceptance rate: 79.7075%
+trans: 28.7253% 	crank: 38.0297% 	pivot: 40.1218% 	rot: 86.1487% 	
+Sweep number 560000
+acceptance rate: 79.7075%
+trans: 28.7262% 	crank: 38.0302% 	pivot: 40.1212% 	rot: 86.1487% 	
+Sweep number 561000
+acceptance rate: 79.7074%
+trans: 28.726% 	crank: 38.0299% 	pivot: 40.1169% 	rot: 86.1486% 	
+Sweep number 562000
+acceptance rate: 79.7075%
+trans: 28.726% 	crank: 38.0302% 	pivot: 40.1155% 	rot: 86.1487% 	
+Sweep number 563000
+acceptance rate: 79.7075%
+trans: 28.7261% 	crank: 38.0311% 	pivot: 40.1116% 	rot: 86.1487% 	
+Sweep number 564000
+acceptance rate: 79.7073%
+trans: 28.7239% 	crank: 38.029% 	pivot: 40.1105% 	rot: 86.1487% 	
+Sweep number 565000
+acceptance rate: 79.7072%
+trans: 28.7235% 	crank: 38.028% 	pivot: 40.1107% 	rot: 86.1487% 	
+Sweep number 566000
+acceptance rate: 79.7074%
+trans: 28.7238% 	crank: 38.0289% 	pivot: 40.1144% 	rot: 86.1488% 	
+Sweep number 567000
+acceptance rate: 79.7075%
+trans: 28.7244% 	crank: 38.0301% 	pivot: 40.1189% 	rot: 86.1488% 	
+Sweep number 568000
+acceptance rate: 79.7075%
+trans: 28.7241% 	crank: 38.03% 	pivot: 40.1205% 	rot: 86.1489% 	
+Sweep number 569000
+acceptance rate: 79.7076%
+trans: 28.7248% 	crank: 38.0307% 	pivot: 40.1182% 	rot: 86.1488% 	
+Sweep number 570000
+acceptance rate: 79.7074%
+trans: 28.7244% 	crank: 38.0306% 	pivot: 40.1168% 	rot: 86.1487% 	
+Sweep number 571000
+acceptance rate: 79.7073%
+trans: 28.7237% 	crank: 38.0303% 	pivot: 40.1119% 	rot: 86.1486% 	
+Sweep number 572000
+acceptance rate: 79.7075%
+trans: 28.7244% 	crank: 38.0316% 	pivot: 40.1095% 	rot: 86.1488% 	
+Sweep number 573000
+acceptance rate: 79.7076%
+trans: 28.7248% 	crank: 38.0314% 	pivot: 40.1049% 	rot: 86.1488% 	
+Sweep number 574000
+acceptance rate: 79.7078%
+trans: 28.7267% 	crank: 38.0326% 	pivot: 40.1024% 	rot: 86.1489% 	
+Sweep number 575000
+acceptance rate: 79.7079%
+trans: 28.7263% 	crank: 38.0327% 	pivot: 40.1017% 	rot: 86.149% 	
+Sweep number 576000
+acceptance rate: 79.708%
+trans: 28.7263% 	crank: 38.0332% 	pivot: 40.1023% 	rot: 86.1491% 	
+Sweep number 577000
+acceptance rate: 79.708%
+trans: 28.7257% 	crank: 38.0335% 	pivot: 40.1024% 	rot: 86.1492% 	
+Sweep number 578000
+acceptance rate: 79.7081%
+trans: 28.725% 	crank: 38.0336% 	pivot: 40.1007% 	rot: 86.1493% 	
+Sweep number 579000
+acceptance rate: 79.7083%
+trans: 28.726% 	crank: 38.0346% 	pivot: 40.104% 	rot: 86.1494% 	
+Sweep number 580000
+acceptance rate: 79.7084%
+trans: 28.7268% 	crank: 38.0347% 	pivot: 40.1034% 	rot: 86.1495% 	
+Sweep number 581000
+acceptance rate: 79.7082%
+trans: 28.7258% 	crank: 38.033% 	pivot: 40.0983% 	rot: 86.1495% 	
+Sweep number 582000
+acceptance rate: 79.7082%
+trans: 28.726% 	crank: 38.0332% 	pivot: 40.0979% 	rot: 86.1495% 	
+Sweep number 583000
+acceptance rate: 79.7082%
+trans: 28.7256% 	crank: 38.0326% 	pivot: 40.0974% 	rot: 86.1495% 	
+Sweep number 584000
+acceptance rate: 79.7084%
+trans: 28.7273% 	crank: 38.0336% 	pivot: 40.0972% 	rot: 86.1496% 	
+Sweep number 585000
+acceptance rate: 79.7085%
+trans: 28.7275% 	crank: 38.0338% 	pivot: 40.0959% 	rot: 86.1497% 	
+Sweep number 586000
+acceptance rate: 79.7084%
+trans: 28.7265% 	crank: 38.0331% 	pivot: 40.0957% 	rot: 86.1497% 	
+Sweep number 587000
+acceptance rate: 79.7085%
+trans: 28.7269% 	crank: 38.034% 	pivot: 40.0939% 	rot: 86.1497% 	
+Sweep number 588000
+acceptance rate: 79.7085%
+trans: 28.7262% 	crank: 38.0336% 	pivot: 40.0954% 	rot: 86.1497% 	
+Sweep number 589000
+acceptance rate: 79.7085%
+trans: 28.726% 	crank: 38.0337% 	pivot: 40.0995% 	rot: 86.1497% 	
+Sweep number 590000
+acceptance rate: 79.7082%
+trans: 28.7243% 	crank: 38.032% 	pivot: 40.0989% 	rot: 86.1496% 	
+Sweep number 591000
+acceptance rate: 79.7081%
+trans: 28.7239% 	crank: 38.0319% 	pivot: 40.1005% 	rot: 86.1495% 	
+Sweep number 592000
+acceptance rate: 79.7084%
+trans: 28.7259% 	crank: 38.0337% 	pivot: 40.0972% 	rot: 86.1496% 	
+Sweep number 593000
+acceptance rate: 79.7083%
+trans: 28.7259% 	crank: 38.034% 	pivot: 40.0959% 	rot: 86.1495% 	
+Sweep number 594000
+acceptance rate: 79.7084%
+trans: 28.727% 	crank: 38.0349% 	pivot: 40.0957% 	rot: 86.1495% 	
+Sweep number 595000
+acceptance rate: 79.7085%
+trans: 28.7277% 	crank: 38.0363% 	pivot: 40.1056% 	rot: 86.1494% 	
+Sweep number 596000
+acceptance rate: 79.7085%
+trans: 28.7273% 	crank: 38.0357% 	pivot: 40.1171% 	rot: 86.1493% 	
+Sweep number 597000
+acceptance rate: 79.7085%
+trans: 28.7282% 	crank: 38.036% 	pivot: 40.1155% 	rot: 86.1493% 	
+Sweep number 598000
+acceptance rate: 79.7084%
+trans: 28.7281% 	crank: 38.0361% 	pivot: 40.1166% 	rot: 86.1492% 	
+Sweep number 599000
+acceptance rate: 79.7086%
+trans: 28.7285% 	crank: 38.0371% 	pivot: 40.1178% 	rot: 86.1493% 	
+Sweep number 600000
+acceptance rate: 79.7086%
+trans: 28.7284% 	crank: 38.0372% 	pivot: 40.1168% 	rot: 86.1494% 	
+Sweep number 601000
+acceptance rate: 79.7089%
+trans: 28.7306% 	crank: 38.0394% 	pivot: 40.118% 	rot: 86.1494% 	
+Sweep number 602000
+acceptance rate: 79.709%
+trans: 28.7311% 	crank: 38.0401% 	pivot: 40.1171% 	rot: 86.1493% 	
+Sweep number 603000
+acceptance rate: 79.7089%
+trans: 28.731% 	crank: 38.0393% 	pivot: 40.1221% 	rot: 86.1493% 	
+Sweep number 604000
+acceptance rate: 79.7089%
+trans: 28.7317% 	crank: 38.0399% 	pivot: 40.1203% 	rot: 86.1492% 	
+Sweep number 605000
+acceptance rate: 79.7088%
+trans: 28.7307% 	crank: 38.0392% 	pivot: 40.1177% 	rot: 86.1492% 	
+Sweep number 606000
+acceptance rate: 79.7087%
+trans: 28.7304% 	crank: 38.0382% 	pivot: 40.1166% 	rot: 86.1492% 	
+Sweep number 607000
+acceptance rate: 79.7086%
+trans: 28.7302% 	crank: 38.0378% 	pivot: 40.1172% 	rot: 86.1492% 	
+Sweep number 608000
+acceptance rate: 79.7087%
+trans: 28.7308% 	crank: 38.0384% 	pivot: 40.1141% 	rot: 86.1492% 	
+Sweep number 609000
+acceptance rate: 79.7087%
+trans: 28.7312% 	crank: 38.0392% 	pivot: 40.1172% 	rot: 86.1491% 	
+Sweep number 610000
+acceptance rate: 79.7087%
+trans: 28.7317% 	crank: 38.0398% 	pivot: 40.1207% 	rot: 86.1491% 	
+Sweep number 611000
+acceptance rate: 79.7088%
+trans: 28.7327% 	crank: 38.0404% 	pivot: 40.1198% 	rot: 86.149% 	
+Sweep number 612000
+acceptance rate: 79.7086%
+trans: 28.7316% 	crank: 38.0391% 	pivot: 40.1175% 	rot: 86.149% 	
+Sweep number 613000
+acceptance rate: 79.7086%
+trans: 28.732% 	crank: 38.039% 	pivot: 40.115% 	rot: 86.149% 	
+Sweep number 614000
+acceptance rate: 79.7085%
+trans: 28.7313% 	crank: 38.0379% 	pivot: 40.1158% 	rot: 86.149% 	
+Sweep number 615000
+acceptance rate: 79.7082%
+trans: 28.7295% 	crank: 38.0359% 	pivot: 40.1159% 	rot: 86.1489% 	
+Sweep number 616000
+acceptance rate: 79.7081%
+trans: 28.7279% 	crank: 38.0343% 	pivot: 40.12% 	rot: 86.149% 	
+Sweep number 617000
+acceptance rate: 79.708%
+trans: 28.7267% 	crank: 38.0325% 	pivot: 40.1245% 	rot: 86.149% 	
+Sweep number 618000
+acceptance rate: 79.708%
+trans: 28.7258% 	crank: 38.0319% 	pivot: 40.1267% 	rot: 86.1491% 	
+Sweep number 619000
+acceptance rate: 79.7082%
+trans: 28.7267% 	crank: 38.0332% 	pivot: 40.1301% 	rot: 86.1491% 	
+Sweep number 620000
+acceptance rate: 79.7083%
+trans: 28.7267% 	crank: 38.0339% 	pivot: 40.1336% 	rot: 86.1491% 	
+Sweep number 621000
+acceptance rate: 79.7084%
+trans: 28.7274% 	crank: 38.0343% 	pivot: 40.1324% 	rot: 86.1492% 	
+Sweep number 622000
+acceptance rate: 79.7084%
+trans: 28.7272% 	crank: 38.0339% 	pivot: 40.1287% 	rot: 86.1493% 	
+Sweep number 623000
+acceptance rate: 79.7084%
+trans: 28.7269% 	crank: 38.034% 	pivot: 40.1247% 	rot: 86.1493% 	
+Sweep number 624000
+acceptance rate: 79.7083%
+trans: 28.7258% 	crank: 38.0329% 	pivot: 40.1242% 	rot: 86.1494% 	
+Sweep number 625000
+acceptance rate: 79.7082%
+trans: 28.725% 	crank: 38.0324% 	pivot: 40.1252% 	rot: 86.1494% 	
+Sweep number 626000
+acceptance rate: 79.7081%
+trans: 28.7244% 	crank: 38.0313% 	pivot: 40.1241% 	rot: 86.1494% 	
+Sweep number 627000
+acceptance rate: 79.7081%
+trans: 28.724% 	crank: 38.031% 	pivot: 40.1251% 	rot: 86.1494% 	
+Sweep number 628000
+acceptance rate: 79.7081%
+trans: 28.7234% 	crank: 38.031% 	pivot: 40.124% 	rot: 86.1494% 	
+Sweep number 629000
+acceptance rate: 79.708%
+trans: 28.7222% 	crank: 38.0301% 	pivot: 40.1275% 	rot: 86.1495% 	
+Sweep number 630000
+acceptance rate: 79.708%
+trans: 28.7215% 	crank: 38.0295% 	pivot: 40.1269% 	rot: 86.1496% 	
+Sweep number 631000
+acceptance rate: 79.7081%
+trans: 28.7215% 	crank: 38.0297% 	pivot: 40.1282% 	rot: 86.1496% 	
+Sweep number 632000
+acceptance rate: 79.7083%
+trans: 28.722% 	crank: 38.0301% 	pivot: 40.1269% 	rot: 86.1498% 	
+Sweep number 633000
+acceptance rate: 79.7082%
+trans: 28.7216% 	crank: 38.0298% 	pivot: 40.1253% 	rot: 86.1497% 	
+Sweep number 634000
+acceptance rate: 79.708%
+trans: 28.7206% 	crank: 38.0294% 	pivot: 40.1223% 	rot: 86.1497% 	
+Sweep number 635000
+acceptance rate: 79.7081%
+trans: 28.7208% 	crank: 38.029% 	pivot: 40.1261% 	rot: 86.1497% 	
+Sweep number 636000
+acceptance rate: 79.708%
+trans: 28.7204% 	crank: 38.0283% 	pivot: 40.1223% 	rot: 86.1497% 	
+Sweep number 637000
+acceptance rate: 79.708%
+trans: 28.7208% 	crank: 38.0288% 	pivot: 40.1182% 	rot: 86.1497% 	
+Sweep number 638000
+acceptance rate: 79.7082%
+trans: 28.7218% 	crank: 38.0305% 	pivot: 40.1183% 	rot: 86.1497% 	
+Sweep number 639000
+acceptance rate: 79.7083%
+trans: 28.7226% 	crank: 38.0313% 	pivot: 40.1213% 	rot: 86.1497% 	
+Sweep number 640000
+acceptance rate: 79.7083%
+trans: 28.7225% 	crank: 38.0314% 	pivot: 40.125% 	rot: 86.1497% 	
+Sweep number 641000
+acceptance rate: 79.7082%
+trans: 28.7226% 	crank: 38.0309% 	pivot: 40.1246% 	rot: 86.1496% 	
+Sweep number 642000
+acceptance rate: 79.7083%
+trans: 28.7235% 	crank: 38.0326% 	pivot: 40.123% 	rot: 86.1496% 	
+Sweep number 643000
+acceptance rate: 79.7083%
+trans: 28.7232% 	crank: 38.0325% 	pivot: 40.127% 	rot: 86.1496% 	
+Sweep number 644000
+acceptance rate: 79.7085%
+trans: 28.7243% 	crank: 38.0331% 	pivot: 40.1298% 	rot: 86.1496% 	
+Sweep number 645000
+acceptance rate: 79.7087%
+trans: 28.7256% 	crank: 38.0346% 	pivot: 40.1292% 	rot: 86.1497% 	
+Sweep number 646000
+acceptance rate: 79.7088%
+trans: 28.726% 	crank: 38.0351% 	pivot: 40.1323% 	rot: 86.1498% 	
+Sweep number 647000
+acceptance rate: 79.7088%
+trans: 28.7254% 	crank: 38.035% 	pivot: 40.1328% 	rot: 86.1497% 	
+Sweep number 648000
+acceptance rate: 79.7087%
+trans: 28.7251% 	crank: 38.035% 	pivot: 40.1334% 	rot: 86.1497% 	
+Sweep number 649000
+acceptance rate: 79.7087%
+trans: 28.7254% 	crank: 38.0356% 	pivot: 40.1299% 	rot: 86.1496% 	
+Sweep number 650000
+acceptance rate: 79.7087%
+trans: 28.7256% 	crank: 38.0352% 	pivot: 40.1258% 	rot: 86.1497% 	
+Sweep number 651000
+acceptance rate: 79.7088%
+trans: 28.7264% 	crank: 38.0361% 	pivot: 40.1275% 	rot: 86.1497% 	
+Sweep number 652000
+acceptance rate: 79.7088%
+trans: 28.7265% 	crank: 38.0368% 	pivot: 40.1295% 	rot: 86.1497% 	
+Sweep number 653000
+acceptance rate: 79.7089%
+trans: 28.7268% 	crank: 38.0369% 	pivot: 40.1325% 	rot: 86.1497% 	
+Sweep number 654000
+acceptance rate: 79.7091%
+trans: 28.7286% 	crank: 38.0393% 	pivot: 40.1358% 	rot: 86.1496% 	
+Sweep number 655000
+acceptance rate: 79.7093%
+trans: 28.7292% 	crank: 38.0407% 	pivot: 40.1364% 	rot: 86.1497% 	
+Sweep number 656000
+acceptance rate: 79.7094%
+trans: 28.7299% 	crank: 38.0419% 	pivot: 40.1412% 	rot: 86.1496% 	
+Sweep number 657000
+acceptance rate: 79.7093%
+trans: 28.7301% 	crank: 38.0421% 	pivot: 40.1419% 	rot: 86.1495% 	
+Sweep number 658000
+acceptance rate: 79.7091%
+trans: 28.7283% 	crank: 38.0406% 	pivot: 40.1428% 	rot: 86.1495% 	
+Sweep number 659000
+acceptance rate: 79.7092%
+trans: 28.7295% 	crank: 38.0416% 	pivot: 40.1447% 	rot: 86.1495% 	
+Sweep number 660000
+acceptance rate: 79.7094%
+trans: 28.7304% 	crank: 38.0429% 	pivot: 40.1465% 	rot: 86.1495% 	
+Sweep number 661000
+acceptance rate: 79.7093%
+trans: 28.7298% 	crank: 38.0417% 	pivot: 40.1454% 	rot: 86.1495% 	
+Sweep number 662000
+acceptance rate: 79.7093%
+trans: 28.7302% 	crank: 38.0414% 	pivot: 40.1436% 	rot: 86.1495% 	
+Sweep number 663000
+acceptance rate: 79.7093%
+trans: 28.7306% 	crank: 38.0416% 	pivot: 40.1441% 	rot: 86.1495% 	
+Sweep number 664000
+acceptance rate: 79.7092%
+trans: 28.73% 	crank: 38.041% 	pivot: 40.1439% 	rot: 86.1495% 	
+Sweep number 665000
+acceptance rate: 79.7091%
+trans: 28.7289% 	crank: 38.0405% 	pivot: 40.1421% 	rot: 86.1495% 	
+Sweep number 666000
+acceptance rate: 79.7091%
+trans: 28.7282% 	crank: 38.04% 	pivot: 40.1417% 	rot: 86.1495% 	
+Sweep number 667000
+acceptance rate: 79.7092%
+trans: 28.7287% 	crank: 38.0399% 	pivot: 40.147% 	rot: 86.1496% 	
+Sweep number 668000
+acceptance rate: 79.7092%
+trans: 28.7284% 	crank: 38.0394% 	pivot: 40.1522% 	rot: 86.1496% 	
+Sweep number 669000
+acceptance rate: 79.709%
+trans: 28.727% 	crank: 38.0379% 	pivot: 40.1551% 	rot: 86.1496% 	
+Sweep number 670000
+acceptance rate: 79.709%
+trans: 28.7265% 	crank: 38.0369% 	pivot: 40.1597% 	rot: 86.1497% 	
+Sweep number 671000
+acceptance rate: 79.7092%
+trans: 28.7272% 	crank: 38.0376% 	pivot: 40.1591% 	rot: 86.1498% 	
+Sweep number 672000
+acceptance rate: 79.7095%
+trans: 28.7285% 	crank: 38.0389% 	pivot: 40.1622% 	rot: 86.1499% 	
+Sweep number 673000
+acceptance rate: 79.7095%
+trans: 28.7284% 	crank: 38.0388% 	pivot: 40.1634% 	rot: 86.1499% 	
+Sweep number 674000
+acceptance rate: 79.7095%
+trans: 28.728% 	crank: 38.0388% 	pivot: 40.1651% 	rot: 86.1499% 	
+Sweep number 675000
+acceptance rate: 79.7096%
+trans: 28.7289% 	crank: 38.0391% 	pivot: 40.1697% 	rot: 86.1499% 	
+Sweep number 676000
+acceptance rate: 79.7096%
+trans: 28.7279% 	crank: 38.0387% 	pivot: 40.1715% 	rot: 86.15% 	
+Sweep number 677000
+acceptance rate: 79.7096%
+trans: 28.7283% 	crank: 38.0385% 	pivot: 40.172% 	rot: 86.15% 	
+Sweep number 678000
+acceptance rate: 79.7095%
+trans: 28.7277% 	crank: 38.038% 	pivot: 40.1681% 	rot: 86.15% 	
+Sweep number 679000
+acceptance rate: 79.7096%
+trans: 28.7285% 	crank: 38.0382% 	pivot: 40.1667% 	rot: 86.15% 	
+Sweep number 680000
+acceptance rate: 79.7095%
+trans: 28.7281% 	crank: 38.0376% 	pivot: 40.1639% 	rot: 86.15% 	
+Sweep number 681000
+acceptance rate: 79.7093%
+trans: 28.7278% 	crank: 38.0369% 	pivot: 40.1663% 	rot: 86.1498% 	
+Sweep number 682000
+acceptance rate: 79.7093%
+trans: 28.7275% 	crank: 38.0359% 	pivot: 40.1684% 	rot: 86.15% 	
+Sweep number 683000
+acceptance rate: 79.7092%
+trans: 28.7276% 	crank: 38.0357% 	pivot: 40.1644% 	rot: 86.1499% 	
+Sweep number 684000
+acceptance rate: 79.7093%
+trans: 28.7279% 	crank: 38.0356% 	pivot: 40.168% 	rot: 86.1499% 	
+Sweep number 685000
+acceptance rate: 79.7092%
+trans: 28.7267% 	crank: 38.034% 	pivot: 40.1665% 	rot: 86.1499% 	
+Sweep number 686000
+acceptance rate: 79.7091%
+trans: 28.726% 	crank: 38.0331% 	pivot: 40.1617% 	rot: 86.1501% 	
+Sweep number 687000
+acceptance rate: 79.7091%
+trans: 28.7259% 	crank: 38.0329% 	pivot: 40.1552% 	rot: 86.1501% 	
+Sweep number 688000
+acceptance rate: 79.7092%
+trans: 28.7268% 	crank: 38.0332% 	pivot: 40.153% 	rot: 86.1501% 	
+Sweep number 689000
+acceptance rate: 79.7094%
+trans: 28.7283% 	crank: 38.0343% 	pivot: 40.1553% 	rot: 86.1502% 	
+Sweep number 690000
+acceptance rate: 79.7094%
+trans: 28.7281% 	crank: 38.0346% 	pivot: 40.1561% 	rot: 86.1502% 	
+Sweep number 691000
+acceptance rate: 79.7095%
+trans: 28.7286% 	crank: 38.0346% 	pivot: 40.1548% 	rot: 86.1503% 	
+Sweep number 692000
+acceptance rate: 79.7098%
+trans: 28.7303% 	crank: 38.0363% 	pivot: 40.157% 	rot: 86.1503% 	
+Sweep number 693000
+acceptance rate: 79.7099%
+trans: 28.7312% 	crank: 38.0376% 	pivot: 40.1568% 	rot: 86.1503% 	
+Sweep number 694000
+acceptance rate: 79.7101%
+trans: 28.7323% 	crank: 38.039% 	pivot: 40.1592% 	rot: 86.1503% 	
+Sweep number 695000
+acceptance rate: 79.7101%
+trans: 28.733% 	crank: 38.04% 	pivot: 40.1607% 	rot: 86.1503% 	
+Sweep number 696000
+acceptance rate: 79.7102%
+trans: 28.733% 	crank: 38.0397% 	pivot: 40.1594% 	rot: 86.1504% 	
+Sweep number 697000
+acceptance rate: 79.7104%
+trans: 28.7343% 	crank: 38.0406% 	pivot: 40.1617% 	rot: 86.1505% 	
+Sweep number 698000
+acceptance rate: 79.7106%
+trans: 28.7349% 	crank: 38.0411% 	pivot: 40.1679% 	rot: 86.1505% 	
+Sweep number 699000
+acceptance rate: 79.7107%
+trans: 28.7358% 	crank: 38.0421% 	pivot: 40.1704% 	rot: 86.1505% 	
+Sweep number 700000
+acceptance rate: 79.7107%
+trans: 28.7365% 	crank: 38.0429% 	pivot: 40.1719% 	rot: 86.1504% 	
+Sweep number 701000
+acceptance rate: 79.7107%
+trans: 28.7373% 	crank: 38.0441% 	pivot: 40.1701% 	rot: 86.1504% 	
+Sweep number 702000
+acceptance rate: 79.7108%
+trans: 28.7379% 	crank: 38.0439% 	pivot: 40.173% 	rot: 86.1503% 	
+Sweep number 703000
+acceptance rate: 79.7105%
+trans: 28.7366% 	crank: 38.0425% 	pivot: 40.1679% 	rot: 86.1503% 	
+Sweep number 704000
+acceptance rate: 79.7104%
+trans: 28.7361% 	crank: 38.0419% 	pivot: 40.165% 	rot: 86.1502% 	
+Sweep number 705000
+acceptance rate: 79.7103%
+trans: 28.7361% 	crank: 38.0415% 	pivot: 40.165% 	rot: 86.1502% 	
+Sweep number 706000
+acceptance rate: 79.7103%
+trans: 28.7365% 	crank: 38.0413% 	pivot: 40.1644% 	rot: 86.1501% 	
+Sweep number 707000
+acceptance rate: 79.7104%
+trans: 28.7374% 	crank: 38.0417% 	pivot: 40.1654% 	rot: 86.1501% 	
+Sweep number 708000
+acceptance rate: 79.7105%
+trans: 28.7377% 	crank: 38.042% 	pivot: 40.1666% 	rot: 86.1502% 	
+Sweep number 709000
+acceptance rate: 79.7106%
+trans: 28.7386% 	crank: 38.043% 	pivot: 40.1615% 	rot: 86.1502% 	
+Sweep number 710000
+acceptance rate: 79.7105%
+trans: 28.7389% 	crank: 38.0429% 	pivot: 40.1598% 	rot: 86.1502% 	
+Sweep number 711000
+acceptance rate: 79.7107%
+trans: 28.7397% 	crank: 38.0442% 	pivot: 40.1683% 	rot: 86.1502% 	
+Sweep number 712000
+acceptance rate: 79.7107%
+trans: 28.7395% 	crank: 38.0436% 	pivot: 40.1773% 	rot: 86.1502% 	
+Sweep number 713000
+acceptance rate: 79.7106%
+trans: 28.7389% 	crank: 38.0426% 	pivot: 40.1852% 	rot: 86.1501% 	
+Sweep number 714000
+acceptance rate: 79.7106%
+trans: 28.7384% 	crank: 38.0429% 	pivot: 40.1832% 	rot: 86.1502% 	
+Sweep number 715000
+acceptance rate: 79.7107%
+trans: 28.7387% 	crank: 38.0432% 	pivot: 40.1817% 	rot: 86.1502% 	
+Sweep number 716000
+acceptance rate: 79.7108%
+trans: 28.7392% 	crank: 38.044% 	pivot: 40.1805% 	rot: 86.1502% 	
+Sweep number 717000
+acceptance rate: 79.7108%
+trans: 28.739% 	crank: 38.044% 	pivot: 40.1775% 	rot: 86.1502% 	
+Sweep number 718000
+acceptance rate: 79.7107%
+trans: 28.7388% 	crank: 38.0441% 	pivot: 40.1751% 	rot: 86.1502% 	
+Sweep number 719000
+acceptance rate: 79.711%
+trans: 28.741% 	crank: 38.0463% 	pivot: 40.1789% 	rot: 86.1502% 	
+Sweep number 720000
+acceptance rate: 79.7111%
+trans: 28.7417% 	crank: 38.0466% 	pivot: 40.1794% 	rot: 86.1502% 	
+Sweep number 721000
+acceptance rate: 79.711%
+trans: 28.7404% 	crank: 38.0458% 	pivot: 40.1782% 	rot: 86.1503% 	
+Sweep number 722000
+acceptance rate: 79.711%
+trans: 28.7398% 	crank: 38.0457% 	pivot: 40.1776% 	rot: 86.1503% 	
+Sweep number 723000
+acceptance rate: 79.711%
+trans: 28.7403% 	crank: 38.0461% 	pivot: 40.179% 	rot: 86.1503% 	
+Sweep number 724000
+acceptance rate: 79.7111%
+trans: 28.7404% 	crank: 38.0462% 	pivot: 40.1788% 	rot: 86.1503% 	
+Sweep number 725000
+acceptance rate: 79.7112%
+trans: 28.7407% 	crank: 38.0467% 	pivot: 40.1826% 	rot: 86.1503% 	
+Sweep number 726000
+acceptance rate: 79.7112%
+trans: 28.7411% 	crank: 38.0471% 	pivot: 40.1854% 	rot: 86.1503% 	
+Sweep number 727000
+acceptance rate: 79.7111%
+trans: 28.7409% 	crank: 38.0467% 	pivot: 40.1813% 	rot: 86.1503% 	
+Sweep number 728000
+acceptance rate: 79.7112%
+trans: 28.7413% 	crank: 38.0469% 	pivot: 40.1795% 	rot: 86.1503% 	
+Sweep number 729000
+acceptance rate: 79.7113%
+trans: 28.7423% 	crank: 38.0475% 	pivot: 40.183% 	rot: 86.1504% 	
+Sweep number 730000
+acceptance rate: 79.7114%
+trans: 28.7426% 	crank: 38.0477% 	pivot: 40.1881% 	rot: 86.1503% 	
+Sweep number 731000
+acceptance rate: 79.7114%
+trans: 28.7426% 	crank: 38.0478% 	pivot: 40.1868% 	rot: 86.1504% 	
+Sweep number 732000
+acceptance rate: 79.7114%
+trans: 28.743% 	crank: 38.0484% 	pivot: 40.1856% 	rot: 86.1504% 	
+Sweep number 733000
+acceptance rate: 79.7115%
+trans: 28.7429% 	crank: 38.0484% 	pivot: 40.1829% 	rot: 86.1505% 	
+Sweep number 734000
+acceptance rate: 79.7115%
+trans: 28.7425% 	crank: 38.0485% 	pivot: 40.183% 	rot: 86.1505% 	
+Sweep number 735000
+acceptance rate: 79.7116%
+trans: 28.7426% 	crank: 38.0489% 	pivot: 40.1862% 	rot: 86.1505% 	
+Sweep number 736000
+acceptance rate: 79.7115%
+trans: 28.7414% 	crank: 38.0479% 	pivot: 40.1888% 	rot: 86.1505% 	
+Sweep number 737000
+acceptance rate: 79.7116%
+trans: 28.7407% 	crank: 38.0478% 	pivot: 40.1956% 	rot: 86.1507% 	
+Sweep number 738000
+acceptance rate: 79.7116%
+trans: 28.7405% 	crank: 38.0474% 	pivot: 40.2012% 	rot: 86.1507% 	
+Sweep number 739000
+acceptance rate: 79.7114%
+trans: 28.7396% 	crank: 38.0466% 	pivot: 40.2004% 	rot: 86.1506% 	
+Sweep number 740000
+acceptance rate: 79.7114%
+trans: 28.7395% 	crank: 38.046% 	pivot: 40.2031% 	rot: 86.1506% 	
+Sweep number 741000
+acceptance rate: 79.7116%
+trans: 28.7415% 	crank: 38.0473% 	pivot: 40.2057% 	rot: 86.1506% 	
+Sweep number 742000
+acceptance rate: 79.7117%
+trans: 28.7423% 	crank: 38.0483% 	pivot: 40.2063% 	rot: 86.1506% 	
+Sweep number 743000
+acceptance rate: 79.7116%
+trans: 28.7414% 	crank: 38.0474% 	pivot: 40.2024% 	rot: 86.1507% 	
+Sweep number 744000
+acceptance rate: 79.7116%
+trans: 28.7414% 	crank: 38.0473% 	pivot: 40.2015% 	rot: 86.1506% 	
+Sweep number 745000
+acceptance rate: 79.7116%
+trans: 28.742% 	crank: 38.048% 	pivot: 40.2058% 	rot: 86.1506% 	
+Sweep number 746000
+acceptance rate: 79.7116%
+trans: 28.7418% 	crank: 38.0476% 	pivot: 40.2084% 	rot: 86.1506% 	
+Sweep number 747000
+acceptance rate: 79.7117%
+trans: 28.742% 	crank: 38.0481% 	pivot: 40.2171% 	rot: 86.1506% 	
+Sweep number 748000
+acceptance rate: 79.7118%
+trans: 28.7422% 	crank: 38.0487% 	pivot: 40.2196% 	rot: 86.1506% 	
+Sweep number 749000
+acceptance rate: 79.7118%
+trans: 28.7422% 	crank: 38.0483% 	pivot: 40.2212% 	rot: 86.1506% 	
+Sweep number 750000
+acceptance rate: 79.7117%
+trans: 28.7423% 	crank: 38.0481% 	pivot: 40.2203% 	rot: 86.1505% 	
+Sweep number 751000
+acceptance rate: 79.7116%
+trans: 28.7418% 	crank: 38.0479% 	pivot: 40.2222% 	rot: 86.1505% 	
+Sweep number 752000
+acceptance rate: 79.7117%
+trans: 28.7422% 	crank: 38.0486% 	pivot: 40.2232% 	rot: 86.1504% 	
+Sweep number 753000
+acceptance rate: 79.7118%
+trans: 28.7422% 	crank: 38.0487% 	pivot: 40.2239% 	rot: 86.1505% 	
+Sweep number 754000
+acceptance rate: 79.7117%
+trans: 28.7413% 	crank: 38.0474% 	pivot: 40.2246% 	rot: 86.1506% 	
+Sweep number 755000
+acceptance rate: 79.7117%
+trans: 28.7416% 	crank: 38.0473% 	pivot: 40.2231% 	rot: 86.1506% 	
+Sweep number 756000
+acceptance rate: 79.7118%
+trans: 28.7424% 	crank: 38.0483% 	pivot: 40.2216% 	rot: 86.1506% 	
+Sweep number 757000
+acceptance rate: 79.712%
+trans: 28.743% 	crank: 38.0497% 	pivot: 40.2212% 	rot: 86.1507% 	
+Sweep number 758000
+acceptance rate: 79.712%
+trans: 28.7423% 	crank: 38.049% 	pivot: 40.2217% 	rot: 86.1508% 	
+Sweep number 759000
+acceptance rate: 79.7119%
+trans: 28.7418% 	crank: 38.0482% 	pivot: 40.2221% 	rot: 86.1508% 	
+Sweep number 760000
+acceptance rate: 79.712%
+trans: 28.742% 	crank: 38.0487% 	pivot: 40.2222% 	rot: 86.1508% 	
+Sweep number 761000
+acceptance rate: 79.712%
+trans: 28.7417% 	crank: 38.0479% 	pivot: 40.2279% 	rot: 86.1508% 	
+Sweep number 762000
+acceptance rate: 79.7121%
+trans: 28.7421% 	crank: 38.0483% 	pivot: 40.2422% 	rot: 86.1508% 	
+Sweep number 763000
+acceptance rate: 79.712%
+trans: 28.7408% 	crank: 38.0473% 	pivot: 40.242% 	rot: 86.1508% 	
+Sweep number 764000
+acceptance rate: 79.712%
+trans: 28.7407% 	crank: 38.0475% 	pivot: 40.2426% 	rot: 86.1508% 	
+Sweep number 765000
+acceptance rate: 79.7119%
+trans: 28.7407% 	crank: 38.048% 	pivot: 40.2423% 	rot: 86.1507% 	
+Sweep number 766000
+acceptance rate: 79.7116%
+trans: 28.7401% 	crank: 38.047% 	pivot: 40.2414% 	rot: 86.1505% 	
+Sweep number 767000
+acceptance rate: 79.7114%
+trans: 28.7386% 	crank: 38.0455% 	pivot: 40.2368% 	rot: 86.1505% 	
+Sweep number 768000
+acceptance rate: 79.7113%
+trans: 28.7379% 	crank: 38.0444% 	pivot: 40.2392% 	rot: 86.1505% 	
+Sweep number 769000
+acceptance rate: 79.7111%
+trans: 28.7356% 	crank: 38.0417% 	pivot: 40.2408% 	rot: 86.1506% 	
+Sweep number 770000
+acceptance rate: 79.7111%
+trans: 28.7348% 	crank: 38.041% 	pivot: 40.2472% 	rot: 86.1506% 	
+Sweep number 771000
+acceptance rate: 79.711%
+trans: 28.734% 	crank: 38.0401% 	pivot: 40.2479% 	rot: 86.1506% 	
+Sweep number 772000
+acceptance rate: 79.711%
+trans: 28.7333% 	crank: 38.0397% 	pivot: 40.2451% 	rot: 86.1507% 	
+Sweep number 773000
+acceptance rate: 79.7111%
+trans: 28.7338% 	crank: 38.0403% 	pivot: 40.2435% 	rot: 86.1507% 	
+Sweep number 774000
+acceptance rate: 79.711%
+trans: 28.7337% 	crank: 38.0401% 	pivot: 40.2406% 	rot: 86.1507% 	
+Sweep number 775000
+acceptance rate: 79.711%
+trans: 28.7339% 	crank: 38.0408% 	pivot: 40.2385% 	rot: 86.1506% 	
+Sweep number 776000
+acceptance rate: 79.711%
+trans: 28.7334% 	crank: 38.0406% 	pivot: 40.2412% 	rot: 86.1506% 	
+Sweep number 777000
+acceptance rate: 79.7109%
+trans: 28.7327% 	crank: 38.0398% 	pivot: 40.2391% 	rot: 86.1506% 	
+Sweep number 778000
+acceptance rate: 79.7107%
+trans: 28.7319% 	crank: 38.0387% 	pivot: 40.2401% 	rot: 86.1506% 	
+Sweep number 779000
+acceptance rate: 79.7106%
+trans: 28.7315% 	crank: 38.0384% 	pivot: 40.2421% 	rot: 86.1505% 	
+Sweep number 780000
+acceptance rate: 79.7105%
+trans: 28.7309% 	crank: 38.0378% 	pivot: 40.2454% 	rot: 86.1505% 	
+Sweep number 781000
+acceptance rate: 79.7106%
+trans: 28.731% 	crank: 38.038% 	pivot: 40.2477% 	rot: 86.1505% 	
+Sweep number 782000
+acceptance rate: 79.7106%
+trans: 28.7318% 	crank: 38.0388% 	pivot: 40.2457% 	rot: 86.1505% 	
+Sweep number 783000
+acceptance rate: 79.7105%
+trans: 28.7316% 	crank: 38.0387% 	pivot: 40.2415% 	rot: 86.1504% 	
+Sweep number 784000
+acceptance rate: 79.7105%
+trans: 28.7317% 	crank: 38.0392% 	pivot: 40.2405% 	rot: 86.1503% 	
+Sweep number 785000
+acceptance rate: 79.7106%
+trans: 28.7317% 	crank: 38.0396% 	pivot: 40.2375% 	rot: 86.1504% 	
+Sweep number 786000
+acceptance rate: 79.7105%
+trans: 28.731% 	crank: 38.0389% 	pivot: 40.2341% 	rot: 86.1504% 	
+Sweep number 787000
+acceptance rate: 79.7104%
+trans: 28.7309% 	crank: 38.0388% 	pivot: 40.2323% 	rot: 86.1503% 	
+Sweep number 788000
+acceptance rate: 79.7102%
+trans: 28.7301% 	crank: 38.0383% 	pivot: 40.2316% 	rot: 86.1502% 	
+Sweep number 789000
+acceptance rate: 79.7102%
+trans: 28.7295% 	crank: 38.038% 	pivot: 40.2319% 	rot: 86.1502% 	
+Sweep number 790000
+acceptance rate: 79.7102%
+trans: 28.7295% 	crank: 38.0377% 	pivot: 40.2287% 	rot: 86.1503% 	
+Sweep number 791000
+acceptance rate: 79.71%
+trans: 28.7287% 	crank: 38.0369% 	pivot: 40.2269% 	rot: 86.1502% 	
+Sweep number 792000
+acceptance rate: 79.7099%
+trans: 28.7283% 	crank: 38.0364% 	pivot: 40.2279% 	rot: 86.1502% 	
+Sweep number 793000
+acceptance rate: 79.7098%
+trans: 28.7271% 	crank: 38.0358% 	pivot: 40.2262% 	rot: 86.1502% 	
+Sweep number 794000
+acceptance rate: 79.71%
+trans: 28.728% 	crank: 38.0371% 	pivot: 40.2253% 	rot: 86.1502% 	
+Sweep number 795000
+acceptance rate: 79.7099%
+trans: 28.7271% 	crank: 38.0365% 	pivot: 40.2229% 	rot: 86.1502% 	
+Sweep number 796000
+acceptance rate: 79.7098%
+trans: 28.727% 	crank: 38.0359% 	pivot: 40.2204% 	rot: 86.1501% 	
+Sweep number 797000
+acceptance rate: 79.7098%
+trans: 28.7268% 	crank: 38.036% 	pivot: 40.2195% 	rot: 86.1502% 	
+Sweep number 798000
+acceptance rate: 79.7097%
+trans: 28.7265% 	crank: 38.0362% 	pivot: 40.2159% 	rot: 86.1501% 	
+Sweep number 799000
+acceptance rate: 79.7096%
+trans: 28.7256% 	crank: 38.0353% 	pivot: 40.214% 	rot: 86.1501% 	
+Sweep number 800000
+acceptance rate: 79.7096%
+trans: 28.725% 	crank: 38.0343% 	pivot: 40.2152% 	rot: 86.1502% 	
+Sweep number 801000
+acceptance rate: 79.7095%
+trans: 28.7248% 	crank: 38.0341% 	pivot: 40.2121% 	rot: 86.1501% 	
+Sweep number 802000
+acceptance rate: 79.7095%
+trans: 28.7249% 	crank: 38.0341% 	pivot: 40.2114% 	rot: 86.1501% 	
+Sweep number 803000
+acceptance rate: 79.7093%
+trans: 28.7241% 	crank: 38.0337% 	pivot: 40.2119% 	rot: 86.15% 	
+Sweep number 804000
+acceptance rate: 79.7092%
+trans: 28.7229% 	crank: 38.0326% 	pivot: 40.213% 	rot: 86.15% 	
+Sweep number 805000
+acceptance rate: 79.7089%
+trans: 28.7209% 	crank: 38.0308% 	pivot: 40.2182% 	rot: 86.15% 	
+Sweep number 806000
+acceptance rate: 79.7087%
+trans: 28.7197% 	crank: 38.03% 	pivot: 40.2145% 	rot: 86.1499% 	
+Sweep number 807000
+acceptance rate: 79.7088%
+trans: 28.7195% 	crank: 38.0302% 	pivot: 40.2111% 	rot: 86.1499% 	
+Sweep number 808000
+acceptance rate: 79.7086%
+trans: 28.7183% 	crank: 38.0293% 	pivot: 40.2075% 	rot: 86.15% 	
+Sweep number 809000
+acceptance rate: 79.7087%
+trans: 28.7191% 	crank: 38.0301% 	pivot: 40.2079% 	rot: 86.1499% 	
+Sweep number 810000
+acceptance rate: 79.7086%
+trans: 28.7187% 	crank: 38.03% 	pivot: 40.2121% 	rot: 86.1498% 	
+Sweep number 811000
+acceptance rate: 79.7087%
+trans: 28.719% 	crank: 38.0301% 	pivot: 40.2124% 	rot: 86.1499% 	
+Sweep number 812000
+acceptance rate: 79.7087%
+trans: 28.7196% 	crank: 38.0307% 	pivot: 40.2113% 	rot: 86.1499% 	
+Sweep number 813000
+acceptance rate: 79.7087%
+trans: 28.7201% 	crank: 38.0308% 	pivot: 40.2092% 	rot: 86.1498% 	
+Sweep number 814000
+acceptance rate: 79.7087%
+trans: 28.7194% 	crank: 38.0303% 	pivot: 40.2104% 	rot: 86.1499% 	
+Sweep number 815000
+acceptance rate: 79.7087%
+trans: 28.7192% 	crank: 38.0295% 	pivot: 40.2153% 	rot: 86.1499% 	
+Sweep number 816000
+acceptance rate: 79.7088%
+trans: 28.7198% 	crank: 38.0294% 	pivot: 40.2178% 	rot: 86.15% 	
+Sweep number 817000
+acceptance rate: 79.7087%
+trans: 28.7197% 	crank: 38.029% 	pivot: 40.2159% 	rot: 86.15% 	
+Sweep number 818000
+acceptance rate: 79.7084%
+trans: 28.7175% 	crank: 38.0268% 	pivot: 40.2134% 	rot: 86.1499% 	
+Sweep number 819000
+acceptance rate: 79.7083%
+trans: 28.7165% 	crank: 38.026% 	pivot: 40.2161% 	rot: 86.1499% 	
+Sweep number 820000
+acceptance rate: 79.7083%
+trans: 28.7158% 	crank: 38.0261% 	pivot: 40.2162% 	rot: 86.1499% 	
+Sweep number 821000
+acceptance rate: 79.7082%
+trans: 28.7152% 	crank: 38.0254% 	pivot: 40.2155% 	rot: 86.1499% 	
+Sweep number 822000
+acceptance rate: 79.7081%
+trans: 28.7151% 	crank: 38.0249% 	pivot: 40.2147% 	rot: 86.1498% 	
+Sweep number 823000
+acceptance rate: 79.7079%
+trans: 28.7137% 	crank: 38.0242% 	pivot: 40.213% 	rot: 86.1498% 	
+Sweep number 824000
+acceptance rate: 79.708%
+trans: 28.7142% 	crank: 38.0246% 	pivot: 40.2103% 	rot: 86.1498% 	
+Sweep number 825000
+acceptance rate: 79.708%
+trans: 28.7141% 	crank: 38.0243% 	pivot: 40.2096% 	rot: 86.1499% 	
+Sweep number 826000
+acceptance rate: 79.7081%
+trans: 28.7147% 	crank: 38.0244% 	pivot: 40.2055% 	rot: 86.1499% 	
+Sweep number 827000
+acceptance rate: 79.7081%
+trans: 28.714% 	crank: 38.024% 	pivot: 40.2038% 	rot: 86.15% 	
+Sweep number 828000
+acceptance rate: 79.7081%
+trans: 28.7134% 	crank: 38.0234% 	pivot: 40.2072% 	rot: 86.15% 	
+Sweep number 829000
+acceptance rate: 79.708%
+trans: 28.7132% 	crank: 38.0231% 	pivot: 40.205% 	rot: 86.15% 	
+Sweep number 830000
+acceptance rate: 79.7079%
+trans: 28.7125% 	crank: 38.0222% 	pivot: 40.2034% 	rot: 86.15% 	
+Sweep number 831000
+acceptance rate: 79.7079%
+trans: 28.7126% 	crank: 38.0221% 	pivot: 40.2067% 	rot: 86.15% 	
+Sweep number 832000
+acceptance rate: 79.708%
+trans: 28.7138% 	crank: 38.0232% 	pivot: 40.208% 	rot: 86.15% 	
+Sweep number 833000
+acceptance rate: 79.7079%
+trans: 28.7131% 	crank: 38.0228% 	pivot: 40.2045% 	rot: 86.1499% 	
+Sweep number 834000
+acceptance rate: 79.7079%
+trans: 28.7125% 	crank: 38.0225% 	pivot: 40.2036% 	rot: 86.1499% 	
+Sweep number 835000
+acceptance rate: 79.708%
+trans: 28.7137% 	crank: 38.0236% 	pivot: 40.2062% 	rot: 86.15% 	
+Sweep number 836000
+acceptance rate: 79.7081%
+trans: 28.7138% 	crank: 38.0237% 	pivot: 40.2025% 	rot: 86.15% 	
+Sweep number 837000
+acceptance rate: 79.7082%
+trans: 28.7146% 	crank: 38.0242% 	pivot: 40.2049% 	rot: 86.1501% 	
+Sweep number 838000
+acceptance rate: 79.7084%
+trans: 28.7158% 	crank: 38.0255% 	pivot: 40.2072% 	rot: 86.1501% 	
+Sweep number 839000
+acceptance rate: 79.7085%
+trans: 28.7161% 	crank: 38.0262% 	pivot: 40.2064% 	rot: 86.1501% 	
+Sweep number 840000
+acceptance rate: 79.7085%
+trans: 28.7166% 	crank: 38.0262% 	pivot: 40.2049% 	rot: 86.1502% 	
+Sweep number 841000
+acceptance rate: 79.7085%
+trans: 28.7168% 	crank: 38.0262% 	pivot: 40.2031% 	rot: 86.1502% 	
+Sweep number 842000
+acceptance rate: 79.7087%
+trans: 28.7177% 	crank: 38.0274% 	pivot: 40.2066% 	rot: 86.1502% 	
+Sweep number 843000
+acceptance rate: 79.7088%
+trans: 28.719% 	crank: 38.0286% 	pivot: 40.2105% 	rot: 86.1501% 	
+Sweep number 844000
+acceptance rate: 79.7089%
+trans: 28.7199% 	crank: 38.0294% 	pivot: 40.2121% 	rot: 86.1501% 	
+Sweep number 845000
+acceptance rate: 79.709%
+trans: 28.7204% 	crank: 38.0299% 	pivot: 40.2132% 	rot: 86.1501% 	
+Sweep number 846000
+acceptance rate: 79.7089%
+trans: 28.7193% 	crank: 38.029% 	pivot: 40.2124% 	rot: 86.1501% 	
+Sweep number 847000
+acceptance rate: 79.7088%
+trans: 28.7191% 	crank: 38.0289% 	pivot: 40.2119% 	rot: 86.1501% 	
+Sweep number 848000
+acceptance rate: 79.7089%
+trans: 28.7192% 	crank: 38.0287% 	pivot: 40.2139% 	rot: 86.1502% 	
+Sweep number 849000
+acceptance rate: 79.7089%
+trans: 28.7189% 	crank: 38.0286% 	pivot: 40.2123% 	rot: 86.1502% 	
+Sweep number 850000
+acceptance rate: 79.709%
+trans: 28.7194% 	crank: 38.0297% 	pivot: 40.215% 	rot: 86.1502% 	
+Sweep number 851000
+acceptance rate: 79.7091%
+trans: 28.7197% 	crank: 38.0301% 	pivot: 40.2205% 	rot: 86.1502% 	
+Sweep number 852000
+acceptance rate: 79.7091%
+trans: 28.7202% 	crank: 38.0306% 	pivot: 40.2196% 	rot: 86.1502% 	
+Sweep number 853000
+acceptance rate: 79.7091%
+trans: 28.7204% 	crank: 38.031% 	pivot: 40.2172% 	rot: 86.1502% 	
+Sweep number 854000
+acceptance rate: 79.7092%
+trans: 28.7201% 	crank: 38.0312% 	pivot: 40.22% 	rot: 86.1503% 	
+Sweep number 855000
+acceptance rate: 79.7093%
+trans: 28.7207% 	crank: 38.0323% 	pivot: 40.2175% 	rot: 86.1503% 	
+Sweep number 856000
+acceptance rate: 79.7092%
+trans: 28.7207% 	crank: 38.0321% 	pivot: 40.2167% 	rot: 86.1502% 	
+Sweep number 857000
+acceptance rate: 79.7092%
+trans: 28.7202% 	crank: 38.0313% 	pivot: 40.2168% 	rot: 86.1503% 	
+Sweep number 858000
+acceptance rate: 79.7092%
+trans: 28.7199% 	crank: 38.0305% 	pivot: 40.2166% 	rot: 86.1504% 	
+Sweep number 859000
+acceptance rate: 79.7092%
+trans: 28.7192% 	crank: 38.0294% 	pivot: 40.2178% 	rot: 86.1505% 	
+Sweep number 860000
+acceptance rate: 79.7091%
+trans: 28.7182% 	crank: 38.0286% 	pivot: 40.2156% 	rot: 86.1505% 	
+Sweep number 861000
+acceptance rate: 79.709%
+trans: 28.7169% 	crank: 38.0279% 	pivot: 40.2138% 	rot: 86.1505% 	
+Sweep number 862000
+acceptance rate: 79.7089%
+trans: 28.7161% 	crank: 38.0273% 	pivot: 40.2113% 	rot: 86.1505% 	
+Sweep number 863000
+acceptance rate: 79.7088%
+trans: 28.7159% 	crank: 38.027% 	pivot: 40.2094% 	rot: 86.1504% 	
+Sweep number 864000
+acceptance rate: 79.7087%
+trans: 28.7157% 	crank: 38.0264% 	pivot: 40.2098% 	rot: 86.1504% 	
+Sweep number 865000
+acceptance rate: 79.7087%
+trans: 28.7157% 	crank: 38.0262% 	pivot: 40.2102% 	rot: 86.1504% 	
+Sweep number 866000
+acceptance rate: 79.7088%
+trans: 28.7161% 	crank: 38.0266% 	pivot: 40.2092% 	rot: 86.1505% 	
+Sweep number 867000
+acceptance rate: 79.7087%
+trans: 28.7162% 	crank: 38.0267% 	pivot: 40.2088% 	rot: 86.1503% 	
+Sweep number 868000
+acceptance rate: 79.7086%
+trans: 28.7157% 	crank: 38.0261% 	pivot: 40.2164% 	rot: 86.1503% 	
+Sweep number 869000
+acceptance rate: 79.7087%
+trans: 28.7159% 	crank: 38.0261% 	pivot: 40.2241% 	rot: 86.1502% 	
+Sweep number 870000
+acceptance rate: 79.7085%
+trans: 28.7152% 	crank: 38.0251% 	pivot: 40.2327% 	rot: 86.1502% 	
+Sweep number 871000
+acceptance rate: 79.7085%
+trans: 28.7152% 	crank: 38.0245% 	pivot: 40.2338% 	rot: 86.1502% 	
+Sweep number 872000
+acceptance rate: 79.7085%
+trans: 28.7148% 	crank: 38.024% 	pivot: 40.2348% 	rot: 86.1502% 	
+Sweep number 873000
+acceptance rate: 79.7084%
+trans: 28.7143% 	crank: 38.0228% 	pivot: 40.2336% 	rot: 86.1502% 	
+Sweep number 874000
+acceptance rate: 79.7083%
+trans: 28.7143% 	crank: 38.0226% 	pivot: 40.2327% 	rot: 86.1502% 	
+Sweep number 875000
+acceptance rate: 79.7082%
+trans: 28.7136% 	crank: 38.0216% 	pivot: 40.2308% 	rot: 86.1502% 	
+Sweep number 876000
+acceptance rate: 79.7082%
+trans: 28.7138% 	crank: 38.0213% 	pivot: 40.2297% 	rot: 86.1501% 	
+Sweep number 877000
+acceptance rate: 79.7081%
+trans: 28.7134% 	crank: 38.0209% 	pivot: 40.2287% 	rot: 86.1501% 	
+Sweep number 878000
+acceptance rate: 79.7081%
+trans: 28.7134% 	crank: 38.0209% 	pivot: 40.2281% 	rot: 86.1501% 	
+Sweep number 879000
+acceptance rate: 79.708%
+trans: 28.7133% 	crank: 38.0207% 	pivot: 40.2237% 	rot: 86.1501% 	
+Sweep number 880000
+acceptance rate: 79.7081%
+trans: 28.7133% 	crank: 38.0209% 	pivot: 40.2247% 	rot: 86.1501% 	
+Sweep number 881000
+acceptance rate: 79.7081%
+trans: 28.7135% 	crank: 38.0213% 	pivot: 40.228% 	rot: 86.15% 	
+Sweep number 882000
+acceptance rate: 79.7082%
+trans: 28.7141% 	crank: 38.0221% 	pivot: 40.2337% 	rot: 86.15% 	
+Sweep number 883000
+acceptance rate: 79.7081%
+trans: 28.713% 	crank: 38.0212% 	pivot: 40.2343% 	rot: 86.15% 	
+Sweep number 884000
+acceptance rate: 79.708%
+trans: 28.7122% 	crank: 38.0206% 	pivot: 40.2312% 	rot: 86.15% 	
+Sweep number 885000
+acceptance rate: 79.7079%
+trans: 28.7123% 	crank: 38.0201% 	pivot: 40.2273% 	rot: 86.15% 	
+Sweep number 886000
+acceptance rate: 79.7079%
+trans: 28.7129% 	crank: 38.02% 	pivot: 40.2235% 	rot: 86.15% 	
+Sweep number 887000
+acceptance rate: 79.7078%
+trans: 28.7124% 	crank: 38.0193% 	pivot: 40.224% 	rot: 86.1499% 	
+Sweep number 888000
+acceptance rate: 79.7077%
+trans: 28.7116% 	crank: 38.0181% 	pivot: 40.2219% 	rot: 86.1499% 	
+Sweep number 889000
+acceptance rate: 79.7075%
+trans: 28.7105% 	crank: 38.0171% 	pivot: 40.2211% 	rot: 86.1499% 	
+Sweep number 890000
+acceptance rate: 79.7075%
+trans: 28.7099% 	crank: 38.0165% 	pivot: 40.2209% 	rot: 86.15% 	
+Sweep number 891000
+acceptance rate: 79.7076%
+trans: 28.7106% 	crank: 38.017% 	pivot: 40.2222% 	rot: 86.15% 	
+Sweep number 892000
+acceptance rate: 79.7075%
+trans: 28.7102% 	crank: 38.0163% 	pivot: 40.2239% 	rot: 86.1499% 	
+Sweep number 893000
+acceptance rate: 79.7074%
+trans: 28.7098% 	crank: 38.0158% 	pivot: 40.2256% 	rot: 86.1499% 	
+Sweep number 894000
+acceptance rate: 79.7074%
+trans: 28.709% 	crank: 38.015% 	pivot: 40.2265% 	rot: 86.15% 	
+Sweep number 895000
+acceptance rate: 79.7073%
+trans: 28.7073% 	crank: 38.0134% 	pivot: 40.229% 	rot: 86.15% 	
+Sweep number 896000
+acceptance rate: 79.7073%
+trans: 28.707% 	crank: 38.013% 	pivot: 40.2277% 	rot: 86.1501% 	
+Sweep number 897000
+acceptance rate: 79.7072%
+trans: 28.7064% 	crank: 38.0127% 	pivot: 40.2356% 	rot: 86.1501% 	
+Sweep number 898000
+acceptance rate: 79.7073%
+trans: 28.7071% 	crank: 38.0132% 	pivot: 40.2391% 	rot: 86.1501% 	
+Sweep number 899000
+acceptance rate: 79.7074%
+trans: 28.7077% 	crank: 38.0135% 	pivot: 40.2385% 	rot: 86.1501% 	
+Sweep number 900000
+acceptance rate: 79.7076%
+trans: 28.7084% 	crank: 38.0141% 	pivot: 40.2381% 	rot: 86.1502% 	
+Sweep number 901000
+acceptance rate: 79.7073%
+trans: 28.7074% 	crank: 38.0128% 	pivot: 40.2362% 	rot: 86.1501% 	
+Sweep number 902000
+acceptance rate: 79.7073%
+trans: 28.7071% 	crank: 38.0123% 	pivot: 40.2341% 	rot: 86.1501% 	
+Sweep number 903000
+acceptance rate: 79.7074%
+trans: 28.7075% 	crank: 38.0126% 	pivot: 40.2347% 	rot: 86.1502% 	
+Sweep number 904000
+acceptance rate: 79.7073%
+trans: 28.7071% 	crank: 38.0118% 	pivot: 40.2306% 	rot: 86.1502% 	
+Sweep number 905000
+acceptance rate: 79.7074%
+trans: 28.7077% 	crank: 38.0118% 	pivot: 40.2358% 	rot: 86.1502% 	
+Sweep number 906000
+acceptance rate: 79.7074%
+trans: 28.708% 	crank: 38.0121% 	pivot: 40.2438% 	rot: 86.1501% 	
+Sweep number 907000
+acceptance rate: 79.7074%
+trans: 28.7081% 	crank: 38.0123% 	pivot: 40.2438% 	rot: 86.1501% 	
+Sweep number 908000
+acceptance rate: 79.7073%
+trans: 28.7082% 	crank: 38.0118% 	pivot: 40.2438% 	rot: 86.15% 	
+Sweep number 909000
+acceptance rate: 79.7074%
+trans: 28.7092% 	crank: 38.0125% 	pivot: 40.2445% 	rot: 86.15% 	
+Sweep number 910000
+acceptance rate: 79.7075%
+trans: 28.7101% 	crank: 38.0129% 	pivot: 40.2439% 	rot: 86.1501% 	
+Sweep number 911000
+acceptance rate: 79.7076%
+trans: 28.7107% 	crank: 38.0131% 	pivot: 40.2456% 	rot: 86.1501% 	
+Sweep number 912000
+acceptance rate: 79.7075%
+trans: 28.71% 	crank: 38.0121% 	pivot: 40.2485% 	rot: 86.1501% 	
+Sweep number 913000
+acceptance rate: 79.7076%
+trans: 28.7106% 	crank: 38.0121% 	pivot: 40.2528% 	rot: 86.1502% 	
+Sweep number 914000
+acceptance rate: 79.7077%
+trans: 28.7114% 	crank: 38.0124% 	pivot: 40.2541% 	rot: 86.1501% 	
+Sweep number 915000
+acceptance rate: 79.7077%
+trans: 28.712% 	crank: 38.0129% 	pivot: 40.2499% 	rot: 86.1501% 	
+Sweep number 916000
+acceptance rate: 79.7075%
+trans: 28.7121% 	crank: 38.0124% 	pivot: 40.2455% 	rot: 86.15% 	
+Sweep number 917000
+acceptance rate: 79.7075%
+trans: 28.7122% 	crank: 38.0129% 	pivot: 40.2451% 	rot: 86.1499% 	
+Sweep number 918000
+acceptance rate: 79.7076%
+trans: 28.7125% 	crank: 38.0135% 	pivot: 40.2451% 	rot: 86.15% 	
+Sweep number 919000
+acceptance rate: 79.7076%
+trans: 28.713% 	crank: 38.0134% 	pivot: 40.2428% 	rot: 86.1499% 	
+Sweep number 920000
+acceptance rate: 79.7077%
+trans: 28.7137% 	crank: 38.0141% 	pivot: 40.2419% 	rot: 86.1499% 	
+Sweep number 921000
+acceptance rate: 79.7076%
+trans: 28.7141% 	crank: 38.0141% 	pivot: 40.2394% 	rot: 86.1499% 	
+Sweep number 922000
+acceptance rate: 79.7076%
+trans: 28.7134% 	crank: 38.0138% 	pivot: 40.2379% 	rot: 86.1499% 	
+Sweep number 923000
+acceptance rate: 79.7075%
+trans: 28.7131% 	crank: 38.0137% 	pivot: 40.2368% 	rot: 86.1499% 	
+Sweep number 924000
+acceptance rate: 79.7076%
+trans: 28.7131% 	crank: 38.0138% 	pivot: 40.2369% 	rot: 86.1499% 	
+Sweep number 925000
+acceptance rate: 79.7075%
+trans: 28.7125% 	crank: 38.0132% 	pivot: 40.2372% 	rot: 86.15% 	
+Sweep number 926000
+acceptance rate: 79.7077%
+trans: 28.7132% 	crank: 38.0139% 	pivot: 40.2386% 	rot: 86.15% 	
+Sweep number 927000
+acceptance rate: 79.7076%
+trans: 28.7134% 	crank: 38.0144% 	pivot: 40.2354% 	rot: 86.1499% 	
+Sweep number 928000
+acceptance rate: 79.7075%
+trans: 28.7125% 	crank: 38.0138% 	pivot: 40.2324% 	rot: 86.1499% 	
+Sweep number 929000
+acceptance rate: 79.7074%
+trans: 28.7124% 	crank: 38.0133% 	pivot: 40.2331% 	rot: 86.1498% 	
+Sweep number 930000
+acceptance rate: 79.7073%
+trans: 28.7119% 	crank: 38.0127% 	pivot: 40.2325% 	rot: 86.1498% 	
+Sweep number 931000
+acceptance rate: 79.7073%
+trans: 28.7116% 	crank: 38.0127% 	pivot: 40.2323% 	rot: 86.1498% 	
+Sweep number 932000
+acceptance rate: 79.7073%
+trans: 28.7115% 	crank: 38.0124% 	pivot: 40.2314% 	rot: 86.1498% 	
+Sweep number 933000
+acceptance rate: 79.7071%
+trans: 28.7103% 	crank: 38.0114% 	pivot: 40.2306% 	rot: 86.1498% 	
+Sweep number 934000
+acceptance rate: 79.7072%
+trans: 28.7104% 	crank: 38.0115% 	pivot: 40.2334% 	rot: 86.1498% 	
+Sweep number 935000
+acceptance rate: 79.7071%
+trans: 28.7098% 	crank: 38.011% 	pivot: 40.2346% 	rot: 86.1498% 	
+Sweep number 936000
+acceptance rate: 79.7072%
+trans: 28.7101% 	crank: 38.0113% 	pivot: 40.2341% 	rot: 86.1498% 	
+Sweep number 937000
+acceptance rate: 79.7072%
+trans: 28.71% 	crank: 38.0114% 	pivot: 40.2353% 	rot: 86.1498% 	
+Sweep number 938000
+acceptance rate: 79.7071%
+trans: 28.7099% 	crank: 38.0116% 	pivot: 40.2318% 	rot: 86.1498% 	
+Sweep number 939000
+acceptance rate: 79.7071%
+trans: 28.7098% 	crank: 38.0116% 	pivot: 40.2296% 	rot: 86.1497% 	
+Sweep number 940000
+acceptance rate: 79.7071%
+trans: 28.7104% 	crank: 38.0125% 	pivot: 40.2251% 	rot: 86.1497% 	
+Sweep number 941000
+acceptance rate: 79.7071%
+trans: 28.7111% 	crank: 38.0129% 	pivot: 40.2243% 	rot: 86.1497% 	
+Sweep number 942000
+acceptance rate: 79.7071%
+trans: 28.7114% 	crank: 38.0129% 	pivot: 40.2221% 	rot: 86.1496% 	
+Sweep number 943000
+acceptance rate: 79.7071%
+trans: 28.7114% 	crank: 38.0131% 	pivot: 40.2214% 	rot: 86.1497% 	
+Sweep number 944000
+acceptance rate: 79.707%
+trans: 28.7103% 	crank: 38.0124% 	pivot: 40.2221% 	rot: 86.1496% 	
+Sweep number 945000
+acceptance rate: 79.7071%
+trans: 28.7109% 	crank: 38.0124% 	pivot: 40.2216% 	rot: 86.1497% 	
+Sweep number 946000
+acceptance rate: 79.707%
+trans: 28.7105% 	crank: 38.012% 	pivot: 40.2207% 	rot: 86.1497% 	
+Sweep number 947000
+acceptance rate: 79.707%
+trans: 28.7105% 	crank: 38.0121% 	pivot: 40.2178% 	rot: 86.1497% 	
+Sweep number 948000
+acceptance rate: 79.7071%
+trans: 28.7108% 	crank: 38.0123% 	pivot: 40.216% 	rot: 86.1498% 	
+Sweep number 949000
+acceptance rate: 79.7071%
+trans: 28.7104% 	crank: 38.0119% 	pivot: 40.213% 	rot: 86.1499% 	
+Sweep number 950000
+acceptance rate: 79.7071%
+trans: 28.7107% 	crank: 38.0121% 	pivot: 40.211% 	rot: 86.1499% 	
+Sweep number 951000
+acceptance rate: 79.7072%
+trans: 28.7109% 	crank: 38.0128% 	pivot: 40.211% 	rot: 86.1499% 	
+Sweep number 952000
+acceptance rate: 79.7073%
+trans: 28.7117% 	crank: 38.0138% 	pivot: 40.2134% 	rot: 86.1498% 	
+Sweep number 953000
+acceptance rate: 79.7072%
+trans: 28.7112% 	crank: 38.0135% 	pivot: 40.2105% 	rot: 86.1498% 	
+Sweep number 954000
+acceptance rate: 79.7072%
+trans: 28.7111% 	crank: 38.0132% 	pivot: 40.2073% 	rot: 86.1498% 	
+Sweep number 955000
+acceptance rate: 79.7071%
+trans: 28.711% 	crank: 38.0127% 	pivot: 40.2059% 	rot: 86.1498% 	
+Sweep number 956000
+acceptance rate: 79.7071%
+trans: 28.7115% 	crank: 38.0134% 	pivot: 40.2025% 	rot: 86.1498% 	
+Sweep number 957000
+acceptance rate: 79.707%
+trans: 28.7116% 	crank: 38.0133% 	pivot: 40.2032% 	rot: 86.1497% 	
+Sweep number 958000
+acceptance rate: 79.707%
+trans: 28.7111% 	crank: 38.013% 	pivot: 40.2045% 	rot: 86.1497% 	
+Sweep number 959000
+acceptance rate: 79.7071%
+trans: 28.7119% 	crank: 38.0138% 	pivot: 40.207% 	rot: 86.1497% 	
+Sweep number 960000
+acceptance rate: 79.7071%
+trans: 28.7121% 	crank: 38.0144% 	pivot: 40.2073% 	rot: 86.1497% 	
+Sweep number 961000
+acceptance rate: 79.7071%
+trans: 28.7117% 	crank: 38.0141% 	pivot: 40.2075% 	rot: 86.1497% 	
+Sweep number 962000
+acceptance rate: 79.7071%
+trans: 28.7118% 	crank: 38.0147% 	pivot: 40.2063% 	rot: 86.1496% 	
+Sweep number 963000
+acceptance rate: 79.7071%
+trans: 28.7115% 	crank: 38.0147% 	pivot: 40.206% 	rot: 86.1496% 	
+Sweep number 964000
+acceptance rate: 79.7071%
+trans: 28.7124% 	crank: 38.0156% 	pivot: 40.2013% 	rot: 86.1496% 	
+Sweep number 965000
+acceptance rate: 79.7071%
+trans: 28.7127% 	crank: 38.0158% 	pivot: 40.2018% 	rot: 86.1496% 	
+Sweep number 966000
+acceptance rate: 79.7072%
+trans: 28.7135% 	crank: 38.0165% 	pivot: 40.2032% 	rot: 86.1495% 	
+Sweep number 967000
+acceptance rate: 79.7074%
+trans: 28.7153% 	crank: 38.0176% 	pivot: 40.2041% 	rot: 86.1495% 	
+Sweep number 968000
+acceptance rate: 79.7074%
+trans: 28.7158% 	crank: 38.0175% 	pivot: 40.2053% 	rot: 86.1495% 	
+Sweep number 969000
+acceptance rate: 79.7075%
+trans: 28.7168% 	crank: 38.0184% 	pivot: 40.2077% 	rot: 86.1495% 	
+Sweep number 970000
+acceptance rate: 79.7076%
+trans: 28.7175% 	crank: 38.0197% 	pivot: 40.2079% 	rot: 86.1495% 	
+Sweep number 971000
+acceptance rate: 79.7078%
+trans: 28.7188% 	crank: 38.0206% 	pivot: 40.2077% 	rot: 86.1495% 	
+Sweep number 972000
+acceptance rate: 79.7079%
+trans: 28.72% 	crank: 38.0215% 	pivot: 40.2103% 	rot: 86.1495% 	
+Sweep number 973000
+acceptance rate: 79.7081%
+trans: 28.7222% 	crank: 38.0235% 	pivot: 40.2129% 	rot: 86.1494% 	
+Sweep number 974000
+acceptance rate: 79.7082%
+trans: 28.7235% 	crank: 38.0252% 	pivot: 40.2111% 	rot: 86.1494% 	
+Sweep number 975000
+acceptance rate: 79.7082%
+trans: 28.7244% 	crank: 38.0259% 	pivot: 40.208% 	rot: 86.1493% 	
+Sweep number 976000
+acceptance rate: 79.7083%
+trans: 28.7247% 	crank: 38.0267% 	pivot: 40.2086% 	rot: 86.1493% 	
+Sweep number 977000
+acceptance rate: 79.7084%
+trans: 28.7248% 	crank: 38.0271% 	pivot: 40.2109% 	rot: 86.1494% 	
+Sweep number 978000
+acceptance rate: 79.7083%
+trans: 28.7251% 	crank: 38.027% 	pivot: 40.2116% 	rot: 86.1493% 	
+Sweep number 979000
+acceptance rate: 79.7083%
+trans: 28.7247% 	crank: 38.0263% 	pivot: 40.2104% 	rot: 86.1493% 	
+Sweep number 980000
+acceptance rate: 79.7083%
+trans: 28.7245% 	crank: 38.026% 	pivot: 40.2085% 	rot: 86.1493% 	
+Sweep number 981000
+acceptance rate: 79.7083%
+trans: 28.7242% 	crank: 38.0253% 	pivot: 40.2081% 	rot: 86.1495% 	
+Sweep number 982000
+acceptance rate: 79.7083%
+trans: 28.7239% 	crank: 38.0253% 	pivot: 40.2065% 	rot: 86.1495% 	
+Sweep number 983000
+acceptance rate: 79.7083%
+trans: 28.7238% 	crank: 38.0252% 	pivot: 40.2086% 	rot: 86.1494% 	
+Sweep number 984000
+acceptance rate: 79.7084%
+trans: 28.7242% 	crank: 38.0253% 	pivot: 40.2113% 	rot: 86.1496% 	
+Sweep number 985000
+acceptance rate: 79.7085%
+trans: 28.7244% 	crank: 38.025% 	pivot: 40.211% 	rot: 86.1496% 	
+Sweep number 986000
+acceptance rate: 79.7085%
+trans: 28.7245% 	crank: 38.0247% 	pivot: 40.2128% 	rot: 86.1496% 	
+Sweep number 987000
+acceptance rate: 79.7085%
+trans: 28.7242% 	crank: 38.0241% 	pivot: 40.2136% 	rot: 86.1497% 	
+Sweep number 988000
+acceptance rate: 79.7085%
+trans: 28.7243% 	crank: 38.0241% 	pivot: 40.2133% 	rot: 86.1497% 	
+Sweep number 989000
+acceptance rate: 79.7087%
+trans: 28.7251% 	crank: 38.0245% 	pivot: 40.2182% 	rot: 86.1498% 	
+Sweep number 990000
+acceptance rate: 79.7088%
+trans: 28.7251% 	crank: 38.0247% 	pivot: 40.2167% 	rot: 86.1499% 	
+Sweep number 991000
+acceptance rate: 79.7087%
+trans: 28.7249% 	crank: 38.0243% 	pivot: 40.2187% 	rot: 86.1498% 	
+Sweep number 992000
+acceptance rate: 79.7087%
+trans: 28.725% 	crank: 38.0242% 	pivot: 40.2204% 	rot: 86.1498% 	
+Sweep number 993000
+acceptance rate: 79.7087%
+trans: 28.725% 	crank: 38.0239% 	pivot: 40.223% 	rot: 86.1498% 	
+Sweep number 994000
+acceptance rate: 79.7087%
+trans: 28.7252% 	crank: 38.0239% 	pivot: 40.2248% 	rot: 86.1499% 	
+Sweep number 995000
+acceptance rate: 79.7088%
+trans: 28.7251% 	crank: 38.0237% 	pivot: 40.2268% 	rot: 86.1499% 	
+Sweep number 996000
+acceptance rate: 79.7088%
+trans: 28.7253% 	crank: 38.0235% 	pivot: 40.2274% 	rot: 86.1499% 	
+Sweep number 997000
+acceptance rate: 79.7088%
+trans: 28.7255% 	crank: 38.0241% 	pivot: 40.2266% 	rot: 86.1499% 	
+Sweep number 998000
+acceptance rate: 79.7088%
+trans: 28.725% 	crank: 38.0239% 	pivot: 40.2266% 	rot: 86.1499% 	
+Sweep number 999000
+acceptance rate: 79.7089%
+trans: 28.7255% 	crank: 38.0244% 	pivot: 40.2293% 	rot: 86.1499% 	
+acceptance rate: 79.709%
+Took 4300seconds 
+Moved 587488306 beads 
