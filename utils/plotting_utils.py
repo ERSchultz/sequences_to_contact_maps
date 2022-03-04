@@ -24,7 +24,7 @@ from .InteractionConverter import InteractionConverter
 from .load_utils import load_sc_contacts, load_X_psi
 from .neural_net_utils import get_data_loaders, load_saved_model
 from .utils import (calc_dist_strat_corr, calc_per_class_acc, compare_PCA,
-                    triu_to_full)
+                    triu_to_full, crop)
 from .xyz_utils import (find_dist_between_centroids, find_label_centroid,
                         xyz_load, xyz_to_contact_grid, xyz_write)
 
@@ -1147,7 +1147,7 @@ def plot_xyz_gif():
     for filename in set(filenames):
         os.remove(filename)
 
-def plot_sc_contact_maps(dataset, samples, ofolder = 'sc_contact', count = 20, jobs = 1, overall = True):
+def plot_sc_contact_maps(dataset, samples, ofolder = 'sc_contact', count = 20, jobs = 1, overall = True, N_max = None, crop_size = None):
     if isinstance(samples, int):
         samples = [samples]
 
@@ -1156,10 +1156,10 @@ def plot_sc_contact_maps(dataset, samples, ofolder = 'sc_contact', count = 20, j
         dir = osp.join(dataset, 'samples', f'sample{sample}')
         odir = osp.join(dir, ofolder)
 
-        sc_contacts = load_sc_contacts(dir, zero_diag = True, jobs = jobs, triu = True)
-        plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall)
+        sc_contacts = load_sc_contacts(dir, zero_diag = True, jobs = jobs, triu = True, N_max = N_max)
+        plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall, crop_size)
 
-def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False):
+def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False, crop_size = None):
     '''
     Plot sc contact map.
 
@@ -1192,6 +1192,9 @@ def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False):
                 contact_map = triu_to_full(sc_contacts[i, :], m)
             else:
                 contact_map = sc_contacts[i, :, :]
+
+            if crop_size is not None:
+                contact_map = crop(contact_map, crop_size)
 
         if i % (N // count) == 0:
             np.savetxt(osp.join(odir, f'{i}.txt'), contact_map, fmt='%.2f')

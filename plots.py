@@ -98,7 +98,8 @@ def main():
 
 if __name__ == '__main__':
     # plot_xyz_gif()
-    plot_sc_contact_maps('/home/eric/dataset_test', samples = 91, ofolder = 'sc_contact/original', jobs = 8)
+    plot_sc_contact_maps('C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps\\dataset_test',
+                        samples = 91, ofolder = 'sc_contact/original', jobs = 4, N_max = 2, count = 2)
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
     # update_result_tables('ContactGNN', 'GNN', 'sequence')
     # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
