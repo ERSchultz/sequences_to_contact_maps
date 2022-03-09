@@ -10,7 +10,8 @@ from scipy.ndimage import gaussian_filter
 
 from .energy_utils import calculate_E_S, calculate_S, s_to_E
 from .utils import (LETTERS, diagonal_preprocessing,
-                    genomic_distance_statistics, print_time, triu_to_full)
+                    diagonal_preprocessing_bulk, genomic_distance_statistics,
+                    print_time, triu_to_full)
 from .xyz_utils import xyz_load, xyz_to_contact_grid
 
 
@@ -203,20 +204,21 @@ def load_final_max_ent_S(k, replicate_path, max_it_path = None):
 
     return s
 
-def load_sc_contacts(sample_folder, N_min = 0, N_max = None, triu = False,
+def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
                     gaussian = False, zero_diag = False, jobs = 1, down_sampling = 1,
-                    diagonal_preprocessing = False):
+                    sparsify = False, correct_diag = False):
     '''
     Load single cell contacts from sample_folder/data_out/output.xyz.
 
     Inputs:
-        sample_foler: sample to load data for
+        sample_folder: sample to load data for
         N_min: minimum sc_contact to load (because early sweeps may not be equillibrated)
         N_max: maximum sc_contact to load (for computational efficiency)
         triu: True to flatten and upper triangularize sc_contact maps
         gaussian: True to apply gaussian filter
         zero_diag: True to zero diagonal
         down_sampling (int): down sample by given value
+        sparsify (bool): True to match experimental sparseness
         diagonal_preprocessing: process diagonal based on overall contact map
 
     Outputs:
@@ -229,48 +231,51 @@ def load_sc_contacts(sample_folder, N_min = 0, N_max = None, triu = False,
 
     # load xyz
     xyz = xyz_load(osp.join(sample_folder, 'data_out/output.xyz'),
-                    multiple_timesteps=True, save = True)
+                    multiple_timesteps=True, save = True, N_min = N_min,
+                    N_max = N_max, down_sampling = down_sampling)
 
     # set up N, m, and xyz
-    N, m, _ = xyz.shape
-    if N_max is None or N_max > N:
-        N_max = N
-    if N_min is None:
-        N_min = 0
-    xyz = xyz[N_min:N_max:down_sampling]
     N, _, _ = xyz.shape
-
-    if diagonal_preprocessing:
-        overall = np.load(osp.join(sample_folder, 'y.npy'))
-        mean_per_diag = genomic_distance_statistics(overall, mode = 'prob')
-        # TODO
 
     # process sc_contacts
     t0 = time.time()
     if jobs > 1:
         mapping = []
         for i in range(N):
-            mapping.append((xyz[i], grid_size, triu, gaussian, zero_diag))
+            mapping.append((xyz[i], grid_size, triu, gaussian, zero_diag, sparsify))
         with multiprocessing.Pool(jobs) as p:
             sc_contacts = p.starmap(load_sc_contacts_xyz, mapping)
     else:
-        sc_contacts = list(map(load_sc_contacts_xyz, xyz, [grid_size]*N, [triu]*N, [gaussian]*N, [zero_diag]*N))
+        sc_contacts = list(map(load_sc_contacts_xyz, xyz, [grid_size]*N, [triu]*N, [gaussian]*N, [zero_diag]*N, [sparsify]*N))
     sc_contacts = np.array(sc_contacts)
+
+    if correct_diag:
+        overall = np.load(osp.join(sample_folder, 'y.npy'))
+        mean_per_diag = genomic_distance_statistics(overall, mode = 'prob')
+        sc_contacts = diagonal_preprocessing_bulk(sc_contacts, mean_per_diag, triu)
+
     tf = time.time()
     print_time(t0, tf, 'load')
 
-
-
     print(f'Loaded {len(sc_contacts)} sc contacts')
-
     return sc_contacts
 
-def load_sc_contacts_xyz(xyz, grid_size, triu, gaussian, zero_diag):
+def load_sc_contacts_xyz(xyz, grid_size, triu, gaussian, zero_diag, sparsify):
     m, _ = xyz.shape
 
     contact_map = xyz_to_contact_grid(xyz, grid_size)
     if zero_diag:
         np.fill_diagonal(contact_map, 0)
+    if sparsify:
+        temp_contact_map = np.zeros_like(contact_map)
+        # wasn't sure how to do this in place and ensure symmetry
+        for i in range(m):
+            where = np.argwhere(contact_map[i])
+            if len(where) > 0:
+                where2 = np.random.choice(where.reshape(-1))
+                temp_contact_map[i, where2] = 1
+                temp_contact_map[where2, i] = 1
+        contact_map = temp_contact_map
     if gaussian:
         contact_map = gaussian_filter(contact_map, sigma = 4)
     if triu:

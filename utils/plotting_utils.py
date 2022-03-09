@@ -1,5 +1,3 @@
-import csv
-import json
 import math
 import multiprocessing
 import os
@@ -24,7 +22,7 @@ from .InteractionConverter import InteractionConverter
 from .load_utils import load_sc_contacts, load_X_psi
 from .neural_net_utils import get_data_loaders, load_saved_model
 from .utils import (calc_dist_strat_corr, calc_per_class_acc, compare_PCA,
-                    triu_to_full, crop)
+                    crop, triu_to_full)
 from .xyz_utils import (find_dist_between_centroids, find_label_centroid,
                         xyz_load, xyz_to_contact_grid, xyz_write)
 
@@ -233,14 +231,14 @@ def plot_seq_binary(seq, show = False, save = True, title = None, labels = None,
         plt.show()
     plt.close()
 
-def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1,
+def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
                     size_in = 6, minVal = None, maxVal = None, prcnt = False,
                     cmap = None, x_ticks = None, y_ticks = None):
     """
-    Plotting function for contact maps.
+    Plotting function for 2D arrays.
 
     Inputs:
-        y: contact map numpy array
+        arr: numpy array
         ofile: save location
         title: plot title
         vmax: maximum value for color bar, 'mean' to set as mean value
@@ -268,42 +266,43 @@ def plotContactMap(y, ofile = None, title = None, vmin = 0, vmax = 1,
     else:
         raise Exception('Invalid cmap: {}'.format(cmap))
 
-    if len(y.shape) == 4:
-        N, C, H, W = y.shape
+    if len(arr.shape) == 4:
+        N, C, H, W = arr.shape
         assert N == 1 and C == 1
-        y = y.reshape(H,W)
-    elif len(y.shape) == 3:
-        N, H, W = y.shape
+        arr = arr.reshape(H,W)
+    elif len(arr.shape) == 3:
+        N, H, W = arr.shape
         assert N == 1
-        y = y.reshape(H,W)
+        y = arr.reshape(H,W)
     else:
-        H, W = y.shape
+        H, W = arr.shape
 
     if minVal is not None or maxVal is not None:
-        y = y.copy() # prevent issues from reference type
+        arr = arr.copy() # prevent issues from reference type
     if minVal is not None:
-        ind = y < minVal
-        y[ind] = 0
+        ind = arr < minVal
+        arr[ind] = 0
     if maxVal is not None:
-        ind = y > maxVal
-        y[ind] = 0
+        ind = arr > maxVal
+        arr[ind] = 0
     plt.figure(figsize = (size_in, size_in))
 
     # set min and max
     if vmin == 'min':
-        vmin = np.percentile(y, 1)
+        vmin = np.percentile(arr, 1)
         # uses 1st percentile instead of absolute min
     elif vmin == 'abs_min':
-        vmin = np.min(y)
+        vmin = np.min(arr)
+
     if vmax == 'mean':
-        vmax = np.mean(y)
+        vmax = np.mean(arr)
     elif vmax == 'max':
-        vmax = np.percentile(y, 99)
+        vmax = np.percentile(arr, 99)
         # uses 99th percentile instead of absolute max
     elif vmax == 'abs_max':
-        vmax = np.max(y)
+        vmax = np.max(arr)
 
-    ax = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap)
+    ax = sns.heatmap(arr, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap)
     if x_ticks is None:
         pass
     elif len(x_ticks) == 0:
@@ -527,18 +526,18 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         v_max = np.max(y)
         v_min = np.min(y)
 
-        # not a contat map but using this plotContactMap function anyways
-        plotContactMap(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min,
+        # not a contat map but using this plot_matrix function anyways
+        plot_matrix(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min,
                         vmax = v_max, cmap = 'blue-red', title = yhat_title)
         np.savetxt(osp.join(subpath, 'energy_hat.txt'), yhat, fmt = '%.3f')
 
-        plotContactMap(y, osp.join(subpath, 'energy.png'), vmin = v_min,
+        plot_matrix(y, osp.join(subpath, 'energy.png'), vmin = v_min,
                         vmax = v_max, cmap = 'blue-red', title = r'$S$')
         np.savetxt(osp.join(subpath, 'energy.txt'), y, fmt = '%.3f')
 
         # plot dif
         dif = yhat - y
-        plotContactMap(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
+        plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
                         vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
 
     print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)),
@@ -619,37 +618,37 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
             print('yhat', yhat, np.max(yhat))
 
         if opt.y_preprocessing == 'prcnt':
-            plotContactMap(y, osp.join(subpath, 'y.png'), vmax = 'max', prcnt = True, title = 'Y')
+            plot_matrix(y, osp.join(subpath, 'y.png'), vmax = 'max', prcnt = True, title = 'Y')
             if opt.loss == 'cross_entropy':
                 yhat = np.argmax(yhat, axis = 1)
-                plotContactMap(yhat, osp.join(subpath, 'yhat.png'), vmax = 'max',
+                plot_matrix(yhat, osp.join(subpath, 'yhat.png'), vmax = 'max',
                                 prcnt = True, title = yhat_title)
             else:
                 yhat = un_normalize(yhat, minmax)
-                plotContactMap(yhat, osp.join(subpath, 'yhat.png'), vmax = 'max',
+                plot_matrix(yhat, osp.join(subpath, 'yhat.png'), vmax = 'max',
                                 prcnt = False, title = yhat_title)
         elif opt.y_preprocessing == 'diag' or opt.y_preprocessing == 'diag_instance':
             v_max = np.max(y)
-            plotContactMap(y, osp.join(subpath, 'y.png'), vmax = v_max, prcnt = False, title = 'Y')
+            plot_matrix(y, osp.join(subpath, 'y.png'), vmax = v_max, prcnt = False, title = 'Y')
             yhat = un_normalize(yhat, minmax)
-            plotContactMap(yhat, osp.join(subpath, 'yhat.png'), vmax = v_max,
+            plot_matrix(yhat, osp.join(subpath, 'yhat.png'), vmax = v_max,
                             prcnt = False, title = yhat_title)
 
             # plot prcnt
             yhat_prcnt = percentile_preprocessing(yhat, prcntDist)
-            plotContactMap(yhat_prcnt, osp.join(subpath, 'yhat_prcnt.png'),
+            plot_matrix(yhat_prcnt, osp.join(subpath, 'yhat_prcnt.png'),
                             vmax = 'max', prcnt = True, title = r'$\hat{Y}$ prcnt')
 
             # plot dif
             ydif_abs = abs(yhat - y)
-            plotContactMap(ydif_abs, osp.join(subpath, 'ydif_abs.png'),
+            plot_matrix(ydif_abs, osp.join(subpath, 'ydif_abs.png'),
                             vmax = v_max, title = r'|$\hat{Y}$ - Y|')
             ydif = yhat - y
             cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                      [(0, 'blue'),
                                                      (0.5, 'white'),
                                                       (1, 'red')], N=126)
-            plotContactMap(ydif, osp.join(subpath, 'ydif.png'), vmin = -1 * v_max,
+            plot_matrix(ydif, osp.join(subpath, 'ydif.png'), vmin = -1 * v_max,
                             vmax = v_max, title = r'$\hat{Y}$ - Y', cmap = cmap)
         else:
             raise Exception("Unsupported preprocessing: {}".format(opt.y_preprocessing))
@@ -668,7 +667,7 @@ def plotPCAReconstructions(y, y_torch, subpath, opt, loss_title, minmax):
         loss = opt.criterion(y_pca_torch, y_torch)
 
         y_pca = un_normalize(y_pca, minmax)
-        plotContactMap(y_pca, osp.join(subpath, 'y_pc{}.png'.format(k+1)),
+        plot_matrix(y_pca, osp.join(subpath, 'y_pc{}.png'.format(k+1)),
                     vmax = np.max(un_normalize(y, minmax)), prcnt = False,
                     title = 'Yhat Top {} PCs\n{}: {}'.format(k+1, loss_title,
                     np.round(loss, 3)))
@@ -1147,7 +1146,9 @@ def plot_xyz_gif():
     for filename in set(filenames):
         os.remove(filename)
 
-def plot_sc_contact_maps(dataset, samples, ofolder = 'sc_contact', count = 20, jobs = 1, overall = True, N_max = None, crop_size = None):
+def plot_sc_contact_maps(dataset, samples, ofolder = 'sc_contact', count = 20,
+                        jobs = 1, overall = True, N_max = None, crop_size = None,
+                        correct_diag = False, sparsify = False):
     if isinstance(samples, int):
         samples = [samples]
 
@@ -1156,10 +1157,13 @@ def plot_sc_contact_maps(dataset, samples, ofolder = 'sc_contact', count = 20, j
         dir = osp.join(dataset, 'samples', f'sample{sample}')
         odir = osp.join(dir, ofolder)
 
-        sc_contacts = load_sc_contacts(dir, zero_diag = True, jobs = jobs, triu = True, N_max = N_max)
-        plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall, crop_size)
+        sc_contacts = load_sc_contacts(dir, zero_diag = True, jobs = jobs, triu = True,
+                                        N_max = N_max, correct_diag = correct_diag,
+                                        sparsify = sparsify)
+        plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall, crop_size, correct_diag)
 
-def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False, crop_size = None):
+def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False,
+                                crop_size = None, correct_diag = False):
     '''
     Plot sc contact map.
 
@@ -1183,7 +1187,16 @@ def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False, 
         result=solve(y)
         m = int(np.max(result))
 
-    overall_map = np.zeros((m,m))
+    if correct_diag:
+        vmax = 'mean'
+    else:
+        vmax = 'abs_max'
+
+    if crop_size is not None:
+        overall_m = min([crop_size, m])
+    else:
+        overall_m = m
+    overall_map = np.zeros((overall_m,overall_m))
     mapping = []
     for i in range(N):
         if overall or i % (N // count) == 0:
@@ -1199,19 +1212,19 @@ def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False, 
         if i % (N // count) == 0:
             np.savetxt(osp.join(odir, f'{i}.txt'), contact_map, fmt='%.2f')
             if jobs > 1:
-                mapping.append((contact_map, osp.join(odir, f'{i}.png'), None, 0, 'abs_max'))
+                mapping.append((contact_map, osp.join(odir, f'{i}.png'), None, 0, vmax))
             else:
-                plotContactMap(contact_map, osp.join(odir, f'{i}.png'), vmax = 'abs_max')
+                plot_matrix(contact_map, osp.join(odir, f'{i}.png'), vmax = vmax)
 
         if overall:
             overall_map += contact_map
 
     if jobs > 1:
         with multiprocessing.Pool(jobs) as p:
-            p.starmap(plotContactMap, mapping)
+            p.starmap(plot_matrix, mapping)
 
     if overall:
-        plotContactMap(overall_map, osp.join(odir, 'overall.png'), vmax = 'abs_max')
+        plot_matrix(overall_map, osp.join(odir, 'overall.png'), vmax = 'abs_max')
 
 
 def plot_centroid_distance(dir = '/home/eric/dataset_test/samples',

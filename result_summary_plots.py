@@ -12,7 +12,7 @@ from sklearn.metrics import mean_squared_error
 from utils.argparse_utils import str2bool, str2int, str2None
 from utils.energy_utils import s_to_E
 from utils.load_utils import load_all, load_final_max_ent_S
-from utils.plotting_utils import plot_top_PCs, plotContactMap
+from utils.plotting_utils import plot_matrix, plot_top_PCs
 from utils.R_pca import R_pca
 from utils.utils import (LETTERS, diagonal_preprocessing,
                          genomic_distance_statistics, pearson_round)
@@ -323,10 +323,10 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
         np.save(S_file, S)
 
     if args.robust:
-        plotContactMap(L_log, osp.join(args.odir, 'L_log.png'), vmin = 'min', vmax = 'max', title = 'L_log')
-        plotContactMap(L, osp.join(args.odir, 'L.png'), vmin = 'min', vmax = 'max', title = 'L')
-        plotContactMap(S_log, osp.join(args.odir, 'S_log.png'), vmin = 'min', vmax = 'max', title = 'S_log')
-        plotContactMap(S, osp.join(args.odir, 'S.png'), vmin = 'min', vmax = 'max', title = 'S')
+        plot_matrix(L_log, osp.join(args.odir, 'L_log.png'), vmin = 'min', vmax = 'max', title = 'L_log')
+        plot_matrix(L, osp.join(args.odir, 'L.png'), vmin = 'min', vmax = 'max', title = 'L')
+        plot_matrix(S_log, osp.join(args.odir, 'S_log.png'), vmin = 'min', vmax = 'max', title = 'S_log')
+        plot_matrix(S, osp.join(args.odir, 'S.png'), vmin = 'min', vmax = 'max', title = 'S')
 
 
         PC_L_log = plot_top_PCs(L_log, 'L_log', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
@@ -345,7 +345,7 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
         # else:
         #     meanDist = genomic_distance_statistics(L_log)
         #     L_log_diag = diagonal_preprocessing(L_log, meanDist)
-        #     plotContactMap(L_log_diag, osp.join(args.odir, 'L_log_diag.png'), vmin = 'min', vmax = 'max', title = 'L_log_diag')
+        #     plot_matrix(L_log_diag, osp.join(args.odir, 'L_log_diag.png'), vmin = 'min', vmax = 'max', title = 'L_log_diag')
         #     np.save(L_log_diag_file, L_log_diag)
         # PC_L_log_diag = plot_top_PCs(L_log_diag, 'L_log_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
         # stat = pearson_round(PC_L_log_diag[0], PC_y_diag[0])
@@ -355,7 +355,7 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
 
         meanDist = genomic_distance_statistics(L)
         L_diag = diagonal_preprocessing(L, meanDist)
-        plotContactMap(L_diag, osp.join(args.odir, 'L_diag.png'), vmin = 'min', vmax = 'max', title = 'L_diag')
+        plot_matrix(L_diag, osp.join(args.odir, 'L_diag.png'), vmin = 'min', vmax = 'max', title = 'L_diag')
         np.save(osp.join(args.odir, 'L_diag.npy'), L_diag)
         PC_L_diag = plot_top_PCs(L_diag, 'L_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
         stat = pearson_round(PC_L_diag[0], PC_y_diag[0])
@@ -371,7 +371,7 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
             pca = PCA(n_components = i)
             y_transform = pca.fit_transform(y/np.std(y, axis = 0))
             y_i = pca.inverse_transform(y_transform)
-            plotContactMap(y_i, osp.join(args.odir, f'y_rank_{i}.png'), vmax = 'max', title = f'Y rank {i}')
+            plot_matrix(y_i, osp.join(args.odir, f'y_rank_{i}.png'), vmax = 'max', title = f'Y rank {i}')
 
         ## Plot projection of y_diag in lower rank space
         for i in [1,2,5,10,15,100]:
@@ -379,7 +379,7 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
             pca = PCA(n_components = i)
             y_transform = pca.fit_transform(ydiag/np.std(ydiag, axis = 0))
             y_i = pca.inverse_transform(y_transform)
-            plotContactMap(y_i, osp.join(args.odir, f'y_diag_rank_{i}.png'), vmax = 'max', title = f'Y_diag rank {i}')
+            plot_matrix(y_i, osp.join(args.odir, f'y_diag_rank_{i}.png'), vmax = 'max', title = f'Y_diag rank {i}')
             if i == 1:
                 np.save(osp.join(args.odir, f'y_diag_rank_{i}.npy'), y_i)
 
@@ -424,7 +424,7 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
             e_transform = pca.fit_transform(e)
             e_i = pca.inverse_transform(e_transform)
             np.save(osp.join(args.odir, f'e_{i}.npy'), e_i)
-            plotContactMap(e_i, osp.join(args.odir, f'e_{i}.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = f"E rank {i}")
+            plot_matrix(e_i, osp.join(args.odir, f'e_{i}.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = f"E rank {i}")
 
 
     if s_hat is not None:
@@ -449,7 +449,7 @@ def main():
 
     ## load data ##
     x, _, chi, e, s, y, ydiag = load_all(args.sample_folder, True, args.data_folder, args.log_file, experimental = args.experimental, throw_exception = False)
-    plotContactMap(e, ofile = osp.join(args.sample_folder, 'e.png'), title = 'E', vmax = 'max', vmin = 'min', cmap = 'blue-red')
+    plot_matrix(e, ofile = osp.join(args.sample_folder, 'e.png'), title = 'E', vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
 
 
@@ -459,7 +459,7 @@ def main():
     else:
         p = y / ydiag
         # p = p / np.max(p)
-        plotContactMap(p, osp.join(args.odir,'p.png'), vmax = 'mean')
+        plot_matrix(p, osp.join(args.odir,'p.png'), vmax = 'mean')
         s_hat = None
         e_hat = None
 
@@ -475,7 +475,7 @@ def main():
             e_transform = pca.fit_transform(e)
             e_i = pca.inverse_transform(e_transform)
             np.save(osp.join(args.odir, f'e_{i}.npy'), e_i)
-            plotContactMap(e_i, osp.join(args.odir, f'e_{i}.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = f"E rank {i}")
+            plot_matrix(e_i, osp.join(args.odir, f'e_{i}.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = f"E rank {i}")
 
 
             # compare ehat to projection of e onto top PCs
@@ -493,22 +493,22 @@ def main():
                 plot_title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{E}$', mse_e)
             else:
                 plot_title = '{} (MSE Loss = {})'.format(r'$\hat{E}$', mse_e)
-            plotContactMap(e_hat, osp.join(args.odir, 'e_hat.png'), vmin = np.min(e), vmax = np.max(e), cmap = 'blue-red', title = plot_title)
+            plot_matrix(e_hat, osp.join(args.odir, 'e_hat.png'), vmin = np.min(e), vmax = np.max(e), cmap = 'blue-red', title = plot_title)
 
             dif = e_hat - e
             v_max = np.max(e)
-            plotContactMap(dif, osp.join(args.odir, 'e_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{E}$ - E', cmap = 'blue-red')
+            plot_matrix(dif, osp.join(args.odir, 'e_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{E}$ - E', cmap = 'blue-red')
 
             # s
             if args.method == 'GNN':
                 plot_title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{S}$', mse_s)
             else:
                 plot_title = '{} (MSE Loss = {})'.format(r'$\hat{S}$', mse_s)
-            plotContactMap(s_hat, osp.join(args.odir, 's_hat.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = plot_title)
+            plot_matrix(s_hat, osp.join(args.odir, 's_hat.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = plot_title)
 
             dif = s_hat - s
             v_max = np.max(s)
-            plotContactMap(dif, osp.join(args.odir, 's_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
+            plot_matrix(dif, osp.join(args.odir, 's_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
 
 
 
@@ -528,7 +528,7 @@ def main():
                 plot_title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{E}_{\Psi-basis}$', mse)
             else:
                 plot_title = '{} (MSE Loss = {})'.format(r'$\hat{E}_{\Psi-basis}$', mse)
-            plotContactMap(e_hat_psi_basis, vmin = np.min(e), vmax = np.max(e), cmap = 'blue-red', ofile = osp.join(args.odir, 'e_hat_psi_basis.png'), title = plot_title)
+            plot_matrix(e_hat_psi_basis, vmin = np.min(e), vmax = np.max(e), cmap = 'blue-red', ofile = osp.join(args.odir, 'e_hat_psi_basis.png'), title = plot_title)
 
         post_analysis_chi(args, psi_letters)
 
@@ -556,9 +556,9 @@ def post_analysis_chi(args, letters):
 
     max = np.max(np.abs(chi))
     min = -1 * max
-    plotContactMap(chi_hat, vmin=min, vmax=max, cmap='blue-red', ofile = osp.join(args.odir, 'chi_hat.png'), x_ticks = letters, y_ticks = letters)
-    plotContactMap(chi, vmin=min, vmax=max, cmap='blue-red', ofile = osp.join(args.odir, 'chi.png'), x_ticks = letters, y_ticks = letters)
-    plotContactMap(dif, vmin=min, vmax=max, cmap='blue-red', ofile = osp.join(args.odir, 'dif.png'), x_ticks = letters, y_ticks = letters)
+    plot_matrix(chi_hat, vmin=min, vmax=max, cmap='blue-red', ofile = osp.join(args.odir, 'chi_hat.png'), x_ticks = letters, y_ticks = letters)
+    plot_matrix(chi, vmin=min, vmax=max, cmap='blue-red', ofile = osp.join(args.odir, 'chi.png'), x_ticks = letters, y_ticks = letters)
+    plot_matrix(dif, vmin=min, vmax=max, cmap='blue-red', ofile = osp.join(args.odir, 'dif.png'), x_ticks = letters, y_ticks = letters)
 
 def test_project():
     dir = '/home/eric/sequences_to_contact_maps/dataset_01_15_22/samples/sample40'
@@ -570,8 +570,8 @@ def test_project():
 
     # visualize pca s projection
     # s_pca_proj, e_pca_proj = project_S_to_psi_basis(s_pca, psi)
-    # plotContactMap(s_pca_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(replicate_dir, 's_pca_proj.png'))
-    # plotContactMap(e_pca_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(replicate_dir, 'e_pca_proj.png'))
+    # plot_matrix(s_pca_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(replicate_dir, 's_pca_proj.png'))
+    # plot_matrix(e_pca_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(replicate_dir, 'e_pca_proj.png'))
 
     # confirm that projecting s returns s
     # s_proj, e_proj = project_S_to_psi_basis(s, psi)
@@ -581,8 +581,8 @@ def test_project():
     # what if you project s into noise basis
     m, k = psi.shape
     s_noise_proj, e_noise_proj = project_S_to_psi_basis(s, np.random.rand(m,k))
-    # plotContactMap(s_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(dir, 's_pca_proj.png'))
-    plotContactMap(e_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(dir, 'e_noise_proj.png'))
+    # plot_matrix(s_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(dir, 's_pca_proj.png'))
+    plot_matrix(e_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(dir, 'e_noise_proj.png'))
     np.save(osp.join(dir, 'e_noise_proj.npy'), e_noise_proj)
 
 

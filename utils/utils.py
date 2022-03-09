@@ -1,4 +1,5 @@
 import math
+import multiprocessing
 import os
 import os.path as osp
 import time
@@ -6,6 +7,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+from numba import jit, njit
 from scipy.stats import pearsonr, spearmanr
 from sklearn.decomposition import PCA
 from sympy import solve, symbols
@@ -60,7 +62,7 @@ def diagonal_preprocessing(y, mean_per_diagonal, triu = False):
     Inputs:
         y: contact map numpy array
         mean_per_diagonal: mean contact frequency distribution where mean_per_diagonal[distance] is the mean at a given distance
-        triu: True if y is 1d array of upper traingle instead of full 2d contact map
+        triu: True if y is 1d array of upper traingle instead of full 2d contact map (relatively slow version)
 
     Outputs:
         result: new contact map
@@ -78,7 +80,6 @@ def diagonal_preprocessing(y, mean_per_diagonal, triu = False):
             if expected == 0:
                 # this is unlikely to happen
                 print(f'WARNING: 0 contacts expected at distance {distance}')
-                pass
             else:
                 result[i,j] = y[i,j] / expected
                 result[j,i] = result[i,j]
@@ -86,6 +87,41 @@ def diagonal_preprocessing(y, mean_per_diagonal, triu = False):
     if triu:
         result = result[np.triu_indices(m)]
 
+    return result
+
+def diagonal_preprocessing_bulk(y_arr, mean_per_diagonal, triu = False):
+    '''Faster version of diagonal_preprocessing when using many contact maps'''
+    y_arr = y_arr.astype('float64')
+
+    zeros = np.argwhere(mean_per_diagonal == 0)
+    if len(zeros) > 0:
+        print(f'WARNING: 0 contacts expected at distance {zeros}')
+
+    # determine m
+    if triu:
+        _, l = y_arr.shape
+
+        # infer m
+        x, y = symbols('x y')
+        y=x*(x+1)/2-l
+        result=solve(y)
+        m = int(np.max(result))
+    else:
+        _, m, _ = y_arr.shape
+
+    # generate expected
+    expected = np.zeros((m, m))
+    for i in range(m):
+        for j in range(i, m):
+            distance = j - i
+            val = mean_per_diagonal[distance]
+            expected[i,j] = val
+            expected[j,i] = val
+
+    if triu:
+        expected = expected[np.triu_indices(m)]
+
+    result = y_arr / expected
     return result
 
 def percentile_preprocessing(y, percentiles):
@@ -392,6 +428,8 @@ def print_time(t0, tf, name = ''):
     print(f'{name} time: {np.round(tf - t0, 3)} s')
 
 def print_size(arr, name = ''):
+    if arr is None:
+        return
     size_b = arr.nbytes
     size_kb = size_b / 1000
     size_mb = size_kb / 1000

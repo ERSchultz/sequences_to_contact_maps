@@ -29,7 +29,8 @@ def xyz_write(xyz, outfile, writestyle, comment = '', x = None):
             for i in range(N):
                 f.write(f'{i} {xyz[i,0]} {xyz[i,1]} {xyz[i,2]}\n')
 
-def xyz_load(xyz_filepath, delim = '\t', multiple_timesteps = False, save = False):
+def xyz_load(xyz_filepath, delim = '\t', multiple_timesteps = False, save = False,
+            N_min = None, N_max = None, down_sampling = 1):
     xyz_npy_file = osp.join(osp.split(xyz_filepath)[0], 'xyz.npy')
     if osp.exists(xyz_npy_file):
         xyz = np.load(xyz_npy_file)
@@ -52,6 +53,12 @@ def xyz_load(xyz_filepath, delim = '\t', multiple_timesteps = False, save = Fals
             np.save(xyz_npy_file, xyz)
     if not multiple_timesteps:
         xyz = xyz[0]
+    if N_min is None:
+        N_min = 0
+    if N_max is None:
+        N_max = len(xyz)
+    xyz = xyz[N_min:N_max:down_sampling]
+    print(f'Loaded xyz with shape {xyz.shape}')
     return xyz
 
 def find_label_centroid(xyz, psi):

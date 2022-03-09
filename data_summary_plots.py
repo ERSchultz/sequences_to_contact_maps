@@ -7,7 +7,7 @@ import pandas as pd
 from utils.dataset_classes import make_dataset
 from utils.InteractionConverter import InteractionConverter
 from utils.load_utils import load_all
-from utils.plotting_utils import plot_seq_binary, plotContactMap
+from utils.plotting_utils import plot_matrix, plot_seq_binary
 from utils.utils import genomic_distance_statistics
 
 # plt.rcParams["font.family"] = "Times New Roman"
@@ -343,21 +343,21 @@ def basic_plots(dataFolder, plot_y = False, plot_s = True, plot_x = True, plot_c
         x, psi, chi, e, s, y, ydiag = load_all(path, data_folder = dataFolder, save = True)
 
         if plot_y:
-            plotContactMap(y, osp.join(path, 'y.png'), vmax = 'mean')
-            plotContactMap(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
+            plot_matrix(y, osp.join(path, 'y.png'), vmax = 'mean')
+            plot_matrix(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
 
             y_prcnt_path = osp.join(path, 'y_prcnt.npy')
             if osp.exists(y_prcnt_path):
                 y_prcnt = np.load(y_prcnt_path)
-                plotContactMap(y_prcnt, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
+                plot_matrix(y_prcnt, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
         chi_to_latex(chi, ofile = osp.join(path, 'chis.tek'))
         if plot_chi:
-            plotContactMap(chi, osp.join(path, 'chi.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
+            plot_matrix(chi, osp.join(path, 'chi.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
         if plot_s:
-            plotContactMap(s, osp.join(path, 's.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
-            plotContactMap(e, osp.join(path, 'e.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
+            plot_matrix(s, osp.join(path, 's.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
+            plot_matrix(e, osp.join(path, 'e.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
         if plot_x:
             x_path = osp.join(path, 'x.npy')
