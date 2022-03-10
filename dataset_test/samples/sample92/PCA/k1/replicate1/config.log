@@ -1,0 +1,5 @@
+Namespace(default_config='/home/eric/TICG-chromatin/maxent/resources/default_config.json', ofile='config.json', m=1500, k=1, load_configuration_filename=None, goal_specified=True, dump_frequency=None, dump_stats_frequency=None, n_sweeps=None, TICG_seed=4310, use_ground_truth_TICG_seed=False, use_ematrix=False, use_smatrix=False, sample_folder='/home/eric/dataset_test/samples/sample92', relabel=None, use_ground_truth_chi=False, use_ground_truth_diag_chi=True, chi_seed=None, diag=False, max_diag_chi=0.5, e=None, chi=None, save_chi=False, save_chi_for_max_ent=True, min_chi=-1.0, max_chi=1.0, fill_diag=None, fill_offdiag=None, ensure_distinguishable=False, format='%.3e')
+psi (x) loaded with shape (1500, 1)
+Rank of S: 1
+Rank of E: 1500
+

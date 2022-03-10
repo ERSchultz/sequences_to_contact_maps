@@ -1,0 +1,43 @@
+Chi:
+ [[-2.  0.]
+ [ 0. -2.]]
+
+Y
+% of total variance explained for first 4 PCs:  [0.091 0.07  0.046 0.004]
+Singular values for first 4 PCs:  [452.894 396.155 321.798  90.139]
+
+Y_DIAG
+% of total variance explained for first 4 PCs:  [0.582 0.098 0.056 0.031]
+Singular values for first 4 PCs:  [1144.417  470.696  355.61   266.006]
+
+C
+% of total variance explained for first 4 PCs:  [0.937 0.049 0.006 0.005]
+Singular values for first 4 PCs:  [1452.065  333.647  115.072  110.   ]
+Correlation between PC 1 of y and C:  1.0
+Correlation between PC 1 of y_diag and C:  -0.99
+Correlation between PC 2 of y_diag and C:  0.99
+
+S
+% of total variance explained for first 4 PCs:  [1. 0. 0. 0.]
+Singular values for first 4 PCs:  [1500.    0.    0.    0.]
+Rank of S: 2
+Correlation between PC 1 of y and S:  -1.0
+Correlation between PC 1 of y_diag and S:  0.98
+Correlation between PC 2 of y_diag and S:  0.0
+
+S_SYM
+% of total variance explained for first 4 PCs:  [1. 0. 0. 0.]
+Singular values for first 4 PCs:  [1500.    0.    0.    0.]
+Rank: 2
+Correlation between PC 1 of y and S_sym:  -1.0
+Correlation between PC 1 of y_diag and S_sym:  0.98
+Correlation between PC 2 of y_diag and S_sym:  0.0
+
+E
+% of total variance explained for first 4 PCs:  [0.999 0.    0.    0.   ]
+Singular values for first 4 PCs:  [1.499361e+03 1.132000e+00 1.132000e+00 1.132000e+00]
+Rank of E: 1500
+Correlation between PC 1 of y and E:  -1.0
+Correlation between PC 1 of y_diag and E:  0.98
+Correlation between PC 2 of y_diag and E:  0.03
+Correlation between PC 1 of S and E:  1.0

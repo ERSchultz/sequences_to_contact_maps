@@ -328,6 +328,29 @@ def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
         plt.show()
     plt.close()
 
+def plot_matrix_gif(arr, dir, ofile = None, title = None, vmin = 0, vmax = 1,
+                    size_in = 6, minVal = None, maxVal = None, prcnt = False,
+                    cmap = None, x_ticks = None, y_ticks = None):
+    filenames = []
+    for i in range(len(arr)):
+        fname=osp.join(dir, f'{i}.png')
+        filenames.append(fname)
+        plot_matrix(arr[i,], fname, ofile, title, vmin, vmax, size_in, minVal,
+                    maxVal, prcnt, cmap, x_ticks, y_ticks)
+
+    # build gif
+    # filenames = [osp.join(dir, f'ovito0{i}.png') for i in range(100, 900)]
+    frames = []
+    for filename in filenames:
+        frames.append(imageio.imread(filename))
+
+    imageio.mimsave(ofile, frames, format='GIF', fps=1)
+
+    # remove files
+    for filename in set(filenames):
+        os.remove(filename)
+
+
 def plotPerClassAccuracy(val_dataloader, imagePath, model, opt, title = None):
     """Plots accuracy for each class in percentile normalized contact map."""
     if opt.y_preprocessing == 'prcnt' and opt.loss == 'mse':

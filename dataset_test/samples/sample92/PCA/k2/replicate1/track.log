@@ -1,0 +1,660 @@
+Iteration Number 1
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-0.7, -0.6, 0.2]
+step:  [ 3.80824364e+08 -3.44490160e+08 -1.64488861e+07]
+lam:  [2.008e-06 2.000e-09 1.580e-06]
+new chi values:  [-3808.94363511  3444.30160141   164.6888612 ]
+
+
+Iteration Number 2
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3808.94364, 3444.3016, 164.68886]
+step:  [-1572731.90594899 12361292.99598021 -2856737.52966791]
+lam:  [ 9.860e-06 -3.198e-06  5.606e-06]
+new chi values:  [-3793.21632094  3320.68867004   193.2562353 ]
+
+
+Iteration Number 3
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3793.21632, 3320.68867, 193.25624]
+step:  [  4439308.78140231  11834325.86920941 -18650047.4416675 ]
+lam:  [ 9.518e-06 -3.174e-06  5.876e-06]
+new chi values:  [-3837.60940781  3202.34541131   379.75671442]
+
+
+Iteration Number 4
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3837.60941, 3202.34541, 379.75671]
+step:  [13289668.39745285 89315262.12999965 -1618447.18330235]
+lam:  [ 9.814e-06 -2.970e-06  4.492e-06]
+new chi values:  [-3970.50609397  2309.1927887    395.94118183]
+
+
+Iteration Number 5
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3970.50609, 2309.19279, 395.94118]
+step:  [ 7434407.24224113 92598177.43096744   306437.44815563]
+lam:  [ 1.0788e-05 -1.9780e-06  3.5920e-06]
+new chi values:  [-4044.85016242  1383.21101569   392.87680552]
+
+
+Iteration Number 6
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-4044.85016, 1383.21102, 392.87681]
+step:  [-4839368.39955289 24472604.72883672 -2967800.88912405]
+lam:  [ 1.1502e-05 -9.6400e-07  2.4120e-06]
+new chi values:  [-3996.456476    1138.48497271   422.55481889]
+
+
+Iteration Number 7
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3996.45648, 1138.48497, 422.55482]
+step:  [-7263251.17723882   931019.9530854  -1277949.34594653]
+lam:  [ 1.1504e-05 -8.1200e-07  4.0660e-06]
+new chi values:  [-3923.82396823  1129.17477047   435.33431346]
+
+
+Iteration Number 8
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3923.82397, 1129.17477, 435.33431]
+step:  [-4990567.8491182   2635317.73581366  2750741.70061158]
+lam:  [ 1.1438e-05 -7.3200e-07  1.3380e-06]
+new chi values:  [-3873.91829151  1102.82159264   407.82689299]
+
+
+Iteration Number 9
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3873.91829, 1102.82159, 407.82689]
+step:  [-4581078.16659604  1513235.19149152 -1865868.28850145]
+lam:  [ 1.1368e-05 -5.2600e-07  3.7360e-06]
+new chi values:  [-3828.10750833  1087.68923809   426.48557289]
+
+
+Iteration Number 10
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3828.10751, 1087.68924, 426.48557]
+step:  [-6755666.20397117  7869230.71897707 -1685092.56996058]
+lam:  [ 1.1106e-05 -8.8200e-07  2.1160e-06]
+new chi values:  [-3760.55084796  1008.99693281   443.3364957 ]
+
+
+Iteration Number 11
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3760.55085, 1008.99693, 443.3365]
+step:  [-7527800.96659999 10166438.65986097 -3943758.68434452]
+lam:  [ 1.1068e-05 -8.9600e-07  2.6820e-06]
+new chi values:  [-3685.27284033   907.3325434    482.77408684]
+
+
+Iteration Number 12
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3685.27284, 907.33254, 482.77409]
+step:  [-7427028.35430102  4104162.10705153  2863103.17786535]
+lam:  [ 1.1284e-05 -4.7200e-07  1.1820e-06]
+new chi values:  [-3611.00255646   866.29091893   454.14305822]
+
+
+Iteration Number 13
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3611.00256, 866.29092, 454.14306]
+step:  [-14296626.77294366  35769940.88551048  -1050724.84381836]
+lam:  [ 1.0792e-05 -1.0640e-06  2.8520e-06]
+new chi values:  [-3468.03629227   508.59151114   464.65030844]
+
+
+Iteration Number 14
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3468.03629, 508.59151, 464.65031]
+step:  [-5275644.67366654  6589086.34652565  4767450.17374608]
+lam:  [ 1.0768e-05 -1.0400e-07  1.3420e-06]
+new chi values:  [-3415.27984326   442.70064653   416.97580826]
+
+
+Iteration Number 15
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3415.27984, 442.70065, 416.97581]
+step:  [  1514576.84959091    600842.37695174 -84200036.19760968]
+lam:  [ 1.0626e-05 -5.7600e-07  6.0160e-06]
+new chi values:  [-3430.4256085    436.69222623  1258.97617198]
+
+
+Iteration Number 16
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3430.42561, 436.69223, 1258.97617]
+step:  [-3197385.12885653 -4915170.70833605  7757351.06292223]
+lam:  [1.0752e-05 0.0000e+00 7.1000e-07]
+new chi values:  [-3398.45175871   485.84393708  1181.40265937]
+
+
+Iteration Number 17
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3398.45176, 485.84394, 1181.40266]
+step:  [-3124683.66148455 28995612.52584833  9551780.2662437 ]
+lam:  [ 1.0682e-05 -8.0000e-09  8.6400e-07]
+new chi values:  [-3367.20492339   195.88781474  1085.88485734]
+
+
+Iteration Number 18
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3367.20492, 195.88781, 1085.88486]
+step:  [-6016754.20668741 21742622.22589213  9694330.23363018]
+lam:  [ 1.0892e-05 -6.0000e-09  8.0600e-07]
+new chi values:  [-3307.03737793   -21.53841226   988.94155766]
+
+
+Iteration Number 19
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3307.03738, -21.53841, 988.94156]
+step:  [-3835681.85260779        0.         12188514.05569376]
+lam:  [1.0714e-05 0.0000e+00 8.9000e-07]
+new chi values:  [-3268.68056147   -21.53841      867.05641944]
+
+
+Iteration Number 20
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3268.68056, -21.53841, 867.05642]
+step:  [-3563142.67048014        0.          9149220.06845182]
+lam:  [1.0784e-05 0.0000e+00 9.8200e-07]
+new chi values:  [-3233.0491333    -21.53841      775.56421932]
+
+
+Iteration Number 21
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3233.04913, -21.53841, 775.56422]
+step:  [ 1371368.2255522         0.         65519551.54294736]
+lam:  [1.0674e-05 0.0000e+00 9.9600e-07]
+new chi values:  [-3246.76281226   -21.53841      120.36870457]
+
+
+Iteration Number 22
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3246.76281, -21.53841, 120.3687]
+step:  [-13537948.641158    33876625.90318212  -2793480.45364722]
+lam:  [ 1.089e-05 -8.000e-09  5.540e-06]
+new chi values:  [-3111.38332359  -360.30466903   148.30350454]
+
+
+Iteration Number 23
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3111.38332, -360.30467, 148.3035]
+step:  [-3980220.99860278  -911641.295171   -1182904.86887816]
+lam:  [1.0542e-05 5.1600e-07 2.6440e-06]
+new chi values:  [-3071.58111001  -351.18825705   160.13254869]
+
+
+Iteration Number 24
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3071.58111, -351.18826, 160.13255]
+step:  [-4080643.56194603   887478.31784635  1190307.55816908]
+lam:  [1.0118e-05 1.5800e-07 1.5660e-06]
+new chi values:  [-3030.77467438  -360.06304318   148.22947442]
+
+
+Iteration Number 25
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-3030.77467, -360.06304, 148.22947]
+step:  [-6583064.98042026  -690890.58184872 -1810229.98158202]
+lam:  [9.936e-06 4.280e-07 3.228e-06]
+new chi values:  [-2964.9440202   -353.15413418   166.33176982]
+
+
+Iteration Number 26
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2964.94402, -353.15413, 166.33177]
+step:  [-5493404.26715883 -3352189.20075446   439216.05999297]
+lam:  [9.974e-06 5.680e-07 2.468e-06]
+new chi values:  [-2910.00997733  -319.63223799   161.9396094 ]
+
+
+Iteration Number 27
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2910.00998, -319.63224, 161.93961]
+step:  [-6542079.04378999 -2839145.49560159  4302645.45058927]
+lam:  [1.0092e-05 2.5800e-07 2.4140e-06]
+new chi values:  [-2844.58918956  -291.24078504   118.91315549]
+
+
+Iteration Number 28
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2844.58919, -291.24079, 118.91316]
+step:  [-5307218.71628732 -1736276.19112416 -1216673.24505125]
+lam:  [9.758e-06 3.160e-07 2.572e-06]
+new chi values:  [-2791.51700284  -273.87802809   131.07989245]
+
+
+Iteration Number 29
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2791.517, -273.87803, 131.07989]
+step:  [-8220588.96480674 -2532251.14463672 -2687234.53904301]
+lam:  [9.720e-06 2.800e-07 3.078e-06]
+new chi values:  [-2709.31111035  -248.55551855   157.95223539]
+
+
+Iteration Number 30
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2709.31111, -248.55552, 157.95224]
+step:  [-4959525.19926256   137239.30789136  2306941.04429458]
+lam:  [9.722e-06 2.220e-07 2.000e-06]
+new chi values:  [-2659.71585801  -249.92791308   134.88282956]
+
+
+Iteration Number 31
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2659.71586, -249.92791, 134.88283]
+step:  [-3400071.42755917 -2082559.86096229   407675.97394397]
+lam:  [9.502e-06 3.400e-07 2.356e-06]
+new chi values:  [-2625.71514572  -229.10231139   130.80607026]
+
+
+Iteration Number 32
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2625.71515, -229.10231, 130.80607]
+step:  [-2882943.62402797   288673.70920657  1865340.56520548]
+lam:  [9.224e-06 1.400e-07 2.210e-06]
+new chi values:  [-2596.88571376  -231.98904709   112.15266435]
+
+
+Iteration Number 33
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2596.88571, -231.98905, 112.15266]
+step:  [-6161163.49374908 -2368513.31923294   238289.16595214]
+lam:  [9.530e-06 1.260e-07 2.646e-06]
+new chi values:  [-2535.27407506  -208.30391681   109.76976834]
+
+
+Iteration Number 34
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2535.27408, -208.30392, 109.76977]
+step:  [-5183856.71733422  1548309.80101965   613899.72336517]
+lam:  [9.366e-06 1.040e-07 2.100e-06]
+new chi values:  [-2483.43551283  -223.78701801   103.63077277]
+
+
+Iteration Number 35
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2483.43551, -223.78702, 103.63077]
+step:  [-4285693.7250686  -2490240.1576701    -17032.19649998]
+lam:  [9.070e-06 3.100e-07 3.024e-06]
+new chi values:  [-2440.57857275  -198.88461842   103.80109196]
+
+
+Iteration Number 36
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2440.57857, -198.88462, 103.80109]
+step:  [-10258627.29842038   -577275.07609078   -912836.49054355]
+lam:  [8.918e-06 2.140e-07 3.948e-06]
+new chi values:  [-2337.99229702  -193.11186924   112.92945491]
+
+
+Iteration Number 37
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2337.9923, -193.11187, 112.92945]
+step:  [-4407346.89120216  -886876.46559519   173610.96858303]
+lam:  [8.718e-06 1.700e-07 2.526e-06]
+new chi values:  [-2293.91883109  -184.24310534   111.19334031]
+
+
+Iteration Number 38
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2293.91883, -184.24311, 111.19334]
+step:  [-2523265.60229184 -1411153.2886646   -556037.53045522]
+lam:  [8.284e-06 3.420e-07 3.584e-06]
+new chi values:  [-2268.68617398  -170.13157711   116.7537153 ]
+
+
+Iteration Number 39
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2268.68617, -170.13158, 116.75372]
+step:  [-3221826.45376036  1636933.06222481  3234746.98238728]
+lam:  [8.274e-06 4.200e-08 1.764e-06]
+new chi values:  [-2236.46790546  -186.50091062    84.40625018]
+
+
+Iteration Number 40
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2236.46791, -186.50091, 84.40625]
+step:  [-3990789.64694914 -2274083.64397583  1976693.4795302 ]
+lam:  [8.362e-06 4.040e-07 2.356e-06]
+new chi values:  [-2196.56001353  -163.76007356    64.6393152 ]
+
+
+Iteration Number 41
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2196.56001, -163.76007, 64.63932]
+step:  [-3561534.95586607  -872126.70315013 -1093409.04234295]
+lam:  [8.176e-06 2.460e-07 3.692e-06]
+new chi values:  [-2160.94466044  -155.03880297    75.57341042]
+
+
+Iteration Number 42
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2160.94466, -155.0388, 75.57341]
+step:  [-3324388.16116859   -67041.64075383   271278.45833346]
+lam:  [8.038e-06 1.300e-07 2.514e-06]
+new chi values:  [-2127.70077839  -154.36838359    72.86062542]
+
+
+Iteration Number 43
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2127.70078, -154.36838, 72.86063]
+step:  [-3482988.00467467  -870510.82435428  -419611.87556386]
+lam:  [7.856e-06 2.160e-07 2.782e-06]
+new chi values:  [-2092.87089995  -145.66327176    77.05674876]
+
+
+Iteration Number 44
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2092.8709, -145.66327, 77.05675]
+step:  [-1836723.31855565 -2037085.31947476   719896.88218819]
+lam:  [7.720e-06 2.200e-07 2.228e-06]
+new chi values:  [-2074.50366681  -125.29241681    69.85778118]
+
+
+Iteration Number 45
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2074.50367, -125.29242, 69.85778]
+step:  [-1598008.05889822 -1551122.03607767    82574.77234691]
+lam:  [7.576e-06 2.060e-07 2.686e-06]
+new chi values:  [-2058.52358941  -109.78119964    69.03203228]
+
+
+Iteration Number 46
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2058.52359, -109.7812, 69.03203]
+step:  [-2024704.56242867 -1633064.00998634   -17630.57698695]
+lam:  [7.740e-06 1.260e-07 2.556e-06]
+new chi values:  [-2038.27654438   -93.4505599     69.20833577]
+
+
+Iteration Number 47
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-2038.27654, -93.45056, 69.20834]
+step:  [-3940155.5377583   -864149.65492105  -631906.80670813]
+lam:  [7.848e-06 1.680e-07 3.064e-06]
+new chi values:  [-1998.87498462   -84.80906345    75.52740807]
+
+
+Iteration Number 48
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-1998.87498, -84.80906, 75.52741]
+step:  [-1256029.27682669  -220396.4820318    582434.43135164]
+lam:  [7.53e-06 7.00e-08 2.48e-06]
+new chi values:  [-1986.31468723   -82.60509518    69.70306569]
+
+
+Iteration Number 49
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-1986.31469, -82.6051, 69.70307]
+step:  [-1112104.39494693  -478004.54946612   353205.37583823]
+lam:  [7.514e-06 8.800e-08 2.486e-06]
+new chi values:  [-1975.19364605   -77.82505451    66.17101624]
+
+
+Iteration Number 50
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-1975.19365, -77.82505, 66.17102]
+step:  [-898747.02899376 -596395.40130283 1157427.40634021]
+lam:  [7.402e-06 6.600e-08 2.264e-06]
+new chi values:  [-1966.20617971   -71.86109599    54.59674594]
+
+
+Iteration Number 51
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-1966.20618, -71.8611, 54.59675]
+step:  [-1452082.82306832    88504.09275522  -674626.7350158 ]
+lam:  [7.602e-06 2.800e-08 3.244e-06]
+new chi values:  [-1951.68535177   -72.74614093    61.34301735]
+
+
+Iteration Number 52
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-1951.68535, -72.74614, 61.34302]
+step:  [-882671.36514366 -188213.22602638 -462351.05093605]
+lam:  [7.400e-06 7.600e-08 2.994e-06]
+new chi values:  [-1942.85863635   -70.86400774    65.96653051]
+
+
+Iteration Number 53
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-1942.85864, -70.86401, 65.96653]
+step:  [-470954.77478015 -630426.10322631   16198.63107353]
+lam:  [7.356e-06 1.340e-07 2.620e-06]
+new chi values:  [-1938.14909225   -64.55974897    65.80454369]
+
+
+Iteration Number 54
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-1938.14909, -64.55975, 65.80454]
+step:  [ -651133.34302275 -1218994.61685894  1119556.11149821]
+lam:  [7.278e-06 1.000e-07 2.140e-06]
+new chi values:  [-1931.63775657   -52.36980383    54.60897889]
+
+
+Iteration Number 55
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-1931.63776, -52.3698, 54.60898]
+step:  [-194097.84839171 -244948.88343977 -330301.86203163]
+lam:  [7.142e-06 7.400e-08 3.136e-06]
+new chi values:  [-1929.69678152   -49.92031117    57.91199862]
+
+
+Iteration Number 56
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-1929.69678, -49.92031, 57.912]
+step:  [-564201.28714663 1319944.69949555  232004.63032778]
+lam:  [ 7.288e-06 -4.000e-08  2.672e-06]
+new chi values:  [-1924.05476713   -63.11975699    55.5919537 ]
+
+
+Iteration Number 57
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-1924.05477, -63.11976, 55.59195]
+step:  [-555468.79707524  189199.48157105  223875.78850971]
+lam:  [7.316e-06 4.600e-08 2.630e-06]
+new chi values:  [-1918.50008203   -65.01175482    53.35319211]
+
+
+Iteration Number 58
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-1918.50008, -65.01175, 53.35319]
+step:  [-156641.43750601  390433.6722506  -237950.15226221]
+lam:  [7.194e-06 5.000e-08 2.972e-06]
+new chi values:  [-1916.93366562   -68.91608672    55.73269152]
+
+
+Iteration Number 59
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-1916.93367, -68.91609, 55.73269]
+step:  [-612556.83820006  505405.45636334 -888751.7861498 ]
+lam:  [7.370e-06 1.600e-08 3.342e-06]
+new chi values:  [-1910.80810162   -73.97014456    64.62020786]
+
+
+Iteration Number 60
+gamma_plaid: 1e-05
+gamma_diag: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [7.15097965e-06 5.62446024e-08 2.74068994e-06]
+current chi values:  [-1910.8081, -73.97014, 64.62021]
+step:  [ -35213.39888124 -849812.28559078  697347.00052659]
+lam:  [7.164e-06 1.540e-07 2.278e-06]
+new chi values:  [-1910.45596601   -65.47201714    57.64673999]
+
+

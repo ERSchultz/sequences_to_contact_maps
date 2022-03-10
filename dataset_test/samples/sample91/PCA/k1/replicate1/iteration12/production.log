@@ -1,0 +1,43 @@
+data out:data_out
+reading input file ... 
+chiAA -1937.75
+number of bins: 20
+binsize 75
+grid move is : 1
+loading production ... loaded: 1
+read successfully
+grid size is : 28.7
+grid.L is: 8
+volume is: 0.0121036
+volume fraction is: 0.0644435
+grid.L is: 8
+volume is: 0.0121036
+volume fraction is: 0.0644435
+making output files ... created successfully
+Initializing simulation objects ... 
+load configuratin is 0
+Objects created
+Initializing took 2397 microseconds 
+Initializing cells: 
+Setting active cells
+setting up contacts
+contactmap size: 1500
+Beginning Simulation
+Sweep number 0
+acceptance rate: 71.9298%
+trans: 46% 	crank: 63% 	pivot: 60% 	rot: 74.3333% 	
+Sweep number 10000
+acceptance rate: 82.3735%
+trans: 48.1546% 	crank: 64.5197% 	pivot: 58.2132% 	rot: 86.0061% 	
+Sweep number 20000
+acceptance rate: 82.3743%
+trans: 47.7212% 	crank: 63.9983% 	pivot: 57.9151% 	rot: 86.0726% 	
+Sweep number 30000
+acceptance rate: 82.3544%
+trans: 47.4728% 	crank: 63.7011% 	pivot: 57.3741% 	rot: 86.09% 	
+Sweep number 40000
+acceptance rate: 82.3519%
+trans: 47.3754% 	crank: 63.5575% 	pivot: 57.6348% 	rot: 86.1014% 	
+acceptance rate: 82.3514%
+Took 130seconds 
+Moved 75202911 beads 
