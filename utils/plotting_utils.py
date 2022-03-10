@@ -231,6 +231,35 @@ def plot_seq_binary(seq, show = False, save = True, title = None, labels = None,
         plt.show()
     plt.close()
 
+def plot_seq_exclusive(seq, labels=None, X=None, show = False, save = True, title = None, ofile = 'seq.png'):
+    '''Plotting function for mutually exclusive binary particle types'''
+    # TODO make figure wider and less tall
+    m, k = seq.shape
+    cmap = matplotlib.cm.get_cmap('tab10')
+    ind = np.arange(k) % cmap.N
+    colors = plt.cycler('color', cmap(ind))
+
+    for i, c in enumerate(colors):
+        x = np.argwhere(seq[:, i] == 1)
+        plt.scatter(x, np.ones_like(x), label = i, color = c['color'], s=1)
+
+    if X is not None and labels is not None:
+        score = silhouette_score(X, labels)
+        lower_title = f'\nsilhouette score: {np.round(score, 3)}'
+    else:
+        lower_title = ''
+
+    plt.legend()
+    ax = plt.gca()
+    ax.axes.get_yaxis().set_visible(False)
+    if title is not None:
+        plt.title(title + lower_title, fontsize=16)
+    if save:
+        plt.savefig(ofile)
+    if show:
+        plt.show()
+    plt.close()
+
 def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
                     size_in = 6, minVal = None, maxVal = None, prcnt = False,
                     cmap = None, x_ticks = None, y_ticks = None):
@@ -1141,12 +1170,13 @@ def plot_config(xyz, L, x = None, ofile = None, show = True, title = None, legen
 
 def plot_xyz_gif():
     dir='/home/eric/dataset_test/samples/sample21'
+    dir = 'C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps\\dataset_test\\samples\\sample92'
     file = osp.join(dir, 'data_out/output.xyz')
 
-    m=200
+    m=1500
 
     x = np.load(osp.join(dir, 'x.npy'))[:m, :]
-    xyz = xyz_load(file, multiple_timesteps=True)[:, :m, :]
+    xyz = xyz_load(file, multiple_timesteps=True)[::50, :m, :]
     print(xyz.shape)
     xyz_write(xyz, osp.join(dir, 'data_out/output_x.xyz'), 'w', x = x)
 
@@ -1163,7 +1193,7 @@ def plot_xyz_gif():
     for filename in filenames:
         frames.append(imageio.imread(filename))
 
-    imageio.mimsave(osp.join(dir,'ovito.gif'), frames, format='GIF', fps=1)
+    imageio.mimsave(osp.join(dir,'ovito.gif'), frames, format='GIF', fps=2)
 
     # remove files
     for filename in set(filenames):
