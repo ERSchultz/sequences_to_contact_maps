@@ -113,8 +113,10 @@ def plot_eigenvectors(v, sc_contacts, odir, it):
     for cluster in range(k):
         ind = np.argwhere(kmeans.labels_ == cluster)
         y_cluster = triu_to_full(np.sum(sc_contacts[ind.reshape(-1), :], axis = 0))
+        sum_cluster = np.sum(y_cluster[0:200, 1300:1500])/np.max(y_cluster)
+        print(sum_cluster)
         plot_matrix(y_cluster, osp.join(odir, f'cluster{cluster}_contacts_{it}.png'),
-                    vmax = 'max')
+                    vmax = 'max', title = sum_cluster)
 
     # plot first 2 nonzero eigenvectors, color by order
     cmap = matplotlib.cm.get_cmap('tab10')

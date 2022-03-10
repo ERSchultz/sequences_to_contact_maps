@@ -115,8 +115,9 @@ def plot_eigenvectors(v, xyz, odir):
         ind = np.argwhere(kmeans.labels_ == cluster)
         xyz_ind = xyz[ind].reshape(len(ind), -1, 3)
         y_cluster = xyz_to_contact_grid(xyz_ind, 28.7)
+        sum_cluster = np.sum(y_cluster[0:200, 1300:1500])/np.max(y_cluster)
         plot_matrix(y_cluster, osp.join(odir, f'cluster{cluster}_contacts.png'),
-                    vmax = 'max')
+                    vmax = 'max', title = sum_cluster)
 
     # plot first 2 nonzero eigenvectors, color by order
     cmap = matplotlib.cm.get_cmap('tab10')
@@ -160,7 +161,7 @@ def plot_eigenvectors(v, xyz, odir):
     plt.close()
 
 def main():
-    dir = '/home/eric/dataset_test/samples/sample93'
+    dir = '/home/eric/dataset_test/samples/sample92'
     odir = osp.join(dir, 'diffusion_test')
     if not osp.exists(odir):
         os.mkdir(odir, mode = 0o755)
