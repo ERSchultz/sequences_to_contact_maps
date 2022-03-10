@@ -7,7 +7,7 @@ import pandas as pd
 from utils.dataset_classes import make_dataset
 from utils.InteractionConverter import InteractionConverter
 from utils.load_utils import load_all
-from utils.plotting_utils import plot_matrix, plot_seq_binary
+from utils.plotting_utils import plot_matrix, plot_seq_binary, plot_seq_exclusive
 from utils.utils import genomic_distance_statistics
 
 # plt.rcParams["font.family"] = "Times New Roman"
@@ -366,14 +366,15 @@ def basic_plots(dataFolder, plot_y = False, plot_s = True, plot_x = True, plot_c
             else:
                 continue
 
-            plot_seq_binary(x, ofile = osp.join(path, 'x.png'))
+            # plot_seq_binary(x, ofile = osp.join(path, 'x.png'))
+            plot_seq_exclusive(x, ofile = osp.join(path, 'x.png'))
 
 if __name__ == '__main__':
     dir = '/home/eric/sequences_to_contact_maps'
-    dataset = 'dataset_11_14_21'
+    dir = 'C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps'
+    dataset = 'dataset_test'
     data_dir = osp.join(dir, dataset)
-    sample = 91
-    basic_plots(data_dir, plot_y = False, plot_s = True, plot_x = False)
+    basic_plots(data_dir, plot_y = False, plot_s = False, plot_x = True)
     # plot_genomic_distance_statistics(dataset)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts('/home/eric/sequences_to_contact_maps/dataset_12_11_21')
