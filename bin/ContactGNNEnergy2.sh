@@ -7,7 +7,6 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
 #SBATCH --mem-per-cpu=2000
-#SBATCH --dependency=afterany:16682922[:16682929]
 
 dirname="/project2/depablo/erschultz/dataset_11_03_21"
 deleteRoot='false'

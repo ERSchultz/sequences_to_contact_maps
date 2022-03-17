@@ -11,7 +11,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import silhouette_score
 from utils.plotting_utils import plot_matrix
 from utils.utils import pearson_round, print_time
-from utils.xyz_utils import xyz_load, xyz_to_contact_grid
+from utils.xyz_utils import (find_dist_between_centroids, find_label_centroid,
+                             xyz_load, xyz_to_contact_grid)
 
 
 def tune_epsilon(dmap, ofile):
@@ -96,6 +97,36 @@ def plot_eigenvectors(v, xyz, odir):
     plt.savefig(osp.join(odir, 'projection234.png'))
     plt.close()
 
+    # centroid distance
+    dist = np.zeros(N)
+    psi = np.zeros((1500, 3))
+    psi[0:200, 0] = 1
+    psi[200:1300, 1] = 1
+    psi[1300:, 2] = 1
+    for i in range(N):
+        centroids = find_label_centroid(xyz[i].reshape(-1, 3), psi)
+        distances = find_dist_between_centroids(centroids)
+        dist[i] = distances[0, 2]
+
+    print('\n\ncentroid corr: ', pearson_round(dist, v[:, 1], stat = 'pearson'))
+
+
+    # plot first 2 nonzero eigenvectors, color by distance
+    sc = plt.scatter(v[:,1]/v[:,0], v[:,2]/v[:,0], c = dist)
+    plt.colorbar(sc)
+    plt.xlabel(r'$v_2$', fontsize = 16)
+    plt.ylabel(r'$v_3$', fontsize = 16)
+    plt.savefig(osp.join(odir, 'projection23_dist.png'))
+    plt.close()
+
+    # plot 3 and 4 eigenvectors, color by order
+    sc = plt.scatter(v[:,2]/v[:,0], v[:,3]/v[:,0], c = dist)
+    plt.colorbar(sc)
+    plt.xlabel(r'$v_3$', fontsize = 16)
+    plt.ylabel(r'$v_4$', fontsize = 16)
+    plt.savefig(osp.join(odir, 'projection34_dist.png'))
+    plt.close()
+
     # k_means
     num_vecs = 3
     X = v[:,1:1+num_vecs]
@@ -119,11 +150,12 @@ def plot_eigenvectors(v, xyz, odir):
         plot_matrix(y_cluster, osp.join(odir, f'cluster{cluster}_contacts.png'),
                     vmax = 'max', title = sum_cluster)
 
-    # plot first 2 nonzero eigenvectors, color by order
+    # plot first 2 nonzero eigenvectors, color by kmeans
     cmap = matplotlib.cm.get_cmap('tab10')
     ind = np.arange(k) % cmap.N
     colors = plt.cycler('color', cmap(ind))
     for cluster, c in zip(range(k), colors):
+        ind = np.argwhere(kmeans.labels_ == cluster)
         plt.scatter(v[ind, 1]/v[ind, 0], v[ind, 2]/v[ind, 0], color = c['color'],
                     label = cluster)
         plt.xlabel(r'$v_2$', fontsize = 16)
@@ -133,7 +165,7 @@ def plot_eigenvectors(v, xyz, odir):
     plt.savefig(osp.join(odir, 'projection23_kmeans.png'))
     plt.close()
 
-    # plot 3 and 4 eigenvectors, color by order
+    # plot 3 and 4 eigenvectors, color by kmeans
     for cluster, c in zip(range(k), colors):
         ind = np.argwhere(kmeans.labels_ == cluster)
         plt.scatter(v[ind, 2]/v[ind, 0], v[ind, 3]/v[ind, 0], color = c['color'],
@@ -146,7 +178,7 @@ def plot_eigenvectors(v, xyz, odir):
     plt.close()
 
 
-    # plot 2,3,4 eigenvectors, color by order
+    # plot 2,3,4 eigenvectors, color by kmeans
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
     for cluster, c in zip(range(k), colors):
@@ -169,7 +201,7 @@ def main():
     # load xyz
     xyz = xyz_load(osp.join(dir, 'data_out/output.xyz'),
                     multiple_timesteps=True, save = True, N_min = 10,
-                    N_max = None, down_sampling = 3)
+                    N_max = None, down_sampling = 1)
     N, m, _ = xyz.shape
     xyz = xyz.reshape(N, m * 3)
 

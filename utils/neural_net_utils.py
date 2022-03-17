@@ -90,7 +90,7 @@ def split_dataset(dataset, opt):
             opt.trainN = opt.N - opt.testN - opt.valN
         elif opt.valN == -1:
             opt.valN = opt.N - opt.trainN - opt.testN
-        elif opt.teN == -1:
+        elif opt.testN == -1:
             opt.testN = opt.N - opt.trainN - opt.valN
 
     if opt.verbose:

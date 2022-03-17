@@ -81,7 +81,7 @@ def debugModel(model_type):
     opt.y_preprocessing = 'diag'
     # opt.split_percents=[0.6666,0.3333,0.0]
     opt.split_percents = None
-    opt.split_counts=[2, -1, 0]
+    opt.split_counts=[8, 2, 0]
     # opt.split_counts=None
 
     if model_type == 'Akita':
@@ -371,9 +371,9 @@ def main2():
 
 
 if __name__ == '__main__':
-    main2()
+    # main2()
     # edit_argparse()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # plot_fixed()
     # test_argpartition(10)
     # downsampling_test()

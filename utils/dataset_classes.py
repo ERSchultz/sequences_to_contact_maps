@@ -182,7 +182,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.output = output
         self.crop = crop
         self.samples = None
-        self.degree_list = []
+        self.degree_list = [] # created in self.process()
+        self.verbose = verbose
         if self.weighted_LDP and self.top_k is None and self.sparsify_threshold is None and self.sparsify_threshold_upper is None:
             print('Warning: using LDP without any sparsification')
 
@@ -216,7 +217,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if verbose:
             print('Dataset construction time: {} minutes'.format(np.round((time.time() - t0) / 60, 3)), file = ofile)
 
-        if self.degree_list and verbose:
+        if verbose:
             self.degree_list = np.array(self.degree_list)
             mean_deg = np.round(np.mean(self.degree_list, axis = 1), 2)
             std_deg = np.round(np.std(self.degree_list, axis = 1), 2)
@@ -289,7 +290,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
             torch.save(graph, self.processed_paths[i])
 
             # record degree
-            self.degree_list.append(np.array(torch_geometric.utils.degree(graph.edge_index[0], num_nodes = self.m)))
+            if self.verbose:
+                deg = np.array(torch_geometric.utils.degree(graph.edge_index[0], num_nodes = self.m))
+                self.degree_list.append(deg)
 
     def process_x_psi(self, raw_folder):
         '''Helper function to load the appropriate particle type matrix and apply any necessary preprocessing.'''
