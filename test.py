@@ -81,7 +81,7 @@ def debugModel(model_type):
     opt.y_preprocessing = 'diag'
     # opt.split_percents=[0.6666,0.3333,0.0]
     opt.split_percents = None
-    opt.split_counts=[8, 2, 0]
+    opt.split_sizes=[8, 2, 0]
     # opt.split_counts=None
 
     if model_type == 'Akita':

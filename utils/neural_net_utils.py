@@ -82,10 +82,10 @@ def split_dataset(dataset, opt):
         opt.valN = math.floor(opt.N * opt.split_percents[1])
         opt.trainN = opt.N - opt.testN - opt.valN
     else:
-        assert opt.split_counts is not None
-        assert opt.split_counts.count(-1) < 2, "can be at most 1 entry set to -1"
+        assert opt.split_sizes is not None
+        assert opt.split_sizes.count(-1) < 2, "can be at most 1 entry set to -1"
 
-        opt.trainN, opt.valN, opt.testN = opt.split_counts
+        opt.trainN, opt.valN, opt.testN = opt.split_sizes
         if opt.trainN == -1:
             opt.trainN = opt.N - opt.testN - opt.valN
         elif opt.valN == -1:

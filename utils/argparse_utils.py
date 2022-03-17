@@ -168,8 +168,8 @@ def finalize_opt(opt, parser, local = False):
     opt.param_file = open(param_file_path, 'a')
 
     # configure other model params
-    assert opt.split_percents is not None or opt.split_counts is not None, "both can't be None"
-    assert opt.split_percents is None or opt.split_counts is None, "one must be None"
+    assert opt.split_percents is not None or opt.split_sizes is not None, "both can't be None"
+    assert opt.split_percents is None or opt.split_sizes is None, "one must be None"
 
     if opt.y_log_transform:
         assert opt.y_norm is None, "don't use log transform with y norm"
