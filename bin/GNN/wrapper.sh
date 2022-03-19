@@ -14,7 +14,7 @@ cd ~/sequences_to_contact_maps
 
 for i in 1 2 3 4
 do
-  bash ~/sequences_to_contact_maps/bin/GNN/ContactGNNEnergy${i}.sh &
+  sbatch ~/sequences_to_contact_maps/bin/GNN/ContactGNNEnergy${i}.sh &
   sleep 5 # hacky solution to prevent jobs from picking the same ID
 done
 wait
