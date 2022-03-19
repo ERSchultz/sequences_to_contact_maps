@@ -15,8 +15,8 @@ cd ~/sequences_to_contact_maps
 for i in 1 2 3 4
 do
   sbatch ~/sequences_to_contact_maps/bin/GNN/ContactGNNEnergy${i}.sh &
-  sleep 5 # hacky solution to prevent jobs from picking the same ID
+  sleep 60 # hacky solution to prevent jobs from picking the same ID
 done
 wait
 
-python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --clean_scratch $useScratch --scratch $scratch
+# python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --clean_scratch $useScratch --scratch $scratch

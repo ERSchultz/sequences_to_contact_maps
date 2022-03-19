@@ -1,5 +1,6 @@
 import argparse
 import csv
+import multiprocessing
 import os
 import os.path as osp
 import shutil
@@ -378,6 +379,7 @@ def finalize_opt(opt, parser, local = False):
     return opt
 
 def copy_data_to_scratch(opt):
+    # TODO parallelize this
     t0 = time.time()
     # initialize scratch path
     scratch_path = osp.join(opt.scratch, osp.split(opt.data_folder)[-1])
@@ -396,36 +398,44 @@ def copy_data_to_scratch(opt):
         os.mkdir(osp.join(scratch_path, 'samples'), mode = 0o700)
 
     # transfer sample data
-    for sample in os.listdir(osp.join(opt.data_folder, 'samples')):
-        sample_dir = osp.join(opt.data_folder, 'samples', sample)
-        if not osp.isdir(sample_dir):
-            continue
-        scratch_sample_dir = osp.join(scratch_path, 'samples', sample)
-        if not osp.exists(scratch_sample_dir):
-            os.mkdir(scratch_sample_dir, mode = 0o700)
-        for file in os.listdir(sample_dir):
-            # skip transferring certain files if not needed (saves space on scratch and move time)
-            if file == 'xx.npy' and not opt.toxx:
-                # only need xx.npy if toxx is True
-                pass
-            elif file == 'y_prcnt.npy' and opt.y_preprocessing != 'prcnt':
-                # only need y_prcnt.npy if using percentile preprocessing
-                pass
-            elif file == 's.npy' and opt.output_mode != 'energy':
-                # only need s.npy if neural net output is energy
-                pass
-            elif file.endswith('npy'):
-                # only move .npy files
-                source_file = osp.join(sample_dir, file)
-                destination_file = osp.join(scratch_sample_dir, file)
-                if not osp.exists(destination_file):
-                    shutil.copyfile(source_file, destination_file)
+    samples = os.listdir(osp.join(opt.data_folder, 'samples'))
+    mapping = []
+    for sample in samples:
+        mapping.append([sample, opt.data_folder, scratch_path, opt.toxx, opt.y_preprocessing, opt.output_mode])
+    with multiprocessing.Pool(opt.num_workers) as p:
+         p.starmap(copy_data_to_scratch_inner, mapping)
 
     opt.data_folder = scratch_path
 
     tf = time.time()
     delta_t = np.round(tf - t0, 0)
     print("Took {} seconds to move data to scratch".format(delta_t), file = opt.log_file)
+
+def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_preprocessing, output_mode):
+    sample_dir = osp.join(data_folder, 'samples', sample)
+    if not osp.isdir(sample_dir):
+        return
+
+    scratch_sample_dir = osp.join(scratch_path, 'samples', sample)
+    if not osp.exists(scratch_sample_dir):
+        os.mkdir(scratch_sample_dir, mode = 0o700)
+    for file in os.listdir(sample_dir):
+        # skip transferring certain files if not needed (saves space on scratch and move time)
+        if file == 'xx.npy' and not toxx:
+            # only need xx.npy if toxx is True
+            pass
+        elif file == 'y_prcnt.npy' and y_preprocessing != 'prcnt':
+            # only need y_prcnt.npy if using percentile preprocessing
+            pass
+        elif (file == 's.npy' or file == 'e.npy') and output_mode != 'energy':
+            # only need s.npy if neural net output is energy
+            pass
+        elif file.endswith('npy'):
+            # only move .npy files
+            source_file = osp.join(sample_dir, file)
+            destination_file = osp.join(scratch_sample_dir, file)
+            if not osp.exists(destination_file):
+                shutil.copyfile(source_file, destination_file)
 
 def argparse_setup(local = False):
     """Helper function set up parser."""
