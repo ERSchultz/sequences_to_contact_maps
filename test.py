@@ -70,8 +70,8 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    opt.data_folder = "/home/eric/dataset_test"
-    opt.scratch = '/home/eric/scratch'
+    opt.data_folder = "/home/erschultz/dataset_test"
+    opt.scratch = '/home/erschultz/scratch'
     opt.use_scratch=True
 
     # architecture
@@ -199,9 +199,11 @@ def debugModel(model_type):
     opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = False
-    opt.gpus = 1
+    opt.gpus = 0
+    opt.delete_root = False
+    opt.use_scratch = True
 
-    opt = finalize_opt(opt, parser, True)
+    opt = finalize_opt(opt, parser, False)
 
     opt.model_type = model_type
 
@@ -340,7 +342,7 @@ def main():
     plot_matrix(y_diag, osp.join(dir, 'y_diag_cut.png'), vmax = 2, cmap = 'blue-red')
 
 def main2():
-    dir = '/home/eric/dataset_test/samples'
+    dir = '/home/erschultz/dataset_test/samples'
     sample = 'sample91'
     sample_dir = osp.join(dir, sample)
     sc_contacts = load_sc_contacts(sample_dir, gaussian = True, jobs = 8, sparsify = True,
@@ -367,7 +369,6 @@ def main2():
     # y_diag3 = triu_to_full(y_diag2)
     # print(np.allclose(y_diag1, y_diag3))
     # print(np.allclose(y_diag, y_diag1))
-
 
 
 if __name__ == '__main__':

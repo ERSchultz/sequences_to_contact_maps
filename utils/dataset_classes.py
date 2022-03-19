@@ -154,14 +154,42 @@ class SequencesContacts(Dataset):
 
 class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN: https://github.com/rusty1s/pytorch_geometric/issues/1511
-    def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag', y_log_transform = False,
-                y_norm = 'instance', min_subtraction = True, use_node_features = True, use_edge_weights = True,
-                sparsify_threshold = None, sparsify_threshold_upper = None, top_k = None,
-                weighted_LDP = False, split_neg_pos_edges = False, degree = False, weighted_degree = False,
+    def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag',
+                y_log_transform = False, y_norm = 'instance', min_subtraction = True,
+                use_node_features = True, use_edge_weights = True,
+                sparsify_threshold = None, sparsify_threshold_upper = None,
+                top_k = None, weighted_LDP = False, split_neg_pos_edges = False,
+                degree = False, weighted_degree = False,
                 split_neg_pos_edges_for_feature_augmentation = False,
-                transform = None, pre_transform = None,
-                output = 'contact', crop = None, samples = None,
-                ofile = sys.stdout, verbose = True):
+                transform = None, pre_transform = None, output = 'contact',
+                crop = None, samples = None, ofile = sys.stdout, verbose = True):
+        '''
+        Inputs:
+            dirname: directory path to raw data
+            root_name: directory for loaded data
+            m: number of particles/beads
+            y_preprocessing: type of contact map preprocessing ('diag', None, etc)
+            y_log_transform: True to log transform contact map
+            y_norm: type of normalization ('instance', 'batch')
+            min_subtraction: True to subtract min during normalization
+            use_node_features: True to use bead labels as node features
+            use_edge_weights: True to use contact map as edge weights
+            sparsify_threshold: lower threshold for sparsifying contact map (None to skip)
+            sparsify_threshold_upper: upper threshold for sparsifying contact map (None to skip)
+            top_k: top k edges to keep, ranked by y_ij (None to skip)
+            weighted_LDP: feature augmentation with weighted_LDP
+            split_neg_pos_edges: True to split negative and positive edges for training
+            degree: feature augmentation with degree
+            weighted_degree: feature augmentation with weighted degree
+            split_neg_pos_edges_for_feature_augmentationTrue to split negative and positive edges for feature augmentation
+            transform:
+            pre_transform:
+            output: output mode ('contact', 'energy')
+            crop:
+            samples:
+            ofile: where to print to if verbose == True
+            verbose: True to print
+        '''
         t0 = time.time()
         self.m = m
         self.dirname = dirname
@@ -217,7 +245,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if verbose:
             print('Dataset construction time: {} minutes'.format(np.round((time.time() - t0) / 60, 3)), file = ofile)
 
-        if verbose:
+        if verbose and self.degree_list:
+            # self.degree_list will be None if loading already processed dataset
             self.degree_list = np.array(self.degree_list)
             mean_deg = np.round(np.mean(self.degree_list, axis = 1), 2)
             std_deg = np.round(np.std(self.degree_list, axis = 1), 2)

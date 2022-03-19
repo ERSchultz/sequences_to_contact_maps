@@ -94,7 +94,7 @@ def split_dataset(dataset, opt):
             opt.testN = opt.N - opt.trainN - opt.valN
 
     if opt.verbose:
-        print(opt.trainN, opt.valN, opt.testN)
+        print(opt.trainN, opt.valN, opt.testN, opt.N)
 
     if opt.random_split:
         return torch.utils.data.random_split(dataset, [opt.trainN, opt.valN, opt.testN], torch.Generator().manual_seed(opt.seed))
