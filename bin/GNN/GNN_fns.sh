@@ -36,8 +36,7 @@ headArchitecture='concat'
 headHiddenSizesList='100-100-1'
 
 # hyperparameters
-# nEpochs=100
-nEpochs=3
+nEpochs=100
 batchSize=1
 numWorkers=4
 milestones='none'
