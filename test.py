@@ -70,7 +70,7 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    opt.data_folder = "/home/erschultz/dataset_test2"
+    opt.data_folder = "/home/erschultz/dataset_test"
     opt.scratch = '/home/erschultz/scratch'
     opt.use_scratch=True
 
@@ -188,7 +188,7 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 50
+    opt.n_epochs = 5
     opt.lr = 1e-3
     opt.batch_size = 1
     opt.milestones = None

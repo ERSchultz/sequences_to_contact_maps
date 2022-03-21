@@ -34,7 +34,9 @@ def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False, 
     """
     data_file_arr = []
     samples_dir = osp.join(dir, 'samples')
-    for file in os.listdir(samples_dir):
+    files = [file for file in os.listdir(samples_dir) if 'sample' in file]
+    for file in sorted(files, key = lambda file: int(osp.split(file)[1][6:])):
+        # sort by sampleid
         if not file.startswith('sample'):
             if verbose:
                 print("Skipping {}".format(file))
@@ -47,7 +49,6 @@ def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False, 
             if samples is None or sample_id in samples:
                 data_file = osp.join(samples_dir, file)
                 data_file_arr.append(data_file)
-
 
     return data_file_arr
 
@@ -212,6 +213,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.samples = None
         self.degree_list = [] # created in self.process()
         self.verbose = verbose
+        self.file_paths = make_dataset(self.dirname, samples = self.samples)
+
         if self.weighted_LDP and self.top_k is None and self.sparsify_threshold is None and self.sparsify_threshold_upper is None:
             print('Warning: using LDP without any sparsification')
 
@@ -254,7 +257,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     @property
     def raw_file_names(self):
-        return make_dataset(self.dirname, samples = self.samples)
+        return self.file_paths
 
     @property
     def processed_file_names(self):

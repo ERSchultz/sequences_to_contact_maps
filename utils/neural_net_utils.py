@@ -38,6 +38,7 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
                                             opt.output_mode, opt.crop, samples,
                                             opt.log_file, verbose)
         opt.root = dataset.root
+        print('\n'*3)
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
         dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)
         opt.root = None
@@ -46,6 +47,7 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
                                             opt.y_norm, opt.x_reshape, opt.ydtype,
                                             opt.y_reshape, opt.crop, opt.min_subtraction, names, minmax)
         opt.root = None
+
     return dataset
 
 def get_data_loaders(dataset, opt):
