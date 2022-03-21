@@ -222,3 +222,8 @@ Prediction Results:
 /home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/71/sample1718: 1.0512123107910156
 Loss: 1.193215298652649 +- 0.48189275460040853
 
+Took 1643.0 seconds to move data to scratch
+Warning: falling back to cpu
+Dataset construction time: 15.562 minutes
+Mean degree: [453.59 400.27 259.98 ... 375.28 280.86 356.31] +- [147.64 114.97  74.33 ... 115.79  78.68 101.27]
+
