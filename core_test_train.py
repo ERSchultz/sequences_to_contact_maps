@@ -66,7 +66,7 @@ def core_test_train(model, opt):
 
     t0 = time.time()
     print("#### TRAINING/VALIDATION ####", file = opt.log_file)
-    train_loss_arr, val_loss_arr = train(train_dataloader, val_dataloader, model, opt, ofile = opt.log_file)
+    train_loss_arr, val_loss_arr = train(train_dataloader, val_dataloader, model, opt)
 
     tot_pars = 0
     if opt.print_params:
@@ -96,7 +96,7 @@ def core_test_train(model, opt):
         # opt.root is set in utils.get_dataset
         clean_directories(root = opt.root)
 
-def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
+def train(train_loader, val_dataloader, model, opt):
     train_loss = []
     val_loss = []
     for e in range(opt.start_epoch, opt.n_epochs+1):
@@ -147,11 +147,13 @@ def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
         if opt.scheduler is not None:
             opt.scheduler.step()
         if e % opt.print_mod == 0 or e == opt.n_epochs:
-            print('Epoch {}, loss = {:.4f}'.format(e, avg_loss), file = ofile)
+            print('Epoch {}, loss = {:.4f}'.format(e, avg_loss), file = opt.log_file)
             print_val_loss = True
+            opt.log_file.close() # save any writes so far
+            opt.log_file = open(opt.log_file_path, 'a')
         else:
             print_val_loss = False
-        val_loss.append(test(val_dataloader, model, opt, print_val_loss, ofile))
+        val_loss.append(test(val_dataloader, model, opt, print_val_loss))
 
         if e % opt.save_mod == 0:
             if opt.use_parallel:
@@ -170,7 +172,7 @@ def train(train_loader, val_dataloader, model, opt, ofile = sys.stdout):
 
     return train_loss, val_loss
 
-def test(loader, model, opt, toprint, ofile = sys.stdout):
+def test(loader, model, opt, toprint):
     assert loader is not None, 'loader is None - check train/val/test split'
     model.eval()
     avg_loss = 0
@@ -201,7 +203,7 @@ def test(loader, model, opt, toprint, ofile = sys.stdout):
             avg_loss += loss.item()
     avg_loss /= (t+1)
     if toprint:
-        print('Mean test/val loss: {:.4f}\n'.format(avg_loss), file = ofile)
+        print('Mean test/val loss: {:.4f}\n'.format(avg_loss), file = opt.log_file)
     # TODO quartiles and median loss
     return avg_loss
 

@@ -192,21 +192,22 @@ def get_base_parser():
 
     return parser
 
-def finalize_opt(opt, parser, local = False):
+def finalize_opt(opt, parser, windows = False, local = False):
     '''
     Helper function to processes command line arguments.
 
     Inputs:
         opt (options): parsed command line arguments from parser.parse_args()
         parser: instance of argparse.ArgumentParser() - used to re-parse if needed
-        local: True to overide some commands when working locally
+        windows: True for windows file path
+        local: True to override copy_data_to_scratch
 
     Outputs:
         opt
     '''
 
     # set up output folders/files
-    if local:
+    if windows:
         model_type_root = 'C:/Users/Eric/OneDrive/Documents/Research/Coding'
     else:
         model_type_root = '/home/erschultz'
@@ -239,8 +240,8 @@ def finalize_opt(opt, parser, local = False):
     opt.ofile_folder = osp.join(model_type_folder, str(opt.id))
     if not osp.exists(opt.ofile_folder):
         os.mkdir(opt.ofile_folder, mode = 0o755)
-    log_file_path = osp.join(opt.ofile_folder, 'out.log')
-    opt.log_file = open(log_file_path, 'a')
+    opt.log_file_path = osp.join(opt.ofile_folder, 'out.log')
+    opt.log_file = open(opt.log_file_path, 'a')
 
     param_file_path = osp.join(opt.ofile_folder, 'params.log')
     opt.param_file = open(param_file_path, 'a')
@@ -376,6 +377,8 @@ def finalize_opt(opt, parser, local = False):
     if opt.cuda:
         torch.cuda.manual_seed(opt.seed)
 
+    opt.log_file.close() # save any writes so far
+    opt.log_file = open(opt.log_file_path, 'a')
     return opt
 
 def copy_data_to_scratch(opt):

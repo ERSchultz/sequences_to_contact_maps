@@ -3,8 +3,8 @@ import os.path as osp
 from shutil import rmtree
 
 import numpy as np
-from utils.argparse_utils import (argparse_setup, get_base_parser,
-                                  get_opt_header)
+from utils.argparse_utils import (argparse_setup, finalize_opt,
+                                  get_base_parser, get_opt_header, opt2list)
 from utils.plotting_utils import (plot_centroid_distance, plot_combined_models,
                                   plot_sc_contact_maps, plot_xyz_gif,
                                   plotting_script)
@@ -46,7 +46,7 @@ def update_result_tables(model_type = None, mode = None, output_mode = 'contact'
                 if osp.exists(txt_file):
                     opt = parser.parse_args(['@{}'.format(txt_file)])
                     opt.id = int(id)
-                    opt = finalizeOpt(opt, parser, True)
+                    opt = finalize_opt(opt, parser, local = True)
                     opt_list = opt2list(opt)
                     if output_mode == 'contact':
                         with open(osp.join(id_path, 'PCA_results.txt'), 'r') as f:
@@ -98,12 +98,12 @@ def main():
 
 if __name__ == '__main__':
     # plot_xyz_gif()
-    plot_sc_contact_maps('C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps\\dataset_test', samples = 92,
-                        ofolder = 'sc_contact/original', jobs = 10, N_max = None,
-                        count = 10, correct_diag = False, sparsify = True,
-                        crop_size = None)
+    # plot_sc_contact_maps('C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps\\dataset_test', samples = 92,
+    #                     ofolder = 'sc_contact/original', jobs = 10, N_max = None,
+    #                     count = 10, correct_diag = False, sparsify = True,
+    #                     crop_size = None)
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
     # update_result_tables('ContactGNN', 'GNN', 'sequence')
-    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
     # plot_combined_models('ContactGNN', [202, 203, 204])
     # main()
