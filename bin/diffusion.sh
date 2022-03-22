@@ -3,7 +3,7 @@
 #SBATCH --partition=depablo-ivyb
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=20
-#SBATCH --mem=65000
+#SBATCH --mem=64000
 #SBATCH --output=logFiles/diffusion.log
 #SBATCH --time=12:00:00
 
