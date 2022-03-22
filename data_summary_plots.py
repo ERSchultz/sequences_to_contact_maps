@@ -7,7 +7,8 @@ import pandas as pd
 from utils.dataset_classes import make_dataset
 from utils.InteractionConverter import InteractionConverter
 from utils.load_utils import load_all
-from utils.plotting_utils import plot_matrix, plot_seq_binary, plot_seq_exclusive
+from utils.plotting_utils import (plot_matrix, plot_seq_binary,
+                                  plot_seq_exclusive)
 from utils.utils import genomic_distance_statistics
 
 # plt.rcParams["font.family"] = "Times New Roman"

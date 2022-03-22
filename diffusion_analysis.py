@@ -1,8 +1,8 @@
+import argparse
 import os
 import os.path as osp
 import time
 
-import dmaps  # https://github.com/hsidky/dmaps
 import matplotlib.cm
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,7 +12,22 @@ from sklearn.metrics import silhouette_score
 from utils.plotting_utils import plot_matrix
 from utils.utils import pearson_round, print_time
 from utils.xyz_utils import (find_dist_between_centroids, find_label_centroid,
-                             xyz_load, xyz_to_contact_grid)
+                             lammps_load, xyz_load, xyz_to_contact_grid)
+
+import dmaps  # https://github.com/hsidky/dmaps
+
+
+def getArgs(default_dir='/home/erschultz/dataset_test'):
+    parser = argparse.ArgumentParser(description='Base parser')
+    parser.add_argument('--dir', type=str, default=default_dir, help='location of data')
+    parser.add_argument('--odir', type=str, help='location to write to')
+
+    args = parser.parse_args()
+    if args.odir is None:
+        args.odir = osp.join(args.dir, 'diffusion_test')
+    if not osp.exists(args.odir):
+        os.mkdir(args.odir, mode = 0o755)
+    return args
 
 
 def tune_epsilon(dmap, ofile):
@@ -97,27 +112,27 @@ def plot_eigenvectors(v, xyz, odir):
     plt.savefig(osp.join(odir, 'projection234.png'))
     plt.close()
 
-    # centroid distance
-    dist = np.zeros(N)
-    psi = np.zeros((1500, 3))
-    psi[0:200, 0] = 1
-    psi[200:1300, 1] = 1
-    psi[1300:, 2] = 1
-    for i in range(N):
-        centroids = find_label_centroid(xyz[i].reshape(-1, 3), psi)
-        distances = find_dist_between_centroids(centroids)
-        dist[i] = distances[0, 2]
-
-    print('\n\ncentroid corr: ', pearson_round(dist, v[:, 1], stat = 'pearson'))
-
-
-    # plot first 2 nonzero eigenvectors, color by distance
-    sc = plt.scatter(v[:,1]/v[:,0], v[:,2]/v[:,0], c = dist)
-    plt.colorbar(sc)
-    plt.xlabel(r'$v_2$', fontsize = 16)
-    plt.ylabel(r'$v_3$', fontsize = 16)
-    plt.savefig(osp.join(odir, 'projection23_dist.png'))
-    plt.close()
+    # # centroid distance
+    # dist = np.zeros(N)
+    # psi = np.zeros((1500, 3))
+    # psi[0:200, 0] = 1
+    # psi[200:1300, 1] = 1
+    # psi[1300:, 2] = 1
+    # for i in range(N):
+    #     centroids = find_label_centroid(xyz[i].reshape(-1, 3), psi)
+    #     distances = find_dist_between_centroids(centroids)
+    #     dist[i] = distances[0, 2]
+    #
+    # print('\n\ncentroid corr: ', pearson_round(dist, v[:, 1], stat = 'pearson'))
+    #
+    #
+    # # plot first 2 nonzero eigenvectors, color by distance
+    # sc = plt.scatter(v[:,1]/v[:,0], v[:,2]/v[:,0], c = dist)
+    # plt.colorbar(sc)
+    # plt.xlabel(r'$v_2$', fontsize = 16)
+    # plt.ylabel(r'$v_3$', fontsize = 16)
+    # plt.savefig(osp.join(odir, 'projection23_dist.png'))
+    # plt.close()
 
     # plot 3 and 4 eigenvectors, color by order
     sc = plt.scatter(v[:,2]/v[:,0], v[:,3]/v[:,0], c = dist)
@@ -193,15 +208,19 @@ def plot_eigenvectors(v, xyz, odir):
     plt.close()
 
 def main():
-    dir = '/home/eric/dataset_test/samples/sample92'
-    odir = osp.join(dir, 'diffusion_test')
-    if not osp.exists(odir):
-        os.mkdir(odir, mode = 0o755)
+    args = getArgs()
 
     # load xyz
-    xyz = xyz_load(osp.join(dir, 'data_out/output.xyz'),
-                    multiple_timesteps=True, save = True, N_min = 10,
+    xyz_file = osp.join(args.dir, 'data_out/output.xyz')
+    lammps_file = osp.join(args.dir, 'traj.dump.lammpstrj')
+    if osp.exists(xyz_file):
+        xyz = xyz_load(xyz_file,
+                    multiple_timesteps = True, save = True, N_min = 10,
                     N_max = None, down_sampling = 1)
+    elif osp.exists(lammps_file):
+        xyz = lammps_load(lammps_file, N_min = 0,
+                    N_max = None, down_sampling = 1)
+
     N, m, _ = xyz.shape
     xyz = xyz.reshape(N, m * 3)
 
@@ -210,14 +229,14 @@ def main():
     dist = dmaps.DistanceMatrix(xyz)
     dist.compute(metric=dmaps.metrics.rmsd)
     D = dist.get_distances()
-    plot_matrix(D, ofile = osp.join(odir, 'distances.png'),
+    plot_matrix(D, ofile = osp.join(args.odir, 'distances.png'),
                     vmin = 'min', vmax = 'max')
     tf = time.time()
     print_time(t0, tf, 'distance')
 
     # compute eigenvectors
     dmap = dmaps.DiffusionMap(dist)
-    eps = tune_epsilon(dmap, osp.join(odir, 'tuning.png'))
+    eps = tune_epsilon(dmap, osp.join(args.odir, 'tuning.png'))
     dmap.set_kernel_bandwidth(eps)
     dmap.compute(5, 0.5)
 
@@ -227,7 +246,7 @@ def main():
     order = np.argsort(v[:, 1])
     print('\n\norder corr: ', pearson_round(order, np.arange(0, N, 1), stat = 'spearman'))
 
-    plot_eigenvectors(v, xyz.reshape(-1, m, 3), odir)
+    plot_eigenvectors(v, xyz.reshape(-1, m, 3), args.odir)
 
 
 if __name__ == '__main__':

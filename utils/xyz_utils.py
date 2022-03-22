@@ -61,6 +61,36 @@ def xyz_load(xyz_filepath, delim = '\t', multiple_timesteps = False, save = Fals
     print(f'Loaded xyz with shape {xyz.shape}')
     return xyz
 
+def lammps_load(filepath, N_min = None, N_max = None, down_sampling = 1):
+    xyz = []
+    with open(filepath, 'r') as f:
+        line = 'null'
+        while line != '':
+            line = f.readline().strip()
+            if line == 'ITEM: NUMBER OF ATOMS':
+                N = int(f.readline().strip())
+                xyz_timestep = np.empty((N, 3))
+
+            if line == 'ITEM: ATOMS id type xu yu zu':
+                i = 0
+                line = f.readline().strip().split(' ')
+                while line[0].isnumeric():
+                    i = int(line[0]) - 1
+                    xyz_timestep[i, :] = [float(j) for j in line[2:5]]
+                    if i == N-1:
+                        xyz.append(xyz_timestep)
+                    line = f.readline().strip().split(' ')
+
+    xyz = np.array(xyz)
+
+    if N_min is None:
+        N_min = 0
+    if N_max is None:
+        N_max = len(xyz)
+    xyz = xyz[N_min:N_max:down_sampling]
+    print(f'Loaded xyz with shape {xyz.shape}')
+    return xyz
+
 def find_label_centroid(xyz, psi):
     '''
     Finds center of mass for each label in psi.
@@ -192,10 +222,6 @@ def main():
     # plotContactMap(dif, osp.join(dir, 'sc_contact', 'dif.png'), cmap = 'blue-red')
 
     # print(np.array_equal(y, overall))
-
-
-
-
 
 
 

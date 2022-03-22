@@ -15,6 +15,7 @@ from utils.networks import get_model
 from utils.plotting_utils import plot_matrix
 from utils.utils import (calc_dist_strat_corr, crop, diagonal_preprocessing,
                          genomic_distance_statistics, print_time, triu_to_full)
+from utils.xyz_utils import lammps_load
 
 
 def test_num_workers():
@@ -242,7 +243,8 @@ def plot_fixed():
 
             overall_corr, corr_arr = calc_dist_strat_corr(y1, y2, mode = 'pearson')
             avg = np.nanmean(corr_arr)
-            title = 'Overall Pearson R: {}\nAverage Dist Pearson R: {}'.format(np.round(overall_corr, 3), np.round(avg, 3))
+            title = f'''Overall Pearson R: {np.round(overall_corr, 3)}\n
+                    Average Dist Pearson R: {np.round(avg, 3)}'''
 
             plt.plot(np.arange(1022), corr_arr, color = 'black')
             plt.ylim(-0.5, 1)
@@ -370,11 +372,15 @@ def main2():
     # print(np.allclose(y_diag1, y_diag3))
     # print(np.allclose(y_diag, y_diag1))
 
+def test_lammps_load():
+    file_path = '/home/erschultz/sequences_to_contact_maps/traj'
+    xyz = lammps_load(file_path)
 
 if __name__ == '__main__':
     # main2()
     # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
+    test_lammps_load()
     # plot_fixed()
     # test_argpartition(10)
     # downsampling_test()
