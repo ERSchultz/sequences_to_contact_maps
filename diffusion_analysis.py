@@ -17,7 +17,7 @@ from utils.xyz_utils import (find_dist_between_centroids, find_label_centroid,
 import dmaps  # https://github.com/hsidky/dmaps
 
 
-def getArgs(default_dir='/home/erschultz/dataset_test'):
+def getArgs(default_dir='/home/erschultz/sequences_to_contact_maps/dataset_test/samples/sample92'):
     parser = argparse.ArgumentParser(description='Base parser')
     parser.add_argument('--dir', type=str, default=default_dir, help='location of data')
     parser.add_argument('--odir', type=str, help='location to write to')
@@ -134,13 +134,13 @@ def plot_eigenvectors(v, xyz, odir):
     # plt.savefig(osp.join(odir, 'projection23_dist.png'))
     # plt.close()
 
-    # plot 3 and 4 eigenvectors, color by order
-    sc = plt.scatter(v[:,2]/v[:,0], v[:,3]/v[:,0], c = dist)
-    plt.colorbar(sc)
-    plt.xlabel(r'$v_3$', fontsize = 16)
-    plt.ylabel(r'$v_4$', fontsize = 16)
-    plt.savefig(osp.join(odir, 'projection34_dist.png'))
-    plt.close()
+    # # plot 3 and 4 eigenvectors, color by distance
+    # sc = plt.scatter(v[:,2]/v[:,0], v[:,3]/v[:,0], c = dist)
+    # plt.colorbar(sc)
+    # plt.xlabel(r'$v_3$', fontsize = 16)
+    # plt.ylabel(r'$v_4$', fontsize = 16)
+    # plt.savefig(osp.join(odir, 'projection34_dist.png'))
+    # plt.close()
 
     # k_means
     num_vecs = 3
