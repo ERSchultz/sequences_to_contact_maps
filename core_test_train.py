@@ -1,5 +1,6 @@
 import locale
 import os
+import os.path as osp
 import sys
 import time
 
@@ -33,21 +34,36 @@ def core_test_train(model, opt):
     dataset = get_dataset(opt)
     train_dataloader, val_dataloader, test_dataloader = get_data_loaders(dataset, opt)
 
-    if opt.pretrained:
-        model_name = os.path.join(opt.ifile_folder, opt.ifile + '.pt')
-        if os.path.exists(model_name):
+    if opt.resume_training:
+        model_name = osp.join(opt.ofile_folder, 'model.pt')
+        if osp.exists(model_name):
             if opt.cuda:
                 save_dict = torch.load(model_name)
             else:
                 save_dict = torch.load(model_name, map_location = 'cpu')
+
             model.load_state_dict(save_dict['model_state_dict'])
-            print('Pre-trained model is loaded.', file = opt.log_file)
+
+            opt.start_epoch = save_dict['epoch'] + 1
+            print(f'Partially-trained model is loaded.\nStarting at epoch {opt.start_epoch}', file = opt.log_file)
+
+            train_loss_arr = save_dict['train_loss']
+            val_loss_arr = save_dict['val_loss']
+        else:
+            raise Exception(f'save_dict does not exist for {opt.ofile_folder}')
+    else:
+        train_loss_arr = []
+        val_loss_arr = []
 
     # Set up model and scheduler
     opt.optimizer = optim.Adam(model.parameters(), lr = opt.lr)
+    if opt.resume_training:
+        opt.optimizer.load_state_dict(save_dict['optimizer_state_dict'])
     if opt.milestones is not None:
         opt.scheduler = optim.lr_scheduler.MultiStepLR(opt.optimizer, milestones = opt.milestones,
                                                     gamma = opt.gamma, verbose = opt.verbose)
+        if opt.resume_training:
+            opt.scheduler.load_state_dict(save_dict['scheduler_state_dict'])
     else:
         opt.scheduler = None
 
@@ -66,7 +82,7 @@ def core_test_train(model, opt):
 
     t0 = time.time()
     print("#### TRAINING/VALIDATION ####", file = opt.log_file)
-    train_loss_arr, val_loss_arr = train(train_dataloader, val_dataloader, model, opt)
+    train(train_dataloader, val_dataloader, model, opt, train_loss_arr, val_loss_arr)
 
     tot_pars = 0
     if opt.print_params:
@@ -96,9 +112,7 @@ def core_test_train(model, opt):
         # opt.root is set in utils.get_dataset
         clean_directories(root = opt.root)
 
-def train(train_loader, val_dataloader, model, opt):
-    train_loss = []
-    val_loss = []
+def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = []):
     for e in range(opt.start_epoch, opt.n_epochs+1):
         if opt.verbose:
             print('Epoch:', e)

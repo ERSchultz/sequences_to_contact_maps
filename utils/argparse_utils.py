@@ -118,16 +118,12 @@ def get_base_parser():
     # model args
     parser.add_argument('--model_type', type=str, default='test',
                         help='Type of model')
-    parser.add_argument('--id', type=int,
+    parser.add_argument('--id', type=str2int,
                         help='id of model')
     parser.add_argument('--pretrained', type=str2bool, default=False,
                         help='True if using a pretrained model')
     parser.add_argument('--resume_training', type=str2bool, default=False,
                         help='True if resuming traning of a partially trained model')
-    parser.add_argument('--ifile_folder', type=str,
-                        help='Location of input file for pretrained model')
-    parser.add_argument('--ifile', type=str,
-                        help='Name of input file for pretrained model')
     parser.add_argument('--k', type=int, default=2,
                         help='Number of epigenetic marks')
     parser.add_argument('--m', type=int, default=1024,
@@ -192,7 +188,7 @@ def get_base_parser():
 
     return parser
 
-def finalize_opt(opt, parser, windows = False, local = False):
+def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     '''
     Helper function to processes command line arguments.
 
@@ -201,6 +197,7 @@ def finalize_opt(opt, parser, windows = False, local = False):
         parser: instance of argparse.ArgumentParser() - used to re-parse if needed
         windows: True for windows file path
         local: True to override copy_data_to_scratch
+        debug: True for debug mode
 
     Outputs:
         opt
@@ -214,6 +211,9 @@ def finalize_opt(opt, parser, windows = False, local = False):
     model_type_folder = osp.join(model_type_root, 'sequences_to_contact_maps', 'results',
                                 opt.model_type)
 
+    if opt.resume_training:
+        assert opt.id is not None
+
     if opt.id is None:
         if not osp.exists(model_type_folder):
             os.mkdir(model_type_folder, mode = 0o755)
@@ -226,7 +226,7 @@ def finalize_opt(opt, parser, windows = False, local = False):
                     if id > max_id:
                         max_id = id
             opt.id = max_id + 1
-    else:
+    elif not debug:
         txt_file = osp.join(model_type_folder, str(opt.id), 'argparse.txt')
         assert osp.exists(txt_file), "{} does not exist".format(txt_file)
         id_copy = opt.id
@@ -344,7 +344,6 @@ def finalize_opt(opt, parser, windows = False, local = False):
     if opt.use_scratch and not local:
         copy_data_to_scratch(opt)
 
-
     # configure cuda
     if opt.gpus > 1:
         opt.cuda = True
@@ -456,7 +455,7 @@ def opt2list(opt):
         opt.y_norm, opt.min_subtraction, opt.y_log_transform, opt.crop, opt.split_percents,
         opt.shuffle, opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr, opt.gpus,
         opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
-        opt.ifile_folder, opt.ifile, opt.k, opt.m, opt.seed, opt.act, opt.inner_act,
+        opt.k, opt.m, opt.seed, opt.act, opt.inner_act,
         opt.head_act, opt.out_act, opt.training_norm, opt.relabel_11_to_00]
     if opt.GNN_mode:
         opt_list.extend([opt.use_node_features, opt.use_edge_weights, opt.transforms,
@@ -503,7 +502,7 @@ def get_opt_header(model_type, GNN_mode):
     opt_list = ['model_type', 'id',  'data_folder', 'y_preprocessing',
         'y_norm', 'min_subtraction', 'y_log_transform', 'crop', 'split', 'shuffle',
         'batch_size', 'num_workers', 'n_epochs', 'lr', 'gpus', 'milestones',
-        'gamma', 'loss', 'pretrained', 'resume_training', 'ifile_folder', 'ifile', 'k', 'm',
+        'gamma', 'loss', 'pretrained', 'resume_training', 'k', 'm',
         'seed', 'act', 'inner_act', 'head_act', 'out_act',
         'training_norm', 'relabel_11_to_00']
     if GNN_mode:

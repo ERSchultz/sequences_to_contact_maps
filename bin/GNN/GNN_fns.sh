@@ -9,6 +9,7 @@ deleteRoot='false'
 modelType='ContactGNNEnergy'
 GNNMode='true'
 outputMode='energy'
+resumeTraining='false'
 
 # architecture
 m=1024
