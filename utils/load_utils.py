@@ -206,7 +206,7 @@ def load_final_max_ent_S(k, replicate_path, max_it_path = None):
 
 def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
                     gaussian = False, zero_diag = False, jobs = 1, down_sampling = 1,
-                    sparsify = False, correct_diag = False):
+                    sparsify = False, correct_diag = False, return_xyz = False):
     '''
     Load single cell contacts from sample_folder/data_out/output.xyz.
 
@@ -220,6 +220,7 @@ def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
         down_sampling (int): down sample by given value
         sparsify (bool): True to match experimental sparseness
         diagonal_preprocessing: process diagonal based on overall contact map
+        return_xyz: True to return xyz as well
 
     Outputs:
         sc_contacts: (N, (m+1)*m/2) if triu, else (N, m, m)
@@ -258,6 +259,8 @@ def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
     print_time(t0, tf, 'load')
 
     print(f'Loaded {len(sc_contacts)} sc contacts')
+    if return_xyz:
+        return sc_contacts, xyz
     return sc_contacts
 
 def load_sc_contacts_xyz(xyz, grid_size, triu, gaussian, zero_diag, sparsify):

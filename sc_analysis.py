@@ -16,9 +16,10 @@ from utils.plotting_utils import (plot_matrix, plot_matrix_gif,
 from utils.utils import (diagonal_preprocessing_bulk,
                          genomic_distance_statistics, pearson_round,
                          print_size, print_time, triu_to_full)
+from utils.xyz_utils import find_dist_between_centroids, find_label_centroid
 
 
-def sort_laplacian(A_tilde, sc_contacts, odir, it):
+def sort_laplacian(A_tilde, xyz, sc_contacts, odir, it):
     w, v = np.linalg.eig(A_tilde)
     v = v[:, np.argsort(w)]
     w = np.sort(w)
@@ -32,7 +33,7 @@ def sort_laplacian(A_tilde, sc_contacts, odir, it):
     assert i == 1, "first nonzero eigenvector is not 2nd vector"
     where = np.argsort(v[:, i])
 
-    plot_eigenvectors(v, sc_contacts, odir, it)
+    plot_eigenvectors(v, xyz, sc_contacts, odir, it)
 
     # sort sc_contacts
     sc_contacts = sc_contacts[where, :]
@@ -64,7 +65,7 @@ def sort_laplacian(A_tilde, sc_contacts, odir, it):
 
     return sc_contacts, where
 
-def plot_eigenvectors(v, sc_contacts, odir, it):
+def plot_eigenvectors(v, xyz, sc_contacts, odir, it):
     N = len(v)
 
     # plot first 2 nonzero eigenvectors, color by order
@@ -93,6 +94,37 @@ def plot_eigenvectors(v, sc_contacts, odir, it):
     ax.set_zlabel(r'$v_4$', fontsize = 16)
     plt.tight_layout()
     plt.savefig(osp.join(odir, f'projection234_{it}.png'))
+    plt.close()
+
+
+    # centroid distance
+    dist = np.zeros(N)
+    psi = np.zeros((1500, 3))
+    psi[0:200, 0] = 1
+    psi[200:1300, 1] = 1
+    psi[1300:, 2] = 1
+    for i in range(N):
+        centroids = find_label_centroid(xyz[i].reshape(-1, 3), psi)
+        distances = find_dist_between_centroids(centroids)
+        dist[i] = distances[0, 2]
+
+    print('\n\ncentroid corr: ', pearson_round(dist, v[:, 1], stat = 'pearson'))
+
+
+    # plot first 2 nonzero eigenvectors, color by distance
+    sc = plt.scatter(v[:,1]/v[:,0], v[:,2]/v[:,0], c = dist)
+    plt.colorbar(sc)
+    plt.xlabel(r'$v_2$', fontsize = 16)
+    plt.ylabel(r'$v_3$', fontsize = 16)
+    plt.savefig(osp.join(odir, f'projection23_dist_{it}.png'))
+    plt.close()
+
+    # plot 3 and 4 eigenvectors, color by distance
+    sc = plt.scatter(v[:,2]/v[:,0], v[:,3]/v[:,0], c = dist)
+    plt.colorbar(sc)
+    plt.xlabel(r'$v_3$', fontsize = 16)
+    plt.ylabel(r'$v_4$', fontsize = 16)
+    plt.savefig(osp.join(odir, f'projection34_dist_{it}.png'))
     plt.close()
 
     # k_means
@@ -159,7 +191,6 @@ def plot_eigenvectors(v, sc_contacts, odir, it):
     plt.savefig(osp.join(odir, f'projection234_kmeans_{it}.png'))
     plt.close()
 
-
 def tune_epsilon(A, ofile):
     X = np.arange(-8, 5, 1)
     epsilons = np.exp(X)
@@ -211,16 +242,17 @@ def tune_epsilon(A, ofile):
     return np.exp(-1/2 * A**2 / eps_final)
 
 def main():
-    dir = '/home/eric/dataset_test/samples/sample92'
+    dir = '/home/erschultz/dataset_test/samples/sample92'
     odir = osp.join(dir, 'sc_contact')
     if not osp.exists(odir):
         os.mkdir(odir, mode = 0o755)
 
     overall = np.load(osp.join(dir, 'y.npy'))
     mean_per_diag = genomic_distance_statistics(overall, mode = 'prob')
-    sc_contacts = load_sc_contacts(dir, N_max = None, triu = True,
+    sc_contacts, xyz = load_sc_contacts(dir, N_max = None, triu = True,
                                     gaussian = True, zero_diag = True, jobs = 8,
-                                    down_sampling = 3, sparsify = False)
+                                    down_sampling = 3, sparsify = False,
+                                    return_xyz = True)
     sc_contacts_orig = sc_contacts.copy()
     print_size(sc_contacts, 'sc_contacts')
     N, _ = sc_contacts.shape
@@ -255,7 +287,7 @@ def main():
                         vmin = np.min(A_tilde), vmax = np.max(A_tilde),
                         cmap = 'blue-red')
         np.savetxt(osp.join(odir, f'A_tilde_{i}.txt'), A_tilde, fmt='%.2f')
-        sc_contacts, order = sort_laplacian(A_tilde, sc_contacts, odir, i)
+        sc_contacts, order = sort_laplacian(A_tilde, xyz, sc_contacts, odir, i)
         print('\n\norder corr: ', pearson_round(order, np.arange(0, N, 1),
                                                 stat = 'spearman'))
         tf = time.time()

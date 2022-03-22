@@ -189,7 +189,7 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 5
+    opt.n_epochs = 50
     opt.lr = 1e-3
     opt.batch_size = 1
     opt.milestones = None
@@ -379,8 +379,8 @@ def test_lammps_load():
 if __name__ == '__main__':
     # main2()
     # edit_argparse()
-    # debugModel('ContactGNNEnergy')
-    test_lammps_load()
+    debugModel('ContactGNNEnergy')
+    # test_lammps_load()
     # plot_fixed()
     # test_argpartition(10)
     # downsampling_test()
