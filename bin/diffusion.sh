@@ -13,4 +13,4 @@ odir="/project2/depablo/erschultz/michrom/project/chr_05/chr_05_01"
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2_2
 
-python3 diffusion_analysis.py --dir $dir --odir $odir
+python3 test.py --dir $dir --odir $odir

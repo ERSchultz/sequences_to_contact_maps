@@ -373,7 +373,7 @@ def main2():
     # print(np.allclose(y_diag, y_diag1))
 
 def test_lammps_load():
-    file_path = '/home/erschultz/sequences_to_contact_maps/traj'
+    file_path = '/home/erschultz/sequences_to_contact_maps/traj.dump.lammpstrj'
     xyz = lammps_load(file_path)
 
 if __name__ == '__main__':
