@@ -211,6 +211,7 @@ def main():
     args = getArgs()
 
     # load xyz
+    t0 = time.time()
     xyz_file = osp.join(args.dir, 'data_out/output.xyz')
     lammps_file = osp.join(args.dir, 'traj.dump.lammpstrj')
     if osp.exists(xyz_file):
@@ -218,11 +219,13 @@ def main():
                     multiple_timesteps = True, save = True, N_min = 10,
                     N_max = None, down_sampling = 1)
     elif osp.exists(lammps_file):
-        xyz = lammps_load(lammps_file, N_min = 0,
+        xyz = lammps_load(lammps_file, save = False, N_min = 2000,
                     N_max = None, down_sampling = 1)
 
     N, m, _ = xyz.shape
     xyz = xyz.reshape(N, m * 3)
+    tf = time.time()
+    print_time(t0, tf, 'load')
 
     # compute distance
     t0 = time.time()

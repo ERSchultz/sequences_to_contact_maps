@@ -189,7 +189,7 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 40
+    opt.n_epochs = 10
     opt.lr = 1e-3
     opt.batch_size = 1
     opt.milestones = None
@@ -200,12 +200,12 @@ def debugModel(model_type):
     opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = False
-    opt.gpus = 0
+    opt.gpus = 1
     opt.delete_root = False
     opt.use_scratch = False
     opt.print_mod = 1
     opt.milestones = [10, 20, 30]
-    opt.id = 38
+    opt.id = 39
     opt.resume_training = True
 
     opt = finalize_opt(opt, parser, False, debug = True)

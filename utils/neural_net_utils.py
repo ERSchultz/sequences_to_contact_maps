@@ -105,3 +105,25 @@ def split_dataset(dataset, opt):
         val_dataset = dataset[opt.testN:opt.testN+opt.valN]
         train_dataset = dataset[opt.testN+opt.valN:opt.testN+opt.valN+opt.trainN]
         return train_dataset, val_dataset, test_dataset
+
+# pytorch helper functions
+def optimizer_to(optim, device = None):
+    # https://discuss.pytorch.org/t/moving-optimizer-from-cpu-to-gpu/96068/2
+    for param in optim.state.values():
+        # Not sure there are any global tensors in the state dict
+        if isinstance(param, torch.Tensor):
+            if device is not None:
+                param.data = param.data.to(device)
+                if param._grad is not None:
+                    param._grad.data = param._grad.data.to(device)
+            else:
+                print(param.data.get_device())
+        elif isinstance(param, dict):
+            for subparam in param.values():
+                if isinstance(subparam, torch.Tensor):
+                    if device is not None:
+                        subparam.data = subparam.data.to(device)
+                        if subparam._grad is not None:
+                            subparam._grad.data = subparam._grad.data.to(device)
+                    else:
+                        print(subparam.data.get_device())

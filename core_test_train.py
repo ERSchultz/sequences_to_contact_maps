@@ -14,7 +14,7 @@ locale.setlocale(locale.LC_ALL, '')
 from utils.argparse_utils import argparse_setup, save_args
 from utils.clean_directories import clean_directories
 from utils.networks import get_model
-from utils.neural_net_utils import get_data_loaders, get_dataset
+from utils.neural_net_utils import get_data_loaders, get_dataset, optimizer_to
 from utils.plotting_utils import plotting_script
 
 
@@ -59,6 +59,10 @@ def core_test_train(model, opt):
     opt.optimizer = optim.Adam(model.parameters(), lr = opt.lr)
     if opt.resume_training:
         opt.optimizer.load_state_dict(save_dict['optimizer_state_dict'])
+        optimizer_to(opt.optimizer)
+        optimizer_to(opt.optimizer, opt.device)
+        optimizer_to(opt.optimizer)
+
     if opt.milestones is not None:
         opt.scheduler = optim.lr_scheduler.MultiStepLR(opt.optimizer, milestones = opt.milestones,
                                                     gamma = opt.gamma, verbose = opt.verbose)
