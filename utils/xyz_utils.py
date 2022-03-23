@@ -62,7 +62,7 @@ def xyz_load(xyz_filepath, delim = '\t', multiple_timesteps = False, save = Fals
     return xyz
 
 def lammps_load(filepath, save = False, N_min = None, N_max = None, down_sampling = 1):
-    xyz_npy_file = osp.join(osp.split(xyz_filepath)[0], 'xyz.npy')
+    xyz_npy_file = osp.join(osp.split(filepath)[0], 'xyz.npy')
     if osp.exists(xyz_npy_file):
         xyz = np.load(xyz_npy_file)
     else:
