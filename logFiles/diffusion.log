@@ -1,0 +1,9 @@
+Loaded xyz with shape (12084, 3620, 3)
+load time: 186.291 s
+distance time: 605.82 s
+Using epsilon = 33.115
+w [0.99999994 0.04784851 0.02287627 0.01284889 0.01166864]
+
+
+order corr:  -0.88
+Using k = 6
