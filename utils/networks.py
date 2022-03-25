@@ -463,9 +463,6 @@ class ConvolutionalAutoencoder(nn.Module):
 class ContactGNN(nn.Module):
     '''
     Graph neural network that maps contact map data to node embeddings of arbitrary length.
-
-    Primary use is to map contact data (formatted as graph) to particle type vector
-    where particle type vector is not given as node feature in graph.
     '''
     def __init__(self, m, input_size, MP_hidden_sizes_list,
                 act, inner_act, out_act,
@@ -481,9 +478,9 @@ class ContactGNN(nn.Module):
             encoder_hidden_sizes_list: list of hidden sizes for MLP encoder
             update_hidden_sizes_list: list of hidden sizes for MLP for update during message passing
             out_act: output activation
-            message_passing: type of message passing algorithm to use
+            message_passing: type of message passing algorithm to use {idendity, gcn, signedconv, z}
             use_edge_weights: True to use edge weights
-            head_architecture: type of head architecture
+            head_architecture: type of head architecture {None, fc, AverageTo2d.mode_options}
             head_hidden_sizes_list: hidden sizes of head architecture
             use_bias: true to use bias term - applies for message passing and head
         '''
@@ -587,6 +584,8 @@ class ContactGNN(nn.Module):
                 input_size = output_size
 
             self.head = nn.Sequential(*head)
+        elif self.head_architecture == 'outer':
+
         elif self.head_architecture in self.to2D.mode_options:
             # Uses linear layers according to head_hidden_sizes_list after converting to 2D
             self.to2D.mode = self.head_architecture # change mode
@@ -595,6 +594,7 @@ class ContactGNN(nn.Module):
             if self.head_architecture == 'concat':
                 input_size *= 2 # concat doubles size
             elif self.head_architecture == 'outer':
+                # deprecated - caught by if statement above
                 input_size *= input_size # outer squares size
             elif self.head_architecture == 'concat-outer':
                 input_size = input_size**2 + 2 * input_size
@@ -657,6 +657,8 @@ class ContactGNN(nn.Module):
             out = latent
         elif self.head_architecture == 'fc':
             out = self.head(latent)
+        elif self.head_architecture == 'outer':
+
         elif self.head_architecture in self.to2D.mode_options:
             _, output_size = latent.shape
             latent = latent.reshape(-1, self.m, output_size)
