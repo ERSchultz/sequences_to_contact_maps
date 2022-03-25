@@ -456,7 +456,7 @@ def opt2list(opt):
         opt.shuffle, opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr, opt.gpus,
         opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
         opt.k, opt.m, opt.seed, opt.act, opt.inner_act,
-        opt.head_act, opt.out_act, opt.training_norm, opt.relabel_11_to_00]
+        opt.head_act, opt.out_act, opt.training_norm, opt.relabel_11_to_00, opt.split_sizes]
     if opt.GNN_mode:
         opt_list.extend([opt.use_node_features, opt.use_edge_weights, opt.transforms,
                         opt.pre_transforms, opt.split_neg_pos_edges_for_feature_augmentation,
@@ -504,7 +504,7 @@ def get_opt_header(model_type, GNN_mode):
         'batch_size', 'num_workers', 'n_epochs', 'lr', 'gpus', 'milestones',
         'gamma', 'loss', 'pretrained', 'resume_training', 'k', 'm',
         'seed', 'act', 'inner_act', 'head_act', 'out_act',
-        'training_norm', 'relabel_11_to_00']
+        'training_norm', 'relabel_11_to_00', 'split_sizes']
     if GNN_mode:
         opt_list.extend(['use_node_features','use_edge_weights', 'transforms',
                         'pre_transforms', 'split_neg_pos_edges_for_feature_augmentation',
