@@ -3,14 +3,18 @@ import os
 import os.path as osp
 import time
 
+import imageio
 import matplotlib.cm
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import silhouette_score
+from utils.load_utils import load_sc_contacts
 from utils.plotting_utils import plot_matrix
-from utils.utils import pearson_round, print_time
+from utils.utils import (diagonal_preprocessing_bulk,
+                         genomic_distance_statistics, pearson_round,
+                         print_size, print_time, triu_to_full)
 from utils.xyz_utils import (find_dist_between_centroids, find_label_centroid,
                              lammps_load, xyz_load, xyz_to_contact_grid)
 
@@ -28,7 +32,6 @@ def getArgs(default_dir='/home/erschultz/sequences_to_contact_maps/dataset_test/
     if not osp.exists(args.odir):
         os.mkdir(args.odir, mode = 0o755)
     return args
-
 
 def tune_epsilon(dmap, ofile):
     X = np.arange(-4, 12, 1)
@@ -81,7 +84,7 @@ def tune_epsilon(dmap, ofile):
 
     return eps_final
 
-def plot_eigenvectors(v, xyz, odir):
+def plot_eigenvectors(v, xyz, odir, sc_contacts = None):
     N = len(v)
 
     # plot first 2 nonzero eigenvectors, color by order
@@ -112,36 +115,6 @@ def plot_eigenvectors(v, xyz, odir):
     plt.savefig(osp.join(odir, 'projection234.png'))
     plt.close()
 
-    # # centroid distance
-    # dist = np.zeros(N)
-    # psi = np.zeros((1500, 3))
-    # psi[0:200, 0] = 1
-    # psi[200:1300, 1] = 1
-    # psi[1300:, 2] = 1
-    # for i in range(N):
-    #     centroids = find_label_centroid(xyz[i].reshape(-1, 3), psi)
-    #     distances = find_dist_between_centroids(centroids)
-    #     dist[i] = distances[0, 2]
-    #
-    # print('\n\ncentroid corr: ', pearson_round(dist, v[:, 1], stat = 'pearson'))
-    #
-    #
-    # # plot first 2 nonzero eigenvectors, color by distance
-    # sc = plt.scatter(v[:,1]/v[:,0], v[:,2]/v[:,0], c = dist)
-    # plt.colorbar(sc)
-    # plt.xlabel(r'$v_2$', fontsize = 16)
-    # plt.ylabel(r'$v_3$', fontsize = 16)
-    # plt.savefig(osp.join(odir, 'projection23_dist.png'))
-    # plt.close()
-
-    # # plot 3 and 4 eigenvectors, color by distance
-    # sc = plt.scatter(v[:,2]/v[:,0], v[:,3]/v[:,0], c = dist)
-    # plt.colorbar(sc)
-    # plt.xlabel(r'$v_3$', fontsize = 16)
-    # plt.ylabel(r'$v_4$', fontsize = 16)
-    # plt.savefig(osp.join(odir, 'projection34_dist.png'))
-    # plt.close()
-
     # k_means
     num_vecs = 3
     X = v[:,1:1+num_vecs]
@@ -159,11 +132,13 @@ def plot_eigenvectors(v, xyz, odir):
     # plot average contact map within cluster
     for cluster in range(k):
         ind = np.argwhere(kmeans.labels_ == cluster)
-        xyz_ind = xyz[ind].reshape(len(ind), -1, 3)
-        y_cluster = xyz_to_contact_grid(xyz_ind, 28.7)
-        sum_cluster = np.sum(y_cluster[0:200, 1300:1500])/np.max(y_cluster)
+        if sc_contacts is not None:
+            y_cluster = triu_to_full(np.sum(sc_contacts[ind.reshape(-1), :], axis = 0))
+        else:
+            xyz_ind = xyz[ind].reshape(len(ind), -1, 3)
+            y_cluster = xyz_to_contact_grid(xyz_ind, 28.7)
         plot_matrix(y_cluster, osp.join(odir, f'cluster{cluster}_contacts.png'),
-                    vmax = 'max', title = sum_cluster)
+                    vmax = 'max', title = f'cluster {k}')
 
     # plot first 2 nonzero eigenvectors, color by kmeans
     cmap = matplotlib.cm.get_cmap('tab10')
@@ -207,7 +182,7 @@ def plot_eigenvectors(v, xyz, odir):
     plt.savefig(osp.join(odir, 'projection234_kmeans.png'))
     plt.close()
 
-def main():
+def main_xyz():
     args = getArgs()
 
     # load xyz
@@ -251,6 +226,69 @@ def main():
 
     plot_eigenvectors(v, xyz.reshape(-1, m, 3), args.odir)
 
+def main_sc():
+    dir = '/home/erschultz/dataset_test/samples/sample92'
+    odir = osp.join(dir, 'single_cell_diffusion')
+    if not osp.exists(odir):
+        os.mkdir(odir, mode = 0o755)
+
+    overall = np.load(osp.join(dir, 'y.npy'))
+    mean_per_diag = genomic_distance_statistics(overall, mode = 'prob')
+    sc_contacts, xyz = load_sc_contacts(dir, N_max = None, triu = True,
+                                    gaussian = True, zero_diag = True, jobs = 8,
+                                    down_sampling = 3, sparsify = False,
+                                    return_xyz = True)
+    print_size(xyz, 'xyz')
+    print_size(sc_contacts, 'sc_contacts')
+    N, _ = sc_contacts.shape
+    for i in range(1):
+        # diag processing
+        t0 = time.time()
+        sc_contacts_diag = diagonal_preprocessing_bulk(sc_contacts, mean_per_diag,
+                                                        triu = True)
+        tf = time.time()
+        print_time(t0, tf, 'diag')
+
+        # compute distance
+        t0 = time.time()
+        dist = dmaps.DistanceMatrix(sc_contacts_diag)
+        dist.compute(metric=dmaps.metrics.correlation)
+        D = dist.get_distances()
+        plot_matrix(D, ofile = osp.join(odir, 'distances.png'),
+                        vmin = 'min', vmax = 'max')
+        tf = time.time()
+        print_time(t0, tf, 'distance')
+
+        # compute eigenvectors
+        dmap = dmaps.DiffusionMap(dist)
+        eps = tune_epsilon(dmap, osp.join(odir, 'tuning.png'))
+        dmap.set_kernel_bandwidth(eps)
+        dmap.compute(5, 0.5)
+
+        v = dmap.get_eigenvectors()
+        w = dmap.get_eigenvalues()
+        print('w', w)
+        order = np.argsort(v[:, 1])
+        print('\n\norder corr: ', pearson_round(order, np.arange(0, N, 1), stat = 'spearman'))
+
+        plot_eigenvectors(v, xyz.reshape(-1, m, 3), sc_contacts, odir, i)
+
+
+def plot_gif_michrom():
+    dir = '/home/erschultz/michrom/project/chr_05/chr_05_02/'
+    filenames = [osp.join(dir, f'cluster{i}_contacts.png') for i in [0, 3, 4, 5, 2, 1]]
+    frames = []
+    for filename in filenames:
+        frames.append(imageio.imread(filename))
+
+
+    imageio.mimsave(osp.join(dir, 'clusters.gif'), frames, format='GIF', fps=1)
+
+    # # remove files
+    # for filename in set(filenames):
+    #     os.remove(filename)
+
 
 if __name__ == '__main__':
-    main()
+    main_sc()
+    # plot_gif_michrom()

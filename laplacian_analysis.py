@@ -241,7 +241,7 @@ def tune_epsilon(A, ofile):
 
     return np.exp(-1/2 * A**2 / eps_final)
 
-def main():
+def main_sc():
     dir = '/home/erschultz/dataset_test/samples/sample92'
     odir = osp.join(dir, 'sc_contact')
     if not osp.exists(odir):
@@ -302,5 +302,7 @@ def main():
         # print('\n')
 
 
+
+
 if __name__ == '__main__':
-    main()
+    main_diff()

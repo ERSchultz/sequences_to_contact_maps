@@ -336,46 +336,6 @@ def testEnergy():
     plot_matrix(energy_hat, osp.join(ofile, 'energy_hat.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$\hat{S}$')
     plot_matrix(energy, osp.join(ofile, 'energy.png'), vmin = v_min, vmax = v_max, cmap = cmap, title = r'$S$')
 
-def main():
-    dir = 'C:/Users/Eric/OneDrive/Documents/Research/Coding/sequences_to_contact_maps/dataset_01_15_22/samples/sample1230'
-    y_diag = np.load(osp.join(dir, 'y_diag.npy'))
-    y = np.load(osp.join(dir, 'y.npy'))
-    # plot_matrix(y_diag, osp.join(dir, 'y_diag_blue_red.png'), vmax = 2, cmap = 'blue-red')
-    # plot_matrix(y, osp.join(dir, 'y_120.png'), vmax = 120)
-
-    y_diag[[np.logical_and(y_diag < 1.5, y_diag > 0.5)]] = 1
-    print(y_diag)
-    plot_matrix(y_diag, osp.join(dir, 'y_diag_cut.png'), vmax = 2, cmap = 'blue-red')
-
-def main2():
-    dir = '/home/erschultz/dataset_test/samples'
-    sample = 'sample91'
-    sample_dir = osp.join(dir, sample)
-    sc_contacts = load_sc_contacts(sample_dir, gaussian = True, jobs = 8, sparsify = True,
-                                    triu = True, correct_diag = True, down_sampling = 100)
-    # sc_contacts_full = load_sc_contacts(sample_dir, gaussian = True, jobs = 8,
-    #                                 triu = False, correct_diag = True, down_sampling = 1000)
-    # i=0
-    # yi = triu_to_full(sc_contacts[i])
-    # # print(yi)
-    # # print(sc_contacts_full[i])
-    # assert np.allclose(yi, sc_contacts_full[i])
-
-    # y = crop(np.load(osp.join(dir, sample, 'y.npy')), 2000)
-    # y_diag = crop(np.load(osp.join(dir, sample, 'y_diag.npy')), 2000)
-    # mean_dist = genomic_distance_statistics(y, mode = 'prob')
-    # print(mean_dist)
-    # plt.plot(mean_dist[10:])
-    # plt.show()
-
-    # y_diag1 = diagonal_preprocessing(y, mean_dist)
-    # plot_matrix(y_diag, vmax = 'max')
-
-    # y_diag2 = diagonal_preprocessing(y[np.triu_indices(len(y))], mean_dist, triu = True)
-    # y_diag3 = triu_to_full(y_diag2)
-    # print(np.allclose(y_diag1, y_diag3))
-    # print(np.allclose(y_diag, y_diag1))
-
 def test_lammps_load():
     file_path = '/home/erschultz/sequences_to_contact_maps/traj.dump.lammpstrj'
     xyz = lammps_load(file_path)
