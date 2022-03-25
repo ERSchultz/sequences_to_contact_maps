@@ -7,9 +7,10 @@ import imageio
 import matplotlib.cm
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.sparse.csgraph import laplacian
 from sklearn.cluster import KMeans
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import silhouette_score
+from sklearn.metrics import pairwise_distances, silhouette_score
 from utils.load_utils import load_sc_contacts
 from utils.plotting_utils import plot_matrix
 from utils.utils import (diagonal_preprocessing_bulk,
@@ -18,27 +19,82 @@ from utils.utils import (diagonal_preprocessing_bulk,
 from utils.xyz_utils import (find_dist_between_centroids, find_label_centroid,
                              lammps_load, xyz_load, xyz_to_contact_grid)
 
-import dmaps  # https://github.com/hsidky/dmaps
+import dmaps  # https://github.com/ERSchultz/dmaps
 
 
 def getArgs(default_dir='/home/erschultz/sequences_to_contact_maps/dataset_test/samples/sample92'):
     parser = argparse.ArgumentParser(description='Base parser')
     parser.add_argument('--dir', type=str, default=default_dir, help='location of data')
     parser.add_argument('--odir', type=str, help='location to write to')
+    parser.add_argument('--N_min', type=int, default=2000)
+    parser.add_argument('--mode', type=str, default='contact_diffusion')
 
     args = parser.parse_args()
     if args.odir is None:
-        args.odir = osp.join(args.dir, 'diffusion_test')
+        args.odir = osp.join(args.dir, args.mode)
+    else:
+        args.odir = osp.join(args.odir, args.mode)
     if not osp.exists(args.odir):
         os.mkdir(args.odir, mode = 0o755)
     return args
 
-def tune_epsilon(dmap, ofile):
-    X = np.arange(-4, 12, 1)
+def sort_laplacian(A_tilde, xyz, sc_contacts, odir, it):
+    w, v = np.linalg.eig(A_tilde)
+    v = v[:, np.argsort(w)]
+    w = np.sort(w)
+    print('w', w[:10])
+
+    # get first nonzero eigenvector of A_tilde
+    lmbda = w[0]; i = 0
+    while lmbda <= 1e-12 and i < len(w):
+        i += 1
+        lmbda = w[i]
+    assert i == 1, "first nonzero eigenvector is not 2nd vector"
+    where = np.argsort(v[:, i])
+
+    plot_eigenvectors(v, xyz, odir, sc_contacts,  it)
+
+    # sort sc_contacts
+    sc_contacts = sc_contacts[where, :]
+
+    # merge adjacent contacts
+    # modify in place to preserve RAM
+    # I did test this - it works
+    # N, _ = sc_contacts.shape
+    # for i in range(N):
+    #     if i == 0:
+    #         new = np.mean(sc_contacts[0:2, :], axis = 0)
+    #     elif i == N:
+    #         new = np.mean(sc_contacts[-2:N, :], axis = 0)
+    #     else:
+    #         new = np.mean(sc_contacts[i-1:i+2, :], axis = 0)
+    #     if i > 0:
+    #         sc_contacts[i-1, :] = new_prev
+    #     new_prev = new.copy()
+    # sc_contacts[N-1] = new_prev
+
+    # plot sorted contacts as gif
+
+    # undo sort
+    order = np.argsort(where)
+    sc_contacts = sc_contacts[order]
+
+    # save order
+    np.savetxt(osp.join(odir, f'order_{i}.txt'), where, fmt='%i')
+
+    return sc_contacts, where
+
+def tune_epsilon(input, ofile):
+    X = np.arange(-12, 20, 1)
     epsilons = np.exp(X)
     Y = np.zeros_like(epsilons)
     for i, eps in enumerate(epsilons):
-        Y[i] = np.log(dmap.sum_similarity_matrix(eps))
+        if isinstance(input, dmaps.DiffusionMap):
+            Y[i] = np.log(input.sum_similarity_matrix(eps))
+        elif isinstance(input, np.ndarray):
+            Y[i] = np.sum(np.exp(-1/2 * input**2 / eps))
+        else:
+            print(type(input))
 
     # find best linear regression on subset of 3/4 points
     best_indices = (-1, -1)
@@ -84,7 +140,7 @@ def tune_epsilon(dmap, ofile):
 
     return eps_final
 
-def plot_eigenvectors(v, xyz, odir, sc_contacts = None):
+def plot_eigenvectors(v, xyz, odir, sc_contacts = None, it = ''):
     N = len(v)
 
     # plot first 2 nonzero eigenvectors, color by order
@@ -92,7 +148,7 @@ def plot_eigenvectors(v, xyz, odir, sc_contacts = None):
     plt.colorbar(sc)
     plt.xlabel(r'$v_2$', fontsize = 16)
     plt.ylabel(r'$v_3$', fontsize = 16)
-    plt.savefig(osp.join(odir, 'projection23.png'))
+    plt.savefig(osp.join(odir, f'projection23_{it}.png'.strip('_')))
     plt.close()
 
     # plot 3 and 4 eigenvectors, color by order
@@ -100,7 +156,7 @@ def plot_eigenvectors(v, xyz, odir, sc_contacts = None):
     plt.colorbar(sc)
     plt.xlabel(r'$v_3$', fontsize = 16)
     plt.ylabel(r'$v_4$', fontsize = 16)
-    plt.savefig(osp.join(odir, 'projection34.png'))
+    plt.savefig(osp.join(odir, f'projection34_{it}.png'.strip('_')))
     plt.close()
 
     # plot 2,3,4 eigenvectors, color by order
@@ -112,7 +168,7 @@ def plot_eigenvectors(v, xyz, odir, sc_contacts = None):
     ax.set_ylabel(r'$v_3$', fontsize = 16)
     ax.set_zlabel(r'$v_4$', fontsize = 16)
     plt.tight_layout()
-    plt.savefig(osp.join(odir, 'projection234.png'))
+    plt.savefig(osp.join(odir, f'projection234_{it}.png'.strip('_')))
     plt.close()
 
     # k_means
@@ -123,7 +179,7 @@ def plot_eigenvectors(v, xyz, odir, sc_contacts = None):
         kmeans = KMeans(n_clusters=k).fit(X)
         sil_scores.append(silhouette_score(X, kmeans.labels_))
     plt.plot(np.arange(2, 10, 1), sil_scores)
-    plt.savefig(osp.join(odir, 'k_means_sil_score.png'))
+    plt.savefig(osp.join(odir, f'k_means_sil_score_{it}.png'.strip('_')))
     plt.close()
     k = np.argmax(sil_scores) + 2
     print(f'Using k = {k}')
@@ -138,7 +194,7 @@ def plot_eigenvectors(v, xyz, odir, sc_contacts = None):
             xyz_ind = xyz[ind].reshape(len(ind), -1, 3)
             y_cluster = xyz_to_contact_grid(xyz_ind, 28.7)
         plot_matrix(y_cluster, osp.join(odir, f'cluster{cluster}_contacts.png'),
-                    vmax = 'max', title = f'cluster {k}')
+                    vmax = 'max', title = f'cluster {cluster}')
 
     # plot first 2 nonzero eigenvectors, color by kmeans
     cmap = matplotlib.cm.get_cmap('tab10')
@@ -152,7 +208,7 @@ def plot_eigenvectors(v, xyz, odir, sc_contacts = None):
         plt.ylabel(r'$v_3$', fontsize = 16)
     plt.legend()
     plt.tight_layout()
-    plt.savefig(osp.join(odir, 'projection23_kmeans.png'))
+    plt.savefig(osp.join(odir, f'projection23_kmeans_{it}.png'.strip('_')))
     plt.close()
 
     # plot 3 and 4 eigenvectors, color by kmeans
@@ -164,7 +220,7 @@ def plot_eigenvectors(v, xyz, odir, sc_contacts = None):
     plt.ylabel(r'$v_4$', fontsize = 16)
     plt.legend()
     plt.tight_layout()
-    plt.savefig(osp.join(odir, 'projection34_kmeans.png'))
+    plt.savefig(osp.join(odir, f'projection34_kmeans_{it}.png'.strip('_')))
     plt.close()
 
 
@@ -179,23 +235,48 @@ def plot_eigenvectors(v, xyz, odir, sc_contacts = None):
     ax.set_zlabel(r'$v_4$', fontsize = 16)
     plt.legend()
     plt.tight_layout()
-    plt.savefig(osp.join(odir, 'projection234_kmeans.png'))
+    plt.savefig(osp.join(odir, f'projection234_kmeans_{it}.png'.strip('_')))
     plt.close()
 
-def main_xyz():
-    args = getArgs()
-
-    # load xyz
-    t0 = time.time()
+def load_helper(args, contacts = False):
     xyz_file = osp.join(args.dir, 'data_out/output.xyz')
     lammps_file = osp.join(args.dir, 'traj.dump.lammpstrj')
     if osp.exists(xyz_file):
         xyz = xyz_load(xyz_file,
                     multiple_timesteps = True, save = True, N_min = 10,
-                    N_max = None, down_sampling = 1)
+                    down_sampling = 10)
     elif osp.exists(lammps_file):
-        xyz = lammps_load(lammps_file, save = False, N_min = 2000,
-                    N_max = None, down_sampling = 1)
+        xyz = lammps_load(lammps_file, save = False, N_min = args.N_min)
+
+    if contacts:
+        sc_contacts = load_sc_contacts(args.dir, N_max = None, triu = True,
+                                        gaussian = True, zero_diag = True, jobs = 8,
+                                        xyz = xyz)
+
+
+        y_file = osp.join(args.dir, 'y.npy')
+        if osp.exists(y_file):
+            overall = np.load(y_file)
+            print('loading y.npy')
+        else:
+            overall = np.sum(sc_contacts, 0)
+            overall = triu_to_full(overall)
+
+        mean_per_diag = genomic_distance_statistics(overall, mode = 'prob')
+
+
+        return xyz, sc_contacts, mean_per_diag
+
+
+    return xyz
+
+def xyz_diffusion():
+    args = getArgs()
+    xyz = load_helper(args)
+
+    # load xyz
+    t0 = time.time()
+
 
     N, m, _ = xyz.shape
     xyz = xyz.reshape(N, m * 3)
@@ -226,18 +307,11 @@ def main_xyz():
 
     plot_eigenvectors(v, xyz.reshape(-1, m, 3), args.odir)
 
-def main_sc():
-    dir = '/home/erschultz/dataset_test/samples/sample92'
-    odir = osp.join(dir, 'single_cell_diffusion')
-    if not osp.exists(odir):
-        os.mkdir(odir, mode = 0o755)
+def contact_diffusion():
+    args = getArgs()
 
-    overall = np.load(osp.join(dir, 'y.npy'))
-    mean_per_diag = genomic_distance_statistics(overall, mode = 'prob')
-    sc_contacts, xyz = load_sc_contacts(dir, N_max = None, triu = True,
-                                    gaussian = True, zero_diag = True, jobs = 8,
-                                    down_sampling = 3, sparsify = False,
-                                    return_xyz = True)
+    xyz, sc_contacts, mean_per_diag = load_helper(args, True)
+
     print_size(xyz, 'xyz')
     print_size(sc_contacts, 'sc_contacts')
     N, _ = sc_contacts.shape
@@ -251,17 +325,16 @@ def main_sc():
 
         # compute distance
         t0 = time.time()
-        dist = dmaps.DistanceMatrix(sc_contacts_diag)
-        dist.compute(metric=dmaps.metrics.correlation)
-        D = dist.get_distances()
-        plot_matrix(D, ofile = osp.join(odir, 'distances.png'),
+        D = pairwise_distances(sc_contacts_diag, sc_contacts_diag,
+                                        metric = 'cosine')
+        plot_matrix(D, ofile = osp.join(args.odir, 'distances.png'),
                         vmin = 'min', vmax = 'max')
         tf = time.time()
         print_time(t0, tf, 'distance')
 
         # compute eigenvectors
-        dmap = dmaps.DiffusionMap(dist)
-        eps = tune_epsilon(dmap, osp.join(odir, 'tuning.png'))
+        dmap = dmaps.DiffusionMap(D)
+        eps = tune_epsilon(dmap, osp.join(args.odir, 'tuning.png'))
         dmap.set_kernel_bandwidth(eps)
         dmap.compute(5, 0.5)
 
@@ -271,7 +344,64 @@ def main_sc():
         order = np.argsort(v[:, 1])
         print('\n\norder corr: ', pearson_round(order, np.arange(0, N, 1), stat = 'spearman'))
 
-        plot_eigenvectors(v, xyz.reshape(-1, m, 3), sc_contacts, odir, i)
+        plot_eigenvectors(v, xyz, args.odir, sc_contacts, i)
+
+def contact_laplacian():
+    args = getArgs()
+    args.dir = '/home/erschultz/dataset_test/samples/sample92'
+    args.odir = osp.join(args.dir, 'single_cell_laplacian')
+    if not osp.exists(args.odir):
+        os.mkdir(args.odir, mode = 0o755)
+
+    xyz, sc_contacts, mean_per_diag = load_helper(args, True)
+
+    print_size(sc_contacts, 'sc_contacts')
+    N, _ = sc_contacts.shape
+    for i in range(1):
+        # diag processing
+        t0 = time.time()
+        sc_contacts_diag = diagonal_preprocessing_bulk(sc_contacts, mean_per_diag,
+                                                        triu = True)
+        tf = time.time()
+        print_time(t0, tf, 'diag')
+
+        # distance (using diag)
+        t0 = time.time()
+        distances = pairwise_distances(sc_contacts_diag, sc_contacts_diag,
+                                        metric = 'correlation')
+        plot_matrix(distances, ofile = osp.join(args.odir, f'distances{i}.png'),
+                        vmin = 'min', vmax = 'max')
+        tf = time.time()
+        print_time(t0, tf, '\n\ndistances')
+
+        # Adjacency
+        eps_final = tune_epsilon(distances, ofile = osp.join(args.odir, f'tuning_{i}.png'))
+        A = np.exp(-1/2 * distances**2 / eps_final)
+        # A = 1 - distances / np.max(distances)
+        plot_matrix(A, ofile = osp.join(args.odir, f'A{i}.png'),
+                        vmin = 'min', vmax = 'max')
+        np.savetxt(osp.join(args.odir, f'A_{i}.txt'), A, fmt='%.2f')
+
+        # Laplacian
+        t0 = time.time()
+        A_tilde = laplacian(A, normed = True)
+        plot_matrix(A_tilde, ofile = osp.join(args.odir, f'A_tilde_{i}.png'),
+                        vmin = np.min(A_tilde), vmax = np.max(A_tilde),
+                        cmap = 'blue-red')
+        np.savetxt(osp.join(args.odir, f'A_tilde_{i}.txt'), A_tilde, fmt='%.2f')
+        sc_contacts, order = sort_laplacian(A_tilde, xyz, sc_contacts, args.odir, i)
+        print('\n\norder corr: ', pearson_round(order, np.arange(0, N, 1),
+                                                stat = 'spearman'))
+        tf = time.time()
+        print_time(t0, tf, 'laplacian')
+
+        # # Plots
+        # t0 = time.time()
+        # plot_sc_contact_maps_inner(sc_contacts, osp.join(odir, f'iteration_{i}'),
+        #                             count = 5, jobs = 6)
+        # tf = time.time()
+        # print_time(t0, tf, 'plot')
+        # print('\n')
 
 
 def plot_gif_michrom():
@@ -288,7 +418,17 @@ def plot_gif_michrom():
     # for filename in set(filenames):
     #     os.remove(filename)
 
+def main():
+    args = getArgs()
+    if args.mode == 'xyz_diffusion':
+        xyz_diffusion()
+    elif args.mode == 'contact_diffusion':
+        contact_diffusion()
+    elif args.mode == 'contact_laplacian':
+        contact_laplacian()
+
+
 
 if __name__ == '__main__':
-    main_sc()
+    main()
     # plot_gif_michrom()

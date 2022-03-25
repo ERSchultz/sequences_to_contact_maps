@@ -241,7 +241,7 @@ def tune_epsilon(A, ofile):
 
     return np.exp(-1/2 * A**2 / eps_final)
 
-def main_sc():
+def main():
     dir = '/home/erschultz/dataset_test/samples/sample92'
     odir = osp.join(dir, 'sc_contact')
     if not osp.exists(odir):
@@ -249,7 +249,7 @@ def main_sc():
 
     overall = np.load(osp.join(dir, 'y.npy'))
     mean_per_diag = genomic_distance_statistics(overall, mode = 'prob')
-    sc_contacts, xyz = load_sc_contacts(dir, N_max = None, triu = True,
+    sc_contacts, xyz = load_sc_contacts(dir, N_min = 10, N_max = None, triu = True,
                                     gaussian = True, zero_diag = True, jobs = 8,
                                     down_sampling = 3, sparsify = False,
                                     return_xyz = True)
@@ -305,4 +305,4 @@ def main_sc():
 
 
 if __name__ == '__main__':
-    main_diff()
+    main()

@@ -206,7 +206,8 @@ def load_final_max_ent_S(k, replicate_path, max_it_path = None):
 
 def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
                     gaussian = False, zero_diag = False, jobs = 1, down_sampling = 1,
-                    sparsify = False, correct_diag = False, return_xyz = False):
+                    sparsify = False, correct_diag = False, return_xyz = False,
+                    xyz = None):
     '''
     Load single cell contacts from sample_folder/data_out/output.xyz.
 
@@ -221,19 +222,24 @@ def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
         sparsify (bool): True to match experimental sparseness
         diagonal_preprocessing: process diagonal based on overall contact map
         return_xyz: True to return xyz as well
+        xyz: None to load xyz
 
     Outputs:
         sc_contacts: (N, (m+1)*m/2) if triu, else (N, m, m)
     '''
     config_file = osp.join(sample_folder, 'config.json')
-    with open(config_file, 'rb') as f:
-        config = json.load(f)
-        grid_size = float(config['grid_size'])
+    if osp.exists(config_file):
+        with open(config_file, 'rb') as f:
+            config = json.load(f)
+            grid_size = float(config['grid_size'])
+    else:
+        grid_size = 28.7
 
     # load xyz
-    xyz = xyz_load(osp.join(sample_folder, 'data_out/output.xyz'),
-                    multiple_timesteps=True, save = True, N_min = N_min,
-                    N_max = N_max, down_sampling = down_sampling)
+    if xyz is None:
+        xyz = xyz_load(osp.join(sample_folder, 'data_out/output.xyz'),
+                        multiple_timesteps=True, save = True, N_min = N_min,
+                        N_max = N_max, down_sampling = down_sampling)
 
     # set up N, m, and xyz
     N, _, _ = xyz.shape

@@ -585,7 +585,8 @@ class ContactGNN(nn.Module):
 
             self.head = nn.Sequential(*head)
         elif self.head_architecture == 'outer':
-
+            self.W = nn.Parameter(init)
+            self.sym = Symmetrize2D()
         elif self.head_architecture in self.to2D.mode_options:
             # Uses linear layers according to head_hidden_sizes_list after converting to 2D
             self.to2D.mode = self.head_architecture # change mode
@@ -658,14 +659,16 @@ class ContactGNN(nn.Module):
         elif self.head_architecture == 'fc':
             out = self.head(latent)
         elif self.head_architecture == 'outer':
-
+            _, output_size = latent.shape
+            latent = latent.reshape(-1, self.m, output_size)
+            out = latent @ self.sym(self.W) @ latent.t()
         elif self.head_architecture in self.to2D.mode_options:
             _, output_size = latent.shape
             latent = latent.reshape(-1, self.m, output_size)
-            latent = latent.permute(0, 2, 1)
+            latent = latent.permute(0, 2, 1) # permute to average over m
             latent = self.to2D(latent)
             _, output_size, _, _ = latent.shape
-            latent = latent.permute(0, 2, 3, 1)
+            latent = latent.permute(0, 2, 3, 1) # permute back
             out = self.head(latent)
             if len(out.shape) > 3:
                 out = torch.squeeze(out, 3)

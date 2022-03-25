@@ -59,9 +59,7 @@ def core_test_train(model, opt):
     opt.optimizer = optim.Adam(model.parameters(), lr = opt.lr)
     if opt.resume_training:
         opt.optimizer.load_state_dict(save_dict['optimizer_state_dict'])
-        optimizer_to(opt.optimizer)
         optimizer_to(opt.optimizer, opt.device)
-        optimizer_to(opt.optimizer)
 
     if opt.milestones is not None:
         opt.scheduler = optim.lr_scheduler.MultiStepLR(opt.optimizer, milestones = opt.milestones,
