@@ -17,7 +17,7 @@ from sklearn import metrics
 from sklearn.decomposition import PCA
 from sympy import solve, symbols
 
-from .argparse_utils import get_base_parser, get_opt_header
+from .argparse_utils import get_base_parser, get_opt_header, list2str, opt2list
 from .InteractionConverter import InteractionConverter
 from .load_utils import load_sc_contacts, load_X_psi
 from .neural_net_utils import get_data_loaders, load_saved_model
@@ -48,27 +48,37 @@ def plot_combined_models(modelType, ids):
         plotModelsFromDirs(dirs, imagePath, opts, log_y = log)
 
 def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
-    # check that only difference in opts is lr
+    # check that only one param is different
     opt_header = get_opt_header(opts[0].model_type, opts[0].GNN_mode)
     opt_lists = []
     for opt in opts:
         opt_lists.append(opt2list(opt))
 
+    differences = set()
     for pos in range(len(opt_lists[0])):
         first = True
         for model in range(len(opt_lists)):
             if first:
                 ref = opt_lists[model][pos]
                 first = False
-            elif opt_header[pos] != 'lr':
-                assert opt_lists[model][pos] == ref
+            else:
+                if opt_lists[model][pos] != ref:
+                    param = opt_header[pos]
+                    if param not in {'id', 'resume_training'}:
+                        differences.add(param)
+
+    if len(differences) == 1:
+        diff_name = differences.pop()
+    else:
+        diff_name = 'id'
+    diff_pos = opt_header.index(diff_name)
 
     fig, ax = plt.subplots()
     colors = ['b', 'r', 'g', 'c']
     styles = ['-', '--']
     colors = colors[:len(dirs)]
     types = ['training', 'validation']
-    lrs = []
+    labels = []
     for dir, opt, c in zip(dirs, opts, colors):
         saveDict = torch.load(dir, map_location=torch.device('cpu'))
         train_loss_arr = saveDict['train_loss']
@@ -81,17 +91,17 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
             y_val = val_loss_arr
         l1 = ax.plot(np.arange(1, len(train_loss_arr)+1), y_train, ls = styles[0], color = c)
         l2 = ax.plot(np.arange(1, len(val_loss_arr)+1), y_val, ls = styles[1], color = c)
-        lrs.append(opt.lr)
+        labels.append(opt2list(opt)[diff_pos])
 
-    for c, lr in zip(colors, lrs):
-        ax.plot(np.NaN, np.NaN, color = c, label = lr)
+    for c, label_i in zip(colors, labels):
+        ax.plot(np.NaN, np.NaN, color = c, label = label_i)
 
     ax2 = ax.twinx()
     for type, style in zip(types, styles):
         ax2.plot(np.NaN, np.NaN, ls = style, label = type, c = 'k')
     ax2.get_yaxis().set_visible(False)
 
-    ax.legend(loc = 1, title = 'lr')
+    ax.legend(loc = 1, title = diff_name)
     ax2.legend(loc = 3)
 
     ax.set_xlabel('Epoch', fontsize = 16)
