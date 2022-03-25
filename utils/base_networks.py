@@ -310,6 +310,9 @@ class Symmetrize2D(nn.Module):
         elif len(x.shape) == 3:
             # assume x is of shape N x H x W
             return  (x + torch.transpose(x, 1, 2)) / 2
+        elif len(x.shape) == 2:
+            # assume x is a matrix of parameters
+            return (x + x.t()) / 2
         else:
             raise Exception('Invalid shape: {}'.format(x.shape))
 

@@ -519,6 +519,7 @@ class ContactGNN(nn.Module):
             # debugging option to skip message passing
             self.model = None
         elif self.message_passing == 'gcn':
+            assert update_hidden_sizes_list is None, 'not supported yet'
             if self.use_edge_weights:
                 fn_header = 'x, edge_index, edge_attr -> x'
             else:
@@ -533,6 +534,7 @@ class ContactGNN(nn.Module):
                 else:
                     model.extend([module, self.act])
                 input_size = output_size
+                print(input_size, 'here')
 
             self.model = gnn.Sequential('x, edge_index, edge_attr', model)
         elif self.message_passing == 'signedconv':
@@ -585,6 +587,8 @@ class ContactGNN(nn.Module):
 
             self.head = nn.Sequential(*head)
         elif self.head_architecture == 'outer':
+            self.head = None
+            init = torch.randn((input_size, input_size))
             self.W = nn.Parameter(init)
             self.sym = Symmetrize2D()
         elif self.head_architecture in self.to2D.mode_options:
@@ -661,7 +665,7 @@ class ContactGNN(nn.Module):
         elif self.head_architecture == 'outer':
             _, output_size = latent.shape
             latent = latent.reshape(-1, self.m, output_size)
-            out = latent @ self.sym(self.W) @ latent.t()
+            out = torch.einsum('nik,njk->nij', latent @ self.sym(self.W), latent)
         elif self.head_architecture in self.to2D.mode_options:
             _, output_size = latent.shape
             latent = latent.reshape(-1, self.m, output_size)

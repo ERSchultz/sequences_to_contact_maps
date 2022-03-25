@@ -151,12 +151,12 @@ def debugModel(model_type):
     elif model_type == 'ContactGNNEnergy':
         opt.loss = 'mse'
         opt.y_norm = None
-        opt.message_passing='gcn'
+        opt.message_passing='signedconv'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
-        opt.encoder_hidden_sizes_list=[100, 100, 8]
+        opt.encoder_hidden_sizes_list=[100, 100, 12]
         opt.update_hidden_sizes_list=[100, 100, 16]
-        opt.hidden_sizes_list=[8, 8, 2]
+        opt.hidden_sizes_list=[8, 8, 3]
         opt.act = 'relu'
         opt.inner_act = 'prelu'
         opt.out_act = 'prelu'
@@ -171,7 +171,7 @@ def debugModel(model_type):
         opt.sparsify_threshold_upper = None
         opt.relabel_11_to_00 = False
         opt.y_log_transform = False
-        opt.head_architecture = 'concat'
+        opt.head_architecture = 'outer'
         opt.head_hidden_sizes_list = [100,100,1]
         opt.crop=[0,50]
         opt.m = 50
@@ -205,8 +205,8 @@ def debugModel(model_type):
     opt.use_scratch = False
     opt.print_mod = 1
     opt.milestones = [10, 20, 30]
-    opt.id = 39
-    opt.resume_training = True
+    # opt.id = 39
+    # opt.resume_training = True
 
     opt = finalize_opt(opt, parser, False, debug = True)
 
@@ -340,8 +340,27 @@ def test_lammps_load():
     file_path = '/home/erschultz/sequences_to_contact_maps/traj.dump.lammpstrj'
     xyz = lammps_load(file_path)
 
+def main():
+    psia = np.array([[1,2], [4,5], [3,6]])
+    print(psia)
+    chi = np.array([[-1, 2], [0, 3]])
+    a = psia @ chi @ psia.T
+    print(a)
+
+    psib = np.array([[0,1], [6, 7], [4, 5]])
+    print(psib)
+    b = psib @ chi @ psib.T
+    print(b)
+
+    psi = np.stack([psia, psib])
+
+    result = np.einsum('nik,njk->nij', psi @ chi, psi)
+    print(result, result.shape)
+
+
+
 if __name__ == '__main__':
-    # main2()
+    # main()
     # edit_argparse()
     debugModel('ContactGNNEnergy')
     # test_lammps_load()

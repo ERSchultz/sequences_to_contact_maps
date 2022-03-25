@@ -33,7 +33,7 @@ act='prelu'
 innerAct='prelu'
 headAct='prelu'
 outAct='prelu'
-headArchitecture='concat'
+headArchitecture='outer'
 headHiddenSizesList='100-100-1'
 
 # hyperparameters
