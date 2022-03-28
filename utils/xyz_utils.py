@@ -6,6 +6,7 @@ from collections import defaultdict
 
 import matplotlib.pyplot as plt
 import numpy as np
+from numba import jit, njit
 
 from .utils import LETTERS
 

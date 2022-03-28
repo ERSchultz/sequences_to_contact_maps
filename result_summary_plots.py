@@ -301,28 +301,37 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
     # calculate PCA
     PC_y = plot_top_PCs(y, 'y', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
     PC_y_diag = plot_top_PCs(ydiag, 'y_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+    y_log = np.log(y + 1e-8)
+    PC_y_log = plot_top_PCs(y_log, 'y_log', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+    stat = pearson_round(PC_y[0], PC_y_log[0])
+    print("Correlation between PC 1 of y and y_log: ", stat, file = args.log_file)
+    stat = pearson_round(PC_y_diag[0], PC_y_log[0])
+    print("Correlation between PC 1 of y_diag and y_log: ", stat, file = args.log_file)
+    stat = pearson_round(PC_y_diag[1], PC_y_log[1])
+    print("Correlation between PC 2 of y_diag and y_log: ", stat, file = args.log_file)
+
 
     # robust PCA
-    L_log_file = osp.join(args.odir, 'L_log.npy')
-    L_file = osp.join(args.odir, 'L.npy')
-    S_log_file = osp.join(args.odir, 'S_log.npy')
-    S_file = osp.join(args.odir, 'S.npy')
-    if osp.exists(L_log_file) and not args.overwrite:
-        L_log = np.load(L_log_file)
-        L = np.load(L_file)
-        S_log = np.load(S_log_file)
-        S = np.load(S_file)
-    elif args.robust:
-        y_log = np.log(y + 1e-8)
-        L_log, S_log = R_pca(y_log).fit(max_iter=2000)
-        np.save(L_log_file, L_log)
-        np.save(S_log_file, S_log)
-        L = np.exp(L_log)
-        S = np.exp(S_log)
-        np.save(L_file, L)
-        np.save(S_file, S)
-
     if args.robust:
+        L_log_file = osp.join(args.odir, 'L_log.npy')
+        L_file = osp.join(args.odir, 'L.npy')
+        S_log_file = osp.join(args.odir, 'S_log.npy')
+        S_file = osp.join(args.odir, 'S.npy')
+        if osp.exists(L_log_file) and not args.overwrite:
+            L_log = np.load(L_log_file)
+            L = np.load(L_file)
+            S_log = np.load(S_log_file)
+            S = np.load(S_file)
+        else:
+            y_log = np.log(y + 1e-8)
+            L_log, S_log = R_pca(y_log).fit(max_iter=2000)
+            np.save(L_log_file, L_log)
+            np.save(S_log_file, S_log)
+            L = np.exp(L_log)
+            S = np.exp(S_log)
+            np.save(L_file, L)
+            np.save(S_file, S)
+
         plot_matrix(L_log, osp.join(args.odir, 'L_log.png'), vmin = 'min', vmax = 'max', title = 'L_log')
         plot_matrix(L, osp.join(args.odir, 'L.png'), vmin = 'min', vmax = 'max', title = 'L')
         plot_matrix(S_log, osp.join(args.odir, 'S_log.png'), vmin = 'min', vmax = 'max', title = 'S_log')
@@ -362,7 +371,6 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
         print("Correlation between PC 1 of L_diag and Y_diag: ", stat, file = args.log_file)
         stat = pearson_round(PC_L_diag[1], PC_y_diag[1])
         print("Correlation between PC 2 of L_diag and Y_diag: ", stat, file = args.log_file)
-
 
     if args.method is None and args.overwrite:
         ## Plot projection of y in lower rank space
@@ -404,6 +412,11 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
             print("Correlation between PC 1 of y_diag and S_sym: ", stat, file = args.log_file)
             stat = pearson_round(PC_y_diag[1], PC_s[1])
             print("Correlation between PC 2 of y_diag and S_sym: ", stat, file = args.log_file)
+            stat = pearson_round(PC_y_log[0], PC_s[0])
+            print("Correlation between PC 1 of y_log and S_sym: ", stat, file = args.log_file)
+            stat = pearson_round(PC_y_log[1], PC_s[1])
+            print("Correlation between PC 2 of y_log and S_sym: ", stat, file = args.log_file)
+
 
     if e is not None:
         PC_e = plot_top_PCs(e, 'e', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
@@ -417,6 +430,11 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
             print("Correlation between PC 2 of y_diag and E: ", stat, file = args.log_file)
             stat = pearson_round(PC_s[0], PC_e[0])
             print("Correlation between PC 1 of S and E: ", stat, file = args.log_file)
+            stat = pearson_round(PC_y_log[0], PC_e[0])
+            print("Correlation between PC 1 of y_log and E: ", stat, file = args.log_file)
+            stat = pearson_round(PC_y_log[1], PC_e[1])
+            print("Correlation between PC 2 of y_log and E: ", stat, file = args.log_file)
+
 
         for i in range(1, 4):
             # get e top i PCs

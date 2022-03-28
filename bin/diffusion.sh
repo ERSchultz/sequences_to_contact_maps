@@ -5,7 +5,7 @@
 #SBATCH --ntasks-per-node=20
 #SBATCH --mem=64000
 #SBATCH --output=logFiles/diffusion.log
-#SBATCH --time=12:00:00
+#SBATCH --time=24:00:00
 
 dir="/project2/depablo/walt/michrom/project/chr_05/chr_05_02"
 odir="/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02"

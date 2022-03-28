@@ -346,6 +346,8 @@ def basic_plots(dataFolder, plot_y = False, plot_s = True, plot_x = True, plot_c
         if plot_y:
             plot_matrix(y, osp.join(path, 'y.png'), vmax = 'mean')
             plot_matrix(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
+            y_log = np.log(y + 1e-8)
+            plot_matrix(y_log, osp.join(path, 'y_log.png'), title = 'log normalization', vmax = 'max')
 
             y_prcnt_path = osp.join(path, 'y_prcnt.npy')
             if osp.exists(y_prcnt_path):
@@ -371,11 +373,11 @@ def basic_plots(dataFolder, plot_y = False, plot_s = True, plot_x = True, plot_c
             plot_seq_exclusive(x, ofile = osp.join(path, 'x.png'))
 
 if __name__ == '__main__':
-    dir = '/home/eric/sequences_to_contact_maps'
-    dir = 'C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps'
-    dataset = 'dataset_test'
+    dir = '/home/erschultz/sequences_to_contact_maps'
+    # dir = 'C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps'
+    dataset = 'dataset_01_15_22'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = False, plot_s = False, plot_x = True)
+    basic_plots(data_dir, plot_y = True, plot_s = False, plot_x = False)
     # plot_genomic_distance_statistics(dataset)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts('/home/eric/sequences_to_contact_maps/dataset_12_11_21')
