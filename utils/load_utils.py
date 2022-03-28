@@ -262,9 +262,8 @@ def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
         sc_contacts = diagonal_preprocessing_bulk(sc_contacts, mean_per_diag, triu)
 
     tf = time.time()
-    print_time(t0, tf, 'load')
-
     print(f'Loaded {len(sc_contacts)} sc contacts')
+    print_time(t0, tf, 'sc load')
     if return_xyz:
         return sc_contacts, xyz
     return sc_contacts
