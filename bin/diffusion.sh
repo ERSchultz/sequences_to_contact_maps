@@ -1,9 +1,9 @@
 #! /bin/bash
 #SBATCH --job-name=diffusion
-#SBATCH --partition=depablo-ivyb
+#SBATCH --partition=bigmem2
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=20
-#SBATCH --mem=64000
+#SBATCH --ntasks-per-node=28
+#SBATCH --mem=512000
 #SBATCH --output=logFiles/diffusion.log
 #SBATCH --time=24:00:00
 
