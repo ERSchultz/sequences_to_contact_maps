@@ -10,6 +10,7 @@ modelType='ContactGNNEnergy'
 GNNMode='true'
 outputMode='energy'
 resumeTraining='false'
+id='none'
 
 # architecture
 m=1024
