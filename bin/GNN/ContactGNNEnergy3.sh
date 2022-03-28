@@ -14,7 +14,9 @@ source bin/GNN/GNN_fns.sh
 source activate python3.8_pytorch1.8.1_cuda10.2_2
 
 rootName='ContactGNNEnergy3' # change to run multiple bash files at once
-splitSizes='3000-200-0'
+splitSizes='1000-200-0'
+messagePassing='GCN'
+useEdgeWeights='true'
 
 
 for lr in 1e-4

@@ -519,22 +519,26 @@ class ContactGNN(nn.Module):
             # debugging option to skip message passing
             self.model = None
         elif self.message_passing == 'gcn':
-            assert update_hidden_sizes_list is None, 'not supported yet'
             if self.use_edge_weights:
                 fn_header = 'x, edge_index, edge_attr -> x'
             else:
                 fn_header = 'x, edge_index -> x'
 
             for i, output_size in enumerate(MP_hidden_sizes_list):
-                module = (gnn.GCNConv(input_size, output_size, bias = use_bias),
-                            fn_header)
-
-                if i == len(MP_hidden_sizes_list) - 1:
-                    model.extend([module]) # no act on last layer of message passing, use inner act
-                else:
-                    model.extend([module, self.act])
+                model.append((gnn.GCNConv(input_size, output_size, bias = use_bias),
+                                        fn_header))
                 input_size = output_size
-                print(input_size, 'here')
+
+                if update_hidden_sizes_list is not None:
+                    for update_output_size in update_hidden_sizes_list:
+                        model.extend([gnn.Linear(input_size, update_output_size, bias = use_bias), self.act])
+                        input_size = update_output_size
+                else:
+                    model.append(self.act)
+
+            # replace final act with inner_act
+            model.pop()
+            model.append(self.inner_act)
 
             self.model = gnn.Sequential('x, edge_index, edge_attr', model)
         elif self.message_passing == 'signedconv':

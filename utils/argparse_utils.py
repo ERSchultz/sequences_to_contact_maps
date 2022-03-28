@@ -253,12 +253,17 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     if opt.y_log_transform:
         assert opt.y_norm is None, "don't use log transform with y norm"
 
+    if opt.head_architecture == 'outer':
+        assert opt.head_hidden_sizes_list is None, "not supported"
+
     opt.split_neg_pos_edges = False
     if opt.message_passing.lower() == 'signedconv':
         opt.split_neg_pos_edges = True
         if opt.use_edge_weights:
             opt.use_edge_weights = False
             print('Setting use_edge_weights to False', file = opt.log_file)
+    if opt.split_neg_pos_edges_for_feature_augmentation:
+        opt.split_neg_pos_edges = True
 
     # configure loss
     if opt.loss == 'mse':

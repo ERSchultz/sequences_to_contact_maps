@@ -35,7 +35,7 @@ innerAct='prelu'
 headAct='prelu'
 outAct='prelu'
 headArchitecture='outer'
-headHiddenSizesList='100-100-1'
+headHiddenSizesList='none'
 
 # hyperparameters
 nEpochs=100
