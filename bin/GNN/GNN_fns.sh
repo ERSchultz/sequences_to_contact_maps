@@ -47,6 +47,7 @@ splitSizes='-200-0'
 lr=1e-4
 
 useScratch='true'
+# useScratchParallel='true' # TODO
 verbose='false'
 plotPredictions='true'
 crop='none'

@@ -150,9 +150,10 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                 if 'x' in locals():
                     print('x', x, x.shape)
                 if opt.GNN_mode:
-                    print('x', data.x, data.x.shape)
-                print('y', y, y.shape)
-                print('yhat', yhat, yhat.shape)
+                    print('x', data.x.shape, torch.min(data.x).item(), torch.max(data.x).item())
+                    print('edge_attr', torch.min(data.edge_attr).item(), torch.max(data.edge_attr).item())
+                print('y', y, y.shape, torch.min(y).item(), torch.max(y).item())
+                print('yhat', yhat, yhat.shape, torch.min(yhat).item(), torch.max(yhat).item())
             loss = opt.criterion(yhat, y)
             avg_loss += loss.item()
             loss.backward()

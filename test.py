@@ -173,8 +173,8 @@ def debugModel(model_type):
         opt.y_log_transform = False
         opt.head_architecture = 'outer'
         opt.head_hidden_sizes_list = None
-        opt.crop=[0,100]
-        opt.m = 100
+        # opt.crop=[0,100]
+        # opt.m = 100
         # opt.use_bias = False
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
