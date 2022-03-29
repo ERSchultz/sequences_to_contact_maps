@@ -404,7 +404,6 @@ def contact_laplacian():
         # print_time(t0, tf, 'plot')
         # print('\n')
 
-
 def plot_gif_michrom():
     dir = '/home/erschultz/michrom/project/chr_05/chr_05_02/'
     filenames = [osp.join(dir, f'cluster{i}_contacts.png') for i in [0, 3, 4, 5, 2, 1]]

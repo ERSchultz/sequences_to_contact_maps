@@ -17,7 +17,11 @@ rootName='ContactGNNEnergy3' # change to run multiple bash files at once
 splitSizes='1000-200-0'
 messagePassing='GCN'
 useEdgeWeights='true'
-
+print_mod=1
+nEpochs=1
+EncoderHiddenSizesList='none'
+updateHiddenSizesList='none'
+verbose='true'
 
 for lr in 1e-4
 do

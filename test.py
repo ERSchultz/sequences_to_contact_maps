@@ -71,7 +71,7 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    opt.data_folder = "/home/erschultz/dataset_test"
+    opt.data_folder = "/home/erschultz/dataset_test2"
     opt.scratch = '/home/erschultz/scratch'
     opt.use_scratch=True
 
@@ -82,7 +82,7 @@ def debugModel(model_type):
     opt.y_preprocessing = 'diag'
     # opt.split_percents=[0.6666,0.3333,0.0]
     opt.split_percents = None
-    opt.split_sizes=[8, 2, 0]
+    opt.split_sizes=[-1, 5, 0]
     # opt.split_counts=None
 
     if model_type == 'Akita':
@@ -154,11 +154,11 @@ def debugModel(model_type):
         opt.message_passing='gcn'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
-        opt.encoder_hidden_sizes_list=[100, 100, 12]
-        opt.update_hidden_sizes_list=[100, 100, 16]
+        opt.encoder_hidden_sizes_list=None
+        opt.update_hidden_sizes_list=[100, 16]
         opt.hidden_sizes_list=[8, 8, 3]
-        opt.act = 'relu'
-        opt.inner_act = 'tanh'
+        opt.act = 'prelu'
+        opt.inner_act = 'prelu'
         opt.out_act = 'prelu'
         opt.head_act = 'prelu'
         opt.use_node_features = False
@@ -173,8 +173,8 @@ def debugModel(model_type):
         opt.y_log_transform = False
         opt.head_architecture = 'outer'
         opt.head_hidden_sizes_list = None
-        opt.crop=[0,50]
-        opt.m = 50
+        opt.crop=[0,100]
+        opt.m = 100
         # opt.use_bias = False
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
@@ -189,8 +189,8 @@ def debugModel(model_type):
         opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
-    opt.n_epochs = 10
-    opt.lr = 1e-3
+    opt.n_epochs = 1
+    opt.lr = 1e-4
     opt.batch_size = 1
     opt.milestones = None
     opt.gamma = 0.1
@@ -198,13 +198,12 @@ def debugModel(model_type):
     # other
     opt.plot = True
     opt.plot_predictions = True
-    opt.verbose = False
-    opt.print_params = False
-    opt.gpus = 1
-    opt.delete_root = False
+    opt.verbose = True
+    opt.print_params = True
+    opt.gpus = 0
+    opt.delete_root = True
     opt.use_scratch = False
     opt.print_mod = 1
-    opt.milestones = [10, 20, 30]
     # opt.id = 39
     # opt.resume_training = True
 

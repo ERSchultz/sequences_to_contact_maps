@@ -72,6 +72,8 @@ def get_base_parser():
                         help='number of classes in percentile normalization')
     parser.add_argument('--use_scratch', type=str2bool, default=False,
                         help='True to move data to scratch')
+    parser.add_argument('--use_scratch_parallel', type=str2bool, default=False,
+                        help='True to move data in parallel (use_scratch must be True)')
 
     # dataloader args
     parser.add_argument('--split_percents', type=str2list,
@@ -386,7 +388,6 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     return opt
 
 def copy_data_to_scratch(opt):
-    # TODO parallelize this
     t0 = time.time()
     # initialize scratch path
     scratch_path = osp.join(opt.scratch, osp.split(opt.data_folder)[-1])
@@ -406,11 +407,15 @@ def copy_data_to_scratch(opt):
 
     # transfer sample data
     samples = os.listdir(osp.join(opt.data_folder, 'samples'))
-    mapping = []
-    for sample in samples:
-        mapping.append([sample, opt.data_folder, scratch_path, opt.toxx, opt.y_preprocessing, opt.output_mode])
-    with multiprocessing.Pool(opt.num_workers) as p:
-         p.starmap(copy_data_to_scratch_inner, mapping)
+    if opt.use_scratch_parallel:
+        mapping = []
+        for sample in samples:
+            mapping.append([sample, opt.data_folder, scratch_path, opt.toxx, opt.y_preprocessing, opt.output_mode])
+        with multiprocessing.Pool(opt.num_workers) as p:
+             p.starmap(copy_data_to_scratch_inner, mapping)
+    else:
+        for sample in samples:
+            copy_data_to_scratch_inner(sample, opt.data_folder, scratch_path, opt.toxx, opt.y_preprocessing, opt.output_mode)
 
     opt.data_folder = scratch_path
 

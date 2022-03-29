@@ -112,7 +112,7 @@ def core_test_train(model, opt):
     opt.log_file.close()
     if opt.root is not None and opt.delete_root:
         # opt.root is set in utils.get_dataset
-        clean_directories(root = opt.root)
+        clean_directories(GNN_path = opt.root)
 
 def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = []):
     for e in range(opt.start_epoch, opt.n_epochs+1):
