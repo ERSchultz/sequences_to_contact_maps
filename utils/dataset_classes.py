@@ -366,7 +366,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
 
         if self.y_log_transform:
-            y = np.log10(y)
+            y = np.log10(y+1e-8)
 
         if self.y_norm == 'instance':
             self.ymax = np.max(y)

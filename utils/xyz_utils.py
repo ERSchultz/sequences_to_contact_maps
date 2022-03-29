@@ -7,6 +7,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import numpy as np
 from numba import jit, njit
+from scipy.sparse import csr_array
 
 from .utils import LETTERS, print_time
 
@@ -140,7 +141,7 @@ def find_dist_between_centroids(centroids):
 
     return distances
 
-def xyz_to_contact_grid(xyz, grid_size):
+def xyz_to_contact_grid(xyz, grid_size, sparse_format = False):
     '''
     Converts xyz to contact map via grid.
 
@@ -174,6 +175,9 @@ def xyz_to_contact_grid(xyz, grid_size):
             #         bead_j = bead_list[j]
             #         contact_map[bead_i, bead_j] += 1
             #         contact_map[bead_j, bead_i] += 1
+
+    if sparse_format:
+        return csr_array(contact_map)
 
     return contact_map
 

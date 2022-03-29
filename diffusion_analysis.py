@@ -244,15 +244,15 @@ def load_helper(args, contacts = False):
     if osp.exists(xyz_file):
         xyz = xyz_load(xyz_file,
                     multiple_timesteps = True, save = True, N_min = 10,
-                    down_sampling = 3)
+                    down_sampling = 1)
     elif osp.exists(lammps_file):
         xyz = lammps_load(lammps_file, save = False, N_min = args.N_min,
-                        down_sampling = 10)
+                        down_sampling = 200)
 
     if contacts:
         sc_contacts = load_sc_contacts(args.dir, N_max = None, triu = True,
                                         gaussian = True, zero_diag = True, jobs = 8,
-                                        xyz = xyz)
+                                        xyz = xyz, sparse_format = False)
 
 
         y_file = osp.join(args.dir, 'y.npy')

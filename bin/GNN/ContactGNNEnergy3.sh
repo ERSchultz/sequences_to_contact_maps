@@ -22,6 +22,9 @@ nEpochs=1
 EncoderHiddenSizesList='none'
 updateHiddenSizesList='none'
 verbose='true'
+yLogTransform='false'
+sparsifyThreshold=1
+split_neg_pos_edges_for_feature_augmentation='false'
 
 for lr in 1e-4
 do

@@ -7,6 +7,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage import gaussian_filter
+from scipy.sparse import csr_array
 
 from .energy_utils import calculate_E_S, calculate_S, s_to_E
 from .utils import (LETTERS, diagonal_preprocessing,
@@ -207,7 +208,7 @@ def load_final_max_ent_S(k, replicate_path, max_it_path = None):
 def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
                     gaussian = False, zero_diag = False, jobs = 1, down_sampling = 1,
                     sparsify = False, correct_diag = False, return_xyz = False,
-                    xyz = None):
+                    xyz = None, sparse_format = False):
     '''
     Load single cell contacts from sample_folder/data_out/output.xyz.
 
@@ -223,6 +224,7 @@ def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
         diagonal_preprocessing: process diagonal based on overall contact map
         return_xyz: True to return xyz as well
         xyz: None to load xyz
+        sparse_format: True to use sparse format
 
     Outputs:
         sc_contacts: (N, (m+1)*m/2) if triu, else (N, m, m)
@@ -247,14 +249,20 @@ def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
     # process sc_contacts
     t0 = time.time()
     if jobs > 1:
+        print(f'found {multiprocessing.cpu_count()} total CPUs, {len(os.sched_getaffinity(0))} available CPUs, using {jobs}')
         mapping = []
         for i in range(N):
             mapping.append((xyz[i], grid_size, triu, gaussian, zero_diag, sparsify))
         with multiprocessing.Pool(jobs) as p:
             sc_contacts = p.starmap(load_sc_contacts_xyz, mapping)
     else:
-        sc_contacts = list(map(load_sc_contacts_xyz, xyz, [grid_size]*N, [triu]*N, [gaussian]*N, [zero_diag]*N, [sparsify]*N))
+        sc_contacts = []
+        for i in range(N):
+            sc_contacts.append(load_sc_contacts_xyz(xyz[i], grid_size, triu, gaussian, zero_diag, sparsify))
     sc_contacts = np.array(sc_contacts)
+    if sparse_format:
+        sc_contacts = csr_array(sc_contacts)
+
 
     if correct_diag:
         overall = np.load(osp.join(sample_folder, 'y.npy'))
@@ -262,7 +270,7 @@ def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
         sc_contacts = diagonal_preprocessing_bulk(sc_contacts, mean_per_diag, triu)
 
     tf = time.time()
-    print(f'Loaded {len(sc_contacts)} sc contacts')
+    print(f'Loaded {sc_contacts.shape[0]} sc contacts')
     print_time(t0, tf, 'sc load')
     if return_xyz:
         return sc_contacts, xyz

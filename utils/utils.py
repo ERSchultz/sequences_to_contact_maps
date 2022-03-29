@@ -6,6 +6,7 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.sparse
 import torch
 from numba import jit, njit
 from scipy.stats import pearsonr, spearmanr
@@ -430,7 +431,12 @@ def print_time(t0, tf, name = ''):
 def print_size(arr, name = ''):
     if arr is None:
         return
-    size_b = arr.nbytes
+    if isinstance(arr, np.ndarray):
+        size_b = arr.nbytes
+    elif isinstance(arr, scipy.sparse._arrays.csr_array):
+        size_b = arr.data.nbytes
+    else:
+        print(type(arr))
     size_kb = size_b / 1000
     size_mb = size_kb / 1000
     size_gb = size_mb / 1000
