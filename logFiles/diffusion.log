@@ -1,2 +1,2 @@
-Loaded xyz with shape (12084, 3620, 3)
-slurmstepd-midway574: error: *** JOB 18821981 ON midway574 CANCELLED AT 2022-03-26T04:57:49 DUE TO TIME LIMIT ***
+Loaded xyz with shape (1209, 3620, 3)
+xyz load time: 114.619 s
