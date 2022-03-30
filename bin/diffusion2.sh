@@ -1,6 +1,6 @@
 #! /bin/bash
 #SBATCH --job-name=diffusion2
-#SBATCH --partition=depablo
+#SBATCH --partition=depablo-ivyb
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=20
 #SBATCH --mem=0
