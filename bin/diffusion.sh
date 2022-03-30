@@ -1,10 +1,9 @@
 #! /bin/bash
-#SBATCH --job-name=diffusion2
+#SBATCH --job-name=diffusion
 #SBATCH --partition=bigmem2
 #SBATCH --nodes=1
-#SBATCH --ntasks=1
-#SBATCH --cpus-per-task=28
-#SBATCH --output=logFiles/diffusion.log
+#SBATCH --ntasks-per-node=28
+#SBATCH --output=logFiles/diffusion3.log
 #SBATCH --time=24:00:00
 
 dir="/project2/depablo/walt/michrom/project/chr_05/chr_05_02"
