@@ -2,6 +2,8 @@
 #SBATCH --job-name=diffusion
 #SBATCH --partition=bigmem2
 #SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=28
 #SBATCH --output=logFiles/diffusion.log
 #SBATCH --time=24:00:00
 
