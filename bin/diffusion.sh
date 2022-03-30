@@ -2,7 +2,7 @@
 #SBATCH --job-name=diffusion
 #SBATCH --partition=depablo-ivyb
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=10
+#SBATCH --ntasks-per-node=20
 #SBATCH --output=logFiles/diffusion.log
 #SBATCH --time=24:00:00
 
