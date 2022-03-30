@@ -1,0 +1,15 @@
+Loaded xyz with shape (61, 3620, 3)
+xyz load time: 100.453 s
+found 28 total CPUs, 10 available CPUs, using 8
+Loaded 61 sc contacts
+sc load time: 18.438 s
+xyz size: 5.3 Megabytes
+sc_contacts size: 3.2 Gigabytes
+diag time: 6.518 s
+distance time: 4.28 s
+Using epsilon = 0.135
+w [0.99999976 0.3568815  0.3020033  0.2834582  0.27298713]
+
+
+order corr:  -0.86
+Using k = 6

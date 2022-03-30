@@ -1,0 +1,183 @@
+Took 308.0 seconds to move data to scratch
+#### ARCHITECTURE ####
+None
+Sequential(
+  (0): GCNConv(1, 8)
+  (1): PReLU(num_parameters=1)
+  (2): GCNConv(8, 8)
+  (3): PReLU(num_parameters=1)
+  (4): GCNConv(8, 8)
+  (5): PReLU(num_parameters=1)
+)
+None 
+
+Namespace(GNN_mode=True, act='prelu', autoencoder_mode=False, batch_size=2, bottleneck=None, channels=1, classes=10, criterion=<function mse_loss at 0x7fcd43808550>, crop=None, cuda=True, data_folder='/scratch/midway2/erschultz/dataset_01_17_22', degree=True, delete_root=False, device=device(type='cuda'), dilation_list=None, dilation_list_head=None, dilation_list_trunk=None, down_sampling=None, encoder_hidden_sizes_list=None, gamma=0.1, gpus=1, head_act='prelu', head_architecture='outer', head_hidden_sizes_list=None, hidden_sizes_list=[8, 8, 8], id=83, inner_act='prelu', k=2, kernel_w_list=None, log_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/83/out.log' mode='a' encoding='UTF-8'>, log_file_path='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/83/out.log', loss='mse', lr=0.0001, m=1024, message_passing='GCN', milestones=None, min_subtraction=True, model_type='ContactGNNEnergy', n_epochs=100, nf=None, node_feature_size=1, num_workers=4, ofile_folder='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/83', out_act='prelu', output_mode='energy', param_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/83/params.log' mode='a' encoding='UTF-8'>, parameter_sharing=False, plot=True, plot_predictions=True, pre_transforms=['degree'], pre_transforms_processed=None, pretrained=False, print_mod=2, print_params=True, random_split=False, relabel_11_to_00=False, resume_training=False, root_name='ContactGNNEnergy3', save_mod=5, scratch='/scratch/midway2/erschultz', seed=42, shuffle=True, sparsify_threshold=1.0, sparsify_threshold_upper=None, split_neg_pos_edges=False, split_neg_pos_edges_for_feature_augmentation=False, split_percents=None, split_sizes=[1000, 200, 0], start_epoch=1, top_k=None, toxx=False, toxx_mode='mean', training_norm=None, transforms=None, transforms_processed=None, update_hidden_sizes_list=None, use_bias=True, use_edge_weights=True, use_node_features=False, use_parallel=False, use_scratch=True, use_scratch_parallel=False, verbose=False, weighted_LDP=False, weighted_degree=False, x_reshape=True, y_log_transform=False, y_norm=None, y_preprocessing='diag', y_reshape=True, ydtype=torch.float32)
+
+Dataset construction time: 37.392 minutes
+Mean degree: [253.84 431.02 266.14 ... 264.56 240.54 281.27] +- [185.32 184.27 180.21 ... 208.24 202.24 207.54]
+
+#### TRAINING/VALIDATION ####
+Epoch 2, loss = 2.3334
+Mean test/val loss: 2.2282
+
+Epoch 4, loss = 2.3272
+Mean test/val loss: 2.2243
+
+Epoch 6, loss = 2.3242
+Mean test/val loss: 2.2214
+
+Epoch 8, loss = 2.3211
+Mean test/val loss: 2.2183
+
+Epoch 10, loss = 2.3178
+Mean test/val loss: 2.2147
+
+Epoch 12, loss = 2.3133
+Mean test/val loss: 2.2100
+
+Epoch 14, loss = 2.3081
+Mean test/val loss: 2.2044
+
+Epoch 16, loss = 2.3015
+Mean test/val loss: 2.1969
+
+Epoch 18, loss = 2.2840
+Mean test/val loss: 2.1773
+
+Epoch 20, loss = 2.2657
+Mean test/val loss: 2.1573
+
+Epoch 22, loss = 2.2397
+Mean test/val loss: 2.1326
+
+Epoch 24, loss = 2.2134
+Mean test/val loss: 2.1082
+
+Epoch 26, loss = 2.1922
+Mean test/val loss: 2.0864
+
+Epoch 28, loss = 2.1794
+Mean test/val loss: 2.0718
+
+Epoch 30, loss = 2.1665
+Mean test/val loss: 2.0643
+
+Epoch 32, loss = 2.1569
+Mean test/val loss: 2.0543
+
+Epoch 34, loss = 2.1483
+Mean test/val loss: 2.0568
+
+Epoch 36, loss = 2.1392
+Mean test/val loss: 2.0361
+
+Epoch 38, loss = 2.1312
+Mean test/val loss: 2.0292
+
+Epoch 40, loss = 2.1217
+Mean test/val loss: 2.0218
+
+Epoch 42, loss = 2.1169
+Mean test/val loss: 2.0134
+
+Epoch 44, loss = 2.1091
+Mean test/val loss: 2.0071
+
+Epoch 46, loss = 2.1011
+Mean test/val loss: 2.0079
+
+Epoch 48, loss = 2.0938
+Mean test/val loss: 1.9939
+
+Epoch 50, loss = 2.0872
+Mean test/val loss: 1.9853
+
+Epoch 52, loss = 2.0788
+Mean test/val loss: 1.9830
+
+Epoch 54, loss = 2.0745
+Mean test/val loss: 1.9707
+
+Epoch 56, loss = 2.0639
+Mean test/val loss: 1.9644
+
+Epoch 58, loss = 2.0600
+Mean test/val loss: 1.9567
+
+Epoch 60, loss = 2.0519
+Mean test/val loss: 1.9504
+
+Epoch 62, loss = 2.0487
+Mean test/val loss: 1.9455
+
+Epoch 64, loss = 2.0385
+Mean test/val loss: 1.9354
+
+Epoch 66, loss = 2.0303
+Mean test/val loss: 1.9406
+
+Epoch 68, loss = 2.0272
+Mean test/val loss: 1.9237
+
+Epoch 70, loss = 2.0187
+Mean test/val loss: 1.9179
+
+Epoch 72, loss = 2.0100
+Mean test/val loss: 1.9130
+
+Epoch 74, loss = 2.0050
+Mean test/val loss: 1.9025
+
+Epoch 76, loss = 2.0001
+Mean test/val loss: 1.8964
+
+Epoch 78, loss = 1.9919
+Mean test/val loss: 1.8883
+
+Epoch 80, loss = 1.9857
+Mean test/val loss: 1.8816
+
+Epoch 82, loss = 1.9783
+Mean test/val loss: 1.8792
+
+Epoch 84, loss = 1.9710
+Mean test/val loss: 1.8718
+
+Epoch 86, loss = 1.9668
+Mean test/val loss: 1.8801
+
+Epoch 88, loss = 1.9612
+Mean test/val loss: 1.8608
+
+Epoch 90, loss = 1.9528
+Mean test/val loss: 1.8650
+
+Epoch 92, loss = 1.9504
+Mean test/val loss: 1.8466
+
+Epoch 94, loss = 1.9423
+Mean test/val loss: 1.8465
+
+Epoch 96, loss = 1.9342
+Mean test/val loss: 1.8417
+
+Epoch 98, loss = 1.9322
+Mean test/val loss: 1.8344
+
+Epoch 100, loss = 1.9247
+Mean test/val loss: 1.8304
+
+
+Total parameters: 227
+Total training + validation time: 4.0 hours
+Final val loss: 1.830419766306877
+
+#### Plotting Script ####
+Prediction Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/83/sample1: 2.834383010864258
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/83/sample2: 1.0886704921722412
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/83/sample3: 1.289776086807251
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/83/sample4: 1.4726943969726562
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/83/sample5: 4.0765604972839355
+Loss: 2.1524168968200685 +- 1.140625673322335
+
