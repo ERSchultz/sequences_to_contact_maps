@@ -1,116 +1,0 @@
-Collecting package metadata (current_repodata.json): ...working... done
-Solving environment: ...working... failed with initial frozen solve. Retrying with flexible solve.
-Solving environment: ...working... failed with repodata from current_repodata.json, will retry with next repodata source.
-Collecting package metadata (repodata.json): ...working... done
-Solving environment: ...working... done
-
-
-==> WARNING: A newer version of conda exists. <==
-  current version: 4.10.3
-  latest version: 4.12.0
-
-Please update conda by running
-
-    $ conda update -n base -c defaults conda
-
-
-
-## Package Plan ##
-
-  environment location: /home/erschultz/anaconda3/envs/python2
-
-  added / updated specs:
-    - numpy
-    - pandas
-    - python=2
-    - scipy
-
-
-The following packages will be downloaded:
-
-    package                    |            build
-    ---------------------------|-----------------
-    ca-certificates-2022.3.18  |       h06a4308_0         121 KB
-    certifi-2020.6.20          |     pyhd3eb1b0_3         155 KB
-    intel-openmp-2022.0.1      |    h06a4308_3633         4.2 MB
-    mkl-2020.2                 |              256       138.3 MB
-    mkl-service-2.3.0          |   py27he904b0f_0         217 KB
-    mkl_fft-1.0.15             |   py27ha843d7b_0         146 KB
-    mkl_random-1.1.0           |   py27hd6b4f25_0         297 KB
-    ncurses-6.3                |       h7f8727e_2         782 KB
-    numpy-1.16.6               |   py27hbc911f0_0          48 KB
-    numpy-base-1.16.6          |   py27hde5b4d6_0         3.5 MB
-    pandas-0.24.2              |   py27he6710b0_0         8.4 MB
-    pip-19.3.1                 |           py27_0         1.7 MB
-    python-2.7.18              |       ha1903f6_2         9.8 MB
-    readline-8.1.2             |       h7f8727e_1         354 KB
-    scipy-1.2.1                |   py27h7c811a0_0        13.7 MB
-    setuptools-44.0.0          |           py27_0         512 KB
-    six-1.16.0                 |     pyhd3eb1b0_1          18 KB
-    sqlite-3.38.0              |       hc218d9a_0         1.0 MB
-    wheel-0.37.1               |     pyhd3eb1b0_0          33 KB
-    zlib-1.2.11                |       h7f8727e_4         108 KB
-    ------------------------------------------------------------
-                                           Total:       183.3 MB
-
-The following NEW packages will be INSTALLED:
-
-  _libgcc_mutex      pkgs/main/linux-64::_libgcc_mutex-0.1-main
-  _openmp_mutex      pkgs/main/linux-64::_openmp_mutex-4.5-1_gnu
-  blas               pkgs/main/linux-64::blas-1.0-mkl
-  ca-certificates    pkgs/main/linux-64::ca-certificates-2022.3.18-h06a4308_0
-  certifi            pkgs/main/noarch::certifi-2020.6.20-pyhd3eb1b0_3
-  intel-openmp       pkgs/main/linux-64::intel-openmp-2022.0.1-h06a4308_3633
-  libffi             pkgs/main/linux-64::libffi-3.3-he6710b0_2
-  libgcc-ng          pkgs/main/linux-64::libgcc-ng-9.3.0-h5101ec6_17
-  libgfortran-ng     pkgs/main/linux-64::libgfortran-ng-7.5.0-ha8ba4b0_17
-  libgfortran4       pkgs/main/linux-64::libgfortran4-7.5.0-ha8ba4b0_17
-  libgomp            pkgs/main/linux-64::libgomp-9.3.0-h5101ec6_17
-  libstdcxx-ng       pkgs/main/linux-64::libstdcxx-ng-9.3.0-hd4cf53a_17
-  mkl                pkgs/main/linux-64::mkl-2020.2-256
-  mkl-service        pkgs/main/linux-64::mkl-service-2.3.0-py27he904b0f_0
-  mkl_fft            pkgs/main/linux-64::mkl_fft-1.0.15-py27ha843d7b_0
-  mkl_random         pkgs/main/linux-64::mkl_random-1.1.0-py27hd6b4f25_0
-  ncurses            pkgs/main/linux-64::ncurses-6.3-h7f8727e_2
-  numpy              pkgs/main/linux-64::numpy-1.16.6-py27hbc911f0_0
-  numpy-base         pkgs/main/linux-64::numpy-base-1.16.6-py27hde5b4d6_0
-  pandas             pkgs/main/linux-64::pandas-0.24.2-py27he6710b0_0
-  pip                pkgs/main/linux-64::pip-19.3.1-py27_0
-  python             pkgs/main/linux-64::python-2.7.18-ha1903f6_2
-  python-dateutil    pkgs/main/noarch::python-dateutil-2.8.2-pyhd3eb1b0_0
-  pytz               pkgs/main/noarch::pytz-2021.3-pyhd3eb1b0_0
-  readline           pkgs/main/linux-64::readline-8.1.2-h7f8727e_1
-  scipy              pkgs/main/linux-64::scipy-1.2.1-py27h7c811a0_0
-  setuptools         pkgs/main/linux-64::setuptools-44.0.0-py27_0
-  six                pkgs/main/noarch::six-1.16.0-pyhd3eb1b0_1
-  sqlite             pkgs/main/linux-64::sqlite-3.38.0-hc218d9a_0
-  tk                 pkgs/main/linux-64::tk-8.6.11-h1ccaba5_0
-  wheel              pkgs/main/noarch::wheel-0.37.1-pyhd3eb1b0_0
-  zlib               pkgs/main/linux-64::zlib-1.2.11-h7f8727e_4
-
-
-
-Downloading and Extracting Packages
-ca-certificates-2022 | 121 KB    |            |   0% ca-certificates-2022 | 121 KB    | ########## | 100% 
-pip-19.3.1           | 1.7 MB    |            |   0% pip-19.3.1           | 1.7 MB    | ##9        |  30% pip-19.3.1           | 1.7 MB    | #######6   |  77% pip-19.3.1           | 1.7 MB    | ########## | 100% 
-mkl_fft-1.0.15       | 146 KB    |            |   0% mkl_fft-1.0.15       | 146 KB    | ########## | 100% 
-pandas-0.24.2        | 8.4 MB    |            |   0% pandas-0.24.2        | 8.4 MB    | 5          |   6% pandas-0.24.2        | 8.4 MB    | #6         |  16% pandas-0.24.2        | 8.4 MB    | ##4        |  24% pandas-0.24.2        | 8.4 MB    | ###6       |  36% pandas-0.24.2        | 8.4 MB    | ####9      |  50% pandas-0.24.2        | 8.4 MB    | ######3    |  64% pandas-0.24.2        | 8.4 MB    | #######6   |  76% pandas-0.24.2        | 8.4 MB    | #########  |  91% pandas-0.24.2        | 8.4 MB    | ########## | 100% 
-scipy-1.2.1          | 13.7 MB   |            |   0% scipy-1.2.1          | 13.7 MB   | 5          |   5% scipy-1.2.1          | 13.7 MB   | #3         |  14% scipy-1.2.1          | 13.7 MB   | ##2        |  22% scipy-1.2.1          | 13.7 MB   | ###1       |  31% scipy-1.2.1          | 13.7 MB   | ###9       |  39% scipy-1.2.1          | 13.7 MB   | ####7      |  47% scipy-1.2.1          | 13.7 MB   | #####5     |  55% scipy-1.2.1          | 13.7 MB   | ######3    |  63% scipy-1.2.1          | 13.7 MB   | #######    |  71% scipy-1.2.1          | 13.7 MB   | #######6   |  77% scipy-1.2.1          | 13.7 MB   | ########2  |  83% scipy-1.2.1          | 13.7 MB   | ########9  |  90% scipy-1.2.1          | 13.7 MB   | #########5 |  95% scipy-1.2.1          | 13.7 MB   | ########## | 100% 
-zlib-1.2.11          | 108 KB    |            |   0% zlib-1.2.11          | 108 KB    | ########## | 100% 
-readline-8.1.2       | 354 KB    |            |   0% readline-8.1.2       | 354 KB    | ########## | 100% 
-sqlite-3.38.0        | 1.0 MB    |            |   0% sqlite-3.38.0        | 1.0 MB    | ######6    |  67% sqlite-3.38.0        | 1.0 MB    | ########## | 100% 
-setuptools-44.0.0    | 512 KB    |            |   0% setuptools-44.0.0    | 512 KB    | ########## | 100% 
-mkl-2020.2           | 138.3 MB  |            |   0% mkl-2020.2           | 138.3 MB  |            |   1% mkl-2020.2           | 138.3 MB  | 1          |   1% mkl-2020.2           | 138.3 MB  | 2          |   2% mkl-2020.2           | 138.3 MB  | 3          |   3% mkl-2020.2           | 138.3 MB  | 3          |   4% mkl-2020.2           | 138.3 MB  | 4          |   5% mkl-2020.2           | 138.3 MB  | 5          |   6% mkl-2020.2           | 138.3 MB  | 6          |   6% mkl-2020.2           | 138.3 MB  | 7          |   7% mkl-2020.2           | 138.3 MB  | 7          |   8% mkl-2020.2           | 138.3 MB  | 8          |   9% mkl-2020.2           | 138.3 MB  | 9          |   9% mkl-2020.2           | 138.3 MB  | #          |  10% mkl-2020.2           | 138.3 MB  | #          |  11% mkl-2020.2           | 138.3 MB  | #1         |  12% mkl-2020.2           | 138.3 MB  | #2         |  12% mkl-2020.2           | 138.3 MB  | #2         |  13% mkl-2020.2           | 138.3 MB  | #3         |  14% mkl-2020.2           | 138.3 MB  | #4         |  14% mkl-2020.2           | 138.3 MB  | #5         |  15% mkl-2020.2           | 138.3 MB  | #5         |  16% mkl-2020.2           | 138.3 MB  | #6         |  16% mkl-2020.2           | 138.3 MB  | #6         |  17% mkl-2020.2           | 138.3 MB  | #7         |  18% mkl-2020.2           | 138.3 MB  | #8         |  18% mkl-2020.2           | 138.3 MB  | #9         |  19% mkl-2020.2           | 138.3 MB  | #9         |  20% mkl-2020.2           | 138.3 MB  | ##         |  21% mkl-2020.2           | 138.3 MB  | ##1        |  21% mkl-2020.2           | 138.3 MB  | ##2        |  22% mkl-2020.2           | 138.3 MB  | ##3        |  23% mkl-2020.2           | 138.3 MB  | ##3        |  24% mkl-2020.2           | 138.3 MB  | ##4        |  25% mkl-2020.2           | 138.3 MB  | ##5        |  25% mkl-2020.2           | 138.3 MB  | ##6        |  26% mkl-2020.2           | 138.3 MB  | ##6        |  27% mkl-2020.2           | 138.3 MB  | ##7        |  28% mkl-2020.2           | 138.3 MB  | ##8        |  29% mkl-2020.2           | 138.3 MB  | ##9        |  29% mkl-2020.2           | 138.3 MB  | ###        |  30% mkl-2020.2           | 138.3 MB  | ###1       |  31% mkl-2020.2           | 138.3 MB  | ###1       |  32% mkl-2020.2           | 138.3 MB  | ###2       |  33% mkl-2020.2           | 138.3 MB  | ###3       |  34% mkl-2020.2           | 138.3 MB  | ###4       |  34% mkl-2020.2           | 138.3 MB  | ###5       |  35% mkl-2020.2           | 138.3 MB  | ###5       |  36% mkl-2020.2           | 138.3 MB  | ###6       |  37% mkl-2020.2           | 138.3 MB  | ###7       |  38% mkl-2020.2           | 138.3 MB  | ###8       |  38% mkl-2020.2           | 138.3 MB  | ###9       |  39% mkl-2020.2           | 138.3 MB  | ###9       |  40% mkl-2020.2           | 138.3 MB  | ####       |  41% mkl-2020.2           | 138.3 MB  | ####1      |  41% mkl-2020.2           | 138.3 MB  | ####1      |  42% mkl-2020.2           | 138.3 MB  | ####2      |  42% mkl-2020.2           | 138.3 MB  | ####3      |  43% mkl-2020.2           | 138.3 MB  | ####3      |  44% mkl-2020.2           | 138.3 MB  | ####4      |  45% mkl-2020.2           | 138.3 MB  | ####5      |  45% mkl-2020.2           | 138.3 MB  | ####6      |  46% mkl-2020.2           | 138.3 MB  | ####6      |  47% mkl-2020.2           | 138.3 MB  | ####7      |  48% mkl-2020.2           | 138.3 MB  | ####8      |  49% mkl-2020.2           | 138.3 MB  | ####9      |  49% mkl-2020.2           | 138.3 MB  | #####      |  50% mkl-2020.2           | 138.3 MB  | #####1     |  51% mkl-2020.2           | 138.3 MB  | #####1     |  52% mkl-2020.2           | 138.3 MB  | #####2     |  53% mkl-2020.2           | 138.3 MB  | #####3     |  53% mkl-2020.2           | 138.3 MB  | #####4     |  54% mkl-2020.2           | 138.3 MB  | #####4     |  55% mkl-2020.2           | 138.3 MB  | #####5     |  56% mkl-2020.2           | 138.3 MB  | #####6     |  56% mkl-2020.2           | 138.3 MB  | #####7     |  57% mkl-2020.2           | 138.3 MB  | #####7     |  58% mkl-2020.2           | 138.3 MB  | #####8     |  59% mkl-2020.2           | 138.3 MB  | #####9     |  59% mkl-2020.2           | 138.3 MB  | ######     |  60% mkl-2020.2           | 138.3 MB  | ######1    |  61% mkl-2020.2           | 138.3 MB  | ######1    |  62% mkl-2020.2           | 138.3 MB  | ######2    |  63% mkl-2020.2           | 138.3 MB  | ######3    |  64% mkl-2020.2           | 138.3 MB  | ######4    |  64% mkl-2020.2           | 138.3 MB  | ######5    |  65% mkl-2020.2           | 138.3 MB  | ######5    |  66% mkl-2020.2           | 138.3 MB  | ######6    |  67% mkl-2020.2           | 138.3 MB  | ######7    |  68% mkl-2020.2           | 138.3 MB  | ######8    |  68% mkl-2020.2           | 138.3 MB  | ######9    |  69% mkl-2020.2           | 138.3 MB  | ######9    |  70% mkl-2020.2           | 138.3 MB  | #######    |  71% mkl-2020.2           | 138.3 MB  | #######1   |  72% mkl-2020.2           | 138.3 MB  | #######2   |  72% mkl-2020.2           | 138.3 MB  | #######3   |  73% mkl-2020.2           | 138.3 MB  | #######3   |  74% mkl-2020.2           | 138.3 MB  | #######4   |  75% mkl-2020.2           | 138.3 MB  | #######5   |  76% mkl-2020.2           | 138.3 MB  | #######6   |  76% mkl-2020.2           | 138.3 MB  | #######7   |  77% mkl-2020.2           | 138.3 MB  | #######8   |  78% mkl-2020.2           | 138.3 MB  | #######8   |  79% mkl-2020.2           | 138.3 MB  | #######9   |  80% mkl-2020.2           | 138.3 MB  | ########   |  80% mkl-2020.2           | 138.3 MB  | ########1  |  81% mkl-2020.2           | 138.3 MB  | ########2  |  82% mkl-2020.2           | 138.3 MB  | ########2  |  83% mkl-2020.2           | 138.3 MB  | ########3  |  84% mkl-2020.2           | 138.3 MB  | ########4  |  85% mkl-2020.2           | 138.3 MB  | ########5  |  85% mkl-2020.2           | 138.3 MB  | ########5  |  86% mkl-2020.2           | 138.3 MB  | ########6  |  87% mkl-2020.2           | 138.3 MB  | ########7  |  88% mkl-2020.2           | 138.3 MB  | ########8  |  88% mkl-2020.2           | 138.3 MB  | ########9  |  89% mkl-2020.2           | 138.3 MB  | ########9  |  90% mkl-2020.2           | 138.3 MB  | #########  |  91% mkl-2020.2           | 138.3 MB  | #########1 |  91% mkl-2020.2           | 138.3 MB  | #########2 |  92% mkl-2020.2           | 138.3 MB  | #########2 |  93% mkl-2020.2           | 138.3 MB  | #########3 |  94% mkl-2020.2           | 138.3 MB  | #########4 |  94% mkl-2020.2           | 138.3 MB  | #########5 |  95% mkl-2020.2           | 138.3 MB  | #########6 |  96% mkl-2020.2           | 138.3 MB  | #########6 |  97% mkl-2020.2           | 138.3 MB  | #########7 |  98% mkl-2020.2           | 138.3 MB  | #########8 |  98% mkl-2020.2           | 138.3 MB  | #########9 |  99% mkl-2020.2           | 138.3 MB  | ########## | 100% mkl-2020.2           | 138.3 MB  | ########## | 100% 
-certifi-2020.6.20    | 155 KB    |            |   0% certifi-2020.6.20    | 155 KB    | ########## | 100% 
-numpy-1.16.6         | 48 KB     |            |   0% numpy-1.16.6         | 48 KB     | ########## | 100% 
-wheel-0.37.1         | 33 KB     |            |   0% wheel-0.37.1         | 33 KB     | ########## | 100% 
-six-1.16.0           | 18 KB     |            |   0% six-1.16.0           | 18 KB     | ########## | 100% 
-python-2.7.18        | 9.8 MB    |            |   0% python-2.7.18        | 9.8 MB    | 6          |   7% python-2.7.18        | 9.8 MB    | #7         |  17% python-2.7.18        | 9.8 MB    | ##6        |  27% python-2.7.18        | 9.8 MB    | ###8       |  38% python-2.7.18        | 9.8 MB    | ####9      |  50% python-2.7.18        | 9.8 MB    | ######1    |  61% python-2.7.18        | 9.8 MB    | #######2   |  72% python-2.7.18        | 9.8 MB    | ########2  |  82% python-2.7.18        | 9.8 MB    | #########3 |  93% python-2.7.18        | 9.8 MB    | ########## | 100% 
-mkl_random-1.1.0     | 297 KB    |            |   0% mkl_random-1.1.0     | 297 KB    | ###7       |  38% mkl_random-1.1.0     | 297 KB    | ########## | 100% 
-intel-openmp-2022.0. | 4.2 MB    |            |   0% intel-openmp-2022.0. | 4.2 MB    | #8         |  18% intel-openmp-2022.0. | 4.2 MB    | ####3      |  44% intel-openmp-2022.0. | 4.2 MB    | ######7    |  67% intel-openmp-2022.0. | 4.2 MB    | #########4 |  94% intel-openmp-2022.0. | 4.2 MB    | ########## | 100% 
-ncurses-6.3          | 782 KB    |            |   0% ncurses-6.3          | 782 KB    | #########2 |  92% ncurses-6.3          | 782 KB    | ########## | 100% 
-numpy-base-1.16.6    | 3.5 MB    |            |   0% numpy-base-1.16.6    | 3.5 MB    | #9         |  20% numpy-base-1.16.6    | 3.5 MB    | #####2     |  52% numpy-base-1.16.6    | 3.5 MB    | #######9   |  80% numpy-base-1.16.6    | 3.5 MB    | ########## | 100% 
-mkl-service-2.3.0    | 217 KB    |            |   0% mkl-service-2.3.0    | 217 KB    | ########## | 100% 
-Preparing transaction: ...working... done
-Verifying transaction: ...working... done
-Executing transaction: ...working... done
