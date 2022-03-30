@@ -6,13 +6,13 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.sparse as sp
 from scipy.ndimage import gaussian_filter
-from scipy.sparse import csr_array
 
 from .energy_utils import calculate_E_S, calculate_S, s_to_E
 from .utils import (LETTERS, diagonal_preprocessing,
                     diagonal_preprocessing_bulk, genomic_distance_statistics,
-                    print_time, triu_to_full)
+                    print_size, print_time, triu_to_full)
 from .xyz_utils import xyz_load, xyz_to_contact_grid
 
 
@@ -252,16 +252,20 @@ def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
         print(f'found {multiprocessing.cpu_count()} total CPUs, {len(os.sched_getaffinity(0))} available CPUs, using {jobs}')
         mapping = []
         for i in range(N):
-            mapping.append((xyz[i], grid_size, triu, gaussian, zero_diag, sparsify))
+            mapping.append((xyz[i], grid_size, triu, gaussian, zero_diag, sparsify, sparse_format))
         with multiprocessing.Pool(jobs) as p:
             sc_contacts = p.starmap(load_sc_contacts_xyz, mapping)
     else:
         sc_contacts = []
         for i in range(N):
-            sc_contacts.append(load_sc_contacts_xyz(xyz[i], grid_size, triu, gaussian, zero_diag, sparsify))
-    sc_contacts = np.array(sc_contacts)
+            sc_contacts.append(load_sc_contacts_xyz(xyz[i], grid_size, triu, gaussian, zero_diag, sparsify, sparse_format))
     if sparse_format:
-        sc_contacts = csr_array(sc_contacts)
+        sc_contacts = sp.vstack(sc_contacts, format = 'csr')
+        sc_contacts = sp.csr_array(sc_contacts)
+    else:
+        sc_contacts = np.array(sc_contacts)
+    print(sc_contacts.shape)
+    print_size(sc_contacts, 'sc_contacts')
 
 
     if correct_diag:
@@ -276,7 +280,7 @@ def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
         return sc_contacts, xyz
     return sc_contacts
 
-def load_sc_contacts_xyz(xyz, grid_size, triu, gaussian, zero_diag, sparsify):
+def load_sc_contacts_xyz(xyz, grid_size, triu, gaussian, zero_diag, sparsify, sparse_format):
     m, _ = xyz.shape
 
     contact_map = xyz_to_contact_grid(xyz, grid_size)
@@ -296,5 +300,7 @@ def load_sc_contacts_xyz(xyz, grid_size, triu, gaussian, zero_diag, sparsify):
         contact_map = gaussian_filter(contact_map, sigma = 4)
     if triu:
         contact_map = contact_map[np.triu_indices(m)]
+    if sparse_format:
+        contact_map = sp.csr_array(contact_map)
 
     return contact_map

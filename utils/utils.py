@@ -6,7 +6,7 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.sparse
+import scipy.sparse as sp
 import torch
 from numba import jit, njit
 from scipy.stats import pearsonr, spearmanr
@@ -94,9 +94,12 @@ def diagonal_preprocessing_bulk(y_arr, mean_per_diagonal, triu = False):
     '''Faster version of diagonal_preprocessing when using many contact maps'''
     y_arr = y_arr.astype('float64')
 
+
     zeros = np.argwhere(mean_per_diagonal == 0)
     if len(zeros) > 0:
         print(f'WARNING: 0 contacts expected at distance {zeros}')
+        # replace with minimum observed mean
+        mean_per_diagonal[zeros] = np.min(mean_per_diagonal[mean_per_diagonal > 0])
 
     # determine m
     if triu:
@@ -121,8 +124,12 @@ def diagonal_preprocessing_bulk(y_arr, mean_per_diagonal, triu = False):
 
     if triu:
         expected = expected[np.triu_indices(m)]
-
-    result = y_arr / expected
+    if sp.issparse(y_arr):
+        result = y_arr.copy()
+        result.data /= np.take(expected, result.indices)
+    else:
+        result = y_arr / expected
+        
     return result
 
 def percentile_preprocessing(y, percentiles):
@@ -433,10 +440,13 @@ def print_size(arr, name = ''):
         return
     if isinstance(arr, np.ndarray):
         size_b = arr.nbytes
-    elif isinstance(arr, scipy.sparse._arrays.csr_array):
+    elif isinstance(arr, sp._arrays.csr_array):
+        size_b = arr.data.nbytes
+    elif isinstance(arr, sp._csr.csr_matrix):
         size_b = arr.data.nbytes
     else:
-        print(type(arr))
+        print(f'Unrecognized type {type(arr)}')
+        return
     size_kb = size_b / 1000
     size_mb = size_kb / 1000
     size_gb = size_mb / 1000

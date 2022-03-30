@@ -11,6 +11,7 @@ from scipy.sparse.csgraph import laplacian
 from sklearn.cluster import KMeans
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import pairwise_distances, silhouette_score
+from sklearn.metrics.pairwise import cosine_distances
 from utils.load_utils import load_sc_contacts
 from utils.plotting_utils import plot_matrix
 from utils.utils import (diagonal_preprocessing_bulk,
@@ -22,12 +23,13 @@ from utils.xyz_utils import (find_dist_between_centroids, find_label_centroid,
 import dmaps  # https://github.com/ERSchultz/dmaps
 
 
-def getArgs(default_dir='/home/erschultz/sequences_to_contact_maps/dataset_test/samples/sample92'):
+def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample30'):
     parser = argparse.ArgumentParser(description='Base parser')
     parser.add_argument('--dir', type=str, default=default_dir, help='location of data')
     parser.add_argument('--odir', type=str, help='location to write to')
     parser.add_argument('--N_min', type=int, default=2000)
     parser.add_argument('--mode', type=str, default='contact_diffusion')
+    parser.add_argument('--jobs', type=int, default=12)
 
     args = parser.parse_args()
     if args.odir is None:
@@ -244,15 +246,16 @@ def load_helper(args, contacts = False):
     if osp.exists(xyz_file):
         xyz = xyz_load(xyz_file,
                     multiple_timesteps = True, save = True, N_min = 10,
-                    down_sampling = 1)
+                    down_sampling = 30)
     elif osp.exists(lammps_file):
         xyz = lammps_load(lammps_file, save = False, N_min = args.N_min,
-                        down_sampling = 200)
+                        down_sampling = 10)
 
     if contacts:
         sc_contacts = load_sc_contacts(args.dir, N_max = None, triu = True,
-                                        gaussian = True, zero_diag = True, jobs = 8,
-                                        xyz = xyz, sparse_format = False)
+                                        gaussian = True, zero_diag = True,
+                                        jobs = args.jobs, xyz = xyz,
+                                        sparse_format = True, sparsify = True)
 
 
         y_file = osp.join(args.dir, 'y.npy')
@@ -326,8 +329,7 @@ def contact_diffusion():
 
         # compute distance
         t0 = time.time()
-        D = pairwise_distances(sc_contacts_diag, sc_contacts_diag,
-                                        metric = 'cosine')
+        D = cosine_distances(sc_contacts_diag, sc_contacts_diag)
         plot_matrix(D, ofile = osp.join(args.odir, 'distances.png'),
                         vmin = 'min', vmax = 'max')
         tf = time.time()
