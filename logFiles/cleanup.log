@@ -1,4 +1,0 @@
-rm: cannot remove ‘graph_1*’rm: cannot remove ‘graph_2*’: No such file or directory
-rm: : No such file or directorycannot remove ‘graph_3*’
-rm: cannot remove ‘graph_4*’: No such file or directory
-: No such file or directory

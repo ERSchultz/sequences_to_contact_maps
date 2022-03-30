@@ -1,0 +1,107 @@
+==> WARNING: A newer version of conda exists. <==
+  current version: 4.10.3
+  latest version: 4.12.0
+
+Please update conda by running
+
+    $ conda update -n base -c defaults conda
+
+
+
+## Package Plan ##
+
+  environment location: /home/erschultz/anaconda3/envs/python3.6
+
+  added / updated specs:
+    - cudatoolkit
+    - numpy=1.16.3
+    - python=3.6.5
+    - pytorch=1.1.0
+
+
+The following packages will be downloaded:
+
+    package                    |            build
+    ---------------------------|-----------------
+    certifi-2021.5.30          |   py36h06a4308_0         139 KB
+    cffi-1.14.0                |   py36h2e261b9_0         223 KB
+    cudatoolkit-10.0.130       |                0       261.2 MB
+    libffi-3.2.1               |    hf484d3e_1007          48 KB
+    mkl-service-2.3.0          |   py36he8ac12f_0          52 KB
+    mkl_fft-1.2.0              |   py36h23d657b_0         149 KB
+    mkl_random-1.1.1           |   py36h0573a6f_0         327 KB
+    ninja-1.10.2               |       h5e70eb0_2         1.5 MB
+    numpy-1.16.3               |   py36h7e9f1db_0          48 KB
+    numpy-base-1.16.3          |   py36hde5b4d6_0         3.5 MB
+    openssl-1.0.2u             |       h7b6447c_0         2.2 MB
+    pip-21.2.2                 |   py36h06a4308_0         1.8 MB
+    pycparser-2.21             |     pyhd3eb1b0_0          94 KB  - https://conda.anaconda.org/pytorch/linux-64
+  - https://conda.anaconda.org/pytorch/noarch
+  - https://repo.anaconda.com/pkgs/main/linux-64
+  - https://repo.anaconda.com/pkgs/main/noarch
+  - https://repo.anaconda.com/pkgs/r/linux-64
+  - https://repo.anaconda.com/pkgs/r/noarch
+
+To search for alternate channels that may provide the conda package you're
+looking for, navigate to
+
+    https://anaconda.org
+
+and use the search bar at the top of the page.
+
+
+Collecting package metadata (current_repodata.json): ...working... done
+Solving environment: ...working... failed with initial frozen solve. Retrying with flexible solve.
+Collecting package metadata (repodata.json): ...working... done
+Solving environment: ...working... done
+    python-3.6.5               |       hc3d631a_2        25.5 MB
+    pytorch-1.1.0              |py3.6_cuda10.0.130_cudnn7.5.1_0       455.0 MB  pytorch
+    readline-7.0               |       h7b6447c_5         324 KB
+    setuptools-58.0.4          |   py36h06a4308_0         788 KB
+    sqlite-3.33.0              |       h62c20be_0         1.1 MB
+    ------------------------------------------------------------
+                                           Total:       754.1 MB
+
+The following NEW packages will be INSTALLED:
+
+  _libgcc_mutex      pkgs/main/linux-64::_libgcc_mutex-0.1-main
+  _openmp_mutex      pkgs/main/linux-64::_openmp_mutex-4.5-1_gnu
+  blas               pkgs/main/linux-64::blas-1.0-mkl
+  ca-certificates    pkgs/main/linux-64::ca-certificates-2022.3.18-h06a4308_0
+  certifi            pkgs/main/linux-64::certifi-2021.5.30-py36h06a4308_0
+  cffi               pkgs/main/linux-64::cffi-1.14.0-py36h2e261b9_0
+  cudatoolkit        pkgs/main/linux-64::cudatoolkit-10.0.130-0
+  intel-openmp       pkgs/main/linux-64::intel-openmp-2022.0.1-h06a4308_3633
+  libedit            pkgs/main/linux-64::libedit-3.1.20210910-h7f8727e_0
+  libffi             pkgs/main/linux-64::libffi-3.2.1-hf484d3e_1007
+  libgcc-ng          pkgs/main/linux-64::libgcc-ng-9.3.0-h5101ec6_17
+  libgfortran-ng     pkgs/main/linux-64::libgfortran-ng-7.5.0-ha8ba4b0_17
+  libgfortran4       pkgs/main/linux-64::libgfortran4-7.5.0-ha8ba4b0_17
+  libgomp            pkgs/main/linux-64::libgomp-9.3.0-h5101ec6_17
+  libstdcxx-ng       pkgs/main/linux-64::libstdcxx-ng-9.3.0-hd4cf53a_17
+  mkl                pkgs/main/linux-64::mkl-2020.2-256
+  mkl-service        pkgs/main/linux-64::mkl-service-2.3.0-py36he8ac12f_0
+  mkl_fft            pkgs/main/linux-64::mkl_fft-1.2.0-py36h23d657b_0
+  mkl_random         pkgs/main/linux-64::mkl_random-1.1.1-py36h0573a6f_0
+  ncurses            pkgs/main/linux-64::ncurses-6.3-h7f8727e_2
+  ninja              pkgs/main/linux-64::ninja-1.10.2-h5e70eb0_2
+  numpy              pkgs/main/linux-64::numpy-1.16.3-py36h7e9f1db_0
+  numpy-base         pkgs/main/linux-64::numpy-base-1.16.3-py36hde5b4d6_0
+  openssl            pkgs/main/linux-64::openssl-1.0.2u-h7b6447c_0
+  pip                pkgs/main/linux-64::pip-21.2.2-py36h06a4308_0
+  pycparser          pkgs/main/noarch::pycparser-2.21-pyhd3eb1b0_0
+  python             pkgs/main/linux-64::python-3.6.5-hc3d631a_2
+  pytorch            pytorch/linux-64::pytorch-1.1.0-py3.6_cuda10.0.130_cudnn7.5.1_0
+  readline           pkgs/main/linux-64::readline-7.0-h7b6447c_5
+  setuptools         pkgs/main/linux-64::setuptools-58.0.4-py36h06a4308_0
+  six                pkgs/main/noarch::six-1.16.0-pyhd3eb1b0_1
+  sqlite             pkgs/main/linux-64::sqlite-3.33.0-h62c20be_0
+  tk                 pkgs/main/linux-64::tk-8.6.11-h1ccaba5_0
+  wheel              pkgs/main/noarch::wheel-0.37.1-pyhd3eb1b0_0
+  xz                 pkgs/main/linux-64::xz-5.2.5-h7b6447c_0
+  zlib               pkgs/main/linux-64::zlib-1.2.11-h7f8727e_4
+
+
+
+Downloading and Extracting Packages
+cudatoolkit-10.0.130 | 261.2 MB  |            |   0%cudatoolkit-10.0.130 | 261.2 MB  |            |   0% cudatoolkit-10.0.130 | 261.2 MB  |            |   0% udatoolkit-10.0.130 | 261.2 MB  |            |   0% cdatoolkit-10.0.130 | 261.2 MB  |            |   1% cuatoolkit-10.0.130 | 261.2 MB  |            |   1% cudtoolkit-10.0.130 | 261.2 MB  | 1          |   1% cudaoolkit-10.0.130 | 261.2 MB  | 1          |   2% cudatolkit-10.0.130 | 261.2 MB  | 2          |   2% cudatolkit-10.0.130 | 261.2 MB  | 2          |   2% cudatookit-10.0.130 | 261.2 MB  | 2          |   3% cudatoolit-10.0.130 | 261.2 MB  | 3          |   3% cudatoolkt-10.0.130 | 261.2 MB  | 3          |   3% cudatoolki-10.0.130 | 261.2 MB  | 3          |   4% cudatoolkit10.0.130 | 261.2 MB  | 4          |   4% cudatoolkit-0.0.130 | 261.2 MB  | 4          |   4% cudatoolkit-1.0.130 | 261.2 MB  | 4          |   5% cudatoolkit-100.130 | 261.2 MB  | 5          |   5% cudatoolkit-10..130 | 261.2 MB  | 5          |   6% cudatoolkit-10.0130 | 261.2 MB  | 6          |   6% cudatoolkit-10.0.30 | 261.2 MB  | 6          |   6% cudatoolkit-10.0.10 | 261.2 MB  | 6          |   7% cudatoolkit-10.0.13 | 261.2 MB  | 7          |   7% cudatoolkit-10.0.130| 261.2 MB  | 7          |   8% cudatoolkit-10.0.130  261.2 MB  | 8          |   8% cudatoolkit-10.0.130 |261.2 MB  | 8          |   8% cudatoolkit-10.0.130 | 61.2 MB  | 8          |   9% cudatoolkit-10.0.130 | 21.2 MB  | 9          |   9% cudatoolkit-10.0.130 | 26.2 MB  | 9          |  10% cudatoolkit-10.0.130 | 2612 MB  | #          |  10% cudatoolkit-10.0.130 | 261. MB  | #          |  11% cudatoolkit-10.0.130 | 261.2MB  | #1         |  11% cudatoolkit-10.0.130 | 261.2 B  | #1         |  11% cudatoolkit-10.0.130 | 261.2 M  | #1         |  12% cudatoolkit-10.0.130 | 261.2 MB | #2         |  12% cudatoolkit-10.0.130 | 261.2 MB | #2         |  13% cudatoolkit-10.0.130 | 261.2 MB   #3         |  13% cudatoolkit-10.0.130 | 261.2 MB  |#3         |  14% cudatoolkit-10.0.130 | 261.2 MB  | 4         |  14% cudatoolkit-10.0.130 | 261.2 MB  | #         |  14% cudatoolkit-10.0.130 | 261.2 MB  | #4        |  15% cudatoolkit-10.0.130 | 261.2 MB  | #5        |  15% cudatoolkit-10.0.130 | 261.2 MB  | #5        |  16% cudatoolkit-10.0.130 | 261.2 MB  | #6        |  16% cudatoolkit-10.0.130 | 261.2 MB  | #6        |  16% cudatoolkit-10.0.130 | 261.2 MB  | #6        |  17% cudatoolkit-10.0.130 | 261.2 MB  | #7        |  17% cudatoolkit-10.0.130 | 261.2 MB  | #7        |  18% cudatoolkit-10.0.130 | 261.2 MB  | #8        |  18% cudatoolkit-10.0.130 | 261.2 MB  | #8           19% cudatoolkit-10.0.130 | 261.2 MB  | #9         | 19% cudatoolkit-10.0.130 | 261.2 MB  | #9         | 19% cudatoolkit-10.0.130 | 261.2 MB  | #9         |  0% cudatoolkit-10.0.130 | 261.2 MB  | ##         |  2% cudatoolkit-10.0.130 | 261.2 MB  | ##         |  21 cudatoolkit-10.0.130 | 261.2 MB  | ##1        |  21%cudatoolkit-10.0.130 | 261.2 MB  | ##1        |  21% cudatoolkit-10.0.130 | 261.2 MB  | ##1        |  22% udatoolkit-10.0.130 | 261.2 MB  | ##2        |  22% cdatoolkit-10.0.130 | 261.2 MB  | ##2        |  23% cuatoolkit-10.0.130 | 261.2 MB  | ##2        |  23% cudtoolkit-10.0.130 | 261.2 MB  | ##3        |  23% cudaoolkit-10.0.130 | 261.2 MB  | ##3        |  24% cudatolkit-10.0.130 | 261.2 MB  | ##4        |  24% cudatolkit-10.0.130 | 261.2 MB  | ##4        |  25% cudatookit-10.0.130 | 261.2 MB  | ##5        |  25% cudatoolit-10.0.130 | 261.2 MB  | ##5        |  26% cudatoolkt-10.0.130 | 261.2 MB  | ##5        |  26% cudatoolki-10.0.130 | 261.2 MB  | ##6        |  26% cudatoolkit10.0.130 | 261.2 MB  | ##6        |  27% cudatoolkit-0.0.130 | 261.2 MB  | ##7        |  27% cudatoolkit-1.0.130 | 261.2 MB  | ##7        |  28% cudatoolkit-100.130 | 261.2 MB  | ##8        |  28% cudatoolkit-10..130 | 261.2 MB  | ##8        |  29% 
