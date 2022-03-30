@@ -1,9 +1,10 @@
 #! /bin/bash
-#SBATCH --job-name=diffusion
+#SBATCH --job-name=diffusion2
 #SBATCH --partition=depablo-ivyb
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=10
-#SBATCH --output=logFiles/diffusion.log
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=10
+#SBATCH --output=logFiles/diffusion2.log
 #SBATCH --time=24:00:00
 
 dir="/project2/depablo/walt/michrom/project/chr_05/chr_05_02"
