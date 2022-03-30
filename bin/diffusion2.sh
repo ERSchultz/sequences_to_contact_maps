@@ -1,6 +1,6 @@
 #! /bin/bash
 #SBATCH --job-name=diffusion2
-#SBATCH --partition=depablo-ivyb
+#SBATCH --partition=bigmem2
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=10
