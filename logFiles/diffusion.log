@@ -1,10 +1,10 @@
 Loaded xyz with shape (1209, 3620, 3)
-xyz load time: 183.437 s
-found 20 total CPUs, 20 available CPUs, using 12
+xyz load time: 192.562 s
+found 20 total CPUs, 20 available CPUs, using 20
 (1209, 6554010)
 sc_contacts size: 14.3 Gigabytes
 Loaded 1209 sc contacts
-sc load time: 254.683 s
+sc load time: 169.979 s
 xyz size: 105.0 Megabytes
 sc_contacts size: 14.3 Gigabytes
 Traceback (most recent call last):
@@ -18,4 +18,4 @@ Traceback (most recent call last):
     result = y_arr.copy()
   File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/site-packages/scipy/sparse/_data.py", line 92, in copy
     return self._with_data(self.data.copy(), copy=True)
-numpy.core._exceptions.MemoryError: Unable to allocate 13.3 GiB for an array with shape (1784216487,) and data type float64
+numpy.core._exceptions.MemoryError: Unable to allocate 13.3 GiB for an array with shape (1784234043,) and data type float64
