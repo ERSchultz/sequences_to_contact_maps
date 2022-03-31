@@ -34,7 +34,7 @@ act='prelu'
 innerAct='prelu'
 headAct='prelu'
 outAct='prelu'
-headArchitecture='outer'
+headArchitecture='bilinear'
 headHiddenSizesList='none'
 
 # hyperparameters
