@@ -148,12 +148,13 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                 yhat = model(x)
             if opt.verbose:
                 if 'x' in locals():
-                    print('x', x, x.shape)
+                    print(f'x={x}, shape={x.shape}')
                 if opt.GNN_mode:
-                    print('x', data.x.shape, torch.min(data.x).item(), torch.max(data.x).item())
-                    print('edge_attr', torch.min(data.edge_attr).item(), torch.max(data.edge_attr).item())
-                print('y', y, y.shape, torch.min(y).item(), torch.max(y).item())
-                print('yhat', yhat, yhat.shape, torch.min(yhat).item(), torch.max(yhat).item())
+                    print(f'x={data.x}, shape={data.x.shape}, min={torch.min(data.x).item()}, max={torch.max(data.x).item()}')
+                    if data.edge_attr is not None:
+                        print(f'edge_attr, min={torch.min(data.edge_attr).item()}, max={torch.max(data.edge_attr).item()}')
+                print(f'y={y}, shape={y.shape}, min={torch.min(y).item()}, max={torch.max(y).item()}')
+                print(f'yhat={yhat}, shape={yhat.shape}, min={torch.min(yhat).item()}, max={torch.max(yhat).item()}')
             loss = opt.criterion(yhat, y)
             avg_loss += loss.item()
             loss.backward()

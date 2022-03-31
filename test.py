@@ -76,13 +76,12 @@ def debugModel(model_type):
     opt.use_scratch=True
 
     # architecture
-    opt.k = 2
     opt.crop = None
     opt.m = 1024
     opt.y_preprocessing = 'diag'
     # opt.split_percents=[0.6666,0.3333,0.0]
     opt.split_percents = None
-    opt.split_sizes=[-1, 5, 0]
+    opt.split_sizes=[1, 2, 0]
     # opt.split_counts=None
 
     if model_type == 'Akita':
@@ -151,7 +150,7 @@ def debugModel(model_type):
     elif model_type == 'ContactGNNEnergy':
         opt.loss = 'mse'
         opt.y_norm = None
-        opt.message_passing='gcn'
+        opt.message_passing='signedconv'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
         opt.encoder_hidden_sizes_list=None
@@ -164,17 +163,17 @@ def debugModel(model_type):
         opt.use_node_features = False
         opt.use_edge_weights = True
         opt.transforms=str2list('none')
-        opt.pre_transforms=str2list('degree')
-        opt.split_neg_pos_edges_for_feature_augmentation = True
+        opt.pre_transforms=str2list('weighted_degree')
+        opt.split_edges_for_feature_augmentation = True
         opt.top_k = None
-        opt.sparsify_threshold = 0.176
+        opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.relabel_11_to_00 = False
-        opt.y_log_transform = False
-        opt.head_architecture = 'outer'
+        opt.y_log_transform = True
+        opt.head_architecture = 'bilinear'
         opt.head_hidden_sizes_list = None
-        # opt.crop=[0,100]
-        # opt.m = 100
+        # opt.crop=[0,50]
+        # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
@@ -196,8 +195,8 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = True
-    opt.plot_predictions = True
+    opt.plot = False
+    opt.plot_predictions = False
     opt.verbose = True
     opt.print_params = True
     opt.gpus = 0
@@ -213,7 +212,6 @@ def debugModel(model_type):
 
     model = get_model(opt)
 
-    # opt.model_type = 'test'
     core_test_train(model, opt)
 
 def test_argpartition(k):

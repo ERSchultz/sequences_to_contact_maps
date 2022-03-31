@@ -12,6 +12,8 @@ import torch
 import torch.nn.functional as F
 import torch_geometric.transforms
 
+from .neural_net_utils import Degree, WeightedLocalDegreeProfile
+
 
 def get_base_parser():
     '''Helper function that returns base parser'''
@@ -35,7 +37,7 @@ def get_base_parser():
                         help='True to use edge weights in GNN')
     parser.add_argument('--relabel_11_to_00',type=str2bool, default=False,
                         help='True to relabel [1,1] particles as [0,0] particles')
-    parser.add_argument('--split_neg_pos_edges_for_feature_augmentation', type=str2bool, default=False,
+    parser.add_argument('--split_edges_for_feature_augmentation', type=str2bool, default=False,
                         help='True to split edges for feature augmentation')
 
     # pre-processing args
@@ -126,8 +128,8 @@ def get_base_parser():
                         help='True if using a pretrained model')
     parser.add_argument('--resume_training', type=str2bool, default=False,
                         help='True if resuming traning of a partially trained model')
-    parser.add_argument('--k', type=int, default=2,
-                        help='Number of epigenetic marks')
+    parser.add_argument('--k', type=str2int,
+                        help='Number of input epigenetic marks')
     parser.add_argument('--m', type=int, default=1024,
                         help='Number of particles')
     parser.add_argument('--seed', type=int, default=42,
@@ -255,8 +257,8 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     if opt.y_log_transform:
         assert opt.y_norm is None, "don't use log transform with y norm"
 
-    if opt.head_architecture == 'outer':
-        assert opt.head_hidden_sizes_list is None, "not supported"
+    if opt.head_architecture == 'bilinear':
+        assert opt.head_hidden_sizes_list is None, f"not supported {opt.id}"
 
     opt.split_neg_pos_edges = False
     if opt.message_passing.lower() == 'signedconv':
@@ -264,7 +266,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
         if opt.use_edge_weights:
             opt.use_edge_weights = False
             print('Setting use_edge_weights to False', file = opt.log_file)
-    if opt.split_neg_pos_edges_for_feature_augmentation:
+    if opt.split_edges_for_feature_augmentation:
         opt.split_neg_pos_edges = True
 
     # configure loss
@@ -296,6 +298,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     if opt.GNN_mode:
         opt.node_feature_size = 0
         if opt.use_node_features:
+            assert opt.k is not None
             opt.node_feature_size += opt.k
         else:
             assert opt.transforms is not None or opt.pre_transforms is not None, "need feature augmentation"
@@ -312,9 +315,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
         if len(transforms_processed) > 0:
             opt.transforms_processed = torch_geometric.transforms.Compose(transforms_processed)
 
-    opt.weighted_LDP = False
-    opt.degree = False
-    opt.weighted_degree = False
+    split = 1
     opt.pre_transforms_processed = None
     if opt.pre_transforms is not None:
         pre_transforms_processed = []
@@ -323,22 +324,29 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
                 pre_transforms_processed.append(torch_geometric.transforms.Constant())
                 opt.node_feature_size += 1
             elif t_str.lower() == 'weighted_ldp':
-                # don't append to pre_transforms
-                # instead set flag to True
-                opt.weighted_LDP = True
+                pre_transforms_processed.append(WeightedLocalDegreeProfile())
+                if (opt.top_k is None and
+                    opt.sparsify_threshold is None and
+                    opt.sparsify_threshold_upper is None):
+                    print('Warning: using LDP without any sparsification')
                 opt.node_feature_size += 5
             elif t_str.lower() == 'degree':
                 opt.node_feature_size += 1
-                if opt.split_neg_pos_edges_for_feature_augmentation:
+                if opt.split_edges_for_feature_augmentation:
+                    if opt.y_log_transform:
+                        split = 0
                     opt.node_feature_size += 2
                     # additional feature for neg and pos
-                opt.degree = True
+                pre_transforms_processed.append(Degree(split_val = split,
+                            split_edges = opt.split_edges_for_feature_augmentation))
             elif t_str.lower() == 'weighted_degree':
                 opt.node_feature_size += 1
-                if opt.split_neg_pos_edges_for_feature_augmentation:
+                if opt.split_edges_for_feature_augmentation:
+                    if opt.y_log_transform:
+                        split = 0
                     opt.node_feature_size += 2
-                    # additional feature for neg and pos
-                opt.weighted_degree = True
+                pre_transforms_processed.append(Degree(weighted = True, split_val = split,
+                            split_edges = opt.split_edges_for_feature_augmentation))
             elif t_str.lower() == 'onehotdegree':
                 opt.node_feature_size += opt.m + 1
                 pre_transforms_processed.append(torch_geometric.transforms.OneHotDegree(opt.m))
@@ -464,15 +472,15 @@ def opt2list(opt):
     opt_list = [opt.model_type, opt.id, opt.data_folder, opt.y_preprocessing,
         opt.y_norm, opt.min_subtraction, opt.y_log_transform, opt.crop, opt.split_percents,
         opt.shuffle, opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr, opt.gpus,
-        opt.milestones, opt.gamma, opt.loss, opt.pretrained, opt.resume_training,
+        opt.milestones, opt.gamma, opt.loss,
         opt.k, opt.m, opt.seed, opt.act, opt.inner_act,
-        opt.head_act, opt.out_act, opt.training_norm, opt.relabel_11_to_00, opt.split_sizes]
+        opt.head_act, opt.out_act, opt.training_norm, opt.split_sizes]
     if opt.GNN_mode:
         opt_list.extend([opt.use_node_features, opt.use_edge_weights, opt.transforms,
-                        opt.pre_transforms, opt.split_neg_pos_edges_for_feature_augmentation,
+                        opt.pre_transforms, opt.split_edges_for_feature_augmentation,
                         opt.sparsify_threshold, opt.sparsify_threshold_upper, opt.top_k,
-                        opt.hidden_sizes_list, opt.message_passing, opt.head_architecture,
-                        opt.head_hidden_sizes_list])
+                        opt.hidden_sizes_list, opt.message_passing, opt.update_hidden_sizes_list,
+                         opt.head_architecture, opt.head_hidden_sizes_list])
 
     if opt.model_type == 'simpleEpiNet':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list])
@@ -512,14 +520,14 @@ def get_opt_header(model_type, GNN_mode):
     opt_list = ['model_type', 'id',  'data_folder', 'y_preprocessing',
         'y_norm', 'min_subtraction', 'y_log_transform', 'crop', 'split', 'shuffle',
         'batch_size', 'num_workers', 'n_epochs', 'lr', 'gpus', 'milestones',
-        'gamma', 'loss', 'pretrained', 'resume_training', 'k', 'm',
+        'gamma', 'loss', 'k', 'm',
         'seed', 'act', 'inner_act', 'head_act', 'out_act',
-        'training_norm', 'relabel_11_to_00', 'split_sizes']
+        'training_norm', 'split_sizes']
     if GNN_mode:
         opt_list.extend(['use_node_features','use_edge_weights', 'transforms',
-                        'pre_transforms', 'split_neg_pos_edges_for_feature_augmentation',
+                        'pre_transforms', 'split_edges_for_feature_augmentation',
                         'sparsify_threshold', 'sparsify_threshold_upper', 'top_k',
-                        'hidden_sizes_list', 'message_passing', 'head_architecture',
+                        'hidden_sizes_list', 'message_passing', 'update_hidden_sizes_list', 'head_architecture',
                         'head_hidden_sizes_list'])
     if model_type == 'simpleEpiNet':
         opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])

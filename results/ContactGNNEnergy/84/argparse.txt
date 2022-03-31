@@ -53,7 +53,7 @@ prelu
 --out_act
 prelu
 --head_architecture
-outer
+bilinear
 --head_hidden_sizes_list
 none
 --n_epochs

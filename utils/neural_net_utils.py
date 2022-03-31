@@ -1,10 +1,15 @@
 import os.path as osp
 
+import numpy as np
 import torch
 import torch_geometric
 from torch.utils.data import DataLoader
+from torch_geometric.transforms import BaseTransform
+from torch_geometric.utils import degree
+from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 
-from .dataset_classes import ContactsGraph, Sequences, SequencesContacts
+from .dataset_classes import Sequences, SequencesContacts
+from .gnn_dataset_classes import ContactsGraph
 from .networks import get_model
 
 
@@ -27,25 +32,31 @@ def load_saved_model(opt, verbose = True):
     return model, train_loss_arr, val_loss_arr
 
 ## dataset functions ##
-def get_dataset(opt, names = False, minmax = False, verbose = True, samples = None):
+def get_dataset(opt, names = False, minmax = False, verbose = True):
     if opt.GNN_mode:
-        dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.m, opt.y_preprocessing, opt.y_log_transform,
-                                            opt.y_norm, opt.min_subtraction, opt.use_node_features, opt.use_edge_weights,
-                                            opt.sparsify_threshold, opt.sparsify_threshold_upper, opt.top_k,
-                                            opt.weighted_LDP, opt.split_neg_pos_edges, opt.degree, opt.weighted_degree,
-                                            opt.split_neg_pos_edges_for_feature_augmentation,
-                                            opt.transforms_processed, opt.pre_transforms_processed,
-                                            opt.output_mode, opt.crop, samples,
-                                            opt.log_file, verbose)
+        if opt.split_sizes is not None and -1 not in opt.split_sizes:
+            max_sample = np.sum(opt.split_sizes)
+        else:
+            max_sample = float('inf')
+
+        dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.m, opt.y_preprocessing,
+                                opt.y_log_transform, opt.y_norm, opt.min_subtraction,
+                                opt.use_node_features, opt.use_edge_weights,
+                                opt.sparsify_threshold, opt.sparsify_threshold_upper,
+                                opt.top_k, opt.split_neg_pos_edges,
+                                opt.transforms_processed, opt.pre_transforms_processed,
+                                opt.output_mode, opt.crop, opt.log_file, verbose,
+                                max_sample)
         opt.root = dataset.root
         print('\n'*3)
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
         dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)
         opt.root = None
     else:
-        dataset = SequencesContacts(opt.data_folder, opt.toxx, opt.toxx_mode, opt.y_preprocessing,
-                                            opt.y_norm, opt.x_reshape, opt.ydtype,
-                                            opt.y_reshape, opt.crop, opt.min_subtraction, names, minmax)
+        dataset = SequencesContacts(opt.data_folder, opt.toxx, opt.toxx_mode,
+                                    opt.y_preprocessing, opt.y_norm,
+                                    opt.x_reshape, opt.ydtype, opt.y_reshape,
+                                    opt.crop, opt.min_subtraction, names, minmax)
         opt.root = None
 
     return dataset
@@ -53,7 +64,7 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
 def get_data_loaders(dataset, opt):
     train_dataset, val_dataset, test_dataset = split_dataset(dataset, opt)
     if opt.verbose:
-        print('lengths: ', len(train_dataset), len(val_dataset), len(test_dataset))
+        print('dataset lengths: ', len(train_dataset), len(val_dataset), len(test_dataset))
 
     if opt.GNN_mode:
         dataloader_fn = torch_geometric.loader.DataLoader
@@ -79,7 +90,7 @@ def split_dataset(dataset, opt):
     """Splits input dataset into proportions specified by split."""
     opt.N = len(dataset)
     if opt.split_percents is not None:
-        assert sum(opt.split_percents) - 1 < 1e-5, "split doesn't sum to 1: {}".format(opt.split_percents)
+        assert sum(opt.split_percents) - 1 < 1e-5, f"split doesn't sum to 1: {opt.split_percents}"
         opt.testN = math.floor(opt.N * opt.split_percents[2])
         opt.valN = math.floor(opt.N * opt.split_percents[1])
         opt.trainN = opt.N - opt.testN - opt.valN
@@ -96,10 +107,11 @@ def split_dataset(dataset, opt):
             opt.testN = opt.N - opt.trainN - opt.valN
 
     if opt.verbose:
-        print(opt.trainN, opt.valN, opt.testN, opt.N)
+        print('split sizes:', opt.trainN, opt.valN, opt.testN, opt.N)
 
     if opt.random_split:
-        return torch.utils.data.random_split(dataset, [opt.trainN, opt.valN, opt.testN], torch.Generator().manual_seed(opt.seed))
+        return torch.utils.data.random_split(dataset, [opt.trainN, opt.valN, opt.testN],
+                                            torch.Generator().manual_seed(opt.seed))
     else:
         test_dataset = dataset[:opt.testN]
         val_dataset = dataset[opt.testN:opt.testN+opt.valN]
@@ -127,3 +139,91 @@ def optimizer_to(optim, device = None):
                             subparam._grad.data = subparam._grad.data.to(device)
                     else:
                         print(subparam.data.get_device())
+
+# pytorch geometric functions
+class WeightedLocalDegreeProfile(BaseTransform):
+    '''
+    Weighted version of Local Degree Profile (LDP) from https://arxiv.org/abs/1811.03508
+    Appends WLDP features to feature vector.
+
+    Reference code: https://pytorch-geometric.readthedocs.io/en/latest/_modules/
+        torch_geometric/transforms/local_degree_profile.html#LocalDegreeProfile
+    '''
+    def __call__(self, data):
+        row, col = data.edge_index
+        N = data.num_nodes
+
+        # weighted_degree must exist
+        deg = data.weighted_degree
+        deg_col = deg[col]
+
+        min_deg, _ = scatter_min(deg_col, row, dim_size=N)
+        min_deg[min_deg > 10000] = 0
+        max_deg, _ = scatter_max(deg_col, row, dim_size=N)
+        max_deg[max_deg < -10000] = 0
+        mean_deg = scatter_mean(deg_col, row, dim_size=N)
+        std_deg = scatter_std(deg_col, row, dim_size=N)
+
+        x = torch.stack([deg, min_deg, max_deg, mean_deg, std_deg], dim=1)
+
+        if data.x is not None:
+            data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
+            data.x = torch.cat([data.x, x], dim=-1)
+        else:
+            data.x = x
+
+        return data
+
+class Degree(BaseTransform):
+    '''
+    Appends degree features to feature vector.
+
+    Reference code: https://pytorch-geometric.readthedocs.io/en/latest/_modules/
+        torch_geometric/transforms/target_indegree.html#TargetIndegree
+    '''
+    def __init__(self, norm = True, max_val = None, weighted = False,
+                split_edges = False, split_val = 0):
+        self.norm = norm
+        self.max_val = max_val
+        self.weighted = weighted
+        self.split_edges = split_edges
+        self.split_val = split_val
+
+    def __call__(self, data):
+        if self.weighted:
+            deg = data.weighted_degree
+            if self.split_edges:
+                ypos = torch.clone(data.contact_map)
+                ypos[ypos < self.split_val] = 0
+                pos_deg = torch.sum(ypos, axis = 1)
+                del ypos
+                yneg = torch.clone(data.contact_map)
+                yneg[yneg > self.split_val] = 0
+                neg_deg = torch.sum(yneg, axis = 1)
+                del yneg
+        else:
+            deg = degree(data.edge_index[0], data.num_nodes)
+            if self.split_edges:
+                pos_deg = degree(data.pos_edge_index[0], data.num_nodes)
+                neg_deg = degree(data.neg_edge_index[0], data.num_nodes)
+
+        if self.norm:
+            deg /= (deg.max() if self.max_val is None else self.max_val)
+            if self.split_edges:
+                # if statement is a safety check to avoid divide by 0
+                pos_deg /= (pos_deg.max() if pos_deg.max() > 0 else 1)
+
+                neg_deg /= (neg_deg.max() if neg_deg.max() > 0 else neg_deg.min())
+
+        if self.split_edges:
+            deg = torch.stack([deg, pos_deg, neg_deg], dim=1)
+        else:
+            deg = torch.stack([deg], dim=1)
+
+        if data.x is not None:
+            data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
+            data.x = torch.cat([graph.x, x], dim=-1)
+        else:
+            data.x = deg
+
+        return data
