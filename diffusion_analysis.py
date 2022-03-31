@@ -30,6 +30,8 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample30'):
     parser.add_argument('--N_min', type=int, default=2000)
     parser.add_argument('--mode', type=str, default='contact_diffusion')
     parser.add_argument('--jobs', type=int, default=12)
+    parser.add_argument('--sparse_format', action='store_true',
+                        help='True to store sc_contacts in sparse format')
 
     args = parser.parse_args()
     if args.odir is None:
@@ -249,13 +251,14 @@ def load_helper(args, contacts = False):
                     down_sampling = 30)
     elif osp.exists(lammps_file):
         xyz = lammps_load(lammps_file, save = False, N_min = args.N_min,
-                        down_sampling = 10)
+                        down_sampling = 1)
 
     if contacts:
         sc_contacts = load_sc_contacts(args.dir, N_max = None, triu = True,
                                         gaussian = True, zero_diag = True,
                                         jobs = args.jobs, xyz = xyz,
-                                        sparse_format = True, sparsify = True)
+                                        sparse_format = args.sparse_format,
+                                        sparsify = True)
 
 
         y_file = osp.join(args.dir, 'y.npy')
