@@ -3,6 +3,7 @@ import os.path as osp
 import numpy as np
 import torch
 import torch_geometric
+from sklearn.decomposition import PCA
 from torch.utils.data import DataLoader
 from torch_geometric.transforms import BaseTransform
 from torch_geometric.utils import degree
@@ -222,8 +223,38 @@ class Degree(BaseTransform):
 
         if data.x is not None:
             data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
-            data.x = torch.cat([graph.x, x], dim=-1)
+            data.x = torch.cat([data.x, deg], dim=-1)
         else:
             data.x = deg
+
+        return data
+
+class AdjPCATransform(BaseTransform):
+    '''Appends values from top k PCs of adjacency matrix to feature vector.'''
+    def __init__(self, k = 5):
+        self.k = k
+
+    def __call__(self, data):
+        pca = PCA(n_components = self.k)
+        y_trans = pca.fit_transform(torch.clone(data.contact_map))
+
+        y_trans = torch.tensor(y_trans, dtype = torch.float32)
+
+        if data.x is not None:
+            data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
+            data.x = torch.cat([data.x, y_trans], dim=-1)
+        else:
+            data.x = y_trans
+
+        return data
+
+class AdjTransform(BaseTransform):
+    '''Appends rows of adjacency matrix to feature vector.'''
+    def __call__(self, data):
+        if data.x is not None:
+            data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
+            data.x = torch.cat([data.x, torch.clone(data.contact_map)], dim=-1)
+        else:
+            data.x = torch.clone(data.contact_map)
 
         return data

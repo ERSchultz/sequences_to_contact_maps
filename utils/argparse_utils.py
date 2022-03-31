@@ -12,7 +12,8 @@ import torch
 import torch.nn.functional as F
 import torch_geometric.transforms
 
-from .neural_net_utils import Degree, WeightedLocalDegreeProfile
+from .neural_net_utils import (AdjPCATransform, AdjTransform, Degree,
+                               WeightedLocalDegreeProfile)
 
 
 def get_base_parser():
@@ -24,6 +25,8 @@ def get_base_parser():
                         help='True to use GNNs (uses pytorch_geometric in core_test_train)')
     parser.add_argument('--transforms', type=str2list,
                         help='list of transforms to use for GNN')
+    parser.add_argument('--transform_k', type=str2int,
+                        help='choice of k for applicable transform')
     parser.add_argument('--pre_transforms', type=str2list,
                         help='list of pre-transforms to use for GNN')
     parser.add_argument('--sparsify_threshold', type=str2float,
@@ -232,14 +235,15 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
             opt.id = max_id + 1
     elif not debug:
         txt_file = osp.join(model_type_folder, str(opt.id), 'argparse.txt')
-        assert osp.exists(txt_file), "{} does not exist".format(txt_file)
-        id_copy = opt.id
-        args = sys.argv.copy() # need to copy if running finalize_opt multiple times
-        args.insert(1, '@{}'.format(txt_file))
-        args.pop(0) # remove program name
-        opt = parser.parse_args(args) # parse again
-        # by inserting at position 1, the original arguments will override the txt file
-        opt.id = id_copy
+        if osp.exists(txt_file):
+            assert opt.resume_training, "can't remember if there was another reason to do this"
+            id_copy = opt.id
+            args = sys.argv.copy() # need to copy if running finalize_opt multiple times
+            args.insert(1, '@{}'.format(txt_file))
+            args.pop(0) # remove program name
+            opt = parser.parse_args(args) # parse again
+            # by inserting at position 1, the original arguments will override the txt file
+            opt.id = id_copy
 
     opt.ofile_folder = osp.join(model_type_folder, str(opt.id))
     if not osp.exists(opt.ofile_folder):
@@ -350,6 +354,14 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
             elif t_str.lower() == 'onehotdegree':
                 opt.node_feature_size += opt.m + 1
                 pre_transforms_processed.append(torch_geometric.transforms.OneHotDegree(opt.m))
+            elif t_str.lower() == 'adj':
+                opt.node_feature_size += opt.m
+                pre_transforms_processed.append(AdjTransform())
+            elif t_str.lower() == 'adjpca':
+                if opt.transform_k is None:
+                    opt.transform_k = 10
+                opt.node_feature_size += opt.transform_k
+                pre_transforms_processed.append(AdjPCATransform(k = opt.transform_k))
             else:
                 raise Exception("Invalid transform {}".format(t_str))
         if len(pre_transforms_processed) > 0:

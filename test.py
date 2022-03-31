@@ -163,8 +163,8 @@ def debugModel(model_type):
         opt.use_node_features = False
         opt.use_edge_weights = True
         opt.transforms=str2list('none')
-        opt.pre_transforms=str2list('weighted_degree')
-        opt.split_edges_for_feature_augmentation = True
+        opt.pre_transforms=str2list('AdjPCA')
+        opt.split_edges_for_feature_augmentation = False
         opt.top_k = None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
@@ -201,9 +201,9 @@ def debugModel(model_type):
     opt.print_params = True
     opt.gpus = 0
     opt.delete_root = True
-    opt.use_scratch = False
+    opt.use_scratch = True
     opt.print_mod = 1
-    # opt.id = 39
+    opt.id = None
     # opt.resume_training = True
 
     opt = finalize_opt(opt, parser, False, debug = True)
