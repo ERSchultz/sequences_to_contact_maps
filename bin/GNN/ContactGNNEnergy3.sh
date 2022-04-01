@@ -18,6 +18,8 @@ splitSizes='1000-200-0'
 messagePassing='GCN'
 useEdgeWeights='true'
 yLogTransform='false'
+sparsifyThreshold=0.5
+sparsifyThresholdUpper=1.5
 preTransforms='weighted_degree'
 
 for lr in 1e-3 1e-4
