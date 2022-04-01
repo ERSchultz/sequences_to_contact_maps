@@ -153,27 +153,27 @@ def debugModel(model_type):
         opt.GNN_mode = True
         opt.output_mode = 'energy'
         opt.encoder_hidden_sizes_list=None
-        opt.update_hidden_sizes_list=[100, 16]
-        opt.hidden_sizes_list=[8, 8, 3]
-        opt.act = 'prelu'
-        opt.inner_act = 'prelu'
-        opt.out_act = 'prelu'
-        opt.head_act = 'prelu'
+        opt.update_hidden_sizes_list=None
+        opt.hidden_sizes_list=[7, 3]
+        opt.act = 'relu'
+        opt.inner_act = 'relu'
+        opt.out_act = 'relu'
+        opt.head_act = 'relu'
         opt.use_node_features = False
-        opt.use_edge_weights = True
+        opt.use_edge_weights = False
         opt.transforms=str2list('none')
-        opt.pre_transforms=str2list('AdjPCA')
-        opt.split_edges_for_feature_augmentation = False
+        opt.pre_transforms=str2list('degree')
+        opt.split_edges_for_feature_augmentation = True
         opt.top_k = None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.relabel_11_to_00 = False
-        opt.y_log_transform = True
+        opt.y_log_transform = False
         opt.head_architecture = 'bilinear'
         opt.head_hidden_sizes_list = None
-        # opt.crop=[0,50]
-        # opt.m = 50
-        # opt.use_bias = False
+        opt.crop=[0,4]
+        opt.m = 4
+        opt.use_bias = False
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
         opt.autoencoder_mode = True
@@ -200,7 +200,7 @@ def debugModel(model_type):
     opt.print_params = True
     opt.gpus = 0
     opt.delete_root = True
-    opt.use_scratch = True
+    opt.use_scratch = False
     opt.print_mod = 1
     opt.id = None
     # opt.resume_training = True
@@ -357,8 +357,8 @@ def main():
 
 if __name__ == '__main__':
     # main()
-    edit_argparse()
-    # debugModel('ContactGNNEnergy')
+    # edit_argparse()
+    debugModel('ContactGNNEnergy')
     # test_lammps_load()
     # plot_fixed()
     # test_argpartition(10)

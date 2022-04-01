@@ -135,26 +135,28 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                     y = torch.reshape(y, (-1, opt.m, opt.m))
                 else:
                     y = data.y
-                yhat = model(data)
-            elif opt.autoencoder_mode and opt.output_mode == 'sequence':
-                x = data[0]
-                x = x.to(opt.device)
-                y = x
-                yhat = model(x)
-            else:
-                x, y = data
-                x = x.to(opt.device)
-                y = y.to(opt.device)
-                yhat = model(x)
-            if opt.verbose:
-                if 'x' in locals():
-                    print(f'x={x}, shape={x.shape}')
-                if opt.GNN_mode:
+                if opt.verbose:
                     print(f'x={data.x}, shape={data.x.shape}, min={torch.min(data.x).item()}, max={torch.max(data.x).item()}')
                     if data.edge_attr is not None:
-                        print(f'edge_attr, min={torch.min(data.edge_attr).item()}, max={torch.max(data.edge_attr).item()}')
-                print(f'y={y}, shape={y.shape}, min={torch.min(y).item()}, max={torch.max(y).item()}')
-                print(f'yhat={yhat}, shape={yhat.shape}, min={torch.min(yhat).item()}, max={torch.max(yhat).item()}')
+                        print(f'edge_attr, shape={data.edge_attr.shape},min={torch.min(data.edge_attr).item()}, max={torch.max(data.edge_attr).item()}')
+                    print(f'y={y}, shape={y.shape}, min={torch.min(y).item()}, max={torch.max(y).item()}')
+                yhat = model(data)
+                if opt.verbose:
+                    print(f'yhat={yhat}, shape={yhat.shape}, min={torch.min(yhat).item()}, max={torch.max(yhat).item()}')
+            else:
+                if opt.autoencoder_mode and opt.output_mode == 'sequence':
+                    x = data[0]
+                    x = x.to(opt.device)
+                    y = x
+                else:
+                    x, y = data
+                    x = x.to(opt.device)
+                    y = y.to(opt.device)
+                yhat = model(x)
+                if opt.verbose:
+                    print(f'x={x}, shape={x.shape}')
+                    print(f'y={y}, shape={y.shape}, min={torch.min(y).item()}, max={torch.max(y).item()}')
+                    print(f'yhat={yhat}, shape={yhat.shape}, min={torch.min(yhat).item()}, max={torch.max(yhat).item()}')
             loss = opt.criterion(yhat, y)
             avg_loss += loss.item()
             loss.backward()

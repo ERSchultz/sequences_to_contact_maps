@@ -9,6 +9,7 @@ import torch_geometric.nn as gnn
 # from .argparse_utils import finalize_opt, get_base_parser
 from .base_networks import (AverageTo2d, ConvBlock, DeconvBlock, LinearBlock,
                             Symmetrize2D, UnetBlock, act2module)
+from .pyg_fns import WeightedSignedConv
 
 
 ## model functions ##
@@ -520,9 +521,10 @@ class ContactGNN(nn.Module):
             self.model = None
         elif self.message_passing == 'gcn':
             if self.use_edge_weights:
-                fn_header = 'x, edge_index, edge_attr -> x'
+                inputs = 'x, edge_index, edge_attr'
             else:
-                fn_header = 'x, edge_index -> x'
+                inputs = 'x, edge_index'
+            fn_header = f'{inputs} -> x'
 
             for i, output_size in enumerate(MP_hidden_sizes_list):
                 model.append((gnn.GCNConv(input_size, output_size, bias = use_bias),
@@ -542,12 +544,18 @@ class ContactGNN(nn.Module):
 
             self.model = gnn.Sequential('x, edge_index, edge_attr', model)
         elif self.message_passing == 'signedconv':
-            assert not self.use_edge_weights and self.head_architecture is not None
+            if self.use_edge_weights:
+                inputs = 'x, pos_edge_index, neg_edge_index, pos_edge_attr, neg_edge_attr'
+            else:
+                inputs = 'x, pos_edge_index, neg_edge_index'
+            fn_header = f'{inputs} -> x'
+            assert self.head_architecture is not None
             first_layer = True
 
             for output_size in MP_hidden_sizes_list:
-                model.append((gnn.SignedConv(input_size, output_size, first_aggr = first_layer, bias = use_bias),
-                            'x, pos_edge_index, neg_edge_index -> x'))
+                model.append((WeightedSignedConv(input_size, output_size,
+                                first_aggr = first_layer, bias = use_bias),
+                                fn_header))
                 input_size = output_size
                 input_size *= 2
                 # SignedConv convention that output_size is the size of the
@@ -568,7 +576,7 @@ class ContactGNN(nn.Module):
             model.append(self.inner_act)
 
             input_size *= 2
-            self.model = gnn.Sequential('x, pos_edge_index, neg_edge_index', model)
+            self.model = gnn.Sequential(inputs, model)
         elif self.message_passing == 'z':
             # uses prior model to predict particle types
             # designed for debugging
@@ -659,8 +667,11 @@ class ContactGNN(nn.Module):
         elif self.message_passing == 'gcn':
             latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
         elif self.message_passing == 'signedconv':
-            latent = self.model(graph.x, graph.edge_index, graph.neg_edge_index)
-
+            if self.use_edge_weights:
+                latent = self.model(graph.x, graph.pos_edge_index, graph.neg_edge_index,
+                                    graph.pos_edge_attr, graph.neg_edge_attr)
+            else:
+                latent = self.model(graph.x, graph.pos_edge_index, graph.neg_edge_index)
 
         if self.head_architecture is None:
             out = latent

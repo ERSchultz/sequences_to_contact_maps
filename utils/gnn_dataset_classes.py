@@ -122,7 +122,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
             sample = int(osp.split(raw_folder)[1][6:])
             x, psi = self.process_x_psi(raw_folder)
             self.contact_map = self.process_y(raw_folder)
-            edge_index, pos_edge_index, neg_edge_index, edge_weight = self.sparsify_adj_mat()
+            (edge_index, edge_weight, pos_edge_index, pos_edge_weight,
+                    neg_edge_index, neg_edge_weight) = self.sparsify_adj_mat()
 
             if self.use_node_features:
                 graph = torch_geometric.data.Data(x = x, edge_index = edge_index, edge_attr = edge_weight)
@@ -134,12 +135,14 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.num_nodes = self.m
             graph.pos_edge_index = pos_edge_index
             graph.neg_edge_index = neg_edge_index
+            graph.pos_edge_attr = pos_edge_weight
+            graph.neg_edge_attr = neg_edge_weight
             graph.weighted_degree = self.weighted_degree # needed for pre_transform delete later to save RAM
             graph.contact_map = self.contact_map
 
             if self.pre_transform is not None:
                 graph = self.pre_transform(graph)
-            del graph.weighted_degree
+            del graph.weighted_degree # no longer needed
 
             if self.output != 'contact':
                 del graph.contact_map
@@ -264,60 +267,35 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def sparsify_adj_mat(self):
         edge_index = self.contact_map.nonzero().t()
         if self.split_neg_pos:
+            edge_weight = None
             if self.y_log_transform:
                 split_val = 0
             else:
                 split_val = 1
             pos_edge_index = (self.contact_map > split_val).nonzero().t()
             neg_edge_index = (self.contact_map < split_val).nonzero().t()
+            if self.use_edge_weights:
+                row, col = pos_edge_index
+                pos_edge_weight = self.contact_map[row, col]
+                row, col = neg_edge_index
+                neg_edge_weight = self.contact_map[row, col]
+            else:
+                pos_edge_weight = None
+                neg_edge_weight = None
         else:
             pos_edge_index = None
             neg_edge_index = None
+            pos_edge_weight = None
+            neg_edge_weight = None
+            if self.use_edge_weights:
+                row, col = edge_index
+                edge_weight = self.contact_map[row, col]
+            else:
+                edge_weight = None
 
-        if self.use_edge_weights:
-            row, col = edge_index
-            edge_weight = self.contact_map[row, col]
-        else:
-            edge_weight = None
 
-        return edge_index, pos_edge_index, neg_edge_index, edge_weight
-
-    def concatDegree(self, data, weighted):
-        if weighted:
-            deg = self.weighted_degree
-            if self.split_neg_pos_edges_for_feature_augmentation:
-                ypos = torch.clone(self.contact_map)
-                ypos[ypos < 0] = 0
-                pos_deg = torch.sum(ypos, axis = 1)
-                del ypos
-                yneg = torch.clone(self.contact_map)
-                yneg[yneg > 0] = 0
-                yneg *= -1
-                neg_deg = torch.sum(yneg, axis = 1)
-                del yneg
-        else:
-            deg = torch_geometric.utils.degree(data.edge_index[0], data.num_nodes)
-            if self.split_neg_pos_edges_for_feature_augmentation:
-                pos_deg = torch_geometric.utils.degree(data.pos_edge_index[0], data.num_nodes)
-                neg_deg = torch_geometric.utils.degree(data.neg_edge_index[0], data.num_nodes)
-        if self.split_neg_pos_edges_for_feature_augmentation:
-            if torch.max(pos_deg) > 0:
-                # this condition failed during testing with small subgraphs
-                # shouldn't be a concern otherwise
-                pos_deg = pos_deg / torch.max(pos_deg)
-            if torch.max(neg_deg) > 0:
-                neg_deg = neg_deg / torch.max(neg_deg)
-            deg = torch.stack([deg, pos_deg, neg_deg], dim=1)
-        else:
-            deg = torch.stack([deg], dim=1)
-
-        if data.x is not None:
-            data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
-            data.x = torch.cat([graph.x, x], dim=-1)
-        else:
-            data.x = deg
-
-        return data
+        return (edge_index, edge_weight, pos_edge_index, pos_edge_weight,
+                neg_edge_index, neg_edge_weight)
 
     def plotDegreeProfile(self):
         # y is weighted adjacency matrix

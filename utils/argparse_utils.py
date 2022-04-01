@@ -12,8 +12,8 @@ import torch
 import torch.nn.functional as F
 import torch_geometric.transforms
 
-from .neural_net_utils import (AdjPCATransform, AdjTransform, Degree,
-                               WeightedLocalDegreeProfile)
+from .pyg_fns import (AdjPCATransform, AdjTransform, Degree,
+                      WeightedLocalDegreeProfile)
 
 
 def get_base_parser():
@@ -267,11 +267,6 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     opt.split_neg_pos_edges = False
     if opt.message_passing.lower() == 'signedconv':
         opt.split_neg_pos_edges = True
-        if opt.use_edge_weights:
-            opt.use_edge_weights = False
-            print('Setting use_edge_weights to False', file = opt.log_file)
-    if opt.split_edges_for_feature_augmentation:
-        opt.split_neg_pos_edges = True
 
     # configure loss
     if opt.loss == 'mse':
@@ -319,7 +314,10 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
         if len(transforms_processed) > 0:
             opt.transforms_processed = torch_geometric.transforms.Compose(transforms_processed)
 
-    split = 1
+    if opt.y_log_transform:
+        split = 0
+    else:
+        split = 1
     opt.pre_transforms_processed = None
     if opt.pre_transforms is not None:
         pre_transforms_processed = []
@@ -337,8 +335,6 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
             elif t_str.lower() == 'degree':
                 opt.node_feature_size += 1
                 if opt.split_edges_for_feature_augmentation:
-                    if opt.y_log_transform:
-                        split = 0
                     opt.node_feature_size += 2
                     # additional feature for neg and pos
                 pre_transforms_processed.append(Degree(split_val = split,
@@ -346,8 +342,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
             elif t_str.lower() == 'weighted_degree':
                 opt.node_feature_size += 1
                 if opt.split_edges_for_feature_augmentation:
-                    if opt.y_log_transform:
-                        split = 0
+
                     opt.node_feature_size += 2
                 pre_transforms_processed.append(Degree(weighted = True, split_val = split,
                             split_edges = opt.split_edges_for_feature_augmentation))
