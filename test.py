@@ -160,19 +160,19 @@ def debugModel(model_type):
         opt.out_act = 'relu'
         opt.head_act = 'relu'
         opt.use_node_features = False
-        opt.use_edge_weights = False
+        opt.use_edge_weights = True
         opt.transforms=str2list('none')
-        opt.pre_transforms=str2list('degree')
+        opt.pre_transforms=str2list('AdjPCA-degree')
         opt.split_edges_for_feature_augmentation = True
         opt.top_k = None
-        opt.sparsify_threshold = None
+        opt.sparsify_threshold = 0.176
         opt.sparsify_threshold_upper = None
         opt.relabel_11_to_00 = False
-        opt.y_log_transform = False
+        opt.y_log_transform = True
         opt.head_architecture = 'bilinear'
         opt.head_hidden_sizes_list = None
-        opt.crop=[0,4]
-        opt.m = 4
+        # opt.crop=[0,4]
+        # opt.m = 4
         opt.use_bias = False
     elif model_type == 'SequenceFCAutoencoder':
         opt.output_mode = 'sequence'
@@ -202,7 +202,7 @@ def debugModel(model_type):
     opt.delete_root = True
     opt.use_scratch = False
     opt.print_mod = 1
-    opt.id = None
+    opt.id = 12
     # opt.resume_training = True
 
     opt = finalize_opt(opt, parser, False, debug = True)

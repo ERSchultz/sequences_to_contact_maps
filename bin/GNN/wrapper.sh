@@ -1,8 +1,7 @@
 #! /bin/bash
 
 
-id=90
-for i in 1 2 3 4
+for i in 1 2 3 4 5 6
 do
-  sbatch ~/sequences_to_contact_maps/bin/GNN/ContactGNNEnergy${i}.sh
+  bash ~/sequences_to_contact_maps/bin/GNN/ContactGNNEnergy${i}.sh
 done
