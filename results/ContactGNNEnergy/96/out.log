@@ -172,3 +172,34 @@ Epoch 88, loss = nan
 Mean test/val loss: nan
 
 Epoch 90, loss = nan
+Mean test/val loss: nan
+
+Epoch 92, loss = nan
+Mean test/val loss: nan
+
+Epoch 94, loss = nan
+Mean test/val loss: nan
+
+Epoch 96, loss = nan
+Mean test/val loss: nan
+
+Epoch 98, loss = nan
+Mean test/val loss: nan
+
+Epoch 100, loss = nan
+Mean test/val loss: nan
+
+
+Total parameters: 51,331
+Total training + validation time: 10.0 hours
+Final val loss: nan
+
+#### Plotting Script ####
+Prediction Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/96/sample1: nan
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/96/sample2: nan
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/96/sample3: nan
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/96/sample4: nan
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/96/sample5: nan
+Loss: nan +- nan
+
