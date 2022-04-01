@@ -5,7 +5,7 @@
 #SBATCH --output=logFiles/cleanup.log
 #SBATCH --time=2:00:00
 
-cd ~/scratch-midway2/dataset_01_17_22/ContactGNNEnergy1
+cd ~/scratch-midway2/dataset_01_17_22/ContactGNNEnergy5
 
 rm graph_1* &
 rm graph_2* &
@@ -16,4 +16,18 @@ wait
 
 cd ..
 
-rm -r ContactGNNEnergy1
+rm -r ContactGNNEnergy5
+
+
+cd ConstantGNNEnergy4
+
+rm graph_1* &
+rm graph_2* &
+rm graph_3* &
+rm graph_4* &
+
+wait
+
+cd ..
+
+rm -r ContactGNNEnergy5
