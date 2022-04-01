@@ -37,6 +37,8 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample30'):
     if args.odir is None:
         args.odir = osp.join(args.dir, args.mode)
     else:
+        if not osp.exists(args.odir):
+            os.mkdir(args.odir, mode = 0o755)
         args.odir = osp.join(args.odir, args.mode)
     if not osp.exists(args.odir):
         os.mkdir(args.odir, mode = 0o755)

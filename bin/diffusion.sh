@@ -1,5 +1,5 @@
 #! /bin/bash
-#SBATCH --job-name=diffusion
+#SBATCH --job-name=diff
 #SBATCH --partition=bigmem2
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=28
