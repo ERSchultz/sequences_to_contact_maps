@@ -1,21 +1,5 @@
-Loaded xyz with shape (1209, 3620, 3)
-xyz load time: 185.124 s
-found 20 total CPUs, 20 available CPUs, using 15
-(1209, 6554010)
-sc_contacts size: 14.3 Gigabytes
-Loaded 1209 sc contacts
-sc load time: 215.47 s
-xyz size: 105.0 Megabytes
-sc_contacts size: 14.3 Gigabytes
-Traceback (most recent call last):
-  File "diffusion_analysis.py", line 435, in <module>
-    main()
-  File "diffusion_analysis.py", line 428, in main
-    contact_diffusion()
-  File "diffusion_analysis.py", line 325, in contact_diffusion
-    sc_contacts_diag = diagonal_preprocessing_bulk(sc_contacts, mean_per_diag,
-  File "/home/erschultz/sequences_to_contact_maps/utils/utils.py", line 128, in diagonal_preprocessing_bulk
-    result = y_arr.copy()
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/site-packages/scipy/sparse/_data.py", line 92, in copy
-    return self._with_data(self.data.copy(), copy=True)
-numpy.core._exceptions.MemoryError: Unable to allocate 13.3 GiB for an array with shape (1784756836,) and data type float64
+Loaded xyz with shape (12084, 3620, 3)
+xyz load time: 115.303 s
+found 28 total CPUs, 28 available CPUs, using 20
+/tmp/slurmd/job18929055/slurm_script: line 18: 44714 Killed                  python3 diffusion_analysis.py --dir $dir --odir $odir --jobs $jobs --sparse_format
+slurmstepd-midway2-bigmem02: error: Detected 1 oom-kill event(s) in step 18929055.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.

@@ -1,21 +1,27 @@
-Loaded xyz with shape (1209, 3620, 3)
-xyz load time: 192.562 s
-found 20 total CPUs, 20 available CPUs, using 20
-(1209, 6554010)
-sc_contacts size: 14.3 Gigabytes
-Loaded 1209 sc contacts
-sc load time: 169.979 s
-xyz size: 105.0 Megabytes
-sc_contacts size: 14.3 Gigabytes
+Loaded xyz with shape (12084, 3620, 3)
+xyz load time: 102.296 s
+found 28 total CPUs, 28 available CPUs, using 20
+Exception in thread Thread-1:
 Traceback (most recent call last):
-  File "diffusion_analysis.py", line 435, in <module>
-    main()
-  File "diffusion_analysis.py", line 428, in main
-    contact_diffusion()
-  File "diffusion_analysis.py", line 325, in contact_diffusion
-    sc_contacts_diag = diagonal_preprocessing_bulk(sc_contacts, mean_per_diag,
-  File "/home/erschultz/sequences_to_contact_maps/utils/utils.py", line 128, in diagonal_preprocessing_bulk
-    result = y_arr.copy()
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/site-packages/scipy/sparse/_data.py", line 92, in copy
-    return self._with_data(self.data.copy(), copy=True)
-numpy.core._exceptions.MemoryError: Unable to allocate 13.3 GiB for an array with shape (1784234043,) and data type float64
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/threading.py", line 932, in _bootstrap_inner
+    self.run()
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/threading.py", line 870, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 513, in _handle_workers
+    cls._maintain_pool(ctx, Process, processes, pool, inqueue,
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 337, in _maintain_pool
+    Pool._repopulate_pool_static(ctx, Process, processes, pool,
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 326, in _repopulate_pool_static
+    w.start()
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/process.py", line 121, in start
+    self._popen = self._Popen(self)
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/context.py", line 277, in _Popen
+    return Popen(process_obj)
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/popen_fork.py", line 19, in __init__
+    self._launch(process_obj)
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/popen_fork.py", line 70, in _launch
+    self.pid = os.fork()
+OSError: [Errno 12] Cannot allocate memory
+slurmstepd-midway2-bigmem02: error: *** JOB 18920364 ON midway2-bigmem02 CANCELLED AT 2022-04-01T10:14:48 ***
+slurmstepd-midway2-bigmem02: error: Detected 10 oom-kill event(s) in step 18920364.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+slurmstepd-midway2-bigmem02: error: *** JOB 18920364 STEPD TERMINATED ON midway2-bigmem02 AT 2022-04-01T10:15:49 DUE TO JOB NOT ENDING WITH SIGNALS ***
