@@ -36,7 +36,7 @@ false
 none
 --pre_transforms
 degree
---split_neg_pos_edges_for_feature_augmentation
+--split_edges_for_feature_augmentation
 true
 --top_k
 none
