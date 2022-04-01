@@ -19,7 +19,7 @@ messagePassing='GCN'
 useEdgeWeights='true'
 yLogTransform='false'
 sparsifyThreshold=1
-preTransforms='degree'
+preTransforms='AdjPCA-degree'
 split_edges_for_feature_augmentation='false'
 
 for lr in 1e-3 1e-4

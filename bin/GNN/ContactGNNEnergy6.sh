@@ -15,7 +15,7 @@ source activate python3.8_pytorch1.8.1_cuda10.2_2
 
 rootName='ContactGNNEnergy6' # change to run multiple bash files at once
 splitSizes='1000-200-0'
-preTransforms='AdjPCA'
+preTransforms='AdjPCA-weighted_LDP'
 
 for lr in 1e-3 1e-4
 do

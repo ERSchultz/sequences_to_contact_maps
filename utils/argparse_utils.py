@@ -233,10 +233,10 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
                     if id > max_id:
                         max_id = id
             opt.id = max_id + 1
-    elif not debug:
+    else:
         txt_file = osp.join(model_type_folder, str(opt.id), 'argparse.txt')
         if osp.exists(txt_file):
-            assert opt.resume_training, "can't remember if there was another reason to do this"
+            assert opt.resume_training or debug, f"issue with id={opt.id}"
             id_copy = opt.id
             args = sys.argv.copy() # need to copy if running finalize_opt multiple times
             args.insert(1, '@{}'.format(txt_file))
@@ -482,11 +482,12 @@ def save_args(opt):
 
 def opt2list(opt):
     opt_list = [opt.model_type, opt.id, opt.data_folder, opt.y_preprocessing,
-        opt.y_norm, opt.min_subtraction, opt.y_log_transform, opt.crop, opt.split_percents,
-        opt.shuffle, opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr, opt.gpus,
+        opt.y_norm, opt.min_subtraction, opt.y_log_transform, opt.crop]
+    opt_list.append(opt.split_percents if opt.split_percents is not None else opt.split_sizes)
+    opt_list.extend([opt.shuffle, opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr, opt.gpus,
         opt.milestones, opt.gamma, opt.loss,
         opt.k, opt.m, opt.seed, opt.act, opt.inner_act,
-        opt.head_act, opt.out_act, opt.training_norm, opt.split_sizes]
+        opt.head_act, opt.out_act, opt.training_norm])
     if opt.GNN_mode:
         opt_list.extend([opt.use_node_features, opt.use_edge_weights, opt.transforms,
                         opt.pre_transforms, opt.split_edges_for_feature_augmentation,
@@ -534,7 +535,7 @@ def get_opt_header(model_type, GNN_mode):
         'batch_size', 'num_workers', 'n_epochs', 'lr', 'gpus', 'milestones',
         'gamma', 'loss', 'k', 'm',
         'seed', 'act', 'inner_act', 'head_act', 'out_act',
-        'training_norm', 'split_sizes']
+        'training_norm']
     if GNN_mode:
         opt_list.extend(['use_node_features','use_edge_weights', 'transforms',
                         'pre_transforms', 'split_edges_for_feature_augmentation',

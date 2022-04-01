@@ -56,12 +56,11 @@ def edit_argparse():
                 if osp.isdir(id_path):
                     arg_file = osp.join(id_path, 'argparse.txt')
                     if osp.exists(arg_file):
-                        print(arg_file)
                         with open(arg_file, 'r') as f:
                             lines = f.readlines()
                         for i, line in enumerate(lines):
-                            if line == '--n\n':
-                                lines[i] = '--m\n'
+                            if line == '--split_neg_pos_edges_for_feature_augmentation\n':
+                                lines[i] = '--split_edges_for_feature_augmentation\n'
                                 break
                         with open(arg_file, 'w') as f:
                             f.write("".join(lines))
@@ -358,8 +357,8 @@ def main():
 
 if __name__ == '__main__':
     # main()
-    # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    edit_argparse()
+    # debugModel('ContactGNNEnergy')
     # test_lammps_load()
     # plot_fixed()
     # test_argpartition(10)

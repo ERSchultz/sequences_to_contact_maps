@@ -46,7 +46,7 @@ def update_result_tables(model_type = None, mode = None, output_mode = 'contact'
                 if osp.exists(txt_file):
                     opt = parser.parse_args(['@{}'.format(txt_file)])
                     opt.id = int(id)
-                    opt = finalize_opt(opt, parser, local = True)
+                    opt = finalize_opt(opt, parser, local = True, debug = True)
                     opt_list = opt2list(opt)
                     if output_mode == 'contact':
                         with open(osp.join(id_path, 'PCA_results.txt'), 'r') as f:
@@ -104,5 +104,5 @@ if __name__ == '__main__':
     #                     crop_size = None)
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
     update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
-    # plot_combined_models('ContactGNNEnergy', [83, 84])
+    # plot_combined_models('ContactGNNEnergy', [92, 95])
     # main()
