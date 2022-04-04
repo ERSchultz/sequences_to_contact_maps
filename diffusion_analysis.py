@@ -32,7 +32,7 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample30'):
     parser.add_argument('--jobs', type=int, default=12)
     parser.add_argument('--sparse_format', action='store_true',
                         help='True to store sc_contacts in sparse format')
-    parser.add_argument('--down_sampling', default=1)
+    parser.add_argument('--down_sampling', type=int, default=1)
 
     args = parser.parse_args()
     if args.odir is None:
