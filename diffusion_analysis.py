@@ -428,6 +428,7 @@ def plot_gif_michrom():
 
 def main():
     args = getArgs()
+    print(args)
     if args.mode == 'xyz_diffusion':
         xyz_diffusion()
     elif args.mode == 'contact_diffusion':
