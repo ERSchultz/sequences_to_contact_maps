@@ -92,8 +92,7 @@ def diagonal_preprocessing(y, mean_per_diagonal, triu = False):
 
 def diagonal_preprocessing_bulk(y_arr, mean_per_diagonal, triu = False):
     '''Faster version of diagonal_preprocessing when using many contact maps'''
-    y_arr = y_arr.astype('float64')
-
+    y_arr = y_arr.astype('float64', copy=False)
 
     zeros = np.argwhere(mean_per_diagonal == 0)
     if len(zeros) > 0:
@@ -129,7 +128,7 @@ def diagonal_preprocessing_bulk(y_arr, mean_per_diagonal, triu = False):
         result.data /= np.take(expected, result.indices)
     else:
         result = y_arr / expected
-        
+
     return result
 
 def percentile_preprocessing(y, percentiles):
