@@ -1,5 +1,0 @@
-Loaded xyz with shape (12084, 3620, 3)
-xyz load time: 115.303 s
-found 28 total CPUs, 28 available CPUs, using 20
-/tmp/slurmd/job18929055/slurm_script: line 18: 44714 Killed                  python3 diffusion_analysis.py --dir $dir --odir $odir --jobs $jobs --sparse_format
-slurmstepd-midway2-bigmem02: error: Detected 1 oom-kill event(s) in step 18929055.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
