@@ -6,7 +6,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
-#SBATCH --mem-per-cpu=2000
+#SBATCH --mem-per-cpu=3000
 
 cd ~/sequences_to_contact_maps
 
