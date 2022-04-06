@@ -138,7 +138,7 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                 if opt.verbose:
                     print(f'x={data.x}, shape={data.x.shape}, min={torch.min(data.x).item()}, max={torch.max(data.x).item()}')
                     if data.edge_attr is not None:
-                        print(f'edge_attr, shape={data.edge_attr.shape},min={torch.min(data.edge_attr).item()}, max={torch.max(data.edge_attr).item()}')
+                        print(f'edge_attr={data.edge_attr}, shape={data.edge_attr.shape},min={torch.min(data.edge_attr).item()}, max={torch.max(data.edge_attr).item()}')
                     print(f'y={y}, shape={y.shape}, min={torch.min(y).item()}, max={torch.max(y).item()}')
                 yhat = model(data)
                 if opt.verbose:

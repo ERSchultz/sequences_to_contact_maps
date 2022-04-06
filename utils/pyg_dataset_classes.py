@@ -23,7 +23,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
     # https://github.com/rusty1s/pytorch_geometric/issues/1511
     def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag',
                 y_log_transform = False, y_norm = 'instance', min_subtraction = True,
-                use_node_features = True, use_edge_weights = True,
+                use_node_features = True, use_edge_weights = True, use_edge_attr = False,
                 sparsify_threshold = None, sparsify_threshold_upper = None,
                 top_k = None, split_neg_pos_edges = False,
                 transform = None, pre_transform = None, output = 'contact',
@@ -39,7 +39,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y_norm: type of normalization ('instance', 'batch')
             min_subtraction: True to subtract min during normalization
             use_node_features: True to use bead labels as node features
-            use_edge_weights: True to use contact map as edge weights
+            use_edge_weights: True to use contact map as edge weights (1d array)
+            use_edge_attr: True to use contact map as edge attributes (2d array)
             sparsify_threshold: lower threshold for sparsifying contact map (None to skip)
             sparsify_threshold_upper: upper threshold for sparsifying contact map (None to skip)
             top_k: top k edges to keep, ranked by y_ij (None to skip)
@@ -61,6 +62,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.min_subtraction = min_subtraction
         self.use_node_features = use_node_features
         self.use_edge_weights = use_edge_weights
+        self.use_edge_attr = use_edge_attr
         self.sparsify_threshold = sparsify_threshold
         self.sparsify_threshold_upper = sparsify_threshold_upper
         self.top_k = top_k
@@ -274,11 +276,14 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 split_val = 1
             pos_edge_index = (self.contact_map > split_val).nonzero().t()
             neg_edge_index = (self.contact_map < split_val).nonzero().t()
-            if self.use_edge_weights:
+            if self.use_edge_weights or self.use_edge_attr:
                 row, col = pos_edge_index
                 pos_edge_weight = self.contact_map[row, col]
                 row, col = neg_edge_index
                 neg_edge_weight = self.contact_map[row, col]
+                if self.use_edge_attr:
+                    pos_edge_weight = pos_edge_weight.reshape(-1, 1)
+                    neg_edge_weight = neg_edge_weight.reshape(-1, 1)
             else:
                 pos_edge_weight = None
                 neg_edge_weight = None
@@ -290,6 +295,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
             if self.use_edge_weights:
                 row, col = edge_index
                 edge_weight = self.contact_map[row, col]
+                if self.use_edge_attr:
+                    edge_weight = edge_weight.reshape(-1, 1)
             else:
                 edge_weight = None
 

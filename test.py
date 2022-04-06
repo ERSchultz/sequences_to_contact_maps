@@ -103,26 +103,6 @@ def debugModel(model_type):
         opt.kernel_w_list=str2list('5-5-5')
         opt.hidden_sizes_list=str2list('32-64-128')
         opt.dilation_list=str2list('2-4-8-16-32-64-128-256-512')
-    elif model_type == 'GNNAutoencoder':
-        opt.GNN_mode = True
-        opt.autoencoder_mode=True
-        opt.hidden_sizes_list=str2list('8-2')
-        opt.out_act = 'relu'
-        opt.use_node_features = False
-        opt.pre_transforms=str2list('constant')
-        opt.top_k = 100
-    elif model_type == 'GNNAutoencoder2':
-        opt.GNN_mode = True
-        opt.autoencoder_mode=True
-        opt.hidden_sizes_list=str2list('12-4')
-        opt.head_hidden_sizes_list=str2list('200-25')
-        opt.out_act = 'relu'
-        opt.head_architecture ='FCAutoencoder'
-        opt.use_node_features = False
-        opt.transforms=str2list('constant')
-        opt.pre_transforms=str2list('weighted_LDP')
-        opt.top_k = 500
-        opt.parameter_sharing = True
     elif model_type == 'ContactGNN':
         opt.GNN_mode = True
         opt.output_mode = 'sequence'
@@ -149,7 +129,7 @@ def debugModel(model_type):
     elif model_type == 'ContactGNNEnergy':
         opt.loss = 'mse'
         opt.y_norm = None
-        opt.message_passing='signedconv'
+        opt.message_passing='gcn'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
         opt.encoder_hidden_sizes_list=None
@@ -159,32 +139,20 @@ def debugModel(model_type):
         opt.inner_act = 'relu'
         opt.out_act = 'relu'
         opt.head_act = 'relu'
-        opt.use_node_features = False
-        opt.use_edge_weights = True
+        opt.use_edge_weights = False
+        opt.use_edge_attr = True
         opt.transforms=str2list('none')
-        opt.pre_transforms=str2list('AdjPCA-degree')
+        opt.pre_transforms=str2list('degree-GeneticDistance')
         opt.split_edges_for_feature_augmentation = True
         opt.top_k = None
-        opt.sparsify_threshold = 0.176
+        opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
-        opt.relabel_11_to_00 = False
-        opt.y_log_transform = True
+        opt.y_log_transform = False
         opt.head_architecture = 'bilinear'
         opt.head_hidden_sizes_list = None
-        # opt.crop=[0,4]
-        # opt.m = 4
+        opt.crop=[0,5]
+        opt.m = 5
         opt.use_bias = False
-    elif model_type == 'SequenceFCAutoencoder':
-        opt.output_mode = 'sequence'
-        opt.autoencoder_mode = True
-        opt.out_act = None
-        opt.hidden_sizes_list=str2list('1024-1024-128')
-        opt.parameter_sharing = False
-    elif model_type == 'SequenceConvAutoencoder':
-        opt.output_mode = 'sequence'
-        opt.autoencoder_mode = True
-        opt.out_act = None
-        opt.hidden_sizes_list=str2list('4-8-12-128')
 
     # hyperparameters
     opt.n_epochs = 1
@@ -202,7 +170,7 @@ def debugModel(model_type):
     opt.delete_root = True
     opt.use_scratch = False
     opt.print_mod = 1
-    opt.id = 12
+    # opt.id = 12
     # opt.resume_training = True
 
     opt = finalize_opt(opt, parser, False, debug = True)

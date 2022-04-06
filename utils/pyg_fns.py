@@ -130,6 +130,42 @@ class AdjTransform(BaseTransform):
 
         return data
 
+class GeneticDistance(BaseTransform):
+    '''
+    Appends genetic distance to features to edege attr vector.
+
+    Based off of https://pytorch-geometric.readthedocs.io/en/latest/
+    _modules/torch_geometric/transforms/distance.html
+    Note that GeneticDistance doesn't assume data.pos exists while Distance does
+    '''
+    def __init__(self, norm = False, max_val = None, cat = True):
+        self.norm = norm
+        self.max = max_val
+        self.cat = cat
+
+    def __call__(self, data):
+        (row, col), pseudo = data.edge_index, data.edge_attr
+        # TODO won't work with SignedConv
+
+        pos = torch.arange(0, data.num_nodes, dtype=torch.float32).reshape(data.num_nodes, 1)
+        dist = torch.norm(pos[col] - pos[row], p=2, dim=-1).view(-1, 1)
+
+        if self.norm and dist.numel() > 0:
+            dist = dist / (dist.max() if self.max is None else self.max)
+
+        if pseudo is not None and self.cat:
+            pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
+            data.edge_attr = torch.cat([pseudo, dist.type_as(pseudo)], dim=-1)
+        else:
+            data.edge_attr = dist
+
+        return data
+
+    def __repr__(self) -> str:
+        return (f'{self.__class__.__name__}(norm={self.norm}, '
+                f'max_value={self.max})')
+
+
 # message passing
 class WeightedSignedConv(MessagePassing):
     '''

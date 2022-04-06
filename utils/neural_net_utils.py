@@ -6,8 +6,8 @@ import torch_geometric
 from torch.utils.data import DataLoader
 
 from .dataset_classes import Sequences, SequencesContacts
-from .gnn_dataset_classes import ContactsGraph
 from .networks import get_model
+from .pyg_dataset_classes import ContactsGraph
 
 
 ## model functions ##
@@ -38,7 +38,7 @@ def get_dataset(opt, names = False, minmax = False, verbose = True):
 
         dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.m, opt.y_preprocessing,
                                 opt.y_log_transform, opt.y_norm, opt.min_subtraction,
-                                opt.use_node_features, opt.use_edge_weights,
+                                opt.use_node_features, opt.use_edge_weights, opt.use_edge_attr,
                                 opt.sparsify_threshold, opt.sparsify_threshold_upper,
                                 opt.top_k, opt.split_neg_pos_edges,
                                 opt.transforms_processed, opt.pre_transforms_processed,

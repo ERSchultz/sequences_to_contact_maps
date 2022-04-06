@@ -12,7 +12,7 @@ import torch
 import torch.nn.functional as F
 import torch_geometric.transforms
 
-from .pyg_fns import (AdjPCATransform, AdjTransform, Degree,
+from .pyg_fns import (AdjPCATransform, AdjTransform, Degree, GeneticDistance,
                       WeightedLocalDegreeProfile)
 
 
@@ -38,6 +38,8 @@ def get_base_parser():
                         help='True to use node features for GNN models')
     parser.add_argument('--use_edge_weights', type=str2bool, default=True,
                         help='True to use edge weights in GNN')
+    parser.add_argument('--use_edge_attr', type=str2bool, default=False,
+                        help='True to use edge attr in GNN')
     parser.add_argument('--relabel_11_to_00',type=str2bool, default=False,
                         help='True to relabel [1,1] particles as [0,0] particles')
     parser.add_argument('--split_edges_for_feature_augmentation', type=str2bool, default=False,
@@ -357,6 +359,9 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
                     opt.transform_k = 10
                 opt.node_feature_size += opt.transform_k
                 pre_transforms_processed.append(AdjPCATransform(k = opt.transform_k))
+            elif t_str.lower() == 'geneticdistance':
+                assert opt.use_edge_attr
+                pre_transforms_processed.append(GeneticDistance(cat = False)) # TODO cat = True
             else:
                 raise Exception("Invalid transform {}".format(t_str))
         if len(pre_transforms_processed) > 0:
