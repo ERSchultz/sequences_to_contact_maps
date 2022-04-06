@@ -17,7 +17,6 @@ rootName='ContactGNNEnergy6' # change to run multiple bash files at once
 splitSizes='4000-200-0'
 preTransforms='AdjPCA-degree'
 useEdgeWeights='true'
-resumeTraining='true'
 
 id=110
 for lr in 1e-3
