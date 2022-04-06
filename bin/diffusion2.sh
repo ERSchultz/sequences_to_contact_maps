@@ -8,9 +8,9 @@
 #SBATCH --time=24:00:00
 
 dir="/project2/depablo/walt/michrom/project/chr_05/chr_05_02"
-odir="/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02_copy"
+odir="/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02_copy2"
 jobs=20
-downSampling=4
+downSampling=10
 
 cd ~/sequences_to_contact_maps
 source activate python3.8_pytorch1.8.1_cuda10.2_2
