@@ -15,6 +15,7 @@ source activate python3.8_pytorch1.8.1_cuda10.2_2
 
 rootName='ContactGNNEnergy2' # change to run multiple bash files at once
 splitSizes='4000-200-0'
+resumeTraining='true'
 
 id=111
 for lr in 1e-4
