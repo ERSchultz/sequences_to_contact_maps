@@ -129,7 +129,7 @@ def debugModel(model_type):
     elif model_type == 'ContactGNNEnergy':
         opt.loss = 'mse'
         opt.y_norm = None
-        opt.message_passing='gcn'
+        opt.message_passing='signedconv'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
         opt.encoder_hidden_sizes_list=None
@@ -140,11 +140,10 @@ def debugModel(model_type):
         opt.out_act = 'relu'
         opt.head_act = 'relu'
         opt.use_edge_weights = False
-        opt.use_edge_attr = True
-        opt.transforms=str2list('none')
-        opt.pre_transforms=str2list('degree-GeneticDistance')
-        opt.split_edges_for_feature_augmentation = True
-        opt.top_k = None
+        opt.use_edge_attr = False
+        opt.transforms=str2list('empty')
+        opt.pre_transforms=str2list('degree-OneHotGeneticPosition')
+        opt.split_edges_for_feature_augmentation = False
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.y_log_transform = False

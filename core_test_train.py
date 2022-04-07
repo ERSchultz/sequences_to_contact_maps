@@ -136,13 +136,30 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                 else:
                     y = data.y
                 if opt.verbose:
-                    print(f'x={data.x}, shape={data.x.shape}, min={torch.min(data.x).item()}, max={torch.max(data.x).item()}')
+                    print(f'x={data.x}, shape={data.x.shape}, '
+                            f'min={torch.min(data.x).item()}, '
+                            f'max={torch.max(data.x).item()}')
                     if data.edge_attr is not None:
-                        print(f'edge_attr={data.edge_attr}, shape={data.edge_attr.shape},min={torch.min(data.edge_attr).item()}, max={torch.max(data.edge_attr).item()}')
-                    print(f'y={y}, shape={y.shape}, min={torch.min(y).item()}, max={torch.max(y).item()}')
+                        print(f'edge_attr={data.edge_attr}, '
+                                f'shape={data.edge_attr.shape}, '
+                                f'min={torch.min(data.edge_attr).item()}, '
+                                f'max={torch.max(data.edge_attr).item()}')
+                    if 'pos_edge_attr' in data._mapping:
+                        print(f'pos_edge_attr={data.pos_edge_attr}, '
+                                f'shape={data.pos_edge_attr.shape}, '
+                                f'min={torch.min(data.pos_edge_attr).item()}, '
+                                f'max={torch.max(data.pos_edge_attr).item()}')
+                        print(f'neg_edge_attr={data.neg_edge_attr}, '
+                                f'shape={data.neg_edge_attr.shape}, '
+                                f'min={torch.min(data.neg_edge_attr).item()}, '
+                                f'max={torch.max(data.neg_edge_attr).item()}')
+                    print(f'y={y}, shape={y.shape}, min={torch.min(y).item()}, '
+                            f'max={torch.max(y).item()}')
                 yhat = model(data)
                 if opt.verbose:
-                    print(f'yhat={yhat}, shape={yhat.shape}, min={torch.min(yhat).item()}, max={torch.max(yhat).item()}')
+                    print(f'yhat={yhat}, shape={yhat.shape}, '
+                            f'min={torch.min(yhat).item()}, '
+                            f'max={torch.max(yhat).item()}')
             else:
                 if opt.autoencoder_mode and opt.output_mode == 'sequence':
                     x = data[0]

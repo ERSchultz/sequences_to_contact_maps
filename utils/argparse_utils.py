@@ -12,7 +12,8 @@ import torch
 import torch.nn.functional as F
 import torch_geometric.transforms
 
-from .pyg_fns import (AdjPCATransform, AdjTransform, Degree, GeneticDistance,
+from .pyg_fns import (AdjPCATransform, AdjTransform, ContactDistance, Degree,
+                      GeneticDistance, GeneticPosition, OneHotGeneticPosition,
                       WeightedLocalDegreeProfile)
 
 
@@ -23,11 +24,9 @@ def get_base_parser():
     # GNN pre-processing args
     parser.add_argument('--GNN_mode', type=str2bool, default=False,
                         help='True to use GNNs (uses pytorch_geometric in core_test_train)')
-    parser.add_argument('--transforms', type=str2list,
+    parser.add_argument('--transforms', type=str2list, default=[],
                         help='list of transforms to use for GNN')
-    parser.add_argument('--transform_k', type=str2int,
-                        help='choice of k for applicable transform')
-    parser.add_argument('--pre_transforms', type=str2list,
+    parser.add_argument('--pre_transforms', type=str2list, default=[],
                         help='list of pre-transforms to use for GNN')
     parser.add_argument('--sparsify_threshold', type=str2float,
                         help='remove all edges with weight < threshold (None to do nothing)')
@@ -302,70 +301,10 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
             assert opt.k is not None
             opt.node_feature_size += opt.k
         else:
-            assert opt.transforms is not None or opt.pre_transforms is not None, "need feature augmentation"
+            assert (len(opt.transforms) + len(opt.pre_transforms)) > 0, "need feature augmentation"
 
-    opt.transforms_processed = None
-    if opt.transforms is not None:
-        transforms_processed = []
-        for t_str in opt.transforms:
-            if t_str.lower() == 'constant':
-                transforms_processed.append(torch_geometric.transforms.Constant())
-                opt.node_feature_size += 1
-            else:
-                raise Exception("Invalid transform {}".format(t_str))
-        if len(transforms_processed) > 0:
-            opt.transforms_processed = torch_geometric.transforms.Compose(transforms_processed)
-
-    if opt.y_log_transform:
-        split = 0
-    else:
-        split = 1
-    opt.pre_transforms_processed = None
-    if opt.pre_transforms is not None:
-        pre_transforms_processed = []
-        for t_str in opt.pre_transforms:
-            if t_str.lower() == 'constant':
-                pre_transforms_processed.append(torch_geometric.transforms.Constant())
-                opt.node_feature_size += 1
-            elif t_str.lower() == 'weighted_ldp':
-                pre_transforms_processed.append(WeightedLocalDegreeProfile())
-                if (opt.top_k is None and
-                    opt.sparsify_threshold is None and
-                    opt.sparsify_threshold_upper is None):
-                    print('Warning: using LDP without any sparsification')
-                opt.node_feature_size += 5
-            elif t_str.lower() == 'degree':
-                opt.node_feature_size += 1
-                if opt.split_edges_for_feature_augmentation:
-                    opt.node_feature_size += 2
-                    # additional feature for neg and pos
-                pre_transforms_processed.append(Degree(split_val = split,
-                            split_edges = opt.split_edges_for_feature_augmentation))
-            elif t_str.lower() == 'weighted_degree':
-                opt.node_feature_size += 1
-                if opt.split_edges_for_feature_augmentation:
-
-                    opt.node_feature_size += 2
-                pre_transforms_processed.append(Degree(weighted = True, split_val = split,
-                            split_edges = opt.split_edges_for_feature_augmentation))
-            elif t_str.lower() == 'onehotdegree':
-                opt.node_feature_size += opt.m + 1
-                pre_transforms_processed.append(torch_geometric.transforms.OneHotDegree(opt.m))
-            elif t_str.lower() == 'adj':
-                opt.node_feature_size += opt.m
-                pre_transforms_processed.append(AdjTransform())
-            elif t_str.lower() == 'adjpca':
-                if opt.transform_k is None:
-                    opt.transform_k = 10
-                opt.node_feature_size += opt.transform_k
-                pre_transforms_processed.append(AdjPCATransform(k = opt.transform_k))
-            elif t_str.lower() == 'geneticdistance':
-                assert opt.use_edge_attr
-                pre_transforms_processed.append(GeneticDistance(cat = False)) # TODO cat = True
-            else:
-                raise Exception("Invalid transform {}".format(t_str))
-        if len(pre_transforms_processed) > 0:
-            opt.pre_transforms_processed = torch_geometric.transforms.Compose(pre_transforms_processed)
+    # transforms
+    process_transforms(opt)
 
     # move data to scratch
     if opt.use_scratch and not local:
@@ -406,6 +345,100 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     opt.log_file.close() # save any writes so far
     opt.log_file = open(opt.log_file_path, 'a')
     return opt
+
+def process_transforms(opt):
+    if opt.y_log_transform:
+        split = 0
+    else:
+        split = 1
+    opt.edge_dim = 0
+
+    # transforms
+    processed = []
+    for t_str in opt.transforms:
+        t_str = t_str.lower().split('_')
+        if t_str[0] == 'constant':
+            transforms_processed.append(torch_geometric.transforms.Constant())
+            opt.node_feature_size += 1
+        else:
+            raise Exception("Invalid transform {}".format(t_str))
+    if len(processed) > 0:
+        opt.transforms_processed = torch_geometric.transforms.Compose(processed)
+    else:
+        opt.transforms_processed = None
+
+    # pre-transforms
+    processed = []
+    for t_str in opt.pre_transforms:
+        t_str = t_str.lower().split('_')
+        if t_str[0] == 'constant':
+            processed.append(torch_geometric.transforms.Constant())
+            opt.node_feature_size += 1
+        elif t_str[0] == 'weightedldp':
+            processed.append(WeightedLocalDegreeProfile())
+            if (opt.top_k is None and
+                opt.sparsify_threshold is None and
+                opt.sparsify_threshold_upper is None):
+                print('Warning: using LDP without any sparsification')
+            opt.node_feature_size += 5
+        elif t_str[0] == 'degree':
+            opt.node_feature_size += 1
+            if opt.split_edges_for_feature_augmentation:
+                opt.node_feature_size += 2
+                # additional feature for neg and pos
+            processed.append(Degree(split_val = split,
+                        split_edges = opt.split_edges_for_feature_augmentation))
+        elif t_str[0] == 'weighteddegree':
+            opt.node_feature_size += 1
+            if opt.split_edges_for_feature_augmentation:
+                opt.node_feature_size += 2
+            processed.append(Degree(weighted = True, split_val = split,
+                        split_edges = opt.split_edges_for_feature_augmentation))
+        elif t_str[0] == 'onehotdegree':
+            opt.node_feature_size += opt.m + 1
+            processed.append(torch_geometric.transforms.OneHotDegree(opt.m))
+        elif t_str[0] == 'adj':
+            opt.node_feature_size += opt.m
+            processed.append(AdjTransform())
+        elif t_str[0] == 'adjpca':
+            if len(t_str) > 1 and t_str[1].isdigit():
+                transform_k = int(t_str[1])
+            else:
+                transform_k = 10
+            opt.node_feature_size += transform_k
+            processed.append(AdjPCATransform(k = transform_k))
+        elif t_str[0] == 'contactdistance':
+            assert opt.use_edge_attr or opt.use_edge_weights
+            if opt.use_edge_attr:
+                opt.edge_dim += 1
+            processed.append(ContactDistance(split_val = split,
+                                            split_edges = opt.split_neg_pos_edges,
+                                            convert_to_attr = opt.use_edge_attr))
+        elif t_str[0] == 'geneticdistance':
+            assert opt.use_edge_attr or opt.use_edge_weights
+            if opt.use_edge_attr:
+                opt.edge_dim += 1
+            processed.append(GeneticDistance(split_edges = opt.split_neg_pos_edges,
+                                            convert_to_attr = opt.use_edge_attr))
+        elif t_str[0] == 'geneticposition':
+            center = False
+            norm = False
+            for mode_str in t_str[1:]:
+                if mode_str == 'center':
+                    center = True
+                elif mode_str == 'norm':
+                    norm = True
+            opt.node_feature_size += 1
+            processed.append(GeneticPosition(center = center, norm = norm))
+        elif t_str[0] == 'onehotgeneticposition':
+            opt.node_feature_size += opt.m
+            processed.append(OneHotGeneticPosition())
+        else:
+            raise Exception("Invalid transform {}".format(t_str))
+    if len(processed) > 0:
+        opt.pre_transforms_processed = torch_geometric.transforms.Compose(processed)
+    else:
+        opt.pre_transforms_processed = None
 
 def copy_data_to_scratch(opt):
     t0 = time.time()
@@ -655,6 +688,8 @@ def str2list(v, sep = '-'):
     elif isinstance(v, str):
         if v.lower() == 'none':
             return None
+        elif v.lower() == 'empty':
+            return []
         else:
             result = [i for i in v.split(sep)]
             for i, val in enumerate(result):

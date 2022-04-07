@@ -42,7 +42,7 @@ def get_model(opt, verbose = True):
         model = ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list,
         opt.act, opt.inner_act, opt.out_act,
         opt.encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
-        opt.message_passing, opt.use_edge_weights or opt.use_edge_attr,
+        opt.message_passing, opt.use_edge_weights or opt.use_edge_attr, opt.edge_dim,
         opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act, opt.use_bias,
         opt.log_file, verbose = verbose)
     else:
@@ -468,7 +468,7 @@ class ContactGNN(nn.Module):
     def __init__(self, m, input_size, MP_hidden_sizes_list,
                 act, inner_act, out_act,
                 encoder_hidden_sizes_list, update_hidden_sizes_list,
-                message_passing, use_edge_weights,
+                message_passing, use_edge_attr, edge_dim,
                 head_architecture, head_hidden_sizes_list, head_act, use_bias,
                 ofile = sys.stdout, verbose = True):
         '''
@@ -480,7 +480,8 @@ class ContactGNN(nn.Module):
             update_hidden_sizes_list: list of hidden sizes for MLP for update during message passing
             out_act: output activation
             message_passing: type of message passing algorithm to use {idendity, gcn, signedconv, z}
-            use_edge_weights: True to use edge weights
+            use_edge_attr: True to use edge attributes/weights
+            edge_dim: 0 for edge weights, 1+ for edge_attr
             head_architecture: type of head architecture {None, fc, AverageTo2d.mode_options}
             head_hidden_sizes_list: hidden sizes of head architecture
             use_bias: true to use bias term - applies for message passing and head
@@ -489,7 +490,8 @@ class ContactGNN(nn.Module):
 
         self.m = m
         self.message_passing = message_passing.lower()
-        self.use_edge_weights = use_edge_weights
+        self.use_edge_attr = use_edge_attr
+        self.edge_dim = edge_dim
         if head_architecture is not None:
             head_architecture = head_architecture.lower()
         self.head_architecture = head_architecture
@@ -520,7 +522,7 @@ class ContactGNN(nn.Module):
             # debugging option to skip message passing
             self.model = None
         elif self.message_passing == 'gcn':
-            if self.use_edge_weights:
+            if self.use_edge_attr:
                 inputs = 'x, edge_index, edge_attr'
             else:
                 inputs = 'x, edge_index'
@@ -544,7 +546,7 @@ class ContactGNN(nn.Module):
 
             self.model = gnn.Sequential('x, edge_index, edge_attr', model)
         elif self.message_passing == 'signedconv':
-            if self.use_edge_weights:
+            if self.use_edge_attr:
                 inputs = 'x, pos_edge_index, neg_edge_index, pos_edge_attr, neg_edge_attr'
             else:
                 inputs = 'x, pos_edge_index, neg_edge_index'
@@ -554,7 +556,8 @@ class ContactGNN(nn.Module):
 
             for output_size in MP_hidden_sizes_list:
                 model.append((WeightedSignedConv(input_size, output_size,
-                                first_aggr = first_layer, bias = use_bias),
+                                first_aggr = first_layer, bias = use_bias,
+                                edge_dim = self.edge_dim),
                                 fn_header))
                 input_size = output_size
                 input_size *= 2
@@ -667,7 +670,7 @@ class ContactGNN(nn.Module):
         elif self.message_passing == 'gcn':
             latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
         elif self.message_passing == 'signedconv':
-            if self.use_edge_weights:
+            if self.use_edge_attr:
                 latent = self.model(graph.x, graph.pos_edge_index, graph.neg_edge_index,
                                     graph.pos_edge_attr, graph.neg_edge_attr)
             else:

@@ -1,6 +1,7 @@
 from typing import Union
 
 import torch
+import torch.nn.functional as F
 from sklearn.decomposition import PCA
 from torch import Tensor
 from torch_geometric.nn.conv import MessagePassing
@@ -12,7 +13,7 @@ from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 from torch_sparse import SparseTensor, matmul
 
 
-# transforms
+# node transforms
 class WeightedLocalDegreeProfile(BaseTransform):
     '''
     Weighted version of Local Degree Profile (LDP) from https://arxiv.org/abs/1811.03508
@@ -130,34 +131,117 @@ class AdjTransform(BaseTransform):
 
         return data
 
+class OneHotGeneticPosition(BaseTransform):
+    '''Appends one hot encoded genetic position to feature vector.'''
+    def __call__(self, data):
+        pos = torch.arange(0, data.num_nodes, dtype=torch.long)
+        pos = F.one_hot(pos, num_classes=data.num_nodes).to(torch.float)
+
+        if data.x is not None:
+            data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
+            data.x = torch.cat([data.x, pos], dim=-1)
+        else:
+            data.x = pos
+
+        return data
+
+class GeneticPosition(BaseTransform):
+    '''Appends genetic position to feature vector.'''
+    def __init__(self, center = False, norm = False):
+        self.center = center # bool
+        self.norm = norm # bool
+        print(self)
+
+    def __call__(self, data):
+        pos = torch.arange(0, data.num_nodes, dtype=torch.float32).reshape(data.num_nodes, 1)
+
+        if self.center:
+            pos -= pos.mean(dim=-2, keepdim=True)
+        if self.norm:
+            pos /= pos.max()
+
+        if data.x is not None:
+            data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
+            data.x = torch.cat([data.x, pos], dim=-1)
+        else:
+            data.x = pos
+
+        return data
+
+    def __repr__(self):
+        return (f'{self.__class__.__name__}'
+                f'(center={self.center}, norm={self.norm})')
+
+
+# edge transforms
 class GeneticDistance(BaseTransform):
     '''
-    Appends genetic distance to features to edege attr vector.
+    Appends genetic distance to features to edge attr vector.
 
     Based off of https://pytorch-geometric.readthedocs.io/en/latest/
     _modules/torch_geometric/transforms/distance.html
     Note that GeneticDistance doesn't assume data.pos exists while Distance does
     '''
-    def __init__(self, norm = False, max_val = None, cat = True):
+    def __init__(self, norm = False, max_val = None, cat = True,
+                split_edges = False, convert_to_attr = False):
         self.norm = norm
         self.max = max_val
         self.cat = cat
+        self.split_edges = split_edges # bool
+        self.convert_to_attr = convert_to_attr # bool, converts to 2d array
+
 
     def __call__(self, data):
-        (row, col), pseudo = data.edge_index, data.edge_attr
+
         # TODO won't work with SignedConv
-
         pos = torch.arange(0, data.num_nodes, dtype=torch.float32).reshape(data.num_nodes, 1)
-        dist = torch.norm(pos[col] - pos[row], p=2, dim=-1).view(-1, 1)
 
-        if self.norm and dist.numel() > 0:
-            dist = dist / (dist.max() if self.max is None else self.max)
+        if self.split_edges:
+            # positive
+            if 'pos_edge_attr' in data._mapping:
+                pseudo = data.pos_edge_attr
+            else:
+                pseudo = None
 
-        if pseudo is not None and self.cat:
-            pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
-            data.edge_attr = torch.cat([pseudo, dist.type_as(pseudo)], dim=-1)
+            row, col = data.pos_edge_index
+            dist = torch.norm(pos[col] - pos[row], p=2, dim=-1)
+            if self.convert_to_attr:
+                dist = dist.reshape(-1, 1)
+
+            if pseudo is not None and self.cat:
+                pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
+                data.pos_edge_attr = torch.cat([pseudo, dist.type_as(pseudo)], dim=-1)
+            else:
+                data.pos_edge_attr = dist
+
+            # negative
+            if 'neg_edge_attr' in data._mapping:
+                pseudo = data.neg_edge_attr
+            else:
+                pseudo = None
+            row, col = data.neg_edge_index
+            dist = torch.norm(pos[col] - pos[row], p=2, dim=-1)
+            if self.convert_to_attr:
+                dist = dist.reshape(-1, 1)
+
+            if pseudo is not None and self.cat:
+                pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
+                data.neg_edge_attr = torch.cat([pseudo, dist.type_as(pseudo)], dim=-1)
+            else:
+                data.neg_edge_attr = dist
+
         else:
-            data.edge_attr = dist
+            (row, col), pseudo = data.edge_index, data.edge_attr
+            dist = torch.norm(pos[col] - pos[row], p=2, dim=-1).view(-1, 1)
+
+            if self.norm and dist.numel() > 0:
+                dist = dist / (dist.max() if self.max is None else self.max)
+
+            if pseudo is not None and self.cat:
+                pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
+                data.edge_attr = torch.cat([pseudo, dist.type_as(pseudo)], dim=-1)
+            else:
+                data.edge_attr = dist
 
         return data
 
@@ -165,16 +249,92 @@ class GeneticDistance(BaseTransform):
         return (f'{self.__class__.__name__}(norm={self.norm}, '
                 f'max_value={self.max})')
 
+class ContactDistance(BaseTransform):
+    '''
+    Appends contact map entries to edge attr vector.
+    '''
+    def __init__(self, cat = True, split_edges = False, split_val = 0,
+                    convert_to_attr = False):
+        self.cat = cat
+        self.split_edges = split_edges # bool
+        self.split_val = split_val # float
+        self.convert_to_attr = convert_to_attr # bool, converts to 2d array
+
+    def __call__(self, data):
+        if self.split_edges:
+            # positive
+            if 'pos_edge_attr' in data._mapping:
+                pseudo = data.pos_edge_attr
+            else:
+                pseudo = None
+
+            row, col = data.pos_edge_index
+            pos_edge_attr = data.contact_map[row, col]
+            if self.convert_to_attr:
+                pos_edge_attr = pos_edge_attr.reshape(-1, 1)
+
+            if pseudo is not None and self.cat:
+                pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
+                data.pos_edge_attr = torch.cat([pseudo, pos_edge_attr.type_as(pseudo)], dim=-1)
+            else:
+                data.pos_edge_attr = pos_edge_attr
+
+            # negative
+            if 'neg_edge_attr' in data._mapping:
+                pseudo = data.neg_edge_attr
+            else:
+                pseudo = None
+            row, col = data.neg_edge_index
+            neg_edge_attr = data.contact_map[row, col]
+            if self.convert_to_attr:
+                neg_edge_attr = neg_edge_attr.reshape(-1, 1)
+
+            if pseudo is not None and self.cat:
+                pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
+                data.neg_edge_attr = torch.cat([pseudo, neg_edge_attr.type_as(pseudo)], dim=-1)
+            else:
+                data.neg_edge_attr = neg_edge_attr
+
+        else:
+            (row, col), pseudo = data.edge_index, data.edge_attr
+            edge_attr = data.contact_map[row, col]
+            if self.convert_to_attr:
+                edge_attr = edge_attr.reshape(-1, 1)
+
+            if pseudo is not None and self.cat:
+                pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
+                data.edge_attr = torch.cat([pseudo, edge_attr.type_as(pseudo)], dim=-1)
+            else:
+                data.edge_attr = edge_attr
+
+        return data
+
+
+    def __repr__(self) -> str:
+        return (f'{self.__class__.__name__}, '
+                f'({self.convert_to_attr})')
 
 # message passing
 class WeightedSignedConv(MessagePassing):
     '''
-    Variant of SignedConv that allows for edge weights.
+    Variant of SignedConv that allows for edge weights or edge features.
     Adapted from: https://pytorch-geometric.readthedocs.io/en/latest/_modules/
             torch_geometric/nn/conv/signed_conv.html#SignedConv
+
+    Args:
+        in_channels (int): Size of each input sample, or :obj:`-1` to derive
+            the size from the first input(s) to the forward method.
+        out_channels (int): Size of each output sample.
+        first_aggr (bool): Denotes which aggregation formula to use.
+        bias (bool, optional): If set to :obj:`False`, the layer will not learn
+            an additive bias. (default: :obj:`True`)
+        edge_dim (int, optional): Edge feature dimensionality (in case
+            there are any). (default: :obj:`None`)
+        **kwargs (optional): Additional arguments of
+            :class:`torch_geometric.nn.conv.MessagePassing`.
     '''
     def __init__(self, in_channels: int, out_channels: int, first_aggr: bool,
-                 bias: bool = True, **kwargs):
+                 bias: bool = True, edge_dim: int = 0, **kwargs):
 
         kwargs.setdefault('aggr', 'mean')
         super().__init__(**kwargs)
@@ -182,6 +342,7 @@ class WeightedSignedConv(MessagePassing):
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.first_aggr = first_aggr
+        self.edge_dim = edge_dim
 
         if first_aggr:
             self.lin_pos_l = Linear(in_channels, out_channels, False)
@@ -189,12 +350,13 @@ class WeightedSignedConv(MessagePassing):
             self.lin_neg_l = Linear(in_channels, out_channels, False)
             self.lin_neg_r = Linear(in_channels, out_channels, bias)
         else:
-            self.lin_pos_l = Linear(2 * in_channels, out_channels, False)
-            self.lin_pos_r = Linear(in_channels, out_channels, bias)
-            self.lin_neg_l = Linear(2 * in_channels, out_channels, False)
-            self.lin_neg_r = Linear(in_channels, out_channels, bias)
+            self.lin_pos_l = Linear(2 * in_channels + edge_dim, out_channels, False)
+            self.lin_pos_r = Linear(in_channels + edge_dim, out_channels, bias)
+            self.lin_neg_l = Linear(2 * in_channels + edge_dim, out_channels, False)
+            self.lin_neg_r = Linear(in_channels + edge_dim, out_channels, bias)
 
         self.reset_parameters()
+        print(self)
 
     def reset_parameters(self):
         self.lin_pos_l.reset_parameters()
@@ -204,8 +366,8 @@ class WeightedSignedConv(MessagePassing):
 
 
     def forward(self, x: Union[Tensor, PairTensor], pos_edge_index: Adj,
-                neg_edge_index: Adj, pos_edge_weight: OptTensor = None,
-                neg_edge_weight: OptTensor = None):
+                neg_edge_index: Adj, pos_edge_attr: OptTensor = None,
+                neg_edge_attr: OptTensor = None):
         """"""
         if isinstance(x, Tensor):
             x: PairTensor = (x, x)
@@ -213,12 +375,12 @@ class WeightedSignedConv(MessagePassing):
         # propagate_type: (x: PairTensor, edge_weight: OptTensor)
         if self.first_aggr:
             out_pos = self.propagate(pos_edge_index, x=x, size=None,
-                                    edge_weight=pos_edge_weight)
+                                    edge_attr=pos_edge_attr)
             out_pos = self.lin_pos_l(out_pos)
             out_pos += self.lin_pos_r(x[1])
 
             out_neg = self.propagate(neg_edge_index, x=x, size=None,
-                                    edge_weight=neg_edge_weight)
+                                    edge_attr=neg_edge_attr)
             out_neg = self.lin_neg_l(out_neg)
             out_neg += self.lin_neg_r(x[1])
 
@@ -228,20 +390,20 @@ class WeightedSignedConv(MessagePassing):
             F_in = self.in_channels
 
             out_pos1 = self.propagate(pos_edge_index, size=None,
-                                    edge_weight=pos_edge_weight,
+                                    edge_attr=pos_edge_attr,
                                     x=(x[0][..., :F_in], x[1][..., :F_in]))
             out_pos2 = self.propagate(neg_edge_index, size=None,
-                                    edge_weight=neg_edge_weight,
+                                    edge_attr=neg_edge_attr,
                                     x=(x[0][..., F_in:], x[1][..., F_in:]))
             out_pos = torch.cat([out_pos1, out_pos2], dim=-1)
             out_pos = self.lin_pos_l(out_pos)
             out_pos += self.lin_pos_r(x[1][..., :F_in])
 
             out_neg1 = self.propagate(pos_edge_index, size=None,
-                                    edge_weight=pos_edge_weight,
+                                    edge_attr=pos_edge_attr,
                                     x=(x[0][..., F_in:], x[1][..., F_in:]))
             out_neg2 = self.propagate(neg_edge_index, size=None,
-                                    edge_weight=neg_edge_weight,
+                                    edge_attr=neg_edge_attr,
                                     x=(x[0][..., :F_in], x[1][..., :F_in]))
             out_neg = torch.cat([out_neg1, out_neg2], dim=-1)
             out_neg = self.lin_neg_l(out_neg)
@@ -250,14 +412,15 @@ class WeightedSignedConv(MessagePassing):
             return torch.cat([out_pos, out_neg], dim=-1)
 
 
-    def message(self, x_j: Tensor, edge_weight: OptTensor) -> Tensor:
-        return x_j if edge_weight is None else edge_weight.view(-1, 1) * x_j
-
-    def message_and_aggregate(self, adj_t: SparseTensor,
-                              x: PairTensor) -> Tensor:
-        adj_t = adj_t.set_value(None)
-        return matmul(adj_t, x[0], reduce=self.aggr)
+    def message(self, x_j: Tensor, edge_attr: OptTensor) -> Tensor:
+        if self.edge_dim == 0:
+            # treat edge_attr as a weight if it exists
+            result = x_j if edge_attr is None else edge_attr.view(-1, 1) * x_j
+        else:
+            result = x_j
+        return result
 
     def __repr__(self) -> str:
         return (f'{self.__class__.__name__}({self.in_channels}, '
-                f'{self.out_channels}, first_aggr={self.first_aggr})')
+                f'{self.out_channels}, first_aggr={self.first_aggr},'
+                f'edge_dim={self.edge_dim})')

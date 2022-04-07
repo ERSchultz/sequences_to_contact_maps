@@ -23,7 +23,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
     # https://github.com/rusty1s/pytorch_geometric/issues/1511
     def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag',
                 y_log_transform = False, y_norm = 'instance', min_subtraction = True,
-                use_node_features = True, use_edge_weights = True, use_edge_attr = False,
+                use_node_features = True,
                 sparsify_threshold = None, sparsify_threshold_upper = None,
                 top_k = None, split_neg_pos_edges = False,
                 transform = None, pre_transform = None, output = 'contact',
@@ -39,8 +39,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y_norm: type of normalization ('instance', 'batch')
             min_subtraction: True to subtract min during normalization
             use_node_features: True to use bead labels as node features
-            use_edge_weights: True to use contact map as edge weights (1d array)
-            use_edge_attr: True to use contact map as edge attributes (2d array)
             sparsify_threshold: lower threshold for sparsifying contact map (None to skip)
             sparsify_threshold_upper: upper threshold for sparsifying contact map (None to skip)
             top_k: top k edges to keep, ranked by y_ij (None to skip)
@@ -61,8 +59,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.y_norm = y_norm
         self.min_subtraction = min_subtraction
         self.use_node_features = use_node_features
-        self.use_edge_weights = use_edge_weights
-        self.use_edge_attr = use_edge_attr
         self.sparsify_threshold = sparsify_threshold
         self.sparsify_threshold_upper = sparsify_threshold_upper
         self.top_k = top_k
@@ -91,7 +87,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             for file in os.listdir(dirname):
                 file_path = osp.join(dirname, file)
                 if file.startswith('graphs') and osp.isdir(file_path):
-                    # format is graphs### where ### is number
+                    # format is graphs<i> where i is integer
                     val = int(file[6:])
                     if val > max_val:
                         max_val = val
@@ -124,21 +120,18 @@ class ContactsGraph(torch_geometric.data.Dataset):
             sample = int(osp.split(raw_folder)[1][6:])
             x, psi = self.process_x_psi(raw_folder)
             self.contact_map = self.process_y(raw_folder)
-            (edge_index, edge_weight, pos_edge_index, pos_edge_weight,
-                    neg_edge_index, neg_edge_weight) = self.sparsify_adj_mat()
-
+            edge_index, pos_edge_index, neg_edge_index = self.generate_edge_index()
+            
             if self.use_node_features:
-                graph = torch_geometric.data.Data(x = x, edge_index = edge_index, edge_attr = edge_weight)
+                graph = torch_geometric.data.Data(x = x, edge_index = edge_index)
             else:
-                graph = torch_geometric.data.Data(x = None, edge_index = edge_index, edge_attr = edge_weight)
+                graph = torch_geometric.data.Data(x = None, edge_index = edge_index)
 
             graph.minmax = torch.tensor([self.ymin, self.ymax])
             graph.path = raw_folder
             graph.num_nodes = self.m
             graph.pos_edge_index = pos_edge_index
             graph.neg_edge_index = neg_edge_index
-            graph.pos_edge_attr = pos_edge_weight
-            graph.neg_edge_attr = neg_edge_weight
             graph.weighted_degree = self.weighted_degree # needed for pre_transform delete later to save RAM
             graph.contact_map = self.contact_map
 
@@ -266,43 +259,20 @@ class ContactsGraph(torch_geometric.data.Dataset):
         y = y.T # convert to col_wise filtering
         return y
 
-    def sparsify_adj_mat(self):
+    def generate_edge_index(self):
         edge_index = self.contact_map.nonzero().t()
         if self.split_neg_pos:
-            edge_weight = None
             if self.y_log_transform:
                 split_val = 0
             else:
                 split_val = 1
             pos_edge_index = (self.contact_map > split_val).nonzero().t()
             neg_edge_index = (self.contact_map < split_val).nonzero().t()
-            if self.use_edge_weights or self.use_edge_attr:
-                row, col = pos_edge_index
-                pos_edge_weight = self.contact_map[row, col]
-                row, col = neg_edge_index
-                neg_edge_weight = self.contact_map[row, col]
-                if self.use_edge_attr:
-                    pos_edge_weight = pos_edge_weight.reshape(-1, 1)
-                    neg_edge_weight = neg_edge_weight.reshape(-1, 1)
-            else:
-                pos_edge_weight = None
-                neg_edge_weight = None
         else:
             pos_edge_index = None
             neg_edge_index = None
-            pos_edge_weight = None
-            neg_edge_weight = None
-            if self.use_edge_weights:
-                row, col = edge_index
-                edge_weight = self.contact_map[row, col]
-                if self.use_edge_attr:
-                    edge_weight = edge_weight.reshape(-1, 1)
-            else:
-                edge_weight = None
 
-
-        return (edge_index, edge_weight, pos_edge_index, pos_edge_weight,
-                neg_edge_index, neg_edge_weight)
+        return edge_index, pos_edge_index, neg_edge_index
 
     def plotDegreeProfile(self):
         # y is weighted adjacency matrix
