@@ -17,7 +17,7 @@ rootName='ContactGNNEnergy4' # change to run multiple bash files at once
 splitSizes='1000-200-0'
 preTransforms='degree-GeneticPosition_center_norm'
 
-id=104
+id=114
 for lr in 1e-4
 do
   echo "id=${id}"
