@@ -34,11 +34,11 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample92'):
                         help='minimum sample index to keep')
     parser.add_argument('--mode', type=str, default='contact_diffusion')
     parser.add_argument('--update_mode', type=str, default='eig')
-    parser.add_argument('--jobs', type=int, default=10)
+    parser.add_argument('--jobs', type=int, default=15)
     parser.add_argument('--sparse_format', action='store_true',
                         help='True to store sc_contacts in sparse format')
-    parser.add_argument('--down_sampling', type=int, default=5)
-    parser.add_argument('--its', type=int, default=2,
+    parser.add_argument('--down_sampling', type=int, default=2)
+    parser.add_argument('--its', type=int, default=1,
                         help='number of iterations')
 
     args = parser.parse_args()
@@ -280,7 +280,7 @@ def load_helper(args, contacts = False):
         sc_contacts = load_sc_contacts(args.dir, N_max = None, triu = True,
                                         gaussian = True, zero_diag = True,
                                         jobs = args.jobs, xyz = xyz,
-                                        sparse_format = True,
+                                        sparse_format = args.sparse_format,
                                         sparsify = True)
 
 

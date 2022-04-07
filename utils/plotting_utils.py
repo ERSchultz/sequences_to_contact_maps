@@ -9,6 +9,7 @@ import matplotlib.cm
 import matplotlib.colors
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.sparse as sp
 import seaborn as sns
 import torch
 from scipy.ndimage import gaussian_filter
@@ -1244,6 +1245,9 @@ def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False,
     '''
     if not osp.exists(odir):
         os.mkdir(odir, mode = 0o775)
+
+    if sp.issparse(sc_contacts):
+        sc_contacts = sc_contacts.toarray()
 
     if len(sc_contacts.shape) == 3:
         triu = False
