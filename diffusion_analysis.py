@@ -280,7 +280,7 @@ def load_helper(args, contacts = False):
         sc_contacts = load_sc_contacts(args.dir, N_max = None, triu = True,
                                         gaussian = True, zero_diag = True,
                                         jobs = args.jobs, xyz = xyz,
-                                        sparse_format = args.sparse_format,
+                                        sparse_format = True,
                                         sparsify = True)
 
 

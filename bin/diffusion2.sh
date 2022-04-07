@@ -3,7 +3,7 @@
 #SBATCH --partition=bigmem2
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=20
-#SBATCH --mem=0
+#SBATCH --mem=128000
 #SBATCH --output=logFiles/diffusion2.log
 #SBATCH --time=24:00:00
 
