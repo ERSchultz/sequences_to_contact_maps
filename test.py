@@ -72,10 +72,8 @@ def debugModel(model_type):
     # dataset
     opt.data_folder = "/home/erschultz/sequences_to_contact_maps/dataset_test"
     opt.scratch = '/home/erschultz/scratch'
-    opt.use_scratch=True
 
     # architecture
-    opt.crop = None
     opt.m = 1024
     opt.y_preprocessing = 'diag'
     # opt.split_percents=[0.6666,0.3333,0.0]
@@ -149,8 +147,8 @@ def debugModel(model_type):
         opt.y_log_transform = False
         opt.head_architecture = 'bilinear'
         opt.head_hidden_sizes_list = None
-        opt.crop=[0,5]
-        opt.m = 5
+        # opt.crop=[0,5]
+        # opt.m = 5
         opt.use_bias = False
 
     # hyperparameters
@@ -164,7 +162,7 @@ def debugModel(model_type):
     opt.plot = False
     opt.plot_predictions = False
     opt.verbose = True
-    opt.print_params = True
+    opt.print_params = False
     opt.gpus = 0
     opt.delete_root = True
     opt.use_scratch = False

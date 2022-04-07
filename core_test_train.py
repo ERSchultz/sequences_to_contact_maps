@@ -16,6 +16,7 @@ from utils.clean_directories import clean_directories
 from utils.networks import get_model
 from utils.neural_net_utils import get_data_loaders, get_dataset, optimizer_to
 from utils.plotting_utils import plotting_script
+from utils.utils import print_time
 
 
 def main():
@@ -155,8 +156,11 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                                 f'max={torch.max(data.neg_edge_attr).item()}')
                     print(f'y={y}, shape={y.shape}, min={torch.min(y).item()}, '
                             f'max={torch.max(y).item()}')
+                    t0 = time.time()
                 yhat = model(data)
                 if opt.verbose:
+                    tf = time.time()
+                    print_time(t0, tf, 'forward')
                     print(f'yhat={yhat}, shape={yhat.shape}, '
                             f'min={torch.min(yhat).item()}, '
                             f'max={torch.max(yhat).item()}')
