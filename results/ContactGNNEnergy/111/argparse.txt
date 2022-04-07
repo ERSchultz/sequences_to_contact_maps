@@ -84,3 +84,5 @@ none
 true
 --id
 111
+--resume_training
+true
