@@ -1223,10 +1223,11 @@ def plot_sc_contact_maps(dataset, samples, ofolder = 'sc_contact', count = 20,
         sc_contacts = load_sc_contacts(dir, zero_diag = True, jobs = jobs, triu = True,
                                         N_max = N_max, correct_diag = correct_diag,
                                         sparsify = sparsify)
-        plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall, crop_size, correct_diag)
+        plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall, crop_size)
 
 def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False,
-                                crop_size = None, correct_diag = False):
+                                crop_size = None, vmax = 'mean', save_txt = False,
+                                title_index = False):
     '''
     Plot sc contact map.
 
@@ -1234,6 +1235,12 @@ def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False,
         sc_contacts: np array of sc contact maps (in full or flattened upper traingle)
         odir: directory to write to
         count: number of plots to make
+        jobs: number of jobs for plotting in parallel
+        overall: True to plot overall contact map
+        crop_size: size to crop contact map
+        vmax: vmax from plot_matrix
+        save_txt: True to save txt file
+        title_index: True to title with index
     '''
     if not osp.exists(odir):
         os.mkdir(odir, mode = 0o775)
@@ -1250,17 +1257,13 @@ def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False,
         result=solve(y)
         m = int(np.max(result))
 
-    if correct_diag:
-        vmax = 'mean'
-    else:
-        vmax = 'abs_max'
-
     if crop_size is not None:
         overall_m = min([crop_size, m])
     else:
         overall_m = m
     overall_map = np.zeros((overall_m,overall_m))
     mapping = []
+    filenames = []
     for i in range(N):
         if overall or i % (N // count) == 0:
             if triu:
@@ -1273,11 +1276,14 @@ def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False,
                 contact_map = crop(contact_map, crop_size)
 
         if i % (N // count) == 0:
-            np.savetxt(osp.join(odir, f'{i}.txt'), contact_map, fmt='%.2f')
+            if save_txt:
+                np.savetxt(osp.join(odir, f'{i}.txt'), contact_map, fmt='%.2f')
+            filenames.append(f'{i}.png')
+            title = i if title_index else None
             if jobs > 1:
-                mapping.append((contact_map, osp.join(odir, f'{i}.png'), None, 0, vmax))
+                mapping.append((contact_map, osp.join(odir, f'{i}.png'), title, 0, vmax))
             else:
-                plot_matrix(contact_map, osp.join(odir, f'{i}.png'), vmax = vmax)
+                plot_matrix(contact_map, osp.join(odir, f'{i}.png'), title = title, vmax = vmax)
 
         if overall:
             overall_map += contact_map
@@ -1289,6 +1295,7 @@ def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False,
     if overall:
         plot_matrix(overall_map, osp.join(odir, 'overall.png'), vmax = 'abs_max')
 
+    return filenames
 
 def plot_centroid_distance(dir = '/home/eric/dataset_test/samples',
                             samples = range(30, 36), parallel = False,
