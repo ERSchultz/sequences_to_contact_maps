@@ -1,5 +1,0 @@
-Namespace(data_folder='../sequences_to_contact_maps/dataset_08_26_21', sample=40, sample_folder='../sequences_to_contact_maps/dataset_08_26_21/samples/sample40', method='block-a200-b1100-a200', m=1500, k=2, seed=12, exclusive=False, model_path=None, epigenetic_data_folder='../sequences_to_contact_maps/chip_seq_data/fold_change_control/processed', ChromHMM_data_file='../sequences_to_contact_maps/chip_seq_data/aligned_reads/ChromHMM_15/STATEBYLINE/HTC116_15_chr2_statebyline.txt', p_switch=0.05, kernel='poly', local=False, save_npy=True, plot=False, input=None, binarize=False, normalize=False, use_ematrix=False, use_smatrix=False, append_random=False, labels=None, X=None, dataset='dataset_08_26_21')
-A 0 200
-B 200 1300
-A 1300 1500
-[ 400. 1100.]

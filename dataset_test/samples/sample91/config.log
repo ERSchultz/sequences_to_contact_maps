@@ -1,7 +1,0 @@
-Namespace(default_config='default_config.json', ofile='config.json', m=1500, k=2, load_configuration_filename=None, goal_specified=True, dump_frequency=1000, dump_stats_frequency=None, n_sweeps=1000000, TICG_seed=None, use_ground_truth_TICG_seed=None, use_ematrix=False, use_smatrix=False, sample_folder=None, relabel=None, use_ground_truth_chi=False, use_ground_truth_diag_chi=False, chi_seed=None, diag=True, max_diag_chi=0.1, e=None, chi=array([[-2.5,  0. ],
-       [-1. , -2.5]]), save_chi=True, save_chi_for_max_ent=False, min_chi=-1.0, max_chi=-1.0, fill_diag=None, fill_offdiag=None, ensure_distinguishable=True, format='%.3e')
-Rank of chi: 2
-psi (x) loaded with shape (1500, 2)
-Rank of S: 2
-Rank of E: 1500
-

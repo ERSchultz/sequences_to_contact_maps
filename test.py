@@ -70,7 +70,7 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    opt.data_folder = "/home/erschultz/dataset_test2"
+    opt.data_folder = "/home/erschultz/sequences_to_contact_maps/dataset_test"
     opt.scratch = '/home/erschultz/scratch'
     opt.use_scratch=True
 
