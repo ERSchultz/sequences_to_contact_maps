@@ -1,16 +1,30 @@
-Loaded xyz with shape (12084, 3620, 3)
-xyz load time: 102.296 s
-found 28 total CPUs, 28 available CPUs, using 20
-Exception in thread Thread-1:
+Namespace(N_min=2000, dir='/project2/depablo/walt/michrom/project/chr_05/chr_05_02', down_sampling=24, its=5, jobs=20, mode='contact_diffusion', odir='/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02_copy/contact_diffusion', sparse_format=False, update_mode='eig')
+Loaded xyz with shape (504, 3620, 3)
+xyz load time: 193.94 s
+found 20 total CPUs, 20 available CPUs, using 20
+(504, 6554010)
+sc_contacts size: 26.4 Gigabytes
+Loaded 504 sc contacts
+sc load time: 106.374 s
+sc_contacts size: 26.4 Gigabytes
+Iteration 0
 Traceback (most recent call last):
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/threading.py", line 932, in _bootstrap_inner
-    self.run()
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/threading.py", line 870, in run
-    self._target(*self._args, **self._kwargs)
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 513, in _handle_workers
-    cls._maintain_pool(ctx, Process, processes, pool, inqueue,
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 337, in _maintain_pool
-    Pool._repopulate_pool_static(ctx, Process, processes, pool,
+  File "diffusion_analysis.py", line 494, in <module>
+    main()
+  File "diffusion_analysis.py", line 488, in main
+    contact_diffusion()
+  File "diffusion_analysis.py", line 394, in contact_diffusion
+    plot_contacts(order, sc_contacts, args, odir_i)
+  File "diffusion_analysis.py", line 257, in plot_contacts
+    filenames = plot_sc_contact_maps_inner(sc_contacts,
+  File "/home/erschultz/sequences_to_contact_maps/utils/plotting_utils.py", line 1296, in plot_sc_contact_maps_inner
+    with multiprocessing.Pool(jobs) as p:
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/context.py", line 119, in Pool
+    return Pool(processes, initializer, initargs, maxtasksperchild,
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 212, in __init__
+    self._repopulate_pool()
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 303, in _repopulate_pool
+    return self._repopulate_pool_static(self._ctx, self.Process,
   File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 326, in _repopulate_pool_static
     w.start()
   File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/process.py", line 121, in start
@@ -22,6 +36,3 @@ Traceback (most recent call last):
   File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/popen_fork.py", line 70, in _launch
     self.pid = os.fork()
 OSError: [Errno 12] Cannot allocate memory
-slurmstepd-midway2-bigmem02: error: *** JOB 18920364 ON midway2-bigmem02 CANCELLED AT 2022-04-01T10:14:48 ***
-slurmstepd-midway2-bigmem02: error: Detected 10 oom-kill event(s) in step 18920364.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
-slurmstepd-midway2-bigmem02: error: *** JOB 18920364 STEPD TERMINATED ON midway2-bigmem02 AT 2022-04-01T10:15:49 DUE TO JOB NOT ENDING WITH SIGNALS ***
