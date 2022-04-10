@@ -15,7 +15,7 @@ source activate python3.8_pytorch1.8.1_cuda10.2_2
 
 rootName='ContactGNNEnergy6' # change to run multiple bash files at once
 splitSizes='4000-200-0'
-preTransforms='AdjPCA-degree'
+preTransforms='AdjPCA-degree-GeneticDistance'
 useEdgeWeights='true'
 
 id=115
