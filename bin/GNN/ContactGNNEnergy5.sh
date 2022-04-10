@@ -17,8 +17,12 @@ rootName='ContactGNNEnergy5' # change to run multiple bash files at once
 splitSizes='1000-200-0'
 preTransforms='AdjPCA-degree'
 useEdgeWeights='true'
+hiddenSizesList='16-16-16'
+EncoderHiddenSizesList='100-100-32'
+updateHiddenSizesList='100-100-32'
+milestones='50'
 
-id=109
+id=116
 for lr in 1e-3
 do
   echo "id=${id}"
