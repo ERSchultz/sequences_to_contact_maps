@@ -47,6 +47,9 @@ class WeightedLocalDegreeProfile(BaseTransform):
 
         return data
 
+    def __repr__(self) -> str:
+        return (f'{self.__class__.__name__}')
+
 class Degree(BaseTransform):
     '''
     Appends degree features to feature vector.
@@ -57,7 +60,7 @@ class Degree(BaseTransform):
     def __init__(self, norm = True, max_val = None, weighted = False,
                 split_edges = False, split_val = 0):
         self.norm = norm # bool
-        self.max_val = max_val # float
+        self.max = max_val # float
         self.weighted = weighted # bool
         self.split_edges = split_edges # bool
         self.split_val = split_val # float
@@ -81,7 +84,7 @@ class Degree(BaseTransform):
                 neg_deg = degree((data.contact_map < self.split_val).nonzero().t()[0], data.num_nodes)
 
         if self.norm:
-            deg /= (deg.max() if self.max_val is None else self.max_val)
+            deg /= (deg.max() if self.max is None else self.max)
             if self.split_edges:
                 # if statement is a safety check to avoid divide by 0
                 pos_deg /= (pos_deg.max() if pos_deg.max() > 0 else 1)
@@ -100,6 +103,12 @@ class Degree(BaseTransform):
             data.x = deg
 
         return data
+
+    def __repr__(self) -> str:
+        return (f'{self.__class__.__name__} ('
+                f'norm={self.norm}, max={self.max},'
+                f'weighted={self.weighted}, split_edges={self.split_edges}),'
+                f'split_val={self.split_val}')
 
 class AdjPCATransform(BaseTransform):
     '''Appends values from top k PCs of adjacency matrix to feature vector.'''
@@ -120,6 +129,9 @@ class AdjPCATransform(BaseTransform):
 
         return data
 
+    def __repr__(self) -> str:
+        return (f'{self.__class__.__name__}')
+
 class AdjTransform(BaseTransform):
     '''Appends rows of adjacency matrix to feature vector.'''
     def __call__(self, data):
@@ -130,6 +142,9 @@ class AdjTransform(BaseTransform):
             data.x = torch.clone(data.contact_map)
 
         return data
+
+    def __repr__(self) -> str:
+        return (f'{self.__class__.__name__}')
 
 class OneHotGeneticPosition(BaseTransform):
     '''Appends one hot encoded genetic position to feature vector.'''
@@ -145,12 +160,14 @@ class OneHotGeneticPosition(BaseTransform):
 
         return data
 
+    def __repr__(self) -> str:
+        return (f'{self.__class__.__name__}')
+
 class GeneticPosition(BaseTransform):
     '''Appends genetic position to feature vector.'''
     def __init__(self, center = False, norm = False):
         self.center = center # bool
         self.norm = norm # bool
-        print(self)
 
     def __call__(self, data):
         pos = torch.arange(0, data.num_nodes, dtype=torch.float32).reshape(data.num_nodes, 1)
@@ -182,7 +199,7 @@ class GeneticDistance(BaseTransform):
     _modules/torch_geometric/transforms/distance.html
     Note that GeneticDistance doesn't assume data.pos exists while Distance does
     '''
-    def __init__(self, norm = False, max_val = None, cat = True,
+    def __init__(self, norm = True, max_val = None, cat = True,
                 split_edges = False, convert_to_attr = False):
         self.norm = norm
         self.max = max_val
@@ -192,8 +209,6 @@ class GeneticDistance(BaseTransform):
 
 
     def __call__(self, data):
-
-        # TODO won't work with SignedConv
         pos = torch.arange(0, data.num_nodes, dtype=torch.float32).reshape(data.num_nodes, 1)
 
         if self.split_edges:
@@ -205,6 +220,8 @@ class GeneticDistance(BaseTransform):
 
             row, col = data.pos_edge_index
             dist = torch.norm(pos[col] - pos[row], p=2, dim=-1)
+            if self.norm and dist.numel() > 0:
+                dist = dist / (dist.max() if self.max is None else self.max)
             if self.convert_to_attr:
                 dist = dist.reshape(-1, 1)
 
@@ -221,6 +238,8 @@ class GeneticDistance(BaseTransform):
                 pseudo = None
             row, col = data.neg_edge_index
             dist = torch.norm(pos[col] - pos[row], p=2, dim=-1)
+            if self.norm and dist.numel() > 0:
+                dist = dist / (dist.max() if self.max is None else self.max)
             if self.convert_to_attr:
                 dist = dist.reshape(-1, 1)
 
@@ -345,18 +364,17 @@ class WeightedSignedConv(MessagePassing):
         self.edge_dim = edge_dim
 
         if first_aggr:
-            self.lin_pos_l = Linear(in_channels, out_channels, False)
+            self.lin_pos_l = Linear(in_channels + self.edge_dim, out_channels, False)
             self.lin_pos_r = Linear(in_channels, out_channels, bias)
-            self.lin_neg_l = Linear(in_channels, out_channels, False)
+            self.lin_neg_l = Linear(in_channels + self.edge_dim, out_channels, False)
             self.lin_neg_r = Linear(in_channels, out_channels, bias)
         else:
-            self.lin_pos_l = Linear(2 * in_channels + edge_dim, out_channels, False)
-            self.lin_pos_r = Linear(in_channels + edge_dim, out_channels, bias)
-            self.lin_neg_l = Linear(2 * in_channels + edge_dim, out_channels, False)
-            self.lin_neg_r = Linear(in_channels + edge_dim, out_channels, bias)
+            self.lin_pos_l = Linear(2 * (in_channels + self.edge_dim), out_channels, False)
+            self.lin_pos_r = Linear(in_channels, out_channels, bias)
+            self.lin_neg_l = Linear(2 * (in_channels + self.edge_dim), out_channels, False)
+            self.lin_neg_r = Linear(in_channels, out_channels, bias)
 
         self.reset_parameters()
-        print(self)
 
     def reset_parameters(self):
         self.lin_pos_l.reset_parameters()
@@ -417,8 +435,9 @@ class WeightedSignedConv(MessagePassing):
             # treat edge_attr as a weight if it exists
             result = x_j if edge_attr is None else edge_attr.view(-1, 1) * x_j
         else:
-            result = x_j
+            result = x_j if edge_attr is None else torch.cat((x_j, edge_attr), axis = 1)
         return result
+
 
     def __repr__(self) -> str:
         return (f'{self.__class__.__name__}({self.in_channels}, '

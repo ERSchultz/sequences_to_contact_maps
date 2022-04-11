@@ -301,7 +301,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
             assert opt.k is not None
             opt.node_feature_size += opt.k
         else:
-            assert (len(opt.transforms) + len(opt.pre_transforms)) > 0, "need feature augmentation"
+            assert (len(opt.transforms) + len(opt.pre_transforms)) > 0, f"need feature augmentation for id={opt.id}"
 
     # transforms
     process_transforms(opt)
@@ -434,7 +434,7 @@ def process_transforms(opt):
             opt.node_feature_size += opt.m
             processed.append(OneHotGeneticPosition())
         else:
-            raise Exception("Invalid transform {}".format(t_str))
+            raise Exception(f"Invalid transform {t_str} for id={opt.id}")
     if len(processed) > 0:
         opt.pre_transforms_processed = torch_geometric.transforms.Compose(processed)
     else:

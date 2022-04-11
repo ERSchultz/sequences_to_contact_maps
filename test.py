@@ -59,8 +59,8 @@ def edit_argparse():
                         with open(arg_file, 'r') as f:
                             lines = f.readlines()
                         for i, line in enumerate(lines):
-                            if line == '--split_neg_pos_edges_for_feature_augmentation\n':
-                                lines[i] = '--split_edges_for_feature_augmentation\n'
+                            if line == '--pre_transforms\n' and lines[i+1] == 'weighted_LDP\n':
+                                lines[i+1] = 'weightedLDP\n'
                                 break
                         with open(arg_file, 'w') as f:
                             f.write("".join(lines))
@@ -132,23 +132,23 @@ def debugModel(model_type):
         opt.output_mode = 'energy'
         opt.encoder_hidden_sizes_list=None
         opt.update_hidden_sizes_list=None
-        opt.hidden_sizes_list=[7, 3]
+        opt.hidden_sizes_list=[3,3]
         opt.act = 'relu'
         opt.inner_act = 'relu'
         opt.out_act = 'relu'
         opt.head_act = 'relu'
         opt.use_edge_weights = False
-        opt.use_edge_attr = False
+        opt.use_edge_attr = True
         opt.transforms=str2list('empty')
-        opt.pre_transforms=str2list('degree-OneHotGeneticPosition')
+        opt.pre_transforms=str2list('degree-GeneticDistance-ContactDistance')
         opt.split_edges_for_feature_augmentation = False
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.y_log_transform = False
         opt.head_architecture = 'bilinear'
         opt.head_hidden_sizes_list = None
-        # opt.crop=[0,5]
-        # opt.m = 5
+        opt.crop=[0,4]
+        opt.m = 4
         opt.use_bias = False
 
     # hyperparameters

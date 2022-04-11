@@ -15,10 +15,11 @@ source activate python3.8_pytorch1.8.1_cuda10.2_2
 
 rootName='ContactGNNEnergy3' # change to run multiple bash files at once
 splitSizes='1000-200-0'
-preTransforms='degree-GeneticPosition_center'
+preTransforms='degree-GeneticDistance'
+useEdgeWeights='false'
+useEdgeAttr='true'
 
-
-id=113
+id=119
 for lr in 1e-4
 do
   echo "id=${id}"
