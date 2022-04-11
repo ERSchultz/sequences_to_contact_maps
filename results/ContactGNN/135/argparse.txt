@@ -31,7 +31,7 @@ false
 --transforms
 empty
 --pre_transforms
-weighted_degree
+WeightedDegree
 --split_edges_for_feature_augmentation
 true
 --top_k
