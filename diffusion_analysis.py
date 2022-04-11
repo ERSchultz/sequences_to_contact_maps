@@ -466,8 +466,8 @@ def contact_laplacian():
         print('\n')
 
 def plot_gif_michrom():
-    dir = '/home/erschultz/michrom/project/chr_05/chr_05_02/'
-    filenames = [osp.join(dir, f'cluster{i}_contacts.png') for i in [0, 3, 4, 5, 2, 1]]
+    dir = '/home/erschultz/michrom/project/chr_05/chr_05_02_copy/contact_diffusion'
+    filenames = [osp.join(dir, f'cluster{i}_contacts.png') for i in [1, 3, 0, 4, 2]]
     frames = []
     for filename in filenames:
         frames.append(imageio.imread(filename))
@@ -491,5 +491,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
-    # plot_gif_michrom()
+    # main()
+    plot_gif_michrom()
