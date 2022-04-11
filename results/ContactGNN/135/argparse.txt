@@ -29,7 +29,7 @@ false
 --hidden_sizes_list
 16-2
 --transforms
-none
+empty
 --pre_transforms
 weighted_degree
 --split_edges_for_feature_augmentation

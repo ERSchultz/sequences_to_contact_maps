@@ -23,7 +23,7 @@ false
 --hidden_sizes_list
 16-2
 --transforms
-none
+empty
 --pre_transforms
 constant
 --top_k

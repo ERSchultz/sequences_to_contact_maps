@@ -29,7 +29,7 @@ FCAutoencoder
 --parameter_sharing
 true
 --transforms
-none
+empty
 --pre_transforms
 weighted_LDP
 --top_k

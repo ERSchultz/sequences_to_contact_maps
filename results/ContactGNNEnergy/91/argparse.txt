@@ -31,7 +31,7 @@ true
 --update_hidden_sizes_list
 100-100-16
 --transforms
-none
+empty
 --pre_transforms
 AdjPCA
 --split_edges_for_feature_augmentation
