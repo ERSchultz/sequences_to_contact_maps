@@ -7,22 +7,15 @@
 #SBATCH --output=logFiles/preprocess.log
 #SBATCH --time=02:00:00
 
-input="/project2/depablo/erschultz/dataset_08_29_21"
-output="/project2/depablo/erschultz/dataset_08_29_21"
+input="/home/erschultz/dataset_test2"
+output="/home/erschultz/dataset_test2"
 numWorkers=10
-k=2
+k=9
 n=1024
 sampleSize=200 # not used since use_batch_for_diag defaults to False
 minSample=0
-overwrite="true"
+overwrite="false"
 percentiles='none' # none skips percentiles
 
 cd ~/sequences_to_contact_maps
-source activate python3.9_pytorch1.11_cuda10.2
-python3 preprocess_data.py --input_folder $input --output_folder $output --num_workers $numWorkers --k $k --n $n --sample_size $sampleSize --min_sample $minSample --overwrite $overwrite --percentiles $percentiles
-
-input="/project2/depablo/erschultz/dataset_11_14_21"
-output="/project2/depablo/erschultz/dataset_11_14_21"
-k=10
-overwrite="false"
-python3 preprocess_data.py --input_folder $input --output_folder $output --num_workers $numWorkers --k $k --n $n --sample_size $sampleSize --min_sample $minSample --overwrite $overwrite --percentiles $percentiles
+python3 -m utils.preprocess_data --input_folder $input --output_folder $output --num_workers $numWorkers --k $k --n $n --sample_size $sampleSize --min_sample $minSample --overwrite $overwrite --percentiles $percentiles

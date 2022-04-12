@@ -11,7 +11,7 @@
 cd ~/sequences_to_contact_maps
 
 source bin/GNN/GNN_fns.sh
-source activate python3.9_pytorch1.11_cuda10.2
+source activate python3.9_pytorch1.9_cuda10.2
 
 rootName='ContactGNNEnergy5' # change to run multiple bash files at once
 splitSizes='1000-200-0'

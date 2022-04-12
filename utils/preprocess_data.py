@@ -6,11 +6,11 @@ import time
 
 import numpy as np
 
-from .argparseSetup import str2bool, str2list
+from .argparse_utils import str2bool, str2list
 from .dataset_classes import Names, make_dataset
+from .neural_net_utils import get_data_loaders
 from .utils import (diagonal_preprocessing, genomic_distance_statistics,
-                    get_data_loaders, getPercentiles, percentile_preprocessing,
-                    x2xx)
+                    get_percentiles, percentile_preprocessing, x2xx)
 
 
 def getArgs():
@@ -167,7 +167,7 @@ def process_percentile(args, out_paths):
                 y_arr[i,:,:] = y_diag
                 # This should be ok from a RAM standpoint
 
-        prcntDist = getPercentiles(y_arr, args.percentiles, plot = False) # flattens array to do computation
+        prcntDist = get_percentiles(y_arr, args.percentiles, plot = False) # flattens array to do computation
         print('prcntDist: ', prcntDist)
         np.save(prcntDist_path, prcntDist)
     else:
@@ -203,18 +203,18 @@ def main():
     out_paths = sorted(make_dataset(args.output_folder, args.min_sample))
 
     # set up for multiprocessing
-    mapping = []
-    for in_path, out_path in zip(in_paths, out_paths):
-        mapping.append((in_path, out_path, args.k, args.n, args.overwrite, args.use_x2xx))
+    # mapping = []
+    # for in_path, out_path in zip(in_paths, out_paths):
+    #     mapping.append((in_path, out_path, args.k, args.n, args.overwrite, args.use_x2xx))
 
-    with multiprocessing.Pool(args.num_workers) as p:
-        p.starmap(process_sample_save, mapping)
+    # with multiprocessing.Pool(args.num_workers) as p:
+    #     p.starmap(process_sample_save, mapping)
 
-    train_dataloader, _, _ = getDataLoaders(Names(args.output_folder, args.min_sample), args)
+    train_dataloader, _, _ = get_data_loaders(Names(args.output_folder, args.min_sample), args)
 
     # diag
     print('Diagonal Preprocessing')
-    process_diag(args, out_paths)
+    # process_diag(args, out_paths)
     y_diag_min_max = get_min_max(args, train_dataloader, 'y_diag.npy')
     np.save(osp.join(args.output_folder, 'y_diag_min_max.npy'), y_diag_min_max.astype(np.float64))
     print('y_diag_min_max: ', y_diag_min_max)
@@ -228,11 +228,11 @@ def main():
         print('y_prcnt_min_max: ', y_prcnt_min_max)
 
     # copy over chi
-    chis_path = osp.join(args.input_folder, 'chis.txt')
-    if osp.exists(chis_path):
-        chi = np.loadtxt(chis_path)
-        np.save(osp.join(args.output_folder, 'chis.npy'), chi)
-        np.savetxt(osp.join(args.output_folder, 'chis.txt'), chi, fmt='%0.5f')
+    # chis_path = osp.join(args.input_folder, 'chis.txt')
+    # if osp.exists(chis_path):
+    #     chi = np.loadtxt(chis_path)
+    #     np.save(osp.join(args.output_folder, 'chis.npy'), chi)
+    #     np.savetxt(osp.join(args.output_folder, 'chis.txt'), chi, fmt='%0.5f')
 
     print('Total time: {}'.format(time.time() - t0))
 
