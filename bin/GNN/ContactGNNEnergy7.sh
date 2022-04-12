@@ -1,6 +1,6 @@
 #! /bin/bash
-#SBATCH --job-name=CGNNE6
-#SBATCH --output=logFiles/ContactGNNEnergy6.out
+#SBATCH --job-name=CGNNE7
+#SBATCH --output=logFiles/ContactGNNEnergy7.out
 #SBATCH --time=1-24:00:00
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -13,12 +13,13 @@ cd ~/sequences_to_contact_maps
 source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.11_cuda10.2
 
-rootName='ContactGNNEnergy6' # change to run multiple bash files at once
-splitSizes='4000-200-0'
-preTransforms='AdjPCA-degree-ContactDistance'
-useEdgeWeights='true'
+rootName='ContactGNNEnergy7' # change to run multiple bash files at once
+splitSizes='1000-200-0'
+messagePassing='GAT'
+useEdgeWeights='false'
+numHeads=8
 
-id=115
+id=126
 for lr in 1e-4
 do
   echo "id=${id}"
