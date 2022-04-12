@@ -37,6 +37,7 @@ headAct='prelu'
 outAct='prelu'
 headArchitecture='bilinear'
 headHiddenSizesList='none'
+numHeads=1
 
 # hyperparameters
 nEpochs=100

@@ -22,21 +22,15 @@ def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False, 
     """
     data_file_arr = []
     samples_dir = osp.join(dir, 'samples')
-    files = [file for file in os.listdir(samples_dir) if 'sample' in file]
-    for file in sorted(files, key = lambda file: int(osp.split(file)[1][6:])):
-        # sort by sampleid
-        if not file.startswith('sample'):
-            if verbose:
-                print("Skipping {}".format(file))
-        else:
-            sample_id = int(file[6:])
-            if sample_id < minSample:
-                continue
-            if sample_id > maxSample:
-                continue
-            if samples is None or sample_id in samples:
-                data_file = osp.join(samples_dir, file)
-                data_file_arr.append(data_file)
+    sample_ids = [int(file[6:]) for file in os.listdir(samples_dir) if 'sample' in file]
+    for sample_id in sorted(sample_ids):
+        if sample_id < minSample:
+            continue
+        if sample_id > maxSample:
+            continue
+        if samples is None or sample_id in samples:
+            data_file = osp.join(samples_dir, f'sample{sample_id}')
+            data_file_arr.append(data_file)
 
     return data_file_arr
 

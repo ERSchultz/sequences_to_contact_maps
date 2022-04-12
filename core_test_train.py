@@ -91,13 +91,17 @@ def core_test_train(model, opt):
     if opt.print_params:
         print('#### FINAL PARAMETERS ####', file = opt.param_file)
     for k,p in model.named_parameters():
-        tot_pars += p.numel()
-        if opt.verbose:
-            print(k, p.numel(), p.shape, file = opt.log_file)
-            print(p, '\ngrad: ', p.grad, '\n', file = opt.log_file)
-        if opt.print_params:
-            print(k, p.numel(), p.shape, file = opt.param_file)
-            print(p, '\ngrad: ', p.grad, '\n', file = opt.param_file)
+        try:
+            tot_pars += p.numel()
+            if opt.verbose:
+                print(k, p.numel(), p.shape, file = opt.log_file)
+                print(p, '\ngrad: ', p.grad, '\n', file = opt.log_file)
+            if opt.print_params:
+                print(k, p.numel(), p.shape, file = opt.param_file)
+                print(p, '\ngrad: ', p.grad, '\n', file = opt.param_file)
+        except ValueError:
+            print(k, file = opt.param_file)
+            print(p, file = opt.param_file)
     print('\nTotal parameters: {}'.format(locale.format_string("%d", tot_pars, grouping = True)), file = opt.log_file)
     tot_time = (time.time() - t0) / 60 / 60 # hours
     print('Total training + validation time: {} hours'.format(np.round(tot_time), 2), file = opt.log_file)

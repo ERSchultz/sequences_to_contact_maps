@@ -164,6 +164,8 @@ def get_base_parser():
                         help='hidden sizes for update step of MPGNN')
     parser.add_argument('--head_act', type=str2None, default='relu',
                         help='activation function for head network')
+    parser.add_argument('--num_heads', type=str2int, default=1,
+                        help='number of attention heads for relevant MPGNN')
 
     # SimpleEpiNet args
     parser.add_argument('--kernel_w_list', type=str2list,
@@ -268,6 +270,8 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     opt.split_neg_pos_edges = False
     if opt.message_passing.lower() == 'signedconv':
         opt.split_neg_pos_edges = True
+    elif opt.message_passing.lower() == 'gat':
+        assert not opt.use_edge_weights
 
     # configure loss
     if opt.loss == 'mse':

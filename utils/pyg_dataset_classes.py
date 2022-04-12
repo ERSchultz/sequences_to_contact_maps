@@ -28,7 +28,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 top_k = None, split_neg_pos_edges = False,
                 transform = None, pre_transform = None, output = 'contact',
                 crop = None, ofile = sys.stdout, verbose = True,
-                max_sample = float('inf')):
+                max_sample = float('inf'), samples = None):
         '''
         Inputs:
             dirname: directory path to raw data
@@ -50,6 +50,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             ofile: where to print to if verbose == True
             verbose: True to print
             max_sample: max sample id to save
+            samples: set of samples to include (None for all)
         '''
         t0 = time.time()
         self.m = m
@@ -68,7 +69,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.samples = None
         self.degree_list = [] # created in self.process()
         self.verbose = verbose
-        self.file_paths = make_dataset(self.dirname, maxSample = max_sample)
+        self.file_paths = make_dataset(self.dirname, maxSample = max_sample, samples = samples)
 
         if self.y_norm == 'batch':
             assert y_preprocessing is not None, "use instance normalization instead"
@@ -121,7 +122,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             x, psi = self.process_x_psi(raw_folder)
             self.contact_map = self.process_y(raw_folder)
             edge_index, pos_edge_index, neg_edge_index = self.generate_edge_index()
-            
+
             if self.use_node_features:
                 graph = torch_geometric.data.Data(x = x, edge_index = edge_index)
             else:

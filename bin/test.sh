@@ -11,6 +11,6 @@ dirname="/../../../project2/depablo/erschultz/dataset_04_18_21"
 
 
 cd ~/sequences_to_contact_maps
-source activate python3.8_pytorch1.8.1_cuda10.2_2
+source activate python3.9_pytorch1.11_cuda10.2
 
 python3 test.py

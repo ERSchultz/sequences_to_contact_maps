@@ -20,8 +20,7 @@ experimental='false'
 overwrite='false'
 robust='false'
 
-source activate activate python3.8_pytorch1.8.1_cuda10.2
-source activate python3.8_pytorch1.8.1_cuda11.1
+source activate python3.9_pytorch1.11_cuda10.2
 
 for i in 2
 # 4 6 8

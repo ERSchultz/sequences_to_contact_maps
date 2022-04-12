@@ -106,9 +106,9 @@ class Degree(BaseTransform):
 
     def __repr__(self) -> str:
         return (f'{self.__class__.__name__} ('
-                f'norm={self.norm}, max={self.max},'
-                f'weighted={self.weighted}, split_edges={self.split_edges}),'
-                f'split_val={self.split_val}')
+                f'norm={self.norm}, max={self.max}, '
+                f'weighted={self.weighted}, split_edges={self.split_edges}, '
+                f'split_val={self.split_val})')
 
 class AdjPCATransform(BaseTransform):
     '''Appends values from top k PCs of adjacency matrix to feature vector.'''

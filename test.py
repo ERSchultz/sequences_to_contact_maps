@@ -7,6 +7,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 from core_test_train import core_test_train
 from utils.argparse_utils import finalize_opt, get_base_parser, str2list
 from utils.base_networks import AverageTo2d
@@ -127,7 +128,7 @@ def debugModel(model_type):
     elif model_type == 'ContactGNNEnergy':
         opt.loss = 'mse'
         opt.y_norm = None
-        opt.message_passing='signedconv'
+        opt.message_passing='gat'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
         opt.encoder_hidden_sizes_list=None
@@ -140,16 +141,16 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         opt.transforms=str2list('empty')
-        opt.pre_transforms=str2list('degree-GeneticDistance-ContactDistance')
-        opt.split_edges_for_feature_augmentation = False
-        opt.sparsify_threshold = None
+        opt.pre_transforms=str2list('degree-contactdistance')
+        opt.split_edges_for_feature_augmentation = True
+        opt.sparsify_threshold = 0.176
         opt.sparsify_threshold_upper = None
-        opt.y_log_transform = False
+        opt.y_log_transform = True
         opt.head_architecture = 'bilinear'
         opt.head_hidden_sizes_list = None
         opt.crop=[0,4]
         opt.m = 4
-        opt.use_bias = False
+        opt.use_bias = True
 
     # hyperparameters
     opt.n_epochs = 1

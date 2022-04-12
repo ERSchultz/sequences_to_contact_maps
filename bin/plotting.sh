@@ -23,7 +23,7 @@ useScratch='false'
 
 
 cd ~/sequences_to_contact_maps
-source activate python3.8_pytorch1.8.1_cuda10.2
+source activate python3.9_pytorch1.11_cuda10.2
 
 for id in 23
 do

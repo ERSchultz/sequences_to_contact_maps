@@ -72,16 +72,19 @@ def diagonal_preprocessing(y, mean_per_diagonal, triu = False):
     if triu:
         y = triu_to_full(y)
 
+    for d in range(len(mean_per_diagonal)):
+        expected = mean_per_diagonal[d]
+        if expected == 0:
+            # this is unlikely to happen
+            print(f'WARNING: 0 contacts expected at distance {d}')
+
     m = len(y)
     result = np.zeros_like(y)
     for i in range(m):
         for j in range(i + 1):
             distance = i - j
             expected = mean_per_diagonal[distance]
-            if expected == 0:
-                # this is unlikely to happen
-                print(f'WARNING: 0 contacts expected at distance {distance}')
-            else:
+            if expected > 0:
                 result[i,j] = y[i,j] / expected
                 result[j,i] = result[i,j]
 
@@ -245,7 +248,7 @@ def calc_dist_strat_corr(y, yhat, mode = 'pearson', return_arr = False):
         mode: pearson or spearman (str)
 
     Outpus:
-        overall_corr: overall correlation
+        avg: average distance stratified correlation
         corr_arr: array of distance stratified correlations
     """
     if mode.lower() == 'pearson':
@@ -257,8 +260,6 @@ def calc_dist_strat_corr(y, yhat, mode = 'pearson', return_arr = False):
     n, _ = y.shape
     triu_ind = np.triu_indices(n)
 
-    overall_corr, _ = stat(y[triu_ind], yhat[triu_ind])
-
     corr_arr = np.zeros(n-2)
     corr_arr[0] = np.NaN
     for d in range(1, n-2):
@@ -268,10 +269,11 @@ def calc_dist_strat_corr(y, yhat, mode = 'pearson', return_arr = False):
         corr, _ = stat(y_diag, yhat_diag)
         corr_arr[d] = corr
 
+    avg = np.nanmean(corr_arr)
     if return_arr:
-        return corr_arr, np.nanmean(corr_arr)
+        return avg, corr_arr
     else:
-        return np.nanmean(corr_arr)
+        return avg
 
 def calc_per_class_acc(val_dataloader, model, opt):
     '''Calculate per class accuracy.'''

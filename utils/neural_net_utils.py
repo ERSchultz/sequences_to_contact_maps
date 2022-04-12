@@ -29,7 +29,7 @@ def load_saved_model(opt, verbose = True):
     return model, train_loss_arr, val_loss_arr
 
 ## dataset functions ##
-def get_dataset(opt, names = False, minmax = False, verbose = True):
+def get_dataset(opt, names = False, minmax = False, verbose = True, samples = None):
     if opt.GNN_mode:
         if opt.split_sizes is not None and -1 not in opt.split_sizes:
             max_sample = np.sum(opt.split_sizes)
@@ -43,7 +43,7 @@ def get_dataset(opt, names = False, minmax = False, verbose = True):
                                 opt.top_k, opt.split_neg_pos_edges,
                                 opt.transforms_processed, opt.pre_transforms_processed,
                                 opt.output_mode, opt.crop, opt.log_file, verbose,
-                                max_sample)
+                                max_sample, samples)
         opt.root = dataset.root
         print('\n'*3)
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
