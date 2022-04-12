@@ -92,3 +92,9 @@ Epoch 32, loss = 1.2415
 Mean test/val loss: 1.2439
 
 Epoch 34, loss = 1.2322
+Mean test/val loss: 1.2077
+
+Epoch 36, loss = 1.2285
+Mean test/val loss: 1.2354
+
+Epoch 38, loss = 1.2212
