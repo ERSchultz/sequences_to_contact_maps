@@ -11,11 +11,11 @@ input="/home/erschultz/dataset_test2"
 output="/home/erschultz/dataset_test2"
 numWorkers=10
 k=9
-n=1024
-sampleSize=200 # not used since use_batch_for_diag defaults to False
-minSample=0
+m=1024
 overwrite="false"
-percentiles='none' # none skips percentiles
+percentiles='none' # none skips percmeanDist_pathentiles
+diagBatch='true'
+sampleSize=10
 
 cd ~/sequences_to_contact_maps
-python3 -m utils.preprocess_data --input_folder $input --output_folder $output --num_workers $numWorkers --k $k --n $n --sample_size $sampleSize --min_sample $minSample --overwrite $overwrite --percentiles $percentiles
+python3 -m utils.preprocess_data --input_folder $input --output_folder $output --num_workers $numWorkers --k $k --m $m --overwrite $overwrite --percentiles $percentiles --diag_batch $diagBatch --sample_size $sampleSize

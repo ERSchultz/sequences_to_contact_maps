@@ -178,7 +178,7 @@ def crop(input, size):
     else:
         return input
 
-def genomic_distance_statistics(y, mode = 'freq', stat = 'mean'):
+def genomic_distance_statistics(y, mode = 'freq', stat = 'mean', plot = False, ofile = None):
     '''
     Calculates statistics of contact frequency/probability as a function of genomic distance
     (i.e. along a give diagonal)
@@ -186,9 +186,11 @@ def genomic_distance_statistics(y, mode = 'freq', stat = 'mean'):
     Inputs:
         mode: freq for frequencies, prob for probabilities
         stat: mean to calculate mean, var for variance
+        plot: True to plot stat_per_diagonal
+        ofile: file path to plot to (None for plt.show())
 
     Outputs:
-        result: numpy array where result[d] is the contact frequency/probability stat at distance d
+        stat_per_diagonal: numpy array where result[d] is the contact frequency/probability stat at distance d
     '''
     if mode == 'prob':
         y = y.copy() / np.max(y)
@@ -202,6 +204,14 @@ def genomic_distance_statistics(y, mode = 'freq', stat = 'mean'):
     stat_per_diagonal = np.zeros_like(distances).astype(float)
     for d in distances:
         stat_per_diagonal[d] = np_stat(np.diagonal(y, offset = d))
+
+    if plot:
+        plt.plot(stat_per_diagonal)
+        if ofile is not None:
+            plt.savefig(ofile)
+        else:
+            plt.show()
+        plt.close()
 
     return stat_per_diagonal
 

@@ -15,27 +15,47 @@ from .utils import (diagonal_preprocessing, genomic_distance_statistics,
 
 def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
-    parser.add_argument('--input_folder', type=str, default='/home/eric/dataset_test', help='Location of input data')
-    parser.add_argument('--output_folder', type=str, default='/home/eric/dataset_test2', help='Location to write data to')
-    parser.add_argument('--min_sample', type=int, default=0, help='minimum sample id')
+    parser.add_argument('--input_folder', type=str, default='/home/eric/dataset_test',
+                        help='Location of input data')
+    parser.add_argument('--output_folder', type=str, default='/home/eric/dataset_test2',
+                        help='Location to write data to')
+    parser.add_argument('--min_sample', type=int, default=0,
+                        help='minimum sample id')
+    parser.add_argument('--verbose', type=str2bool, default=True,
+                        help='True to print')
 
     # dataloader args
-    parser.add_argument('--split', type=str2list, default=[0.8, 0.1, 0.1], help='Train, val, test split for dataset')
-    parser.add_argument('--shuffle', type=str2bool, default=True, help='Whether or not to shuffle dataset')
-    parser.add_argument('--batch_size', type=int, default=1, help='Training batch size')
-    parser.add_argument('--num_workers', type=int, default=4, help='Number of processes to use')
+    parser.add_argument('--split_percents', type=str2list,
+                        help='Train, val, test split for dataset (percents)')
+    parser.add_argument('--split_sizes', type=str2list, default=[-1, 20, 0],
+                        help='Train, val, test split for dataset (counts), -1 for remainder')
+    parser.add_argument('--random_split', type=str2bool, default=False,
+                        help='True to use random train, val, test split')
+    parser.add_argument('--shuffle', type=str2bool, default=True,
+                        help='Whether or not to shuffle dataset')
+    parser.add_argument('--batch_size', type=int, default=16,
+                        help='Training batch size')
+    parser.add_argument('--num_workers', type=int, default=1,
+                        help='Number of threads for data loader to use')
+
 
     # model args
     parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
-    parser.add_argument('--n', type=int, default=1024, help='Number of particles')
+    parser.add_argument('--m', type=int, default=1024, help='Number of particles')
 
     # preprocessing args
-    parser.add_argument('--sample_size', type=int, default=2, help='Size of sample for preprocessing statistics')
-    parser.add_argument('--seed', type=int, default=42, help='Random seed to use. Default: 42')
-    parser.add_argument('--overwrite', type=str2bool, default=False, help='Whether or not to overwrite existing preprocessing files')
-    parser.add_argument('--percentiles', type=str2list, help='Percentiles to use for percentile preprocessing (None to skip)')
-    parser.add_argument('--use_batch_for_diag', type=str2bool, default=False, help='True to use batch for diag norm (in addition to instance)')
-    parser.add_argument('--use_x2xx', type=str2bool, default=False, help='True to calculate x2xx')
+    parser.add_argument('--sample_size', type=int, default=200,
+                        help='Size of sample for preprocessing statistics')
+    parser.add_argument('--seed', type=int, default=42,
+                        help='Random seed to use. Default: 42')
+    parser.add_argument('--overwrite', type=str2bool, default=False,
+                        help='Whether or not to overwrite existing preprocessing files')
+    parser.add_argument('--percentiles', type=str2list,
+                        help='Percentiles to use for percentile preprocessing (None to skip)')
+    parser.add_argument('--diag_batch', type=str2bool, default=False,
+                        help='True to use batch for diag norm (in addition to instance;)')
+    parser.add_argument('--use_x2xx', type=str2bool, default=False,
+                        help='True to calculate x2xx')
 
     args = parser.parse_args()
     args.GNN_mode = False # used in getDataLoaders
@@ -55,11 +75,18 @@ def make_paths(args, in_paths):
         if not osp.exists(out_path):
             os.mkdir(out_path, mode = 0o755)
 
-def get_min_max(args, dataloader, ifile):
-    '''Helper function to get min and max values of all contact maps.'''
+def get_min_max(sample_size, dataloader, ifile):
+    '''
+    Helper function to get min and max values of all contact maps.
+
+    Inputs:
+        sample_size: number of samples to consider when calculating statistics
+        data_loader: data loader to use
+        ifile: type of file to load
+    '''
     min_max = np.array([float('inf'), -float('inf')])
     for i, path in enumerate(dataloader):
-        if i < args.sample_size: # dataloader shuffles so this is a random sample
+        if i < sample_size: # dataloader shuffles so this is a random sample
             path = path[0]
             y = np.load(osp.join(path, ifile))
             min_val = np.min(y)
@@ -109,12 +136,12 @@ def process_sample_save(in_path, out_path, k, n, overwrite, use_x2xx):
 
 def process_diag(args, out_paths):
     # determine mean_dist for batch diagonal preprocessing
-    if args.use_batch_for_diag:
+    if args.diag_batch:
         meanDist_path = osp.join(args.output_folder, 'meanDist.npy')
         if not osp.exists(meanDist_path) or args.overwrite:
-            train_dataloader, _, _ = getDataLoaders(Names(args.output_folder, args.min_sample), args)
+            train_dataloader, _, _ = get_data_loaders(Names(args.output_folder, args.min_sample), args)
             assert args.sample_size <= args.trainN, "Sample size too large - max {}".format(args.trainN)
-            meanDist = np.zeros(args.n)
+            meanDist = np.zeros(args.m)
             for i, path in enumerate(train_dataloader):
                 if i < args.sample_size: # dataloader shuffles so this is a random sample
                     path = path[0]
@@ -123,6 +150,10 @@ def process_diag(args, out_paths):
             meanDist = meanDist / args.sample_size
             print('meanDist: ', meanDist)
             np.save(meanDist_path, meanDist)
+            plt.plot(meanDist)
+            # plt.savefig(osp.join(meanDist_path, 'meanDist.png'))
+            plt.show()
+            plt.close()
         else:
             meanDist = np.load(meanDist_path)
     else:
@@ -131,7 +162,7 @@ def process_diag(args, out_paths):
     # set up for multiprocessing
     mapping = []
     for out_path in out_paths:
-        mapping.append((out_path, meanDist.copy(), args.overwrite, args.use_batch_for_diag))
+        mapping.append((out_path, meanDist.copy(), args.overwrite, args.diag_batch))
 
     with multiprocessing.Pool(args.num_workers) as p:
         p.starmap(process_sample_diag, mapping)
@@ -159,7 +190,7 @@ def process_percentile(args, out_paths):
     if not osp.exists(prcntDist_path) or args.overwrite:
         train_dataloader, _, _ = getDataLoaders(Names(args.output_folder), args)
         assert args.sample_size <= args.trainN, "Sample size too large - max {}".format(args.trainN)
-        y_arr = np.zeros((args.sample_size, args.n, args.n))
+        y_arr = np.zeros((args.sample_size, args.m, args.m))
         for i, path in enumerate(train_dataloader):
             if i < args.sample_size: # dataloader shuffles so this is a random sample
                 path = path[0]
@@ -205,7 +236,7 @@ def main():
     # set up for multiprocessing
     # mapping = []
     # for in_path, out_path in zip(in_paths, out_paths):
-    #     mapping.append((in_path, out_path, args.k, args.n, args.overwrite, args.use_x2xx))
+    #     mapping.append((in_path, out_path, args.k, args.m, args.overwrite, args.use_x2xx))
 
     # with multiprocessing.Pool(args.num_workers) as p:
     #     p.starmap(process_sample_save, mapping)
@@ -214,16 +245,21 @@ def main():
 
     # diag
     print('Diagonal Preprocessing')
-    # process_diag(args, out_paths)
-    y_diag_min_max = get_min_max(args, train_dataloader, 'y_diag.npy')
+    process_diag(args, out_paths)
+    y_diag_min_max = get_min_max(args.sample_size, train_dataloader, 'y_diag.npy')
     np.save(osp.join(args.output_folder, 'y_diag_min_max.npy'), y_diag_min_max.astype(np.float64))
     print('y_diag_min_max: ', y_diag_min_max)
+
+    if args.diag_batch:
+        y_diag_batch_min_max = get_min_max(args.sample_size, train_dataloader, 'y_diag_batch.npy')
+        np.save(osp.join(args.output_folder, 'y_diag__batch_min_max.npy'), y_diag_batch_min_max.astype(np.float64))
+        print('y_diag_batch_min_max: ', y_diag_batch_min_max)
 
     # percentile
     if args.percentiles is not None:
         print('Percentile Preprocessing')
         process_percentile(args, out_paths)
-        y_prcnt_min_max = get_min_max(args, train_dataloader, 'y_prcnt.npy')
+        y_prcnt_min_max = get_min_max(args.sample_size, train_dataloader, 'y_prcnt.npy')
         np.save(osp.join(args.output_folder, 'y_prcnt_min_max.npy'), y_prcnt_min_max.astype(np.float64))
         print('y_prcnt_min_max: ', y_prcnt_min_max)
 
