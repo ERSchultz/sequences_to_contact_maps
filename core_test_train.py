@@ -79,8 +79,12 @@ def core_test_train(model, opt):
     if opt.print_params:
         print('#### INITIAL PARAMETERS ####', file = opt.param_file)
         for k,p in model.named_parameters():
-            print(k, p.shape, file = opt.param_file)
-            print(p, '\n', file = opt.param_file)
+            try:
+                print(k, p.shape, file = opt.param_file)
+                print(p, '\n', file = opt.param_file)
+            except ValueError:
+                print(k, file = opt.param_file)
+                print(p, file = opt.param_file)
         print('\n', file = opt.param_file)
 
     t0 = time.time()
