@@ -82,7 +82,8 @@ def core_test_train(model, opt):
             try:
                 print(k, p.shape, file = opt.param_file)
                 print(p, '\n', file = opt.param_file)
-            except ValueError:
+            except Exception as e:
+                print(e, file = opt.param_file)
                 print(k, file = opt.param_file)
                 print(p, file = opt.param_file)
         print('\n', file = opt.param_file)
