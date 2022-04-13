@@ -19,6 +19,7 @@ preTransforms='degree-ContactDistance-GeneticDistance'
 useEdgeWeights='false'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8-8'
+resumeTraining='true'
 
 id=122
 for lr in 1e-4

@@ -22,6 +22,8 @@ hiddenSizesList='16-16-16'
 EncoderHiddenSizesList='100-100-32'
 updateHiddenSizesList='100-100-32'
 milestones='50'
+resumeTraining='true'
+
 
 id=121
 for lr in 1e-3

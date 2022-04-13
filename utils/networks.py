@@ -681,7 +681,6 @@ class ContactGNN(nn.Module):
         elif self.message_passing in {'gcn', 'transformer', 'gat'}:
             latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
         elif self.message_passing == 'signedconv':
-            print(graph._mapping)
             if self.use_edge_attr:
                 latent = self.model(graph.x, graph.pos_edge_index, graph.neg_edge_index,
                                     graph.pos_edge_attr, graph.neg_edge_attr)
