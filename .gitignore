@@ -3,6 +3,7 @@
 *.bed
 *.bigWig
 *.xlsx#
+*.csv#
 .magicindex.json
 
 maxent*

@@ -25,7 +25,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 y_log_transform = False, y_norm = 'instance', min_subtraction = True,
                 use_node_features = True,
                 sparsify_threshold = None, sparsify_threshold_upper = None,
-                top_k = None, split_neg_pos_edges = False,
+                split_neg_pos_edges = False,
                 transform = None, pre_transform = None, output = 'contact',
                 crop = None, ofile = sys.stdout, verbose = True,
                 max_sample = float('inf'), samples = None):
@@ -41,7 +41,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
             use_node_features: True to use bead labels as node features
             sparsify_threshold: lower threshold for sparsifying contact map (None to skip)
             sparsify_threshold_upper: upper threshold for sparsifying contact map (None to skip)
-            top_k: top k edges to keep, ranked by y_ij (None to skip)
             split_neg_pos_edges: True to split negative and positive edges for training
             transform: list of transforms
             pre_transform: list of transforms
@@ -62,7 +61,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.use_node_features = use_node_features
         self.sparsify_threshold = sparsify_threshold
         self.sparsify_threshold_upper = sparsify_threshold_upper
-        self.top_k = top_k
         self.split_neg_pos = split_neg_pos_edges
         self.output = output
         self.crop = crop
@@ -232,8 +230,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if self.sparsify_threshold_upper is not None:
             y[np.abs(y) > self.sparsify_threshold_upper] = 0
 
-        if self.top_k is not None:
-            y = self.filter_to_topk(y)
 
         # self.plotDegreeProfile(y)
         y = torch.tensor(y, dtype = torch.float32)
@@ -250,10 +246,10 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def weighted_degree(self):
         return torch.sum(self.contact_map, axis = 1)
 
-    def filter_to_topk(self, y):
-        # any entry whose absolute value is not in the topk will be set to 0, row-wise
+    def filter_to_topk(self, y, top_k):
+        # any entry whose absolute value is not in the top_k will be set to 0, row-wise
         yabs = np.abs(y)
-        k = self.m - self.top_k
+        k = self.m - top_k
         z = np.argpartition(yabs, k, axis = -1)
         z = z[:, :k]
         y[np.arange(self.m)[:,None], z] = 0

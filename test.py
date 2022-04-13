@@ -59,10 +59,13 @@ def edit_argparse():
                     if osp.exists(arg_file):
                         with open(arg_file, 'r') as f:
                             lines = f.readlines()
+                        weights = False
                         for i, line in enumerate(lines):
-                            if line == '--pre_transforms\n' and lines[i+1] == 'weighted_LDP\n':
-                                lines[i+1] = 'weightedLDP\n'
-                                break
+                            if line == '--use_edge_weights\n' and lines[i+1] == 'true\n':
+                                weights = True
+                            if line == '--pre_transforms\n' and lines[i+1] == 'degree\n' and weights:
+                                lines[i+1] = 'degree-ContactDistance\n'
+                                # print('gotcha')
                         with open(arg_file, 'w') as f:
                             f.write("".join(lines))
 

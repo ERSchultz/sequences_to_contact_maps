@@ -33,7 +33,7 @@ true
 --transforms
 empty
 --pre_transforms
-degree
+degree-ContactDistance
 --split_edges_for_feature_augmentation
 false
 --top_k
