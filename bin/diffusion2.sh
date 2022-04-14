@@ -14,7 +14,7 @@ downSampling=12
 its=5
 
 cd ~/sequences_to_contact_maps
-source activate python3.9_pytorch1.11_cuda10.2
+source activate python3.8_pytorch1.8.1_cuda10.2_2
 module load cmake
 
 python3 diffusion_analysis.py --dir $dir --odir $odir --jobs $jobs --down_sampling $downSampling --its $its
