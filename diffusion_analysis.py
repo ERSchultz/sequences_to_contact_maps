@@ -256,9 +256,10 @@ def plot_contacts(order, sc_contacts, args, odir):
             sc_contacts = sc_contacts[order]
         filenames = plot_sc_contact_maps_inner(sc_contacts,
                                     osp.join(odir, dir),
-                                    count = 20, jobs = args.jobs,
+                                    count = 20, jobs = args.jobs // 2,
                                     title_index = True)
 
+        print('starting gif')
         frames = []
         for filename in filenames:
             frames.append(imageio.imread(osp.join(odir,dir, filename)))
@@ -363,6 +364,7 @@ def contact_diffusion():
             # D = pairwise_distances(sc_contacts_diag, sc_contacts_diag,
             #                         metric = 'correlation')
             D = cosine_distances(sc_contacts_diag, sc_contacts_diag)
+            del sc_contacts_diag # no longer needed
             plot_matrix(D, ofile = osp.join(odir_i, 'distances.png'),
                             vmin = 'min', vmax = 'max')
             tf = time.time()
