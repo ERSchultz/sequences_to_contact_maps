@@ -31,7 +31,7 @@ true
 --transforms
 constant
 --pre_transforms
-WeightedDegree
+WeightedDegree-ContactDistance
 --top_k
 none
 --sparsify_threshold

@@ -33,7 +33,7 @@ true
 --transforms
 empty
 --pre_transforms
-AdjPCA
+AdjPCA-ContactDistance
 --split_edges_for_feature_augmentation
 true
 --top_k

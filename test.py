@@ -63,9 +63,9 @@ def edit_argparse():
                         for i, line in enumerate(lines):
                             if line == '--use_edge_weights\n' and lines[i+1] == 'true\n':
                                 weights = True
-                            if line == '--pre_transforms\n' and lines[i+1] == 'degree\n' and weights:
-                                lines[i+1] = 'degree-ContactDistance\n'
-                                # print('gotcha')
+                            if line == '--pre_transforms\n' and lines[i+1] == 'AdjPCA-degree\n' and weights:
+                                lines[i+1] = 'AdjPCA-degree-ContactDistance\n'
+                                print('gotcha', id)
                         with open(arg_file, 'w') as f:
                             f.write("".join(lines))
 
@@ -328,8 +328,8 @@ def main():
 
 if __name__ == '__main__':
     # main()
-    # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    edit_argparse()
+    # debugModel('ContactGNNEnergy')
     # test_lammps_load()
     # plot_fixed()
     # test_argpartition(10)
