@@ -2,14 +2,14 @@
 #SBATCH --job-name=preprocess
 #SBATCH --partition=depablo-gpu
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=20
+#SBATCH --ntasks-per-node=16
 #SBATCH --mem-per-cpu=2000
 #SBATCH --output=logFiles/preprocess.log
 #SBATCH --time=04:00:00
 
 input="/project2/depablo/erschultz/dataset_01_17_22"
 output="/home/depablo/erschultz/dataset_01_17_22"
-numWorkers=20
+numWorkers=16
 m=1024
 overwrite="false"
 percentiles='none' # none skips percmeanDist_pathentiles
