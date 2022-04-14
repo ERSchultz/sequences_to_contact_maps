@@ -31,7 +31,7 @@ def getArgs():
     parser.add_argument('--split_sizes', type=str2list, default=[-1, 200, 0],
                         help='Train, val, test split for dataset (counts), -1 for remainder')
     parser.add_argument('--random_split', type=str2bool, default=False,
-                        help='True to us    parser.add_argument('--random_split', type=str2bool, default=Fae random train, val, test split')
+                        help='True to use random train, val, test split')
     parser.add_argument('--shuffle', type=str2bool, default=True,
                         help='Whether or not to shuffle dataset')
     parser.add_argument('--num_workers', type=int, default=1,
