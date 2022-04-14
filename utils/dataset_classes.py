@@ -22,7 +22,7 @@ def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False, 
     """
     data_file_arr = []
     samples_dir = osp.join(dir, 'samples')
-    sample_ids = [int(file[6:]) for file in os.listdir(samples_dir) if 'sample' in file]
+    sample_ids = [int(file[6:]) for file in os.listdir(samples_dir) if 'sample' in file and file[6:].isnumeric()]
     for sample_id in sorted(sample_ids):
         if sample_id < minSample:
             continue

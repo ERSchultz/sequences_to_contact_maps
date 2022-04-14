@@ -4,6 +4,7 @@ import os
 import os.path as osp
 import time
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 from .argparse_utils import str2bool, str2list
@@ -27,20 +28,17 @@ def getArgs():
     # dataloader args
     parser.add_argument('--split_percents', type=str2list,
                         help='Train, val, test split for dataset (percents)')
-    parser.add_argument('--split_sizes', type=str2list, default=[-1, 20, 0],
+    parser.add_argument('--split_sizes', type=str2list, default=[-1, 200, 0],
                         help='Train, val, test split for dataset (counts), -1 for remainder')
     parser.add_argument('--random_split', type=str2bool, default=False,
-                        help='True to use random train, val, test split')
+                        help='True to us    parser.add_argument('--random_split', type=str2bool, default=Fae random train, val, test split')
     parser.add_argument('--shuffle', type=str2bool, default=True,
                         help='Whether or not to shuffle dataset')
-    parser.add_argument('--batch_size', type=int, default=16,
-                        help='Training batch size')
     parser.add_argument('--num_workers', type=int, default=1,
                         help='Number of threads for data loader to use')
 
 
     # model args
-    parser.add_argument('--k', type=int, default=2, help='Number of epigenetic marks')
     parser.add_argument('--m', type=int, default=1024, help='Number of particles')
 
     # preprocessing args
@@ -58,7 +56,11 @@ def getArgs():
                         help='True to calculate x2xx')
 
     args = parser.parse_args()
-    args.GNN_mode = False # used in getDataLoaders
+
+    # used in get_data_loaders
+    args.GNN_mode = False
+    args.batch_size = 1
+
     return args
 
 def make_paths(args, in_paths):
@@ -97,17 +99,18 @@ def get_min_max(sample_size, dataloader, ifile):
                 min_max[1] = max_val
     return min_max
 
-def process_sample_save(in_path, out_path, k, n, overwrite, use_x2xx):
+def process_sample_save(in_path, out_path, n, overwrite, use_x2xx):
     '''Saves relevant files as .npy files'''
-    # check if sample needs to be processed
     x_npy_file = osp.join(out_path, 'x.npy')
     if not osp.exists(x_npy_file) or overwrite:
+
+        # determine k
+        k = 0
+        while osp.exists(osp.join(in_path, f'seq{k}.txt')):
+            k += 1
+
         x = np.zeros((n, k))
-        if osp.exists(osp.join(in_path, 'seq0.txt')):
-            rangefn = range(k)
-        else:
-            rangefn = range(1, k + 1)
-        for i, seq_i in enumerate(rangefn):
+        for i, seq_i in enumerate(range(k)):
             xi_path = osp.join(in_path, 'seq{}.txt'.format(seq_i))
             if osp.exists(xi_path):
                 xi = np.loadtxt(xi_path)
@@ -131,15 +134,27 @@ def process_sample_save(in_path, out_path, k, n, overwrite, use_x2xx):
     y_npy_file = osp.join(out_path, 'y.npy')
     if not osp.exists(y_npy_file) or overwrite:
         y_path = osp.join(in_path, 'data_out/contacts.txt')
-        y = np.loadtxt(y_path)[:n, :n]
+        if osp.exists(y_path):
+            y = np.loadtxt(y_path)[:n, :n]
+        else:
+            y_path = osp.join(in_path, 'y.npy')
+            if osp.exists(y_path):
+                y = np.load(y_path)
         np.save(y_npy_file, y.astype(np.int16))
+
+    chi_source_file = osp.join(in_path, 'chis.txt')
+    if osp.exists(chi_source_file):
+        chi_output_file = osp.join(out_path, 'chis.npy')
+        if not osp.exists(chi_output_file) or overwrite:
+            chi = np.loadtxt(chi_source_file)
+            np.save(chi_output_file, chi)
 
 def process_diag(args, out_paths):
     # determine mean_dist for batch diagonal preprocessing
     if args.diag_batch:
         meanDist_path = osp.join(args.output_folder, 'meanDist.npy')
         if not osp.exists(meanDist_path) or args.overwrite:
-            train_dataloader, _, _ = get_data_loaders(Names(args.output_folder, args.min_sample), args)
+            train_dataloader, _, _ = get_data_loaders(Names(args.input_folder, args.min_sample), args)
             assert args.sample_size <= args.trainN, "Sample size too large - max {}".format(args.trainN)
             meanDist = np.zeros(args.m)
             for i, path in enumerate(train_dataloader):
@@ -148,12 +163,15 @@ def process_diag(args, out_paths):
                     y = np.load(osp.join(path, 'y.npy'))
                     meanDist += genomic_distance_statistics(y)
             meanDist = meanDist / args.sample_size
-            print('meanDist: ', meanDist)
-            np.save(meanDist_path, meanDist)
-            plt.plot(meanDist)
-            # plt.savefig(osp.join(meanDist_path, 'meanDist.png'))
-            plt.show()
+
+            plt.plot(meanDist[10:])
+            plt.yscale('log')
+            plt.xlabel('Genomic Distance')
+            plt.ylabel('Mean Contact Frequency')
+            plt.savefig(osp.join(args.output_folder, 'meanDist.png'))
             plt.close()
+
+            np.save(meanDist_path, meanDist)
         else:
             meanDist = np.load(meanDist_path)
     else:
@@ -234,12 +252,12 @@ def main():
     out_paths = sorted(make_dataset(args.output_folder, args.min_sample))
 
     # set up for multiprocessing
-    # mapping = []
-    # for in_path, out_path in zip(in_paths, out_paths):
-    #     mapping.append((in_path, out_path, args.k, args.m, args.overwrite, args.use_x2xx))
+    mapping = []
+    for in_path, out_path in zip(in_paths, out_paths):
+        mapping.append((in_path, out_path, args.m, args.overwrite, args.use_x2xx))
 
-    # with multiprocessing.Pool(args.num_workers) as p:
-    #     p.starmap(process_sample_save, mapping)
+    with multiprocessing.Pool(args.num_workers) as p:
+        p.starmap(process_sample_save, mapping)
 
     train_dataloader, _, _ = get_data_loaders(Names(args.output_folder, args.min_sample), args)
 
@@ -264,11 +282,11 @@ def main():
         print('y_prcnt_min_max: ', y_prcnt_min_max)
 
     # copy over chi
-    # chis_path = osp.join(args.input_folder, 'chis.txt')
-    # if osp.exists(chis_path):
-    #     chi = np.loadtxt(chis_path)
-    #     np.save(osp.join(args.output_folder, 'chis.npy'), chi)
-    #     np.savetxt(osp.join(args.output_folder, 'chis.txt'), chi, fmt='%0.5f')
+    chis_path = osp.join(args.input_folder, 'chis.txt')
+    if osp.exists(chis_path):
+        chi = np.loadtxt(chis_path)
+        np.save(osp.join(args.output_folder, 'chis.npy'), chi)
+        np.savetxt(osp.join(args.output_folder, 'chis.txt'), chi, fmt='%0.5f')
 
     print('Total time: {}'.format(time.time() - t0))
 

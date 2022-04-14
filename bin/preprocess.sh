@@ -1,21 +1,21 @@
 #! /bin/bash
 #SBATCH --job-name=preprocess
-#SBATCH --partition=depablo-gpu
+#SBATCH --partition=depablo-ivyb
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=10
+#SBATCH --ntasks-per-node=20
 #SBATCH --mem-per-cpu=2000
 #SBATCH --output=logFiles/preprocess.log
-#SBATCH --time=02:00:00
+#SBATCH --time=04:00:00
 
-input="/home/erschultz/dataset_test2"
-output="/home/erschultz/dataset_test2"
-numWorkers=10
-k=9
+input="/project2/depablo/erschultz/dataset_01_17_22"
+output="/home/depablo/erschultz/dataset_01_17_22"
+numWorkers=20
 m=1024
 overwrite="false"
 percentiles='none' # none skips percmeanDist_pathentiles
 diagBatch='true'
-sampleSize=10
+sampleSize=200
+splitPercents='none'
 
 cd ~/sequences_to_contact_maps
-python3 -m utils.preprocess_data --input_folder $input --output_folder $output --num_workers $numWorkers --k $k --m $m --overwrite $overwrite --percentiles $percentiles --diag_batch $diagBatch --sample_size $sampleSize
+python3 -m utils.preprocess_data --input_folder $input --output_folder $output --num_workers $numWorkers --m $m --overwrite $overwrite --percentiles $percentiles --diag_batch $diagBatch --sample_size $sampleSize --split_percents $splitPercents
