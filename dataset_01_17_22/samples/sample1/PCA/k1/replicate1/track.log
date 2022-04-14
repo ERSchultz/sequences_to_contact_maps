@@ -1,6 +1,1840 @@
 True
 Iteration Number 1
 gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-0.4]
+========= step before gamma:  83424015.18563262
+step:  [83424015.18563262]
+lam:  [2.052e-06]
+B:  [[7.34428858e-14]]
+========= step after gamma:  834.2401518563262
+step:  [834.24015186]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.052e-06]
+new chi values:  [-10.4]
+
+
 True
 Iteration Number 2
 gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-10.4]
+========= step before gamma:  120909881.21343742
+step:  [1.20909881e+08]
+lam:  [2.036e-06]
+B:  [[5.08056112e-14]]
+========= step after gamma:  1209.0988121343744
+step:  [1209.09881213]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.036e-06]
+new chi values:  [-20.4]
+
+
+True
+Iteration Number 3
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-20.4]
+========= step before gamma:  127822124.65638062
+step:  [1.27822125e+08]
+lam:  [2.046e-06]
+B:  [[4.79799599e-14]]
+========= step after gamma:  1278.2212465638063
+step:  [1278.22124656]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.046e-06]
+new chi values:  [-30.4]
+
+
+True
+Iteration Number 4
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-30.4]
+========= step before gamma:  124039407.19421719
+step:  [1.24039407e+08]
+lam:  [2.052e-06]
+B:  [[4.93947896e-14]]
+========= step after gamma:  1240.394071942172
+step:  [1240.39407194]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.052e-06]
+new chi values:  [-40.4]
+
+
+True
+Iteration Number 5
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-40.4]
+========= step before gamma:  128771423.51676062
+step:  [1.28771424e+08]
+lam:  [2.05e-06]
+B:  [[4.75951904e-14]]
+========= step after gamma:  1287.7142351676064
+step:  [1287.71423517]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.05e-06]
+new chi values:  [-50.4]
+
+
+True
+Iteration Number 6
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-50.4]
+========= step before gamma:  82840076.81611714
+step:  [82840076.81611714]
+lam:  [2.066e-06]
+B:  [[7.37915832e-14]]
+========= step after gamma:  828.4007681611714
+step:  [828.40076816]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.066e-06]
+new chi values:  [-60.4]
+
+
+True
+Iteration Number 7
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-60.4]
+========= step before gamma:  74074414.00377175
+step:  [74074414.00377175]
+lam:  [2.076e-06]
+B:  [[8.23887776e-14]]
+========= step after gamma:  740.7441400377176
+step:  [740.74414004]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.076e-06]
+new chi values:  [-70.4]
+
+
+True
+Iteration Number 8
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-70.4]
+========= step before gamma:  64275449.421230905
+step:  [64275449.4212309]
+lam:  [2.086e-06]
+B:  [[9.47935872e-14]]
+========= step after gamma:  642.754494212309
+step:  [642.75449421]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.086e-06]
+new chi values:  [-80.4]
+
+
+True
+Iteration Number 9
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-80.4]
+========= step before gamma:  52824893.63952831
+step:  [52824893.63952831]
+lam:  [2.116e-06]
+B:  [[1.14773547e-13]]
+========= step after gamma:  528.2489363952832
+step:  [528.2489364]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.116e-06]
+new chi values:  [-90.4]
+
+
+True
+Iteration Number 10
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-90.4]
+========= step before gamma:  67408251.30051248
+step:  [67408251.30051248]
+lam:  [2.1e-06]
+B:  [[9.01803607e-14]]
+========= step after gamma:  674.0825130051248
+step:  [674.08251301]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.1e-06]
+new chi values:  [-100.4]
+
+
+True
+Iteration Number 11
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-100.4]
+========= step before gamma:  46937870.8492689
+step:  [46937870.8492689]
+lam:  [2.14e-06]
+B:  [[1.28657315e-13]]
+========= step after gamma:  469.37870849268904
+step:  [469.37870849]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.14e-06]
+new chi values:  [-110.4]
+
+
+True
+Iteration Number 12
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-110.4]
+========= step before gamma:  53375796.79085878
+step:  [53375796.79085878]
+lam:  [2.13e-06]
+B:  [[1.13326653e-13]]
+========= step after gamma:  533.7579679085878
+step:  [533.75796791]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.13e-06]
+new chi values:  [-120.4]
+
+
+True
+Iteration Number 13
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-120.4]
+========= step before gamma:  53228720.22047648
+step:  [53228720.22047648]
+lam:  [2.12e-06]
+B:  [[1.13827655e-13]]
+========= step after gamma:  532.2872022047649
+step:  [532.2872022]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.12e-06]
+new chi values:  [-130.4]
+
+
+True
+Iteration Number 14
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-130.4]
+========= step before gamma:  42183023.996110424
+step:  [42183023.99611042]
+lam:  [2.16e-06]
+B:  [[1.42685371e-13]]
+========= step after gamma:  421.83023996110427
+step:  [421.83023996]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.16e-06]
+new chi values:  [-140.4]
+
+
+True
+Iteration Number 15
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-140.4]
+========= step before gamma:  46664338.82390553
+step:  [46664338.82390553]
+lam:  [2.152e-06]
+B:  [[1.29154309e-13]]
+========= step after gamma:  466.6433882390553
+step:  [466.64338824]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.152e-06]
+new chi values:  [-150.4]
+
+
+True
+Iteration Number 16
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-150.4]
+========= step before gamma:  48288750.89864079
+step:  [48288750.89864079]
+lam:  [2.146e-06]
+B:  [[1.24933868e-13]]
+========= step after gamma:  482.8875089864079
+step:  [482.88750899]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.146e-06]
+new chi values:  [-160.4]
+
+
+True
+Iteration Number 17
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-160.4]
+========= step before gamma:  40931262.58950579
+step:  [40931262.58950579]
+lam:  [2.178e-06]
+B:  [[1.46609218e-13]]
+========= step after gamma:  409.312625895058
+step:  [409.3126259]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.178e-06]
+new chi values:  [-170.4]
+
+
+True
+Iteration Number 18
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-170.4]
+========= step before gamma:  31497018.74121701
+step:  [31497018.74121701]
+lam:  [2.236e-06]
+B:  [[1.88681363e-13]]
+========= step after gamma:  314.9701874121701
+step:  [314.97018741]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.236e-06]
+new chi values:  [-180.4]
+
+
+True
+Iteration Number 19
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-180.4]
+========= step before gamma:  35141337.26052371
+step:  [35141337.26052371]
+lam:  [2.216e-06]
+B:  [[1.69683367e-13]]
+========= step after gamma:  351.4133726052371
+step:  [351.41337261]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.216e-06]
+new chi values:  [-190.4]
+
+
+True
+Iteration Number 20
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-190.4]
+========= step before gamma:  40200614.04824236
+step:  [40200614.04824236]
+lam:  [2.182e-06]
+B:  [[1.49174349e-13]]
+========= step after gamma:  402.00614048242363
+step:  [402.00614048]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.182e-06]
+new chi values:  [-200.4]
+
+
+True
+Iteration Number 21
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-200.4]
+========= step before gamma:  31797331.636513565
+step:  [31797331.63651356]
+lam:  [2.24e-06]
+B:  [[1.86773547e-13]]
+========= step after gamma:  317.9733163651357
+step:  [317.97331637]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.24e-06]
+new chi values:  [-210.4]
+
+
+True
+Iteration Number 22
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-210.4]
+========= step before gamma:  23191943.35881041
+step:  [23191943.35881041]
+lam:  [2.36e-06]
+B:  [[2.50901804e-13]]
+========= step after gamma:  231.9194335881041
+step:  [231.91943359]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.36e-06]
+new chi values:  [-220.4]
+
+
+True
+Iteration Number 23
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-220.4]
+========= step before gamma:  23504010.573923767
+step:  [23504010.57392377]
+lam:  [2.35e-06]
+B:  [[2.47995992e-13]]
+========= step after gamma:  235.04010573923767
+step:  [235.04010574]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.35e-06]
+new chi values:  [-230.4]
+
+
+True
+Iteration Number 24
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-230.4]
+========= step before gamma:  23018990.160937093
+step:  [23018990.16093709]
+lam:  [2.302e-06]
+B:  [[2.55306613e-13]]
+========= step after gamma:  230.18990160937096
+step:  [230.18990161]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.302e-06]
+new chi values:  [-240.4]
+
+
+True
+Iteration Number 25
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-240.4]
+========= step before gamma:  25294163.528055377
+step:  [25294163.52805538]
+lam:  [2.314e-06]
+B:  [[2.31867735e-13]]
+========= step after gamma:  252.94163528055378
+step:  [252.94163528]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.314e-06]
+new chi values:  [-250.4]
+
+
+True
+Iteration Number 26
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-250.4]
+========= step before gamma:  23772942.00462842
+step:  [23772942.00462842]
+lam:  [2.342e-06]
+B:  [[2.45527054e-13]]
+========= step after gamma:  237.72942004628422
+step:  [237.72942005]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.342e-06]
+new chi values:  [-260.4]
+
+
+True
+Iteration Number 27
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-260.4]
+========= step before gamma:  21331949.50085775
+step:  [21331949.50085775]
+lam:  [2.494e-06]
+B:  [[2.66496994e-13]]
+========= step after gamma:  213.31949500857755
+step:  [213.31949501]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.494e-06]
+new chi values:  [-270.4]
+
+
+True
+Iteration Number 28
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-270.4]
+========= step before gamma:  21285206.374409575
+step:  [21285206.37440958]
+lam:  [2.458e-06]
+B:  [[2.68773547e-13]]
+========= step after gamma:  212.85206374409577
+step:  [212.85206374]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.458e-06]
+new chi values:  [-280.4]
+
+
+True
+Iteration Number 29
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-280.4]
+========= step before gamma:  21554450.54247448
+step:  [21554450.54247448]
+lam:  [2.436e-06]
+B:  [[2.66436874e-13]]
+========= step after gamma:  215.5445054247448
+step:  [215.54450542]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.436e-06]
+new chi values:  [-290.4]
+
+
+True
+Iteration Number 30
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-290.4]
+========= step before gamma:  19798137.587410055
+step:  [19798137.58741006]
+lam:  [2.506e-06]
+B:  [[2.86537074e-13]]
+========= step after gamma:  197.98137587410056
+step:  [197.98137587]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.506e-06]
+new chi values:  [-300.4]
+
+
+True
+Iteration Number 31
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-300.4]
+========= step before gamma:  17649288.36260597
+step:  [17649288.36260597]
+lam:  [2.742e-06]
+B:  [[3.08052104e-13]]
+========= step after gamma:  176.49288362605972
+step:  [176.49288363]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.742e-06]
+new chi values:  [-310.4]
+
+
+True
+Iteration Number 32
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-310.4]
+========= step before gamma:  18279836.696581114
+step:  [18279836.69658111]
+lam:  [2.64e-06]
+B:  [[3.03006012e-13]]
+========= step after gamma:  182.79836696581117
+step:  [182.79836697]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.64e-06]
+new chi values:  [-320.4]
+
+
+True
+Iteration Number 33
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-320.4]
+========= step before gamma:  18993874.814114872
+step:  [18993874.81411487]
+lam:  [2.706e-06]
+B:  [[2.88140281e-13]]
+========= step after gamma:  189.93874814114875
+step:  [189.93874814]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.706e-06]
+new chi values:  [-330.4]
+
+
+True
+Iteration Number 34
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-330.4]
+========= step before gamma:  17984240.810962982
+step:  [17984240.81096298]
+lam:  [2.588e-06]
+B:  [[3.10877756e-13]]
+========= step after gamma:  179.84240810962984
+step:  [179.84240811]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.588e-06]
+new chi values:  [-340.4]
+
+
+True
+Iteration Number 35
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-340.4]
+========= step before gamma:  16413378.210776767
+step:  [16413378.21077677]
+lam:  [2.744e-06]
+B:  [[3.31126253e-13]]
+========= step after gamma:  164.13378210776767
+step:  [164.13378211]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.744e-06]
+new chi values:  [-350.4]
+
+
+True
+Iteration Number 36
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-350.4]
+========= step before gamma:  18299158.275080394
+step:  [18299158.27508039]
+lam:  [2.79e-06]
+B:  [[2.94488978e-13]]
+========= step after gamma:  182.99158275080396
+step:  [182.99158275]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.79e-06]
+new chi values:  [-360.4]
+
+
+True
+Iteration Number 37
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-360.4]
+========= step before gamma:  15522336.10562149
+step:  [15522336.10562149]
+lam:  [2.832e-06]
+B:  [[3.4446493e-13]]
+========= step after gamma:  155.2233610562149
+step:  [155.22336106]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.832e-06]
+new chi values:  [-370.4]
+
+
+True
+Iteration Number 38
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-370.4]
+========= step before gamma:  12380060.79062269
+step:  [12380060.79062269]
+lam:  [2.976e-06]
+B:  [[4.20264529e-13]]
+========= step after gamma:  123.80060790622692
+step:  [123.80060791]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.976e-06]
+new chi values:  [-380.4]
+
+
+True
+Iteration Number 39
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-380.4]
+========= step before gamma:  15118734.700217
+step:  [15118734.700217]
+lam:  [2.948e-06]
+B:  [[3.45987976e-13]]
+========= step after gamma:  151.18734700217001
+step:  [151.187347]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [2.948e-06]
+new chi values:  [-390.4]
+
+
+True
+Iteration Number 40
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-390.4]
+========= step before gamma:  13323508.106627744
+step:  [13323508.10662774]
+lam:  [3.184e-06]
+B:  [[3.74893788e-13]]
+========= step after gamma:  133.23508106627744
+step:  [133.23508107]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [3.184e-06]
+new chi values:  [-400.4]
+
+
+True
+Iteration Number 41
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-400.4]
+========= step before gamma:  11482930.988258371
+step:  [11482930.98825837]
+lam:  [3.152e-06]
+B:  [[4.37771543e-13]]
+========= step after gamma:  114.82930988258371
+step:  [114.82930988]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [3.152e-06]
+new chi values:  [-410.4]
+
+
+True
+Iteration Number 42
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-410.4]
+========= step before gamma:  10406535.964423256
+step:  [10406535.96442326]
+lam:  [3.252e-06]
+B:  [[4.73442886e-13]]
+========= step after gamma:  104.06535964423257
+step:  [104.06535964]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [3.252e-06]
+new chi values:  [-420.4]
+
+
+True
+Iteration Number 43
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-420.4]
+========= step before gamma:  11573860.18953726
+step:  [11573860.18953726]
+lam:  [3.22e-06]
+B:  [[4.28456914e-13]]
+========= step after gamma:  115.73860189537261
+step:  [115.7386019]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [3.22e-06]
+new chi values:  [-430.4]
+
+
+True
+Iteration Number 44
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-430.4]
+========= step before gamma:  11654745.742454126
+step:  [11654745.74245413]
+lam:  [3.154e-06]
+B:  [[4.31146293e-13]]
+========= step after gamma:  116.54745742454128
+step:  [116.54745742]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [3.154e-06]
+new chi values:  [-440.4]
+
+
+True
+Iteration Number 45
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-440.4]
+========= step before gamma:  9802167.033022193
+step:  [9802167.03302219]
+lam:  [3.486e-06]
+B:  [[4.78761523e-13]]
+========= step after gamma:  98.02167033022194
+step:  [98.02167033]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [3.486e-06]
+new chi values:  [-450.4]
+
+
+True
+Iteration Number 46
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-450.4]
+========= step before gamma:  6162391.716811074
+step:  [6162391.71681107]
+lam:  [3.732e-06]
+B:  [[7.21619238e-13]]
+========= step after gamma:  61.623917168110744
+step:  [61.62391717]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [3.732e-06]
+new chi values:  [-460.4]
+
+
+True
+Iteration Number 47
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-460.4]
+========= step before gamma:  10759314.785820581
+step:  [10759314.78582058]
+lam:  [3.5e-06]
+B:  [[4.34869739e-13]]
+========= step after gamma:  107.59314785820582
+step:  [107.59314786]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [3.5e-06]
+new chi values:  [-470.4]
+
+
+True
+Iteration Number 48
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-470.4]
+========= step before gamma:  7463861.029410246
+step:  [7463861.02941025]
+lam:  [3.596e-06]
+B:  [[6.14012024e-13]]
+========= step after gamma:  74.63861029410246
+step:  [74.63861029]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [3.596e-06]
+new chi values:  [-480.4]
+
+
+True
+Iteration Number 49
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-480.4]
+========= step before gamma:  6564001.369658645
+step:  [6564001.36965865]
+lam:  [3.756e-06]
+B:  [[6.73811623e-13]]
+========= step after gamma:  65.64001369658646
+step:  [65.6400137]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [3.756e-06]
+new chi values:  [-490.4]
+
+
+True
+Iteration Number 50
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-490.4]
+========= step before gamma:  6519021.076375964
+step:  [6519021.07637596]
+lam:  [3.976e-06]
+B:  [[6.44713427e-13]]
+========= step after gamma:  65.19021076375965
+step:  [65.19021076]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [3.976e-06]
+new chi values:  [-500.4]
+
+
+True
+Iteration Number 51
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-500.4]
+========= step before gamma:  4312532.684431244
+step:  [4312532.68443124]
+lam:  [4.098e-06]
+B:  [[9.46288577e-13]]
+========= step after gamma:  43.12532684431244
+step:  [43.12532684]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [4.098e-06]
+new chi values:  [-510.4]
+
+
+True
+Iteration Number 52
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-510.4]
+========= step before gamma:  5653046.712056029
+step:  [5653046.71205603]
+lam:  [4.198e-06]
+B:  [[7.04204409e-13]]
+========= step after gamma:  56.53046712056029
+step:  [56.53046712]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [4.198e-06]
+new chi values:  [-520.4]
+
+
+True
+Iteration Number 53
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-520.4]
+========= step before gamma:  4390123.736379213
+step:  [4390123.73637921]
+lam:  [4.764e-06]
+B:  [[7.77859719e-13]]
+========= step after gamma:  43.90123736379213
+step:  [43.90123736]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [4.764e-06]
+new chi values:  [-530.4]
+
+
+True
+Iteration Number 54
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-530.4]
+========= step before gamma:  3250401.346986349
+step:  [3250401.34698635]
+lam:  [4.652e-06]
+B:  [[1.08506613e-12]]
+========= step after gamma:  32.504013469863494
+step:  [32.50401347]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [4.652e-06]
+new chi values:  [-540.4]
+
+
+True
+Iteration Number 55
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-540.4]
+========= step before gamma:  3956473.350007106
+step:  [3956473.35000711]
+lam:  [4.76e-06]
+B:  [[8.64128257e-13]]
+========= step after gamma:  39.564733500071064
+step:  [39.5647335]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [4.76e-06]
+new chi values:  [-550.4]
+
+
+True
+Iteration Number 56
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-550.4]
+========= step before gamma:  3655587.547102834
+step:  [3655587.54710283]
+lam:  [4.882e-06]
+B:  [[9.0187976e-13]]
+========= step after gamma:  36.555875471028344
+step:  [36.55587547]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [4.882e-06]
+new chi values:  [-560.4]
+
+
+True
+Iteration Number 57
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-560.4]
+========= step before gamma:  3239358.3937341985
+step:  [3239358.3937342]
+lam:  [5.674e-06]
+B:  [[7.73270541e-13]]
+========= step after gamma:  32.39358393734199
+step:  [32.39358394]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [5.674e-06]
+new chi values:  [-570.4]
+
+
+True
+Iteration Number 58
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-570.4]
+========= step before gamma:  3568180.5696302415
+step:  [3568180.56963024]
+lam:  [5.26e-06]
+B:  [[8.18036072e-13]]
+========= step after gamma:  35.68180569630242
+step:  [35.6818057]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [5.26e-06]
+new chi values:  [-580.4]
+
+
+True
+Iteration Number 59
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-580.4]
+========= step before gamma:  2093585.767504571
+step:  [2093585.76750457]
+lam:  [5.696e-06]
+B:  [[1.18595591e-12]]
+========= step after gamma:  20.93585767504571
+step:  [20.93585768]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [5.696e-06]
+new chi values:  [-590.4]
+
+
+True
+Iteration Number 60
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-590.4]
+========= step before gamma:  2132095.0608047373
+step:  [2132095.06080474]
+lam:  [5.63e-06]
+B:  [[1.19549098e-12]]
+========= step after gamma:  21.320950608047376
+step:  [21.32095061]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [5.63e-06]
+new chi values:  [-600.4]
+
+
+True
+Iteration Number 61
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-600.4]
+========= step before gamma:  2544513.5600023963
+step:  [2544513.5600024]
+lam:  [5.91e-06]
+B:  [[8.91683367e-13]]
+========= step after gamma:  25.445135600023967
+step:  [25.4451356]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [5.91e-06]
+new chi values:  [-610.4]
+
+
+True
+Iteration Number 62
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-610.4]
+========= step before gamma:  2160911.0866811364
+step:  [2160911.08668114]
+lam:  [6.176e-06]
+B:  [[9.26877756e-13]]
+========= step after gamma:  21.609110866811367
+step:  [21.60911087]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [6.176e-06]
+new chi values:  [-620.4]
+
+
+True
+Iteration Number 63
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-620.4]
+========= step before gamma:  2096879.2220526568
+step:  [2096879.22205266]
+lam:  [6.41e-06]
+B:  [[8.43587174e-13]]
+========= step after gamma:  20.96879222052657
+step:  [20.96879222]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [6.41e-06]
+new chi values:  [-630.4]
+
+
+True
+Iteration Number 64
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-630.4]
+========= step before gamma:  1755111.0136517526
+step:  [1755111.01365175]
+lam:  [6.674e-06]
+B:  [[8.57438878e-13]]
+========= step after gamma:  17.55111013651753
+step:  [17.55111014]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [6.674e-06]
+new chi values:  [-640.4]
+
+
+True
+Iteration Number 65
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-640.4]
+========= step before gamma:  1183598.0819860173
+step:  [1183598.08198602]
+lam:  [6.932e-06]
+B:  [[1.05348297e-12]]
+========= step after gamma:  11.835980819860174
+step:  [11.83598082]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [6.932e-06]
+new chi values:  [-650.4]
+
+
+True
+Iteration Number 66
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-650.4]
+========= step before gamma:  1366564.42700856
+step:  [1366564.42700856]
+lam:  [6.83e-06]
+B:  [[9.87074148e-13]]
+========= step after gamma:  13.6656442700856
+step:  [13.66564427]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [6.83e-06]
+new chi values:  [-660.4]
+
+
+True
+Iteration Number 67
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-660.4]
+========= step before gamma:  1405005.4216135875
+step:  [1405005.42161359]
+lam:  [6.98e-06]
+B:  [[8.53306613e-13]]
+========= step after gamma:  14.050054216135877
+step:  [14.05005422]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [6.98e-06]
+new chi values:  [-670.4]
+
+
+True
+Iteration Number 68
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-670.4]
+========= step before gamma:  940213.6850140519
+step:  [940213.68501405]
+lam:  [7.214e-06]
+B:  [[1.02625651e-12]]
+========= step after gamma:  9.402136850140518
+step:  [9.40213685]
+new chi values:  [-679.80213685]
+
+
+True
+Iteration Number 69
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-679.80214]
+========= step before gamma:  717429.7179605231
+step:  [717429.71796052]
+lam:  [7.562e-06]
+B:  [[8.59875752e-13]]
+========= step after gamma:  7.174297179605231
+step:  [7.17429718]
+new chi values:  [-686.97643718]
+
+
+True
+Iteration Number 70
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-686.97644]
+========= step before gamma:  972297.0263801339
+step:  [972297.02638013]
+lam:  [7.278e-06]
+B:  [[9.26569138e-13]]
+========= step after gamma:  9.72297026380134
+step:  [9.72297026]
+new chi values:  [-696.69941026]
+
+
+True
+Iteration Number 71
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-696.69941]
+========= step before gamma:  1063426.4592185826
+step:  [1063426.45921858]
+lam:  [7.02e-06]
+B:  [[1.08977956e-12]]
+========= step after gamma:  10.634264592185827
+step:  [10.63426459]
+======= OUTSIDE TRUST REGION =========
+========= steplength:  10.0
+========= trust_region:  10.0
+step:  [10.]
+lam:  [7.02e-06]
+new chi values:  [-706.69941]
+
+
+True
+Iteration Number 72
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-706.69941]
+========= step before gamma:  299163.46285295114
+step:  [299163.46285295]
+lam:  [7.8e-06]
+B:  [[1.26653307e-12]]
+========= step after gamma:  2.9916346285295115
+step:  [2.99163463]
+new chi values:  [-709.69104463]
+
+
+True
+Iteration Number 73
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-709.69104]
+========= step before gamma:  736184.4063027434
+step:  [736184.40630274]
+lam:  [7.49e-06]
+B:  [[9.35771543e-13]]
+========= step after gamma:  7.361844063027434
+step:  [7.36184406]
+new chi values:  [-717.05288406]
+
+
+True
+Iteration Number 74
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-717.05288]
+========= step before gamma:  328862.9882712594
+step:  [328862.98827126]
+lam:  [7.858e-06]
+B:  [[9.75787575e-13]]
+========= step after gamma:  3.2886298827125944
+step:  [3.28862988]
+new chi values:  [-720.34150988]
+
+
+True
+Iteration Number 75
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-720.34151]
+========= step before gamma:  289741.30732444505
+step:  [289741.30732445]
+lam:  [7.836e-06]
+B:  [[1.18347094e-12]]
+========= step after gamma:  2.8974130732444507
+step:  [2.89741307]
+new chi values:  [-723.23892307]
+
+
+True
+Iteration Number 76
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-723.23892]
+========= step before gamma:  506455.1495675946
+step:  [506455.14956759]
+lam:  [7.696e-06]
+B:  [[9.53490982e-13]]
+========= step after gamma:  5.064551495675946
+step:  [5.0645515]
+new chi values:  [-728.3034715]
+
+
+True
+Iteration Number 77
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-728.30347]
+========= step before gamma:  86026.73437171141
+step:  [86026.73437171]
+lam:  [8.084e-06]
+B:  [[1.1031503e-12]]
+========= step after gamma:  0.8602673437171142
+step:  [0.86026734]
+new chi values:  [-729.16373734]
+
+
+True
+Iteration Number 78
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-729.16374]
+========= step before gamma:  238299.66055096086
+step:  [238299.66055096]
+lam:  [7.934e-06]
+B:  [[1.0276994e-12]]
+========= step after gamma:  2.382996605509609
+step:  [2.38299661]
+new chi values:  [-731.54673661]
+
+
+True
+Iteration Number 79
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-731.54674]
+========= step before gamma:  205119.8583793483
+step:  [205119.85837935]
+lam:  [7.814e-06]
+B:  [[1.77896192e-12]]
+========= step after gamma:  2.051198583793483
+step:  [2.05119858]
+new chi values:  [-733.59793858]
+
+
+True
+Iteration Number 80
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-733.59794]
+========= step before gamma:  111195.1585989847
+step:  [111195.15859898]
+lam:  [8.09e-06]
+B:  [[7.99498998e-13]]
+========= step after gamma:  1.111951585989847
+step:  [1.11195159]
+new chi values:  [-734.70989159]
+
+
+True
+Iteration Number 81
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-734.70989]
+========= step before gamma:  149927.02882986222
+step:  [149927.02882986]
+lam:  [8.062e-06]
+B:  [[7.79715431e-13]]
+========= step after gamma:  1.4992702882986224
+step:  [1.49927029]
+new chi values:  [-736.20916029]
+
+
+True
+Iteration Number 82
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-736.20916]
+========= step before gamma:  34275.10369464928
+step:  [-34275.10369465]
+lam:  [8.218e-06]
+B:  [[1.14075752e-12]]
+========= step after gamma:  0.34275103694649284
+step:  [-0.34275104]
+new chi values:  [-735.86640896]
+
+
+True
+Iteration Number 83
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-735.86641]
+========= step before gamma:  69504.31715852892
+step:  [69504.31715853]
+lam:  [8.106e-06]
+B:  [[1.04886172e-12]]
+========= step after gamma:  0.6950431715852893
+step:  [0.69504317]
+new chi values:  [-736.56145317]
+
+
+True
+Iteration Number 84
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-736.56145]
+========= step before gamma:  270811.6958724785
+step:  [270811.69587248]
+lam:  [7.94e-06]
+B:  [[8.82164329e-13]]
+========= step after gamma:  2.708116958724785
+step:  [2.70811696]
+new chi values:  [-739.26956696]
+
+
+True
+Iteration Number 85
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-739.26957]
+========= step before gamma:  176905.2318046798
+step:  [176905.23180468]
+lam:  [7.972e-06]
+B:  [[1.16955511e-12]]
+========= step after gamma:  1.769052318046798
+step:  [1.76905232]
+new chi values:  [-741.03862232]
+
+
+True
+Iteration Number 86
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-741.03862]
+========= step before gamma:  181078.76756280614
+step:  [181078.76756281]
+lam:  [7.928e-06]
+B:  [[1.38558717e-12]]
+========= step after gamma:  1.8107876756280616
+step:  [1.81078768]
+new chi values:  [-742.84940768]
+
+
+True
+Iteration Number 87
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-742.84941]
+========= step before gamma:  180030.59215831844
+step:  [180030.59215832]
+lam:  [7.946e-06]
+B:  [[1.29367134e-12]]
+========= step after gamma:  1.8003059215831845
+step:  [1.80030592]
+new chi values:  [-744.64971592]
+
+
+True
+Iteration Number 88
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-744.64972]
+========= step before gamma:  298878.0677649291
+step:  [298878.06776493]
+lam:  [7.91e-06]
+B:  [[8.99699399e-13]]
+========= step after gamma:  2.988780677649291
+step:  [2.98878068]
+new chi values:  [-747.63850068]
+
+
+True
+Iteration Number 89
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-747.6385]
+========= step before gamma:  395617.6234221783
+step:  [-395617.62342218]
+lam:  [8.522e-06]
+B:  [[8.67250501e-13]]
+========= step after gamma:  3.9561762342217834
+step:  [-3.95617623]
+new chi values:  [-743.68232377]
+
+
+True
+Iteration Number 90
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-743.68232]
+========= step before gamma:  81055.11796997099
+step:  [-81055.11796997]
+lam:  [8.274e-06]
+B:  [[1.17327054e-12]]
+========= step after gamma:  0.81055117969971
+step:  [-0.81055118]
+new chi values:  [-742.87176882]
+
+
+True
+Iteration Number 91
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-742.87177]
+========= step before gamma:  60929.5496699979
+step:  [60929.54967]
+lam:  [8.102e-06]
+B:  [[1.26212024e-12]]
+========= step after gamma:  0.6092954966999791
+step:  [0.6092955]
+new chi values:  [-743.4810655]
+
+
+True
+Iteration Number 92
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-743.48107]
+========= step before gamma:  93593.38186822277
+step:  [93593.38186822]
+lam:  [8.078e-06]
+B:  [[1.07807214e-12]]
+========= step after gamma:  0.9359338186822278
+step:  [0.93593382]
+new chi values:  [-744.41700382]
+
+
+True
+Iteration Number 93
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-744.417]
+========= step before gamma:  125393.28955512164
+step:  [125393.28955512]
+lam:  [8.072e-06]
+B:  [[8.52521042e-13]]
+========= step after gamma:  1.2539328955512166
+step:  [1.2539329]
+new chi values:  [-745.6709329]
+
+
+True
+Iteration Number 94
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-745.67093]
+========= step before gamma:  102249.40778989048
+step:  [102249.40778989]
+lam:  [8.054e-06]
+B:  [[1.22152705e-12]]
+========= step after gamma:  1.022494077898905
+step:  [1.02249408]
+new chi values:  [-746.69342408]
+
+
+True
+Iteration Number 95
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-746.69342]
+========= step before gamma:  236728.1315311518
+step:  [236728.13153115]
+lam:  [7.992e-06]
+B:  [[7.8951503e-13]]
+========= step after gamma:  2.367281315311518
+step:  [2.36728132]
+new chi values:  [-749.06070132]
+
+
+True
+Iteration Number 96
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-749.0607]
+========= step before gamma:  23394.055633397496
+step:  [-23394.0556334]
+lam:  [8.198e-06]
+B:  [[8.16428858e-13]]
+========= step after gamma:  0.23394055633397498
+step:  [-0.23394056]
+new chi values:  [-748.82675944]
+
+
+True
+Iteration Number 97
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-748.82676]
+========= step before gamma:  469878.8606361721
+step:  [-469878.86063617]
+lam:  [8.5e-06]
+B:  [[6.83366733e-13]]
+========= step after gamma:  4.698788606361721
+step:  [-4.69878861]
+new chi values:  [-744.12797139]
+
+
+True
+Iteration Number 98
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-744.12797]
+========= step before gamma:  115688.78169606403
+step:  [115688.78169606]
+lam:  [8.022e-06]
+B:  [[1.35622846e-12]]
+========= step after gamma:  1.1568878169606405
+step:  [1.15688782]
+new chi values:  [-745.28485782]
+
+
+True
+Iteration Number 99
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-745.28486]
+========= step before gamma:  92975.33632830613
+step:  [92975.33632831]
+lam:  [8.08e-06]
+B:  [[1.06372745e-12]]
+========= step after gamma:  0.9297533632830615
+step:  [0.92975336]
+new chi values:  [-746.21461336]
+
+
+True
+Iteration Number 100
+gamma: 1e-05
+READING FROM OBJ_GOAL
+obj goal:  [8.17890042e-06]
+current chi values:  [-746.21461]
+========= step before gamma:  90521.7851476762
+step:  [90521.78514768]
+lam:  [8.074e-06]
+B:  [[1.15884168e-12]]
+========= step after gamma:  0.905217851476762
+step:  [0.90521785]
+new chi values:  [-747.11982785]
+
+
