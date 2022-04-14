@@ -44,7 +44,7 @@ def get_model(opt, verbose = True):
         opt.encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
         opt.message_passing, opt.use_edge_weights or opt.use_edge_attr, opt.edge_dim,
         opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act, opt.use_bias,
-        opt.num_heads,
+        opt.num_heads, opt.concat_heads,
         opt.log_file, verbose = verbose)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
@@ -471,7 +471,8 @@ class ContactGNN(nn.Module):
                 encoder_hidden_sizes_list, update_hidden_sizes_list,
                 message_passing, use_edge_attr, edge_dim,
                 head_architecture, head_hidden_sizes_list, head_act, use_bias,
-                num_heads, ofile = sys.stdout, verbose = True):
+                num_heads, concat_heads,
+                ofile = sys.stdout, verbose = True):
         '''
         Inputs:
             m: number of nodes
@@ -538,11 +539,14 @@ class ContactGNN(nn.Module):
                                             edge_dim = self.edge_dim)
                 elif self.message_passing == 'gat':
                     module = gnn.GATv2Conv(input_size, output_size,
-                                            heads = num_heads,
+                                            heads = num_heads, concat = concat_heads,
                                             edge_dim = self.edge_dim,
                                             bias = use_bias)
                 model.append((module, fn_header))
-                input_size = output_size
+                if concat_heads:
+                    input_size = output_size * num_heads
+                else:
+                    input_size = output_size
 
                 if update_hidden_sizes_list is not None:
                     for update_output_size in update_hidden_sizes_list:

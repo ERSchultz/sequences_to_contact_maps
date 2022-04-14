@@ -18,14 +18,13 @@ splitSizes='1000-200-0'
 preTransforms='degree-ContactDistance-GeneticDistance'
 useEdgeWeights='false'
 useEdgeAttr='true'
-hiddenSizesList='16-16-16'
-EncoderHiddenSizesList='100-100-32'
-updateHiddenSizesList='100-100-32'
+hiddenSizesList='32-32-32'
+EncoderHiddenSizesList='100-100-64'
+updateHiddenSizesList='100-100-64'
 milestones='50'
-resumeTraining='true'
 
 
-id=121
+id=127
 for lr in 1e-3
 do
   echo "id=${id}"

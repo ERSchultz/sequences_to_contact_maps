@@ -167,6 +167,8 @@ def get_base_parser():
                         help='activation function for head network')
     parser.add_argument('--num_heads', type=str2int, default=1,
                         help='number of attention heads for relevant MPGNN')
+    parser.add_argument('--concat_heads', type=str2bool, default=True,
+                        help='False to average instead of concat attention heads')
 
     # SimpleEpiNet args
     parser.add_argument('--kernel_w_list', type=str2list,

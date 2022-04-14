@@ -17,10 +17,11 @@ rootName='ContactGNNEnergy5' # change to run multiple bash files at once
 splitSizes='1000-200-0'
 messagePassing='GAT'
 useEdgeWeights='false'
-preTransforms='degree-contactdistance-geneticdistance'
+preTransforms='degree-contactdistance-geneticdistance-AdjPCA_10'
 useEdgeAttr='true'
+milestones='50'
 
-id=125
+id=131
 for lr in 1e-3
 do
   echo "id=${id}"

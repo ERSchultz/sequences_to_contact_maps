@@ -154,6 +154,8 @@ def debugModel(model_type):
         opt.crop=[0,4]
         opt.m = 4
         opt.use_bias = True
+        opt.num_heads = 2
+        opt.concat_heads = True
 
     # hyperparameters
     opt.n_epochs = 1
