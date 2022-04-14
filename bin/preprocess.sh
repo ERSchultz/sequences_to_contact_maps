@@ -17,7 +17,7 @@ diagBatch='true'
 sampleSize=200
 splitPercents='none'
 
-# source activate python3.9_pytorch1.9_cuda10.2
+source activate python3.9_pytorch1.9_cuda10.2
 cd ~/sequences_to_contact_maps
 # python3 -m utils.preprocess_data --input_folder $input --output_folder $output --num_workers $numWorkers --m $m --overwrite $overwrite --percentiles $percentiles --diag_batch $diagBatch --sample_size $sampleSize --split_percents $splitPercents
 

@@ -519,6 +519,9 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
         elif file == 'y_prcnt.npy' and y_preprocessing != 'prcnt':
             # only need y_prcnt.npy if using percentile preprocessing
             pass
+        elif file == 'y_diag_batch.npy' and y_preprocessing != 'diag_batch':
+            # only need y_diag_batch.npy if using batch diagonal preprocessing
+            pass
         elif (file == 's.npy' or file == 'e.npy') and output_mode != 'energy':
             # only need s.npy if neural net output is energy
             pass

@@ -74,12 +74,12 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    opt.data_folder = "/home/erschultz/sequences_to_contact_maps/dataset_test"
+    opt.data_folder = "/home/erschultz/dataset_test2"
     opt.scratch = '/home/erschultz/scratch'
 
     # architecture
     opt.m = 1024
-    opt.y_preprocessing = 'diag'
+    opt.y_preprocessing = 'diag_batch'
     # opt.split_percents=[0.6666,0.3333,0.0]
     opt.split_percents = None
     opt.split_sizes=[1, 2, 0]
@@ -130,7 +130,7 @@ def debugModel(model_type):
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
         opt.loss = 'mse'
-        opt.y_norm = None
+        opt.y_norm = 'none'
         opt.message_passing='gat'
         opt.GNN_mode = True
         opt.output_mode = 'energy'
@@ -145,10 +145,10 @@ def debugModel(model_type):
         opt.use_edge_attr = True
         opt.transforms=str2list('empty')
         opt.pre_transforms=str2list('degree-contactdistance')
-        opt.split_edges_for_feature_augmentation = True
+        opt.split_edges_for_feature_augmentation = False
         opt.sparsify_threshold = 0.176
         opt.sparsify_threshold_upper = None
-        opt.y_log_transform = True
+        opt.y_log_transform = False
         opt.head_architecture = 'bilinear'
         opt.head_hidden_sizes_list = None
         opt.crop=[0,4]
@@ -328,8 +328,8 @@ def main():
 
 if __name__ == '__main__':
     # main()
-    edit_argparse()
-    # debugModel('ContactGNNEnergy')
+    # edit_argparse()
+    debugModel('ContactGNNEnergy')
     # test_lammps_load()
     # plot_fixed()
     # test_argpartition(10)
