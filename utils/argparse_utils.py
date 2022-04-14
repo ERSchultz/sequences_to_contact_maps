@@ -311,6 +311,8 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
             assert (len(opt.transforms) + len(opt.pre_transforms)) > 0, f"need feature augmentation for id={opt.id}"
 
     # transforms
+    opt.edge_transforms = []
+    opt.node_transforms = []
     process_transforms(opt)
 
     # move data to scratch
@@ -355,8 +357,6 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
 
 def process_transforms(opt):
     # collect these for printing purposes (see opt2list)
-    opt.edge_transforms = []
-    opt.node_transforms = []
 
     if opt.y_log_transform:
         split = 0

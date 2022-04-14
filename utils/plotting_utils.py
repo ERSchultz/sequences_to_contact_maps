@@ -18,7 +18,8 @@ from sklearn import metrics
 from sklearn.decomposition import PCA
 from sympy import solve, symbols
 
-from .argparse_utils import get_base_parser, get_opt_header, list2str, opt2list
+from .argparse_utils import (finalize_opt, get_base_parser, get_opt_header,
+                             list2str, opt2list)
 from .InteractionConverter import InteractionConverter
 from .load_utils import load_sc_contacts, load_X_psi
 from .neural_net_utils import get_data_loaders, load_saved_model
@@ -40,6 +41,8 @@ def plot_combined_models(modelType, ids):
         dirs.append(osp.join(id_path, 'model.pt'))
         txt_file = osp.join(id_path, 'argparse.txt')
         opt = parser.parse_args(['@{}'.format(txt_file)])
+        finalize_opt(opt, parser, local = True, debug = True)
+
         opts.append(opt)
     imagePath = osp.join(path, '{} combined'.format(list2str(ids)))
     if not osp.exists(imagePath):

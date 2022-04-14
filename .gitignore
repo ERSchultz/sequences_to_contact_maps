@@ -10,8 +10,7 @@ maxent*
 test/**
 
 # datasets
-dataset*/freq_arr*
-*/samples/**
+dataset*/*
 !*/samples/sample40
 !*/samples/sample40/*
 !dataset_01_18_22/samples/sample21
