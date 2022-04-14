@@ -1,13 +1,26 @@
-Namespace(N_min=2000, dir='/project2/depablo/walt/michrom/project/chr_05/chr_05_02', down_sampling=24, its=5, jobs=20, mode='contact_diffusion', odir='/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02_copy/contact_diffusion', sparse_format=False, update_mode='eig')
-Loaded xyz with shape (504, 3620, 3)
-xyz load time: 193.94 s
+Namespace(N_min=2000, dir='/project2/depablo/walt/michrom/project/chr_05/chr_05_02', down_sampling=48, its=5, jobs=20, mode='contact_diffusion', odir='/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02_copy/contact_diffusion', sparse_format=False, update_mode='eig')
+Loaded xyz with shape (252, 3620, 3)
+xyz load time: 185.446 s
 found 20 total CPUs, 20 available CPUs, using 20
-(504, 6554010)
-sc_contacts size: 26.4 Gigabytes
-Loaded 504 sc contacts
-sc load time: 106.374 s
-sc_contacts size: 26.4 Gigabytes
+(252, 6554010)
+sc_contacts size: 13.2 Gigabytes
+Loaded 252 sc contacts
+sc load time: 51.853 s
+sc_contacts size: 13.2 Gigabytes
 Iteration 0
+plot time: 48.58 s
+
+
+Iteration 1
+diag time: 11.704 s
+distance time: 17.919 s
+Using epsilon = 0.223
+w [1.         0.06724752 0.04807423 0.04456998 0.04162557]
+
+
+order corr:  0.85
+Using k = 6
+update time: 72.067 s
 Traceback (most recent call last):
   File "diffusion_analysis.py", line 494, in <module>
     main()
