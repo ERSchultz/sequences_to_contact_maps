@@ -293,7 +293,9 @@ def plot_genomic_distance_statistics_inner(datafolder, ifile, ofile, title,  mod
     fig, ax = plt.subplots()
     samples = make_dataset(datafolder)
     mean_result = []
-    for sample in samples:
+    for i, sample in enumerate(samples):
+        if i > 100:
+            break
         y = np.load(osp.join(sample, ifile))
         result = genomic_distance_statistics(y, mode = mode, stat = stat)[10:]
         mean_result.append(result)
@@ -379,10 +381,10 @@ def basic_plots(dataFolder, plot_y = False, plot_s = True, plot_x = True, plot_c
         #     meanDist = genomic_distance_statistics(y)
 
 if __name__ == '__main__':
-    dir = '/home/erschultz/sequences_to_contact_maps'
-    dataset = 'dataset_10_27_21_test'
+    dir = '/project2/depablo/erschultz'
+    dataset = 'dataset_01_17_22'
     data_dir = osp.join(dir, dataset)
     # basic_plots(data_dir, plot_y = True, plot_s = False, plot_x = True)
-    plot_genomic_distance_statistics(dataset)
+    plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts('/home/eric/sequences_to_contact_maps/dataset_12_11_21')
