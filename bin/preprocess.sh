@@ -8,7 +8,7 @@
 #SBATCH --time=04:00:00
 
 input="/project2/depablo/erschultz/dataset_01_17_22"
-output="/home/depablo/erschultz/dataset_01_17_22"
+output="/project2/depablo/erschultz/dataset_01_17_22"
 numWorkers=16
 m=1024
 overwrite="false"
