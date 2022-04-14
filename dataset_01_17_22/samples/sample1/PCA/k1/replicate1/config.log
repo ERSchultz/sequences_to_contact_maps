@@ -1,3 +1,5 @@
-Namespace(default_config='/home/eric/TICG-chromatin/maxent/resources/default_config.json', ofile='config.json', m=1500, k=1, load_configuration_filename=None, goal_specified=True, dump_frequency=None, dump_stats_frequency=None, n_sweeps=None, TICG_seed=20576, use_ground_truth_TICG_seed=False, use_ematrix=False, use_smatrix=False, sample_folder='/home/eric/sequences_to_contact_maps/dataset_01_17_22/samples/sample1', relabel=None, use_ground_truth_chi=False, use_ground_truth_diag_chi=True, chi_seed=None, diag=False, max_diag_chi=0.5, e=None, chi=None, save_chi=False, save_chi_for_max_ent=True, min_chi=-1.0, max_chi=1.0, fill_diag=None, fill_offdiag=None, ensure_distinguishable=False, format='%.3e')
-WARNING: ground truth config missing
-psi is None
+Namespace(TICG_seed=31739, chi=None, chi_seed=None, default_config='/home/erschultz/TICG-chromatin/maxent/resources/default_config.json', diag=False, dump_frequency=None, dump_stats_frequency=None, e=None, ensure_distinguishable=False, fill_diag=None, fill_offdiag=None, format='%.3e', goal_specified=True, k=1, load_configuration_filename=None, m=1024, max_chi=1.0, max_diag_chi=0.5, min_chi=-1.0, n_sweeps=None, ofile='config.json', relabel=None, sample_folder='/project2/depablo/erschultz/dataset_01_17_22/samples/sample1', save_chi=False, save_chi_for_max_ent=True, use_ematrix=False, use_ground_truth_TICG_seed=False, use_ground_truth_chi=False, use_ground_truth_diag_chi=True, use_smatrix=False)
+psi (x) loaded with shape (1024, 1)
+Rank of S: 1
+Rank of E: 1024
+
