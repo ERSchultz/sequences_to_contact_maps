@@ -19,7 +19,6 @@ preTransforms='degree-ContactDistance-GeneticDistance'
 useEdgeWeights='false'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8-8-8'
-resumeTraining='true'
 milestones='50'
 
 id=128
