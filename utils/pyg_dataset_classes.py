@@ -68,10 +68,12 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.degree_list = [] # created in self.process()
         self.verbose = verbose
         self.file_paths = make_dataset(self.dirname, maxSample = max_sample, samples = samples)
+        if verbose:
+            print(self.file_paths)
 
         if self.y_norm == 'batch':
             assert y_preprocessing is not None, "use instance normalization instead"
-            min_max = np.load(osp.join(dirname, "y_{}_min_max.npy".format(y_preprocessing)))
+            min_max = np.load(osp.join(dirname, f"y_{y_preprocessing}_min_max.npy"))
             print("min, max: ", min_max)
             self.ymin = min_max[0]
             self.ymax = min_max[1]
@@ -97,7 +99,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
         super(ContactsGraph, self).__init__(self.root, transform, pre_transform)
 
         if verbose:
-            print('Dataset construction time: {} minutes'.format(np.round((time.time() - t0) / 60, 3)), file = ofile)
+            print('Dataset construction time: '
+                    f'{np.round((time.time() - t0) / 60, 3)} minutes', file = ofile)
 
         if verbose and self.degree_list:
             # self.degree_list will be None if loading already processed dataset
@@ -131,7 +134,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.num_nodes = self.m
             graph.pos_edge_index = pos_edge_index
             graph.neg_edge_index = neg_edge_index
-            graph.weighted_degree = self.weighted_degree # needed for pre_transform delete later to save RAM
+            graph.weighted_degree = self.weighted_degree
+            # graph.weighted_degree needed for pre_transform -  delete later to save RAM
             graph.contact_map = self.contact_map
 
             if self.pre_transform is not None:
@@ -162,7 +166,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     elif osp.exists(chi_path2):
                         chi = np.load(chi_path2)
                     else:
-                        raise Exception('chi does not exist: {}, {}'.format(chi_path1, chi_path2))
+                        raise Exception(f'chi does not exist: {chi_path1}, {chi_path2}')
                     chi = torch.tensor(chi, dtype = torch.float32)
                     graph.energy = x @ chi @ x.t()
 
@@ -170,11 +174,15 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             # record degree
             if self.verbose:
-                deg = np.array(torch_geometric.utils.degree(graph.edge_index[0], graph.num_nodes))
+                deg = np.array(torch_geometric.utils.degree(graph.edge_index[0],
+                                                            graph.num_nodes))
                 self.degree_list.append(deg)
 
     def process_x_psi(self, raw_folder):
-        '''Helper function to load the appropriate particle type matrix and apply any necessary preprocessing.'''
+        '''
+        Helper function to load the appropriate particle type matrix and
+        apply any necessary preprocessing.
+        '''
         x_file = osp.join(raw_folder, 'x.npy')
         if osp.exists(x_file):
             x = np.load(x_file)
@@ -196,7 +204,10 @@ class ContactsGraph(torch_geometric.data.Dataset):
         return x, psi
 
     def process_y(self, raw_folder):
-        '''Helper function to load the appropriate contact map and apply any necessary preprocessing.'''
+        '''
+        Helper function to load the appropriate contact map and apply any
+        necessary preprocessing.
+        '''
         if self.y_preprocessing is None:
             y_path = osp.join(raw_folder, 'y.npy')
         elif self.y_preprocessing == 'diag':
@@ -222,7 +233,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
             self.ymax = np.max(y)
             self.ymin = np.min(y)
 
-        # if y_norm is batch this uses batch parameters from init, if y_norm is None, this does nothing
+        # if y_norm is batch this uses batch parameters from init,
+        # if y_norm is None, this does nothing
         if self.min_subtraction:
             y = (y - self.ymin) / (self.ymax - self.ymin)
         else:
@@ -303,7 +315,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
 
 def main():
-    g = ContactsGraph('dataset_04_18_21', root_name = 'graphs0', output = 'energy', crop = [0, 15], m = 15)
+    g = ContactsGraph('dataset_04_18_21', root_name = 'graphs0', output = 'energy',
+                        crop = [0, 15], m = 15)
     rmtree(g.root)
 
 
