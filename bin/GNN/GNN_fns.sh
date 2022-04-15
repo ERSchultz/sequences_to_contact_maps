@@ -46,6 +46,7 @@ numWorkers=4
 milestones='none'
 gamma=0.1
 splitSizes='-200-0'
+splitPercents='none'
 lr=1e-4
 
 useScratch='true'

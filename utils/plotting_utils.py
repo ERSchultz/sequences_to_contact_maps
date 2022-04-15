@@ -1234,7 +1234,7 @@ def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False,
                                 crop_size = None, vmax = 'mean', save_txt = False,
                                 title_index = False):
     '''
-    Plot sc contact map.
+    Plot sc contact maps.
 
     Inputs:
         sc_contacts: np array of sc contact maps (in full or flattened upper traingle)

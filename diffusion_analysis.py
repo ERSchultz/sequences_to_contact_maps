@@ -1,4 +1,5 @@
 import argparse
+import multiprocessing
 import os
 import os.path as osp
 import time
@@ -9,13 +10,14 @@ import imageio
 import matplotlib.cm
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.ndimage import gaussian_filter
 from scipy.sparse.csgraph import laplacian
 from sklearn.cluster import KMeans
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import pairwise_distances, silhouette_score
 from sklearn.metrics.pairwise import cosine_distances
 
-from utils.load_utils import load_sc_contacts
+from utils.load_utils import save_sc_contacts
 from utils.plotting_utils import plot_matrix, plot_sc_contact_maps_inner
 from utils.utils import (diagonal_preprocessing_bulk,
                          genomic_distance_statistics, pearson_round,
@@ -92,7 +94,7 @@ def update_eig(vi, sc_contacts, l=1):
     return sc_contacts
 
 def update_kNN(v, sc_contacts, k=2):
-    pass
+    raise NotImplementedError
 
 def tune_epsilon(input, ofile):
     X = np.arange(-12, 20, 1)
@@ -180,6 +182,7 @@ def plot_eigenvectors(v, xyz, odir, sc_contacts = None):
     plt.tight_layout()
     plt.savefig(osp.join(odir, 'projection234.png'.strip('_')))
     plt.close()
+    return #TODO
 
     # k_means
     num_vecs = 3
@@ -248,23 +251,41 @@ def plot_eigenvectors(v, xyz, odir, sc_contacts = None):
     plt.savefig(osp.join(odir, 'projection234_kmeans.png'.strip('_')))
     plt.close()
 
-def plot_contacts(order, sc_contacts, args, odir):
-    for dir in ['sc_contacts_time', 'sc_contacts_traj']:
-        if dir == 'sc_contacts_traj':
+def plot_contacts(dir, order, args):
+    for folder in ['sc_contacts_time', 'sc_contacts_traj']:
+        if folder == 'sc_contacts_traj':
             if order is None:
                 continue
             sc_contacts = sc_contacts[order]
-        filenames = plot_sc_contact_maps_inner(sc_contacts,
-                                    osp.join(odir, dir),
-                                    count = 20, jobs = args.jobs // 2,
-                                    title_index = True)
+        odir = osp.join(dir, folder)
+        if not osp.exists(odir):
+            os.mkdir(odir, mode = 0o775)
 
+        # make plots
+        filenames = []
+        mapping = []
+        for i in range(args.N):
+            if i % (args.N // 20) == 0:
+                y = np.load(osp.join(dir, f'y_sc_{i}.npy'))
+                y = triu_to_full(y, args.m)
+                ofile = osp.join(odir, f'y_sc_{i}.png')
+                filenames.append(ofile)
+                if args.jobs > 1:
+                    mapping.append((y, ofile, i, 0, 'max'))
+                else:
+                    plot_matrix(y, ofile, title = i, vmax = 'max')
+
+        if args.jobs > 1:
+            with multiprocessing.Pool(args.jobs) as p:
+                p.starmap(plot_matrix, mapping)
+
+        # make gif
         print('starting gif')
         frames = []
         for filename in filenames:
-            frames.append(imageio.imread(osp.join(odir,dir, filename)))
+            frames.append(imageio.imread(filename))
 
-        imageio.mimsave(osp.join(odir, dir, 'sc_contacts.gif'), frames, format='GIF', fps=2)
+        imageio.mimsave(osp.join(odir, 'sc_contacts.gif'), frames, format='GIF', fps=2)
 
 def load_helper(args, contacts = False):
     xyz_file = osp.join(args.dir, 'data_out/output.xyz')
@@ -278,28 +299,54 @@ def load_helper(args, contacts = False):
                         down_sampling = args.down_sampling)
 
     if contacts:
-        sc_contacts = load_sc_contacts(args.dir, N_max = None, triu = True,
-                                        gaussian = True, zero_diag = True,
-                                        jobs = args.jobs, xyz = xyz,
-                                        sparse_format = args.sparse_format,
-                                        sparsify = True)
-
-
-        y_file = osp.join(args.dir, 'y.npy')
-        if osp.exists(y_file):
-            overall = np.load(y_file)
-            print('loading y.npy')
-        else:
-            overall = np.sum(sc_contacts, 0)
-            overall = triu_to_full(overall)
-
-        mean_per_diag = genomic_distance_statistics(overall, mode = 'prob')
-
-
-        return xyz, sc_contacts, mean_per_diag
-
+        args.sc_contacts_dir = osp.join(osp.split(args.odir)[0], 'sc_contacts')
+        save_sc_contacts(xyz, args.sc_contacts_dir, args.jobs, sparsify = True)
 
     return xyz
+
+def diag_processsing(dir, odir, args):
+    t0 = time.time()
+    if not osp.exists(odir):
+        os.mkdir(odir, mode = 0o755)
+
+    sc_contacts = np.zeros((args.N, int(args.m*(args.m+1)/2)))
+    for i in range(args.N):
+        fpath = osp.join(dir, f'y_sc_{i}.npy')
+        sc_contacts[i] = np.load(fpath)
+    overall = np.sum(sc_contacts, axis = 0)
+    overall = triu_to_full(overall)
+    mean_per_diag = genomic_distance_statistics(overall, mode = 'prob')
+    del overall # no longer needed
+    sc_contacts_diag = diagonal_preprocessing_bulk(sc_contacts, mean_per_diag,
+                                                    triu = True)
+    tf = time.time()
+    print_time(t0, tf, 'diag')
+
+    return sc_contacts_diag
+
+def gaussian_processing(args):
+    t0 = time.time()
+    args.odir_i_sc_contacts = osp.join(args.odir_i, 'sc_contacts')
+    if not osp.exists(args.odir_i_sc_contacts):
+        os.mkdir(args.odir_i_sc_contacts, mode = 0o755)
+    mapping = []
+    for file in os.listdir(args.sc_contacts_dir):
+        ifile = osp.join(args.sc_contacts_dir, file)
+        ofile = osp.join(args.odir_i_sc_contacts, file)
+        mapping.append((ifile, ofile, args.m))
+
+    with multiprocessing.Pool(args.jobs) as p:
+        p.starmap(gaussian_processing_inner, mapping)
+
+    tf = time.time()
+    print_time(t0, tf, 'gaussian')
+
+def gaussian_processing_inner(ifile, ofile, m):
+    y = np.load(ifile)
+    y = triu_to_full(y, m)
+    y = gaussian_filter(y, sigma = 4)
+    y = y[np.triu_indices(m)]
+    np.save(ofile, y)
 
 def xyz_diffusion():
     args = getArgs()
@@ -340,24 +387,21 @@ def xyz_diffusion():
 
 def contact_diffusion():
     args = getArgs()
-    xyz, sc_contacts, mean_per_diag = load_helper(args, True)
+    xyz = load_helper(args, True)
+    args.N, args.m, _ = xyz.shape
 
-    print_size(sc_contacts, 'sc_contacts')
-    N, _ = sc_contacts.shape
     order = None
+    odir_prev = None
     for it in range(args.its+1):
-        odir_i = osp.join(args.odir, f'iteration_{it}')
-        if osp.exists(odir_i):
-            rmtree(odir_i)
-        os.mkdir(odir_i, mode = 0o755)
+        args.odir_i = osp.join(args.odir, f'iteration_{it}')
+        if osp.exists(args.odir_i):
+            rmtree(args.odir_i)
+        os.mkdir(args.odir_i, mode = 0o755)
         print(f"Iteration {it}")
         if it > 0:
             # diag processing
-            t0 = time.time()
-            sc_contacts_diag = diagonal_preprocessing_bulk(sc_contacts, mean_per_diag,
-                                                            triu = True)
-            tf = time.time()
-            print_time(t0, tf, 'diag')
+            sc_contacts_diag = diag_processsing(osp.join(odir_prev, 'sc_contacts'),
+                            osp.join(args.odir_i, 'sc_contacts_diag'), args)
 
             # compute distance
             t0 = time.time()
@@ -365,14 +409,14 @@ def contact_diffusion():
             #                         metric = 'correlation')
             D = cosine_distances(sc_contacts_diag, sc_contacts_diag)
             del sc_contacts_diag # no longer needed
-            plot_matrix(D, ofile = osp.join(odir_i, 'distances.png'),
+            plot_matrix(D, ofile = osp.join(args.odir_i, 'distances.png'),
                             vmin = 'min', vmax = 'max')
             tf = time.time()
             print_time(t0, tf, 'distance')
 
             # compute eigenvectors
             dmap = dmaps.DiffusionMap(D)
-            eps = tune_epsilon(dmap, osp.join(odir_i, 'tuning.png'))
+            eps = tune_epsilon(dmap, osp.join(args.odir_i, 'tuning.png'))
             dmap.set_kernel_bandwidth(eps)
             dmap.compute(5, 0.5)
 
@@ -380,23 +424,28 @@ def contact_diffusion():
             w = dmap.get_eigenvalues()
             print('w', w)
             order = np.argsort(v[:, 1])
-            print('\n\norder corr: ', pearson_round(order, np.arange(0, N, 1),
+            print('\n\norder corr: ', pearson_round(order, np.arange(0, args.N, 1),
                                                     stat = 'spearman'))
 
-            np.savetxt(osp.join(odir_i, 'order.txt'), order, fmt='%i')
-            plot_eigenvectors(v, xyz, odir_i, sc_contacts)
+            np.savetxt(osp.join(args.odir_i, 'order.txt'), order, fmt='%i')
+            plot_eigenvectors(v, xyz, args.odir_i, None)
+            return
 
             if args.update_mode == 'eig':
                 sc_contacts = update_eig(v[:, 1], sc_contacts)
             elif args.update_mode == 'knn':
                 sc_contacts = update_kNN(v, sc_contacts, 3)
+        else:
+            # apply gaussian
+            gaussian_processing(args)
 
         # Plots
         t0 = time.time()
-        plot_contacts(order, sc_contacts, args, odir_i)
+        plot_contacts(args.odir_i_sc_contacts, order, args)
         tf = time.time()
         print_time(t0, tf, 'plot')
         print('\n')
+        odir_prev = args.odir_i
 
 def contact_laplacian():
     args = getArgs()
@@ -405,10 +454,10 @@ def contact_laplacian():
     print_size(sc_contacts, 'sc_contacts')
     N, _ = sc_contacts.shape
     for it in range(args.its):
-        odir_i = osp.join(args.odir, f'iteration_{it}')
-        if osp.exists(odir_i):
-            rmtree(odir_i)
-        os.mkdir(odir_i, mode = 0o755)
+        args.odir_i = osp.join(args.odir, f'iteration_{it}')
+        if osp.exists(args.odir_i):
+            rmtree(args.odir_i)
+        os.mkdir(args.odir_i, mode = 0o755)
         print(f"Iteration {it}")
         # diag processing
         t0 = time.time()
@@ -421,23 +470,23 @@ def contact_laplacian():
         t0 = time.time()
         D = pairwise_distances(sc_contacts_diag, sc_contacts_diag,
                                         metric = 'correlation')
-        plot_matrix(D, ofile = osp.join(odir_i, 'distances.png'),
+        plot_matrix(D, ofile = osp.join(args.odir_i, 'distances.png'),
                         vmin = 'min', vmax = 'max')
         tf = time.time()
         print_time(t0, tf, 'distance')
 
         # compute adjacency
-        eps_final = tune_epsilon(D, ofile = osp.join(odir_i, 'tuning.png'))
+        eps_final = tune_epsilon(D, ofile = osp.join(args.odir_i, 'tuning.png'))
         A = np.exp(-1/2 * D**2 / eps_final)
-        plot_matrix(A, ofile = osp.join(odir_i, 'A.png'),
+        plot_matrix(A, ofile = osp.join(args.odir_i, 'A.png'),
                         vmin = 'min', vmax = 'max')
 
         # compute laplacian
         A_tilde = laplacian(A, normed = True)
-        plot_matrix(A_tilde, ofile = osp.join(odir_i, 'A_tilde.png'),
+        plot_matrix(A_tilde, ofile = osp.join(args.odir_i, 'A_tilde.png'),
                         vmin = np.min(A_tilde), vmax = np.max(A_tilde),
                         cmap = 'blue-red')
-        np.savetxt(osp.join(odir_i, 'A_tilde.txt'), A_tilde, fmt='%.2f')
+        np.savetxt(osp.join(args.odir_i, 'A_tilde.txt'), A_tilde, fmt='%.2f')
 
         # compute eigenvectors
         w, v = np.linalg.eig(A_tilde)
@@ -454,15 +503,15 @@ def contact_laplacian():
         print('\n\norder corr: ', pearson_round(order, np.arange(0, N, 1),
                                                 stat = 'spearman'))
 
-        np.savetxt(osp.join(odir_i, 'order.txt'), order, fmt='%i')
-        plot_eigenvectors(v, xyz, odir_i, sc_contacts)
+        np.savetxt(osp.join(args.odir_i, 'order.txt'), order, fmt='%i')
+        plot_eigenvectors(v, xyz, args.odir_i, sc_contacts)
 
         if args.update_mode == 'eig':
             sc_contacts = update_eig(v[:, 1], sc_contacts)
 
         # Plots
         t0 = time.time()
-        plot_contacts(order, sc_contacts, args, odir_i)
+        plot_contacts()
         tf = time.time()
         print_time(t0, tf, 'plot')
         print('\n')
