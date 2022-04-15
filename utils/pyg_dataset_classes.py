@@ -68,8 +68,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.degree_list = [] # created in self.process()
         self.verbose = verbose
         self.file_paths = make_dataset(self.dirname, maxSample = max_sample, samples = samples)
-        if verbose:
-            print(self.file_paths)
 
         if self.y_norm == 'batch':
             assert y_preprocessing is not None, "use instance normalization instead"

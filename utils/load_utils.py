@@ -205,6 +205,61 @@ def load_final_max_ent_S(k, replicate_path, max_it_path = None):
 
     return s
 
+def save_sc_contacts(xyz, odir, jobs = 5, triu = True, zero_diag = True,
+                     sparsify = False, overwrite = False):
+    '''
+    Saves single cell contacts from sample_folder/data_out/output.xyz.
+
+    Inputs:
+        xyz: None to load xyz
+        odir: dir to save to
+        jobs: Number of jobs
+        triu: True to flatten and upper triangularize sc_contact maps
+        zero_diag: True to zero diagonal
+        sparsify (bool): True to match experimental sparseness
+    '''
+    grid_size = 28.7
+    N, _, _ = xyz.shape
+
+    if not osp.exists(odir):
+        os.mkdir(odir, mode = 0o755)
+
+    # process sc_contacts
+    t0 = time.time()
+    print(f'found {multiprocessing.cpu_count()} total CPUs, {len(os.sched_getaffinity(0))} available CPUs, using {jobs}')
+    mapping = []
+    for i in range(N):
+        ofile = osp.join(odir, f'y_sc_{i}.npy')
+        if not osp.exists(ofile) or overwrite:
+            mapping.append((xyz[i], ofile, grid_size, triu, zero_diag, sparsify))
+    if len(mapping) > 0:
+        with multiprocessing.Pool(jobs) as p:
+            p.starmap(save_sc_contacts_xyz, mapping)
+
+    tf = time.time()
+    print_time(t0, tf, 'sc save')
+
+def save_sc_contacts_xyz(xyz, ofile, grid_size, triu, zero_diag, sparsify):
+    m, _ = xyz.shape
+
+    contact_map = xyz_to_contact_grid(xyz, grid_size)
+    if zero_diag:
+        np.fill_diagonal(contact_map, 0)
+    if sparsify:
+        temp_contact_map = np.zeros_like(contact_map)
+        # wasn't sure how to do this in place and ensure symmetry
+        for i in range(m):
+            where = np.argwhere(contact_map[i])
+            if len(where) > 0:
+                where2 = np.random.choice(where.reshape(-1))
+                temp_contact_map[i, where2] = 1
+                temp_contact_map[where2, i] = 1
+        contact_map = temp_contact_map
+    if triu:
+        contact_map = contact_map[np.triu_indices(m)]
+
+    np.save(ofile, contact_map)
+
 def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
                     gaussian = False, zero_diag = False, jobs = 1, down_sampling = 1,
                     sparsify = False, correct_diag = False, return_xyz = False,
