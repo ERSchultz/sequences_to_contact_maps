@@ -14,13 +14,18 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 
 rootName='ContactGNNEnergy7' # change to run multiple bash files at once
-splitSizes='1000-200-0'
-messagePassing='GAT'
+dirname="/project2/depablo/erschultz/dataset_09_02_21"
+splitSizes='none'
+splitPercents='0.8-0.1-0.1'
+preTransforms='degree-ContactDistance-GeneticDistance'
 useEdgeWeights='false'
-numHeads=8
+useEdgeAttr='true'
+hiddenSizesList='32-32-32'
+EncoderHiddenSizesList='100-100-64'
+updateHiddenSizesList='100-100-64'
 milestones='50'
 
-id=126
+id=139
 for lr in 1e-3
 do
   echo "id=${id}"

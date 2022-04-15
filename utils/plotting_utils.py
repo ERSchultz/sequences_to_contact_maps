@@ -41,7 +41,7 @@ def plot_combined_models(modelType, ids):
         dirs.append(osp.join(id_path, 'model.pt'))
         txt_file = osp.join(id_path, 'argparse.txt')
         opt = parser.parse_args(['@{}'.format(txt_file)])
-        finalize_opt(opt, parser, local = True, debug = True)
+        opt = finalize_opt(opt, parser, local = True, debug = True)
 
         opts.append(opt)
     imagePath = osp.join(path, '{} combined'.format(list2str(ids)))
@@ -74,6 +74,7 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
     if len(differences) == 1:
         diff_name = differences.pop()
     else:
+        print(differences)
         diff_name = 'id'
     diff_pos = opt_header.index(diff_name)
 
