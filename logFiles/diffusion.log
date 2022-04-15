@@ -1,51 +1,56 @@
-Namespace(N_min=2000, dir='/project2/depablo/walt/michrom/project/chr_05/chr_05_02', down_sampling=48, its=5, jobs=20, mode='contact_diffusion', odir='/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02_copy/contact_diffusion', sparse_format=False, update_mode='eig')
-Loaded xyz with shape (252, 3620, 3)
-xyz load time: 185.446 s
+Namespace(N_min=2000, dir='/project2/depablo/walt/michrom/project/chr_05/chr_05_02', down_sampling=100, its=5, jobs=20, mode='contact_diffusion', odir='/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02_copy/contact_diffusion', sparse_format=False, update_mode='eig')
+Loaded xyz with shape (121, 3620, 3)
+xyz load time: 183.346 s
 found 20 total CPUs, 20 available CPUs, using 20
-(252, 6554010)
-sc_contacts size: 13.2 Gigabytes
-Loaded 252 sc contacts
-sc load time: 51.853 s
-sc_contacts size: 13.2 Gigabytes
+(121, 6554010)
+sc_contacts size: 6.3 Gigabytes
+Loaded 121 sc contacts
+sc load time: 25.66 s
+sc_contacts size: 6.3 Gigabytes
 Iteration 0
-plot time: 48.58 s
+starting gif
+plot time: 61.707 s
 
 
 Iteration 1
-diag time: 11.704 s
-distance time: 17.919 s
+diag time: 7.471 s
+distance time: 7.751 s
 Using epsilon = 0.223
-w [1.         0.06724752 0.04807423 0.04456998 0.04162557]
+w [0.9999999  0.09242043 0.07353679 0.06916746 0.06723466]
 
 
-order corr:  0.85
+order corr:  -0.84
 Using k = 6
-update time: 72.067 s
+update time: 23.85 s
+starting gif
+starting gif
+plot time: 129.385 s
+
+
+Iteration 2
+diag time: 7.777 s
+distance time: 7.891 s
+Using epsilon = 0.082
+w [1.0000001  0.7170789  0.66486615 0.65422046 0.64036834]
+
+
+order corr:  -0.85
+Using k = 5
+update time: 22.867 s
+starting gif
+starting gif
+plot time: 131.49 s
+
+
+Iteration 3
+diag time: 6.937 s
+distance time: 7.954 s
+Using epsilon = 0.011
 Traceback (most recent call last):
-  File "diffusion_analysis.py", line 494, in <module>
+  File "diffusion_analysis.py", line 496, in <module>
     main()
-  File "diffusion_analysis.py", line 488, in main
+  File "diffusion_analysis.py", line 490, in main
     contact_diffusion()
-  File "diffusion_analysis.py", line 394, in contact_diffusion
-    plot_contacts(order, sc_contacts, args, odir_i)
-  File "diffusion_analysis.py", line 257, in plot_contacts
-    filenames = plot_sc_contact_maps_inner(sc_contacts,
-  File "/home/erschultz/sequences_to_contact_maps/utils/plotting_utils.py", line 1296, in plot_sc_contact_maps_inner
-    with multiprocessing.Pool(jobs) as p:
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/context.py", line 119, in Pool
-    return Pool(processes, initializer, initargs, maxtasksperchild,
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 212, in __init__
-    self._repopulate_pool()
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 303, in _repopulate_pool
-    return self._repopulate_pool_static(self._ctx, self.Process,
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 326, in _repopulate_pool_static
-    w.start()
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/process.py", line 121, in start
-    self._popen = self._Popen(self)
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/context.py", line 277, in _Popen
-    return Popen(process_obj)
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/popen_fork.py", line 19, in __init__
-    self._launch(process_obj)
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/popen_fork.py", line 70, in _launch
-    self.pid = os.fork()
-OSError: [Errno 12] Cannot allocate memory
+  File "diffusion_analysis.py", line 377, in contact_diffusion
+    dmap.compute(5, 0.5)
+RuntimeError: Eigensolver did not converge.
