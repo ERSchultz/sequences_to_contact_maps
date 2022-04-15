@@ -15,10 +15,9 @@ source activate python3.9_pytorch1.9_cuda10.2
 
 rootName='ContactGNNEnergy8' # change to run multiple bash files at once
 splitSizes='1000-200-0'
-yPreprocessing='diag_batch'
 milestones='50'
 
-id=133
+id=136
 for lr in 1e-3
 do
   echo "id=${id}"
