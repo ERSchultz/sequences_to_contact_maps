@@ -704,6 +704,13 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
+def is_float(v) -> bool:
+    try:
+        float(v)
+        return True
+    except ValueError:
+        return False
+
 def str2list(v, sep = '-'):
     """
     Helper function for argparser, converts str to list by splitting on sep.
@@ -727,6 +734,8 @@ def str2list(v, sep = '-'):
             for i, val in enumerate(result):
                 if val.isnumeric():
                     result[i] = int(val)
+                elif is_float(val):
+                    result[i] = float(val)
                 elif val == '':
                     result[i] = -1
             return result
