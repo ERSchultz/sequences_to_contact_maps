@@ -5,9 +5,9 @@
 #SBATCH --output=logFiles/cleanup.log
 #SBATCH --time=2:00:00
 
-cd ~/scratch-midway2/dataset_01_17_22/ContactGNNEnergy5
+cd ~/scratch-midway2/
 
-rm graph_1* &
+rm -r dataset_09*
 rm graph_2* &
 rm graph_3* &
 rm graph_4* &
