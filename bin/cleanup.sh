@@ -5,29 +5,16 @@
 #SBATCH --output=logFiles/cleanup.log
 #SBATCH --time=2:00:00
 
+cd ~/scratch-midway2/dataset_09_02_21/samples
+
+for i in 1 2 3 4 5 6 7 8 9
+do
+  echo $i
+  rm -r "sample${i}"* &
+done
+
+wait
+
 cd ~/scratch-midway2/
 
-rm -r dataset_09*
-rm graph_2* &
-rm graph_3* &
-rm graph_4* &
-
-wait
-
-cd ..
-
-rm -r ContactGNNEnergy5
-
-
-cd ConstantGNNEnergy4
-
-rm graph_1* &
-rm graph_2* &
-rm graph_3* &
-rm graph_4* &
-
-wait
-
-cd ..
-
-rm -r ContactGNNEnergy5
+rm -r dataset_09_02_21
