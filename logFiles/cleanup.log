@@ -1,9 +1,975 @@
+/tmp/slurmd/job19336934/slurm_script: line 11: cd: /home/erschultz/sequences_to_contact_maps/results/Akita/3$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 11: cd: /home/erschultz/sequences_to_contact_maps/results/Akita/4$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 11: cd: /home/erschultz/sequences_to_contact_maps/results/Akita/5$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 11: cd: /home/erschultz/sequences_to_contact_maps/results/Akita/6$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 11: cd: /home/erschultz/sequences_to_contact_maps/results/Akita/7$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 11: cd: /home/erschultz/sequences_to_contact_maps/results/Akita/8$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 18: cd: /home/erschultz/sequences_to_contact_maps/results/DeepC/7$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 18: cd: /home/erschultz/sequences_to_contact_maps/results/DeepC/8$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 18: cd: /home/erschultz/sequences_to_contact_maps/results/DeepC/9$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 18: cd: /home/erschultz/sequences_to_contact_maps/results/DeepC/10$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 18: cd: /home/erschultz/sequences_to_contact_maps/results/DeepC/11$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 18: cd: /home/erschultz/sequences_to_contact_maps/results/DeepC/12$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 18: cd: /home/erschultz/sequences_to_contact_maps/results/DeepC/13$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 18: cd: /home/erschultz/sequences_to_contact_maps/results/DeepC/14$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 18: cd: /home/erschultz/sequences_to_contact_maps/results/DeepC/15$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 18: cd: /home/erschultz/sequences_to_contact_maps/results/DeepC/16$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 18: cd: /home/erschultz/sequences_to_contact_maps/results/DeepC/17$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+/tmp/slurmd/job19336934/slurm_script: line 18: cd: /home/erschultz/sequences_to_contact_maps/results/DeepC/18$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
 1
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/1$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
 2
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/2$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
 3
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/3$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
 4
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/4$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
 5
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/5$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
 6
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/6$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
 7
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/7$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
 8
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/8$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
 9
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/9$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+10
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/10$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+11
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/11$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+12
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/12$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+13
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/13$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+14
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/14$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+15
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/15$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+16
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/16$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+17
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/17$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+18
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/18$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+19
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/19$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+20
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/20$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+21
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/21$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+22
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/22$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+23
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/23$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+24
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/24$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+25
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/25$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+26
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/26$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+27
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/27$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+28
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/28$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+29
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/29$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+30
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/30$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+31
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/31$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+32
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/32$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+33
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/33$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+34
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/34$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+35
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/35$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+36
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/36$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+37
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/37$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+38
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/38$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+39
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/39$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+40
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/40$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+41
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/41$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+42
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/42$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+43
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/43$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+44
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/44$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+45
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/45$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+46
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/46$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+47
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/47$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+48
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/48$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+49
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/49$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+50
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/50$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+51
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/51$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+52
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/52$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+53
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/53$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+54
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/54$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+55
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/55$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+56
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/56$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+57
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/57$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+58
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/58$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+59
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/59$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+60
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/60$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+61
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/61$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+62
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/62$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+63
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/63$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+64
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/64$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+65
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/65$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+66
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/66$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+67
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/67$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+68
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/68$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+69
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/69$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+70
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/70$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+71
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/71$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+72
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/72$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+73
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/73$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+74
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/74$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+75
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/75$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+76
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/76$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+77
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/77$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+78
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/78$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+79
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/79$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+80
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/80$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+81
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/81$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+82
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/82$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+83
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/83$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+84
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/84$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+85
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/85$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+86
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/86$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+87
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/87$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+88
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/88$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+89
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/89$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+90
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/90$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+91
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/91$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+92
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/92$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+93
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/93$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+94
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/94$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+95
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/95$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+96
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/96$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+97
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/97$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+98
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/98$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+99
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/99$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+100
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/100$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+101
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/101$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+102
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/102$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+103
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/103$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+104
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/104$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+105
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/105$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+106
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/106$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+107
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/107$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+108
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/108$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+109
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/109$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+110
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/110$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+111
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/111$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+112
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/112$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+113
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/113$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+114
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/114$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+115
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/115$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+116
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/116$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+117
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/117$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+118
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/118$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+119
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/119$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+120
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/120$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+121
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/121$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+122
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/122$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+123
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/123$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+124
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/124$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+125
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/125$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+126
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/126$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+127
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/127$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+128
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/128$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+129
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/129$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+130
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/130$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+131
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/131$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+132
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/132$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+133
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/133$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+134
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/134$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+135
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/135$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+136
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/136$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+137
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/137$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+138
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/138$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+139
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/139$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+140
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/140$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+141
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/141$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+142
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/142$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+143
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/143$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+144
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/144$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+145
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/145$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+146
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/146$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+147
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/147$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+148
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/148$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+149
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/149$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+150
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/150$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+151
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/151$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+152
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/152$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+153
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/153$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+154
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/154$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+155
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/155$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+156
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/156$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+157
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/157$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+158
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/158$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+159
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/159$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+160
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/160$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+161
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/161$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+162
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/162$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+163
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/163$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+164
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/164$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+165
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/165$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+166
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/166$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+167
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/167$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+168
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/168$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+169
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/169$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+170
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/170$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+171
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/171$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+172
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/172$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+173
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/173$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+174
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/174$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+175
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/175$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+176
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/176$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+177
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/177$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+178
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/178$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+179
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/179$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+180
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/180$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+181
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/181$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+182
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/182$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+183
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/183$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+184
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/184$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+185
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/185$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+186
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/186$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+187
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/187$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+188
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/188$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+189
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/189$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+190
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/190$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+191
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/191$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+192
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/192$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+193
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/193$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+194
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/194$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+195
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/195$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+196
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/196$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+197
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/197$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+198
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/198$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+199
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/199$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+200
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/200$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+201
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/201$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+202
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/202$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+203
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/203$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+204
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/204$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+205
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/205$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+206
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/206$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+207
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/207$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+208
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/208$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+209
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/209$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+210
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/210$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+211
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/211$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+212
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/212$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+213
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/213$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+214
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/214$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+215
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/215$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+216
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/216$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+217
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/217$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+218
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/218$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+219
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/219$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+220
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/220$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+221
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/221$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+222
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/222$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+223
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/223$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+224
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/224$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+225
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/225$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+226
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/226$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+227
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/227$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+228
+/tmp/slurmd/job19336934/slurm_script: line 26: cd: /home/erschultz/sequences_to_contact_maps/results/ContactGNN/228$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+24
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/24$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+25
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/25$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+26
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/26$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+27
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/27$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+28
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/28$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+29
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/29$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+30
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/30$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+31
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/31$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+32
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/32$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+33
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/33$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+34
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/34$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+35
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/35$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+36
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/36$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+37
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/37$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+38
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/38$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+39
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/39$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+40
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/40$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+41
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/41$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+42
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/42$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+43
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/43$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+44
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/44$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+45
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/45$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+46
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/46$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+47
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/47$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+48
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/48$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+49
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/49$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+50
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/50$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+51
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/51$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+52
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/52$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+53
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/53$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+54
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/54$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+55
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/55$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+56
+/tmp/slurmd/job19336934/slurm_script: line 34: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder/56$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+1
+/tmp/slurmd/job19336934/slurm_script: line 42: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder2/1$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+2
+/tmp/slurmd/job19336934/slurm_script: line 42: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder2/2$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+3
+/tmp/slurmd/job19336934/slurm_script: line 42: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder2/3$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+4
+/tmp/slurmd/job19336934/slurm_script: line 42: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder2/4$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+5
+/tmp/slurmd/job19336934/slurm_script: line 42: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder2/5$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+6
+/tmp/slurmd/job19336934/slurm_script: line 42: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder2/6$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+7
+/tmp/slurmd/job19336934/slurm_script: line 42: cd: /home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder2/7$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+3
+/tmp/slurmd/job19336934/slurm_script: line 50: cd: /home/erschultz/sequences_to_contact_maps/results/SequenceFCAutoencoder/3$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+4
+/tmp/slurmd/job19336934/slurm_script: line 50: cd: /home/erschultz/sequences_to_contact_maps/results/SequenceFCAutoencoder/4$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+5
+/tmp/slurmd/job19336934/slurm_script: line 50: cd: /home/erschultz/sequences_to_contact_maps/results/SequenceFCAutoencoder/5$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+6
+/tmp/slurmd/job19336934/slurm_script: line 50: cd: /home/erschultz/sequences_to_contact_maps/results/SequenceFCAutoencoder/6$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+7
+/tmp/slurmd/job19336934/slurm_script: line 50: cd: /home/erschultz/sequences_to_contact_maps/results/SequenceFCAutoencoder/7$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+8
+/tmp/slurmd/job19336934/slurm_script: line 50: cd: /home/erschultz/sequences_to_contact_maps/results/SequenceFCAutoencoder/8$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+1
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/1$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+2
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/2$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+3
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/3$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+4
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/4$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+5
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/5$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+6
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/6$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+7
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/7$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+8
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/8$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+9
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/9$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+10
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/10$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+11
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/11$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+12
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/12$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+13
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/13$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+14
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/14$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+15
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/15$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+16
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/16$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+17
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/17$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+18
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/18$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+19
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/19$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+20
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/20$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+21
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/21$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+22
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/22$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+23
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/23$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+24
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/24$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+25
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/25$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+26
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/26$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+27
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/27$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+28
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/28$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+29
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/29$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+30
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/30$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+31
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/31$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+32
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/32$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+33
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/33$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+34
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/34$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+35
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/35$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+36
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/36$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+37
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/37$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+38
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/38$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
+39
+/tmp/slurmd/job19336934/slurm_script: line 58: cd: /home/erschultz/sequences_to_contact_maps/results/UNet/39$: No such file or directory
+rm: cannot remove ‘*.pt’: No such file or directory
