@@ -1,10 +1,9 @@
-rm: rm: cannot remove ‘graph_1*’rm: rm: cannot remove ‘graph_3*’cannot remove ‘graph_2*’: No such file or directorycannot remove ‘graph_4*’
-: No such file or directory: No such file or directory
-: No such file or directory
-
-/tmp/slurmd/job18935399/slurm_script: line 22: cd: ConstantGNNEnergy4: No such file or directory
-rm: rm: rm: rm: cannot remove ‘graph_1*’cannot remove ‘graph_3*’cannot remove ‘graph_2*’cannot remove ‘graph_4*’: No such file or directory
-: No such file or directory: No such file or directory: No such file or directory
-
-
-rm: cannot remove ‘ContactGNNEnergy5’: No such file or directory
+1
+2
+3
+4
+5
+6
+7
+8
+9

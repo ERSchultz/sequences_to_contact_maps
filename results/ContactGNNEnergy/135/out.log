@@ -44,3 +44,42 @@ Mean degree: [790.61 345.01 627.84 ... 178.61 161.1  806.37] +- [132.49  95.2  1
 
 #### TRAINING/VALIDATION ####
 Epoch 2, loss = 1.3280
+Mean test/val loss: 1.2687
+
+Epoch 4, loss = 1.2278
+Mean test/val loss: 1.1522
+
+Epoch 6, loss = 1.1841
+Mean test/val loss: 1.1457
+
+Epoch 8, loss = 1.1781
+Mean test/val loss: 1.1048
+
+Epoch 10, loss = 1.1505
+Mean test/val loss: 1.1064
+
+Epoch 12, loss = 1.1421
+Mean test/val loss: 1.1177
+
+Epoch 14, loss = 1.1248
+Mean test/val loss: 1.2219
+
+Epoch 16, loss = 1.1167
+Mean test/val loss: 1.0839
+
+Epoch 18, loss = 1.1119
+Mean test/val loss: 1.0756
+
+Epoch 20, loss = 1.1059
+Mean test/val loss: 1.0809
+
+Epoch 22, loss = 1.1033
+Mean test/val loss: 1.0557
+
+Epoch 24, loss = 1.0981
+Mean test/val loss: 1.0660
+
+Epoch 26, loss = 1.0964
+Mean test/val loss: 1.0572
+
+Epoch 28, loss = 1.0865

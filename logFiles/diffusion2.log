@@ -1,41 +1,39 @@
 Namespace(N_min=2000, dir='/project2/depablo/walt/michrom/project/chr_05/chr_05_02', down_sampling=12, its=5, jobs=20, mode='contact_diffusion', odir='/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02_copy2/contact_diffusion', sparse_format=False, update_mode='eig')
 Loaded xyz with shape (1007, 3620, 3)
-xyz load time: 194.519 s
-found 20 total CPUs, 20 available CPUs, using 20
-Exception in thread Thread-3:
+xyz load time: 109.323 s
+found 28 total CPUs, 20 available CPUs, using 20
+multiprocessing.pool.RemoteTraceback: 
+"""
 Traceback (most recent call last):
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/threading.py", line 932, in _bootstrap_inner
-    self.run()
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/threading.py", line 870, in run
-    self._target(*self._args, **self._kwargs)
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 576, in _handle_results
-    task = get()
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/connection.py", line 250, in recv
-    buf = self._recv_bytes()
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/connection.py", line 421, in _recv_bytes
-    return self._recv(size)
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/connection.py", line 386, in _recv
-    buf.write(chunk)
-MemoryError
-Exception in thread Thread-1:
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 51, in starmapstar
+    return list(itertools.starmap(args[0], args[1]))
+  File "/home/erschultz/sequences_to_contact_maps/utils/load_utils.py", line 261, in save_sc_contacts_xyz
+    np.save(ofile, contact_map)
+  File "<__array_function__ internals>", line 5, in save
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/site-packages/numpy/lib/npyio.py", line 529, in save
+    format.write_array(fid, arr, allow_pickle=allow_pickle,
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/site-packages/numpy/lib/format.py", line 687, in write_array
+    array.tofile(fp)
+OSError: 6554010 requested and 0 written
+"""
+
+The above exception was the direct cause of the following exception:
+
 Traceback (most recent call last):
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/threading.py", line 932, in _bootstrap_inner
-    self.run()
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/threading.py", line 870, in run
-    self._target(*self._args, **self._kwargs)
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 513, in _handle_workers
-    cls._maintain_pool(ctx, Process, processes, pool, inqueue,
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 337, in _maintain_pool
-    Pool._repopulate_pool_static(ctx, Process, processes, pool,
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 326, in _repopulate_pool_static
-    w.start()
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/process.py", line 121, in start
-    self._popen = self._Popen(self)
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/context.py", line 277, in _Popen
-    return Popen(process_obj)
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/popen_fork.py", line 19, in __init__
-    self._launch(process_obj)
-  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/popen_fork.py", line 70, in _launch
-    self.pid = os.fork()
-OSError: [Errno 12] Cannot allocate memory
-slurmstepd-midway576: error: *** JOB 19047578 ON midway576 CANCELLED AT 2022-04-07T16:07:52 ***
+  File "diffusion_analysis.py", line 545, in <module>
+    main()
+  File "diffusion_analysis.py", line 539, in main
+    contact_diffusion()
+  File "diffusion_analysis.py", line 390, in contact_diffusion
+    xyz = load_helper(args, True)
+  File "diffusion_analysis.py", line 303, in load_helper
+    save_sc_contacts(xyz, args.sc_contacts_dir, args.jobs, sparsify = True)
+  File "/home/erschultz/sequences_to_contact_maps/utils/load_utils.py", line 237, in save_sc_contacts
+    p.starmap(save_sc_contacts_xyz, mapping)
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 372, in starmap
+    return self._map_async(func, iterable, starmapstar, chunksize).get()
+  File "/home/erschultz/miniconda3/envs/python3.8_pytorch1.8.1_cuda10.2_2/lib/python3.8/multiprocessing/pool.py", line 771, in get
+    raise self._value
+OSError: 6554010 requested and 0 written
