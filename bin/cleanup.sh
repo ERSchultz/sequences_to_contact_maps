@@ -5,7 +5,7 @@
 #SBATCH --output=logFiles/cleanup.log
 #SBATCH --time=2:00:00
 
-cd ~/scratch-midway2/dataset_09_02_21/samples
+cd ~/scratch-midway2/dataset_01_17_22/samples
 
 for i in 1 2 3 4 5 6 7 8 9
 do
@@ -15,6 +15,6 @@ done
 
 wait
 
-cd ~/scratch-midway2/
+cd ~/scratch-midway2/dataset_01_17_22/
 
-rm -r dataset_09_02_21
+rm -r samples
