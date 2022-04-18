@@ -21,6 +21,7 @@ preTransforms='degree-contactdistance-geneticdistance'
 useEdgeAttr='true'
 numHeads=8
 milestones='50'
+resumeTraining='true'
 
 id=137
 for lr in 1e-3

@@ -4,6 +4,7 @@
 *.bigWig
 *.xlsx#
 *.csv#
+*.ipynb
 .magicindex.json
 
 maxent*
@@ -28,7 +29,4 @@ results/test/**
 !results/ContactGNN*/**
 
 # chip_seq
-chip_seq_data/__pycache__
-chip_seq_data/narrow_peaks/**
-chip_seq_data/fold_change_control/**
-chip_seq_data/aligned_reads/**
+chip_seq_data/**
