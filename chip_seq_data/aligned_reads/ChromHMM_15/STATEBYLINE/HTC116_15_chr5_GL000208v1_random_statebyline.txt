@@ -1,5 +1,0 @@
-HTC116	chr5_GL000208v1_random
-MaxState E
-3
-2
-2

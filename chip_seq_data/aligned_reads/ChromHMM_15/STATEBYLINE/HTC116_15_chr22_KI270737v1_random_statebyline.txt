@@ -1,6 +1,0 @@
-HTC116	chr22_KI270737v1_random
-MaxState E
-3
-3
-3
-3

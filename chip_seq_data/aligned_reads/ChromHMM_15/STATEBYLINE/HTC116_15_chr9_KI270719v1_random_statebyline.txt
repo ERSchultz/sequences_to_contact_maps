@@ -1,9 +1,0 @@
-HTC116	chr9_KI270719v1_random
-MaxState E
-3
-3
-3
-3
-3
-3
-3
