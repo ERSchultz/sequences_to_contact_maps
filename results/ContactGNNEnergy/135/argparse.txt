@@ -61,7 +61,7 @@ none
 --num_heads
 1
 --n_epochs
-100
+80
 --lr
 1e-3
 --batch_size
@@ -74,6 +74,8 @@ none
 0.1
 --split_sizes
 4000-200-0
+--split_percents
+none
 --verbose
 false
 --scratch
@@ -89,4 +91,4 @@ true
 --id
 135
 --resume_training
-false
+true

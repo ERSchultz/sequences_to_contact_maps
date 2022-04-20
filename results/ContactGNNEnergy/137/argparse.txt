@@ -74,6 +74,8 @@ none
 0.1
 --split_sizes
 4000-200-0
+--split_percents
+none
 --verbose
 false
 --scratch
@@ -89,4 +91,4 @@ true
 --id
 137
 --resume_training
-false
+true
