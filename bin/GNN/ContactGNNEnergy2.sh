@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE2
 #SBATCH --output=logFiles/ContactGNNEnergy2.out
-#SBATCH --time=24:00:00
+#SBATCH --time=1-24:00:00
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
@@ -18,6 +18,7 @@ dirname="/project2/depablo/erschultz/dataset_12_12_21"
 splitSizes='none'
 splitPercents='0.8-0.1-0.1'
 milestones='50'
+resumeTraining='true'
 
 id=142
 for lr in 1e-3

@@ -23,6 +23,7 @@ hiddenSizesList='32-32-32'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 milestones='50'
+resumeTraining='true'
 
 id=138
 for lr in 1e-4
