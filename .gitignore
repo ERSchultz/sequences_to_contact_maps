@@ -27,6 +27,7 @@ neural_net_utils/__pycache_
 # results
 results/test/**
 !results/ContactGNN*/**
+results/*/*combined
 
 # chip_seq
 chip_seq_data/**
