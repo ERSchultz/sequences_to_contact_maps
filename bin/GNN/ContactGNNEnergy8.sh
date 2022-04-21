@@ -7,6 +7,8 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
 #SBATCH --mem-per-cpu=3000
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-user=erschultz@uchicago.edu
 
 cd ~/sequences_to_contact_maps
 

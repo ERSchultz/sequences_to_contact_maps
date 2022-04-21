@@ -1,11 +1,13 @@
 #! /bin/bash
 #SBATCH --job-name=preprocess
-#SBATCH --partition=depablo-gpu
+#SBATCH --partition=depablo-ivyb
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=16
 #SBATCH --mem-per-cpu=2000
 #SBATCH --output=logFiles/preprocess.log
 #SBATCH --time=04:00:00
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-user=erschultz@uchicago.edu
 
 input="/project2/depablo/erschultz/dataset_01_17_22"
 output="/project2/depablo/erschultz/dataset_01_17_22"
