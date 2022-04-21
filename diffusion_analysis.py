@@ -5,7 +5,6 @@ import os.path as osp
 import time
 from shutil import rmtree
 
-import dmaps  # https://github.com/ERSchultz/dmaps
 import imageio
 import matplotlib.cm
 import matplotlib.pyplot as plt
@@ -16,7 +15,6 @@ from sklearn.cluster import KMeans
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import pairwise_distances, silhouette_score
 from sklearn.metrics.pairwise import cosine_distances
-
 from utils.load_utils import save_sc_contacts
 from utils.plotting_utils import plot_matrix, plot_sc_contact_maps_inner
 from utils.utils import (diagonal_preprocessing_bulk,
@@ -24,6 +22,8 @@ from utils.utils import (diagonal_preprocessing_bulk,
                          print_size, print_time, triu_to_full)
 from utils.xyz_utils import (find_dist_between_centroids, find_label_centroid,
                              lammps_load, xyz_load, xyz_to_contact_grid)
+
+import dmaps  # https://github.com/ERSchultz/dmaps
 
 
 def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample92'):
@@ -39,8 +39,8 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample92'):
     parser.add_argument('--jobs', type=int, default=15)
     parser.add_argument('--sparse_format', action='store_true',
                         help='True to store sc_contacts in sparse format')
-    parser.add_argument('--down_sampling', type=int, default=6)
-    parser.add_argument('--its', type=int, default=1,
+    parser.add_argument('--down_sampling', type=int, default=1)
+    parser.add_argument('--its', type=int, default=3,
                         help='number of iterations')
 
     args = parser.parse_args()
@@ -54,10 +54,48 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample92'):
         os.mkdir(args.odir, mode = 0o755)
     return args
 
+def update_eig_chunk(vi, dir, odir, l=1):
+    '''
+    Update sc contact maps based on eigenvector vi.
+    Average contacts with range l.
+
+    This version only loads a chunk of sc_contacts of size (2l+1) into RAM at a time.
+    '''
+    t0 = time.time()
+    where = np.argsort(vi)
+    N = len(vi)
+    odir = osp.join(odir, 'sc_contacts')
+    if not osp.exists(odir):
+        os.mkdir(odir, mode = 0o755)
+
+    # merge adjacent contacts
+    y_queue = [] # queue of rotating (2l+1) contacts
+    # initialize queue
+    for j in range(l):
+        fpath = osp.join(dir, f'y_sc_{where[j]}.npy')
+        y_queue.append(np.load(fpath))
+    # iterate through
+    for i in range(N):
+        if i < N-l:
+            fpath = osp.join(dir, f'y_sc_{where[i+l]}.npy')
+            y_queue.append(np.load(fpath))
+
+        # calculate average
+        y_new = np.mean(y_queue, axis = 0)
+        np.save(osp.join(odir, f'y_sc_{where[i]}.npy'), y_new)
+
+        # pop first entry of queue
+        if i >= l:
+            y_queue.pop(0)
+
+
+    tf = time.time()
+    print_time(t0, tf, 'update')
+
 def update_eig(vi, sc_contacts, l=1):
     '''
     Update sc contact maps based on eigenvector vi.
-    Average contacts with range l
+    Average contacts with range l.
     '''
     t0 = time.time()
     where = np.argsort(vi)
@@ -121,6 +159,9 @@ def tune_epsilon(input, ofile):
             score = reg.score(slice_X, slice_Y)
             if score >= best_score and reg.coef_ > 0.1:
                 best_score = score
+                best_indices = (left, right)
+                best_reg = reg
+            elif best_reg is None:
                 best_indices = (left, right)
                 best_reg = reg
             left += 1
@@ -252,11 +293,9 @@ def plot_eigenvectors(v, xyz, odir, sc_contacts = None):
     plt.close()
 
 def plot_contacts(dir, order, args):
-    for folder in ['sc_contacts_time', 'sc_contacts_traj']:
-        if folder == 'sc_contacts_traj':
-            if order is None:
-                continue
-            sc_contacts = sc_contacts[order]
+    for order, folder in zip([range(args.N), order], ['sc_contacts_time', 'sc_contacts_traj']):
+        if order is None:
+            continue
         odir = osp.join(dir, folder)
         if not osp.exists(odir):
             os.mkdir(odir, mode = 0o775)
@@ -264,7 +303,7 @@ def plot_contacts(dir, order, args):
         # make plots
         filenames = []
         mapping = []
-        for i in range(args.N):
+        for i in order:
             if i % (args.N // 20) == 0:
                 y = np.load(osp.join(dir, f'y_sc_{i}.npy'))
                 y = triu_to_full(y, args.m)
@@ -326,13 +365,13 @@ def diag_processsing(dir, odir, args):
 
 def gaussian_processing(args):
     t0 = time.time()
-    args.odir_i_sc_contacts = osp.join(args.odir_i, 'sc_contacts')
-    if not osp.exists(args.odir_i_sc_contacts):
-        os.mkdir(args.odir_i_sc_contacts, mode = 0o755)
+    odir_i_sc_contacts = osp.join(args.odir_i, 'sc_contacts')
+    if not osp.exists(odir_i_sc_contacts):
+        os.mkdir(odir_i_sc_contacts, mode = 0o755)
     mapping = []
     for file in os.listdir(args.sc_contacts_dir):
         ifile = osp.join(args.sc_contacts_dir, file)
-        ofile = osp.join(args.odir_i_sc_contacts, file)
+        ofile = osp.join(odir_i_sc_contacts, file)
         mapping.append((ifile, ofile, args.m))
 
     with multiprocessing.Pool(args.jobs) as p:
@@ -429,10 +468,9 @@ def contact_diffusion():
 
             np.savetxt(osp.join(args.odir_i, 'order.txt'), order, fmt='%i')
             plot_eigenvectors(v, xyz, args.odir_i, None)
-            return
 
             if args.update_mode == 'eig':
-                sc_contacts = update_eig(v[:, 1], sc_contacts)
+                sc_contacts = update_eig_chunk(v[:, 1], osp.join(odir_prev, 'sc_contacts'), args.odir_i)
             elif args.update_mode == 'knn':
                 sc_contacts = update_kNN(v, sc_contacts, 3)
         else:
@@ -441,7 +479,7 @@ def contact_diffusion():
 
         # Plots
         t0 = time.time()
-        plot_contacts(args.odir_i_sc_contacts, order, args)
+        plot_contacts(osp.join(args.odir_i, 'sc_contacts'), order, args)
         tf = time.time()
         print_time(t0, tf, 'plot')
         print('\n')
