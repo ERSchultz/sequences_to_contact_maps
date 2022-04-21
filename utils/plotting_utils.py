@@ -88,13 +88,11 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
         saveDict = torch.load(dir, map_location=torch.device('cpu'))
         train_loss_arr = saveDict['train_loss']
         val_loss_arr = saveDict['val_loss']
-        if log_y:
-            y_train = np.log10(train_loss_arr)
-            y_val = np.log10(val_loss_arr)
-        else:
-            y_train = train_loss_arr
-            y_val = val_loss_arr
+        y_train = train_loss_arr
+        y_val = val_loss_arr
         l1 = ax.plot(np.arange(1, len(train_loss_arr)+1), y_train, ls = styles[0], color = c)
+        if log_y:
+            ax.set_yscale('log')
         l2 = ax.plot(np.arange(1, len(val_loss_arr)+1), y_val, ls = styles[1], color = c)
         labels.append(opt2list(opt)[diff_pos])
 
