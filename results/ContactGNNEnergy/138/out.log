@@ -152,3 +152,58 @@ Epoch 72, loss = 1.0367
 Mean test/val loss: 1.0229
 
 Epoch 74, loss = 1.0358
+Mean test/val loss: 1.0221
+
+Epoch 76, loss = 1.0352
+Mean test/val loss: 1.0233
+
+Epoch 78, loss = 1.0340
+Mean test/val loss: 1.0213
+
+Epoch 80, loss = 1.0337
+Mean test/val loss: 1.0232
+
+Epoch 82, loss = 1.0328
+Mean test/val loss: 1.0239
+
+Epoch 84, loss = 1.0323
+Mean test/val loss: 1.0210
+
+Epoch 86, loss = 1.0312
+Mean test/val loss: 1.0203
+
+Epoch 88, loss = 1.0311
+Mean test/val loss: 1.0199
+
+Epoch 90, loss = 1.0300
+Mean test/val loss: 1.0187
+
+Epoch 92, loss = 1.0295
+Mean test/val loss: 1.0196
+
+Epoch 94, loss = 1.0288
+Mean test/val loss: 1.0185
+
+Epoch 96, loss = 1.0283
+Mean test/val loss: 1.0214
+
+Epoch 98, loss = 1.0278
+Mean test/val loss: 1.0192
+
+Epoch 100, loss = 1.0269
+Mean test/val loss: 1.0198
+
+
+Total parameters: 111,567
+Total training + validation time: 14.0 hours
+Final val loss: 1.0197781509160995
+
+#### Plotting Script ####
+Prediction Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/138/sample1: 1.5759878158569336
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/138/sample2: 0.8554553985595703
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/138/sample3: 0.8244002461433411
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/138/sample4: 0.6550059914588928
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/138/sample5: 1.0390512943267822
+Loss: 0.989980149269104 +- 0.3173434296941545
+
