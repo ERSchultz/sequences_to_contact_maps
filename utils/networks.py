@@ -504,7 +504,7 @@ class ContactGNN(nn.Module):
         self.inner_act = act2module(inner_act)
         self.out_act = act2module(out_act)
         if head_hidden_sizes_list is not None and len(head_hidden_sizes_list) > 1:
-            self.head_act = act2use_edge_attrmodule(head_act)
+            self.head_act = act2module(head_act)
             # only want this to show up as a parameter if actually needed
         else:
             self.head_act = None
