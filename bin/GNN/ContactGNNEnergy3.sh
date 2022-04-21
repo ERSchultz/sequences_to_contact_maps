@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE3
 #SBATCH --output=logFiles/ContactGNNEnergy3.out
-#SBATCH --time=24:00:00
+#SBATCH --time=1-24:00:00
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
@@ -25,7 +25,6 @@ hiddenSizesList='32-32-32'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 milestones='50'
-resumeTraining='true'
 
 id=138
 for lr in 1e-3

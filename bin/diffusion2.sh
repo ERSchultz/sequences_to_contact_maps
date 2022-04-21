@@ -6,6 +6,7 @@
 #SBATCH --mem=0
 #SBATCH --output=logFiles/diffusion2.log
 #SBATCH --time=24:00:00
+#SBATCH --mail-user=erschultz@uchicago.edu
 
 dir="/project2/depablo/walt/michrom/project/chr_05/chr_05_02"
 odir="/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02_copy2"
