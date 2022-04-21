@@ -104,5 +104,5 @@ if __name__ == '__main__':
     #                     crop_size = None)
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
     # update_result_tables('ContactGNNEnergy', 'GNN', v'energy')
-    plot_combined_models('ContactGNNEnergy', [133, 136])
+    plot_combined_models('ContactGNNEnergy', [101, 136])
     # main()

@@ -4,7 +4,6 @@ import os.path as osp
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
 from utils.dataset_classes import make_dataset
 from utils.InteractionConverter import InteractionConverter
 from utils.load_utils import load_all
@@ -294,7 +293,7 @@ def plot_genomic_distance_statistics_inner(datafolder, ifile, ofile, title,  mod
     samples = make_dataset(datafolder)
     mean_result = []
     for i, sample in enumerate(samples):
-        if i > 100:
+        if i > 10:
             break
         y = np.load(osp.join(sample, ifile))
         result = genomic_distance_statistics(y, mode = mode, stat = stat)[10:]
@@ -321,6 +320,7 @@ def plot_genomic_distance_statistics_inner(datafolder, ifile, ofile, title,  mod
     if title is not None:
         plt.title(title, fontsize = 16)
     plt.legend()
+    plt.tight_layout()
     plt.savefig(ofile)
     plt.close()
 
