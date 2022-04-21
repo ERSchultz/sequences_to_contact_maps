@@ -3,7 +3,6 @@ import os.path as osp
 from shutil import rmtree
 
 import numpy as np
-
 from utils.argparse_utils import (argparse_setup, finalize_opt,
                                   get_base_parser, get_opt_header, opt2list)
 from utils.plotting_utils import (plot_centroid_distance, plot_combined_models,
@@ -104,6 +103,6 @@ if __name__ == '__main__':
     #                     count = 10, correct_diag = False, sparsify = True,
     #                     crop_size = None)
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    # update_result_tables('ContactGNNEnergy', 'GNN', v'energy')
     plot_combined_models('ContactGNNEnergy', [133, 136])
     # main()
