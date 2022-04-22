@@ -246,12 +246,13 @@ def save_sc_contacts_xyz(xyz, ofile, grid_size, triu, zero_diag, sparsify):
     if zero_diag:
         np.fill_diagonal(contact_map, 0)
     if sparsify:
+        rng = np.random.default_rng(135)
         temp_contact_map = np.zeros_like(contact_map)
         # wasn't sure how to do this in place and ensure symmetry
         for i in range(m):
             where = np.argwhere(contact_map[i])
             if len(where) > 0:
-                where2 = np.random.choice(where.reshape(-1))
+                where2 = rng.choice(where.reshape(-1))
                 temp_contact_map[i, where2] = 1
                 temp_contact_map[where2, i] = 1
         contact_map = temp_contact_map
@@ -342,12 +343,13 @@ def load_sc_contacts_xyz(xyz, grid_size, triu, gaussian, zero_diag, sparsify, sp
     if zero_diag:
         np.fill_diagonal(contact_map, 0)
     if sparsify:
+        rng = np.random.default_rng(135)
         temp_contact_map = np.zeros_like(contact_map)
         # wasn't sure how to do this in place and ensure symmetry
         for i in range(m):
             where = np.argwhere(contact_map[i])
             if len(where) > 0:
-                where2 = np.random.choice(where.reshape(-1))
+                where2 = rng.choice(where.reshape(-1))
                 temp_contact_map[i, where2] = 1
                 temp_contact_map[where2, i] = 1
         contact_map = temp_contact_map

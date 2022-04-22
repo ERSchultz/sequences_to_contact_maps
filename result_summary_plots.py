@@ -277,6 +277,7 @@ def load_method_S(root, sample_folder, sample, method, k, model_id):
     if method == 'GNN':
         # look in results
         gnn_path = osp.join(root, f'results/ContactGNNEnergy/{model_id}/sample{sample}/energy_hat.txt')
+        print(gnn_path)
         if osp.exists(gnn_path):
             return np.loadtxt(gnn_path)
         else:

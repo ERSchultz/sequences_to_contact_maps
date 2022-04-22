@@ -8,11 +8,11 @@
 
 dirname="/home/erschultz/sequences_to_contact_maps"
 # dirname='/project2/depablo/erschultz'
-dataset="dataset_01_15_22"
-sample='none'
+dataset="dataset_01_17_22"
+sample=1
 sampleFolder='none'
-method='none'
-modelID='none'
+method='GNN'
+modelID='137'
 k='none'
 plot='true'
 linearModel='ols'
@@ -22,10 +22,10 @@ robust='false'
 
 source activate python3.9_pytorch1.11_cuda10.2
 
-for i in 2
+for i in 1
 # 4 6 8
 # 1 2 3 4 6 7 8 9 11 12 13 14 15 17 18 19 20 21 23 24
 do
-  sampleFolder="${dirname}/${dataset}/samples/sample40"
+  sampleFolder="${dirname}/${dataset}/samples/sample${i}"
   python ~/sequences_to_contact_maps/result_summary_plots.py --root $dirname --dataset $dataset --sample $sample --sample_folder $sampleFolder --method $method --model_id $modelID --k $k --plot $plot --experimental $experimental --linear_model $linearModel --overwrite $overwrite --robust $robust
 done

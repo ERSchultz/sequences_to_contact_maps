@@ -118,7 +118,7 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
     else:
         ylabel = 'Loss'
     if log_y:
-        ylabel = r'$\log_{10}$(' + ylabel + ')'
+        ylabel = f'Semi-log {ylabel}'
     ax.set_ylabel(ylabel, fontsize = 16)
 
     if opt.y_preprocessing is not None:
