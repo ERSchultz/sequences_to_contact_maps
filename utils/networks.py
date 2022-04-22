@@ -32,12 +32,16 @@ def get_model(opt, verbose = True):
                             opt.training_norm,
                             opt.down_sampling)
     elif opt.model_type.startswith('GNNAutoencoder'):
-        model = GNNAutoencoder(opt.m, opt.node_feature_size, opt.hidden_sizes_list, opt.act, opt.head_act, opt.out_act,
-                                opt.message_passing, opt.head_architecture, opt.head_hidden_sizes_list, opt.parameter_sharing)
+        model = GNNAutoencoder(opt.m, opt.node_feature_size, opt.hidden_sizes_list,
+                                opt.act, opt.head_act, opt.out_act,
+                                opt.message_passing, opt.head_architecture,
+                                opt.head_hidden_sizes_list, opt.parameter_sharing)
     elif opt.model_type == 'SequenceFCAutoencoder':
-        model = FullyConnectedAutoencoder(opt.m * opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, opt.parameter_sharing)
+        model = FullyConnectedAutoencoder(opt.m * opt.k, opt.hidden_sizes_list,
+                                opt.act, opt.out_act, opt.parameter_sharing)
     elif opt.model_type == 'SequenceConvAutoencoder':
-        model = ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list, opt.act, opt.out_act, conv1d = True)
+        model = ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list,
+                                opt.act, opt.out_act, conv1d = True)
     elif opt.model_type.startswith('ContactGNN'):
         model = ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list,
         opt.act, opt.inner_act, opt.out_act,
@@ -616,7 +620,7 @@ class ContactGNN(nn.Module):
                 input_size = output_size
 
             self.head = nn.Sequential(*head)
-        elif self.head_architecture == 'bilinear':
+        elif self.head_architecture.startswith('bilinear'):
             self.head = None
             init = torch.randn((input_size, input_size))
             self.W = nn.Parameter(init)
@@ -695,10 +699,13 @@ class ContactGNN(nn.Module):
             out = latent
         elif self.head_architecture == 'fc':
             out = self.head(latent)
-        elif self.head_architecture == 'bilinear':
+        elif self.head_architecture.startswith('bilinear'):
             _, output_size = latent.shape
             latent = latent.reshape(-1, self.m, output_size)
-            out = torch.einsum('nik,njk->nij', latent @ self.sym(self.W), latent)
+            if 'asym' in self.head_architecture:
+                out = torch.einsum('nik,njk->nij', latent @ self.W, latent)
+            else:
+                out = torch.einsum('nik,njk->nij', latent @ self.sym(self.W), latent)
         elif self.head_architecture in self.to2D.mode_options:
             _, output_size = latent.shape
             latent = latent.reshape(-1, self.m, output_size)

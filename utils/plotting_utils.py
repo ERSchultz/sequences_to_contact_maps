@@ -527,7 +527,7 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
 
 def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
     print('Prediction Results:', file = opt.log_file)
-    assert opt.output_mode == 'energy'
+    assert opt.output_mode.startswith('energy')
     if opt.y_preprocessing is not None:
         preprocessing = opt.y_preprocessing.capitalize()
     else:
@@ -1373,7 +1373,7 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
             plotPerClassAccuracy(val_dataloader, imagePath, model, opt)
         elif opt.output_mode == 'sequence':
             plotROCCurve(val_dataloader, imagePath, model, opt)
-        elif opt.output_mode == 'energy':
+        elif opt.output_mode.startswith('energy'):
             pass
             # TODO
         else:
@@ -1388,5 +1388,5 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
                 plotParticleDistribution(val_dataloader, model, opt, use_latent = False)
             elif opt.model_type == 'GNNAutoencoder':
                 plotParticleDistribution(val_dataloader, model, opt, use_latent = True)
-        elif opt.output_mode == 'energy':
+        elif opt.output_mode.startswith('energy'):
             plotEnergyPredictions(val_dataloader, model, opt)

@@ -7,7 +7,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
 from core_test_train import core_test_train
 from utils.argparse_utils import finalize_opt, get_base_parser, str2list
 from utils.base_networks import AverageTo2d
@@ -133,7 +132,7 @@ def debugModel(model_type):
         opt.y_norm = 'none'
         opt.message_passing='gat'
         opt.GNN_mode = True
-        opt.output_mode = 'energy'
+        opt.output_mode = 'energy_sym'
         opt.encoder_hidden_sizes_list=None
         opt.update_hidden_sizes_list=None
         opt.hidden_sizes_list=[3,3]
@@ -149,7 +148,7 @@ def debugModel(model_type):
         opt.sparsify_threshold = 0.176
         opt.sparsify_threshold_upper = None
         opt.y_log_transform = False
-        opt.head_architecture = 'bilinear'
+        opt.head_architecture = 'bilinear_asym'
         opt.head_hidden_sizes_list = None
         opt.crop=[0,4]
         opt.m = 4
@@ -158,15 +157,15 @@ def debugModel(model_type):
         opt.concat_heads = True
 
     # hyperparameters
-    opt.n_epochs = 1
+    opt.n_epochs = 3
     opt.lr = 1e-4
     opt.batch_size = 1
     opt.milestones = None
     opt.gamma = 0.1
 
     # other
-    opt.plot = False
-    opt.plot_predictions = False
+    opt.plot = True
+    opt.plot_predictions = True
     opt.verbose = True
     opt.print_params = False
     opt.gpus = 0

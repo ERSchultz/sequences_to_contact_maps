@@ -44,7 +44,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             split_neg_pos_edges: True to split negative and positive edges for training
             transform: list of transforms
             pre_transform: list of transforms
-            output: output mode ('contact', 'energy')
+            output: output mode ('contact', 'energy', 'energy_sym')
             crop: tuple of crop sizes
             ofile: where to print to if verbose == True
             verbose: True to print
@@ -143,7 +143,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             if self.output != 'contact':
                 del graph.contact_map
 
-            if self.output == 'energy':
+            if self.output.startswith('energy'):
                 # first look for s
                 s_path1 = osp.join(raw_folder, 's.npy')
                 s_path2 = osp.join(raw_folder, 's_matrix.txt')
@@ -167,6 +167,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
                         raise Exception(f'chi does not exist: {chi_path1}, {chi_path2}')
                     chi = torch.tensor(chi, dtype = torch.float32)
                     graph.energy = x @ chi @ x.t()
+
+                if self.output == 'energy_sym':
+                    graph.energy = (graph.energy + graph.energy.t()) / 2
 
             torch.save(graph, self.processed_paths[i])
 

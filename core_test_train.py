@@ -140,7 +140,7 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                 if opt.autoencoder_mode:
                     y = data.contact_map
                     y = torch.reshape(y, (-1, opt.m, opt.m))
-                elif opt.output_mode == 'energy':
+                elif opt.output_mode.startswith('energy'):
                     y = data.energy
                     y = torch.reshape(y, (-1, opt.m, opt.m))
                 else:
@@ -233,7 +233,7 @@ def test(loader, model, opt, toprint):
                 if opt.autoencoder_mode:
                     y = data.contact_map
                     y = torch.reshape(y, (-1, opt.m, opt.m))
-                elif opt.output_mode == 'energy':
+                elif opt.output_mode.startswith('energy'):
                     y = data.energy
                     y = torch.reshape(y, (-1, opt.m, opt.m))
                 else:
