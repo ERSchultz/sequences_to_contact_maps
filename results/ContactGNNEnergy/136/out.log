@@ -205,3 +205,9 @@ Prediction Results:
 /home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/136/sample5: 1.1922227144241333
 Loss: 1.1236399173736573 +- 0.3850482501075058
 
+Took 314.0 seconds to move data to scratch
+Warning: falling back to cpu
+Took 314.0 seconds to move data to scratch
+Warning: falling back to cpu
+Took 314.0 seconds to move data to scratch
+Warning: falling back to cpu
