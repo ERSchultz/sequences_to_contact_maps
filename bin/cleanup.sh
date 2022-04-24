@@ -5,56 +5,16 @@
 #SBATCH --output=logFiles/cleanup.log
 #SBATCH --time=2:00:00
 
-dir=/home/erschultz/sequences_to_contact_maps/results/Akita
-for i in $( seq 3 8 )
-do
-  cd "${dir}/${i}"
-  rm *.pt
-done
 
-dir=/home/erschultz/sequences_to_contact_maps/results/DeepC
-for i in $( seq 7 18 )
-do
-  cd "${dir}/${i}"
-  rm *.pt
-done
 
-dir=/home/erschultz/sequences_to_contact_maps/results/ContactGNN
-for i in $( seq 1 228 )
+cd "/home/erschultz/scratch-midway2/dataset_01_17_22/samples"
+for i in $( seq 1 4 )
 do
   echo $i
-  cd "${dir}/${i}"
-  rm *.pt
+  rm "sample${i}*" &
 done
 
-dir=/home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder
-for i in $( seq 24 56 )
-do
-  echo $i
-  cd "${dir}/${i}"
-  rm *.pt
-done
+wait
 
-dir=/home/erschultz/sequences_to_contact_maps/results/GNNAutoencoder2
-for i in $( seq 1 7 )
-do
-  echo $i
-  cd "${dir}/${i}"
-  rm *.pt
-done
-
-dir=/home/erschultz/sequences_to_contact_maps/results/SequenceFCAutoencoder
-for i in $( seq 3 8 )
-do
-  echo $i
-  cd "${dir}/${i}"
-  rm *.pt
-done
-
-dir=/home/erschultz/sequences_to_contact_maps/results/UNet
-for i in $( seq 1 39 )
-do
-  echo $i
-  cd "${dir}/${i}"
-  rm *.pt
-done
+cd "/home/erschultz/scratch-midway2"
+rm -r dataset_01_17_22
