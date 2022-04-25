@@ -28,5 +28,6 @@ id=148
 for lr in 1e-3
 do
   train
-  id=$(( $id + 1 ))done
+  id=$(( $id + 1 ))
+done
 python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --GNN_file_name $rootName --scratch $scratch
