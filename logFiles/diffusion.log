@@ -1,25 +1,8 @@
 Namespace(dir='/project2/depablo/walt/michrom/project/chr_05/chr_05_02', scratch='/scratch/midway2/erschultz', odir='/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02_copy', N_min=2000, mode='contact_diffusion', update_mode='eig', jobs=20, sparse_format=False, down_sampling=12, its=5, scratch_dir='/scratch/midway2/erschultz/contact_diffusion')
 Loaded xyz with shape (1007, 3620, 3)
-xyz load time: 186.404 s
+xyz load time: 183.596 s
 found 20 total CPUs, 20 available CPUs, using 20
-sc save time: 482.69 s
+sc save time: 466.703 s
 Iteration 0
-gaussian time: 745.852 s
-starting gif
-plot time: 61.048 s
-
-
-Iteration 1
-[0.38449418 0.38278347 0.37796627 ... 0.09684861 0.09075484 0.08673389]
-Traceback (most recent call last):
-  File "/home/erschultz/sequences_to_contact_maps/diffusion_analysis.py", line 598, in <module>
-    main()
-  File "/home/erschultz/sequences_to_contact_maps/diffusion_analysis.py", line 592, in main
-    contact_diffusion()
-  File "/home/erschultz/sequences_to_contact_maps/diffusion_analysis.py", line 447, in contact_diffusion
-    sc_contacts_diag = diag_processsing(osp.join(odir_prev, 'sc_contacts'),
-  File "/home/erschultz/sequences_to_contact_maps/diffusion_analysis.py", line 366, in diag_processsing
-    sc_contacts_diag = diagonal_preprocessing_bulk(sc_contacts, mean_per_diag,
-  File "/home/erschultz/sequences_to_contact_maps/utils/utils.py", line 133, in diagonal_preprocessing_bulk
-    result = y_arr / expected
-numpy.core._exceptions._ArrayMemoryError: Unable to allocate 49.2 GiB for an array with shape (1007, 6554010) and data type float64
+gaussian time: 702.991 s
+/tmp/slurmd/job19492971/slurm_script: line 22:  4112 Killed                  python3 diffusion_analysis.py --dir $dir --odir $odir --jobs $jobs --down_sampling $downSampling --its $its --scratch $scratch
