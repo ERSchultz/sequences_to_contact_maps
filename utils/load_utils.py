@@ -3,6 +3,7 @@ import multiprocessing
 import os
 import os.path as osp
 import time
+from shutil import rmtree
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,9 +11,8 @@ import scipy.sparse as sp
 from scipy.ndimage import gaussian_filter
 
 from .energy_utils import calculate_E_S, calculate_S, s_to_E
-from .utils import (LETTERS, diagonal_preprocessing,
-                    diagonal_preprocessing_bulk, genomic_distance_statistics,
-                    print_size, print_time, triu_to_full)
+from .utils import (LETTERS, DiagonalPreprocessing, print_size, print_time,
+                    triu_to_full)
 from .xyz_utils import xyz_load, xyz_to_contact_grid
 
 
@@ -157,7 +157,10 @@ def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None,
                     max_it = it
 
         if max_it < 0:
-            raise Exception(f'max it not found for {replicate_folder}')
+            if throw_exception:
+                raise Exception(f'max it not found for {replicate_folder}')
+            else:
+                return None
 
         max_it_folder = osp.join(replicate_folder, f'iteration{max_it}')
 
@@ -221,6 +224,8 @@ def save_sc_contacts(xyz, odir, jobs = 5, triu = True, zero_diag = True,
     grid_size = 28.7
     N, _, _ = xyz.shape
 
+    if overwrite and osp.exists(odir):
+        rmtree(odir)
     if not osp.exists(odir):
         os.mkdir(odir, mode = 0o755)
 
@@ -230,7 +235,7 @@ def save_sc_contacts(xyz, odir, jobs = 5, triu = True, zero_diag = True,
     mapping = []
     for i in range(N):
         ofile = osp.join(odir, f'y_sc_{i}.npy')
-        if not osp.exists(ofile) or overwrite:
+        if not osp.exists(ofile):
             mapping.append((xyz[i], ofile, grid_size, triu, zero_diag, sparsify))
     if len(mapping) > 0:
         with multiprocessing.Pool(jobs) as p:
@@ -326,8 +331,8 @@ def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
 
     if correct_diag:
         overall = np.load(osp.join(sample_folder, 'y.npy'))
-        mean_per_diag = genomic_distance_statistics(overall, mode = 'prob')
-        sc_contacts = diagonal_preprocessing_bulk(sc_contacts, mean_per_diag, triu)
+        mean_per_diag = DiagonalPreprocessing.genomic_distance_statistics(overall, mode = 'prob')
+        sc_contacts = DiagonalPreprocessing.process_bulk(sc_contacts, mean_per_diag, triu)
 
     tf = time.time()
     print(f'Loaded {sc_contacts.shape[0]} sc contacts')

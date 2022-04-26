@@ -54,85 +54,173 @@ def x2xx(x, mode = 'mean'):
                 xx[:, j, i] = np.add(x[j], x[i]) / 2
     return xx
 
-def diagonal_preprocessing(y, mean_per_diagonal, triu = False):
-    """
-    Removes diagonal effect from contact map y.
+class DiagonalPreprocessing():
+    '''
+    Functions for removing diagonal effect from contact map, y.
+    '''
+    def get_expected(mean_per_diagonal):
+        '''
+        Generate matrix of expected contact frequencies.
 
-    mean_per_diagonal is output of genomic_distance_statistics with default args
+        Inputs:
+            mean_per_diagonal: output of genomic_distance_statistics
+        '''
+        m = len(mean_per_diagonal)
+        expected = np.zeros((m, m))
+        for i in range(m):
+            for j in range(i, m):
+                distance = j - i
+                val = mean_per_diagonal[distance]
+                expected[i,j] = val
+                expected[j,i] = val
 
-    Inputs:
-        y: contact map numpy array
-        mean_per_diagonal: mean contact frequency distribution where mean_per_diagonal[distance] is the mean at a given distance
-        triu: True if y is 1d array of upper traingle instead of full 2d contact map (relatively slow version)
+        return expected
 
-    Outputs:
-        result: new contact map
-    """
-    y = y.astype('float64')
-    if triu:
-        y = triu_to_full(y)
+    def genomic_distance_statistics(y, mode = 'freq', stat = 'mean', plot = False, ofile = None):
+        '''
+        Calculate statistics of contact frequency/probability as a function of genomic distance
+        (i.e. along a give diagonal)
 
-    for d in range(len(mean_per_diagonal)):
-        expected = mean_per_diagonal[d]
-        if expected == 0:
-            # this is unlikely to happen
-            print(f'WARNING: 0 contacts expected at distance {d}')
+        Inputs:
+            mode: freq for frequencies, prob for probabilities
+            stat: mean to calculate mean, var for variance
+            plot: True to plot stat_per_diagonal
+            ofile: file path to plot to (None for plt.show())
 
-    m = len(y)
-    result = np.zeros_like(y)
-    for i in range(m):
-        for j in range(i + 1):
-            distance = i - j
-            expected = mean_per_diagonal[distance]
-            if expected > 0:
-                result[i,j] = y[i,j] / expected
-                result[j,i] = result[i,j]
+        Outputs:
+            stat_per_diagonal: numpy array where result[d] is the contact frequency/probability stat at distance d
+        '''
+        if mode == 'prob':
+            y = y.copy() / np.max(y)
 
-    if triu:
-        result = result[np.triu_indices(m)]
+        if stat == 'mean':
+            np_stat = np.mean
+        elif stat == 'var':
+            np_stat = np.var
+        m = len(y)
+        distances = range(0, m, 1)
+        stat_per_diagonal = np.zeros_like(distances).astype(float)
+        for d in distances:
+            stat_per_diagonal[d] = np_stat(np.diagonal(y, offset = d))
 
-    return result
+        if plot:
+            plt.plot(stat_per_diagonal)
+            if ofile is not None:
+                plt.savefig(ofile)
+            else:
+                plt.show()
+            plt.close()
 
-def diagonal_preprocessing_bulk(y_arr, mean_per_diagonal, triu = False):
-    '''Faster version of diagonal_preprocessing when using many contact maps'''
-    y_arr = y_arr.astype('float64', copy=False)
+        return stat_per_diagonal
 
-    zeros = np.argwhere(mean_per_diagonal == 0)
-    if len(zeros) > 0:
-        print(f'WARNING: 0 contacts expected at distance {zeros}')
-        # replace with minimum observed mean
-        mean_per_diagonal[zeros] = np.min(mean_per_diagonal[mean_per_diagonal > 0])
+    def process(y, mean_per_diagonal, triu = False):
+        """
+        Inputs:
+            y: contact map numpy array or path to .npy file
+            mean_per_diagonal: mean contact frequency distribution where
+                mean_per_diagonal[distance] is the mean at a given distance
+            triu: True if y is 1d array of upper triangle instead of full 2d contact map
+                (relatively slow version)
 
-    # determine m
-    if triu:
-        _, l = y_arr.shape
+        Outputs:
+            result: new contact map
+        """
+        if isinstance(y, str):
+            assert osp.exists(y)
+            y = np.load(y)
+        y = y.astype('float64')
+        if triu:
+            y = triu_to_full(y)
+
+        for d in range(len(mean_per_diagonal)):
+            expected = mean_per_diagonal[d]
+            if expected == 0:
+                # this is unlikely to happen
+                print(f'WARNING: 0 contacts expected at distance {d}')
+
+        m = len(mean_per_diagonal)
+        result = np.zeros((m, m))
+        for i in range(m):
+            for j in range(i + 1):
+                distance = i - j
+                expected = mean_per_diagonal[distance]
+                if expected > 0:
+                    result[i,j] = y[i,j] / expected
+                    result[j,i] = result[i,j]
+
+        if triu:
+            result = result[np.triu_indices(m)]
+
+        return result
+
+    def process_chunk(dir, mean_per_diagonal, chunk_size = 100, jobs = 1, sparse_format = False):
+        '''
+        Faster version of process when using many contact maps
+        but RAM is limited.
+
+        Assumes contact maps are in triu format (i.e. an N x m x m array of N m by m
+        contact maps has been reshaped to size N x m*(m+1)/2 )
+        '''
+        zeros = np.argwhere(mean_per_diagonal == 0)
+        if len(zeros) > 0:
+            print(f'WARNING: 0 contacts expected at distance {zeros}')
+            # replace with minimum observed mean
+            mean_per_diagonal[zeros] = np.min(mean_per_diagonal[mean_per_diagonal > 0])
+
+        expected = DiagonalPreprocessing.get_expected(mean_per_diagonal)
 
         # infer m
-        x, y = symbols('x y')
-        y=x*(x+1)/2-l
-        result=solve(y)
-        m = int(np.max(result))
-    else:
-        _, m, _ = y_arr.shape
+        m = len(mean_per_diagonal)
 
-    # generate expected
-    expected = np.zeros((m, m))
-    for i in range(m):
-        for j in range(i, m):
-            distance = j - i
-            val = mean_per_diagonal[distance]
-            expected[i,j] = val
-            expected[j,i] = val
+        N = len([f for f in os.listdir(dir) if f.endswith('.npy')])
+        files = [f'y_sc_{i}.npy' for i in range(N)]
+        sc_contacts_diag = np.zeros((N, int(m*(m+1)/2)))
+        for i in range(0, N, chunk_size):
+            # load 100 sc contacts
+            if jobs > 1:
+                with multiprocessing.Pool(jobs) as p:
+                    sc_contacts = np.array(p.map(np.load, [osp.join(dir, f) for f in files[i:i + chunk_size]]),
+                                            copy = False)
+            else:
+                sc_contacts = np.zeros((len(files[i:i + chunk_size]), int(m*(m+1)/2)))
+                for j, file in enumerate(files[i:i + chunk_size]):
+                    sc_contacts[j] = np.load(osp.join(dir, file))
 
-    if triu:
-        expected = expected[np.triu_indices(m)]
-    if sp.issparse(y_arr):
-        result = y_arr.copy()
-        result.data /= np.take(expected, result.indices)
-    else:
-        result = y_arr / expected
+            # process
+            sc_contacts_diag[i:i+chunk_size] = DiagonalPreprocessing.process_bulk(sc_contacts,
+                                                    expected = expected,
+                                                    triu = True)
 
-    return result
+        if sparse_format:
+            sc_contacts_diag = sp.csr_array(sc_contacts_diag)
+
+        return sc_contacts_diag
+
+    def process_bulk(y_arr, mean_per_diagonal = None, expected = None,
+                    triu = False):
+        '''Faster version of process when using many contact maps.'''
+        y_arr = y_arr.astype('float64', copy = False)
+
+        if expected is None:
+            assert mean_per_diagonal is not None
+            zeros = np.argwhere(mean_per_diagonal == 0)
+            if len(zeros) > 0:
+                print(f'WARNING: 0 contacts expected at distance {zeros}')
+                # replace with minimum observed mean
+                mean_per_diagonal[zeros] = np.min(mean_per_diagonal[mean_per_diagonal > 0])
+
+            expected = DiagonalPreprocessing.get_expected(mean_per_diagonal)
+
+        if triu:
+            m, _ = expected.shape
+            expected = expected[np.triu_indices(m)]
+        if sp.issparse(y_arr):
+            result = y_arr.copy()
+            result.data /= np.take(expected, result.indices)
+        else:
+            result = y_arr / expected
+
+        return result
 
 def percentile_preprocessing(y, percentiles):
     """
@@ -177,43 +265,6 @@ def crop(input, size):
         return input[:size, :size]
     else:
         return input
-
-def genomic_distance_statistics(y, mode = 'freq', stat = 'mean', plot = False, ofile = None):
-    '''
-    Calculates statistics of contact frequency/probability as a function of genomic distance
-    (i.e. along a give diagonal)
-
-    Inputs:
-        mode: freq for frequencies, prob for probabilities
-        stat: mean to calculate mean, var for variance
-        plot: True to plot stat_per_diagonal
-        ofile: file path to plot to (None for plt.show())
-
-    Outputs:
-        stat_per_diagonal: numpy array where result[d] is the contact frequency/probability stat at distance d
-    '''
-    if mode == 'prob':
-        y = y.copy() / np.max(y)
-
-    if stat == 'mean':
-        np_stat = np.mean
-    elif stat == 'var':
-        np_stat = np.var
-    m = len(y)
-    distances = range(0, m, 1)
-    stat_per_diagonal = np.zeros_like(distances).astype(float)
-    for d in distances:
-        stat_per_diagonal[d] = np_stat(np.diagonal(y, offset = d))
-
-    if plot:
-        plt.plot(stat_per_diagonal)
-        if ofile is not None:
-            plt.savefig(ofile)
-        else:
-            plt.show()
-        plt.close()
-
-    return stat_per_diagonal
 
 def triu_to_full(arr, m = None):
     '''Convert array of upper triangle to symmetric matrix.'''

@@ -11,8 +11,8 @@ dirname="/home/erschultz/sequences_to_contact_maps"
 dataset="dataset_01_17_22"
 sample=1
 sampleFolder='none'
-method='GNN'
-modelID='137'
+method='none'
+modelID='none'
 k='none'
 plot='true'
 linearModel='ols'
@@ -20,7 +20,7 @@ experimental='false'
 overwrite='false'
 robust='false'
 
-source activate python3.9_pytorch1.11_cuda10.2
+source activate python3.9_pytorch1.9
 
 for i in 1
 # 4 6 8

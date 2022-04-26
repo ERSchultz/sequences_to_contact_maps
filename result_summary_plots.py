@@ -14,8 +14,7 @@ from utils.energy_utils import s_to_E
 from utils.load_utils import load_all, load_final_max_ent_S
 from utils.plotting_utils import plot_matrix, plot_top_PCs
 from utils.R_pca import R_pca
-from utils.utils import (LETTERS, diagonal_preprocessing,
-                         genomic_distance_statistics, pearson_round)
+from utils.utils import LETTERS, DiagonalPreprocessing, pearson_round
 
 
 def getArgs():
@@ -301,7 +300,7 @@ def load_method_S(root, sample_folder, sample, method, k, model_id):
 def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
     # calculate PCA
     PC_y = plot_top_PCs(y, 'y', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
-    PC_y_diag = plot_top_PCs(ydiag, 'y_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+    PC_y_diag = plot_top_PCs(ydiag, 'y_diag', args.odir, args.log_file, count = 6, plot = args.plot_baseline, verbose = args.verbose)
     y_log = np.log(y + 1e-8)
     PC_y_log = plot_top_PCs(y_log, 'y_log', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
     stat = pearson_round(PC_y[0], PC_y_log[0])
@@ -363,8 +362,8 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
         # stat = pearson_round(PC_L_log_diag[1], PC_y_diag[1])
         # print("Correlation between PC 2 of L_log_diag and Y_diag: ", stat, file = args.log_file)
 
-        meanDist = genomic_distance_statistics(L)
-        L_diag = diagonal_preprocessing(L, meanDist)
+        meanDist = DiagonalPreprocessing.genomic_distance_statistics(L)
+        L_diag = DiagonalPreprocessing.process(L, meanDist)
         plot_matrix(L_diag, osp.join(args.odir, 'L_diag.png'), vmin = 'min', vmax = 'max', title = 'L_diag')
         np.save(osp.join(args.odir, 'L_diag.npy'), L_diag)
         PC_L_diag = plot_top_PCs(L_diag, 'L_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)

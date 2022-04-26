@@ -9,7 +9,7 @@ from utils.InteractionConverter import InteractionConverter
 from utils.load_utils import load_all
 from utils.plotting_utils import (plot_matrix, plot_seq_binary,
                                   plot_seq_exclusive)
-from utils.utils import genomic_distance_statistics
+from utils.utils import DiagonalPreprocessing
 
 
 def chi_to_latex(chi, ofile):
@@ -296,7 +296,7 @@ def plot_genomic_distance_statistics_inner(datafolder, ifile, ofile, title,  mod
         if i > 10:
             break
         y = np.load(osp.join(sample, ifile))
-        result = genomic_distance_statistics(y, mode = mode, stat = stat)[10:]
+        result = DiagonalPreprocessing.genomic_distance_statistics(y, mode = mode, stat = stat)[10:]
         mean_result.append(result)
         ax.plot(result, label = osp.split(sample)[1])
     mean_result = np.mean(mean_result, axis = 0)

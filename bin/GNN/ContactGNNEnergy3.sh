@@ -23,9 +23,10 @@ useEdgeAttr='true'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
+batchSize=4
 
-id=148
-for lr in 1e-3
+id=149
+for lr in 1e-4
 do
   train
   id=$(( $id + 1 ))

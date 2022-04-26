@@ -9,6 +9,7 @@ import imageio
 import matplotlib.cm
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.sparse as sp
 from scipy.ndimage import gaussian_filter
 from scipy.sparse.csgraph import laplacian
 from sklearn.cluster import KMeans
@@ -18,16 +19,15 @@ from sklearn.metrics.pairwise import cosine_distances
 from utils.argparse_utils import str2None
 from utils.load_utils import save_sc_contacts
 from utils.plotting_utils import plot_matrix, plot_sc_contact_maps_inner
-from utils.utils import (diagonal_preprocessing_bulk,
-                         genomic_distance_statistics, pearson_round,
-                         print_size, print_time, triu_to_full)
+from utils.utils import (DiagonalPreprocessing, pearson_round, print_size,
+                         print_time, triu_to_full)
 from utils.xyz_utils import (find_dist_between_centroids, find_label_centroid,
                              lammps_load, xyz_load, xyz_to_contact_grid)
 
 import dmaps  # https://github.com/ERSchultz/dmaps
 
 
-def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample92'):
+def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample7'):
     parser = argparse.ArgumentParser(description='Base parser')
     parser.add_argument('--dir', type=str, default=default_dir,
                         help='location of data')
@@ -43,7 +43,7 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample92'):
     parser.add_argument('--sparse_format', action='store_true',
                         help='True to store sc_contacts in sparse format')
     parser.add_argument('--down_sampling', type=int, default=1)
-    parser.add_argument('--its', type=int, default=3,
+    parser.add_argument('--its', type=int, default=1,
                         help='number of iterations')
 
     args = parser.parse_args()
@@ -61,6 +61,7 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample92'):
         rmtree(args.scratch_dir)
     os.mkdir(args.scratch_dir, mode = 0o755)
 
+    # args.sparse_format = True
     return args
 
 def update_eig_chunk(vi, dir, odir, l=1):
@@ -343,16 +344,33 @@ def load_helper(args, contacts = False):
                         down_sampling = args.down_sampling)
 
     if contacts:
-        args.sc_contacts_dir = osp.join(osp.split(args.odir)[0], 'sc_contacts')
+        args.sc_contacts_dir = osp.join(args.odir, 'sc_contacts')
         save_sc_contacts(xyz, args.sc_contacts_dir, args.jobs, sparsify = True,
                         overwrite = True)
 
     return xyz
 
+def diag_processsing_chunk(dir, odir, args):
+    t0 = time.time()
+    if not osp.exists(odir):
+        os.mkdir(odir, mode = 0o755)
+
+    overall = np.zeros(int(args.m*(args.m+1)/2))
+    for i in range(args.N):
+        fpath = osp.join(dir, f'y_sc_{i}.npy')
+        overall += np.load(fpath)
+    overall = triu_to_full(overall)
+    mean_per_diag = DiagonalPreprocessing.genomic_distance_statistics(overall, mode = 'prob')
+    sc_contacts_diag = DiagonalPreprocessing.process_chunk(dir, mean_per_diag,
+                                    jobs = 1, sparse_format = args.sparse_format)
+
+    tf = time.time()
+    print_time(t0, tf, 'diag')
+
+    return sc_contacts_diag
+
 def diag_processsing(dir, odir, args):
     t0 = time.time()
-    # if not osp.exists(odir):
-    #     os.mkdir(odir, mode = 0o755)
 
     sc_contacts = np.zeros((args.N, int(args.m*(args.m+1)/2)))
     for i in range(args.N):
@@ -360,10 +378,8 @@ def diag_processsing(dir, odir, args):
         sc_contacts[i] = np.load(fpath)
     overall = np.sum(sc_contacts, axis = 0)
     overall = triu_to_full(overall)
-    mean_per_diag = genomic_distance_statistics(overall, mode = 'prob')
-    print(mean_per_diag)
-    del overall # no longer needed
-    sc_contacts_diag = diagonal_preprocessing_bulk(sc_contacts, mean_per_diag,
+    mean_per_diag = DiagonalPreprocessing.genomic_distance_statistics(overall, mode = 'prob')
+    sc_contacts_diag = DiagonalPreprocessing.process_bulk(sc_contacts, mean_per_diag,
                                                     triu = True)
     tf = time.time()
     print_time(t0, tf, 'diag')
@@ -381,8 +397,12 @@ def gaussian_processing(args):
         ofile = osp.join(odir_i_sc_contacts, file)
         mapping.append((ifile, ofile, args.m))
 
-    with multiprocessing.Pool(args.jobs) as p:
-        p.starmap(gaussian_processing_inner, mapping)
+    if args.jobs > 1:
+        with multiprocessing.Pool(args.jobs) as p:
+            p.starmap(gaussian_processing_inner, mapping)
+    else:
+        for ifile, ofile, m in mapping:
+            gaussian_processing_inner(ifile, ofile, m)
 
     tf = time.time()
     print_time(t0, tf, 'gaussian')
@@ -444,7 +464,7 @@ def contact_diffusion():
         print(f"Iteration {it}")
         if it > 0:
             # diag processing
-            sc_contacts_diag = diag_processsing(osp.join(odir_prev, 'sc_contacts'),
+            sc_contacts_diag = diag_processsing_chunk(osp.join(odir_prev, 'sc_contacts'),
                             osp.join(args.odir_i, 'sc_contacts_diag'), args)
             print_size(sc_contacts_diag, 'sc_contacts_diag')
 
