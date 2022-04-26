@@ -68,6 +68,10 @@ concat
 none
 --gamma
 0.1
+--split_sizes
+none
+--split_percents
+0.8-0.1-0.1
 --verbose
 false
 --use_scratch

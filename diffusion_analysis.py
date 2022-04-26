@@ -9,6 +9,7 @@ import imageio
 import matplotlib.cm
 import matplotlib.pyplot as plt
 import numpy as np
+import psutil
 import scipy.sparse as sp
 from scipy.ndimage import gaussian_filter
 from scipy.sparse.csgraph import laplacian
@@ -42,7 +43,7 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample7'):
     parser.add_argument('--jobs', type=int, default=15)
     parser.add_argument('--sparse_format', action='store_true',
                         help='True to store sc_contacts in sparse format')
-    parser.add_argument('--down_sampling', type=int, default=1)
+    parser.add_argument('--down_sampling', type=int, default=2)
     parser.add_argument('--its', type=int, default=1,
                         help='number of iterations')
 
@@ -64,85 +65,86 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample7'):
     # args.sparse_format = True
     return args
 
-def update_eig_chunk(vi, dir, odir, l=1):
-    '''
-    Update sc contact maps based on eigenvector vi.
-    Average contacts with range l.
+class Updates():
+    def update_eig_chunk(vi, dir, odir, l=1):
+        '''
+        Update sc contact maps based on eigenvector vi.
+        Average contacts with range l.
 
-    This version only loads a chunk of sc_contacts of size (2l+1) into RAM at a time.
-    '''
-    t0 = time.time()
-    where = np.argsort(vi)
-    N = len(vi)
-    odir = osp.join(odir, 'sc_contacts')
-    if not osp.exists(odir):
-        os.mkdir(odir, mode = 0o755)
+        This version only loads a chunk of sc_contacts of size (2l+1) into RAM at a time.
+        '''
+        t0 = time.time()
+        where = np.argsort(vi)
+        N = len(vi)
+        odir = osp.join(odir, 'sc_contacts')
+        if not osp.exists(odir):
+            os.mkdir(odir, mode = 0o755)
 
-    # merge adjacent contacts
-    y_queue = [] # queue of rotating (2l+1) contacts
-    # initialize queue
-    for j in range(l):
-        fpath = osp.join(dir, f'y_sc_{where[j]}.npy')
-        y_queue.append(np.load(fpath))
-    # iterate through
-    for i in range(N):
-        if i < N-l:
-            fpath = osp.join(dir, f'y_sc_{where[i+l]}.npy')
+        # merge adjacent contacts
+        y_queue = [] # queue of rotating (2l+1) contacts
+        # initialize queue
+        for j in range(l):
+            fpath = osp.join(dir, f'y_sc_{where[j]}.npy')
             y_queue.append(np.load(fpath))
-
-        # calculate average
-        y_new = np.mean(y_queue, axis = 0)
-        np.save(osp.join(odir, f'y_sc_{where[i]}.npy'), y_new)
-
-        # pop first entry of queue
-        if i >= l:
-            y_queue.pop(0)
-
-
-    tf = time.time()
-    print_time(t0, tf, 'update')
-
-def update_eig(vi, sc_contacts, l=1):
-    '''
-    Update sc contact maps based on eigenvector vi.
-    Average contacts with range l.
-    '''
-    t0 = time.time()
-    where = np.argsort(vi)
-    N, _ = sc_contacts.shape
-
-    # sort sc_contacts
-    sc_contacts = sc_contacts[where]
-
-    # merge adjacent contacts
-    if l == 1:
-        # modify in place to preserve RAM
-        # I did test this - it works
+        # iterate through
         for i in range(N):
-            new = np.mean(sc_contacts[max(0, i-1):min(i+l+1, N), :], axis = 0)
-            # print(new)
-            if i > 0:
-                sc_contacts[i-1, :] = new_prev
-            new_prev = new.copy()
-        sc_contacts[N-1] = new_prev
-    else:
-        sc_contacts_new = np.zeros_like(sc_contacts)
-        for i in range(N):
-            new = np.mean(sc_contacts[max(0, i-1):min(i+l+1, N), :], axis = 0)
-            sc_contacts_new[i] = new
+            if i < N-l:
+                fpath = osp.join(dir, f'y_sc_{where[i+l]}.npy')
+                y_queue.append(np.load(fpath))
 
-        sc_contacts = sc_contact_new
+            # calculate average
+            y_new = np.mean(y_queue, axis = 0)
+            np.save(osp.join(odir, f'y_sc_{where[i]}.npy'), y_new)
 
-    # undo sort
-    order = np.argsort(where)
-    sc_contacts = sc_contacts[order]
-    tf = time.time()
-    print_time(t0, tf, 'update')
+            # pop first entry of queue
+            if i >= l:
+                y_queue.pop(0)
 
-    return sc_contacts
 
-def update_kNN(v, sc_contacts, k=2):
-    raise NotImplementedError
+        tf = time.time()
+        print_time(t0, tf, 'update')
+
+    def update_eig(vi, sc_contacts, l=1):
+        '''
+        Update sc contact maps based on eigenvector vi.
+        Average contacts with range l.
+        '''
+        t0 = time.time()
+        where = np.argsort(vi)
+        N, _ = sc_contacts.shape
+
+        # sort sc_contacts
+        sc_contacts = sc_contacts[where]
+
+        # merge adjacent contacts
+        if l == 1:
+            # modify in place to preserve RAM
+            # I did test this - it works
+            for i in range(N):
+                new = np.mean(sc_contacts[max(0, i-1):min(i+l+1, N), :], axis = 0)
+                # print(new)
+                if i > 0:
+                    sc_contacts[i-1, :] = new_prev
+                new_prev = new.copy()
+            sc_contacts[N-1] = new_prev
+        else:
+            sc_contacts_new = np.zeros_like(sc_contacts)
+            for i in range(N):
+                new = np.mean(sc_contacts[max(0, i-1):min(i+l+1, N), :], axis = 0)
+                sc_contacts_new[i] = new
+
+            sc_contacts = sc_contact_new
+
+        # undo sort
+        order = np.argsort(where)
+        sc_contacts = sc_contacts[order]
+        tf = time.time()
+        print_time(t0, tf, 'update')
+
+        return sc_contacts
+
+    def update_kNN(v, sc_contacts, k=2):
+        raise NotImplementedError
 
 def tune_epsilon(input, ofile):
     X = np.arange(-12, 20, 1)
@@ -386,33 +388,40 @@ def diag_processsing(dir, odir, args):
 
     return sc_contacts_diag
 
-def gaussian_processing(args):
-    t0 = time.time()
-    odir_i_sc_contacts = osp.join(args.odir_i, 'sc_contacts')
-    if not osp.exists(odir_i_sc_contacts):
-        os.mkdir(odir_i_sc_contacts, mode = 0o755)
-    mapping = []
-    for file in os.listdir(args.sc_contacts_dir):
-        ifile = osp.join(args.sc_contacts_dir, file)
-        ofile = osp.join(odir_i_sc_contacts, file)
-        mapping.append((ifile, ofile, args.m))
+class GaussianProcessing():
+    def __init__(self, args):
+        self.idir = args.sc_contacts_dir
+        self.odir = osp.join(args.odir_i, 'sc_contacts')
+        if not osp.exists(self.odir):
+            os.mkdir(self.odir, mode = 0o755)
 
-    if args.jobs > 1:
-        with multiprocessing.Pool(args.jobs) as p:
-            p.starmap(gaussian_processing_inner, mapping)
-    else:
-        for ifile, ofile, m in mapping:
-            gaussian_processing_inner(ifile, ofile, m)
+        self.m = args.m
 
-    tf = time.time()
-    print_time(t0, tf, 'gaussian')
+    def process(self, jobs):
+        t0 = time.time()
 
-def gaussian_processing_inner(ifile, ofile, m):
-    y = np.load(ifile)
-    y = triu_to_full(y, m)
-    y = gaussian_filter(y, sigma = 4)
-    y = y[np.triu_indices(m)]
-    np.save(ofile, y)
+        mapping = []
+        for file in os.listdir(self.idir):
+            ifile = osp.join(self.idir, file)
+            ofile = osp.join(self.odir, file)
+            mapping.append((ifile, ofile))
+
+        if jobs > 1:
+            with multiprocessing.Pool(jobs) as p:
+                p.starmap(self.inner, mapping)
+        else:
+            for ifile, ofile, m in mapping:
+                self.inner(ifile, ofile)
+
+        tf = time.time()
+        print_time(t0, tf, 'gaussian')
+
+    def inner(self, ifile, ofile):
+        y = np.load(ifile)
+        y = triu_to_full(y, self.m)
+        y = gaussian_filter(y, sigma = 4)
+        y = y[np.triu_indices(self.m)]
+        np.save(ofile, y)
 
 def xyz_diffusion():
     args = getArgs()
@@ -467,12 +476,13 @@ def contact_diffusion():
             sc_contacts_diag = diag_processsing_chunk(osp.join(odir_prev, 'sc_contacts'),
                             osp.join(args.odir_i, 'sc_contacts_diag'), args)
             print_size(sc_contacts_diag, 'sc_contacts_diag')
+            print(psutil.virtual_memory())
 
             # compute distance
             t0 = time.time()
-            # D = pairwise_distances(sc_contacts_diag, sc_contacts_diag,
-            #                         metric = 'correlation')
-            D = cosine_distances(sc_contacts_diag, sc_contacts_diag)
+            D = pairwise_distances(sc_contacts_diag, sc_contacts_diag,
+                                    metric = 'correlation')
+            # D = cosine_distances(sc_contacts_diag, sc_contacts_diag)
             del sc_contacts_diag # no longer needed
             plot_matrix(D, ofile = osp.join(args.odir_i, 'distances.png'),
                             vmin = 'min', vmax = 'max')
@@ -493,19 +503,20 @@ def contact_diffusion():
                                                     stat = 'spearman'))
 
             np.savetxt(osp.join(args.odir_i, 'order.txt'), order, fmt='%i')
-            plot_eigenvectors(v, xyz, args.odir_i)
+            # plot_eigenvectors(v, xyz, args.odir_i)
 
             if args.update_mode == 'eig':
-                sc_contacts = update_eig_chunk(v[:, 1], osp.join(odir_prev, 'sc_contacts'), args.odir_i)
+                sc_contacts = Updates.update_eig_chunk(v[:, 1], osp.join(odir_prev, 'sc_contacts'), args.odir_i)
             elif args.update_mode == 'knn':
-                sc_contacts = update_kNN(v, sc_contacts, 3)
+                sc_contacts = Updates.update_kNN(v, sc_contacts, 3)
         else:
             # apply gaussian
-            gaussian_processing(args)
+            GP = GaussianProcessing(args)
+            GP.process(args.jobs)
 
         # Plots
         t0 = time.time()
-        plot_contacts(osp.join(args.odir_i, 'sc_contacts'), order, args)
+        # plot_contacts(osp.join(args.odir_i, 'sc_contacts'), order, args)
         tf = time.time()
         print_time(t0, tf, 'plot')
         print('\n')
@@ -573,10 +584,11 @@ def contact_laplacian():
             plot_eigenvectors(v, xyz, args.odir_i)
 
             if args.update_mode == 'eig':
-                sc_contacts = update_eig_chunk(v[:, 1], osp.join(odir_prev, 'sc_contacts'), args.odir_i)
+                sc_contacts = Updates.update_eig_chunk(v[:, 1], osp.join(odir_prev, 'sc_contacts'), args.odir_i)
         else:
             # apply gaussian
-            gaussian_processing(args)
+            GP = GaussianProcessing(args)
+            GP.process(args.jobs)
 
         # Plots
         t0 = time.time()

@@ -176,6 +176,7 @@ class DiagonalPreprocessing():
         files = [f'y_sc_{i}.npy' for i in range(N)]
         sc_contacts_diag = np.zeros((N, int(m*(m+1)/2)))
         for i in range(0, N, chunk_size):
+            print(i)
             # load 100 sc contacts
             if jobs > 1:
                 with multiprocessing.Pool(jobs) as p:
