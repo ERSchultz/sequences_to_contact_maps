@@ -11,7 +11,7 @@
 dir="/project2/depablo/walt/michrom/project/chr_05/chr_05_02"
 odir="/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02_copy"
 jobs=20
-downSampling=20
+downSampling=12
 its=4
 scratch='/scratch/midway2/erschultz'
 

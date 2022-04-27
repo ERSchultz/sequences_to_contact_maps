@@ -43,7 +43,7 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample7'):
     parser.add_argument('--jobs', type=int, default=15)
     parser.add_argument('--sparse_format', action='store_true',
                         help='True to store sc_contacts in sparse format')
-    parser.add_argument('--down_sampling', type=int, default=2)
+    parser.add_argument('--down_sampling', type=int, default=1)
     parser.add_argument('--its', type=int, default=1,
                         help='number of iterations')
 
@@ -354,7 +354,7 @@ def load_helper(args, contacts = False):
 
 def diag_processsing_chunk(dir, odir, args):
     t0 = time.time()
-    if not osp.exists(odir):
+    if odir is not None and not osp.exists(odir):
         os.mkdir(odir, mode = 0o755)
 
     overall = np.zeros(int(args.m*(args.m+1)/2))
@@ -363,7 +363,7 @@ def diag_processsing_chunk(dir, odir, args):
         overall += np.load(fpath)
     overall = triu_to_full(overall)
     mean_per_diag = DiagonalPreprocessing.genomic_distance_statistics(overall, mode = 'prob')
-    sc_contacts_diag = DiagonalPreprocessing.process_chunk(dir, mean_per_diag,
+    sc_contacts_diag = DiagonalPreprocessing.process_chunk(dir, mean_per_diag, odir,
                                     jobs = 1, sparse_format = args.sparse_format)
 
     tf = time.time()
@@ -387,6 +387,33 @@ def diag_processsing(dir, odir, args):
     print_time(t0, tf, 'diag')
 
     return sc_contacts_diag
+
+def pairwise_distances_chunk(dir, m, metric, chunk_size = 100):
+    N = len([f for f in os.listdir(dir) if f.endswith('.npy')])
+    files = [f'y_sc_{i}.npy' for i in range(N)]
+    D = np.zeros((N, N))
+    for i in range(0, N, chunk_size):
+        i_len = len(files[i:i + chunk_size])
+
+        X = np.zeros((i_len, int(m*(m+1)/2)))
+        for k, file in enumerate(files[i:i + chunk_size]):
+            X[k] = np.load(osp.join(dir, file))
+
+        for j in range(i, N, chunk_size):
+            j_len = len(files[j:j + chunk_size])
+            Y = np.zeros((j_len, int(m*(m+1)/2)))
+            for k, file in enumerate(files[j:j + chunk_size]):
+                Y[k] = np.load(osp.join(dir, file))
+
+            D_ij = pairwise_distances(X, Y, metric = metric)
+            D[i:i+i_len, j:j+j_len] = D_ij
+
+    # make symmetric
+    D = np.triu(D) + np.triu(D, 1).T
+
+    return D
+
+
 
 class GaussianProcessing():
     def __init__(self, args):
@@ -473,22 +500,22 @@ def contact_diffusion():
         print(f"Iteration {it}")
         if it > 0:
             # diag processing
+            diag_dir = osp.join(args.odir_i, 'sc_contacts_diag')
             sc_contacts_diag = diag_processsing_chunk(osp.join(odir_prev, 'sc_contacts'),
-                            osp.join(args.odir_i, 'sc_contacts_diag'), args)
+                            diag_dir, args)
             print_size(sc_contacts_diag, 'sc_contacts_diag')
-            print(psutil.virtual_memory())
 
             # compute distance
             t0 = time.time()
-            D = pairwise_distances(sc_contacts_diag, sc_contacts_diag,
-                                    metric = 'correlation')
-            # D = cosine_distances(sc_contacts_diag, sc_contacts_diag)
+            D = pairwise_distances_chunk(diag_dir, args.m, metric = 'cosine',
+                                        chunk_size = 500)
+            # D = pairwise_distances(sc_contacts_diag, sc_contacts_diag,
+            #                         metric = 'cosine')
             del sc_contacts_diag # no longer needed
             plot_matrix(D, ofile = osp.join(args.odir_i, 'distances.png'),
-                            vmin = 'min', vmax = 'max')
+                            vmin = 'min', vmax = 'mean')
             tf = time.time()
             print_time(t0, tf, 'distance')
-            print(psutil.virtual_memory())
 
             # compute eigenvectors
             dmap = dmaps.DiffusionMap(D)

@@ -153,7 +153,8 @@ class DiagonalPreprocessing():
 
         return result
 
-    def process_chunk(dir, mean_per_diagonal, chunk_size = 100, jobs = 1, sparse_format = False):
+    def process_chunk(dir, mean_per_diagonal, odir = None, chunk_size = 100, jobs = 1,
+                    sparse_format = False):
         '''
         Faster version of process when using many contact maps
         but RAM is limited.
@@ -174,9 +175,9 @@ class DiagonalPreprocessing():
 
         N = len([f for f in os.listdir(dir) if f.endswith('.npy')])
         files = [f'y_sc_{i}.npy' for i in range(N)]
-        sc_contacts_diag = np.zeros((N, int(m*(m+1)/2)))
+        if odir is None:
+            sc_contacts_diag = np.zeros((N, int(m*(m+1)/2)))
         for i in range(0, N, chunk_size):
-            print(i)
             # load 100 sc contacts
             if jobs > 1:
                 with multiprocessing.Pool(jobs) as p:
@@ -188,14 +189,22 @@ class DiagonalPreprocessing():
                     sc_contacts[j] = np.load(osp.join(dir, file))
 
             # process
-            sc_contacts_diag[i:i+chunk_size] = DiagonalPreprocessing.process_bulk(sc_contacts,
+            result = DiagonalPreprocessing.process_bulk(sc_contacts,
                                                     expected = expected,
                                                     triu = True)
+            if odir is None:
+                sc_contacts_diag[i:i+chunk_size] = result
+            else:
+                for y, f in zip(result, files[i:i + chunk_size]):
+                    np.save(osp.join(odir, f), y)
 
-        if sparse_format:
-            sc_contacts_diag = sp.csr_array(sc_contacts_diag)
 
-        return sc_contacts_diag
+        if odir is None:
+            if sparse_format:
+                sc_contacts_diag = sp.csr_array(sc_contacts_diag)
+
+            return sc_contacts_diag
+
 
     def process_bulk(y_arr, mean_per_diagonal = None, expected = None,
                     triu = False):
