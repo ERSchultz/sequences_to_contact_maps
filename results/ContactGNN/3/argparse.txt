@@ -19,7 +19,7 @@ diag
 --y_norm
 instance
 --y_log_transform
-false
+none
 --message_passing
 GCN
 --use_node_features

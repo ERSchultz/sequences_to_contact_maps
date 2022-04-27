@@ -19,7 +19,7 @@ diag
 --y_norm
 none
 --y_log_transform
-true
+10
 --message_passing
 SignedConv
 --use_node_features

@@ -13,8 +13,8 @@ from utils.base_networks import AverageTo2d
 from utils.load_utils import load_sc_contacts
 from utils.networks import get_model
 from utils.plotting_utils import plot_matrix
-from utils.utils import (calc_dist_strat_corr, crop, diagonal_preprocessing,
-                         genomic_distance_statistics, print_time, triu_to_full)
+from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
+                         print_time, triu_to_full)
 from utils.xyz_utils import lammps_load
 
 
@@ -60,11 +60,10 @@ def edit_argparse():
                             lines = f.readlines()
                         weights = False
                         for i, line in enumerate(lines):
-                            if line == '--use_edge_weights\n' and lines[i+1] == 'true\n':
-                                weights = True
-                            if line == '--pre_transforms\n' and lines[i+1] == 'AdjPCA-degree\n' and weights:
-                                lines[i+1] = 'AdjPCA-degree-ContactDistance\n'
-                                print('gotcha', id)
+
+                            if line == '--y_log_transform\n' and lines[i+1] == 'true\n':
+                                lines[i+1] = '10\n'
+                                print(lines[i+1], id)
                         with open(arg_file, 'w') as f:
                             f.write("".join(lines))
 
@@ -121,7 +120,7 @@ def debugModel(model_type):
         opt.sparsify_threshold = 0.176
         opt.sparsify_threshold_upper = None
         opt.relabel_11_to_00 = False
-        opt.y_log_transform = True
+        opt.y_log_transform = 'True'
         opt.head_architecture = 'fc'
         opt.head_hidden_sizes_list = [2]
         # opt.crop=[50,100]
@@ -129,7 +128,7 @@ def debugModel(model_type):
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
         opt.loss = 'mse'
-        opt.y_norm = 'none'
+        opt.y_norm = None
         opt.message_passing='gat'
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym'
@@ -140,6 +139,7 @@ def debugModel(model_type):
         opt.inner_act = 'relu'
         opt.out_act = 'relu'
         opt.head_act = 'relu'
+        opt.training_norm = 'instance'
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         opt.transforms=str2list('empty')
@@ -147,7 +147,7 @@ def debugModel(model_type):
         opt.split_edges_for_feature_augmentation = False
         opt.sparsify_threshold = 0.176
         opt.sparsify_threshold_upper = None
-        opt.y_log_transform = False
+        opt.y_log_transform = 'ln'
         opt.head_architecture = 'bilinear_asym'
         opt.head_hidden_sizes_list = None
         opt.crop=[0,4]
@@ -327,8 +327,8 @@ def main():
 
 if __name__ == '__main__':
     # main()
-    # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    edit_argparse()
+    # debugModel('ContactGNNEnergy')
     # test_lammps_load()
     # plot_fixed()
     # test_argpartition(10)

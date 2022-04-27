@@ -17,7 +17,7 @@ diag
 --y_norm
 none
 --y_log_transform
-true
+10
 --message_passing
 GAT
 --use_node_features

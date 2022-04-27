@@ -17,12 +17,8 @@ source activate python3.9_pytorch1.9_cuda10.2
 
 rootName='ContactGNNEnergy5' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_04_26_22"
-messagePassing='SignedConv'
-preTransforms='degree-ContactDistance-GeneticDistance'
-useEdgeAttr='true'
-hiddenSizesList='32-32-32'
-EncoderHiddenSizesList='100-100-64'
-updateHiddenSizesList='100-100-64'
+trainingNorm='instance'
+
 
 id=153
 for lr in 1e-3

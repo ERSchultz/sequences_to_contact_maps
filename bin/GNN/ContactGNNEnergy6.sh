@@ -16,11 +16,10 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 
 rootName='ContactGNNEnergy6' # change to run multiple bash files at once
-splitSizes='1000-200-0'
-preTransforms='degree-GeneticPosition_center_norm'
-milestones='50'
+dirname="/project2/depablo/erschultz/dataset_04_26_22"
 
-id=114
+
+id=154
 for lr in 1e-3
 do
   echo "id=${id}"

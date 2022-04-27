@@ -22,7 +22,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN:
     # https://github.com/rusty1s/pytorch_geometric/issues/1511
     def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag',
-                y_log_transform = False, y_norm = 'instance', min_subtraction = True,
+                y_log_transform = None, y_norm = 'instance', min_subtraction = True,
                 use_node_features = True,
                 sparsify_threshold = None, sparsify_threshold_upper = None,
                 split_neg_pos_edges = False,
@@ -35,7 +35,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             root_name: directory for loaded data
             m: number of particles/beads
             y_preprocessing: type of contact map preprocessing ('diag', None, etc)
-            y_log_transform: True to log transform contact map
+            y_log_transform: type of log transform (int k for log_k, 'ln' for ln, None to skip)
             y_norm: type of normalization ('instance', 'batch')
             min_subtraction: True to subtract min during normalization
             use_node_features: True to use bead labels as node features
@@ -227,8 +227,19 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if self.crop is not None:
             y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
 
-        if self.y_log_transform:
-            y = np.log10(y+1e-8)
+        if self.y_log_transform is not None:
+            if self.y_log_transform == 'ln':
+                y = np.log(y+1e-8)
+            elif self.y_log_transform.isdigit():
+                val = int(self.y_log_transform)
+                if val == 2:
+                    y = np.log2(y+1e-8)
+                elif val == 10:
+                    y = np.log10(y+1e-8)
+                else:
+                    raise Exception(f'Unaccepted log base: {val}')
+            else:
+                raise Exception(f'Unrecognized log transform: {self.y_log_transform}')
 
         if self.y_norm == 'instance':
             self.ymax = np.max(y)

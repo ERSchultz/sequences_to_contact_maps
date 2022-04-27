@@ -48,7 +48,7 @@ def get_model(opt, verbose = True):
         opt.encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
         opt.message_passing, opt.use_edge_weights or opt.use_edge_attr, opt.edge_dim,
         opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act, opt.use_bias,
-        opt.num_heads, opt.concat_heads,
+        opt.training_norm, opt.num_heads, opt.concat_heads,
         opt.log_file, verbose = verbose)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
@@ -475,7 +475,7 @@ class ContactGNN(nn.Module):
                 encoder_hidden_sizes_list, update_hidden_sizes_list,
                 message_passing, use_edge_attr, edge_dim,
                 head_architecture, head_hidden_sizes_list, head_act, use_bias,
-                num_heads, concat_heads,
+                training_norm, num_heads, concat_heads,
                 ofile = sys.stdout, verbose = True):
         '''
         Inputs:
@@ -563,6 +563,11 @@ class ContactGNN(nn.Module):
             model.pop()
             model.append(self.inner_act)
 
+            if training_norm == 'instance':
+                model.append(gnn.InstanceNorm(input_size))
+            else:
+                raise Exception(f'Invalid training_norm: {training_norm}')
+
             self.model = gnn.Sequential('x, edge_index, edge_attr', model)
         elif self.message_passing == 'signedconv':
             if self.use_edge_attr:
@@ -598,6 +603,11 @@ class ContactGNN(nn.Module):
             model.append(self.inner_act)
 
             input_size *= 2
+            if training_norm == 'instance':
+                model.append(gnn.InstanceNorm(input_size))
+            else:
+                raise Exception(f'Invalid training_norm: {training_norm}')
+
             self.model = gnn.Sequential(inputs, model)
         elif self.message_passing == 'z':
             # uses prior model to predict particle types

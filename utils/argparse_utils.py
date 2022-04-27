@@ -61,7 +61,7 @@ def get_base_parser():
                         help='mode for toxx (default mean)')
     parser.add_argument('--y_preprocessing', type=str2None, default='diag',
                         help='type of pre-processing for y')
-    parser.add_argument('--y_log_transform', type=str2bool, default=False,
+    parser.add_argument('--y_log_transform', type=str,
                         help='True to log transform y')
     parser.add_argument('--y_norm', type=str2None, default='batch',
                         help='type of [0,1] normalization for y')
@@ -132,7 +132,7 @@ def get_base_parser():
     parser.add_argument('--pretrained', type=str2bool, default=False,
                         help='True if using a pretrained model')
     parser.add_argument('--resume_training', type=str2bool, default=False,
-                        help='True if resuming traning of a partially trained model')
+                        help='True if resuming training of a partially trained model')
     parser.add_argument('--k', type=str2int,
                         help='Number of input epigenetic marks')
     parser.add_argument('--m', type=int, default=1024,
@@ -264,8 +264,8 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     assert opt.split_percents is not None or opt.split_sizes is not None, "both can't be None"
     assert opt.split_percents is None or opt.split_sizes is None, "one must be None"
 
-    if opt.y_log_transform:
-        assert opt.y_norm is None, "don't use log transform with y norm"
+    if opt.y_log_transform is not None:
+        assert opt.y_norm is None, f"don't use log transform ({opt.y_log_transform}) with y norm ({opt.y_norm})"
 
     if opt.head_architecture == 'bilinear':
         assert opt.head_hidden_sizes_list is None, f"not supported {opt.id}"
@@ -358,7 +358,7 @@ def process_transforms(opt):
     opt.edge_transforms = []
     opt.node_transforms = []
 
-    if opt.y_log_transform:
+    if opt.y_log_transform is not None:
         split = 0
     else:
         split = 1
