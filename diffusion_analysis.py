@@ -2,6 +2,7 @@ import argparse
 import multiprocessing
 import os
 import os.path as osp
+import sys
 import time
 from shutil import move, rmtree
 
@@ -17,7 +18,7 @@ from sklearn.cluster import KMeans
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import pairwise_distances, silhouette_score
 from sklearn.metrics.pairwise import cosine_distances
-from utils.argparse_utils import str2None
+from utils.argparse_utils import str2bool, str2None
 from utils.load_utils import save_sc_contacts
 from utils.plotting_utils import plot_matrix, plot_sc_contact_maps_inner
 from utils.utils import (DiagonalPreprocessing, pearson_round, print_size,
@@ -28,7 +29,7 @@ from utils.xyz_utils import (find_dist_between_centroids, find_label_centroid,
 import dmaps  # https://github.com/ERSchultz/dmaps
 
 
-def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample7'):
+def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample92'):
     parser = argparse.ArgumentParser(description='Base parser')
     parser.add_argument('--dir', type=str, default=default_dir,
                         help='location of data')
@@ -43,9 +44,13 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample7'):
     parser.add_argument('--jobs', type=int, default=15)
     parser.add_argument('--sparse_format', action='store_true',
                         help='True to store sc_contacts in sparse format')
-    parser.add_argument('--down_sampling', type=int, default=1)
+    parser.add_argument('--down_sampling', type=int, default=5)
     parser.add_argument('--its', type=int, default=1,
                         help='number of iterations')
+    parser.add_argument('--chunk_size', type=int, default=300,
+                        help='chunk size for pairwise_distances_chunk')
+    parser.add_argument('--plot', type=str2bool, default=False,
+                        help='True to plot')
 
     args = parser.parse_args()
     if args.odir is None:
@@ -62,14 +67,21 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample7'):
         rmtree(args.scratch_dir)
     os.mkdir(args.scratch_dir, mode = 0o755)
 
-    # args.sparse_format = True
+    args.log_file_path = osp.join(args.scratch_dir, 'out.log')
+    args.log_file = open(args.log_file_path, 'a')
+
+    print(args, file = args.log_file)
     return args
 
-class Updates():
-    def update_eig_chunk(vi, dir, odir, l=1):
+class Updater():
+    def __init__(self, k, log_file = sys.stdout):
+        self.k = k
+        self.log_file = log_file
+
+    def update_eig_chunk(self, vi, dir, odir):
         '''
         Update sc contact maps based on eigenvector vi.
-        Average contacts with range l.
+        Average contacts with range k.
 
         This version only loads a chunk of sc_contacts of size (2l+1) into RAM at a time.
         '''
@@ -83,13 +95,13 @@ class Updates():
         # merge adjacent contacts
         y_queue = [] # queue of rotating (2l+1) contacts
         # initialize queue
-        for j in range(l):
+        for j in range(self.k):
             fpath = osp.join(dir, f'y_sc_{where[j]}.npy')
             y_queue.append(np.load(fpath))
         # iterate through
         for i in range(N):
-            if i < N-l:
-                fpath = osp.join(dir, f'y_sc_{where[i+l]}.npy')
+            if i < N-self.k:
+                fpath = osp.join(dir, f'y_sc_{where[i+self.k]}.npy')
                 y_queue.append(np.load(fpath))
 
             # calculate average
@@ -97,17 +109,17 @@ class Updates():
             np.save(osp.join(odir, f'y_sc_{where[i]}.npy'), y_new)
 
             # pop first entry of queue
-            if i >= l:
+            if i >= self.k:
                 y_queue.pop(0)
 
 
         tf = time.time()
-        print_time(t0, tf, 'update')
+        print_time(t0, tf, 'update', file = self.log_file)
 
-    def update_eig(vi, sc_contacts, l=1):
+    def update_eig(self, vi, sc_contacts):
         '''
         Update sc contact maps based on eigenvector vi.
-        Average contacts with range l.
+        Average contacts with range k.
         '''
         t0 = time.time()
         where = np.argsort(vi)
@@ -117,11 +129,11 @@ class Updates():
         sc_contacts = sc_contacts[where]
 
         # merge adjacent contacts
-        if l == 1:
+        if self.k == 1:
             # modify in place to preserve RAM
             # I did test this - it works
             for i in range(N):
-                new = np.mean(sc_contacts[max(0, i-1):min(i+l+1, N), :], axis = 0)
+                new = np.mean(sc_contacts[max(0, i-1):min(i+self.k+1, N), :], axis = 0)
                 # print(new)
                 if i > 0:
                     sc_contacts[i-1, :] = new_prev
@@ -130,7 +142,7 @@ class Updates():
         else:
             sc_contacts_new = np.zeros_like(sc_contacts)
             for i in range(N):
-                new = np.mean(sc_contacts[max(0, i-1):min(i+l+1, N), :], axis = 0)
+                new = np.mean(sc_contacts[max(0, i-1):min(i+self.k+1, N), :], axis = 0)
                 sc_contacts_new[i] = new
 
             sc_contacts = sc_contact_new
@@ -139,11 +151,11 @@ class Updates():
         order = np.argsort(where)
         sc_contacts = sc_contacts[order]
         tf = time.time()
-        print_time(t0, tf, 'update')
+        print_time(t0, tf, 'update', file = self.log_file)
 
         return sc_contacts
 
-    def update_kNN(v, sc_contacts, k=2):
+    def update_kNN(self, v, sc_contacts):
         raise NotImplementedError
 
 def tune_epsilon(input, ofile):
@@ -363,11 +375,12 @@ def diag_processsing_chunk(dir, odir, args):
         overall += np.load(fpath)
     overall = triu_to_full(overall)
     mean_per_diag = DiagonalPreprocessing.genomic_distance_statistics(overall, mode = 'prob')
+    print(mean_per_diag, file = args.log_file)
     sc_contacts_diag = DiagonalPreprocessing.process_chunk(dir, mean_per_diag, odir,
                                     jobs = 1, sparse_format = args.sparse_format)
 
     tf = time.time()
-    print_time(t0, tf, 'diag')
+    print_time(t0, tf, 'diag', file = args.log_file)
 
     return sc_contacts_diag
 
@@ -388,7 +401,7 @@ def diag_processsing(dir, odir, args):
 
     return sc_contacts_diag
 
-def pairwise_distances_chunk(dir, m, metric, chunk_size = 100):
+def pairwise_distances_chunk(dir, m, metric, chunk_size):
     N = len([f for f in os.listdir(dir) if f.endswith('.npy')])
     files = [f'y_sc_{i}.npy' for i in range(N)]
     D = np.zeros((N, N))
@@ -401,9 +414,12 @@ def pairwise_distances_chunk(dir, m, metric, chunk_size = 100):
 
         for j in range(i, N, chunk_size):
             j_len = len(files[j:j + chunk_size])
-            Y = np.zeros((j_len, int(m*(m+1)/2)))
-            for k, file in enumerate(files[j:j + chunk_size]):
-                Y[k] = np.load(osp.join(dir, file))
+            if j == i:
+                Y = X
+            else:
+                Y = np.zeros((j_len, int(m*(m+1)/2)))
+                for k, file in enumerate(files[j:j + chunk_size]):
+                    Y[k] = np.load(osp.join(dir, file))
 
             D_ij = pairwise_distances(X, Y, metric = metric)
             D[i:i+i_len, j:j+j_len] = D_ij
@@ -412,8 +428,6 @@ def pairwise_distances_chunk(dir, m, metric, chunk_size = 100):
     D = np.triu(D) + np.triu(D, 1).T
 
     return D
-
-
 
 class GaussianProcessing():
     def __init__(self, args):
@@ -424,7 +438,7 @@ class GaussianProcessing():
 
         self.m = args.m
 
-    def process(self, jobs):
+    def process(self, jobs, log_file = sys.stdout):
         t0 = time.time()
 
         mapping = []
@@ -441,7 +455,7 @@ class GaussianProcessing():
                 self.inner(ifile, ofile)
 
         tf = time.time()
-        print_time(t0, tf, 'gaussian')
+        print_time(t0, tf, 'gaussian', file = log_file)
 
     def inner(self, ifile, ofile):
         y = np.load(ifile)
@@ -494,28 +508,30 @@ def contact_diffusion():
 
     order = None
     odir_prev = None
+    updater = Updater(1, args.log_file)
     for it in range(args.its+1):
         args.odir_i = osp.join(args.scratch_dir, f'iteration_{it}')
         os.mkdir(args.odir_i, mode = 0o755)
         print(f"Iteration {it}")
+        print(f"Iteration {it}", file = args.log_file)
         if it > 0:
             # diag processing
             diag_dir = osp.join(args.odir_i, 'sc_contacts_diag')
             sc_contacts_diag = diag_processsing_chunk(osp.join(odir_prev, 'sc_contacts'),
                             diag_dir, args)
-            print_size(sc_contacts_diag, 'sc_contacts_diag')
+            print_size(sc_contacts_diag, 'sc_contacts_diag', file = args.log_file)
 
             # compute distance
             t0 = time.time()
             D = pairwise_distances_chunk(diag_dir, args.m, metric = 'cosine',
-                                        chunk_size = 500)
-            # D = pairwise_distances(sc_contacts_diag, sc_contacts_diag,
+                                        chunk_size = args.chunk_size)
+            # D = (sc_contacts_diag, sc_contacts_diag,
             #                         metric = 'cosine')
             del sc_contacts_diag # no longer needed
             plot_matrix(D, ofile = osp.join(args.odir_i, 'distances.png'),
                             vmin = 'min', vmax = 'mean')
             tf = time.time()
-            print_time(t0, tf, 'distance')
+            print_time(t0, tf, 'distance', file = args.log_file)
 
             # compute eigenvectors
             dmap = dmaps.DiffusionMap(D)
@@ -525,29 +541,34 @@ def contact_diffusion():
 
             v = dmap.get_eigenvectors()
             w = dmap.get_eigenvalues()
-            print('w', w)
+            print('w', w, file = args.log_file)
             order = np.argsort(v[:, 1])
-            print('\n\norder corr: ', pearson_round(order, np.arange(0, args.N, 1),
-                                                    stat = 'spearman'))
+            print('\norder corr: ',
+                pearson_round(order, np.arange(0, args.N, 1), stat = 'spearman'),
+                file = args.log_file)
 
             np.savetxt(osp.join(args.odir_i, 'order.txt'), order, fmt='%i')
-            plot_eigenvectors(v, xyz, args.odir_i)
+            if args.plot:
+                plot_eigenvectors(v, xyz, args.odir_i)
 
             if args.update_mode == 'eig':
-                sc_contacts = Updates.update_eig_chunk(v[:, 1], osp.join(odir_prev, 'sc_contacts'), args.odir_i)
+                sc_contacts = updater.update_eig_chunk(v[:, 1],
+                                        osp.join(odir_prev, 'sc_contacts'),
+                                        args.odir_i)
             elif args.update_mode == 'knn':
-                sc_contacts = Updates.update_kNN(v, sc_contacts, 3)
+                sc_contacts = updater.update_kNN(v, sc_contacts)
         else:
             # apply gaussian
             GP = GaussianProcessing(args)
-            GP.process(args.jobs)
+            GP.process(args.jobs, args.log_file)
 
         # Plots
-        t0 = time.time()
-        plot_contacts(osp.join(args.odir_i, 'sc_contacts'), order, args)
-        tf = time.time()
-        print_time(t0, tf, 'plot')
-        print('\n')
+        if args.plot:
+            t0 = time.time()
+            plot_contacts(osp.join(args.odir_i, 'sc_contacts'), order, args)
+            tf = time.time()
+            print_time(t0, tf, 'plot', file = args.log_file)
+        print('\n', file = args.log_file)
         odir_prev = args.odir_i
 
     # move files from scratch to odir
@@ -612,7 +633,7 @@ def contact_laplacian():
             plot_eigenvectors(v, xyz, args.odir_i)
 
             if args.update_mode == 'eig':
-                sc_contacts = Updates.update_eig_chunk(v[:, 1], osp.join(odir_prev, 'sc_contacts'), args.odir_i)
+                sc_contacts = Updater.update_eig_chunk(v[:, 1], osp.join(odir_prev, 'sc_contacts'), args.odir_i)
         else:
             # apply gaussian
             GP = GaussianProcessing(args)
@@ -645,7 +666,6 @@ def plot_gif_michrom():
 
 def main():
     args = getArgs()
-    print(args)
     if args.mode == 'xyz_diffusion':
         xyz_diffusion()
     elif args.mode == 'contact_diffusion':

@@ -14,9 +14,11 @@ jobs=20
 downSampling=12
 its=4
 scratch='/scratch/midway2/erschultz'
+chunkSize=400
+plot='true'
 
 cd ~/sequences_to_contact_maps
 source activate python3.9_pytorch1.9_cuda10.2
 module load cmake
 
-python3 diffusion_analysis.py --dir $dir --odir $odir --jobs $jobs --down_sampling $downSampling --its $its --scratch $scratch
+python3 diffusion_analysis.py --dir $dir --odir $odir --jobs $jobs --down_sampling $downSampling --its $its --scratch $scratch --chunk_size $chunkSize --plot $plot

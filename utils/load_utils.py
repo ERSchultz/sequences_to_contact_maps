@@ -2,6 +2,7 @@ import json
 import multiprocessing
 import os
 import os.path as osp
+import sys
 import time
 from shutil import rmtree
 
@@ -209,7 +210,7 @@ def load_final_max_ent_S(k, replicate_path, max_it_path = None):
     return s
 
 def save_sc_contacts(xyz, odir, jobs = 5, triu = True, zero_diag = True,
-                     sparsify = False, overwrite = False):
+                     sparsify = False, overwrite = False, log_file = sys.stdout):
     '''
     Saves single cell contacts from sample_folder/data_out/output.xyz.
 
@@ -242,7 +243,7 @@ def save_sc_contacts(xyz, odir, jobs = 5, triu = True, zero_diag = True,
             p.starmap(save_sc_contacts_xyz, mapping)
 
     tf = time.time()
-    print_time(t0, tf, 'sc save')
+    print_time(t0, tf, 'sc save', file = log_file)
 
 def save_sc_contacts_xyz(xyz, ofile, grid_size, triu, zero_diag, sparsify):
     m, _ = xyz.shape

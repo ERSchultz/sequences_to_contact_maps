@@ -2,6 +2,7 @@ import math
 import multiprocessing
 import os
 import os.path as osp
+import sys
 import time
 
 import matplotlib.pyplot as plt
@@ -504,10 +505,10 @@ def pearson_round(x, y, stat = 'pearson'):
     stat, _ = fn(x, y)
     return np.round(stat, 2)
 
-def print_time(t0, tf, name = ''):
-    print(f'{name} time: {np.round(tf - t0, 3)} s')
+def print_time(t0, tf, name = '', file = sys.stdout):
+    print(f'{name} time: {np.round(tf - t0, 3)} s', file = file)
 
-def print_size(arr, name = ''):
+def print_size(arr, name = '', file = sys.stdout):
     if arr is None:
         return
     if isinstance(arr, np.ndarray):
@@ -517,7 +518,7 @@ def print_size(arr, name = ''):
     elif isinstance(arr, sp._csr.csr_matrix):
         size_b = arr.data.nbytes
     else:
-        print(f'Unrecognized type {type(arr)}')
+        print(f'Unrecognized type {type(arr)}', file = file)
         return
     size_kb = size_b / 1000
     size_mb = size_kb / 1000
@@ -527,5 +528,5 @@ def print_size(arr, name = ''):
     sizes = [size_gb, size_mb, size_kb, size_b]
     for size, size_name in zip(sizes, size_names):
         if size > 1:
-            print(f'{name} size: {np.round(size, 1)} {size_name}')
+            print(f'{name} size: {np.round(size, 1)} {size_name}', file = file)
             return
