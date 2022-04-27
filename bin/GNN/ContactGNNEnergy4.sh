@@ -16,13 +16,14 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 
 rootName='ContactGNNEnergy4' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_12_12_21"
-splitSizes='none'
-splitPercents='0.8-0.1-0.1'
-headArchitecture='bilinear_asym'
-milestones='50'
+dirname="/project2/depablo/erschultz/dataset_04_26_22"
+preTransforms='degree-ContactDistance-GeneticDistance'
+useEdgeAttr='true'
+hiddenSizesList='32-32-32'
+EncoderHiddenSizesList='100-100-64'
+updateHiddenSizesList='100-100-64'
 
-id=144
+id=152
 for lr in 1e-3
 do
   train
