@@ -154,8 +154,8 @@ class DiagonalPreprocessing():
 
         return result
 
-    def process_chunk(dir, mean_per_diagonal, odir = None, chunk_size = 100, jobs = 1,
-                    sparse_format = False):
+    def process_chunk(dir, mean_per_diagonal, odir = None, chunk_size = 100,
+                    jobs = 1, sparse_format = False):
         '''
         Faster version of process when using many contact maps
         but RAM is limited.
@@ -179,15 +179,10 @@ class DiagonalPreprocessing():
         if odir is None:
             sc_contacts_diag = np.zeros((N, int(m*(m+1)/2)))
         for i in range(0, N, chunk_size):
-            # load 100 sc contacts
-            if jobs > 1:
-                with multiprocessing.Pool(jobs) as p:
-                    sc_contacts = np.array(p.map(np.load, [osp.join(dir, f) for f in files[i:i + chunk_size]]),
-                                            copy = False)
-            else:
-                sc_contacts = np.zeros((len(files[i:i + chunk_size]), int(m*(m+1)/2)))
-                for j, file in enumerate(files[i:i + chunk_size]):
-                    sc_contacts[j] = np.load(osp.join(dir, file))
+            # load sc contacts
+            sc_contacts = np.zeros((len(files[i:i + chunk_size]), int(m*(m+1)/2)))
+            for j, file in enumerate(files[i:i + chunk_size]):
+                sc_contacts[j] = np.load(osp.join(dir, file))
 
             # process
             result = DiagonalPreprocessing.process_bulk(sc_contacts,
@@ -196,8 +191,15 @@ class DiagonalPreprocessing():
             if odir is None:
                 sc_contacts_diag[i:i+chunk_size] = result
             else:
-                for y, f in zip(result, files[i:i + chunk_size]):
-                    np.save(osp.join(odir, f), y)
+                if jobs > 1:
+                    mapping = []
+                    for y, f in zip(result, files[i:i + chunk_size]):
+                        mapping.append((osp.join(odir, f), y))
+                    with multiprocessing.Pool(jobs) as p:
+                        p.starmap(np.save, mapping)
+                else:
+                    for y, f in zip(result, files[i:i + chunk_size]):
+                        np.save(osp.join(odir, f), y)
 
 
         if odir is None:
