@@ -1,8 +1,6 @@
-Namespace(dir='/project2/depablo/walt/michrom/project/chr_05/chr_05_02', scratch='/scratch/midway2/erschultz', odir='/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02_copy', N_min=2000, mode='contact_diffusion', update_mode='eig', jobs=20, sparse_format=False, down_sampling=12, its=5, scratch_dir='/scratch/midway2/erschultz/contact_diffusion')
+Namespace(dir='/project2/depablo/walt/michrom/project/chr_05/chr_05_02', scratch='/scratch/midway2/erschultz', odir='/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02_copy', N_min=2000, mode='contact_diffusion', update_mode='eig', jobs=20, sparse_format=False, down_sampling=12, its=4, scratch_dir='/scratch/midway2/erschultz/contact_diffusion')
 Loaded xyz with shape (1007, 3620, 3)
-xyz load time: 183.596 s
+xyz load time: 170.947 s
 found 20 total CPUs, 20 available CPUs, using 20
-sc save time: 466.703 s
+sc save time: 454.198 s
 Iteration 0
-gaussian time: 702.991 s
-/tmp/slurmd/job19492971/slurm_script: line 22:  4112 Killed                  python3 diffusion_analysis.py --dir $dir --odir $odir --jobs $jobs --down_sampling $downSampling --its $its --scratch $scratch
