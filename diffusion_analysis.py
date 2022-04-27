@@ -531,7 +531,7 @@ def contact_diffusion():
                                                     stat = 'spearman'))
 
             np.savetxt(osp.join(args.odir_i, 'order.txt'), order, fmt='%i')
-            # plot_eigenvectors(v, xyz, args.odir_i)
+            plot_eigenvectors(v, xyz, args.odir_i)
 
             if args.update_mode == 'eig':
                 sc_contacts = Updates.update_eig_chunk(v[:, 1], osp.join(odir_prev, 'sc_contacts'), args.odir_i)
@@ -544,7 +544,7 @@ def contact_diffusion():
 
         # Plots
         t0 = time.time()
-        # plot_contacts(osp.join(args.odir_i, 'sc_contacts'), order, args)
+        plot_contacts(osp.join(args.odir_i, 'sc_contacts'), order, args)
         tf = time.time()
         print_time(t0, tf, 'plot')
         print('\n')
