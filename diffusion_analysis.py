@@ -488,6 +488,7 @@ def contact_diffusion():
                             vmin = 'min', vmax = 'max')
             tf = time.time()
             print_time(t0, tf, 'distance')
+            print(psutil.virtual_memory())
 
             # compute eigenvectors
             dmap = dmaps.DiffusionMap(D)
