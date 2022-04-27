@@ -16,10 +16,10 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 
 rootName='ContactGNNEnergy9' # change to run multiple bash files at once
-splitSizes='1000-200-0'
-preTransforms='degree-GeneticDistance'
-useEdgeAttr='true'
-milestones='50'
+dirname="/project2/depablo/erschultz/dataset_12_12_21"
+splitSizes='none'
+splitPercents='0.8-0.1-0.1'
+trainingNorm='instance'
 
 
 id=119
