@@ -14,7 +14,7 @@ jobs=20
 downSampling=12
 its=4
 scratch='/scratch/midway2/erschultz'
-chunkSize=400
+chunkSize=300
 plot='true'
 
 cd ~/sequences_to_contact_maps
