@@ -389,7 +389,6 @@ class WeightedSignedConv(MessagePassing):
     def forward(self, x: Union[Tensor, PairTensor], pos_edge_index: Adj,
                 neg_edge_index: Adj, pos_edge_attr: OptTensor = None,
                 neg_edge_attr: OptTensor = None):
-        """"""
         if isinstance(x, Tensor):
             x: PairTensor = (x, x)
 
@@ -447,8 +446,11 @@ class WeightedSignedConv(MessagePassing):
                 f'{self.out_channels}, first_aggr={self.first_aggr},'
                 f'edge_dim={self.edge_dim})')
 
-class GATv2Conv(MessagePassing):
+class WeightedGATv2Conv(MessagePassing):
     """
+    Variant of GATv2Conv that allows for edge features during
+    message passing (instead of just as attention coefficients).
+
     Args:
         in_channels (int or tuple): Size of each input sample, or :obj:`-1` to
             derive the size from the first input(s) to the forward method.
@@ -469,6 +471,7 @@ class GATv2Conv(MessagePassing):
             self-loops to the input graph. (default: :obj:`True`)
         edge_dim (int, optional): Edge feature dimensionality (in case
             there are any). (default: :obj:`None`)
+        edge_dim_MP (bool, optional): True to use edge features in message passing
         fill_value (float or Tensor or str, optional): The way to generate
             edge features of self-loops (in case :obj:`edge_dim != None`).
             If given as :obj:`float` or :class:`torch.Tensor`, edge features of
@@ -482,6 +485,7 @@ class GATv2Conv(MessagePassing):
         share_weights (bool, optional): If set to :obj:`True`, the same matrix
             will be applied to the source and the target node of every edge.
             (default: :obj:`False`)
+
         **kwargs (optional): Additional arguments of
             :class:`torch_geometric.nn.conv.MessagePassing`.
     """
@@ -497,6 +501,7 @@ class GATv2Conv(MessagePassing):
         dropout: float = 0.0,
         add_self_loops: bool = True,
         edge_dim: Optional[int] = None,
+        edge_dim_MP: bool = False,
         fill_value: Union[float, Tensor, str] = 'mean',
         bias: bool = True,
         share_weights: bool = False,
@@ -512,24 +517,29 @@ class GATv2Conv(MessagePassing):
         self.dropout = dropout
         self.add_self_loops = add_self_loops
         self.edge_dim = edge_dim
+        if edge_dim_MP:
+            self.edge_dim_MP = edge_dim
+        else:
+            self.edge_dim_MP = 0
         self.fill_value = fill_value
         self.share_weights = share_weights
 
+
         if isinstance(in_channels, int):
-            self.lin_l = Linear(in_channels, heads * out_channels, bias=bias,
+            self.lin_l = Linear(in_channels + self.edge_dim_MP, heads * out_channels, bias=bias,
                                 weight_initializer='glorot')
             if share_weights:
                 self.lin_r = self.lin_l
             else:
-                self.lin_r = Linear(in_channels, heads * out_channels,
+                self.lin_r = Linear(in_channels + self.edge_dim_MP, heads * out_channels,
                                     bias=bias, weight_initializer='glorot')
         else:
-            self.lin_l = Linear(in_channels[0], heads * out_channels,
+            self.lin_l = Linear(in_channels[0] + self.edge_dim_MP, heads * out_channels,
                                 bias=bias, weight_initializer='glorot')
             if share_weights:
                 self.lin_r = self.lin_l
             else:
-                self.lin_r = Linear(in_channels[1], heads * out_channels,
+                self.lin_r = Linear(in_channels[1] + self.edge_dim_MP, heads * out_channels,
                                     bias=bias, weight_initializer='glorot')
 
         self.att = Parameter(torch.Tensor(1, heads, out_channels))
@@ -563,10 +573,6 @@ class GATv2Conv(MessagePassing):
     def forward(self, x: Union[Tensor, PairTensor], edge_index: Adj,
                 edge_attr: OptTensor = None,
                 return_attention_weights: bool = None):
-        # type: (Union[Tensor, PairTensor], Tensor, OptTensor, NoneType) -> Tensor  # noqa
-        # type: (Union[Tensor, PairTensor], SparseTensor, OptTensor, NoneType) -> Tensor  # noqa
-        # type: (Union[Tensor, PairTensor], Tensor, OptTensor, bool) -> Tuple[Tensor, Tuple[Tensor, Tensor]]  # noqa
-        # type: (Union[Tensor, PairTensor], SparseTensor, OptTensor, bool) -> Tuple[Tensor, SparseTensor]  # noqa
         r"""
         Args:
             return_attention_weights (bool, optional): If set to :obj:`True`,
