@@ -7,16 +7,16 @@
 
 
 
-# cd "/project2/depablo/erschultz/dataset_04_26_22/samples"
+cd "/project2/depablo/erschultz/dataset_04_26_22/samples"
 
-# for i in $( seq 2001 4400)
-# do
-#   echo $i
-#   rm -r "sample${i}"
-# done
+for i in $( seq 2001 4400)
+do
+  echo $i
+  rm -r "sample${i}"
+done
 
 
-cd "/home/erschultz/scratch-midway2/dataset_04_26_22"
+cd "/home/erschultz/scratch-midway2/dataset_04_26_22/samples"
 
 for i in $( seq 2001 4400)
 do
