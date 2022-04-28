@@ -4,6 +4,7 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.stats as ss
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -306,29 +307,16 @@ def test_lammps_load():
     file_path = '/home/erschultz/sequences_to_contact_maps/traj.dump.lammpstrj'
     xyz = lammps_load(file_path)
 
-def main():
-    psia = np.array([[1,2], [4,5], [3,6]])
-    print(psia)
-    chi = np.array([[-1, 2], [0, 3]])
-    a = psia @ chi @ psia.T
-    print(a)
-
-    psib = np.array([[0,1], [6, 7], [4, 5]])
-    print(psib)
-    b = psib @ chi @ psib.T
-    print(b)
-
-    psi = np.stack([psia, psib])
-
-    result = np.einsum('nik,njk->nij', psi @ chi, psi)
-    print(result, result.shape)
+def binom():
+    y = ss.binom.rvs(1000, 0.5, size = 100)
+    print(y)
 
 
 
 if __name__ == '__main__':
-    # main()
+    binom()
     # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
     # test_lammps_load()
     # plot_fixed()
     # test_argpartition(10)
