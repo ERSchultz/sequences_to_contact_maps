@@ -327,8 +327,8 @@ def main():
 
 if __name__ == '__main__':
     # main()
-    edit_argparse()
-    # debugModel('ContactGNNEnergy')
+    # edit_argparse()
+    debugModel('ContactGNNEnergy')
     # test_lammps_load()
     # plot_fixed()
     # test_argpartition(10)

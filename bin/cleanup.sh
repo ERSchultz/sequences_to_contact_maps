@@ -7,9 +7,27 @@
 
 
 
-cd "/project2/depablo/erschultz"
+# cd "/project2/depablo/erschultz/dataset_04_26_22/samples"
 
-rm -r dataset_08_26_21 &
-rm -r dataset_08_29_21 &
+# for i in $( seq 2001 4400)
+# do
+#   echo $i
+#   rm -r "sample${i}"
+# done
 
-wait
+
+cd "/home/erschultz/scratch-midway2/dataset_04_26_22"
+
+for i in $( seq 2001 4400)
+do
+  echo $i
+  rm -r "sample${i}"
+done
+
+
+# cd "/project2/depablo/erschultz/"
+#
+# rm -r dataset_08_26_21 &
+# rm -r dataset_08_29_21 &
+#
+# wait
