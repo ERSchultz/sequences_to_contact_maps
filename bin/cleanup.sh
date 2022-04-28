@@ -1,6 +1,6 @@
 #! /bin/bash
 #SBATCH --job-name=cleanup
-#SBATCH --partition=depablo-ivyb
+#SBATCH --partition=depablo-gpu
 #SBATCH --ntasks=10
 #SBATCH --output=logFiles/cleanup.log
 #SBATCH --time=2:00:00
