@@ -100,7 +100,8 @@ def load_E_S(sample_folder, psi = None, chi = None, save = False, throw_exceptio
                 chi = np.load(chi_path)
             else:
                 chi = None
-        e, s = calculate_E_S(psi, chi)
+        if psi is not None and chi is not None: 
+            e, s = calculate_E_S(psi, chi)
 
         if save and s is not None:
             np.save(osp.join(sample_folder, 's.npy'), s)
