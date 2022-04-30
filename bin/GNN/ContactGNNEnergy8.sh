@@ -21,6 +21,7 @@ m=2048
 yLogTransform='10'
 sparsifyThresholdUpper='none'
 sparsifyThreshold=0.405
+batchSize=1
 
 
 id=156

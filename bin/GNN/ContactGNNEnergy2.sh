@@ -25,6 +25,7 @@ hiddenSizesList='64-64-64'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=1
+batchSize=1
 
 id=151
 for lr in 1e-3

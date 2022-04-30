@@ -23,6 +23,7 @@ useEdgeAttr='true'
 hiddenSizesList='32-32-32'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
+batchSize=1
 
 id=152
 for lr in 1e-3
