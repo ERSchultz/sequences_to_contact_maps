@@ -1,76 +1,42 @@
-Namespace(dir='/project2/depablo/walt/michrom/project/chr_05/chr_05_02', scratch='/scratch/midway2/erschultz', odir='/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02_copy', N_min=2000, mode='contact_diffusion', update_mode='eig', jobs=20, sparse_format=False, down_sampling=12, its=5, scratch_dir='/scratch/midway2/erschultz/contact_diffusion')
 Loaded xyz with shape (1007, 3620, 3)
-xyz load time: 102.593 s
+xyz load time: 100.622 s
 found 28 total CPUs, 20 available CPUs, using 20
-sc save time: 61.584 s
+sc save time: 217.186 s
 Iteration 0
-gaussian time: 102.282 s
 starting gif
-plot time: 53.896 s
-
-
 Iteration 1
-[0.38449418 0.38278347 0.37796627 ... 0.09684861 0.09075484 0.08673389]
-diag time: 314.91 s
-sc_contacts_diag size: 52.8 Gigabytes
-distance time: 90.88 s
-Using epsilon = 0.135
-w [1.         0.11070091 0.0771025  0.07081989 0.06501408]
-
-
-order corr:  0.84
+WARNING: 0 contacts expected at distance [[   0]
+ [3617]
+ [3618]
+ [3619]]
+Using epsilon = 0.223
 Using k = 4
-update time: 582.454 s
 starting gif
 starting gif
-plot time: 104.685 s
-
-
 Iteration 2
-[0.38445874 0.38274786 0.37793063 ... 0.09667157 0.09058831 0.08657444]
-diag time: 289.3 s
-sc_contacts_diag size: 52.8 Gigabytes
-distance time: 88.786 s
-Using epsilon = 0.082
-w [1.         0.42436168 0.31015113 0.26432455 0.25092196]
-
-
-order corr:  -0.84
-Using k = 5
-update time: 569.362 s
+WARNING: 0 contacts expected at distance [[   0]
+ [3617]
+ [3618]
+ [3619]]
+Using epsilon = 0.135
+Using k = 4
 starting gif
 starting gif
-plot time: 102.142 s
-
-
 Iteration 3
-[0.38444733 0.38273655 0.37791963 ... 0.09670618 0.09062142 0.08660658]
-diag time: 299.049 s
-sc_contacts_diag size: 52.8 Gigabytes
-distance time: 83.406 s
-Using epsilon = 0.05
-w [1.0000002  0.8728101  0.7857132  0.75663024 0.7402671 ]
-
-
-order corr:  0.85
-Using k = 5
-update time: 568.321 s
+WARNING: 0 contacts expected at distance [[   0]
+ [3617]
+ [3618]
+ [3619]]
+Using epsilon = 0.135
+Using k = 2
 starting gif
 starting gif
-plot time: 102.905 s
-
-
 Iteration 4
-[0.38435879 0.38264834 0.37783243 ... 0.09667746 0.09059439 0.08658067]
-diag time: 288.718 s
-sc_contacts_diag size: 52.8 Gigabytes
-distance time: 88.561 s
-Using epsilon = 0.011
-Traceback (most recent call last):
-  File "/home/erschultz/sequences_to_contact_maps/diffusion_analysis.py", line 598, in <module>
-    main()
-  File "/home/erschultz/sequences_to_contact_maps/diffusion_analysis.py", line 592, in main
-    contact_diffusion()
-  File "/home/erschultz/sequences_to_contact_maps/diffusion_analysis.py", line 466, in contact_diffusion
-    dmap.compute(5, 0.5)
-RuntimeError: Eigensolver did not converge.
+WARNING: 0 contacts expected at distance [[   0]
+ [3617]
+ [3618]
+ [3619]]
+Using epsilon = 0.135
+Using k = 4
+starting gif
+starting gif
