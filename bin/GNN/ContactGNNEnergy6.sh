@@ -16,9 +16,8 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 
 rootName='ContactGNNEnergy6' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_04_26_22"
-m=2048
-batchSize=1
+dirname="/project2/depablo/erschultz/dataset_04_27_22"
+m=1024
 
 
 id=154

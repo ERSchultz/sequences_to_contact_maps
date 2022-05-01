@@ -16,8 +16,8 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 
 rootName='ContactGNNEnergy1' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_04_26_22"
-m=2048
+dirname="/project2/depablo/erschultz/dataset_04_27_22"
+m=1024
 messagePassing='GAT'
 preTransforms='degree-ContactDistance-GeneticDistance'
 useEdgeAttr='true'
@@ -25,7 +25,6 @@ hiddenSizesList='8-8-8'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
-batchSize=1
 
 id=150
 for lr in 1e-3

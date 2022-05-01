@@ -605,7 +605,7 @@ class ContactGNN(nn.Module):
             input_size *= 2
             if training_norm == 'instance':
                 model.append(gnn.InstanceNorm(input_size))
-            else:
+            elif training_norm is not None:
                 raise Exception(f'Invalid training_norm: {training_norm}')
 
             self.model = gnn.Sequential(inputs, model)
