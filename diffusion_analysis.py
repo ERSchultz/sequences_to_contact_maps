@@ -543,7 +543,12 @@ def contact_diffusion():
             dmap = dmaps.DiffusionMap(D)
             eps = tune_epsilon(dmap, osp.join(args.odir_i, 'tuning.png'))
             dmap.set_kernel_bandwidth(eps)
-            dmap.compute(5, 0.5)
+            try:
+                dmap.compute(5, 0.5)
+            except Exception as e:
+                print(e, file = args.log_file)
+                break # exit loop
+
 
             v = dmap.get_eigenvectors()
             w = dmap.get_eigenvalues()

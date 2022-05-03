@@ -8,16 +8,12 @@
 
 
 
-cd "/project2/depablo/erschultz/"
 
-rm -r dataset_08_26_21 &
-rm -r dataset_08_29_21 &
+cd "/home/erschultz/scratch-midway2/contact_diffusion"
 
-wait
+for i in 1 3 4
+do
+  mv "iteration_${i}" "/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02/contact_diffusion"
+done
 
-cd "/home/erschultz/scratch-midway2/"
-
-rm -r dataset_01_17_22 &
-rm -r dataset_12_12_21 &
-
-wait
+mv out.log "/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02/contact_diffusion"
