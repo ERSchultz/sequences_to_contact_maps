@@ -7,13 +7,13 @@
 
 
 
+cd "/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02/contact_diffusion"
+rm -r iteration_2
 
 
 cd "/home/erschultz/scratch-midway2/contact_diffusion"
 
-for i in 1 3 4
+for i in 0 2
 do
   mv "iteration_${i}" "/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02/contact_diffusion"
 done
-
-mv out.log "/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02/contact_diffusion"
