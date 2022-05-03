@@ -100,7 +100,7 @@ def load_E_S(sample_folder, psi = None, chi = None, save = False, throw_exceptio
                 chi = np.load(chi_path)
             else:
                 chi = None
-        if psi is not None and chi is not None: 
+        if psi is not None and chi is not None:
             e, s = calculate_E_S(psi, chi)
 
         if save and s is not None:
@@ -143,7 +143,7 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None,
         if log_file is not None:
             print('Chi:\n', chi, file = log_file)
 
-    e, s = load_E_S(sample_folder, psi, save = save)
+    e, s = load_E_S(sample_folder, psi, save = save, throw_exception = throw_exception)
 
     return x, psi, chi, e, s, y, ydiag
 

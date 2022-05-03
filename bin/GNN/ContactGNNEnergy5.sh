@@ -19,6 +19,7 @@ rootName='ContactGNNEnergy5' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_04_27_22"
 m=1024
 trainingNorm='instance'
+resumeTraining='true'
 
 
 id=153

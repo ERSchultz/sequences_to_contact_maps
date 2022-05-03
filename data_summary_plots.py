@@ -333,19 +333,29 @@ def plot_genomic_distance_statistics(dataFolder):
             plot_genomic_distance_statistics_inner(dataFolder, ifile, ofile, title, stat = stat)
 
 ### basic plots
-def basic_plots(dataFolder, plot_y = False, plot_s = True, plot_x = True, plot_chi = True):
+def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, plot_chi = True):
     '''Generate basic plots of data in dataFolder.'''
     in_paths = sorted(make_dataset(dataFolder))
     for path in in_paths:
         print(path)
 
-        x, psi, chi, e, s, y, ydiag = load_all(path, data_folder = dataFolder, save = True)
+        x, psi, chi, e, s, y, ydiag = load_all(path, data_folder = dataFolder,
+                                                save = True,
+                                                throw_exception = False)
 
         if plot_y:
             plot_matrix(y, osp.join(path, 'y.png'), vmax = 'mean')
             plot_matrix(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
             y_log = np.log(y + 1e-8)
             plot_matrix(y_log, osp.join(path, 'y_log.png'), title = 'log normalization', vmax = 'max')
+
+            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
+            plt.plot(meanDist)
+            plt.yscale('log')
+            plt.ylabel('Contact Probability')
+            plt.xlabel('Genomic Distance')
+            plt.savefig(osp.join(path, 'meanDist.png'))
+            plt.close()
 
             y_prcnt_path = osp.join(path, 'y_prcnt.npy')
             if osp.exists(y_prcnt_path):
@@ -357,14 +367,16 @@ def basic_plots(dataFolder, plot_y = False, plot_s = True, plot_x = True, plot_c
                 y_diag_batch = np.load(y_diag_batch_path)
                 plot_matrix(y_diag_batch, osp.join(path, 'y_diag_batch.png'), title = 'diag normalization', vmax = 'max')
 
+        if chi is not None:
+            chi_to_latex(chi, ofile = osp.join(path, 'chis.tek'))
+            if plot_chi:
+                plot_matrix(chi, osp.join(path, 'chi.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
-        chi_to_latex(chi, ofile = osp.join(path, 'chis.tek'))
-        if plot_chi:
-            plot_matrix(chi, osp.join(path, 'chi.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
-
-        if plot_s:
-            plot_matrix(s, osp.join(path, 's.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
-            plot_matrix(e, osp.join(path, 'e.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
+        if plot_energy:
+            if s is not None:
+                plot_matrix(s, osp.join(path, 's.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
+            if e is not None:
+                plot_matrix(e, osp.join(path, 'e.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
         if plot_x:
             x_path = osp.join(path, 'x.npy')
@@ -376,15 +388,12 @@ def basic_plots(dataFolder, plot_y = False, plot_s = True, plot_x = True, plot_c
             plot_seq_binary(x, ofile = osp.join(path, 'x.png'))
             # plot_seq_exclusive(x, ofile = osp.join(path, 'x.png'))
 
-        # if plot_mean_dist:
-        #     y = np.load(osp.join(path, 'y.npy'))
-        #     meanDist = genomic_distance_statistics(y)
-
 if __name__ == '__main__':
     dir = '/project2/depablo/erschultz'
-    dataset = 'dataset_01_17_22'
+    dir = '/home/erschultz'
+    dataset = 'dataset_test'
     data_dir = osp.join(dir, dataset)
-    # basic_plots(data_dir, plot_y = True, plot_s = False, plot_x = True)
-    plot_genomic_distance_statistics(data_dir)
+    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False)
+    # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts('/home/eric/sequences_to_contact_maps/dataset_12_11_21')

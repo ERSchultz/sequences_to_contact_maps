@@ -1,5 +1,6 @@
 import os
 import os.path as osp
+import sys
 import time
 
 import matplotlib.pyplot as plt
@@ -9,11 +10,13 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from core_test_train import core_test_train
+from scipy.optimize import minimize
+from sklearn.decomposition import PCA
 from utils.argparse_utils import finalize_opt, get_base_parser, str2list
 from utils.base_networks import AverageTo2d
 from utils.load_utils import load_sc_contacts
 from utils.networks import get_model
-from utils.plotting_utils import plot_matrix
+from utils.plotting_utils import plot_matrix, plot_top_PCs
 from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
                          print_time, triu_to_full)
 from utils.xyz_utils import lammps_load
@@ -308,10 +311,80 @@ def test_lammps_load():
     xyz = lammps_load(file_path)
 
 def binom():
-    y = ss.binom.rvs(1000, 0.5, size = 100)
-    print(y)
+    # p = np.ones((m,m))
+    # for i in range(m):
+    #     for j in range(i):
+    #         p[i,j] = (i+j)/(2*m)
+    #         p[j,i] = (i+j)/(2*m)
+    # print(p)
+    # p = p[np.triu_indices(m)]
+    # print('p', p)
+    #
+    # y = np.zeros_like(p)
+    # n=1000
+    # for i in range(len(p)):
+    #     y[i] = ss.binom.rvs(n, p[i], size = 1)
+    # print('y', y)
+
+    dir = '/home/erschultz/sequences_to_contact_maps/dataset_01_17_22/samples/sample1'
+    y = np.load(osp.join(dir, 'y_diag.npy'))
+    m = len(y)
+    e = np.load(osp.join(dir, 'e.npy'))
+    y = y[np.triu_indices(m)]
+    n = np.max(y)
+    print(y, y.shape)
+
+    p = y/n
+    loss = binom_nll(p, y, n, 100)
+    print('p loss', loss)
+    p = triu_to_full(p)
+    print(p, p.shape)
+    plot_matrix(p, osp.join(dir, 'p.png'), title = None, vmin = 'min', vmax = 'max')
+    plot_top_PCs(p, 'p', dir, sys.stdout, count = 4, plot = True, verbose = True)
 
 
+    for i in [1,2,3,4,5,10,15,100,150,200]:
+        # get y top i PCs
+        pca = PCA(n_components = i)
+        p_transform = pca.fit_transform(p)
+        p_i = pca.inverse_transform(p_transform)
+        if i == 1:
+            p_1 = p_i
+        loss = binom_nll(p_i[np.triu_indices(m)], y, n, 100)
+        print(f'p_{i} loss', loss)
+        plot_matrix(p_i, osp.join(dir, f'p_rank_{i}.png'), vmin = 'min', vmax = 'max', title = f'p rank {i}')
+
+        plt.scatter(p_i[np.triu_indices(m)], e[np.triu_indices(m)])
+        plt.ylabel('e')
+        plt.xlabel('p')
+        plt.savefig(osp.join(dir, f'p_rank_{i} vs e.png'))
+        plt.close()
+
+
+
+    # print('-'*30)
+    # lmbda = 100
+    # model = minimize(binom_nll, np.ones_like(y) / 2, args = (y, n, lmbda),
+    #                 bounds = [(0,1)]*len(y))
+    # print(model)
+
+def binom_nll(p, y, n, lmbda = 100):
+    print(p)
+    ll = 0
+    for i in range(len(p)):
+        # print(p[i], y[i])
+        left = p[i]**y[i]
+        right = (1 - p[i])**(n - y[i])
+        prod = left*right
+        ll += np.log(prod)
+    nll = -1 * ll
+
+
+    p_full = triu_to_full(p)
+    reg = lmbda * np.linalg.norm(p_full, 'nuc')
+    print(nll, reg)
+
+    return nll + reg
 
 if __name__ == '__main__':
     binom()
