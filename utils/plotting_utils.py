@@ -300,7 +300,7 @@ def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
             cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                      [(0,    'white'),
                                                       (1,    'red')], N=126)
-    elif cmap == 'blue-red':
+    elif cmap.replace('-', '').lower() == 'bluered':
         cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                  [(0, 'blue'),
                                                  (0.5, 'white'),
@@ -871,6 +871,7 @@ def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2
     pca = PCA()
     try:
         pca = pca.fit(inp/np.std(inp, axis = 0))
+        #
     except ValueError:
         pca = pca.fit(inp)
 

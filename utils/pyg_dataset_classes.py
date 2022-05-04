@@ -143,7 +143,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             if self.output != 'contact':
                 del graph.contact_map
 
-            if self.output.startswith('energy'):
+            if self.output is not None and self.output.startswith('energy'):
                 # first look for s
                 s_path1 = osp.join(raw_folder, 's.npy')
                 s_path2 = osp.join(raw_folder, 's_matrix.txt')

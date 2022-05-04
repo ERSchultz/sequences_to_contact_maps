@@ -17,7 +17,7 @@ from scipy.sparse.csgraph import laplacian
 from sklearn.cluster import KMeans
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import pairwise_distances, silhouette_score
-from sklearn.metrics.pairwise import cosine_distances
+from sklearn.metrics.pairwise import cosine_distances, euclidean_distances
 from utils.argparse_utils import str2bool, str2None
 from utils.load_utils import save_sc_contacts
 from utils.plotting_utils import plot_matrix, plot_sc_contact_maps_inner
@@ -41,6 +41,8 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample92'):
                         help='minimum sample index to keep')
     parser.add_argument('--mode', type=str, default='contact_diffusion')
     parser.add_argument('--update_mode', type=str, default='eig')
+    parser.add_argument('--k', type=int, default=1,
+                        help='k for update_mode')
     parser.add_argument('--jobs', type=int, default=15)
     parser.add_argument('--sparse_format', action='store_true',
                         help='True to store sc_contacts in sparse format')
@@ -62,7 +64,7 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample92'):
     if osp.exists(odir):
         rmtree(odir)
 
-    args.scratch_dir = osp.join(args.scratch, args.mode)
+    args.scratch_dir = osp.join(args.scratch, f'{args.mode}_{args.update_mode}{args.k}')
     if osp.exists(args.scratch_dir):
         rmtree(args.scratch_dir)
     os.mkdir(args.scratch_dir, mode = 0o755)
@@ -156,8 +158,29 @@ class Updater():
 
         return sc_contacts
 
-    def update_kNN(self, v, sc_contacts):
+    def update_kNN_chunk(self, v, dir, odir):
         raise NotImplementedError
+        t0 = time.time()
+        N = len(v)
+        odir = osp.join(odir, 'sc_contacts')
+        if not osp.exists(odir):
+            os.mkdir(odir, mode = 0o755)
+
+        # compute pairwise distance in v space
+        D = euclidean_distances(v, v)
+
+        # merge adjacent contacts
+        for i in range(N):
+
+
+            # calculate average
+            y_new = np.mean(y_list, axis = 0)
+            np.save(osp.join(odir, f'y_sc_{i}.npy'), y_new)
+
+
+
+        tf = time.time()
+        print_time(t0, tf, 'update', file = self.log_file)
 
 def tune_epsilon(input, ofile):
     X = np.arange(-12, 20, 1)
@@ -514,7 +537,7 @@ def contact_diffusion():
 
     order = None
     odir_prev = None
-    updater = Updater(1, args.log_file)
+    updater = Updater(args.k, args.log_file)
     for it in range(args.its+1):
         args.odir_i = osp.join(args.scratch_dir, f'iteration_{it}')
         os.mkdir(args.odir_i, mode = 0o755)
@@ -567,7 +590,9 @@ def contact_diffusion():
                                         osp.join(odir_prev, 'sc_contacts'),
                                         args.odir_i)
             elif args.update_mode == 'knn':
-                sc_contacts = updater.update_kNN(v, sc_contacts)
+                sc_contacts = updater.update_kNN(v[:,1:4],
+                                        osp.join(odir_prev, 'sc_contacts'),
+                                        args.odir_i)
         else:
             # apply gaussian
             GP = GaussianProcessing(args)
