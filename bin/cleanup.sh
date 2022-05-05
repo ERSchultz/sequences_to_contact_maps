@@ -6,7 +6,6 @@
 #SBATCH --time=2:00:00
 
 
-
 cd "/home/erschultz/scratch-midway2"
 
 mv "contact_diffusion_kNN3" "/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02"
