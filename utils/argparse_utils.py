@@ -512,20 +512,30 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
     if not osp.exists(scratch_sample_dir):
         os.mkdir(scratch_sample_dir, mode = 0o700)
     for file in os.listdir(sample_dir):
-        # skip transferring certain files if not needed (saves space on scratch and move time)
-        if file == 'xx.npy' and not toxx:
+        move_file = False
+        # change to True to move file
+        # defaults to not moving file (saves space on scratch and move time)
+
+        if file == 'xx.npy' and toxx:
             # only need xx.npy if toxx is True
-            pass
-        elif file == 'y_prcnt.npy' and y_preprocessing != 'prcnt':
+            move_file = True
+        elif file == 'y.npy' and y_preprocessing is None:
+            # only need y.npy if not using preprocessing
+            move_file = True
+        elif file == 'y_prcnt.npy' and y_preprocessing == 'prcnt':
             # only need y_prcnt.npy if using percentile preprocessing
-            pass
-        elif file == 'y_diag_batch.npy' and y_preprocessing != 'diag_batch':
+            move_file = True
+        elif file == 'y_diag.npy' and y_preprocessing == 'diag':
+            # only need y_diag.npy if using diagonal preprocessing
+            move_file = True
+        elif file == 'y_diag_batch.npy' and y_preprocessing == 'diag_batch':
             # only need y_diag_batch.npy if using batch diagonal preprocessing
-            pass
-        elif (file == 's.npy' or file == 'e.npy') and not output_mode.startswith('energy'):
+            move_file = True
+        elif (file == 's.npy' or file == 'e.npy') and output_mode.startswith('energy'):
             # only need s.npy if neural net output is energy
-            pass
-        elif file.endswith('npy'):
+            move_file = True
+
+        if move_file:
             # only move .npy files
             source_file = osp.join(sample_dir, file)
             destination_file = osp.join(scratch_sample_dir, file)

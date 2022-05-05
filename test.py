@@ -84,7 +84,7 @@ def debugModel(model_type):
 
     # architecture
     opt.m = 1024
-    opt.y_preprocessing = 'diag_batch'
+    opt.y_preprocessing = None
     # opt.split_percents=[0.6666,0.3333,0.0]
     opt.split_percents = None
     opt.split_sizes=[1, 2, 0]
@@ -135,7 +135,7 @@ def debugModel(model_type):
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
         opt.loss = 'mse'
-        opt.y_norm = None
+        opt.y_norm = 'instance'
         opt.message_passing='gat'
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym'
@@ -154,7 +154,7 @@ def debugModel(model_type):
         opt.split_edges_for_feature_augmentation = False
         opt.sparsify_threshold = 0.176
         opt.sparsify_threshold_upper = None
-        opt.y_log_transform = 'ln'
+        opt.y_log_transform = None
         opt.head_architecture = 'bilinear_asym'
         opt.head_hidden_sizes_list = None
         opt.crop=[0,4]
@@ -177,7 +177,7 @@ def debugModel(model_type):
     opt.print_params = False
     opt.gpus = 0
     opt.delete_root = True
-    opt.use_scratch = False
+    opt.use_scratch = True
     opt.print_mod = 1
     # opt.id = 12
     # opt.resume_training = True
@@ -468,9 +468,9 @@ def plot_e_from_s():
 
 if __name__ == '__main__':
     # plot_e_from_s()
-    binom()
+    # binom()
     # edit_argparse()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # test_lammps_load()
     # plot_fixed()
     # test_argpartition(10)

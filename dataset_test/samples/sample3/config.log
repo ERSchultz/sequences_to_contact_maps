@@ -1,3 +1,0 @@
-Namespace(TICG_seed=None, chi='polynomial', chi_seed=None, default_config='default_config.json', diag=True, diag_bins=20, dump_frequency=50000, dump_stats_frequency=None, e=None, ensure_distinguishable=True, fill_diag=None, fill_offdiag=None, format='%.3e', goal_specified=True, k=4, load_configuration_filename='input1024.xyz', m=1024, max_chi=1.0, max_diag_chi=0.2, min_chi=-1.0, n_sweeps=2000, ofile='config.json', relabel=None, sample_folder=None, save_chi=True, save_chi_for_max_ent=False, use_ematrix=True, use_ground_truth_TICG_seed=None, use_ground_truth_chi=False, use_ground_truth_diag_chi=False, use_smatrix=False)
-Rank of chi: 9
-psi loaded with shape (1024, 10)
