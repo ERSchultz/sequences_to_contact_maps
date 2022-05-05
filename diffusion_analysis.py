@@ -72,7 +72,6 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample92'):
 
     args.log_file_path = osp.join(args.scratch_dir, 'out.log')
     args.log_file = open(args.log_file_path, 'a')
-    args.log_file = sys.stdout
 
     args.update_mode = args.update_mode.lower()
 
