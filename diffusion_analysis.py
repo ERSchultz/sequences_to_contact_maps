@@ -40,18 +40,18 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample92'):
     parser.add_argument('--N_min', type=int, default=2000,
                         help='minimum sample index to keep')
     parser.add_argument('--mode', type=str, default='contact_diffusion')
-    parser.add_argument('--update_mode', type=str, default='eig')
-    parser.add_argument('--k', type=int, default=1,
+    parser.add_argument('--update_mode', type=str, default='kNN')
+    parser.add_argument('--k', type=int, default=3,
                         help='k for update_mode')
     parser.add_argument('--jobs', type=int, default=15)
     parser.add_argument('--sparse_format', action='store_true',
                         help='True to store sc_contacts in sparse format')
-    parser.add_argument('--down_sampling', type=int, default=2)
+    parser.add_argument('--down_sampling', type=int, default=5)
     parser.add_argument('--its', type=int, default=1,
                         help='number of iterations')
     parser.add_argument('--chunk_size', type=int, default=500,
                         help='chunk size for pairwise_distances_chunk')
-    parser.add_argument('--plot', type=str2bool, default=False,
+    parser.add_argument('--plot', type=str2bool, default=True,
                         help='True to plot')
 
     args = parser.parse_args()
@@ -60,17 +60,21 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample92'):
     elif not osp.exists(args.odir):
         os.mkdir(args.odir, mode = 0o755)
 
-    odir = osp.join(args.odir, args.mode)
+    fname = f'{args.mode}_{args.update_mode}{args.k}'
+    odir = osp.join(args.odir, fname)
     if osp.exists(odir):
         rmtree(odir)
 
-    args.scratch_dir = osp.join(args.scratch, f'{args.mode}_{args.update_mode}{args.k}')
+    args.scratch_dir = osp.join(args.scratch, fname)
     if osp.exists(args.scratch_dir):
         rmtree(args.scratch_dir)
     os.mkdir(args.scratch_dir, mode = 0o755)
 
     args.log_file_path = osp.join(args.scratch_dir, 'out.log')
     args.log_file = open(args.log_file_path, 'a')
+    args.log_file = sys.stdout
+
+    args.update_mode = args.update_mode.lower()
 
     print(args, file = args.log_file)
     print(args)
@@ -159,7 +163,11 @@ class Updater():
         return sc_contacts
 
     def update_kNN_chunk(self, v, dir, odir):
-        raise NotImplementedError
+        '''
+        Update sc contact maps based on kNN in eigenspace v.
+
+        Only loads a chunk of sc_contacts of size (k+1) into RAM at a time.
+        '''
         t0 = time.time()
         N = len(v)
         odir = osp.join(odir, 'sc_contacts')
@@ -171,13 +179,14 @@ class Updater():
 
         # merge adjacent contacts
         for i in range(N):
-
+            y_list = []
+            nn = np.argpartition(D[i], self.k+1)[:self.k+1] # include self + kNN
+            for j in nn:
+                y_list.append(np.load(osp.join(dir, f'y_sc_{j}.npy')))
 
             # calculate average
             y_new = np.mean(y_list, axis = 0)
             np.save(osp.join(odir, f'y_sc_{i}.npy'), y_new)
-
-
 
         tf = time.time()
         print_time(t0, tf, 'update', file = self.log_file)
@@ -283,7 +292,7 @@ def plot_eigenvectors(v, xyz, odir):
     plt.savefig(osp.join(odir, 'k_means_sil_score.png'.strip('_')))
     plt.close()
     k = np.argmax(sil_scores) + 2
-    print(f'Using k = {k}')
+    print(f'Using k = {k} for k_means')
     kmeans = KMeans(n_clusters=k).fit(X)
 
     # plot average contact map within cluster
@@ -563,10 +572,10 @@ def contact_diffusion():
             print_time(t0, tf, 'distance', file = args.log_file)
 
             # compute eigenvectors
-            dmap = dmaps.DiffusionMap(D)
-            eps = tune_epsilon(dmap, osp.join(args.odir_i, 'tuning.png'))
-            dmap.set_kernel_bandwidth(eps)
             try:
+                dmap = dmaps.DiffusionMap(D)
+                eps = tune_epsilon(dmap, osp.join(args.odir_i, 'tuning.png'))
+                dmap.set_kernel_bandwidth(eps)
                 dmap.compute(5, 0.5)
             except Exception as e:
                 print(e, file = args.log_file)
@@ -590,7 +599,7 @@ def contact_diffusion():
                                         osp.join(odir_prev, 'sc_contacts'),
                                         args.odir_i)
             elif args.update_mode == 'knn':
-                sc_contacts = updater.update_kNN(v[:,1:4],
+                sc_contacts = updater.update_kNN_chunk(v[:,1:4],
                                         osp.join(odir_prev, 'sc_contacts'),
                                         args.odir_i)
         else:
