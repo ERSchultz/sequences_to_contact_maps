@@ -7,7 +7,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .argparse_utils import str2bool, str2list
+from .argparse_utils import ArgparserConverter
 from .dataset_classes import Names, make_dataset
 from .neural_net_utils import get_data_loaders
 from .utils import (diagonal_preprocessing, genomic_distance_statistics,
@@ -16,23 +16,24 @@ from .utils import (diagonal_preprocessing, genomic_distance_statistics,
 
 def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
+    AC = ArgparserConverter()
     parser.add_argument('--input_folder', type=str, default='/home/eric/dataset_test',
                         help='Location of input data')
     parser.add_argument('--output_folder', type=str, default='/home/eric/dataset_test2',
                         help='Location to write data to')
     parser.add_argument('--min_sample', type=int, default=0,
                         help='minimum sample id')
-    parser.add_argument('--verbose', type=str2bool, default=True,
+    parser.add_argument('--verbose', type=AC.str2bool, default=True,
                         help='True to print')
 
     # dataloader args
-    parser.add_argument('--split_percents', type=str2list,
+    parser.add_argument('--split_percents', type=AC.str2list,
                         help='Train, val, test split for dataset (percents)')
-    parser.add_argument('--split_sizes', type=str2list, default=[-1, 200, 0],
+    parser.add_argument('--split_sizes', type=AC.str2list, default=[-1, 200, 0],
                         help='Train, val, test split for dataset (counts), -1 for remainder')
-    parser.add_argument('--random_split', type=str2bool, default=False,
+    parser.add_argument('--random_split', type=AC.str2bool, default=False,
                         help='True to use random train, val, test split')
-    parser.add_argument('--shuffle', type=str2bool, default=True,
+    parser.add_argument('--shuffle', type=AC.str2bool, default=True,
                         help='Whether or not to shuffle dataset')
     parser.add_argument('--num_workers', type=int, default=1,
                         help='Number of threads for data loader to use')
@@ -46,13 +47,13 @@ def getArgs():
                         help='Size of sample for preprocessing statistics')
     parser.add_argument('--seed', type=int, default=42,
                         help='Random seed to use. Default: 42')
-    parser.add_argument('--overwrite', type=str2bool, default=False,
+    parser.add_argument('--overwrite', type=AC.str2bool, default=False,
                         help='Whether or not to overwrite existing preprocessing files')
-    parser.add_argument('--percentiles', type=str2list,
+    parser.add_argument('--percentiles', type=AC.str2list,
                         help='Percentiles to use for percentile preprocessing (None to skip)')
-    parser.add_argument('--diag_batch', type=str2bool, default=False,
+    parser.add_argument('--diag_batch', type=AC.str2bool, default=False,
                         help='True to use batch for diag norm (in addition to instance;)')
-    parser.add_argument('--use_x2xx', type=str2bool, default=False,
+    parser.add_argument('--use_x2xx', type=AC.str2bool, default=False,
                         help='True to calculate x2xx')
 
     args = parser.parse_args()

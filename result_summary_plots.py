@@ -9,7 +9,7 @@ import statsmodels.api as sm
 from sklearn.decomposition import PCA
 from sklearn.linear_model import Lasso, LinearRegression, Ridge
 from sklearn.metrics import mean_squared_error
-from utils.argparse_utils import str2bool, str2int, str2None
+from utils.argparse_utils import ArgparserConverter
 from utils.energy_utils import s_to_E
 from utils.load_utils import load_all, load_final_max_ent_S
 from utils.plotting_utils import plot_matrix, plot_top_PCs
@@ -19,20 +19,24 @@ from utils.utils import LETTERS, DiagonalPreprocessing, pearson_round
 
 def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
+    AC = ArgparserConverter()
+
     # parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
     parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
     parser.add_argument('--dataset', type=str, help='Location of input data')
-    parser.add_argument('--sample', type=str2int, default=40)
-    parser.add_argument('--sample_folder', type=str2None, default=None, help='None to infer from --dataset and --sample')
-    parser.add_argument('--method', type=str2None, default='GNN', help = 'parametrization method')
-    parser.add_argument('--model_id', type=str2int, help='model ID if method == GNN')
+    parser.add_argument('--sample', type=AC.str2int, default=40)
+    parser.add_argument('--sample_folder', type=AC.str2None, default=None, help='None to infer from --dataset and --sample')
+    parser.add_argument('--method', type=AC.str2None, default='GNN', help = 'parametrization method')
+    parser.add_argument('--model_id', type=AC.str2int, help='model ID if method == GNN')
     parser.add_argument('--linear_model', type=str, default='ols', help='type of linear model {ols, ridge, lasso}')
     parser.add_argument('--alpha', type=float, default=1.0, help='alpha for linear model')
-    parser.add_argument('--k', type=str2int, help='k for method')
-    parser.add_argument('--plot', type=str2bool, default=False, help='True to plot s_hat and s_dif')
-    parser.add_argument('--experimental', type=str2bool, default=False, help='True if using experimental data (ground truth data missing)')
-    parser.add_argument('--overwrite', type=str2bool, default=False, help='True to overwrite existing results')
-    parser.add_argument('--robust', type=str2bool, default=False, help='True for robust PCA analysis')
+    parser.add_argument('--k', type=AC.str2int, help='k for method')
+    parser.add_argument('--plot', type=AC.str2bool, default=False, help='True to plot s_hat and s_dif')
+    parser.add_argument('--experimental', type=AC.str2bool, default=False, help='True if using experimental data (ground truth data missing)')
+    parser.add_argument('--overwrite', type=AC.str2bool, default=False, help='True to overwrite existing results')
+    parser.add_argument('--robust', type=AC.str2bool, default=False, help='True for robust PCA analysis')
+    parser.add_argument('--scale', type=AC.str2bool, default=False, help='True to scale data for PCA')
+    parser.add_argument('--svd', type=AC.str2bool, default=False, help='True to use svd instead of PCA')
 
     args = parser.parse_args()
     args.data_folder = osp.join(args.root, args.dataset)
@@ -67,6 +71,10 @@ def getArgs():
         args.odir = osp.join(args.sample_folder, f'results_GNN-{args.model_id}')
     else:
         args.odir = osp.join(args.sample_folder, f'results_{args.method}-{args.k}')
+    if args.scale:
+        args.odir += '-scale'
+    if args.svd:
+        args.odir += '-svd'
     if not osp.exists(args.odir):
         os.mkdir(args.odir, mode = 0o755)
 
@@ -276,7 +284,6 @@ def load_method_S(root, sample_folder, sample, method, k, model_id):
     if method == 'GNN':
         # look in results
         gnn_path = osp.join(root, f'results/ContactGNNEnergy/{model_id}/sample{sample}/energy_hat.txt')
-        print(gnn_path)
         if osp.exists(gnn_path):
             return np.loadtxt(gnn_path)
         else:
@@ -299,12 +306,20 @@ def load_method_S(root, sample_folder, sample, method, k, model_id):
 
 def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
     # calculate PCA
-    PC_y = plot_top_PCs(y, 'y', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
-    PC_y_diag = plot_top_PCs(ydiag, 'y_diag', args.odir, args.log_file, count = 6, plot = args.plot_baseline, verbose = args.verbose)
+    PC_y = plot_top_PCs(y, 'y', args.odir, args.log_file, count = 2,
+                        plot = args.plot_baseline, verbose = args.verbose,
+                        scale = args.scale, svd = args.svd)
+    PC_y_diag = plot_top_PCs(ydiag, 'y_diag', args.odir, args.log_file, count = 6,
+                        plot = args.plot_baseline, verbose = args.verbose,
+                        scale = args.scale, svd = args.svd)
     y_log = np.log(y + 1e-8)
-    PC_y_log = plot_top_PCs(y_log, 'y_log', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+    PC_y_log = plot_top_PCs(y_log, 'y_log', args.odir, args.log_file, count = 2,
+                        plot = args.plot_baseline, verbose = args.verbose,
+                        scale = args.scale, svd = args.svd)
     p = ydiag/np.max(ydiag)
-    PC_p = plot_top_PCs(p, 'p', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+    PC_p = plot_top_PCs(p, 'p', args.odir, args.log_file, count = 2,
+                        plot = args.plot_baseline, verbose = args.verbose,
+                        scale = args.scale, svd = args.svd)
     stat = pearson_round(PC_y[0], PC_y_log[0])
     print("Correlation between PC 1 of y and y_log: ", stat, file = args.log_file)
     stat = pearson_round(PC_y_diag[0], PC_y_log[0])
@@ -340,7 +355,9 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
         plot_matrix(S, osp.join(args.odir, 'S.png'), vmin = 'min', vmax = 'max', title = 'S')
 
 
-        PC_L_log = plot_top_PCs(L_log, 'L_log', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+        PC_L_log = plot_top_PCs(L_log, 'L_log', args.odir, args.log_file, count = 2,
+                        plot = args.plot_baseline, verbose = args.verbose,
+                        scale = args.scale, svd = args.svd)
         stat = pearson_round(PC_L_log[0], PC_y[0])
         print("Correlation between PC 1 of L_log and Y: ", stat, file = args.log_file)
         stat = pearson_round(PC_L_log[1], PC_y[1])
@@ -368,7 +385,9 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
         L_diag = DiagonalPreprocessing.process(L, meanDist)
         plot_matrix(L_diag, osp.join(args.odir, 'L_diag.png'), vmin = 'min', vmax = 'max', title = 'L_diag')
         np.save(osp.join(args.odir, 'L_diag.npy'), L_diag)
-        PC_L_diag = plot_top_PCs(L_diag, 'L_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+        PC_L_diag = plot_top_PCs(L_diag, 'L_diag', args.odir, args.log_file, count = 2,
+                        plot = args.plot_baseline, verbose = args.verbose,
+                        scale = args.scale, svd = args.svd)
         stat = pearson_round(PC_L_diag[0], PC_y_diag[0])
         print("Correlation between PC 1 of L_diag and Y_diag: ", stat, file = args.log_file)
         stat = pearson_round(PC_L_diag[1], PC_y_diag[1])
@@ -379,7 +398,10 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
         for i in [1,2,5,10,15,100]:
             # get y top i PCs
             pca = PCA(n_components = i)
-            y_transform = pca.fit_transform(y/np.std(y, axis = 0))
+            if args.scale:
+                y_transform = pca.fit_transform(y/np.std(y, axis = 0))
+            else:
+                y_transform = pca.fit_transform(y)
             y_i = pca.inverse_transform(y_transform)
             plot_matrix(y_i, osp.join(args.odir, f'y_rank_{i}.png'), vmax = 'max', title = f'Y rank {i}')
 
@@ -387,7 +409,10 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
         for i in [1,2,5,10,15,100]:
             # get y_diag top i PCs
             pca = PCA(n_components = i)
-            y_transform = pca.fit_transform(ydiag/np.std(ydiag, axis = 0))
+            if args.scale:
+                y_transform = pca.fit_transform(ydiag/np.std(ydiag, axis = 0))
+            else:
+                y_transform = pca.fit_transform(ydiag)
             y_i = pca.inverse_transform(y_transform)
             plot_matrix(y_i, osp.join(args.odir, f'y_diag_rank_{i}.png'), vmax = 'max', title = f'Y_diag rank {i}')
             if i == 1:
@@ -395,7 +420,9 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
 
 
     if s is not None:
-        PC_s = plot_top_PCs(s, 's', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+        PC_s = plot_top_PCs(s, 's', args.odir, args.log_file, count = 2,
+                        plot = args.plot_baseline, verbose = args.verbose,
+                        scale = args.scale, svd = args.svd)
         print(f'Rank of S: {np.linalg.matrix_rank(s)}', file = args.log_file)
         if args.method is None:
             stat = pearson_round(PC_y[0], PC_s[0])
@@ -406,7 +433,9 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
             print("Correlation between PC 2 of y_diag and S: ", stat, file = args.log_file)
 
             s_sym = (s + s.T) / 2
-            PC_s_sym = plot_top_PCs(s_sym, 's_sym', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+            PC_s_sym = plot_top_PCs(s_sym, 's_sym', args.odir, args.log_file, count = 2,
+                        plot = args.plot_baseline, verbose = args.verbose,
+                        scale = args.scale, svd = args.svd)
             print(f'Rank: {np.linalg.matrix_rank(s)}', file = args.log_file)
             stat = pearson_round(PC_y[0], PC_s_sym[0])
             print("Correlation between PC 1 of y and S_sym: ", stat, file = args.log_file)
@@ -421,7 +450,9 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
 
 
     if e is not None:
-        PC_e = plot_top_PCs(e, 'e', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
+        PC_e = plot_top_PCs(e, 'e', args.odir, args.log_file, count = 2,
+                        plot = args.plot_baseline, verbose = args.verbose,
+                        scale = args.scale, svd = args.svd)
         print(f'Rank of E: {np.linalg.matrix_rank(e)}', file = args.log_file)
         if args.method is None:
             stat = pearson_round(PC_y[0], PC_e[0])
@@ -449,7 +480,9 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
 
 
     if s_hat is not None:
-        PC_s_hat = plot_top_PCs(s_hat, 's_hat', args.odir, args.log_file, count = 2, plot = True, verbose = True)
+        PC_s_hat = plot_top_PCs(s_hat, 's_hat', args.odir, args.log_file, count = 2,
+                        plot = True, verbose = True, scale = args.scale, svd = args.svd)
+
         stat = pearson_round(PC_y_diag[0], PC_s_hat[0])
         print("Correlation between PC 1 of y_diag and S_hat: ", stat, file = args.log_file)
         for zero_index, one_index in enumerate([1,2,3]):
@@ -457,7 +490,8 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
             print(f"Correlation between PC {one_index} of S and S_hat: ", stat, file = args.log_file)
 
     if e_hat is not None:
-        PC_e_hat = plot_top_PCs(e_hat, 'e_hat', args.odir, args.log_file, count = 2, plot = True, verbose = True)
+        PC_e_hat = plot_top_PCs(e_hat, 'e_hat', args.odir, args.log_file, count = 2,
+                        plot = True, verbose = True, scale = args.scale, svd = args.svd)
         stat = pearson_round(PC_y_diag[0], PC_e_hat[0])
         print("Correlation between PC 1 of y_diag and E: ", stat, file = args.log_file)
         for zero_index, one_index in enumerate([1,2,3]):
@@ -471,7 +505,6 @@ def main():
     ## load data ##
     x, _, chi, e, s, y, ydiag = load_all(args.sample_folder, True, args.data_folder, args.log_file, experimental = args.experimental, throw_exception = False)
     plot_matrix(e, ofile = osp.join(args.sample_folder, 'e.png'), title = 'E', vmax = 'max', vmin = 'min', cmap = 'blue-red')
-
 
 
     if args.method is not None:

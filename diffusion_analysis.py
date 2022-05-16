@@ -18,7 +18,7 @@ from sklearn.cluster import KMeans
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import pairwise_distances, silhouette_score
 from sklearn.metrics.pairwise import cosine_distances, euclidean_distances
-from utils.argparse_utils import str2bool, str2None
+from utils.argparse_utils import ArgparserConverter
 from utils.load_utils import save_sc_contacts
 from utils.plotting_utils import plot_matrix, plot_sc_contact_maps_inner
 from utils.utils import (DiagonalPreprocessing, pearson_round, print_size,
@@ -31,9 +31,11 @@ import dmaps  # https://github.com/ERSchultz/dmaps
 
 def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample92'):
     parser = argparse.ArgumentParser(description='Base parser')
+    AC = ArgparserConverter()
+
     parser.add_argument('--dir', type=str, default=default_dir,
                         help='location of data')
-    parser.add_argument('--scratch', type=str2None, default='/home/erschultz/scratch',
+    parser.add_argument('--scratch', type=AC.str2None, default='/home/erschultz/scratch',
                         help='scratch dir')
     parser.add_argument('--odir', type=str,
                         help='location to write to')
@@ -51,7 +53,7 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample92'):
                         help='number of iterations')
     parser.add_argument('--chunk_size', type=int, default=500,
                         help='chunk size for pairwise_distances_chunk')
-    parser.add_argument('--plot', type=str2bool, default=True,
+    parser.add_argument('--plot', type=AC.str2bool, default=True,
                         help='True to plot')
 
     args = parser.parse_args()
@@ -229,7 +231,7 @@ def tune_epsilon(input, ofile):
     coef = np.round(best_reg.coef_[0], 3)
     intercept = np.round(best_reg.intercept_, 3)
 
-    eps_final = np.round(np.exp(np.mean(slice_X)), 3)
+    eps_final = np.exp(np.mean(slice_X))
     print(f'Using epsilon = {eps_final}')
 
     # plot results

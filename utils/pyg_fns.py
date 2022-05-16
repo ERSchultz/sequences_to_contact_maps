@@ -203,12 +203,14 @@ class GeneticDistance(BaseTransform):
     Note that GeneticDistance doesn't assume data.pos exists while Distance does
     '''
     def __init__(self, norm = True, max_val = None, cat = True,
-                split_edges = False, convert_to_attr = False):
+                split_edges = False, convert_to_attr = False,
+                log = False):
         self.norm = norm
         self.max = max_val
         self.cat = cat
         self.split_edges = split_edges # bool
         self.convert_to_attr = convert_to_attr # bool, converts to 2d array
+        self.log = False # apply ln transform
 
 
     def __call__(self, data):
@@ -225,6 +227,8 @@ class GeneticDistance(BaseTransform):
             dist = torch.norm(pos[col] - pos[row], p=2, dim=-1)
             if self.norm and dist.numel() > 0:
                 dist = dist / (dist.max() if self.max is None else self.max)
+            if self.log:
+                dist = np.log(dist)
             if self.convert_to_attr:
                 dist = dist.reshape(-1, 1)
 
@@ -243,6 +247,8 @@ class GeneticDistance(BaseTransform):
             dist = torch.norm(pos[col] - pos[row], p=2, dim=-1)
             if self.norm and dist.numel() > 0:
                 dist = dist / (dist.max() if self.max is None else self.max)
+            if self.log:
+                dist = np.log(dist)
             if self.convert_to_attr:
                 dist = dist.reshape(-1, 1)
 
@@ -258,6 +264,8 @@ class GeneticDistance(BaseTransform):
 
             if self.norm and dist.numel() > 0:
                 dist = dist / (dist.max() if self.max is None else self.max)
+            if self.log:
+                dist = np.log(dist)
 
             if pseudo is not None and self.cat:
                 pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo

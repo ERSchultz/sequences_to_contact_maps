@@ -20,29 +20,30 @@ from .pyg_fns import (AdjPCATransform, AdjTransform, ContactDistance, Degree,
 def get_base_parser():
     '''Helper function that returns base parser'''
     parser = argparse.ArgumentParser(description='Base parser', fromfile_prefix_chars='@')
+    AC = ArgparserConverter()
 
     # GNN pre-processing args
-    parser.add_argument('--GNN_mode', type=str2bool, default=False,
+    parser.add_argument('--GNN_mode', type=AC.str2bool, default=False,
                         help='True to use GNNs (uses pytorch_geometric in core_test_train)')
-    parser.add_argument('--transforms', type=str2list, default=[],
+    parser.add_argument('--transforms', type=AC.str2list, default=[],
                         help='list of transforms to use for GNN')
-    parser.add_argument('--pre_transforms', type=str2list, default=[],
+    parser.add_argument('--pre_transforms', type=AC.str2list, default=[],
                         help='list of pre-transforms to use for GNN')
-    parser.add_argument('--sparsify_threshold', type=str2float,
+    parser.add_argument('--sparsify_threshold', type=AC.str2float,
                         help='remove all edges with weight < threshold (None to do nothing)')
-    parser.add_argument('--sparsify_threshold_upper', type=str2float,
+    parser.add_argument('--sparsify_threshold_upper', type=AC.str2float,
                         help='remove all edges with weight < threshold (None to do nothing)')
-    parser.add_argument('--top_k', type=str2int, default=None,
+    parser.add_argument('--top_k', type=AC.str2int, default=None,
                         help='filter to top k largest edges per node (None to do nothing) - DEPRECATED')
-    parser.add_argument('--use_node_features', type=str2bool, default=False,
+    parser.add_argument('--use_node_features', type=AC.str2bool, default=False,
                         help='True to use node features for GNN models')
-    parser.add_argument('--use_edge_weights', type=str2bool, default=True,
+    parser.add_argument('--use_edge_weights', type=AC.str2bool, default=True,
                         help='True to use edge weights in GNN')
-    parser.add_argument('--use_edge_attr', type=str2bool, default=False,
+    parser.add_argument('--use_edge_attr', type=AC.str2bool, default=False,
                         help='True to use edge attr in GNN')
-    parser.add_argument('--relabel_11_to_00',type=str2bool, default=False,
+    parser.add_argument('--relabel_11_to_00',type=AC.str2bool, default=False,
                         help='True to relabel [1,1] particles as [0,0] particles')
-    parser.add_argument('--split_edges_for_feature_augmentation', type=str2bool, default=False,
+    parser.add_argument('--split_edges_for_feature_augmentation', type=AC.str2bool, default=False,
                         help='True to split edges for feature augmentation')
 
     # pre-processing args
@@ -50,46 +51,46 @@ def get_base_parser():
                         help='Location of data')
     parser.add_argument('--scratch', type=str, default='/scratch/midway2/erschultz',
                         help='Location of scratch dir')
-    parser.add_argument('--root_name', type=str2None,
+    parser.add_argument('--root_name', type=AC.str2None,
                         help='name of file to save graph data (leave as None to create root automatically)'
                             '(root is the directory path - defined later)')
-    parser.add_argument('--delete_root', type=str2bool, default=True,
+    parser.add_argument('--delete_root', type=AC.str2bool, default=True,
                         help='True to delete root directory after runtime')
-    parser.add_argument('--toxx', type=str2bool, default=False,
+    parser.add_argument('--toxx', type=AC.str2bool, default=False,
                         help='True if x should be converted to 2D image')
     parser.add_argument('--toxx_mode', type=str, default='mean',
                         help='mode for toxx (default mean)')
-    parser.add_argument('--y_preprocessing', type=str2None, default='diag',
+    parser.add_argument('--y_preprocessing', type=AC.str2None, default='diag',
                         help='type of pre-processing for y')
     parser.add_argument('--y_log_transform', type=str,
                         help='True to log transform y')
-    parser.add_argument('--y_norm', type=str2None, default='batch',
+    parser.add_argument('--y_norm', type=AC.str2None, default='batch',
                         help='type of [0,1] normalization for y')
-    parser.add_argument('--min_subtraction', type=str2bool, default=True,
+    parser.add_argument('--min_subtraction', type=AC.str2bool, default=True,
                         help='if min subtraction should be used for y_norm')
-    parser.add_argument('--x_reshape', type=str2bool, default=True,
+    parser.add_argument('--x_reshape', type=AC.str2bool, default=True,
                         help='True if x should be considered a 1D image')
-    parser.add_argument('--ydtype', type=str2dtype, default='float32',
+    parser.add_argument('--ydtype', type=AC.str2dtype, default='float32',
                         help='torch data type for y')
-    parser.add_argument('--y_reshape', type=str2bool, default=True,
+    parser.add_argument('--y_reshape', type=AC.str2bool, default=True,
                         help='True if y should be considered a 2D image')
-    parser.add_argument('--crop', type=str2list,
+    parser.add_argument('--crop', type=AC.str2list,
                         help='size of crop to apply to image - format: <leftcrop-rightcrop>')
     parser.add_argument('--classes', type=int, default=10,
                         help='number of classes in percentile normalization')
-    parser.add_argument('--use_scratch', type=str2bool, default=False,
+    parser.add_argument('--use_scratch', type=AC.str2bool, default=False,
                         help='True to move data to scratch')
-    parser.add_argument('--use_scratch_parallel', type=str2bool, default=False,
+    parser.add_argument('--use_scratch_parallel', type=AC.str2bool, default=False,
                         help='True to move data in parallel (use_scratch must be True)')
 
     # dataloader args
-    parser.add_argument('--split_percents', type=str2list,
+    parser.add_argument('--split_percents', type=AC.str2list,
                         help='Train, val, test split for dataset (percents)')
-    parser.add_argument('--split_sizes', type=str2list, default=[-1, 200, 0],
+    parser.add_argument('--split_sizes', type=AC.str2list, default=[-1, 200, 0],
                         help='Train, val, test split for dataset (counts), -1 for remainder')
-    parser.add_argument('--random_split', type=str2bool, default=False,
+    parser.add_argument('--random_split', type=AC.str2bool, default=False,
                         help='True to use random train, val, test split')
-    parser.add_argument('--shuffle', type=str2bool, default=True,
+    parser.add_argument('--shuffle', type=AC.str2bool, default=True,
                         help='Whether or not to shuffle dataset')
     parser.add_argument('--batch_size', type=int, default=16,
                         help='Training batch size')
@@ -109,17 +110,17 @@ def get_base_parser():
                         help='Learning eate. Default=0.001')
     parser.add_argument('--gpus', type=int, default=1,
                         help='Number of gpus')
-    parser.add_argument('--milestones', type=str2list, default=[2],
+    parser.add_argument('--milestones', type=AC.str2list, default=[2],
                         help='Milestones for lr decay - format: <milestone1-milestone2>')
     parser.add_argument('--gamma', type=float, default=0.1,
                         help='Gamma for lr decay')
     parser.add_argument('--loss', type=str, default='mse',
                         help='Type of loss to use: options: {"mse", "cross_entropy"}')
-    parser.add_argument('--autoencoder_mode', type=str2bool, default=False,
+    parser.add_argument('--autoencoder_mode', type=AC.str2bool, default=False,
                         help='True to use input as target output (i.e. autoencoder)')
-    parser.add_argument('--verbose', type=str2bool, default=False,
+    parser.add_argument('--verbose', type=AC.str2bool, default=False,
                         help='True to print')
-    parser.add_argument('--print_params', type=str2bool, default=True,
+    parser.add_argument('--print_params', type=AC.str2bool, default=True,
                         help='True to print parameters after training')
     parser.add_argument('--output_mode', type=str, default='contact',
                         help='data structure of output {"contact", "sequence", "energy"}')
@@ -127,76 +128,76 @@ def get_base_parser():
     # model args
     parser.add_argument('--model_type', type=str, default='test',
                         help='Type of model')
-    parser.add_argument('--id', type=str2int,
+    parser.add_argument('--id', type=AC.str2int,
                         help='id of model')
-    parser.add_argument('--pretrained', type=str2bool, default=False,
+    parser.add_argument('--pretrained', type=AC.str2bool, default=False,
                         help='True if using a pretrained model')
-    parser.add_argument('--resume_training', type=str2bool, default=False,
+    parser.add_argument('--resume_training', type=AC.str2bool, default=False,
                         help='True if resuming training of a partially trained model')
-    parser.add_argument('--k', type=str2int,
+    parser.add_argument('--k', type=AC.str2int,
                         help='Number of input epigenetic marks')
     parser.add_argument('--m', type=int, default=1024,
                         help='Number of particles')
     parser.add_argument('--seed', type=int, default=42,
                         help='random seed to use. Default: 42')
-    parser.add_argument('--act', type=str2None, default='relu',
+    parser.add_argument('--act', type=AC.str2None, default='relu',
                         help='default activation') # TODO impelement throughout
-    parser.add_argument('--inner_act', type=str2None,
+    parser.add_argument('--inner_act', type=AC.str2None,
                         help='default activation (not used for all networks)')
-    parser.add_argument('--out_act', type=str2None,
+    parser.add_argument('--out_act', type=AC.str2None,
                         help='activation of final layer')
-    parser.add_argument('--training_norm', type=str2None,
+    parser.add_argument('--training_norm', type=AC.str2None,
                         help='norm during training (batch, instance, or None)')
-    parser.add_argument('--parameter_sharing', type=str2bool, default=False,
+    parser.add_argument('--parameter_sharing', type=AC.str2bool, default=False,
                         help='true to use parameter sharing in autoencoder blocks')
-    parser.add_argument('--use_bias', type=str2bool, default=True,
+    parser.add_argument('--use_bias', type=AC.str2bool, default=True,
                         help='true to use bias (only implemented in ContactGNN)')
 
     # GNN model args
     parser.add_argument('--message_passing', type=str, default='GCN',
                         help='type of message passing algorithm')
-    parser.add_argument('--head_architecture', type=str2None,
+    parser.add_argument('--head_architecture', type=AC.str2None,
                         help='type of head architecture')
-    parser.add_argument('--head_hidden_sizes_list', type=str2list,
+    parser.add_argument('--head_hidden_sizes_list', type=AC.str2list,
                         help='List of hidden sizes for convolutional layers')
-    parser.add_argument('--encoder_hidden_sizes_list', type=str2list,
+    parser.add_argument('--encoder_hidden_sizes_list', type=AC.str2list,
                         help='hidden sizes for encoder')
-    parser.add_argument('--update_hidden_sizes_list', type=str2list,
+    parser.add_argument('--update_hidden_sizes_list', type=AC.str2list,
                         help='hidden sizes for update step of MPGNN')
-    parser.add_argument('--head_act', type=str2None, default='relu',
+    parser.add_argument('--head_act', type=AC.str2None, default='relu',
                         help='activation function for head network')
-    parser.add_argument('--num_heads', type=str2int, default=1,
+    parser.add_argument('--num_heads', type=AC.str2int, default=1,
                         help='number of attention heads for relevant MPGNN')
-    parser.add_argument('--concat_heads', type=str2bool, default=True,
+    parser.add_argument('--concat_heads', type=AC.str2bool, default=True,
                         help='False to average instead of concat attention heads')
 
     # SimpleEpiNet args
-    parser.add_argument('--kernel_w_list', type=str2list,
+    parser.add_argument('--kernel_w_list', type=AC.str2list,
                         help='List of kernel widths of convolutional layers')
-    parser.add_argument('--hidden_sizes_list', type=str2list,
+    parser.add_argument('--hidden_sizes_list', type=AC.str2list,
                         help='List of hidden sizes for convolutional layers')
 
     # UNet args
     parser.add_argument('--nf', type=int, help='Number of filters')
 
     # DeepC args
-    parser.add_argument('--dilation_list', type=str2list,
+    parser.add_argument('--dilation_list', type=AC.str2list,
                         help='List of dilations for dilated convolutional layers')
 
     # Akita args
-    parser.add_argument('--dilation_list_trunk', type=str2list,
+    parser.add_argument('--dilation_list_trunk', type=AC.str2list,
                         help='List of dilations for dilated convolutional layers of trunk')
     parser.add_argument('--bottleneck', type=int,
                         help='Number of filters in bottleneck (must be <= hidden_size_dilation_trunk)')
-    parser.add_argument('--dilation_list_head', type=str2list,
+    parser.add_argument('--dilation_list_head', type=AC.str2list,
                         help='List of dilations for dilated convolutional layers of head')
-    parser.add_argument('--down_sampling', type=str2None,
+    parser.add_argument('--down_sampling', type=AC.str2None,
                         help='type of down sampling to use')
 
     # post-processing args
-    parser.add_argument('--plot', type=str2bool, default=True,
+    parser.add_argument('--plot', type=AC.str2bool, default=True,
                         help='True to plot result figures')
-    parser.add_argument('--plot_predictions', type=str2bool, default=True,
+    parser.add_argument('--plot_predictions', type=AC.str2bool, default=True,
                         help='True to plot predictions')
 
     return parser
@@ -210,7 +211,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
         parser: instance of argparse.ArgumentParser() - used to re-parse if needed
         windows: True for windows file path
         local: True to override copy_data_to_scratch
-        debug: True for debug mode
+        debug: True for debug mode (won't throw warning for resume_training)
 
     Outputs:
         opt
@@ -314,6 +315,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     process_transforms(opt)
 
     # move data to scratch
+    print(opt.use_scratch, opt.use_scratch and not local)
     if opt.use_scratch and not local:
         copy_data_to_scratch(opt)
 
@@ -337,8 +339,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
         opt.use_parallel = False
 
     if opt.cuda and not torch.cuda.is_available():
-        if not local:
-            print('Warning: falling back to cpu', file = opt.log_file)
+        print('Warning: falling back to cpu', file = opt.log_file)
         opt.cuda = False
         opt.use_parallel = False
 
@@ -440,8 +441,13 @@ def process_transforms(opt):
             assert opt.use_edge_attr or opt.use_edge_weights
             if opt.use_edge_attr:
                 opt.edge_dim += 1
+            log = False
+            for mode_str in t_str[1:]:
+                if mode_str == 'log':
+                    log = True
             processed.append(GeneticDistance(split_edges = opt.split_neg_pos_edges,
-                                            convert_to_attr = opt.use_edge_attr))
+                                            convert_to_attr = opt.use_edge_attr,
+                                            log = log))
         elif t_str[0] == 'geneticposition':
             center = False
             norm = False
@@ -640,195 +646,206 @@ def get_opt_header(model_type, GNN_mode):
 
     return opt_list
 
-def str2None(v):
-    """
-    Helper function for argparser, converts str to None if str == 'none'
+class ArgparserConverter():
+    @staticmethod
+    def str2None(v):
+        """
+        Helper function for argparser, converts str to None if str == 'none'
 
-    Returns the string otherwise.
+        Returns the string otherwise.
 
-    Inputs:
-        v: string
-    """
-    if v is None:
-        return v
-    elif isinstance(v, str):
-        if v.lower() == 'none':
-            return None
-        else:
+        Inputs:
+            v: string
+        """
+        if v is None:
             return v
-    else:
-        raise argparse.ArgumentTypeError('String value expected.')
+        elif isinstance(v, str):
+            if v.lower() == 'none':
+                return None
+            else:
+                return v
+        else:
+            raise argparse.ArgumentTypeError('String value expected.')
 
-def str2int(v):
-    """
-    Helper function for argparser, converts str to int if possible.
+    @staticmethod
+    def str2int(v):
+        """
+        Helper function for argparser, converts str to int if possible.
 
-    Inputs:
-        v: string
-    """
-    if v is None:
-        return v
-    elif isinstance(v, str):
-        if v.lower() == 'none':
+        Inputs:
+            v: string
+        """
+        if v is None:
+            return v
+        elif isinstance(v, str):
+            if v.lower() == 'none':
+                return None
+            elif v.isnumeric():
+                return int(v)
+            elif v[0] == '-' and v[1:].isnumeric():
+                return int(v)
+            else:
+                raise argparse.ArgumentTypeError('none or int expected not {}'.format(v))
+        else:
+            raise argparse.ArgumentTypeError('String value expected.')
+
+    @staticmethod
+    def str2float(v):
+        """
+        Helper function for argparser, converts str to float if possible.
+
+        Inputs:
+            v: string
+        """
+        if v is None:
+            return v
+        elif isinstance(v, str):
+            if v.lower() == 'none':
+                return None
+            elif v.replace('.', '').replace('-', '').isnumeric():
+                return float(v)
+            else:
+                raise argparse.ArgumentTypeError('none or float expected not {}'.format(v))
+        else:
+            raise argparse.ArgumentTypeError('String value expected.')
+
+    @staticmethod
+    def str2bool(v):
+        """
+        Helper function for argparser, converts str to boolean for various string inputs.
+        https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
+
+        Inputs:
+            v: string
+        """
+        if isinstance(v, bool):
+           return v
+        if v.lower() in ('yes', 'true', 't', 'y', '1'):
+            return True
+        elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+            return False
+        else:
+            raise argparse.ArgumentTypeError('Boolean value expected.')
+
+    def is_float(v) -> bool:
+        try:
+            float(v)
+            return True
+        except ValueError:
+            return False
+
+    @staticmethod
+    def str2list(v, sep = '-'):
+        """
+        Helper function for argparser, converts str to list by splitting on sep.
+        Empty string will be mapped to -1.
+
+        Example for sep = '-': "-i-j-k" -> [-1, i, j, k]
+
+        Inputs:
+            v: string
+            sep: separator
+        """
+        if v is None:
             return None
-        elif v.isnumeric():
-            return int(v)
+        elif isinstance(v, str):
+            if v.lower() == 'none':
+                return None
+            elif v.lower() == 'empty':
+                return []
+            else:
+                result = [i for i in v.split(sep)]
+                for i, val in enumerate(result):
+                    if val.isnumeric():
+                        result[i] = int(val)
+                    elif ArgparserConverter.is_float(val):
+                        result[i] = float(val)
+                    elif val == '':
+                        result[i] = -1
+                return result
         else:
-            raise argparse.ArgumentTypeError('none or int expected not {}'.format(v))
-    else:
-        raise argparse.ArgumentTypeError('String value expected.')
+            raise argparse.ArgumentTypeError('str value expected.')
 
-def str2float(v):
-    """
-    Helper function for argparser, converts str to float if possible.
+    @staticmethod
+    def str2list2D(v, sep1 = '\\', sep2 = '&'):
+        """
+        Helper function for argparser, converts str to list by splitting on sep1, then on sep2.
 
-    Inputs:
-        v: string
-    """
-    if v is None:
-        return v
-    elif isinstance(v, str):
-        if v.lower() == 'none':
+        Example for sep1 = '\\', sep2 = '&': "i & j \\ k & l" -> [[i, j], [k, l]]
+
+        Inputs:
+            v: string (any spaces will be ignored)
+            sep: separator
+        """
+        if v is None:
             return None
-        elif v.replace('.', '').isnumeric():
-            return float(v)
+        elif isinstance(v, str):
+            if v.lower() == 'none':
+                return None
+            elif v.lower() in {'nonlinear', 'polynomial'}:
+                return v.lower()
+            else:
+                v = v.replace(' ', '') # get rid of spaces
+                result = [i.split(sep2) for i in v.split(sep1)]
+                result = np.array(result, dtype=float)
+                return result
         else:
-            raise argparse.ArgumentTypeError('none or float expected not {}'.format(v))
-    else:
-        raise argparse.ArgumentTypeError('String value expected.')
+            raise argparse.ArgumentTypeError('str value expected.')
 
-def str2bool(v):
-    """
-    Helper function for argparser, converts str to boolean for various string inputs.
-    https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
+    @staticmethod
+    def str2dtype(v):
+        """
+        Helper function for argparser, converts str to torch dtype.
 
-    Inputs:
-        v: string
-    """
-    if isinstance(v, bool):
-       return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
-
-def is_float(v) -> bool:
-    try:
-        float(v)
-        return True
-    except ValueError:
-        return False
-
-def str2list(v, sep = '-'):
-    """
-    Helper function for argparser, converts str to list by splitting on sep.
-    Empty string will be mapped to -1.
-
-    Example for sep = '-': "-i-j-k" -> [-1, i, j, k]
-
-    Inputs:
-        v: string
-        sep: separator
-    """
-    if v is None:
-        return None
-    elif isinstance(v, str):
-        if v.lower() == 'none':
-            return None
-        elif v.lower() == 'empty':
-            return []
+        Inputs:
+            v: string
+        """
+        if isinstance(v, str):
+            if v == 'float32':
+                return torch.float32
+            elif v == 'float64':
+                return torch.float64
+            elif v == 'int32':
+                return torch.int32
+            elif v == 'int64':
+                return torch.int64
+            else:
+                raise Exception('Unkown str: {}'.format(v))
         else:
-            result = [i for i in v.split(sep)]
-            for i, val in enumerate(result):
-                if val.isnumeric():
-                    result[i] = int(val)
-                elif is_float(val):
-                    result[i] = float(val)
-                elif val == '':
-                    result[i] = -1
-            return result
-    else:
-        raise argparse.ArgumentTypeError('str value expected.')
+            raise argparse.ArgumentTypeError('str value expected.')
 
-def str2list2D(v, sep1 = '\\', sep2 = '&'):
-    """
-    Helper function for argparser, converts str to list by splitting on sep1, then on sep2.
+    def list2str(v, sep = '-'):
+        """
+        Helper function to convert list to string.
 
-    Example for sep1 = '\\', sep2 = '&': "i & j \\ k & l" -> [[i, j], [k, l]]
-
-    Inputs:
-        v: string (any spaces will be ignored)
-        sep: separator
-    """
-    if v is None:
-        return None
-    elif isinstance(v, str):
-        if v.lower() == 'none':
-            return None
-        elif v.lower() in {'nonlinear', 'polynomial'}:
-            return v.lower()
+        Inputs:
+            v: list
+        """
+        if isinstance(v, list):
+            return sep.join([str(i) for i in v])
         else:
-            v = v.replace(' ', '') # get rid of spaces
-            result = [i.split(sep2) for i in v.split(sep1)]
-            result = np.array(result, dtype=float)
-            return result
-    else:
-        raise argparse.ArgumentTypeError('str value expected.')
+            raise Exception('list value expected.')
 
-def str2dtype(v):
-    """
-    Helper function for argparser, converts str to torch dtype.
+    @staticmethod
+    def float2str(v):
+        """
+        Helper function to convert float to str in si notation.
 
-    Inputs:
-        v: string
-    """
-    if isinstance(v, str):
-        if v == 'float32':
-            return torch.float32
-        elif v == 'float64':
-            return torch.float64
-        elif v == 'int32':
-            return torch.int32
-        elif v == 'int64':
-            return torch.int64
+        Inputs:
+            v: float
+        """
+        # TODO make this more robust
+        if isinstance(v, float):
+            vstr = "{:.1e}".format(v)
+            if vstr[2] == '0':
+                # converts 1.0e-04 to 1e-04
+                vstr = vstr[0:1] + vstr[3:]
+            if vstr[-2] == '0':
+                # converts 1e-04 to 1e-4
+                vstr = vstr[0:-2] + vstr[-1]
         else:
-            raise Exception('Unkown str: {}'.format(v))
-    else:
-        raise argparse.ArgumentTypeError('str value expected.')
-
-def list2str(v, sep = '-'):
-    """
-    Helper function to convert list to string.
-
-    Inputs:
-        v: list
-    """
-    if isinstance(v, list):
-        return sep.join([str(i) for i in v])
-    else:
-        raise Exception('list value expected.')
-
-def float2str(v):
-    """
-    Helper function to convert float to str in si notation.
-
-    Inputs:
-        v: float
-    """
-    # TODO make this more robust
-    if isinstance(v, float):
-        vstr = "{:.1e}".format(v)
-        if vstr[2] == '0':
-            # converts 1.0e-04 to 1e-04
-            vstr = vstr[0:1] + vstr[3:]
-        if vstr[-2] == '0':
-            # converts 1e-04 to 1e-4
-            vstr = vstr[0:-2] + vstr[-1]
-    else:
-        raise Exception('float value expected.')
-    return vstr
+            raise Exception('float value expected.')
+        return vstr
 
 def test():
     s = '-200-0'

@@ -89,6 +89,7 @@ def load_E_S(sample_folder, psi = None, chi = None, save = False, throw_exceptio
         if s is not None:
             e = s_to_E(s)
         else:
+            e = None
             calc = True
 
     if calc:

@@ -16,10 +16,11 @@ from scipy.ndimage import gaussian_filter
 from scipy.stats import pearsonr
 from sklearn import metrics
 from sklearn.decomposition import PCA
+from sklearn.metrics import silhouette_score
 from sympy import solve, symbols
 
-from .argparse_utils import (finalize_opt, get_base_parser, get_opt_header,
-                             list2str, opt2list)
+from .argparse_utils import (ArgparserConverter, finalize_opt, get_base_parser,
+                             get_opt_header, opt2list)
 from .InteractionConverter import InteractionConverter
 from .load_utils import load_sc_contacts, load_X_psi
 from .neural_net_utils import get_data_loaders, load_saved_model
@@ -44,7 +45,7 @@ def plot_combined_models(modelType, ids):
         opt = finalize_opt(opt, parser, local = True, debug = True)
 
         opts.append(opt)
-    imagePath = osp.join(path, '{} combined'.format(list2str(ids)))
+    imagePath = osp.join(path, '{} combined'.format(ArgparserConverter.list2str(ids)))
     if not osp.exists(imagePath):
         os.mkdir(imagePath, mode = 0o755)
 
@@ -851,7 +852,7 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
             file = opt.log_file)
 
 def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2,
-                plot = False, verbose = False):
+                plot = False, verbose = False, scale = False, svd = False):
     '''
     Plots top PCs of inp.
 
@@ -863,42 +864,58 @@ def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2
         count: number of PCs to plot
         plot: True to plot
         verbose: True to print
+        scale: True to scale data before PCA
+        svd: True to use right singular vectors instead of PCs
 
     Outputs:
         pca.components_: all PCs of inp
     '''
-
     pca = PCA()
-    try:
-        pca = pca.fit(inp/np.std(inp, axis = 0))
-        #
-    except ValueError:
-        pca = pca.fit(inp)
+    if svd:
+        pca = None
+        assert not scale
+        U, S, Vt = np.linalg.svd(np.corrcoef(inp), full_matrices=0)
+    else:
+        if scale:
+            try:
+                pca = pca.fit(inp/np.std(inp, axis = 0))
+            except ValueError:
+                print(f'val error for {inp_type}')
+                pca = pca.fit(inp)
+        else:
+            pca = pca.fit(inp)
+
+        # combine notation between svd and pca
+        S = pca.singular_values_
+        Vt = pca.components_
 
     if verbose:
         if log_file is not None:
             print(f'\n{inp_type.upper()}', file = log_file)
-            print(f'''% of total variance explained for first 4 PCs:
-                {np.round(pca.explained_variance_ratio_[0:4], 3)}
-                \n\tSum of first 4: {np.sum(pca.explained_variance_ratio_[0:4])}''',
-                file = log_file)
-            print(f'''Singular values for first 4 PCs:
-                {np.round(pca.singular_values_[0:4], 3)}
-                \n\tSum of all: {np.sum(pca.singular_values_)}''',
+            if pca is not None:
+                print(f'''% of total variance explained for first 6 PCs:
+                    {np.round(pca.explained_variance_ratio_[0:6], 3)}
+                    \n\tSum of first 6: {np.sum(pca.explained_variance_ratio_[0:6])}''',
+                    file = log_file)
+            print(f'''Singular values for first 6 PCs:
+                {np.round(S[0:6], 3)}
+                \n\tSum of all: {np.sum(S)}''',
                 file = log_file)
 
     if plot:
         i = 0
         while i < count:
-            explained = pca.explained_variance_ratio_[i]
-            if np.mean(pca.components_[i][:100]) < 0:
-                PC = pca.components_[i] * -1
+
+            if np.mean(Vt[i][:100]) < 0:
+                PC = Vt[i] * -1
                 # PCs are sign invariant, so this doesn't matter mathematically
                 # goal is to help compare PCs visually by aligning them
             else:
-                PC = pca.components_[i]
+                PC = Vt[i]
             plt.plot(PC)
-            plt.title("Component {}: {}% of variance".format(i+1, np.round(explained * 100, 3)))
+            if pca is not None:
+                explained = pca.explained_variance_ratio_[i]
+                plt.title("Component {}: {}% of variance".format(i+1, np.round(explained * 100, 3)))
             if odir is not None:
                 plt.savefig(osp.join(odir, '{}_PC_{}.png'.format(inp_type, i+1)))
                 plt.close()
@@ -906,8 +923,7 @@ def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2
                 plt.show()
             i += 1
 
-
-    return pca.components_
+    return Vt
 
 #### Functions for plotting predicted particles ####
 def plotParticleDistribution(val_dataloader, model, opt, count = 5, dims = (0,1),
