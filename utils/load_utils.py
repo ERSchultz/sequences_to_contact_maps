@@ -190,7 +190,7 @@ def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None,
 
     return chi
 
-def load_final_max_ent_S(k, replicate_path, max_it_path = None):
+def load_final_max_ent_S(replicate_path, max_it_path = None):
     s_path = osp.join(replicate_path, 'resources', 's.npy')
     if osp.exists(s_path):
         s = np.load(s_path)
@@ -199,6 +199,8 @@ def load_final_max_ent_S(k, replicate_path, max_it_path = None):
         x_file = osp.join(replicate_path, 'resources', 'x.npy')
         if osp.exists(x_file):
             x = np.load(x_file)
+
+        _, k = x.shape
 
         # load chi
         chi = load_final_max_ent_chi(k, replicate_path, max_it_path)
