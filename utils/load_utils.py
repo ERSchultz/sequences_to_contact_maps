@@ -39,9 +39,13 @@ def load_X_psi(sample_folder, throw_exception = True):
     return x, psi
 
 def load_Y(sample_folder, throw_exception = True):
-    y_file = osp.join(osp.join(sample_folder, 'y.npy'))
+    y_file = osp.join(sample_folder, 'y.npy')
+    y_file2 = osp.join(sample_folder, 'data_out/contacts.txt')
     if osp.exists(y_file):
         y = np.load(y_file)
+    elif osp.exists(y_file2):
+        y = np.loadtxt(y_file)
+        np.save(y_file, y) # save in proper place
     elif throw_exception:
         raise Exception(f'y not found for {sample_folder}')
     else:
@@ -50,8 +54,10 @@ def load_Y(sample_folder, throw_exception = True):
     ydiag_file = osp.join(sample_folder, 'y_diag.npy')
     if osp.exists(ydiag_file):
         ydiag = np.load(ydiag_file)
-    elif throw_exception:
-        raise Exception(f'ydiag not found for {sample_folder}')
+    elif y is not None:
+        meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
+        y_diag = DiagonalPreprocessing.process(y, meanDist)
+        np.save(ydiag_file, y_diag) # save in proper place
     else:
         ydiag = None
 

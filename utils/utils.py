@@ -498,14 +498,14 @@ def round_up_by_10(val):
         mult *= 10
     return mult
 
-def pearson_round(x, y, stat = 'pearson'):
+def pearson_round(x, y, stat = 'pearson', round = 2):
     "Wrapper function that combines np.round and pearsonr."
     if stat == 'pearson':
         fn = pearsonr
     elif stat == 'spearman':
         fn = spearmanr
     stat, _ = fn(x, y)
-    return np.round(stat, 2)
+    return np.round(stat, round)
 
 def print_time(t0, tf, name = '', file = sys.stdout):
     print(f'{name} time: {np.round(tf - t0, 3)} s', file = file)
