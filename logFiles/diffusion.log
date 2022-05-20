@@ -1,10 +1,10 @@
-/tmp/slurmd/job19613743/slurm_script: line 21: activate: No such file or directory
-Namespace(dir='/project2/depablo/walt/michrom/project/chr_05/chr_05_02', scratch='/scratch/midway2/erschultz', odir='/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02', N_min=2000, mode='contact_diffusion', update_mode='eig', jobs=20, sparse_format=False, down_sampling=12, its=4, chunk_size=200, plot=True, scratch_dir='/scratch/midway2/erschultz/contact_diffusion', log_file_path='/scratch/midway2/erschultz/contact_diffusion/out.log', log_file=<_io.TextIOWrapper name='/scratch/midway2/erschultz/contact_diffusion/out.log' mode='a' encoding='UTF-8'>)
-Namespace(dir='/project2/depablo/walt/michrom/project/chr_05/chr_05_02', scratch='/scratch/midway2/erschultz', odir='/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02', N_min=2000, mode='contact_diffusion', update_mode='eig', jobs=20, sparse_format=False, down_sampling=12, its=4, chunk_size=200, plot=True, scratch_dir='/scratch/midway2/erschultz/contact_diffusion', log_file_path='/scratch/midway2/erschultz/contact_diffusion/out.log', log_file=<_io.TextIOWrapper name='/scratch/midway2/erschultz/contact_diffusion/out.log' mode='a' encoding='UTF-8'>)
+/tmp/slurmd/job19645429/slurm_script: line 22: activate: No such file or directory
+Namespace(dir='/project2/depablo/walt/michrom/project/chr_05/chr_05_02', scratch='/scratch/midway2/erschultz', odir='/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02', N_min=2000, mode='contact_diffusion', update_mode='eig', k=2, jobs=20, sparse_format=False, down_sampling=12, its=4, chunk_size=200, plot=True, scratch_dir='/scratch/midway2/erschultz/contact_diffusion_eig2', log_file_path='/scratch/midway2/erschultz/contact_diffusion_eig2/out.log', log_file=<_io.TextIOWrapper name='/scratch/midway2/erschultz/contact_diffusion_eig2/out.log' mode='a' encoding='UTF-8'>)
+Namespace(dir='/project2/depablo/walt/michrom/project/chr_05/chr_05_02', scratch='/scratch/midway2/erschultz', odir='/project2/depablo/erschultz/michrom/project/chr_05/chr_05_02', N_min=2000, mode='contact_diffusion', update_mode='eig', k=2, jobs=20, sparse_format=False, down_sampling=12, its=4, chunk_size=200, plot=True, scratch_dir='/scratch/midway2/erschultz/contact_diffusion_eig2', log_file_path='/scratch/midway2/erschultz/contact_diffusion_eig2/out.log', log_file=<_io.TextIOWrapper name='/scratch/midway2/erschultz/contact_diffusion_eig2/out.log' mode='a' encoding='UTF-8'>)
 Loaded xyz with shape (1007, 3620, 3)
-xyz load time: 180.22 s
+xyz load time: 178.705 s
 found 20 total CPUs, 20 available CPUs, using 20
-sc save time: 455.065 s
+sc save time: 454.25 s
 Iteration 0
 starting gif
 Iteration 1
@@ -14,21 +14,16 @@ starting gif
 starting gif
 Iteration 2
 Using epsilon = 0.082
-Using k = 5
+Using k = 8
 starting gif
 starting gif
 Iteration 3
-Using epsilon = 0.05
-Using k = 5
+Using epsilon = 0.03
+Using k = 6
 starting gif
 starting gif
 Iteration 4
 Using epsilon = 0.011
-Traceback (most recent call last):
-  File "/home/erschultz/sequences_to_contact_maps/diffusion_analysis.py", line 684, in <module>
-    main()
-  File "/home/erschultz/sequences_to_contact_maps/diffusion_analysis.py", line 678, in main
-    contact_diffusion()
-  File "/home/erschultz/sequences_to_contact_maps/diffusion_analysis.py", line 546, in contact_diffusion
-    dmap.compute(5, 0.5)
-RuntimeError: Eigensolver did not converge.
+Using k = 9
+starting gif
+starting gif
