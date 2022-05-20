@@ -44,7 +44,7 @@ def load_Y(sample_folder, throw_exception = True):
     if osp.exists(y_file):
         y = np.load(y_file)
     elif osp.exists(y_file2):
-        y = np.loadtxt(y_file)
+        y = np.loadtxt(y_file2)
         np.save(y_file, y) # save in proper place
     elif throw_exception:
         raise Exception(f'y not found for {sample_folder}')
