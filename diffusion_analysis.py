@@ -1,3 +1,4 @@
+'''deprecated'''
 import argparse
 import multiprocessing
 import os
@@ -23,8 +24,7 @@ from utils.load_utils import save_sc_contacts
 from utils.plotting_utils import plot_matrix, plot_sc_contact_maps_inner
 from utils.utils import (DiagonalPreprocessing, pearson_round, print_size,
                          print_time, triu_to_full)
-from utils.xyz_utils import (find_dist_between_centroids, find_label_centroid,
-                             lammps_load, xyz_load, xyz_to_contact_grid)
+from utils.xyz_utils import (lammps_load, xyz_load, xyz_to_contact_grid)
 
 import dmaps  # https://github.com/ERSchultz/dmaps
 

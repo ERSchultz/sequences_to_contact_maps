@@ -207,3 +207,4 @@ Prediction Results:
 /home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/158/sample5: 1.9311071634292603
 Loss: 2.3676425933837892 +- 1.0666137144964152
 
+Warning: falling back to cpu
