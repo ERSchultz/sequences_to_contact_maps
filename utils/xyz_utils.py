@@ -68,6 +68,7 @@ def xyz_load(xyz_filepath, delim = '\t', multiple_timesteps = False, save = Fals
 
 def lammps_load(filepath, save = False, N_min = None, N_max = None, down_sampling = 1):
     xyz_npy_file = osp.join(osp.split(filepath)[0], 'xyz.npy')
+    x_npy_file = osp.join(osp.split(filepath)[0], 'x.npy')
     t0 = time.time()
     if osp.exists(xyz_npy_file):
         xyz = np.load(xyz_npy_file)
@@ -82,7 +83,6 @@ def lammps_load(filepath, save = False, N_min = None, N_max = None, down_samplin
                     xyz_timestep = np.empty((N, 3))
 
                 if line == 'ITEM: ATOMS id type xu yu zu':
-                    i = 0
                     line = f.readline().strip().split(' ')
                     while line[0].isnumeric():
                         i = int(line[0]) - 1
@@ -90,10 +90,30 @@ def lammps_load(filepath, save = False, N_min = None, N_max = None, down_samplin
                         if i == N-1:
                             xyz.append(xyz_timestep)
                         line = f.readline().strip().split(' ')
-
         xyz = np.array(xyz)
         if save:
             np.save(xyz_npy_file, xyz)
+
+    if osp.exists(x_npy_file):
+        x = np.load(x_npy_file)
+    else:
+        x = []
+        with open(filepath, 'r') as f:
+            keep_reading = True
+            while keep_reading:
+                line = f.readline().strip()
+                if line == 'ITEM: ATOMS id type xu yu zu':
+                    keep_reading = False
+                    line = f.readline().strip().split(' ')
+                    while line[0].isnumeric():
+                        i = int(line[0]) - 1
+                        x.append(int(line[1])-1)
+                        line = f.readline().strip().split(' ')
+        N = len(x)
+        x_arr = np.zeros((N, np.max(x)+1))
+        x_arr[np.arange(N), x] = 1
+        if save:
+            np.save(x_npy_file, x_arr)
 
     if N_min is None:
         N_min = 0
@@ -103,7 +123,7 @@ def lammps_load(filepath, save = False, N_min = None, N_max = None, down_samplin
     tf = time.time()
     print(f'Loaded xyz with shape {xyz.shape}')
     print_time(t0, tf, 'xyz load')
-    return xyz
+    return xyz, x_arr
 
 def find_label_centroid(xyz, psi):
     '''

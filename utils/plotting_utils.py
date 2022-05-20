@@ -1148,7 +1148,7 @@ def plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath):
 #### End section ####
 
 #### Functions for plotting xyz files ####
-def plot_config(xyz, L, x = None, ofile = None, show = True, title = None, legend=True):
+def plot_xyz(xyz, L, x = None, ofile = None, show = True, title = None, legend = True):
     '''
     Plots particles in xyz as 3D scatter plot.
     Only supports mutually exclusive bead types for coloring. # TODO
@@ -1158,7 +1158,7 @@ def plot_config(xyz, L, x = None, ofile = None, show = True, title = None, legen
         x: bead types to color
         LJ: True if Lennard Jones particles
         ofile: location to save image
-        show: if False fig, ax are returned
+        show: True to show
         title: title of plot
     '''
     fig = plt.figure()
@@ -1185,7 +1185,6 @@ def plot_config(xyz, L, x = None, ofile = None, show = True, title = None, legen
     ax.set_zlabel('z')
 
     if L is not None:
-        #
         ax.set_xlim(0, L)
         ax.set_ylim(0, L)
         ax.set_zlim(0, L)
@@ -1198,23 +1197,14 @@ def plot_config(xyz, L, x = None, ofile = None, show = True, title = None, legen
         plt.show()
     plt.close()
 
-def plot_xyz_gif():
-    dir='/home/eric/dataset_test/samples/sample21'
-    dir = 'C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps\\dataset_test\\samples\\sample92'
-    file = osp.join(dir, 'data_out/output.xyz')
-
-    m=1500
-
-    x = np.load(osp.join(dir, 'x.npy'))[:m, :]
-    xyz = xyz_load(file, multiple_timesteps=True)[::50, :m, :]
-    print(xyz.shape)
-    xyz_write(xyz, osp.join(dir, 'data_out/output_x.xyz'), 'w', x = x)
-
+def plot_xyz_gif(xyz, x, dir, ofile = 'xyz.gif', order = None):
     filenames = []
-    for i in range(2, len(xyz)):
-        fname=osp.join(dir, f'{i}.png')
+    if order is None:
+        order = range(len(xyz))
+    for i in order:
+        fname = osp.join(dir, f'{i}.png')
         filenames.append(fname)
-        plot_config(xyz[i, :, :], None, x = x, ofile = fname, show = False,
+        plot_xyz(xyz[i, :, :], None, x = x, ofile = fname, show = False,
                     title = None, legend = False)
 
     # build gif
@@ -1223,7 +1213,7 @@ def plot_xyz_gif():
     for filename in filenames:
         frames.append(imageio.imread(filename))
 
-    imageio.mimsave(osp.join(dir,'ovito.gif'), frames, format='GIF', fps=2)
+    imageio.mimsave(osp.join(dir, ofile), frames, format='GIF', fps=2)
 
     # remove files
     for filename in set(filenames):

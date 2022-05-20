@@ -8,6 +8,7 @@ from utils.argparse_utils import (argparse_setup, finalize_opt,
 from utils.plotting_utils import (plot_centroid_distance, plot_combined_models,
                                   plot_sc_contact_maps, plot_xyz_gif,
                                   plotting_script)
+from utils.xyz_utils import xyz_load, xyz_write
 
 
 def update_result_tables(model_type = None, mode = None, output_mode = 'contact'):
@@ -86,6 +87,19 @@ def update_result_tables(model_type = None, mode = None, output_mode = 'contact'
             wr = csv.writer(f)
             wr.writerows(results)
 
+def plot_xyz_gif_wrapper():
+    dir = '/home/erschultz/dataset_test/samples/sample1'
+    file = osp.join(dir, 'data_out/output.xyz')
+
+    m=200
+
+    x = np.load(osp.join(dir, 'x.npy'))[:m, :]
+    xyz = xyz_load(file, multiple_timesteps=True)[::50, :m, :]
+    print(xyz.shape)
+    xyz_write(xyz, osp.join(dir, 'data_out/output_x.xyz'), 'w', x = x)
+
+    plot_xyz_gif(xyz, x, dir)
+
 def main():
     opt = argparse_setup()
     print(opt, '\n')
@@ -97,12 +111,12 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    # plot_xyz_gif()
+    plot_xyz_gif_wrapper()
     # plot_sc_contact_maps('C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps\\dataset_test', samples = 92,
     #                     ofolder = 'sc_contact/original', jobs = 10, N_max = None,
     #                     count = 10, correct_diag = False, sparsify = True,
     #                     crop_size = None)
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
     # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
-    plot_combined_models('ContactGNNEnergy', [150, 158])
+    # plot_combined_models('ContactGNNEnergy', [150, 158])
     # main()
