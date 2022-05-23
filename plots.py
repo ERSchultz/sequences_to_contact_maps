@@ -1,6 +1,10 @@
 import csv
+import os
 import os.path as osp
 from shutil import rmtree
+import json
+import math
+import matplotlib.pyplot as plt
 
 import numpy as np
 from utils.argparse_utils import (argparse_setup, finalize_opt,
@@ -100,6 +104,42 @@ def plot_xyz_gif_wrapper():
 
     plot_xyz_gif(xyz, x, dir)
 
+def plot_diag_vs_diag_chi():
+    dir = '/home/erschultz/dataset_test3/samples'
+    data = []
+    ids = set()
+    for file in os.listdir(dir):
+        id = int(file[6:])
+        ids.add(id)
+        print(id)
+        file_dir = osp.join(dir, file)
+        y = np.load(osp.join(file_dir, 'y.npy')).astype(np.float64)
+        y /= np.max(y)
+        m = len(y)
+        with open(osp.join(file_dir, 'config.json'), 'r') as f:
+            config = json.load(f)
+        diag_chis = config['diag_chis']
+        k = len(diag_chis)
+
+        for i in range(14, m):
+            diag_chi = diag_chis[math.floor(i/(m/k))]
+            mean = np.mean(np.diagonal(y, i)) / np.mean(np.diagonal(y, 14))
+            data.append([mean, diag_chi, id])
+
+    data = np.array(data)
+    print(data)
+
+    for id in ids:
+        where = np.equal(data[:, 2], id)
+        plt.plot(data[where, 1], data[where, 0], label = f'sample{id}')
+    plt.xlabel('diag chi')
+    plt.ylabel('mean')
+    plt.yscale('log')
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+
 def main():
     opt = argparse_setup()
     print(opt, '\n')
@@ -111,11 +151,8 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    plot_xyz_gif_wrapper()
-    # plot_sc_contact_maps('C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps\\dataset_test', samples = 92,
-    #                     ofolder = 'sc_contact/original', jobs = 10, N_max = None,
-    #                     count = 10, correct_diag = False, sparsify = True,
-    #                     crop_size = None)
+    plot_diag_vs_diag_chi()
+    # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
     # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
     # plot_combined_models('ContactGNNEnergy', [150, 158])

@@ -63,6 +63,16 @@ def load_Y(sample_folder, throw_exception = True):
 
     return y, ydiag
 
+def load_Y_diag(sample_folder, throw_exception = False):
+    ydiag_file = osp.join(sample_folder, 'y_diag.npy')
+    if osp.exists(ydiag_file):
+        ydiag = np.load(ydiag_file)
+    else:
+        _, ydiag = load_Y(sample_folder)
+
+    return ydiag
+
+
 def load_E_S(sample_folder, psi = None, chi = None, save = False, throw_exception = True):
     '''
     Load E and S.
