@@ -1,7 +1,0 @@
-Namespace(TICG_seed=22676, chi=None, chi_seed=None, default_config='/home/erschultz/TICG-chromatin/maxent/resources/default_config.json', diag=False, dump_frequency=None, dump_stats_frequency=None, ensure_distinguishable=False, fill_diag=None, fill_offdiag=None, format='%.3e', goal_specified=True, k=1, load_configuration_filename='input1024.xyz', m=1024, max_chi=1.0, max_diag_chi=0.5, min_chi=-1.0, n_sweeps=None, ofile='config.json', relabel=None, sample_folder='/project2/depablo/erschultz/dataset_09_21_21/samples/sample1', save_chi=False, save_chi_for_max_ent=True, use_ematrix=False, use_ground_truth_TICG_seed=False, use_ground_truth_chi=False, use_ground_truth_diag_chi=True, use_smatrix=False)
-WARNING: ground truth config missing
-psi (x) loaded with shape (1024, 1)
-Rank of S: 1
-Rank of E: 1024
-
-

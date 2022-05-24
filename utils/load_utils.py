@@ -18,12 +18,13 @@ from .xyz_utils import xyz_load, xyz_to_contact_grid
 
 
 ## load data functions ##
-def load_X_psi(sample_folder, throw_exception = True):
+def load_X_psi(sample_folder, throw_exception = True, verbose = False):
     x_file = osp.join(sample_folder, 'x.npy')
     psi_file = osp.join(sample_folder, 'psi.npy')
     if osp.exists(x_file):
         x = np.load(x_file)
-        print(f'x loaded with shape {x.shape}')
+        if verbose:
+            print(f'x loaded with shape {x.shape}')
     elif throw_exception:
         raise Exception(f'x not found for {sample_folder}')
     else:
@@ -31,10 +32,12 @@ def load_X_psi(sample_folder, throw_exception = True):
 
     if osp.exists(psi_file):
         psi = np.load(psi_file)
-        print(f'psi loaded with shape {psi.shape}')
+        if verbose:
+            print(f'psi loaded with shape {psi.shape}')
     else:
         psi = x
-        print(f'Warning: assuming x == psi for {sample_folder}')
+        if x is not None:
+            print(f'Warning: assuming x == psi for {sample_folder}')
 
     return x, psi
 
