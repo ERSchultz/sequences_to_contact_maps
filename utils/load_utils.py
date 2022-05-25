@@ -61,7 +61,7 @@ def load_Y(sample_folder, throw_exception = True):
         elif y is not None:
             meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
             ydiag = DiagonalPreprocessing.process(y, meanDist)
-            np.save(ydiag_file, y_diag) # save in proper place
+            np.save(ydiag_file, ydiag) # save in proper place
         else:
             ydiag = None
     except Exception:
