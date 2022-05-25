@@ -1,17 +1,18 @@
 import csv
+import json
+import math
 import os
 import os.path as osp
 from shutil import rmtree
-import json
-import math
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
 import numpy as np
 from utils.argparse_utils import (argparse_setup, finalize_opt,
                                   get_base_parser, get_opt_header, opt2list)
 from utils.plotting_utils import (plot_centroid_distance, plot_combined_models,
                                   plot_sc_contact_maps, plot_xyz_gif,
                                   plotting_script)
+from utils.utils import DiagonalPreprocessing
 from utils.xyz_utils import xyz_load, xyz_write
 
 
@@ -121,13 +122,31 @@ def plot_diag_vs_diag_chi():
         diag_chis = config['diag_chis']
         k = len(diag_chis)
 
-        for i in range(14, m):
+        diag_means = DiagonalPreprocessing.genomic_distance_statistics(y)
+        max_diag_mean = np.max(diag_means[3:])
+
+        # for i in range(1, m):
+        #     diag_chi = diag_chis[math.floor(i/(m/k))]
+        #     mean = diag_means[i] / max_diag_mean
+        #     data.append([mean, diag_chi, id])
+
+        temp = []
+        prev_diag_chi = diag_chis[0]
+        for i in range(1, m):
             diag_chi = diag_chis[math.floor(i/(m/k))]
-            mean = np.mean(np.diagonal(y, i)) / np.mean(np.diagonal(y, 14))
+            temp.append(diag_means[i] )
+            # / max_diag_mean
+            if diag_chi != prev_diag_chi:
+                mean = np.mean(temp)
+                data.append([mean, prev_diag_chi, id])
+                temp = []
+                prev_diag_chi = diag_chi
+        else:
+            mean = np.mean(temp)
             data.append([mean, diag_chi, id])
 
+
     data = np.array(data)
-    print(data)
 
     for id in ids:
         where = np.equal(data[:, 2], id)

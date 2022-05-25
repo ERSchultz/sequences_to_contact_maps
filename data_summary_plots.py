@@ -1,3 +1,4 @@
+import json
 import math
 import os.path as osp
 
@@ -6,7 +7,7 @@ import numpy as np
 import pandas as pd
 from utils.dataset_classes import make_dataset
 from utils.InteractionConverter import InteractionConverter
-from utils.load_utils import load_all
+from utils.load_utils import load_all, load_X_psi, load_Y
 from utils.plotting_utils import (plot_matrix, plot_seq_binary,
                                   plot_seq_exclusive)
 from utils.utils import DiagonalPreprocessing
@@ -21,21 +22,23 @@ def chi_to_latex(chi, ofile):
             f.write(' & '.join(chi_row) + ' \\\ \n')
         f.write('\\end{bmatrix}\n')
 
-### Finding count for each type of pairwise interaction ###
 def getPairwiseContacts(data_folder):
+    '''
+    Calculates number of pairs of each type of label in psi.
+    Used to check if some labels are too rare, which could cause problems.'
+    '''
     samples = make_dataset(data_folder)
     for sample in samples:
         print(sample)
-        x_linear_file = osp.join(sample, 'x_linear.npy')
-        x_linear = np.load(x_linear_file)
-        m, k = x_linear.shape
-        label_count = np.sum(x_linear, axis = 0)
+        _, psi = load_X_psi(sample)
+        m, k = psi.shape
+        label_count = np.sum(psi, axis = 0)
         print(label_count)
 
         label_pair_count = np.zeros((k, k))
         for i in range(k):
             for j in range(i, k):
-                val = np.sum(np.logical_and(x_linear[:, i] == 1, x_linear[:, j] == 1))
+                val = np.sum(np.logical_and(psi[:, i] == 1, psi[:, j] == 1))
                 label_pair_count[i, j] = val
         print(label_pair_count)
 
@@ -48,8 +51,8 @@ def getFrequencies(dataFolder, preprocessing, m, k, chi = None, save = True):
     accross samples in dataFolder.
 
     Inputs:
-        dataFolder: location of input data`
-        preprocessing: {'none', 'diag', 'diag_instance'}
+        dataFolder: location of input data
+        preprocessing: {None, 'none', 'diag'}
         m: numper of particles
         k: number of particle types
         chi: chi matrix
@@ -67,14 +70,8 @@ def getFrequencies(dataFolder, preprocessing, m, k, chi = None, save = True):
     if osp.exists(freq_path):
         return np.load(freq_path)
 
-    if preprocessing == 'none':
-        y_file = 'y.npy'
-    elif preprocessing == 'diag':
-        y_file = 'y_diag.npy'
-    elif preprocessing == 'diag_instance':
-        y_file = 'y_diag_instance.npy'
-    else:
-        raise Exception("Invalid preprocessing", preprocessing)
+    if preprocessing not in {None, 'none', 'diag'}:
+        raise Exception(f"Invalid preprocessing: {preprocessing}")
 
     converter = InteractionConverter(k)
     samples = make_dataset(dataFolder)
@@ -83,14 +80,11 @@ def getFrequencies(dataFolder, preprocessing, m, k, chi = None, save = True):
     for sample in samples:
         sampleid = int(osp.split(sample)[1][6:])
 
-        x = np.load(osp.join(sample, 'x.npy'))
+        x, psi = load_X_psi(sample)
 
-        y_path = osp.join(sample, y_file)
-        if osp.exists(y_path):
-            y = np.load(y_path)
-        else:
-            print("Warning: {} not found for sample {} - aborting".format(y_file, sample))
-            return None
+        y, ydiag = load_Y(sample)
+        if preprocessing == 'diag':
+            y = ydiag
 
         for i in range(m):
             xi = x[i]
@@ -326,11 +320,45 @@ def plot_genomic_distance_statistics_inner(datafolder, ifile, ofile, title,  mod
 
 def plot_genomic_distance_statistics(dataFolder):
     '''Wrapper function for plot_genomic_distance_statistics_inner.'''
-    for title in ['y', 'y_diag', 'y_diag_batch']:
+    for title in ['y', 'y_diag']:
         for stat in ['mean', 'var']:
             ifile = title + '.npy'
             ofile = osp.join(dataFolder, f"freq_stat_{stat}_{title}.png")
             plot_genomic_distance_statistics_inner(dataFolder, ifile, ofile, title, stat = stat)
+
+def plot_mean_vs_genomic_distance(y, path, config = None):
+    meanDist = DiagonalPreprocessing.genomic_distance_statistics(y/np.max(y))
+    plt.plot(meanDist)
+    plt.yscale('log')
+
+    if config is not None:
+        diag_chis = config['diag_chis']
+        m = len(y)
+        k = len(diag_chis)
+
+        # find chi transition points
+        transitions = [0]
+        prev_diag_chi = diag_chis[0]
+        for i in range(1, m):
+            diag_chi = diag_chis[math.floor(i/(m/k))]
+            if diag_chi != prev_diag_chi:
+                transitions.append(i)
+                prev_diag_chi = diag_chi
+
+        max_y = np.max(meanDist)
+        min_y = np.min(meanDist)
+        annotate_y = max_y + (max_y - min_y) * 0.05
+        x_offset = 0
+        for i, diag_chi in zip(transitions, diag_chis):
+            plt.axvline(i, linestyle = 'dashed', color = 'green')
+            plt.annotate(f'{np.round(diag_chi, 1)}', (i + x_offset, annotate_y))
+            annotate_y *= 0.8
+
+    plt.ylabel('Contact Probability')
+    plt.xlabel('Genomic Distance')
+    plt.savefig(osp.join(path, 'meanDist.png'))
+    plt.close()
+
 
 ### basic plots
 def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, plot_chi = False, sampleID = None):
@@ -341,6 +369,8 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
             continue
         print(path)
 
+        with open(osp.join(path, 'config.json'), 'r') as f:
+            config = json.load(f)
         x, psi, chi, e, s, y, ydiag = load_all(path, data_folder = dataFolder,
                                                 save = True,
                                                 throw_exception = False)
@@ -351,13 +381,7 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
             y_log = np.log(y + 1e-8)
             plot_matrix(y_log, osp.join(path, 'y_log.png'), title = 'log normalization', vmax = 'max')
 
-            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y/np.max(y))
-            plt.plot(meanDist)
-            plt.yscale('log')
-            plt.ylabel('Contact Probability')
-            plt.xlabel('Genomic Distance')
-            plt.savefig(osp.join(path, 'meanDist.png'))
-            plt.close()
+            plot_mean_vs_genomic_distance(y, path, config)
 
             y_prcnt_path = osp.join(path, 'y_prcnt.npy')
             if osp.exists(y_prcnt_path):
@@ -402,4 +426,4 @@ if __name__ == '__main__':
     basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False, sampleID = None)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
-    # getPairwiseContacts('/home/eric/sequences_to_contact_maps/dataset_12_11_21')
+    # getPairwiseContacts(data_dir)

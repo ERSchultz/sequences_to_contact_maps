@@ -55,14 +55,18 @@ def load_Y(sample_folder, throw_exception = True):
         y = None
 
     ydiag_file = osp.join(sample_folder, 'y_diag.npy')
-    if osp.exists(ydiag_file):
-        ydiag = np.load(ydiag_file)
-    elif y is not None:
-        meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
-        ydiag = DiagonalPreprocessing.process(y, meanDist)
-        np.save(ydiag_file, y_diag) # save in proper place
-    else:
-        ydiag = None
+    try:
+        if osp.exists(ydiag_file):
+            ydiag = np.load(ydiag_file)
+        elif y is not None:
+            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
+            ydiag = DiagonalPreprocessing.process(y, meanDist)
+            np.save(ydiag_file, y_diag) # save in proper place
+        else:
+            ydiag = None
+    except Exception:
+        print(f'Exception when loading y_diag for {sample_folder}')
+        raise
 
     return y, ydiag
 

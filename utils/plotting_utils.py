@@ -206,8 +206,8 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
     else:
         plt.savefig(osp.join(imagePath, 'train_val_loss.png'))
     plt.close()
-#### End section ####
 
+### Functions for plotting sequences ###
 def plot_seq_binary(seq, show = False, save = True, title = None, labels = None,
                     x_axis = True, ofile = 'seq.png'):
     '''Plotting function for *non* mutually exclusive binary particle types'''
@@ -274,126 +274,7 @@ def plot_seq_exclusive(seq, labels=None, X=None, show = False, save = True, titl
         plt.show()
     plt.close()
 
-def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
-                    size_in = 6, minVal = None, maxVal = None, prcnt = False,
-                    cmap = None, x_ticks = None, y_ticks = None):
-    """
-    Plotting function for 2D arrays.
-
-    Inputs:
-        arr: numpy array
-        ofile: save location
-        title: plot title
-        vmax: maximum value for color bar, 'mean' to set as mean value
-        size_in: size of figure x,y in inches
-        minVal: values in y less than minVal are set to 0
-        maxVal: values in y greater than maxVal are set to 0
-    """
-    if cmap is None:
-        if prcnt:
-            cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                     [(0,       'white'),
-                                                      (0.25,    'orange'),
-                                                      (0.5,     'red'),
-                                                      (0.74,    'purple'),
-                                                      (1,       'blue')], N=10)
-        else:
-            cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                     [(0,    'white'),
-                                                      (1,    'red')], N=126)
-    elif cmap.replace('-', '').lower() == 'bluered':
-        cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                 [(0, 'blue'),
-                                                 (0.5, 'white'),
-                                                  (1, 'red')], N=126)
-    else:
-        raise Exception('Invalid cmap: {}'.format(cmap))
-
-    if len(arr.shape) == 4:
-        N, C, H, W = arr.shape
-        assert N == 1 and C == 1
-        arr = arr.reshape(H,W)
-    elif len(arr.shape) == 3:
-        N, H, W = arr.shape
-        assert N == 1
-        y = arr.reshape(H,W)
-    else:
-        H, W = arr.shape
-
-    if minVal is not None or maxVal is not None:
-        arr = arr.copy() # prevent issues from reference type
-    if minVal is not None:
-        ind = arr < minVal
-        arr[ind] = 0
-    if maxVal is not None:
-        ind = arr > maxVal
-        arr[ind] = 0
-    plt.figure(figsize = (size_in, size_in))
-
-    # set min and max
-    if vmin == 'min':
-        vmin = np.percentile(arr, 1)
-        # uses 1st percentile instead of absolute min
-    elif vmin == 'abs_min':
-        vmin = np.min(arr)
-
-    if vmax == 'mean':
-        vmax = np.mean(arr)
-    elif vmax == 'max':
-        vmax = np.percentile(arr, 99)
-        # uses 99th percentile instead of absolute max
-    elif vmax == 'abs_max':
-        vmax = np.max(arr)
-
-    ax = sns.heatmap(arr, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap)
-    if x_ticks is None:
-        pass
-    elif len(x_ticks) == 0:
-        ax.axes.get_xaxis().set_visible(False)
-    else:
-        ax.set_xticks([i+0.5 for i in range(W)])
-        ax.axes.set_xticklabels(x_ticks)
-
-    if y_ticks is None:
-        pass
-    elif len(y_ticks) == 0:
-        ax.axes.get_yaxis().set_visible(False)
-    else:
-        ax.set_yticks([i+0.5 for i in range(H)])
-        ax.axes.set_yticklabels(y_ticks, rotation='horizontal')
-
-    if title is not None:
-        plt.title(title, fontsize = 16)
-    plt.tight_layout()
-    if ofile is not None:
-        plt.savefig(ofile)
-    else:
-        plt.show()
-    plt.close()
-
-def plot_matrix_gif(arr, dir, ofile = None, title = None, vmin = 0, vmax = 1,
-                    size_in = 6, minVal = None, maxVal = None, prcnt = False,
-                    cmap = None, x_ticks = None, y_ticks = None):
-    filenames = []
-    for i in range(len(arr)):
-        fname=osp.join(dir, f'{i}.png')
-        filenames.append(fname)
-        plot_matrix(arr[i,], fname, ofile, title, vmin, vmax, size_in, minVal,
-                    maxVal, prcnt, cmap, x_ticks, y_ticks)
-
-    # build gif
-    # filenames = [osp.join(dir, f'ovito0{i}.png') for i in range(100, 900)]
-    frames = []
-    for filename in filenames:
-        frames.append(imageio.imread(filename))
-
-    imageio.mimsave(ofile, frames, format='GIF', fps=1)
-
-    # remove files
-    for filename in set(filenames):
-        os.remove(filename)
-
-
+### Functions for analyzing model performance ###
 def plotPerClassAccuracy(val_dataloader, imagePath, model, opt, title = None):
     """Plots accuracy for each class in percentile normalized contact map."""
     if opt.y_preprocessing == 'prcnt' and opt.loss == 'mse':
@@ -1145,7 +1026,6 @@ def plotPredictedParticleTypesAlongPolymer(x, z, opt, subpath):
     plt.tight_layout()
     plt.savefig(osp.join(subpath, 'particle_type_vector_predicted.png'))
     plt.close()
-#### End section ####
 
 #### Functions for plotting xyz files ####
 def plot_xyz(xyz, L, x = None, ofile = None, show = True, title = None, legend = True):
@@ -1358,6 +1238,125 @@ def plot_centroid_distance_sample(dir, sample):
     plt.close()
 
 ### Primary scripts ###
+def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
+                    size_in = 6, minVal = None, maxVal = None, prcnt = False,
+                    cmap = None, x_ticks = None, y_ticks = None):
+    """
+    Plotting function for 2D arrays.
+
+    Inputs:
+        arr: numpy array
+        ofile: save location
+        title: plot title
+        vmax: maximum value for color bar, 'mean' to set as mean value
+        size_in: size of figure x,y in inches
+        minVal: values in y less than minVal are set to 0
+        maxVal: values in y greater than maxVal are set to 0
+    """
+    if cmap is None:
+        if prcnt:
+            cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                     [(0,       'white'),
+                                                      (0.25,    'orange'),
+                                                      (0.5,     'red'),
+                                                      (0.74,    'purple'),
+                                                      (1,       'blue')], N=10)
+        else:
+            cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                     [(0,    'white'),
+                                                      (1,    'red')], N=126)
+    elif cmap.replace('-', '').lower() == 'bluered':
+        cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                 [(0, 'blue'),
+                                                 (0.5, 'white'),
+                                                  (1, 'red')], N=126)
+    else:
+        raise Exception('Invalid cmap: {}'.format(cmap))
+
+    if len(arr.shape) == 4:
+        N, C, H, W = arr.shape
+        assert N == 1 and C == 1
+        arr = arr.reshape(H,W)
+    elif len(arr.shape) == 3:
+        N, H, W = arr.shape
+        assert N == 1
+        y = arr.reshape(H,W)
+    else:
+        H, W = arr.shape
+
+    if minVal is not None or maxVal is not None:
+        arr = arr.copy() # prevent issues from reference type
+    if minVal is not None:
+        ind = arr < minVal
+        arr[ind] = 0
+    if maxVal is not None:
+        ind = arr > maxVal
+        arr[ind] = 0
+    plt.figure(figsize = (size_in, size_in))
+
+    # set min and max
+    if vmin == 'min':
+        vmin = np.percentile(arr, 1)
+        # uses 1st percentile instead of absolute min
+    elif vmin == 'abs_min':
+        vmin = np.min(arr)
+
+    if vmax == 'mean':
+        vmax = np.mean(arr)
+    elif vmax == 'max':
+        vmax = np.percentile(arr, 99)
+        # uses 99th percentile instead of absolute max
+    elif vmax == 'abs_max':
+        vmax = np.max(arr)
+
+    ax = sns.heatmap(arr, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap)
+    if x_ticks is None:
+        pass
+    elif len(x_ticks) == 0:
+        ax.axes.get_xaxis().set_visible(False)
+    else:
+        ax.set_xticks([i+0.5 for i in range(W)])
+        ax.axes.set_xticklabels(x_ticks)
+
+    if y_ticks is None:
+        pass
+    elif len(y_ticks) == 0:
+        ax.axes.get_yaxis().set_visible(False)
+    else:
+        ax.set_yticks([i+0.5 for i in range(H)])
+        ax.axes.set_yticklabels(y_ticks, rotation='horizontal')
+
+    if title is not None:
+        plt.title(title, fontsize = 16)
+    plt.tight_layout()
+    if ofile is not None:
+        plt.savefig(ofile)
+    else:
+        plt.show()
+    plt.close()
+
+def plot_matrix_gif(arr, dir, ofile = None, title = None, vmin = 0, vmax = 1,
+                    size_in = 6, minVal = None, maxVal = None, prcnt = False,
+                    cmap = None, x_ticks = None, y_ticks = None):
+    filenames = []
+    for i in range(len(arr)):
+        fname=osp.join(dir, f'{i}.png')
+        filenames.append(fname)
+        plot_matrix(arr[i,], fname, ofile, title, vmin, vmax, size_in, minVal,
+                    maxVal, prcnt, cmap, x_ticks, y_ticks)
+
+    # build gif
+    # filenames = [osp.join(dir, f'ovito0{i}.png') for i in range(100, 900)]
+    frames = []
+    for filename in filenames:
+        frames.append(imageio.imread(filename))
+
+    imageio.mimsave(ofile, frames, format='GIF', fps=1)
+
+    # remove files
+    for filename in set(filenames):
+        os.remove(filename)
+
 def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, dataset = None):
     if model is None:
         model, train_loss_arr, val_loss_arr = load_saved_model(opt, verbose = True)
