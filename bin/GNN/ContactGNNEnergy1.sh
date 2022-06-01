@@ -26,8 +26,8 @@ EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
-id=159
-for lr in 1e-3
+id=160
+for lr in 1e-4
 do
   train
   id=$(( $id + 1 ))

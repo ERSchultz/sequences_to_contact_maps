@@ -170,9 +170,9 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    plot_diag_vs_diag_chi()
+    # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
     # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
-    # plot_combined_models('ContactGNNEnergy', [150, 158])
+    plot_combined_models('ContactGNNEnergy', [158, 159])
     # main()
