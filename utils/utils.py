@@ -10,6 +10,7 @@ import numpy as np
 import scipy.sparse as sp
 import torch
 from numba import jit, njit
+from scipy.ndimage import uniform_filter
 from scipy.stats import pearsonr, spearmanr
 from sklearn.decomposition import PCA
 from sympy import solve, symbols
@@ -532,3 +533,100 @@ def print_size(arr, name = '', file = sys.stdout):
         if size > 1:
             print(f'{name} size: {np.round(size, 1)} {size_name}', file = file)
             return
+
+class SCC():
+    '''
+    Class for calculation of SCC as defined by https://pubmed.ncbi.nlm.nih.gov/28855260/
+    '''
+    def __init__(self):
+        self.r_2k_dict = {} # memoized solution for var_stabilized r_2k
+
+    def r_2k(self, x_k, y_k, var_stabilized):
+        '''
+        Compute r_2k (numerator of pearson correlation)
+
+        Inputs:
+            x: contact map
+            y: contact map of same shape as x
+            var_stabilized: True to use var_stabilized version
+        '''
+        # x and y are stratums
+        if var_stabilized:
+            N_k = len(x_k)
+            if N_k in self.r_2k_dict:
+                result = self.r_2k_dict[N_k]
+            else:
+                result = np.var(np.arange(1, N_k+1)/N_k)
+                self.r_2k_dict[N_k] = result
+            return result
+        else:
+            return math.sqrt(np.var(x_k) * np.var(y_k))
+
+    def mean_filter(x, size):
+        return uniform_filter(x, size, mode = 'constant') / (size)**2
+
+    def scc(self, x, y, h = 3, K = None, var_stabilized = False, verbose = False):
+        '''
+        Compute scc between contact map x and y.
+
+        Inputs:
+            x: contact map
+            y: contact map of same shape as x
+            h: span of convolutional kernel (width = (1+2h))
+            K: maximum stratum (diagonal) to consider (None for all)
+            var_stabilized: True to use var_stabilized r_2k
+            verbose: True to print when nan found
+        '''
+        x = SCC.mean_filter(x, 1+2*h)
+        y = SCC.mean_filter(y, 1+2*h)
+
+        if K is None:
+            K = len(y) - 2
+
+        num = 0
+        denom = 0
+        nan_list = []
+        for k in range(1, K):
+            # get stratum (diagonal) of contact map
+            x_k = np.diagonal(x, k)
+            y_k = np.diagonal(y, k)
+
+            N_k = len(x_k)
+            r_2k = self.r_2k(x_k, y_k, var_stabilized)
+            p_k, _ = pearsonr(x_k, y_k)
+
+            if np.isnan(p_k):
+                # nan is hopefully rare so just set to 0
+                nan_list.append(k)
+                p_k = 0
+                if verbose:
+                    print(f'k={k}')
+                    print(x_k)
+                    print(y_k)
+
+            num += N_k * r_2k * p_k
+            denom += N_k * r_2k
+
+        print(f'{len(nan_list)} nans: k = {nan_list}')
+        return num / denom
+
+def test():
+    scc = SCC()
+    dir = '/home/erschultz/sequences_to_contact_maps/dataset_05_18_22/samples/sample7'
+    x = np.load(osp.join(dir, 'y.npy'))
+    dir = osp.join(dir, 'PCA-normalize-diagOn/k4/replicate1/y.npy')
+    y = np.load(dir)
+
+    t0 = time.time()
+    print(scc.scc(x,y))
+    tf = time.time()
+    print_time(t0, tf, 'scc')
+
+    t0 = time.time()
+    print(scc.scc(x,y))
+    tf = time.time()
+    print_time(t0, tf, 'scc')
+
+
+if __name__ == '__main__':
+    test()
