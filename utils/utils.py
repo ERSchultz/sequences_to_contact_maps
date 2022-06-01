@@ -577,8 +577,8 @@ class SCC():
             var_stabilized: True to use var_stabilized r_2k
             verbose: True to print when nan found
         '''
-        x = SCC.mean_filter(x, 1+2*h)
-        y = SCC.mean_filter(y, 1+2*h)
+        x = SCC.mean_filter(x.astype(np.float64), 1+2*h)
+        y = SCC.mean_filter(y.astype(np.float64), 1+2*h)
 
         if K is None:
             K = len(y) - 2
@@ -607,25 +607,22 @@ class SCC():
             num += N_k * r_2k * p_k
             denom += N_k * r_2k
 
-        print(f'{len(nan_list)} nans: k = {nan_list}')
+        if len(nan_list) > 0:
+            print(f'{len(nan_list)} nans: k = {nan_list}')
         return num / denom
 
 def test():
     scc = SCC()
-    dir = '/home/erschultz/sequences_to_contact_maps/dataset_05_18_22/samples/sample7'
+    dir = '/home/erschultz/sequences_to_contact_maps/dataset_05_18_22/samples/sample1'
     x = np.load(osp.join(dir, 'y.npy'))
-    dir = osp.join(dir, 'PCA-normalize-diagOn/k4/replicate1/y.npy')
+    dir = osp.join(dir, 'GNN-150-E-diagOn/knone/replicate1/y.npy')
     y = np.load(dir)
 
-    t0 = time.time()
-    print(scc.scc(x,y))
-    tf = time.time()
-    print_time(t0, tf, 'scc')
-
-    t0 = time.time()
-    print(scc.scc(x,y))
-    tf = time.time()
-    print_time(t0, tf, 'scc')
+    for _ in range(2):
+        t0 = time.time()
+        print(scc.scc(x,y, var_stabilized = False, verbose = True))
+        tf = time.time()
+        print_time(t0, tf, 'scc')
 
 
 if __name__ == '__main__':
