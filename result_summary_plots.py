@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import statsmodels.api as sm
 from sklearn.decomposition import PCA
-from sklearn.linear_model import Lasso, LinearRegression, Ridge
 from sklearn.metrics import mean_squared_error
 from utils.argparse_utils import ArgparserConverter
 from utils.energy_utils import s_to_E
@@ -28,7 +27,6 @@ def getArgs():
     parser.add_argument('--sample_folder', type=AC.str2None, default=None, help='None to infer from --dataset and --sample')
     parser.add_argument('--method', type=AC.str2None, default='GNN', help = 'parametrization method')
     parser.add_argument('--model_id', type=AC.str2int, help='model ID if method == GNN')
-    parser.add_argument('--linear_model', type=str, default='ols', help='type of linear model {ols, ridge, lasso}')
     parser.add_argument('--alpha', type=float, default=1.0, help='alpha for linear model')
     parser.add_argument('--k', type=AC.str2int, help='k for method')
     parser.add_argument('--plot', type=AC.str2bool, default=False, help='True to plot s_hat and s_dif')
@@ -249,36 +247,6 @@ def predict_chi_in_psi_basis(psi, s, psi_letters = None, args = None):
         np.save(osp.join(args.odir, args.save_file), hat_chi)
 
     return hat_chi
-
-def find_linear_combinations(x, args, PC, verbose = False):
-    # deprecated function to calculate PC from linear regression on x
-    m, k = x.shape
-    for j in range(2):
-        print('PC {}'.format(j+1), file = args.log_file)
-
-        # correlations
-        for i in range(k):
-            stat = pearson_round(x[:, i], PC[j])
-            print('\tCorrelation with particle type {}: {}'.format(i, stat), file = args.log_file)
-
-        # linear regression
-        if verbose:
-            x2 = sm.add_constant(x)
-            est = sm.OLS(PC[j], x2)
-            est2 = est.fit()
-            print(est2.summary(), '\n', file = args.log_file)
-        else:
-            if args.linear_model == 'ols':
-                reg = LinearRegression()
-            elif args.linear_model == 'ridge':
-                reg = Ridge(args.alpha)
-            elif args.linear_model == 'lasso':
-                reg = Lasso(args.alpha)
-            reg.fit(x, PC[j])
-            score = reg.score(x, PC[j])
-            print('\n\tLinear Regression', file = args.log_file)
-            print(f'\tR^2: {score}', file = args.log_file)
-            print(f'\tcoefficients: {reg.coef_}', file = args.log_file)
 
 def load_method_S(root, sample_folder, sample, method, k, model_id):
     if method == 'GNN':

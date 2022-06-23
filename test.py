@@ -21,7 +21,7 @@ from utils.argparse_utils import (ArgparserConverter, finalize_opt,
                                   get_base_parser)
 from utils.base_networks import AverageTo2d
 from utils.energy_utils import s_to_E
-from utils.load_utils import load_sc_contacts
+from utils.load_utils import load_sc_contacts, save_sc_contacts
 from utils.networks import get_model
 from utils.plotting_utils import plot_matrix, plot_top_PCs
 from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
@@ -454,7 +454,6 @@ def binom_nll(p, y, n, lmbda = 100):
 
     return likelihood + reg
 
-
 def s_sym_pca_mse(chi, v, s_sym):
     s = v @ triu_to_full(chi) @ v.T
 
@@ -503,49 +502,74 @@ def plot_binom_helper2(x, y, xlabel, ylabel, ofile):
     plt.savefig(ofile)
     plt.close()
 
-def get_plaid_goal(y, v):
-    obj_goal = []
-    y_max = np.max(y)
-    m, k = v.shape
+def main():
+    n_samples = 10
+    for sample in [5, 15, 25, 34, 35]:
+        dir = f'/home/erschultz/dataset_test3/samples/sample{sample}'
+        odir = osp.join(dir, 'sc_contacts')
+        y = np.load(osp.join(dir, 'y.npy')).astype(np.float32)
+        y_proj_arr = []
+        pca = PCA(n_components = 10)
+        y_proj = pca.fit_transform(y).flatten().reshape(1, -1)
 
-    for i in range(k):
-        vi = v[:, i]
-        for j in range(k):
-            if j < i:
-                # don't double count
-                continue
-            vj = v[:, j]
-            result = vi @ y @ vj
-            result /= y_max # convert from freq to prob
-            obj_goal.append(result)
+        save_sc_contacts(None, odir, triu = False, sparsify = False, overwrite = True,
+                        fmt = 'txt', jobs = 10)
 
-    return np.array(obj_goal)
+        avg_contacts = 0
+        for i in range(n_samples):
+            y_i = np.loadtxt(osp.join(odir, f'y_sc_{i}.txt'))
+            proj = pca.transform(y_i)
+            y_proj_arr.append(proj.flatten())
 
-def check_max_ent_goal():
-    dir = '/home/erschultz/sequences_to_contact_maps/dataset_04_27_22/samples/sample1'
-    maxentdir = osp.join(dir, 'PCA-normalize/k10/replicate1')
-    y = np.load(osp.join(dir, 'y.npy')).astype(np.float64)
-    y /= np.max(y)
-    yhat = np.load(osp.join(maxentdir, 'y.npy')).astype(np.float64)
-    yhat /= np.max(yhat)
-    psi = np.load(osp.join(maxentdir, 'resources/x.npy'))
-    # print(psi)
+            contacts = int(np.sum(y_i) / 2)
+            avg_contacts += contacts
+            sparsity = np.round(np.count_nonzero(y_i) / len(y_i)**2 * 100, 2)
+            plot_matrix(y_i, osp.join(odir, f'y_sc_{i}.png'), title = f'# contacts: {contacts}, sparsity: {sparsity}%', vmin = 0, vmax = 1)
 
-    diff = get_plaid_goal(y, psi) - get_plaid_goal(yhat, psi)
-    # print(diff)
-    print(np.sum(np.abs(diff)))
+        avg_contacts /= n_samples
+        avg_contacts = int(avg_contacts)
+        print(f'avg_contacts: {avg_contacts}')
 
-    maxentdir = osp.join(dir, 'PCA-MSE/k3')
-    yhat = np.load(osp.join(maxentdir, 'y.npy')).astype(np.float64)
-    yhat /= np.max(yhat)
+        y = np.triu(y)
+        np.fill_diagonal(y, 0)
+        m = len(y)
+        y = y[np.triu_indices(m)] # flatten
+        y /= np.sum(y)
+        rng = np.random.default_rng()
+        for i in range(n_samples):
+            y_i = np.zeros_like(y)
+            for j in rng.choice(np.arange(len(y)), size = avg_contacts, p = y):
+                y_i[j] += 1
+
+            y_i = triu_to_full(y_i)
+            proj = pca.transform(y_i)
+            y_proj_arr.append(proj.flatten())
+
+            contacts = int(np.sum(y_i) / 2)
+            sparsity = np.round(np.count_nonzero(y_i) / len(y_i)**2 * 100, 2)
+            plot_matrix(y_i, osp.join(odir, f'y_sample_{i}.png'), title = f'# contacts: {contacts}, sparsity: {sparsity}%', vmin = 0, vmax = 1)
+
+        y_proj_arr = np.array(y_proj_arr)
+        pca = PCA(n_components = 2)
+        proj = pca.fit_transform(y_proj_arr)
+        for i, vals in enumerate(proj):
+            if i >= n_samples:
+                shape = 'v'
+                label = f'{i - n_samples}'
+            else:
+                shape = 'o'
+                label = f'sc_{i}'
+            plt.scatter(vals[0], vals[1], label = label, marker = shape)
+            i += 1
+        plt.legend()
+        plt.savefig(osp.join(dir, 'sc vs sample.png'))
+        plt.close()
 
 
-    diff = get_plaid_goal(y, psi) - get_plaid_goal(yhat, psi)
-    # print(diff)
-    print(np.sum(np.abs(diff)))
+
 
 if __name__ == '__main__':
+    main()
     # binom()
-    check_max_ent_goal()
     # edit_argparse()
     # debugModel('ContactGNNEnergy')

@@ -572,7 +572,7 @@ class SCC():
         Inputs:
             x: contact map
             y: contact map of same shape as x
-            h: span of convolutional kernel (width = (1+2h))
+            h: span of mean filter (width = (1+2h))
             K: maximum stratum (diagonal) to consider (None for all)
             var_stabilized: True to use var_stabilized r_2k
             verbose: True to print when nan found

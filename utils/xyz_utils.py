@@ -161,7 +161,7 @@ def find_dist_between_centroids(centroids):
 
     return distances
 
-def xyz_to_contact_grid(xyz, grid_size, sparse_format = False):
+def xyz_to_contact_grid(xyz, grid_size, sparse_format = False, dtype = np.int32):
     '''
     Converts xyz to contact map via grid.
 
@@ -173,15 +173,15 @@ def xyz_to_contact_grid(xyz, grid_size, sparse_format = False):
         N, m, _ = xyz.shape
     else:
         N = 1
-        m, _ = xyz.shape
-        xyz = xyz.reshape(-1, m, 3)
+        m, d = xyz.shape
+        xyz = xyz.reshape(1, m, d)
 
-    contact_map = np.zeros((m, m))
+    contact_map = np.zeros((m, m)).astype(dtype)
     for n in range(N):
         # use dictionary to find contacts
         grid_dict = defaultdict(list) # grid (x, y, z) : bead id list
         for i in range(m):
-            grid_i = tuple([d // grid_size for d in xyz[n, i, :]])
+            grid_i = tuple([d // grid_size for d in xyz[n, i, :3]])
             grid_dict[grid_i].append(i)
 
         for bead_list in grid_dict.values():

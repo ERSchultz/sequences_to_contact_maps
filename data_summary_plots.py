@@ -354,8 +354,8 @@ def plot_mean_vs_genomic_distance(y, path, config = None):
             plt.annotate(f'{np.round(diag_chi, 1)}', (i + x_offset, annotate_y))
             annotate_y *= 0.8
 
-    plt.ylabel('Contact Probability')
-    plt.xlabel('Genomic Distance')
+    plt.ylabel('Contact Probability', fontsize = 16)
+    plt.xlabel('Polymer Distance (beads)', fontsize = 16)
     plt.savefig(osp.join(path, 'meanDist.png'))
     plt.close()
 
@@ -369,8 +369,15 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
             continue
         print(path)
 
-        with open(osp.join(path, 'config.json'), 'r') as f:
-            config = json.load(f)
+        config_file = osp.join(path, 'config.json')
+        chi_diag = None
+        if osp.exists(config_file):
+            with open(config_file, 'r') as f:
+                config = json.load(f)
+            if "diag_chis" in config:
+                chi_diag = np.array(config["diag_chis"])
+        else:
+            config = None
         x, psi, chi, e, s, y, ydiag = load_all(path, data_folder = dataFolder,
                                                 save = True,
                                                 throw_exception = False)
@@ -398,6 +405,12 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
             if plot_chi:
                 plot_matrix(chi, osp.join(path, 'chi.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
+        if chi_diag is not None:
+            plt.plot(chi_diag)
+            plt.xlabel('bin', fontsize = 16)
+            plt.ylabel('diag chi', fontsize = 16)
+            plt.savefig(osp.join(path, 'chi_diag.png'))
+
         if plot_energy:
             if s is not None:
                 plot_matrix(s, osp.join(path, 's.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
@@ -423,7 +436,7 @@ if __name__ == '__main__':
     dir = '/home/erschultz'
     dataset = 'dataset_test3'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False, sampleID = None)
+    basic_plots(data_dir, plot_y = False, plot_energy = False, plot_x = False, sampleID = 200)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

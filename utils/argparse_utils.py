@@ -314,7 +314,6 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     process_transforms(opt)
 
     # move data to scratch
-    print(opt.use_scratch, opt.use_scratch and not local)
     if opt.use_scratch and not local:
         copy_data_to_scratch(opt)
 

@@ -24,12 +24,12 @@ from utils.load_utils import save_sc_contacts
 from utils.plotting_utils import plot_matrix, plot_sc_contact_maps_inner
 from utils.utils import (DiagonalPreprocessing, pearson_round, print_size,
                          print_time, triu_to_full)
-from utils.xyz_utils import (lammps_load, xyz_load, xyz_to_contact_grid)
+from utils.xyz_utils import lammps_load, xyz_load, xyz_to_contact_grid
 
 import dmaps  # https://github.com/ERSchultz/dmaps
 
 
-def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample1'):
+def getArgs(default_dir='/home/erschultz/dataset_test2/samples/combined'):
     parser = argparse.ArgumentParser(description='Base parser')
     AC = ArgparserConverter()
 
@@ -49,7 +49,7 @@ def getArgs(default_dir='/home/erschultz/dataset_test/samples/sample1'):
     parser.add_argument('--sparse_format', action='store_true',
                         help='True to store sc_contacts in sparse format')
     parser.add_argument('--down_sampling', type=int, default=1)
-    parser.add_argument('--its', type=int, default=1,
+    parser.add_argument('--its', type=int, default=3,
                         help='number of iterations')
     parser.add_argument('--chunk_size', type=int, default=500,
                         help='chunk size for pairwise_distances_chunk')
@@ -251,36 +251,78 @@ def tune_epsilon(input, ofile):
 
     return eps_final
 
-def plot_eigenvectors(v, xyz, odir):
+def plot_eigenvectors_inner(v, odir, fig_label, labels = None):
     N = len(v)
+    if labels is not None:
+        if np.min(labels) == 1:
+            labels -= 1
+            # switch to zero based indexing
+        k = len(np.unique(labels))
+        if k <= 10:
+            cmap = matplotlib.cm.get_cmap('tab10')
+        else:
+            cmap = matplotlib.cm.get_cmap('tab20')
+        ind = np.arange(k) % cmap.N
+        colors = plt.cycler('color', cmap(ind))
 
-    # plot first 2 nonzero eigenvectors, color by order
-    sc = plt.scatter(v[:,1]/v[:,0], v[:,2]/v[:,0], c = np.arange(0, N, 1))
-    plt.colorbar(sc)
+    # eig 2 and 3
+    if labels is None:
+        sc = plt.scatter(v[:,1]/v[:,0], v[:,2]/v[:,0], c = np.arange(0, N, 1))
+        plt.colorbar(sc)
+    else:
+        for cluster, c in zip(range(k), colors):
+            ind = np.argwhere(labels == cluster)
+            plt.scatter(v[ind, 1]/v[ind, 0], v[ind, 2]/v[ind, 0], color = c['color'],
+                        label = cluster)
+        plt.legend()
     plt.xlabel(r'$v_2$', fontsize = 16)
     plt.ylabel(r'$v_3$', fontsize = 16)
-    plt.savefig(osp.join(odir, 'projection23.png'.strip('_')))
+    plt.tight_layout()
+    plt.savefig(osp.join(odir, f'projection23_{fig_label}.png'))
     plt.close()
 
-    # plot 3 and 4 eigenvectors, color by order
-    sc = plt.scatter(v[:,2]/v[:,0], v[:,3]/v[:,0], c = np.arange(0, N, 1))
-    plt.colorbar(sc)
+    # eig 3 and 4
+    if labels is None:
+        sc = plt.scatter(v[:,2]/v[:,0], v[:,3]/v[:,0], c = np.arange(0, N, 1))
+        plt.colorbar(sc)
+    else:
+        for cluster, c in zip(range(k), colors):
+            ind = np.argwhere(labels == cluster)
+            plt.scatter(v[ind, 2]/v[ind, 0], v[ind, 3]/v[ind, 0], color = c['color'],
+                        label = cluster)
+        plt.legend()
     plt.xlabel(r'$v_3$', fontsize = 16)
     plt.ylabel(r'$v_4$', fontsize = 16)
-    plt.savefig(osp.join(odir, 'projection34.png'.strip('_')))
+    plt.tight_layout()
+    plt.savefig(osp.join(odir, f'projection34_{fig_label}.png'))
     plt.close()
 
-    # plot 2,3,4 eigenvectors, color by order
+    # eig 2, 3, 4
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
-    sc = ax.scatter(v[:,1]/v[:,0], v[:,2]/v[:,0], v[:,3]/v[:,0], c = np.arange(0, N, 1))
-    plt.colorbar(sc)
+    if labels is None:
+        sc = ax.scatter(v[:,1]/v[:,0], v[:,2]/v[:,0], v[:,3]/v[:,0],
+                        c = np.arange(0, N, 1))
+        plt.colorbar(sc)
+    else:
+        for cluster, c in zip(range(k), colors):
+            ind = np.argwhere(labels == cluster)
+            ax.scatter(v[ind,1]/v[ind,0], v[ind,2]/v[ind,0], v[ind,3]/v[ind,0],
+                        color = c['color'], label = cluster)
+        plt.legend()
     ax.set_xlabel(r'$v_2$', fontsize = 16)
     ax.set_ylabel(r'$v_3$', fontsize = 16)
     ax.set_zlabel(r'$v_4$', fontsize = 16)
     plt.tight_layout()
-    plt.savefig(osp.join(odir, 'projection234.png'.strip('_')))
+    plt.savefig(osp.join(odir, f'projection234_{fig_label}.png'))
     plt.close()
+
+def plot_eigenvectors(v, xyz, odir):
+    N = len(v)
+    _, _, d = xyz.shape
+
+    # color by order
+    plot_eigenvectors_inner(v, odir, 'time')
 
     # k_means
     num_vecs = 3
@@ -290,7 +332,7 @@ def plot_eigenvectors(v, xyz, odir):
         kmeans = KMeans(n_clusters=k).fit(X)
         sil_scores.append(silhouette_score(X, kmeans.labels_))
     plt.plot(np.arange(2, 10, 1), sil_scores)
-    plt.savefig(osp.join(odir, 'k_means_sil_score.png'.strip('_')))
+    plt.savefig(osp.join(odir, 'k_means_sil_score.png'))
     plt.close()
     k = np.argmax(sil_scores) + 2
     print(f'Using k = {k} for k_means')
@@ -299,52 +341,17 @@ def plot_eigenvectors(v, xyz, odir):
     # plot average contact map within cluster
     for cluster in range(k):
         ind = np.argwhere(kmeans.labels_ == cluster)
-        xyz_ind = xyz[ind].reshape(len(ind), -1, 3)
+        xyz_ind = xyz[ind].reshape(len(ind), -1, d)
         y_cluster = xyz_to_contact_grid(xyz_ind, 28.7)
         plot_matrix(y_cluster, osp.join(odir, f'cluster{cluster}_contacts.png'),
                     vmax = 'mean', title = f'cluster {cluster}')
 
-    # plot first 2 nonzero eigenvectors, color by kmeans
-    cmap = matplotlib.cm.get_cmap('tab10')
-    ind = np.arange(k) % cmap.N
-    colors = plt.cycler('color', cmap(ind))
-    for cluster, c in zip(range(k), colors):
-        ind = np.argwhere(kmeans.labels_ == cluster)
-        plt.scatter(v[ind, 1]/v[ind, 0], v[ind, 2]/v[ind, 0], color = c['color'],
-                    label = cluster)
-        plt.xlabel(r'$v_2$', fontsize = 16)
-        plt.ylabel(r'$v_3$', fontsize = 16)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(osp.join(odir, 'projection23_kmeans.png'.strip('_')))
-    plt.close()
+    # color by kmeans
+    plot_eigenvectors_inner(v, odir, 'kmeans', kmeans.labels_)
 
-    # plot 3 and 4 eigenvectors, color by kmeans
-    for cluster, c in zip(range(k), colors):
-        ind = np.argwhere(kmeans.labels_ == cluster)
-        plt.scatter(v[ind, 2]/v[ind, 0], v[ind, 3]/v[ind, 0], color = c['color'],
-                    label = cluster)
-    plt.xlabel(r'$v_3$', fontsize = 16)
-    plt.ylabel(r'$v_4$', fontsize = 16)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(osp.join(odir, 'projection34_kmeans.png'.strip('_')))
-    plt.close()
-
-
-    # plot 2,3,4 eigenvectors, color by kmeans
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-    for cluster, c in zip(range(k), colors):
-        ind = np.argwhere(kmeans.labels_ == cluster)
-        ax.scatter(v[ind,1]/v[ind,0], v[ind,2]/v[ind,0], v[ind,3]/v[ind,0], color = c['color'], label = cluster)
-    ax.set_xlabel(r'$v_2$', fontsize = 16)
-    ax.set_ylabel(r'$v_3$', fontsize = 16)
-    ax.set_zlabel(r'$v_4$', fontsize = 16)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(osp.join(odir, 'projection234_kmeans.png'.strip('_')))
-    plt.close()
+    # color by ground truth label
+    if d > 3: # ground truth exists
+        plot_eigenvectors_inner(v, odir, 'ground_truth', xyz[:, 0, 3])
 
 def plot_contacts(dir, order, args):
     for order, folder in zip([range(args.N), order], ['sc_contacts_time', 'sc_contacts_traj']):
@@ -381,9 +388,12 @@ def plot_contacts(dir, order, args):
         imageio.mimsave(osp.join(odir, 'sc_contacts.gif'), frames, format='GIF', fps=2)
 
 def load_helper(args, contacts = False):
+    npy_file = osp.join(args.dir, 'xyz.npy')
     xyz_file = osp.join(args.dir, 'data_out/output.xyz')
     lammps_file = osp.join(args.dir, 'traj.dump.lammpstrj')
-    if osp.exists(xyz_file):
+    if osp.exists(npy_file):
+        xyz = np.load(npy_file)
+    elif osp.exists(xyz_file):
         xyz = xyz_load(xyz_file,
                     multiple_timesteps = True, save = True, N_min = 10,
                     down_sampling = args.down_sampling)
@@ -543,7 +553,7 @@ def xyz_diffusion():
 def contact_diffusion():
     args = getArgs()
     xyz = load_helper(args, True)
-    args.N, args.m, _ = xyz.shape
+    args.N, args.m, args.d = xyz.shape
 
     order = None
     odir_prev = None
@@ -676,7 +686,8 @@ def contact_laplacian():
                                                     stat = 'spearman'))
 
             np.savetxt(osp.join(args.odir_i, 'order.txt'), order, fmt='%i')
-            plot_eigenvectors(v, xyz, args.odir_i)
+            if args.plot:
+                plot_eigenvectors(v, xyz, args.odir_i)
 
             if args.update_mode == 'eig':
                 sc_contacts = Updater.update_eig_chunk(v[:, 1], osp.join(odir_prev, 'sc_contacts'), args.odir_i)

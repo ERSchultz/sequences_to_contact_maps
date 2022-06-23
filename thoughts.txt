@@ -1,0 +1,92 @@
+Questions:
+-how do genes interact with long distance regulatory elements (i.e. enhancers)?
+--what forces drive these interactions? (ie which epigenetic marks?)
+--what are the dynamics of these interactions
+--are TADs the only answer?
+-how do TADs and plaid patterns interact?
+-what is a single cell contact map
+--is it just a single structure draw from the bulk?
+--can we run max ent on a single structure draw from the bulk and retrieve the bulk parameters? or the bulk structural ensemble?
+--if two sc hic maps are close, by definition, their (estimated) structures must be close (no comment on real structures), but if the two hic maps are far away, are the structures different? by how much?
+--is the space of structures of a sc hic map the same as the bulk (A), a subset of the bulk (B), or a different distribution entirely (C)??
+---A) suggests model is not capturing differences in hic maps properly
+---B) suggests that sc hic maps can be considered draws from the bulk
+---C) suggests that sc hic maps are not simply draws from the bulk
+
+Datasets:
+-nagano 2017: cell cycle dataset
+--major difference is diagonal effect
+--also observe changes to insulation profile of TADs
+--and A/B compartmentalization
+--"Overall, the ordering of TADs according to A-association score is significantly correlated with a linear model weighting H3K4me1 and H3K4me3 scores (Pearson’s r= 0.79, P< 0.001). "
+--can we model these epi marks and show how changes to their interactions causes changes in A-association score
+--what proportion of the time does a given TAD spend in A vs B? - do they switch compartments between cells or within cells?
+-Amat 2019: salt shock - only two conditions - disruption of A/B compartments - major TAD disruption
+--experimental paper with more insight into effect of osmolarity: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3576538/
+--osmolarity and disease: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3438915/
+--could we get a salt shock dataset with single cell resolution over gradient of concentrations??
+-ramani: 4 human cell lines
+-flymer: mouse zygotes and oocytes
+-tan: lymphoblast and blood cell
+--structure determination via approach from Stevens 2017
+--uses radii of gyration of structure to measure TADs
+--can identify lymphblast cell types based on specific E-P loops OR from the compartment profile - what is the mechanism of this difference?
+-salt shock sc-hic: perform sc-hi on cells treated to different levels of osmotic shock
+-collombet: embryogenesis
+--maternal vs paternal domains
+--compares epigenetic marks to different domain types (i.e. at what stage a domain appears) - can we model these changes as causal?
+--parentally preformed domains are depleted of CTCF - so we could get away without modelling it?
+---de novo domains still have CTCF though...
+--UMAP in figure 1f only shows clustering by embryonic stage - what about cell differentiation as shown by diffusion map on RNA-seq in Haghverdi et al 2015
+
+Methods:
+-GNN: relevant for settings where we want to model many contact maps AND the prominent variation is the plaid/diagonal pattern - ie no TADs
+-Diffusion Map: relevant for any setting with sufficent contact maps where we want to determine their collective variables
+--potentiall useful in setting where we expect transition to occur but don't know what it is a priori
+--can potentially be performed iteratively to impute sc-contact maps
+-TICG model: simulation model of plaid/diagonal effect
+-Higashi: used to impute/embed sc-contact maps
+
+TODOS:
+-how does diffusion map imputation method compare to using higashi + diffusion map
+-explore synthetic sc dataset with varying diagonal effect - a la cell cycle dataset
+
+Thoughts:
+-order parameters:
+--quantify 3d locations of genes - e.g. peripheral vs central or distance between promoters and enhancers 
+---hic already identifies promoter enhancer contacts - but not distances or durations 
+---hic already identifies A/B separation
+-density of A vs B?
+
+-diffusion map on 100s of bulk hic datasets to see variation accross cell types
+--could combine with gene expression to find structural patterns that predict gene expression
+
+-quantify effect of different epigentic marks
+--existing maxent approach does this too
+
+-initial idea for diffusion map was to find temporal trajectory
+--the diffusion map can certainly get a trajectory - but how do we show that this trajectory is time - and what does this tell us?
+--seems like we can't
+
+-can you do max ent with YV^1 instead of with V^1 (V^1 is PC1, Y is the data)
+--if so, for single cell data you could just get the labels as Y_iV^1 and reuse the chi from a bulk simulation
+--NOTE: this assumes the parameters are the same and that only the labels change!! - so not helpful for situations where interactions change, but could be helpful for generatlization?? - still need a contact map though, it would be nice to generalize without needing a hic map
+
+-to tell if SCC is good you need to compare to SCC between biological replicates
+
+-whats the deal with the increase in diagonal contact probability for high distance
+--if this was noise we would expect to see decreases as well
+
+-can we do something interesting with higher-order chromatin interactions?
+--does our model reproduce this
+
+-cannot estimate structure exactly, but we can use simulation to robustly estimate structural properties of sc-hic-map
+
+-TADS: 
+--hybrid MC-MD for TADs??
+--can we do TADs in TICG in 'unsupervised' manner (i.e. requiring only hic data)?
+---e.g. use TAD caller and define start and end as those loci
+--does a TICG simulation with only diagonal effect show TAD-like patterns for single frames??
+---look at pairwise spatial distance matrix
+---if using a term like BIn Zhang CTCF, if you delete term 3 do you see weaker TAD boundaries????
+

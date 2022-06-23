@@ -237,19 +237,34 @@ def load_final_max_ent_S(replicate_path, max_it_path = None):
     return s
 
 def save_sc_contacts(xyz, odir, jobs = 5, triu = True, zero_diag = True,
-                     sparsify = False, overwrite = False, log_file = sys.stdout):
+                     sparsify = False, overwrite = False, fmt = 'npy',
+                     log_file = sys.stdout):
     '''
     Saves single cell contacts from sample_folder/data_out/output.xyz.
 
     Inputs:
-        xyz: None to load xyz
-        odir: dir to save to
-        jobs: Number of jobs
-        triu: True to flatten and upper triangularize sc_contact maps
-        zero_diag: True to zero diagonal
+        xyz (np.array or None): None to load xyz
+        odir (str): dir to save to
+        jobs (int): Number of jobs
+        triu (bool): True to flatten and upper triangularize sc_contact maps
+        zero_diag (bool): True to zero diagonal
         sparsify (bool): True to match experimental sparseness
+        overwrite (bool): True to overwrite existing data, False to load
+        fmt (str): format to save data in
+        log_file (file object): location to write to
     '''
     grid_size = 28.7
+    if xyz is None:
+        dir = osp.split(odir)[0]
+        xyz_file = osp.join(dir, 'data_out/output.xyz')
+        lammps_file = osp.join(dir, 'traj.dump.lammpstrj')
+        if osp.exists(xyz_file):
+            xyz = xyz_load(xyz_file, multiple_timesteps = True)
+        elif osp.exists(lammps_file):
+            xyz = lammps_load(lammps_file)
+        else:
+            raise Exception(f'xyz not found: {dir}')
+
     N, _, _ = xyz.shape
 
     if overwrite and osp.exists(odir):
@@ -262,9 +277,9 @@ def save_sc_contacts(xyz, odir, jobs = 5, triu = True, zero_diag = True,
     print(f'found {multiprocessing.cpu_count()} total CPUs, {len(os.sched_getaffinity(0))} available CPUs, using {jobs}')
     mapping = []
     for i in range(N):
-        ofile = osp.join(odir, f'y_sc_{i}.npy')
+        ofile = osp.join(odir, f'y_sc_{i}.{fmt}')
         if not osp.exists(ofile):
-            mapping.append((xyz[i], ofile, grid_size, triu, zero_diag, sparsify))
+            mapping.append((xyz[i], ofile, grid_size, triu, zero_diag, sparsify, fmt))
     if len(mapping) > 0:
         with multiprocessing.Pool(jobs) as p:
             p.starmap(save_sc_contacts_xyz, mapping)
@@ -272,27 +287,23 @@ def save_sc_contacts(xyz, odir, jobs = 5, triu = True, zero_diag = True,
     tf = time.time()
     print_time(t0, tf, 'sc save', file = log_file)
 
-def save_sc_contacts_xyz(xyz, ofile, grid_size, triu, zero_diag, sparsify):
+def save_sc_contacts_xyz(xyz, ofile, grid_size, triu, zero_diag, sparsify, fmt):
     m, _ = xyz.shape
 
-    contact_map = xyz_to_contact_grid(xyz, grid_size)
+    contact_map = xyz_to_contact_grid(xyz, grid_size, dtype = np.int8)
     if zero_diag:
         np.fill_diagonal(contact_map, 0)
     if sparsify:
-        rng = np.random.default_rng(135)
-        temp_contact_map = np.zeros_like(contact_map)
-        # wasn't sure how to do this in place and ensure symmetry
-        for i in range(m):
-            where = np.argwhere(contact_map[i])
-            if len(where) > 0:
-                where2 = rng.choice(where.reshape(-1))
-                temp_contact_map[i, where2] = 1
-                temp_contact_map[where2, i] = 1
-        contact_map = temp_contact_map
+        contact_map = sparsify_contact_map(contact_map)
     if triu:
         contact_map = contact_map[np.triu_indices(m)]
 
-    np.save(ofile, contact_map)
+    if fmt == 'npy':
+        np.save(ofile, contact_map)
+    elif fmt == 'txt':
+        np.savetxt(ofile, contact_map, fmt = '%d')
+    else:
+        raise Exception(f'Unrecognized format: {fmt}')
 
 def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
                     gaussian = False, zero_diag = False, jobs = 1, down_sampling = 1,
@@ -372,20 +383,11 @@ def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
 def load_sc_contacts_xyz(xyz, grid_size, triu, gaussian, zero_diag, sparsify, sparse_format):
     m, _ = xyz.shape
 
-    contact_map = xyz_to_contact_grid(xyz, grid_size)
+    contact_map = xyz_to_contact_grid(xyz, grid_size, dtype = np.int8)
     if zero_diag:
         np.fill_diagonal(contact_map, 0)
     if sparsify:
-        rng = np.random.default_rng(135)
-        temp_contact_map = np.zeros_like(contact_map)
-        # wasn't sure how to do this in place and ensure symmetry
-        for i in range(m):
-            where = np.argwhere(contact_map[i])
-            if len(where) > 0:
-                where2 = rng.choice(where.reshape(-1))
-                temp_contact_map[i, where2] = 1
-                temp_contact_map[where2, i] = 1
-        contact_map = temp_contact_map
+        contact_map = sparsify_contact_map(contact_map)
     if gaussian:
         contact_map = gaussian_filter(contact_map, sigma = 4)
     if triu:
@@ -394,3 +396,27 @@ def load_sc_contacts_xyz(xyz, grid_size, triu, gaussian, zero_diag, sparsify, sp
         contact_map = sp.csr_array(contact_map)
 
     return contact_map
+
+def sparsify_contact_map_old(contact_map):
+    # deprecated, doesn't guarantee row sums are 1
+    rng = np.random.default_rng(135)
+    temp = np.zeros_like(contact_map)
+    # wasn't sure how to do this in place and ensure symmetry
+    for i in range(len(contact_map)):
+        where = np.argwhere(contact_map[i])
+        if len(where) > 0:
+            where2 = rng.choice(where.reshape(-1))
+            temp[i, where2] = 1
+            temp[where2, i] = 1
+    return temp
+
+def sparsify_contact_map(contact_map):
+    rng = np.random.default_rng(135)
+    contact_map = np.triu(contact_map)
+    for i in range(len(contact_map)):
+        where = np.argwhere(contact_map[i])
+        contact_map[i] = 0
+        if len(where) > 0:
+            where2 = rng.choice(where.reshape(-1))
+            contact_map[i, where2] = 1
+    return contact_map + contact_map.T
