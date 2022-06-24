@@ -1,3 +1,4 @@
+import json
 import os
 import os.path as osp
 
@@ -5,8 +6,11 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 
+from .utils import DiagonalPreprocessing
 
-def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False, samples = None):
+
+def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False,
+                samples = None):
     """
     Make list data file paths.
 
@@ -50,7 +54,7 @@ class Names(Dataset):
 class SequencesContacts(Dataset):
     def __init__(self, dirname, toxx, toxx_mode, y_preprocessing, y_norm, x_reshape, ydtype,
                 y_reshape, crop, min_subtraction, names = False, minmax = False, min_sample = 0):
-        super(Sequences2Contacts, self).__init__()
+        super(SequencesContacts, self).__init__()
         self.toxx = toxx
         self.toxx_mode = toxx_mode
         self.y_norm = y_norm
@@ -135,7 +139,6 @@ class SequencesContacts(Dataset):
     def __len__(self):
         return len(self.paths)
 
-
 class Sequences(Dataset):
     def __init__(self, dirname, crop, x_reshape, names = False, min_sample = 0):
         super(Sequences, self).__init__()
@@ -155,6 +158,50 @@ class Sequences(Dataset):
 
         x = torch.tensor(x, dtype = torch.float32)
         result = [x]
+        if self.names:
+            result.append(self.paths[index])
+
+        return result
+
+    def __len__(self):
+        return len(self.paths)
+
+class DiagFunctions(Dataset):
+    '''
+    Dataset that contains mean contact probability along each diagonal (x)
+    and corresponding diagonal chi functions (y).
+    '''
+    def __init__(self, dirname, min_sample = 0, max_sample = float('inf'),
+                    names = False):
+        super(DiagFunctions, self).__init__()
+        self.names = names
+        self.paths = sorted(make_dataset(dirname, minSample = min_sample,
+                                        maxSample = max_sample))
+
+    def __getitem__(self, index):
+        if len(self.paths[index]) == 0:
+            return
+
+        # get meanDist
+        meanDist_file = osp.join(self.paths[index], 'meanDist.npy')
+        if osp.exists(meanDist_file):
+            meanDist = np.load(meanDist_file)
+        else:
+            y = np.load(osp.join(self.paths[index], 'y.npy'))
+            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y/np.max(y))
+            np.save(meanDist_file, meanDist)
+
+        # get chi_diag
+        config_file = osp.join(self.paths[index], 'config.json')
+        if osp.exists(config_file):
+            with open(config_file, 'r') as f:
+                config = json.load(f)
+                if "diag_chis" in config:
+                    chi_diag = np.array(config["diag_chis"])
+
+        meanDist = torch.tensor(meanDist, dtype = torch.float32)
+        chi_diag = torch.tensor(chi_diag, dtype = torch.float32)
+        result = [meanDist, chi_diag]
         if self.names:
             result.append(self.paths[index])
 

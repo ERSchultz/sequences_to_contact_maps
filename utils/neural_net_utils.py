@@ -6,7 +6,7 @@ import torch
 import torch_geometric
 from torch.utils.data import DataLoader
 
-from .dataset_classes import Sequences, SequencesContacts
+from .dataset_classes import DiagFunctions, Sequences, SequencesContacts
 from .networks import get_model
 from .pyg_dataset_classes import ContactsGraph
 
@@ -31,6 +31,7 @@ def load_saved_model(opt, verbose = True):
 
 ## dataset functions ##
 def get_dataset(opt, names = False, minmax = False, verbose = True, samples = None):
+    opt.root = None
     if opt.GNN_mode:
         if opt.split_sizes is not None and -1 not in opt.split_sizes:
             max_sample = np.sum(opt.split_sizes)
@@ -49,13 +50,13 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
         print('\n'*3)
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
         dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)
-        opt.root = None
+    elif opt.output_mode == 'diag_chi':
+        dataset = DiagFunctions(opt.data_folder, names = names)
     else:
         dataset = SequencesContacts(opt.data_folder, opt.toxx, opt.toxx_mode,
                                     opt.y_preprocessing, opt.y_norm,
                                     opt.x_reshape, opt.ydtype, opt.y_reshape,
                                     opt.crop, opt.min_subtraction, names, minmax)
-        opt.root = None
 
     return dataset
 

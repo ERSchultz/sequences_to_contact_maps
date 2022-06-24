@@ -151,7 +151,7 @@ def get_base_parser():
     parser.add_argument('--parameter_sharing', type=AC.str2bool, default=False,
                         help='true to use parameter sharing in autoencoder blocks')
     parser.add_argument('--use_bias', type=AC.str2bool, default=True,
-                        help='true to use bias (only implemented in ContactGNN)')
+                        help='true to use bias (only implemented in ContactGNN and MLP)')
 
     # GNN model args
     parser.add_argument('--message_passing', type=str, default='GCN',

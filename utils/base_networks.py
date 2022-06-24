@@ -3,6 +3,7 @@ import time
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
 def act2module(act, none_mode = False, in_place = True):
@@ -280,8 +281,6 @@ class LinearBlock(nn.Module):
 
         if norm == 'batch':
             model.append(nn.BatchNorm1d(output_size))
-        elif norm == 'instance':
-            model.append(nn.InstanceNorm1d(output_size))
 
         if dropout == 'drop':
             model.append(nn.Dropout(dropout_p))
@@ -293,6 +292,26 @@ class LinearBlock(nn.Module):
 
     def forward(self, x):
         return self.model(x)
+
+class MLP(nn.Module):
+    def __init__(self, in_channels, hidden_channels, bias = True, act = 'relu',
+                out_act = None, norm = None):
+        super(MLP, self).__init__()
+        model = []
+
+        input_size = in_channels
+        for i, output_size in enumerate(hidden_channels):
+            if i == len(hidden_channels) - 1:
+                act = out_act
+            model.append(LinearBlock(input_size, output_size, activation = act, norm = norm))
+            input_size = output_size
+
+        self.model = nn.Sequential(*model)
+
+        self.out_act = out_act
+
+    def forward(self, input):
+        return self.model(input)
 
 class Symmetrize2D(nn.Module):
     '''
@@ -432,20 +451,15 @@ def test_average_to_2d_outer():
 
         assert np.array_equal(out1, out), print(out1)
 
-def main():
-    sym = Symmetrize2D()
-    avg = AverageTo2d(mode = 'outer')
-    # x = np.random.randint(low = 1, high = 10, size = (5, 10, 500))
-    x = np.array([[[5,6,7],[3,9,12],[1, 7, 8]], [[5,3,1],[4,5,12],[1, 13, 7]]])
-    x = np.reshape(x, (-1, 3, 6))
-    x = torch.tensor(x, dtype = torch.float32)
+def test_MLP():
+    mlp = MLP(5, [10, 10], 'batch', 'relu', 'prelu')
+    print(mlp)
+    x = torch.randn(2, 5)
     print(x, x.shape)
-    x = avg(x)
-    # print(x, x.shape)
-    print(x[:, :, 0, 1])
-    print(x[:, :, 1, 0])
+    out = mlp(x)
+    print(out)
 
 
 if __name__ == '__main__':
-    # main()
-    test_average_to_2d_outer()
+    # test_average_to_2d_outer()
+    test_MLP()

@@ -23,7 +23,7 @@ from .argparse_utils import (ArgparserConverter, finalize_opt, get_base_parser,
                              get_opt_header, opt2list)
 from .InteractionConverter import InteractionConverter
 from .load_utils import load_sc_contacts, load_X_psi
-from .neural_net_utils import get_data_loaders, load_saved_model
+from .neural_net_utils import get_data_loaders, get_dataset, load_saved_model
 from .utils import (calc_dist_strat_corr, calc_per_class_acc, compare_PCA,
                     crop, triu_to_full)
 from .xyz_utils import (find_dist_between_centroids, find_label_centroid,
@@ -89,12 +89,10 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
         saveDict = torch.load(dir, map_location=torch.device('cpu'))
         train_loss_arr = saveDict['train_loss']
         val_loss_arr = saveDict['val_loss']
-        y_train = train_loss_arr
-        y_val = val_loss_arr
-        l1 = ax.plot(np.arange(1, len(train_loss_arr)+1), y_train, ls = styles[0], color = c)
+        l1 = ax.plot(np.arange(1, len(train_loss_arr)+1), train_loss_arr, ls = styles[0], color = c)
         if log_y:
             ax.set_yscale('log')
-        l2 = ax.plot(np.arange(1, len(val_loss_arr)+1), y_val, ls = styles[1], color = c)
+        l2 = ax.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr, ls = styles[1], color = c)
         labels.append(opt2list(opt)[diff_pos])
 
     for c, label_i in zip(colors, labels):
@@ -148,14 +146,8 @@ def plotModelFromDir(dir, imagePath, opt = None, log_y = False):
 
 def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log_y = False):
     """Plots loss as function of epoch."""
-    if log_y:
-        y_train = np.log10(train_loss_arr)
-        y_val = np.log10(val_loss_arr)
-    else:
-        y_train = train_loss_arr
-        y_val = val_loss_arr
-    plt.plot(np.arange(1, len(train_loss_arr)+1), y_train, label = 'Training')
-    plt.plot(np.arange(1, len(val_loss_arr)+1), y_val, label = 'Validation')
+    plt.plot(np.arange(1, len(train_loss_arr)+1), train_loss_arr, label = 'Training')
+    plt.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr, label = 'Validation')
 
     ylabel = 'Loss'
     if opt is not None:
@@ -186,7 +178,8 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
             new_max_y = max_y + (max_y - min_y) * 0.1
             annotate_y = max_y + (max_y - min_y) * 0.05
             x_offset = (opt.milestones[0] - 1) * 0.05
-            plt.ylim(top = new_max_y)
+            if not log_y:
+                plt.ylim(top = new_max_y)
             plt.axvline(1, linestyle = 'dashed', color = 'green')
             plt.annotate('lr: {}'.format(lr), (1 + x_offset, annotate_y))
             for m in opt.milestones:
@@ -194,14 +187,14 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
                 plt.axvline(m, linestyle = 'dashed', color = 'green')
                 plt.annotate('lr: {:.1e}'.format(lr), (m + x_offset, annotate_y))
 
-    if log_y:
-        ylabel = r'$\log_{10}$(' + ylabel + ')'
+
     plt.xlabel('Epoch', fontsize = 16)
     plt.ylabel(ylabel, fontsize = 16)
 
     plt.legend()
     plt.tight_layout()
     if log_y:
+        plt.yscale('log')
         plt.savefig(osp.join(imagePath, 'train_val_loss_log.png'))
     else:
         plt.savefig(osp.join(imagePath, 'train_val_loss.png'))
@@ -601,6 +594,60 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
             raise Exception("Unsupported preprocessing: {}".format(opt.y_preprocessing))
 
     print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)), file = opt.log_file)
+
+def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
+    print('Prediction Results:', file = opt.log_file)
+
+    if opt.loss == 'mse':
+        loss_title = 'MSE Loss'
+    elif opt.loss == 'cross_entropy':
+        loss_title = 'Cross Entropy Loss'
+    elif opt.loss == 'BCE':
+        loss_title = 'Binary Cross Entropy Loss'
+    else:
+        loss_title = 'Loss'
+
+    loss_arr = np.zeros(min(count, opt.valN))
+    for i, data in enumerate(val_dataloader):
+        if i == count:
+            break
+
+        x, y, path = data
+        x = x.to(opt.device)
+        y = y.to(opt.device)
+        path = path[0]
+        yhat = model(x)
+
+        loss = opt.criterion(yhat, y).item()
+        y = y.cpu().numpy().reshape((-1))
+
+        sample = osp.split(path)[-1]
+        subpath = osp.join(opt.ofile_folder, sample)
+        print('{}: {}'.format(subpath, loss), file = opt.log_file)
+        if not osp.exists(subpath):
+            os.mkdir(subpath, mode = 0o755)
+
+        yhat = yhat.cpu().detach().numpy().reshape((-1))
+
+        loss_arr[i] = loss
+        if opt.verbose:
+            print('y', y)
+            print('yhat', yhat)
+
+        plt.plot(y, label = 'ground truth')
+        plt.plot(yhat, label = 'estimate')
+        plt.xlabel('bin', fontsize = 16)
+        plt.ylabel('diag chi', fontsize = 16)
+        plt.title(f'{loss_title}: {np.round(loss, 3)}')
+        plt.legend()
+        plt.savefig(osp.join(subpath, 'diag_chi_hat.png'))
+        plt.close()
+
+        np.savetxt(osp.join(subpath, 'diag_chi.txt'), y, fmt = '%.3f')
+        np.savetxt(osp.join(subpath, 'diag_chi_hat.txt'), yhat, fmt = '%.3f')
+
+    print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)),
+        file = opt.log_file)
 
 def plotPCAReconstructions(y, y_torch, subpath, opt, loss_title, minmax):
     assert opt.autoencoder_mode and opt.output_mode == 'contact'
@@ -1364,7 +1411,7 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
     opt.batch_size = 1 # batch size must be 1
     opt.shuffle = False # for reproducibility
     if dataset is None:
-        dataset = getDataset(opt, True, True)
+        dataset = get_dataset(opt, True, True)
     _, val_dataloader, _ = get_data_loaders(dataset, opt)
 
     imagePath = opt.ofile_folder
@@ -1382,6 +1429,9 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
         elif opt.output_mode.startswith('energy'):
             pass
             # TODO
+        elif opt.output_mode.startswith('diag_chi'):
+            pass
+            # TODO
         else:
             raise Exception("Unkown output_mode {}".format(opt.output_mode))
 
@@ -1396,3 +1446,5 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, data
                 plotParticleDistribution(val_dataloader, model, opt, use_latent = True)
         elif opt.output_mode.startswith('energy'):
             plotEnergyPredictions(val_dataloader, model, opt)
+        elif opt.output_mode == 'diag_chi':
+            plotDiagChiPredictions(val_dataloader, model, opt)

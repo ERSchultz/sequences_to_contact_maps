@@ -7,8 +7,8 @@ import torch.nn.functional as F
 import torch_geometric.nn as gnn
 
 # from .argparse_utils import finalize_opt, get_base_parser
-from .base_networks import (AverageTo2d, ConvBlock, DeconvBlock, LinearBlock,
-                            Symmetrize2D, UnetBlock, act2module)
+from .base_networks import (MLP, AverageTo2d, ConvBlock, DeconvBlock,
+                            LinearBlock, Symmetrize2D, UnetBlock, act2module)
 from .pyg_fns import WeightedSignedConv
 
 
@@ -17,31 +17,27 @@ def get_model(opt, verbose = True):
     if opt.model_type == 'SimpleEpiNet':
         model = SimpleEpiNet(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
     if opt.model_type == 'UNet':
-        model = UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm, out_act = opt.out_act)
+        model = UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm,
+                            out_act = opt.out_act)
     elif opt.model_type == 'DeepC':
         model = DeepC(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list, opt.training_norm, opt.act, opt.out_act)
     elif opt.model_type == 'Akita':
         model = Akita(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
-                            opt.dilation_list_trunk,
-                            opt.bottleneck,
-                            opt.dilation_list_head,
-                            opt.act,
-                            opt.out_act,
-                            opt.channels,
-                            opt.training_norm,
-                            opt.down_sampling)
+                            opt.dilation_list_trunk, opt.bottleneck,
+                            opt.dilation_list_head, opt.act, opt.out_act,
+                            opt.channels, opt.training_norm, opt.down_sampling)
     elif opt.model_type.startswith('GNNAutoencoder'):
         model = GNNAutoencoder(opt.m, opt.node_feature_size, opt.hidden_sizes_list,
-                                opt.act, opt.head_act, opt.out_act,
-                                opt.message_passing, opt.head_architecture,
-                                opt.head_hidden_sizes_list, opt.parameter_sharing)
+                            opt.act, opt.head_act, opt.out_act,
+                            opt.message_passing, opt.head_architecture,
+                            opt.head_hidden_sizes_list, opt.parameter_sharing)
     elif opt.model_type == 'SequenceFCAutoencoder':
         model = FullyConnectedAutoencoder(opt.m * opt.k, opt.hidden_sizes_list,
-                                opt.act, opt.out_act, opt.parameter_sharing)
+                            opt.act, opt.out_act, opt.parameter_sharing)
     elif opt.model_type == 'SequenceConvAutoencoder':
         model = ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list,
-                                opt.act, opt.out_act, conv1d = True)
+                            opt.act, opt.out_act, conv1d = True)
     elif opt.model_type.startswith('ContactGNN'):
         model = ContactGNN(opt.m, opt.node_feature_size, opt.hidden_sizes_list,
         opt.act, opt.inner_act, opt.out_act,
@@ -50,6 +46,9 @@ def get_model(opt, verbose = True):
         opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act, opt.use_bias,
         opt.training_norm, opt.num_heads, opt.concat_heads,
         opt.log_file, verbose = verbose)
+    elif opt.model_type == 'MLP':
+        model = MLP(opt.m, opt.hidden_sizes_list, opt.use_bias, opt.act,
+                            opt.out_act, opt.training_norm)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -71,7 +70,8 @@ class UNet(nn.Module):
         ub = UnetBlock(nf * 4, nf * 8, subBlock = ub, norm = std_norm)
         ub = UnetBlock(nf * 2, nf * 4, subBlock = ub, norm = std_norm)
         ub = UnetBlock(nf, nf * 2, subBlock = ub, norm = std_norm)
-        sequence = [UnetBlock(nf_in, nf, nf_out, subBlock = ub, norm = std_norm, outermost = True, out_act = out_act)]
+        sequence = [UnetBlock(nf_in, nf, nf_out, subBlock = ub, norm = std_norm,
+                                outermost = True, out_act = out_act)]
         self.model = nn.Sequential(*sequence)
 
     def forward(self, input):
@@ -139,16 +139,20 @@ class DeepC(nn.Module):
 
         # Convolution
         input_size = k
-        assert len(kernel_w_list) == len(hidden_sizes_list), "length of kernel_w_list ({}) and hidden_sizes_list ({}) must match".format(len(kernel_w_list), len(hidden_sizes_list))
+        len_kw = len(kernel_w_list)
+        len_h = len(hidden_sizes_list)
+        assert len_kw == len_h, f"length of kernel_w_list != hidden_sizes_list: {len_kw} vs {len_h}"
         for kernel_w, output_size in zip(kernel_w_list, hidden_sizes_list):
             model.append(ConvBlock(input_size, output_size, kernel_w, padding = kernel_w//2,
-                                    activation = act, norm = std_norm, dropout = 'drop', dropout_p = 0.2, conv1d = True))
+                                    activation = act, norm = std_norm, dropout = 'drop',
+                                    dropout_p = 0.2, conv1d = True))
             input_size = output_size
 
         # Dilated Convolution
         for dilation in dilation_list:
             model.append(ConvBlock(input_size, input_size, 3, padding = dilation,
-                                    activation = 'gated', norm = std_norm, dilation = dilation, residual = True, conv1d = True))
+                                    activation = 'gated', norm = std_norm,
+                                    dilation = dilation, residual = True, conv1d = True))
 
         self.model = nn.Sequential(*model)
 
@@ -205,7 +209,9 @@ class Akita(nn.Module):
         trunk = []
         # Convolution
         input_size = k
-        assert len(kernel_w_list) == len(hidden_sizes_list), "length of kernel_w_list ({}) and hidden_sizes_list ({}) must match".format(len(kernel_w_list), len(hidden_sizes_list))
+        len_kw = len(kernel_w_list)
+        len_h = len(hidden_sizes_list)
+        assert len_kw == len_h, f"length of kernel_w_list != hidden_sizes_list: {len_kw} vs {len_h}"
         for kernel_w, output_size in zip(kernel_w_list, hidden_sizes_list):
             trunk.append(ConvBlock(input_size, output_size, kernel_w, padding = kernel_w//2,
                                     activation = act, norm = std_norm, conv1d = True))
@@ -215,10 +221,12 @@ class Akita(nn.Module):
         # Diaated Convolution
         for dilation in dilation_list_trunk:
             trunk.append(ConvBlock(input_size, input_size, 3, padding = dilation,
-                                    activation = act, norm = std_norm, dilation = dilation, residual = True, conv1d = True))
+                                    activation = act, norm = std_norm,
+                                    dilation = dilation, residual = True, conv1d = True))
 
         # Bottleneck
-        trunk.append(ConvBlock(input_size, bottleneck_size, 1, padding = 0, activation = act, conv1d = True))
+        trunk.append(ConvBlock(input_size, bottleneck_size, 1, padding = 0,
+                                    activation = act, conv1d = True))
 
         # Downsampling
         downsampling_factor = 2
@@ -244,13 +252,14 @@ class Akita(nn.Module):
         # Dilated Convolution
         for dilation in dilation_list_head:
             head.append(ConvBlock(input_size, input_size, 3, padding = dilation,
-                                    activation = act, norm = std_norm, dilation = dilation, residual = True))
+                                    activation = act, norm = std_norm,
+                                    dilation = dilation, residual = True))
             head.append(Symmetrize2D())
 
         # UpSampling
         if downsample_method is not None:
             head.append(DeconvBlock(input_size, input_size, stride = stride_size,
-                                        activation = act, norm = std_norm, output_padding = 1))
+                                    activation = act, norm = std_norm, output_padding = 1))
 
         self.head = nn.Sequential(*head)
 
@@ -272,10 +281,13 @@ class SimpleEpiNet(nn.Module):
         model = []
 
         # Convolution
-        assert len(kernel_w_list) == len(hidden_sizes_list), "length of kernel_w_list ({}) and hidden_sizes_list ({}) must match".format(len(kernel_w_list), len(hidden_sizes_list))
+        len_kw = len(kernel_w_list)
+        len_h = len(hidden_sizes_list)
+        assert len_kw == len_h, f"length of kernel_w_list != hidden_sizes_list: {len_kw} vs {len_h}"
         input_size = k
         for kernel_w, output_size in zip(kernel_w_list, hidden_sizes_list):
-            model.append(ConvBlock(input_size, output_size, kernel_w, padding = kernel_w//2, conv1d = True))
+            model.append(ConvBlock(input_size, output_size, kernel_w,
+                                    padding = kernel_w//2, conv1d = True))
             input_size = output_size
 
         self.model = nn.Sequential(*model)
@@ -310,7 +322,8 @@ class GNNAutoencoder(nn.Module):
         self.head_architecture = head_architecture
         if self.head_architecture == 'FCAutoencoder':
             input_size = self.m * self.output_size
-            self.head = FullyConnectedAutoencoder(input_size, head_hidden_sizes_list, head_act, out_act, parameter_sharing)
+            self.head = FullyConnectedAutoencoder(input_size, head_hidden_sizes_list,
+                                                head_act, out_act, parameter_sharing)
 
     def forward(self, graph):
         x, edge_index, edge_attr  = graph.x, graph.edge_index, graph.edge_attr
@@ -337,7 +350,7 @@ class GNNAutoencoder(nn.Module):
         x = self.act(x)
         x = self.conv2(x, edge_index, edge_attr)
 
-        assert self.head_architecture == 'xxT', 'get_latent not supported for {}'.format(self.head_architecture)
+        assert self.head_architecture == 'xxT', f'get_latent unsupported for {self.head_architecture}'
         latent = torch.reshape(x, (-1, self.m, self.output_size))
         return latent
 
@@ -415,7 +428,8 @@ class FullyConnectedAutoencoder(nn.Module):
         return latent
 
 class ConvolutionalAutoencoder(nn.Module):
-    def __init__(self, m, input_size, hidden_sizes_list, act, out_act, pooling = 'maxpool', conv1d = True):
+    def __init__(self, m, input_size, hidden_sizes_list, act, out_act,
+                pooling = 'maxpool', conv1d = True):
         '''
         Inputs:
             m: number of particles
@@ -431,12 +445,17 @@ class ConvolutionalAutoencoder(nn.Module):
         latent_size = hidden_sizes_list.pop()
         first = True
         for output_size in hidden_sizes_list:
-            encode_model.append(ConvBlock(input_size, output_size, activation = act, pool = pooling, conv1d = conv1d))
+            encode_model.append(ConvBlock(input_size, output_size, activation = act,
+                                            pool = pooling, conv1d = conv1d))
             if first:
-                decode_model.append(DeconvBlock(output_size, input_size, activation = out_act, conv1d = conv1d, stride = 2, output_padding = 1))
+                decode_model.append(DeconvBlock(output_size, input_size,
+                                            activation = out_act, conv1d = conv1d,
+                                            stride = 2, output_padding = 1))
                 first = False
             else:
-                decode_model.append(DeconvBlock(output_size, input_size, activation = act, conv1d = conv1d, stride = 2, output_padding = 1))
+                decode_model.append(DeconvBlock(output_size, input_size,
+                                            activation = act, conv1d = conv1d,
+                                            stride = 2, output_padding = 1))
             input_size = output_size
 
         self.encode = nn.Sequential(*encode_model)
@@ -485,12 +504,14 @@ class ContactGNN(nn.Module):
             encoder_hidden_sizes_list: list of hidden sizes for MLP encoder
             update_hidden_sizes_list: list of hidden sizes for MLP for update during message passing
             out_act (str): output activation
-            message_passing (str): type of message passing algorithm to use {idendity, gcn, signedconv, z}
+            message_passing (str): type of message passing algorithm to use
+                                    {idendity, gcn, signedconv, z}
             use_edge_attr: True to use edge attributes/weights
             edge_dim: 0 for edge weights, 1+ for edge_attr
             head_architecture: type of head architecture {None, fc, AverageTo2d.mode_options}
             head_hidden_sizes_list: hidden sizes of head architecture
             use_bias: True to use bias term - applies for message passing and head
+            training_norm: Normalization layer
         '''
         super(ContactGNN, self).__init__()
 
@@ -518,7 +539,8 @@ class ContactGNN(nn.Module):
         self.encoder = None
         if encoder_hidden_sizes_list is not None:
             for output_size in encoder_hidden_sizes_list:
-                encoder.extend([(gnn.Linear(input_size, output_size, bias = use_bias), 'x -> x'), self.act])
+                module = gnn.Linear(input_size, output_size, bias = use_bias)
+                encoder.extend([(module, 'x -> x'), self.act])
                 input_size = output_size
             self.encoder = gnn.Sequential('x', encoder)
 
@@ -626,7 +648,8 @@ class ContactGNN(nn.Module):
                     act = self.out_act
                 else:
                     act = self.head_act
-                head.append(LinearBlock(input_size, output_size, activation = act, bias = use_bias))
+                head.append(LinearBlock(input_size, output_size, activation = act,
+                                        bias = use_bias))
                 input_size = output_size
 
             self.head = nn.Sequential(*head)
@@ -654,7 +677,8 @@ class ContactGNN(nn.Module):
                     act = self.out_act
                 else:
                     act = self.head_act
-                head.append(LinearBlock(input_size, output_size, activation = act, bias = use_bias))
+                head.append(LinearBlock(input_size, output_size, activation = act,
+                                        bias = use_bias))
                 input_size = output_size
 
             self.head = nn.Sequential(*head)
@@ -740,6 +764,7 @@ class seq2Energy(nn.Module):
     def forward(self, seq):
         return seq @ torch.triu(self.chi) @ seq.t()
 
+
 def testFullyConnectedAutoencoder():
     model = FullyConnectedAutoencoder(12, [2], 'relu', False)
     criterion = torch.nn.MSELoss()
@@ -757,11 +782,9 @@ def testFullyConnectedAutoencoder():
     print('Total parameters: {}'.format(tot_pars))
 
 def testGNNAutoencoder():
-    model = GNNAutoencoder(1024, 2, [8, 4], 'relu', 'relu', 'sigmoid', 'GCN', 'FCAutoencoder', [200, 25], True)
+    model = GNNAutoencoder(1024, 2, [8, 4], 'relu', 'relu', 'sigmoid', 'GCN',
+                            'FCAutoencoder', [200, 25], True)
 
-
-def main():
-    testGNNAutoencoder()
 
 if __name__ == '__main__':
-    main()
+    testGNNAutoencoder()

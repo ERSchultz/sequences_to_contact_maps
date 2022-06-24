@@ -49,7 +49,6 @@ Methods:
 
 TODOS:
 -how does diffusion map imputation method compare to using higashi + diffusion map
--explore synthetic sc dataset with varying diagonal effect - a la cell cycle dataset
 
 Thoughts:
 -order parameters:

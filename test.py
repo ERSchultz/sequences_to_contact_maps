@@ -84,16 +84,16 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    opt.data_folder = "/home/erschultz/dataset_test2"
+    opt.data_folder = "/home/erschultz/dataset_test_diag2"
     opt.scratch = '/home/erschultz/scratch'
 
     # architecture
     opt.m = 1024
     opt.y_preprocessing = None
-    # opt.split_percents=[0.6666,0.3333,0.0]
-    opt.split_percents = None
-    opt.split_sizes=[1, 2, 0]
-    # opt.split_counts=None
+    opt.split_percents=[0.8,0.2,0.0]
+    # opt.split_percents = None
+    # opt.split_sizes=[1, 2, 0]
+    opt.split_sizes=None
 
     if model_type == 'Akita':
         opt.kernel_w_list=AC.str2list('5-5-5')
@@ -112,9 +112,12 @@ def debugModel(model_type):
         opt.out_act = 'sigmoid'
         opt.training_norm = 'batch'
     elif model_type == 'DeepC':
+        opt.k=10
+        opt.y_norm=None
+        opt.y_preprocessing='diag'
         opt.kernel_w_list=AC.str2list('5-5-5')
         opt.hidden_sizes_list=AC.str2list('32-64-128')
-        opt.dilation_list=AC.str2list('2-4-8-16-32-64-128-256-512')
+        opt.dilation_list=AC.str2list('32-64-256')
     elif model_type == 'ContactGNN':
         opt.GNN_mode = True
         opt.output_mode = 'sequence'
@@ -167,22 +170,29 @@ def debugModel(model_type):
         opt.use_bias = True
         opt.num_heads = 2
         opt.concat_heads = True
+    elif model_type == 'MLP':
+        opt.random_split=True
+        opt.hidden_sizes_list=AC.str2list('1000-'*7 + '20')
+        opt.act='prelu'
+        opt.out_act='prelu'
+        opt.output_mode='diag_chi'
+        # opt.training_norm='batch'
 
     # hyperparameters
-    opt.n_epochs = 3
-    opt.lr = 1e-4
-    opt.batch_size = 1
-    opt.milestones = None
+    opt.n_epochs = 60
+    opt.lr = 1e-3
+    opt.batch_size = 5
+    opt.milestones = [20, 40]
     opt.gamma = 0.1
 
     # other
     opt.plot = True
     opt.plot_predictions = True
-    opt.verbose = True
+    opt.verbose = False
     opt.print_params = False
-    opt.gpus = 0
+    opt.gpus = 1
     opt.delete_root = True
-    opt.use_scratch = True
+    opt.use_scratch = False
     opt.print_mod = 1
     # opt.id = 12
     # opt.resume_training = True
@@ -569,7 +579,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
     # binom()
     # edit_argparse()
-    # debugModel('ContactGNNEnergy')
+    debugModel('MLP')

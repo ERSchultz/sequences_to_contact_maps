@@ -326,13 +326,12 @@ def plot_genomic_distance_statistics(dataFolder):
             ofile = osp.join(dataFolder, f"freq_stat_{stat}_{title}.png")
             plot_genomic_distance_statistics_inner(dataFolder, ifile, ofile, title, stat = stat)
 
-def plot_mean_vs_genomic_distance(y, path, config = None):
+def plot_mean_vs_genomic_distance(y, path, diag_chis):
     meanDist = DiagonalPreprocessing.genomic_distance_statistics(y/np.max(y))
     plt.plot(meanDist)
     plt.yscale('log')
 
-    if config is not None:
-        diag_chis = config['diag_chis']
+    if diag_chis is not None:
         m = len(y)
         k = len(diag_chis)
 
@@ -365,20 +364,13 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
     '''Generate basic plots of data in dataFolder.'''
     in_paths = sorted(make_dataset(dataFolder))
     for path in in_paths:
-        if sampleID is not None and osp.split(path)[1] != f'sample{sampleID}':
+        if isinstance(sampleID, list) and int(osp.split(path)[1][6:]) not in sampleID:
+            continue
+        elif isinstance(sampleID, int) and osp.split(path)[1] != f'sample{sampleID}':
             continue
         print(path)
 
-        config_file = osp.join(path, 'config.json')
-        chi_diag = None
-        if osp.exists(config_file):
-            with open(config_file, 'r') as f:
-                config = json.load(f)
-            if "diag_chis" in config:
-                chi_diag = np.array(config["diag_chis"])
-        else:
-            config = None
-        x, psi, chi, e, s, y, ydiag = load_all(path, data_folder = dataFolder,
+        x, psi, chi, chi_diag, e, s, y, ydiag = load_all(path, data_folder = dataFolder,
                                                 save = True,
                                                 throw_exception = False)
 
@@ -388,7 +380,7 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
             y_log = np.log(y + 1e-8)
             plot_matrix(y_log, osp.join(path, 'y_log.png'), title = 'log normalization', vmax = 'max')
 
-            plot_mean_vs_genomic_distance(y, path, config)
+            plot_mean_vs_genomic_distance(y, path, chi_diag)
 
             y_prcnt_path = osp.join(path, 'y_prcnt.npy')
             if osp.exists(y_prcnt_path):
@@ -410,6 +402,7 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
             plt.xlabel('bin', fontsize = 16)
             plt.ylabel('diag chi', fontsize = 16)
             plt.savefig(osp.join(path, 'chi_diag.png'))
+            plt.close()
 
         if plot_energy:
             if s is not None:
@@ -436,7 +429,7 @@ if __name__ == '__main__':
     dir = '/home/erschultz'
     dataset = 'dataset_test3'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = False, plot_energy = False, plot_x = False, sampleID = 200)
+    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False, sampleID = list(range(200, 250)))
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

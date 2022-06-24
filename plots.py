@@ -107,14 +107,12 @@ def plot_xyz_gif_wrapper():
     plot_xyz_gif(xyz, x, dir)
 
 def plot_diag_vs_diag_chi():
-    dir = '/home/erschultz/dataset_test3/samples'
+    dir = '/home/erschultz/dataset_test_diag2/samples'
     data = []
     ids = set()
     m_dict = {} # sample_id : m
     for file in os.listdir(dir):
         id = int(file[6:])
-        if id not in range(121, 131):
-            continue
 
         ids.add(id)
         print(id)
@@ -131,7 +129,6 @@ def plot_diag_vs_diag_chi():
         diag_means = DiagonalPreprocessing.genomic_distance_statistics(y)
         max_diag_mean = np.max(diag_means[3:])
         # diag_means /= max_diag_mean
-
 
         temp = []
         prev_diag_chi = diag_chis[0]

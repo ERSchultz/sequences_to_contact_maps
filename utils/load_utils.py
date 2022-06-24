@@ -134,12 +134,12 @@ def load_E_S(sample_folder, psi = None, chi = None, save = False, throw_exceptio
 
 def load_all(sample_folder, plot = False, data_folder = None, log_file = None,
                 save = False, experimental = False, throw_exception = True):
-    '''Loads x, psi, chi, e, s, y, ydiag.'''
+    '''Loads x, psi, chi, chi_diag, e, s, y, ydiag.'''
     y, ydiag = load_Y(sample_folder, throw_exception = throw_exception)
 
     if experimental:
         # everything else is None
-        return None, None, None, None, None, y, ydiag
+        return None, None, None, None, None, None, y, ydiag
 
     x, psi = load_X_psi(sample_folder, throw_exception = throw_exception)
     # x = x.astype(float)
@@ -167,9 +167,17 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None,
         if log_file is not None:
             print('Chi:\n', chi, file = log_file)
 
+    chi_diag = None
+    config_file = osp.join(sample_folder, 'config.json')
+    if osp.exists(config_file):
+        with open(config_file, 'r') as f:
+            config = json.load(f)
+            if "diag_chis" in config:
+                chi_diag = np.array(config["diag_chis"])
+
     e, s = load_E_S(sample_folder, psi, save = save, throw_exception = throw_exception)
 
-    return x, psi, chi, e, s, y, ydiag
+    return x, psi, chi, chi_diag, e, s, y, ydiag
 
 def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None,
                 throw_exception = True):

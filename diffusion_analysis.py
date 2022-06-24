@@ -29,7 +29,7 @@ from utils.xyz_utils import lammps_load, xyz_load, xyz_to_contact_grid
 import dmaps  # https://github.com/ERSchultz/dmaps
 
 
-def getArgs(default_dir='/home/erschultz/dataset_test2/samples/combined'):
+def getArgs(default_dir='/home/erschultz/dataset_test_sc_traj/samples/combined'):
     parser = argparse.ArgumentParser(description='Base parser')
     AC = ArgparserConverter()
 
@@ -43,7 +43,7 @@ def getArgs(default_dir='/home/erschultz/dataset_test2/samples/combined'):
                         help='minimum sample index to keep')
     parser.add_argument('--mode', type=str, default='contact_diffusion')
     parser.add_argument('--update_mode', type=str, default='kNN')
-    parser.add_argument('--k', type=int, default=3,
+    parser.add_argument('--k', type=int, default=0,
                         help='k for update_mode')
     parser.add_argument('--jobs', type=int, default=15)
     parser.add_argument('--sparse_format', action='store_true',
