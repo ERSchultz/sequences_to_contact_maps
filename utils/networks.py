@@ -48,7 +48,8 @@ def get_model(opt, verbose = True):
         opt.log_file, verbose = verbose)
     elif opt.model_type == 'MLP':
         model = MLP(opt.m, opt.hidden_sizes_list, opt.use_bias, opt.act,
-                            opt.out_act, opt.training_norm)
+                            opt.out_act, opt.training_norm, opt.dropout, opt.dropout_p,
+                            opt.log_file, verbose = verbose)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -144,7 +145,7 @@ class DeepC(nn.Module):
         assert len_kw == len_h, f"length of kernel_w_list != hidden_sizes_list: {len_kw} vs {len_h}"
         for kernel_w, output_size in zip(kernel_w_list, hidden_sizes_list):
             model.append(ConvBlock(input_size, output_size, kernel_w, padding = kernel_w//2,
-                                    activation = act, norm = std_norm, dropout = 'drop',
+                                    activation = act, norm = std_norm, dropout = True,
                                     dropout_p = 0.2, conv1d = True))
             input_size = output_size
 

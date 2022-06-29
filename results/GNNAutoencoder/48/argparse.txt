@@ -16,7 +16,7 @@ true
 1024
 --y_preprocessing
 diag
---y_norm
+--preprocessing_norm
 instance
 --use_node_features
 true

@@ -8,7 +8,7 @@ DeepC
 1024
 --y_preprocessing
 diag
---y_norm
+--preprocessing_norm
 instance
 --kernel_w_list
 5-5-5

@@ -12,7 +12,7 @@ false
 1024
 --y_preprocessing
 diag_instance
---y_norm
+--preprocessing_norm
 instance
 --min_subtraction
 False

@@ -324,16 +324,19 @@ def plot_genomic_distance_statistics(dataFolder):
         for stat in ['mean', 'var']:
             ifile = title + '.npy'
             ofile = osp.join(dataFolder, f"freq_stat_{stat}_{title}.png")
-            plot_genomic_distance_statistics_inner(dataFolder, ifile, ofile, title, stat = stat)
+            plot_genomic_distance_statistics_inner(dataFolder, ifile, ofile,
+                                                    title, stat = stat)
 
 def plot_mean_vs_genomic_distance(y, path, diag_chis):
-    meanDist = DiagonalPreprocessing.genomic_distance_statistics(y/np.max(y))
+    meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob',
+                                            zero_diag = True, zero_offset = 3)
     plt.plot(meanDist)
     plt.yscale('log')
 
     if diag_chis is not None:
         m = len(y)
         k = len(diag_chis)
+        bin_size = m / k
 
         # find chi transition points
         transitions = [0]
@@ -344,17 +347,16 @@ def plot_mean_vs_genomic_distance(y, path, diag_chis):
                 transitions.append(i)
                 prev_diag_chi = diag_chi
 
-        max_y = np.max(meanDist)
-        min_y = np.min(meanDist)
-        annotate_y = max_y + (max_y - min_y) * 0.05
-        x_offset = 0
-        for i, diag_chi in zip(transitions, diag_chis):
+        start = np.log10(np.max(meanDist)*1.05)
+        stop = np.log10(np.max(meanDist[-int(0.9*k):])*1.05)
+        annotate_y_arr = np.logspace(start, stop, k)
+        for i, diag_chi, annotate_y in zip(transitions, diag_chis, annotate_y_arr):
             plt.axvline(i, linestyle = 'dashed', color = 'green')
-            plt.annotate(f'{np.round(diag_chi, 1)}', (i + x_offset, annotate_y))
-            annotate_y *= 0.8
+            plt.annotate(f'{np.round(diag_chi, 1)}', (i, annotate_y))
 
     plt.ylabel('Contact Probability', fontsize = 16)
     plt.xlabel('Polymer Distance (beads)', fontsize = 16)
+    plt.tight_layout()
     plt.savefig(osp.join(path, 'meanDist.png'))
     plt.close()
 
@@ -375,8 +377,8 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
                                                 throw_exception = False)
 
         if plot_y:
-            plot_matrix(y, osp.join(path, 'y.png'), vmax = 'mean')
-            plot_matrix(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
+            # plot_matrix(y, osp.join(path, 'y.png'), vmax = 'mean')
+            # plot_matrix(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
             y_log = np.log(y + 1e-8)
             plot_matrix(y_log, osp.join(path, 'y_log.png'), title = 'log normalization', vmax = 'max')
 
@@ -426,10 +428,11 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
 
 if __name__ == '__main__':
     dir = '/project2/depablo/erschultz'
-    dir = '/home/erschultz'
-    dataset = 'dataset_test3'
+    dir = '/home/erschultz/sequences_to_contact_maps'
+    dataset = 'dataset_05_18_22'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False, sampleID = list(range(200, 250)))
+    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
+                    sampleID = None)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

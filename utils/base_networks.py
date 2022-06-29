@@ -1,3 +1,4 @@
+import sys
 import time
 
 import numpy as np
@@ -150,7 +151,7 @@ class ResnetBlock(nn.Module):
 
 class ConvBlock(nn.Module):
     def __init__(self, input_size, output_size, kernel_size = 3, stride = 1, padding = 1, bias = True,
-                 activation = 'prelu', norm = None, pool = None, pool_kernel_size = 2, dropout = None,
+                 activation = 'prelu', norm = None, pool = None, pool_kernel_size = 2, dropout = False,
                  dropout_p = 0.5, dilation = 1, residual = False, conv1d = False):
         super(ConvBlock, self).__init__()
 
@@ -193,7 +194,7 @@ class ConvBlock(nn.Module):
             model.append(maxpool_fn(pool_kernel_size))
             model2.append(maxpool_fn(pool_kernel_size))
 
-        if dropout == 'drop':
+        if dropout:
             if conv1d:
                 dropout_fn = nn.Dropout
             else:
@@ -274,7 +275,7 @@ class DeconvBlock(nn.Module):
 
 class LinearBlock(nn.Module):
     def __init__(self, input_size, output_size, bias = True, activation = 'prelu',
-                 norm = None, dropout = None, dropout_p = 0.5):
+                 norm = None, dropout = False, dropout_p = 0.5):
         super(LinearBlock, self).__init__()
 
         model =  [nn.Linear(input_size, output_size, bias = bias)]
@@ -282,7 +283,7 @@ class LinearBlock(nn.Module):
         if norm == 'batch':
             model.append(nn.BatchNorm1d(output_size))
 
-        if dropout == 'drop':
+        if dropout:
             model.append(nn.Dropout(dropout_p))
 
         if activation is not None:
@@ -295,7 +296,8 @@ class LinearBlock(nn.Module):
 
 class MLP(nn.Module):
     def __init__(self, in_channels, hidden_channels, bias = True, act = 'relu',
-                out_act = None, norm = None):
+                out_act = None, norm = None, dropout = False, dropout_p = 0.5,
+                ofile = sys.stdout, verbose = True):
         super(MLP, self).__init__()
         model = []
 
@@ -303,12 +305,18 @@ class MLP(nn.Module):
         for i, output_size in enumerate(hidden_channels):
             if i == len(hidden_channels) - 1:
                 act = out_act
-            model.append(LinearBlock(input_size, output_size, activation = act, norm = norm))
+                dropout = False # no dropout in last layer
+            model.append(LinearBlock(input_size, output_size, activation = act,
+                            norm = norm, dropout = dropout, dropout_p = dropout_p))
             input_size = output_size
 
         self.model = nn.Sequential(*model)
 
         self.out_act = out_act
+
+        if verbose:
+            print("#### ARCHITECTURE ####", file = ofile)
+            print(self.model, file = ofile)
 
     def forward(self, input):
         return self.model(input)
@@ -452,7 +460,7 @@ def test_average_to_2d_outer():
         assert np.array_equal(out1, out), print(out1)
 
 def test_MLP():
-    mlp = MLP(5, [10, 10], 'batch', 'relu', 'prelu')
+    mlp = MLP(5, [10, 10], 'batch', 'relu', 'prelu', dropout = True)
     print(mlp)
     x = torch.randn(2, 5)
     print(x, x.shape)

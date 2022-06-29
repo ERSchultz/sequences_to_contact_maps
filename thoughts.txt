@@ -60,24 +60,8 @@ Thoughts:
 -diffusion map on 100s of bulk hic datasets to see variation accross cell types
 --could combine with gene expression to find structural patterns that predict gene expression
 
--quantify effect of different epigentic marks
---existing maxent approach does this too
-
--initial idea for diffusion map was to find temporal trajectory
---the diffusion map can certainly get a trajectory - but how do we show that this trajectory is time - and what does this tell us?
---seems like we can't
-
--can you do max ent with YV^1 instead of with V^1 (V^1 is PC1, Y is the data)
---if so, for single cell data you could just get the labels as Y_iV^1 and reuse the chi from a bulk simulation
---NOTE: this assumes the parameters are the same and that only the labels change!! - so not helpful for situations where interactions change, but could be helpful for generatlization?? - still need a contact map though, it would be nice to generalize without needing a hic map
-
--to tell if SCC is good you need to compare to SCC between biological replicates
-
--whats the deal with the increase in diagonal contact probability for high distance
---if this was noise we would expect to see decreases as well
-
 -can we do something interesting with higher-order chromatin interactions?
---does our model reproduce this
+--does our model reproduce this?
 
 -cannot estimate structure exactly, but we can use simulation to robustly estimate structural properties of sc-hic-map
 

@@ -1,3 +1,5 @@
+import json
+import math
 import os
 import os.path as osp
 import sys
@@ -170,6 +172,23 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
                 if self.output == 'energy_sym':
                     graph.energy = (graph.energy + graph.energy.t()) / 2
+            elif self.output == 'diag_chi':
+                chi_diag = None
+                config_file = osp.join(raw_folder, 'config.json')
+                if osp.exists(config_file):
+                    with open(config_file, 'r') as f:
+                        config = json.load(f)
+                        if "diag_chis" in config:
+                            chi_diag = np.array(config["diag_chis"])
+                if chi_diag is None:
+                    raise Exception(f'chi_diag not found for {config_file}')
+                D = np.zeros((self.m, self.m))
+                k = len(chi_diag)
+                for d in range(self.m):
+                    rng = np.arange(self.m-d)
+                    diag_chi = chi_diag[math.floor(d/(self.m/k))]
+                    D[rng, rng+d] = diag_chi
+                graph.y = torch.tensor(D, dtype = torch.float32)
 
             torch.save(graph, self.processed_paths[i])
 
@@ -178,6 +197,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 deg = np.array(torch_geometric.utils.degree(graph.edge_index[0],
                                                             graph.num_nodes))
                 self.degree_list.append(deg)
+
+
 
     def process_x_psi(self, raw_folder):
         '''
@@ -227,6 +248,18 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if self.crop is not None:
             y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
 
+
+        if self.y_norm == 'instance':
+            self.ymax = np.max(y)
+            self.ymin = np.min(y)
+
+        # if y_norm is batch this uses batch parameters from init,
+        # if y_norm is None, this does nothing
+        if self.min_subtraction:
+            y = (y - self.ymin) / (self.ymax - self.ymin)
+        else:
+            y = y / self.ymax
+
         if self.y_log_transform is not None:
             if self.y_log_transform == 'ln':
                 y = np.log(y+1e-8)
@@ -240,17 +273,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     raise Exception(f'Unaccepted log base: {val}')
             else:
                 raise Exception(f'Unrecognized log transform: {self.y_log_transform}')
-
-        if self.y_norm == 'instance':
-            self.ymax = np.max(y)
-            self.ymin = np.min(y)
-
-        # if y_norm is batch this uses batch parameters from init,
-        # if y_norm is None, this does nothing
-        if self.min_subtraction:
-            y = (y - self.ymin) / (self.ymax - self.ymin)
-        else:
-            y = y / self.ymax
 
         if self.sparsify_threshold is not None:
             y[np.abs(y) < self.sparsify_threshold] = 0

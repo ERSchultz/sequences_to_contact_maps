@@ -16,9 +16,9 @@ sequence
 1024
 --y_preprocessing
 diag
---y_norm
+--preprocessing_norm
 none
---y_log_transform
+--log_preprocessing
 none
 --message_passing
 GCN

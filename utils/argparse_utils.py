@@ -60,14 +60,16 @@ def get_base_parser():
                         help='True if x should be converted to 2D image')
     parser.add_argument('--toxx_mode', type=str, default='mean',
                         help='mode for toxx (default mean)')
-    parser.add_argument('--y_preprocessing', type=AC.str2None, default='diag',
+    parser.add_argument('--y_preprocessing', type=AC.str2None,
                         help='type of pre-processing for y')
-    parser.add_argument('--y_log_transform', type=str,
-                        help='True to log transform y')
-    parser.add_argument('--y_norm', type=AC.str2None, default='batch',
+    parser.add_argument('--y_zero_diag_count', type=int, default=0,
+                        help='number of diagonals of y set to 0')
+    parser.add_argument('--log_preprocessing', type=str,
+                        help='type of log transform input data (None to skip)')
+    parser.add_argument('--preprocessing_norm', type=AC.str2None, default='batch',
                         help='type of [0,1] normalization for y')
     parser.add_argument('--min_subtraction', type=AC.str2bool, default=True,
-                        help='if min subtraction should be used for y_norm')
+                        help='if min subtraction should be used for preprocessing_norm')
     parser.add_argument('--x_reshape', type=AC.str2bool, default=True,
                         help='True if x should be considered a 1D image')
     parser.add_argument('--ydtype', type=AC.str2dtype, default='float32',
@@ -148,6 +150,10 @@ def get_base_parser():
                         help='activation of final layer')
     parser.add_argument('--training_norm', type=AC.str2None,
                         help='norm during training (batch, instance, or None)')
+    parser.add_argument('--dropout', type=AC.str2bool,
+                        help='True to use dropout')
+    parser.add_argument('--dropout_p', type=float, default=0.2,
+                        help='dropout probability')
     parser.add_argument('--parameter_sharing', type=AC.str2bool, default=False,
                         help='true to use parameter sharing in autoencoder blocks')
     parser.add_argument('--use_bias', type=AC.str2bool, default=True,
@@ -264,9 +270,6 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     # configure other model params
     assert (opt.split_percents is None) ^ (opt.split_sizes is None)
 
-    if opt.y_log_transform is not None:
-        assert opt.y_norm is None, f"don't use log transform ({opt.y_log_transform}) with y norm ({opt.y_norm})"
-
     if opt.head_architecture == 'bilinear':
         assert opt.head_hidden_sizes_list is None, f"not supported {opt.id}"
 
@@ -284,7 +287,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
         assert opt.out_act is None, "Cannot use output activation with cross entropy"
         assert not opt.GNN_mode, 'cross_entropy not tested for GNN'
         assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'
-        assert opt.y_norm is None, 'Cannot normalize with cross entropy'
+        assert opt.preprocessing_norm is None, 'Cannot normalize with cross entropy'
         opt.channels = opt.classes
         opt.y_reshape = False
         opt.criterion = F.cross_entropy
@@ -292,7 +295,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     elif opt.loss == 'BCE':
         assert opt.out_act is None, "Cannot use output activation with BCE"
         if opt.output_mode == 'contact':
-            assert opt.y_norm is not None, 'must use some sort of y_norm'
+            assert opt.preprocessing_norm is not None, 'must use some sort of preprocessing_norm'
         opt.criterion = F.binary_cross_entropy_with_logits
     else:
         raise Exception('Invalid loss: {}'.format(repr(opt.loss)))
@@ -358,7 +361,7 @@ def process_transforms(opt):
     opt.edge_transforms = []
     opt.node_transforms = []
 
-    if opt.y_log_transform is not None:
+    if opt.log_preprocessing is not None:
         split = 0
     else:
         split = 1
@@ -539,6 +542,9 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
         elif (file == 's.npy' or file == 'e.npy') and output_mode.startswith('energy'):
             # only need s.npy if neural net output is energy
             move_file = True
+        elif file == 'config.json' and output_mode == 'diag_chi':
+            # need to config to get diag_chi
+            move_file = True
 
         if move_file:
             # only move .npy files
@@ -560,7 +566,7 @@ def save_args(opt):
 
 def opt2list(opt):
     opt_list = [opt.model_type, opt.id, osp.split(opt.data_folder)[1], opt.y_preprocessing,
-        opt.y_norm, opt.min_subtraction, opt.y_log_transform, opt.crop]
+        opt.preprocessing_norm, opt.min_subtraction, opt.log_preprocessing, opt.crop]
     opt_list.append(opt.split_percents if opt.split_percents is not None else opt.split_sizes)
     opt_list.extend([opt.shuffle, opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr,
         opt.milestones, opt.gamma, opt.loss,
@@ -592,6 +598,8 @@ def opt2list(opt):
         pass
     elif opt.model_type == 'SequenceFCAutoencoder':
         opt_list.extend([opt.hidden_sizes_list, opt.parameter_sharing])
+    elif model_type == 'MLP':
+        opt_list.extend([opt.y_zero_diag_count])
     else:
         raise Exception("Unknown model type: {}".format(opt.model_type))
 
@@ -610,7 +618,7 @@ def save_opt(opt, ofile):
 
 def get_opt_header(model_type, GNN_mode):
     opt_list = ['model_type', 'id',  'dataset', 'y_preprocessing',
-        'y_norm', 'min_subtraction', 'y_log_transform', 'crop', 'split', 'shuffle',
+        'preprocessing_norm', 'min_subtraction', 'log_preprocessing', 'crop', 'split', 'shuffle',
         'batch_size', 'num_workers', 'n_epochs', 'lr', 'milestones',
         'gamma', 'loss', 'k', 'm',
         'seed', 'act', 'inner_act', 'head_act', 'out_act',
@@ -640,6 +648,8 @@ def get_opt_header(model_type, GNN_mode):
         pass
     elif model_type == 'SequenceFCAutoencoder':
         opt_list.extend(['hidden_sizes_list', 'parameter_sharing'])
+    elif model_type == 'MLP':
+        opt_list.extend(['y_zero_diag_count'])
     else:
         raise Exception("Unknown model type: {}".format(model_type))
 

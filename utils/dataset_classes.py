@@ -171,9 +171,22 @@ class DiagFunctions(Dataset):
     Dataset that contains mean contact probability along each diagonal (x)
     and corresponding diagonal chi functions (y).
     '''
-    def __init__(self, dirname, min_sample = 0, max_sample = float('inf'),
-                    names = False):
+    def __init__(self, dirname, crop, norm, log, zero_diag_count,
+                    min_sample = 0, max_sample = float('inf'), names = False):
+        '''
+        Inputs:
+            dirname: dataset directory
+            crop (tuples): pair of values to crop meanDist to
+            norm (str): type of normalization (only instance currently accepted)
+            log (str): typue of log preprocessing (None to skip)
+            zero_diag_count (int): number of diagonals to zero
+        '''
         super(DiagFunctions, self).__init__()
+        self.crop = crop
+        assert norm is None or norm == 'instance', f'Unaccepted norm: {norm}'
+        self.norm = norm
+        self.log = log
+        self.zero_diag_count = zero_diag_count
         self.names = names
         self.paths = sorted(make_dataset(dirname, minSample = min_sample,
                                         maxSample = max_sample))
@@ -187,9 +200,31 @@ class DiagFunctions(Dataset):
         if osp.exists(meanDist_file):
             meanDist = np.load(meanDist_file)
         else:
-            y = np.load(osp.join(self.paths[index], 'y.npy'))
-            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y/np.max(y))
+            y = np.load(osp.join(self.paths[index], 'y.npy')).astype(np.float64)
+            if self.zero_diag_count > 0:
+                y = np.triu(y, self.zero_diag_count)
+            if self.norm == 'instance':
+                y /= np.max(y)
+
+            if self.log is not None:
+                if self.log == 'ln':
+                    y = np.log(y+1e-8)
+                elif self.log.isdigit():
+                    val = int(self.log)
+                    if val == 2:
+                        y = np.log2(y+1e-8)
+                    elif val == 10:
+                        y = np.log10(y+1e-8)
+                    else:
+                        raise Exception(f'Unaccepted log base: {val}')
+                else:
+                    raise Exception(f'Unrecognized log transform: {self.log}')
+
+            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
             np.save(meanDist_file, meanDist)
+
+        if self.crop is not None:
+            meanDist = meanDist[self.crop[0]:self.crop[1]]
 
         # get chi_diag
         config_file = osp.join(self.paths[index], 'config.json')

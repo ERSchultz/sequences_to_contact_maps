@@ -43,8 +43,8 @@ def plot_combined_models(modelType, ids):
         txt_file = osp.join(id_path, 'argparse.txt')
         opt = parser.parse_args(['@{}'.format(txt_file)])
         opt = finalize_opt(opt, parser, local = True, debug = True)
-
         opts.append(opt)
+
     imagePath = osp.join(path, '{} combined'.format(ArgparserConverter.list2str(ids)))
     if not osp.exists(imagePath):
         os.mkdir(imagePath, mode = 0o755)
@@ -75,7 +75,7 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
     if len(differences) == 1:
         diff_name = differences.pop()
     else:
-        print(differences)
+        print('dif: ', differences)
         diff_name = 'id'
     diff_pos = opt_header.index(diff_name)
 
@@ -124,11 +124,11 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
         preprocessing = opt.y_preprocessing.capitalize()
     else:
         preprocessing = 'None'
-    if opt.y_norm is not None:
-        y_norm = opt.y_norm.capitalize()
+    if opt.preprocessing_norm is not None:
+        preprocessing_norm = opt.preprocessing_norm.capitalize()
     else:
-         y_norm = 'None'
-    plt.title('Y Preprocessing: {}, Y Norm: {}'.format(preprocessing, y_norm), fontsize = 16)
+         preprocessing_norm = 'None'
+    plt.title('Y Preprocessing: {}, Norm: {}'.format(preprocessing, preprocessing_norm), fontsize = 16)
 
     plt.tight_layout()
     if log_y:
@@ -162,13 +162,14 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log
             preprocessing = opt.y_preprocessing.capitalize()
         else:
             preprocessing = 'None'
-        if opt.y_norm is not None:
-            y_norm = opt.y_norm.capitalize()
+        if opt.preprocessing_norm is not None:
+            preprocessing_norm = opt.preprocessing_norm.capitalize()
         else:
-             y_norm = 'None'
-        upper_title = 'Y Preprocessing: {}, Y Norm: {}'.format(preprocessing, y_norm)
-        lower_title = 'Final Validation Loss: {}'.format(np.round(val_loss_arr[-1], 3))
-        plt.title('{}\n{}'.format(upper_title, lower_title), fontsize = 16)
+             preprocessing_norm = 'None'
+        upper_title = 'Y Preprocessing: {}, Norm: {}'.format(preprocessing, preprocessing_norm)
+        train_title = 'Final Training Loss: {}'.format(np.round(train_loss_arr[-1], 3))
+        val_title = 'Final Validation Loss: {}'.format(np.round(val_loss_arr[-1], 3))
+        plt.title(f'{upper_title}\n{train_title}\n{val_title}', fontsize = 16)
 
 
         if opt.milestones is not None:
@@ -308,11 +309,11 @@ def plotPerClassAccuracy(val_dataloader, imagePath, model, opt, title = None):
         preprocessing = opt.y_preprocessing.capitalize()
     else:
         preprocessing = 'None'
-    if opt.y_norm is not None:
-        y_norm = opt.y_norm.capitalize()
+    if opt.preprocessing_norm is not None:
+        preprocessing_norm = opt.preprocessing_norm.capitalize()
     else:
-         y_norm = 'None'
-    plt.title(f'Y Preprocessing: {preprocessing}, Y Norm: {y_norm}\n{acc_result}',
+         preprocessing_norm = 'None'
+    plt.title(f'Y Preprocessing: {preprocessing}, Norm: {preprocessing_norm}\n{acc_result}',
                 fontsize = 16)
 
     plt.tight_layout()
@@ -389,11 +390,11 @@ def plotDistanceStratifiedPearsonCorrelation(val_dataloader, imagePath, model, o
         preprocessing = opt.y_preprocessing.capitalize()
     else:
         preprocessing = 'None'
-    if opt.y_norm is not None:
-        y_norm = opt.y_norm.capitalize()
+    if opt.preprocessing_norm is not None:
+        preprocessing_norm = opt.preprocessing_norm.capitalize()
     else:
-         y_norm = 'None'
-    plt.title(f'Y Preprocessing: {preprocessing}, Y Norm: {y_norm}\n{title}',
+         preprocessing_norm = 'None'
+    plt.title(f'Y Preprocessing: {preprocessing}, Norm: {preprocessing_norm}\n{title}',
                 fontsize = 16)
 
     plt.tight_layout()
@@ -407,11 +408,11 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         preprocessing = opt.y_preprocessing.capitalize()
     else:
         preprocessing = 'None'
-    if opt.y_norm is not None:
-        y_norm = opt.y_norm.capitalize()
+    if opt.preprocessing_norm is not None:
+        preprocessing_norm = opt.preprocessing_norm.capitalize()
     else:
-         y_norm = 'None'
-    upper_title = 'Y Preprocessing: {}, Y Norm: {}'.format(preprocessing, y_norm)
+         preprocessing_norm = 'None'
+    upper_title = 'Y Preprocessing: {}, Norm: {}'.format(preprocessing, preprocessing_norm)
 
     loss_arr = np.zeros(min(count, opt.valN))
     for i, data in enumerate(val_dataloader):
@@ -494,11 +495,11 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
         preprocessing = opt.y_preprocessing.capitalize()
     else:
         preprocessing = 'None'
-    if opt.y_norm is not None:
-        y_norm = opt.y_norm.capitalize()
+    if opt.preprocessing_norm is not None:
+        preprocessing_norm = opt.preprocessing_norm.capitalize()
     else:
-         y_norm = 'None'
-    upper_title = 'Y Preprocessing: {}, Y Norm: {}'.format(preprocessing, y_norm)
+         preprocessing_norm = 'None'
+    upper_title = 'Y Preprocessing: {}, Norm: {}'.format(preprocessing, preprocessing_norm)
 
 
     loss_arr = np.zeros(min(count, opt.valN))
@@ -612,11 +613,17 @@ def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
         if i == count:
             break
 
-        x, y, path = data
-        x = x.to(opt.device)
-        y = y.to(opt.device)
-        path = path[0]
-        yhat = model(x)
+        if opt.GNN_mode:
+            data = data.to(opt.device)
+            y = data.y
+            yhat = model(data)
+            path = data.path[0]
+        else:
+            x, y, path = data
+            x = x.to(opt.device)
+            y = y.to(opt.device)
+            path = path[0]
+            yhat = model(x)
 
         loss = opt.criterion(yhat, y).item()
         y = y.cpu().numpy().reshape((-1))
@@ -758,11 +765,11 @@ def plotROCCurve(val_dataloader, imagePath, model, opt):
         preprocessing = opt.y_preprocessing.capitalize()
     else:
         preprocessing = 'None'
-    if opt.y_norm is not None:
-        y_norm = opt.y_norm.capitalize()
+    if opt.preprocessing_norm is not None:
+        preprocessing_norm = opt.preprocessing_norm.capitalize()
     else:
-         y_norm = 'None'
-    plt.title(f'Y Preprocessing: {preprocessing}, Y Norm: {y_norm}\n{title.strip()}',
+         preprocessing_norm = 'None'
+    plt.title(f'Y Preprocessing: {preprocessing}, Norm: {preprocessing_norm}\n{title.strip()}',
                 fontsize = 16)
 
     plt.tight_layout()

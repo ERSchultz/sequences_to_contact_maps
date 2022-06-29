@@ -123,17 +123,17 @@ def plot_diag_vs_diag_chi():
         m_dict[id] = m
         with open(osp.join(file_dir, 'config.json'), 'r') as f:
             config = json.load(f)
-        diag_chis = config['diag_chis']
-        k = len(diag_chis)
+        chi_diag = config['chi_diag']
+        k = len(chi_diag)
 
         diag_means = DiagonalPreprocessing.genomic_distance_statistics(y)
         max_diag_mean = np.max(diag_means[3:])
         # diag_means /= max_diag_mean
 
         temp = []
-        prev_diag_chi = diag_chis[0]
+        prev_diag_chi = chi_diag[0]
         for i in range(1, m):
-            diag_chi = diag_chis[math.floor(i/(m/k))]
+            diag_chi = chi_diag[math.floor(i/(m/k))]
             temp.append(diag_means[i])
             if diag_chi != prev_diag_chi:
                 mean = np.mean(temp)
@@ -176,7 +176,7 @@ def plot_diag_vs_diag_chi():
     ax.legend(loc = 1, title = 'sample')
     ax2.legend(loc = 3, title = 'm')
     plt.tight_layout()
-    plt.savefig(osp.join(osp.split(dir)[0], 'diag_chis.png'))
+    plt.savefig(osp.join(osp.split(dir)[0], 'chi_diag.png'))
     plt.close()
 
 
@@ -191,9 +191,9 @@ def main():
         rmtree(opt.root)
 
 if __name__ == '__main__':
-    plot_diag_vs_diag_chi()
+    # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
-    # plot_combined_models('ContactGNNEnergy', [158, 159])
+    update_result_tables('test', None, 'energy')
+    # plot_combined_models('test', [154, 159])
     # main()

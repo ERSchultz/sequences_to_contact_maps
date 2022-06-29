@@ -12,7 +12,7 @@ sequence
 1024
 --y_preprocessing
 diag
---y_norm
+--preprocessing_norm
 instance
 --hidden_sizes_list
 1024-128

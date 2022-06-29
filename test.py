@@ -1,7 +1,9 @@
+import math
 import os
 import os.path as osp
 import sys
 import time
+from shutil import rmtree
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -35,9 +37,9 @@ def test_num_workers():
     opt.cuda = True
     opt.device = torch.device('cuda')
     opt.y_preprocessing = 'diag'
-    opt.y_norm = 'batch'
+    opt.preprocessing_norm = 'batch'
     dataset = Sequences2Contacts(opt.data_folder, opt.toxx, opt.y_preprocessing,
-                                        opt.y_norm, opt.x_reshape, opt.ydtype,
+                                        opt.preprocessing_norm, opt.x_reshape, opt.ydtype,
                                         opt.y_reshape, opt.crop)
 
     b_arr = np.array([1, 2, 4, 8, 16, 32])
@@ -72,9 +74,10 @@ def edit_argparse():
                         weights = False
                         for i, line in enumerate(lines):
 
-                            if line == '--y_log_transform\n' and lines[i+1] == 'true\n':
-                                lines[i+1] = '10\n'
-                                print(lines[i+1], id)
+                            if line.startswith('preprocessing_norm'):
+                                val = line[18:]
+                                lines[i] = '--preprocessing_norm\n'+val
+                                print(lines[i], id)
                         with open(arg_file, 'w') as f:
                             f.write("".join(lines))
 
@@ -84,7 +87,7 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    opt.data_folder = "/home/erschultz/dataset_test_diag2"
+    opt.data_folder = "/home/erschultz/dataset_test_diag1024"
     opt.scratch = '/home/erschultz/scratch'
 
     # architecture
@@ -113,7 +116,7 @@ def debugModel(model_type):
         opt.training_norm = 'batch'
     elif model_type == 'DeepC':
         opt.k=10
-        opt.y_norm=None
+        opt.preprocessing_norm=None
         opt.y_preprocessing='diag'
         opt.kernel_w_list=AC.str2list('5-5-5')
         opt.hidden_sizes_list=AC.str2list('32-64-128')
@@ -122,7 +125,7 @@ def debugModel(model_type):
         opt.GNN_mode = True
         opt.output_mode = 'sequence'
         opt.loss = 'BCE'
-        opt.y_norm = None
+        opt.preprocessing_norm = None
         opt.message_passing='SignedConv'
         opt.hidden_sizes_list=AC.str2list('16-2')
         opt.out_act = None
@@ -135,7 +138,7 @@ def debugModel(model_type):
         opt.sparsify_threshold = 0.176
         opt.sparsify_threshold_upper = None
         opt.relabel_11_to_00 = False
-        opt.y_log_transform = 'True'
+        opt.log_preprocessing = 'True'
         opt.head_architecture = 'fc'
         opt.head_hidden_sizes_list = [2]
         # opt.crop=[50,100]
@@ -143,7 +146,7 @@ def debugModel(model_type):
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
         opt.loss = 'mse'
-        opt.y_norm = 'instance'
+        opt.preprocessing_norm = 'instance'
         opt.message_passing='gat'
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym'
@@ -162,7 +165,7 @@ def debugModel(model_type):
         opt.split_edges_for_feature_augmentation = False
         opt.sparsify_threshold = 0.176
         opt.sparsify_threshold_upper = None
-        opt.y_log_transform = None
+        opt.log_preprocessing = None
         opt.head_architecture = 'bilinear_asym'
         opt.head_hidden_sizes_list = None
         opt.crop=[0,4]
@@ -170,19 +173,49 @@ def debugModel(model_type):
         opt.use_bias = True
         opt.num_heads = 2
         opt.concat_heads = True
+    elif model_type == 'ContactGNNDiag':
+        opt.loss = 'mse'
+        opt.preprocessing_norm = 'instance'
+        opt.message_passing='gat'
+        opt.GNN_mode = True
+        opt.output_mode = 'diag_chi'
+        opt.encoder_hidden_sizes_list=None
+        opt.update_hidden_sizes_list=None
+        opt.hidden_sizes_list=[3,3]
+        opt.training_norm = 'instance'
+        opt.use_edge_weights = False
+        opt.use_edge_attr = True
+        opt.transforms=AC.str2list('empty')
+        opt.pre_transforms=AC.str2list('degree-contactdistance')
+        opt.split_edges_for_feature_augmentation = False
+        opt.sparsify_threshold = 0.176
+        opt.sparsify_threshold_upper = None
+        opt.log_preprocessing = None
+        opt.head_architecture = 'bilinear_asym'
+        opt.head_hidden_sizes_list = None
+        opt.use_bias = True
+        opt.use_bias = True
+        opt.num_heads = 2
     elif model_type == 'MLP':
+        opt.preprocessing_norm='instance'
         opt.random_split=True
-        opt.hidden_sizes_list=AC.str2list('1000-'*7 + '20')
+        opt.hidden_sizes_list=AC.str2list('1000-'*6 + '20')
         opt.act='prelu'
         opt.out_act='prelu'
         opt.output_mode='diag_chi'
+        opt.log_preprocessing='ln'
+        opt.y_zero_diag_count=4
         # opt.training_norm='batch'
+        opt.dropout=False
+        opt.dropout_p=0.1
+        # opt.crop=[20,1000]
+        # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 60
+    opt.n_epochs = 80
     opt.lr = 1e-3
-    opt.batch_size = 5
-    opt.milestones = [20, 40]
+    opt.batch_size = 10
+    opt.milestones = [20, 50]
     opt.gamma = 0.1
 
     # other
@@ -190,9 +223,9 @@ def debugModel(model_type):
     opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = False
-    opt.gpus = 1
+    opt.gpus = 0
     opt.delete_root = True
-    opt.use_scratch = False
+    opt.use_scratch = True
     opt.print_mod = 1
     # opt.id = 12
     # opt.resume_training = True
@@ -204,6 +237,9 @@ def debugModel(model_type):
     model = get_model(opt)
 
     core_test_train(model, opt)
+
+    if opt.use_scratch:
+        rmtree(opt.data_folder)
 
 class ContactGNNEnergyTest(nn.Module):
     def __init__(self, m, head_hidden_sizes_list):
@@ -512,10 +548,10 @@ def plot_binom_helper2(x, y, xlabel, ylabel, ofile):
     plt.savefig(ofile)
     plt.close()
 
-def main():
+def sc_structure_vs_sc_sample():
     n_samples = 10
     for sample in [5, 15, 25, 34, 35]:
-        dir = f'/home/erschultz/dataset_test3/samples/sample{sample}'
+        dir = f'/home/erschultz/dataset_test_diag/samples/sample{sample}'
         odir = osp.join(dir, 'sc_contacts')
         y = np.load(osp.join(dir, 'y.npy')).astype(np.float32)
         y_proj_arr = []
@@ -575,11 +611,25 @@ def main():
         plt.savefig(osp.join(dir, 'sc vs sample.png'))
         plt.close()
 
+def main():
+    # how to fill empty matrix by diagonal
+    m = 10
+    D = np.zeros((m,m))
+    diag_chis = [0, 5]
+    k = len(diag_chis)
+    for i in range(1, m):
+        rng = np.arange(m-i)
+        print(rng)
+        diag_chi = diag_chis[math.floor(i/(m/k))]
+        D[rng, rng+i] = diag_chi
+    print(D)
+
+
 
 
 
 if __name__ == '__main__':
     # main()
     # binom()
-    # edit_argparse()
-    debugModel('MLP')
+    edit_argparse()
+    # debugModel('MLP')

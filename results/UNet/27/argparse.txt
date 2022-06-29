@@ -12,7 +12,7 @@ false
 1024
 --y_preprocessing
 prcnt
---y_norm
+--preprocessing_norm
 instance
 --nf
 8

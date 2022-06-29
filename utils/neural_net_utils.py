@@ -39,7 +39,7 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
             max_sample = float('inf')
 
         dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.m, opt.y_preprocessing,
-                                opt.y_log_transform, opt.y_norm, opt.min_subtraction,
+                                opt.log_preprocessing, opt.preprocessing_norm, opt.min_subtraction,
                                 opt.use_node_features,
                                 opt.sparsify_threshold, opt.sparsify_threshold_upper,
                                 opt.split_neg_pos_edges,
@@ -51,10 +51,11 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
         dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)
     elif opt.output_mode == 'diag_chi':
-        dataset = DiagFunctions(opt.data_folder, names = names)
+        dataset = DiagFunctions(opt.data_folder, opt.crop, opt.preprocessing_norm,
+                                opt.log_preprocessing, opt.y_zero_diag_count, names = names)
     else:
         dataset = SequencesContacts(opt.data_folder, opt.toxx, opt.toxx_mode,
-                                    opt.y_preprocessing, opt.y_norm,
+                                    opt.y_preprocessing, opt.preprocessing_norm,
                                     opt.x_reshape, opt.ydtype, opt.y_reshape,
                                     opt.crop, opt.min_subtraction, names, minmax)
 
@@ -112,6 +113,7 @@ def split_dataset(dataset, opt):
         return torch.utils.data.random_split(dataset, [opt.trainN, opt.valN, opt.testN],
                                             torch.Generator().manual_seed(opt.seed))
     else:
+        assert opt.GNN_mode, "pytorch datasets don't support slicing"
         test_dataset = dataset[:opt.testN]
         val_dataset = dataset[opt.testN:opt.testN+opt.valN]
         train_dataset = dataset[opt.testN+opt.valN:opt.testN+opt.valN+opt.trainN]
