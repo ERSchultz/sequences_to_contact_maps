@@ -14,8 +14,10 @@ def calculate_E(x, chi):
     return e
 
 def s_to_E(s):
-    e = s + s.T - np.diag(np.diagonal(s).copy())
-    return e
+    if s is None:
+        return None
+        
+    return s + s.T - np.diag(np.diagonal(s).copy())
 
 def calculate_S(x, chi):
     # zero lower triangle (double check)

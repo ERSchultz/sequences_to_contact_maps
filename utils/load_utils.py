@@ -230,6 +230,8 @@ def load_final_max_ent_S(replicate_path, max_it_path = None):
         x_file = osp.join(replicate_path, 'resources', 'x.npy')
         if osp.exists(x_file):
             x = np.load(x_file)
+        else:
+            return None
 
         _, k = x.shape
 
