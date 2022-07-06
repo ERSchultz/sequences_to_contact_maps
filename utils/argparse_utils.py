@@ -598,7 +598,7 @@ def opt2list(opt):
         pass
     elif opt.model_type == 'SequenceFCAutoencoder':
         opt_list.extend([opt.hidden_sizes_list, opt.parameter_sharing])
-    elif model_type == 'MLP':
+    elif opt.model_type == 'MLP':
         opt_list.extend([opt.y_zero_diag_count])
     else:
         raise Exception("Unknown model type: {}".format(opt.model_type))

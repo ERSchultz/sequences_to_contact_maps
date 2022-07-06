@@ -107,7 +107,7 @@ def plot_xyz_gif_wrapper():
     plot_xyz_gif(xyz, x, dir)
 
 def plot_diag_vs_diag_chi():
-    dir = '/home/erschultz/dataset_test_diag2/samples'
+    dir = '/home/erschultz/dataset_test_diag1024/samples'
     data = []
     ids = set()
     m_dict = {} # sample_id : m
@@ -123,7 +123,7 @@ def plot_diag_vs_diag_chi():
         m_dict[id] = m
         with open(osp.join(file_dir, 'config.json'), 'r') as f:
             config = json.load(f)
-        chi_diag = config['chi_diag']
+        chi_diag = config['diag_chis']
         k = len(chi_diag)
 
         diag_means = DiagonalPreprocessing.genomic_distance_statistics(y)
@@ -160,8 +160,8 @@ def plot_diag_vs_diag_chi():
             prev_m = m
         where = np.equal(data[:, 2], id)
         ax.plot(data[where, 1], data[where, 0], color = cmap(id % cmap.N), ls = ls)
-    ax.set_xlabel('diag chi', fontsize=16)
-    ax.set_ylabel('mean', fontsize=16)
+    ax.set_xlabel('Diagonal Parameter', fontsize=16)
+    ax.set_ylabel('Contact Probability', fontsize=16)
     ax.set_yscale('log')
 
 
@@ -194,6 +194,6 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    update_result_tables('test', None, 'energy')
+    update_result_tables('ContactGNNEnergy', None, 'energy')
     # plot_combined_models('test', [154, 159])
     # main()

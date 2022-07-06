@@ -52,7 +52,8 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
         dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)
     elif opt.output_mode == 'diag_chi':
         dataset = DiagFunctions(opt.data_folder, opt.crop, opt.preprocessing_norm,
-                                opt.log_preprocessing, opt.y_zero_diag_count, names = names)
+                                opt.log_preprocessing, opt.y_zero_diag_count,
+                                names = names, samples = samples)
     else:
         dataset = SequencesContacts(opt.data_folder, opt.toxx, opt.toxx_mode,
                                     opt.y_preprocessing, opt.preprocessing_norm,

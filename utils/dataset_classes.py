@@ -172,7 +172,8 @@ class DiagFunctions(Dataset):
     and corresponding diagonal chi functions (y).
     '''
     def __init__(self, dirname, crop, norm, log, zero_diag_count,
-                    min_sample = 0, max_sample = float('inf'), names = False):
+                    min_sample = 0, max_sample = float('inf'), names = False,
+                    samples = None):
         '''
         Inputs:
             dirname: dataset directory
@@ -189,7 +190,7 @@ class DiagFunctions(Dataset):
         self.zero_diag_count = zero_diag_count
         self.names = names
         self.paths = sorted(make_dataset(dirname, minSample = min_sample,
-                                        maxSample = max_sample))
+                                        maxSample = max_sample, samples = samples))
 
     def __getitem__(self, index):
         if len(self.paths[index]) == 0:
@@ -235,6 +236,7 @@ class DiagFunctions(Dataset):
                     chi_diag = np.array(config["diag_chis"])
 
         meanDist = torch.tensor(meanDist, dtype = torch.float32)
+        print('meanDist', meanDist, meanDist.shape)
         chi_diag = torch.tensor(chi_diag, dtype = torch.float32)
         result = [meanDist, chi_diag]
         if self.names:

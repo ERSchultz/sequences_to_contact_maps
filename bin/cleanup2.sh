@@ -7,13 +7,15 @@
 
 
 
-cd "/home/erschultz/scratch-midway2/dataset_04_27_22/samples"
-for i in 1 2 3 4 5 6 7 8 9
-do
-  rm -r "sample${i}*" &
-done
+cd "/project2/depablo/erschultz"
+
+rm -r dataset_09_02_21 &
+rm -r dataset_10_25_21 &
+rm -r dataset_12_11_21 &
+rm -r dataset_12_17_21 &
+rm -r dataset_11_14_21 &
+rm -r dataset_01_19_22 &
+rm -r dataset_01_11_22 &
+rm -r dataset_01_12_22 &
 
 wait
-
-cd "/home/erschultz/scratch-midway2"
-rm -r dataset_04_27_22
