@@ -6,10 +6,9 @@
 #SBATCH --time=2:00:00
 
 
-cd "/project2/depablo/erschultz"
+cd "/project2/depablo/erschultz/michrom/project/chr_05"
 
-rm -r dataset_01_16_22 &
-rm -r dataset_01_14_22 &
-rm -r dataset_01_13_22 &
+rm -r chr_05_02_copy &
+rm -r chr_05_02_copy2 &
 
 wait
