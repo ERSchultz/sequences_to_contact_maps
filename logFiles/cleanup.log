@@ -1,9 +1,0 @@
-rm: rm: cannot remove ‘sample9*’cannot remove ‘sample6*’rm: : No such file or directorycannot remove ‘sample1*’: No such file or directory
-
-rm: : No such file or directorycannot remove ‘sample8*’
-rm: : No such file or directorycannot remove ‘sample7*’
-rm: : No such file or directorycannot remove ‘sample2*’
-rm: rm: cannot remove ‘sample4*’: No such file or directorycannot remove ‘sample5*’
-: No such file or directory
-: No such file or directory
-rm: cannot remove ‘sample3*’: No such file or directory
