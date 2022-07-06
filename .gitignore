@@ -11,11 +11,7 @@ maxent*
 test/**
 
 # datasets
-dataset*/*
-!*/samples/sample40
-!*/samples/sample40/*
-!dataset_01_18_22/samples/sample21
-!dataset_01_18_22/samples/sample21/**
+dataset*
 !dataset_09_21_21/samples/sample1
 !dataset_09_21_21/samples/sample1/**
 !dataset_test/**
