@@ -13,7 +13,7 @@ rm -r sample19
 
 for i in 13 14 15
 do
-  cd "${datset}/sample${i}"
+  cd "${dataset}/sample${i}"
   rm -r GNN* &
   rm -r PCA* &
   wait
