@@ -6,15 +6,15 @@
 #SBATCH --time=2:00:00
 
 
-dataset="/project2/depablo/erschultz/dataset_05_18_22/samples"
+dataset="/project2/depablo/erschultz/dataset_01_17_22/samples"
 cd $dataset
 
 rm -r sample19
 
-for i in 13 14 15
+for i in $( seq 1 4400 )
 do
   cd "${dataset}/sample${i}"
-  rm -r GNN* &
-  rm -r PCA* &
+  rm s.npy &
+  rm e.npy &
   wait
 done
