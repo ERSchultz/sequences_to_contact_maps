@@ -7,8 +7,7 @@
 
 
 cd "/project2/depablo/erschultz/michrom/project/chr_05"
+rm -r sc_contacts
 
-rm -r chr_05_02_copy &
-rm -r chr_05_02_copy2 &
-
-wait
+cd 'chr_05_02'
+rm -r contact_diffusion_kNN2
