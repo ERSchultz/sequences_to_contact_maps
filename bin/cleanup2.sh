@@ -7,13 +7,15 @@
 
 
 
-cd "/project2/depablo/erschultz"
+dataset="/project2/depablo/erschultz/dataset_05_18_22/samples"
+cd $dataset
 
-rm -r dataset_10_27_21 &
-rm -r dataset_12_12_21 &
-rm -r dataset_04_26_22 &
-rm -r dataset_12_29_21 &
-rm -r dataset_01_15_22 &
+rm -r sample19
 
-
-wait
+for i in 13 14 15
+do
+  cd "${datset}/sample${i}"
+  rm -r GNN* &
+  rm -r PCA* &
+  wait
+done
