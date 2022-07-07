@@ -6,8 +6,15 @@
 #SBATCH --time=2:00:00
 
 
-cd "/project2/depablo/erschultz/michrom/project/chr_05"
-rm -r sc_contacts
+dataset="/project2/depablo/erschultz/dataset_05_18_22/samples"
+cd $dataset
 
-cd 'chr_05_02'
-rm -r contact_diffusion_kNN2
+rm -r sample19
+
+for i in 13 14 15
+do
+  cd "${datset}/sample${i}"
+  rm -r GNN* &
+  rm -r PCA* &
+  wait
+done
