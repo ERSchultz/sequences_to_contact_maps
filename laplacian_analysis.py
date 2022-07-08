@@ -11,6 +11,7 @@ from sklearn.cluster import KMeans
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import pairwise_distances, silhouette_score
 from sympy import solve, symbols
+
 from utils.load_utils import load_sc_contacts
 from utils.plotting_utils import (plot_matrix, plot_matrix_gif,
                                   plot_sc_contact_maps_inner)
@@ -19,6 +20,23 @@ from utils.utils import (diagonal_preprocessing_bulk,
                          print_size, print_time, triu_to_full)
 from utils.xyz_utils import find_dist_between_centroids, find_label_centroid
 
+
+def diag_processsing(dir, odir, args):
+    t0 = time.time()
+
+    sc_contacts = np.zeros((args.N, int(args.m*(args.m+1)/2)))
+    for i in range(args.N):
+        fpath = osp.join(dir, f'y_sc_{i}.npy')
+        sc_contacts[i] = np.load(fpath)
+    overall = np.sum(sc_contacts, axis = 0)
+    overall = triu_to_full(overall)
+    mean_per_diag = DiagonalPreprocessing.genomic_distance_statistics(overall, mode = 'prob')
+    sc_contacts_diag = DiagonalPreprocessing.process_bulk(sc_contacts, mean_per_diag,
+                                                    triu = True)
+    tf = time.time()
+    print_time(t0, tf, 'diag')
+
+    return sc_contacts_diag
 
 def sort_laplacian(A_tilde, xyz, sc_contacts, odir, it):
     w, v = np.linalg.eig(A_tilde)

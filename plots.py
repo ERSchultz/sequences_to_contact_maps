@@ -8,6 +8,7 @@ from shutil import rmtree
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+
 from utils.argparse_utils import (argparse_setup, finalize_opt,
                                   get_base_parser, get_opt_header, opt2list)
 from utils.plotting_utils import (plot_centroid_distance, plot_combined_models,

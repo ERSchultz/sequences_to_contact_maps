@@ -7,6 +7,7 @@ import sys
 import time
 from shutil import move, rmtree
 
+import dmaps  # https://github.com/ERSchultz/dmaps
 import imageio
 import matplotlib.cm
 import matplotlib.pyplot as plt
@@ -19,6 +20,7 @@ from sklearn.cluster import KMeans
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import pairwise_distances, silhouette_score
 from sklearn.metrics.pairwise import cosine_distances, euclidean_distances
+
 from utils.argparse_utils import ArgparserConverter
 from utils.load_utils import save_sc_contacts
 from utils.plotting_utils import plot_matrix, plot_sc_contact_maps_inner
@@ -26,10 +28,8 @@ from utils.utils import (DiagonalPreprocessing, pearson_round, print_size,
                          print_time, triu_to_full)
 from utils.xyz_utils import lammps_load, xyz_load, xyz_to_contact_grid
 
-import dmaps  # https://github.com/ERSchultz/dmaps
 
-
-def getArgs(default_dir='/home/erschultz/dataset_test_sc_traj/samples/combined'):
+def getArgs(default_dir='/home/erschultz/dataset_test_sc_traj/samples/combined2'):
     parser = argparse.ArgumentParser(description='Base parser')
     AC = ArgparserConverter()
 
@@ -48,8 +48,8 @@ def getArgs(default_dir='/home/erschultz/dataset_test_sc_traj/samples/combined')
     parser.add_argument('--jobs', type=int, default=15)
     parser.add_argument('--sparse_format', action='store_true',
                         help='True to store sc_contacts in sparse format')
-    parser.add_argument('--down_sampling', type=int, default=1)
-    parser.add_argument('--its', type=int, default=3,
+    parser.add_argument('--down_sampling', type=int, default=10)
+    parser.add_argument('--its', type=int, default=2,
                         help='number of iterations')
     parser.add_argument('--chunk_size', type=int, default=500,
                         help='chunk size for pairwise_distances_chunk')
@@ -251,6 +251,7 @@ def tune_epsilon(input, ofile):
 
     return eps_final
 
+## plotting functions
 def plot_eigenvectors_inner(v, odir, fig_label, labels = None):
     N = len(v)
     if labels is not None:
@@ -386,6 +387,7 @@ def plot_contacts(dir, order, args):
             frames.append(imageio.imread(filename))
 
         imageio.mimsave(osp.join(odir, 'sc_contacts.gif'), frames, format='GIF', fps=2)
+## end section
 
 def load_helper(args, contacts = False):
     npy_file = osp.join(args.dir, 'xyz.npy')
@@ -430,23 +432,6 @@ def diag_processsing_chunk(dir, odir, args):
 
     tf = time.time()
     print_time(t0, tf, 'diag', file = args.log_file)
-
-    return sc_contacts_diag
-
-def diag_processsing(dir, odir, args):
-    t0 = time.time()
-
-    sc_contacts = np.zeros((args.N, int(args.m*(args.m+1)/2)))
-    for i in range(args.N):
-        fpath = osp.join(dir, f'y_sc_{i}.npy')
-        sc_contacts[i] = np.load(fpath)
-    overall = np.sum(sc_contacts, axis = 0)
-    overall = triu_to_full(overall)
-    mean_per_diag = DiagonalPreprocessing.genomic_distance_statistics(overall, mode = 'prob')
-    sc_contacts_diag = DiagonalPreprocessing.process_bulk(sc_contacts, mean_per_diag,
-                                                    triu = True)
-    tf = time.time()
-    print_time(t0, tf, 'diag')
 
     return sc_contacts_diag
 
@@ -513,13 +498,11 @@ class GaussianProcessing():
         y = y[np.triu_indices(self.m)]
         np.save(ofile, y)
 
-def xyz_diffusion():
-    args = getArgs()
+def xyz_diffusion(args):
     xyz = load_helper(args)
 
     # load xyz
     t0 = time.time()
-
 
     N, m, _ = xyz.shape
     xyz = xyz.reshape(N, m * 3)
@@ -550,8 +533,7 @@ def xyz_diffusion():
 
     plot_eigenvectors(v, xyz.reshape(-1, m, 3), args.odir)
 
-def contact_diffusion():
-    args = getArgs()
+def contact_diffusion(args):
     xyz = load_helper(args, True)
     args.N, args.m, args.d = xyz.shape
 
@@ -627,11 +609,7 @@ def contact_diffusion():
         print('\n', file = args.log_file)
         odir_prev = args.odir_i
 
-    # move files from scratch to odir
-    move(args.scratch_dir, args.odir)
-
-def contact_laplacian():
-    args = getArgs()
+def contact_laplacian(args):
     xyz = load_helper(args, True)
     args.N, args.m, _ = xyz.shape
 
@@ -704,9 +682,6 @@ def contact_laplacian():
         print('\n')
         odir_prev = args.odir_i
 
-    # move files from scratch to odir
-    move(args.scratch_dir, args.odir)
-
 def plot_gif_michrom():
     dir = '/home/erschultz/michrom/project/chr_05/chr_05_02_copy/contact_diffusion'
     filenames = [osp.join(dir, f'cluster{i}_contacts.png') for i in [1, 3, 0, 4, 2]]
@@ -721,14 +696,27 @@ def plot_gif_michrom():
     # for filename in set(filenames):
     #     os.remove(filename)
 
+def cleanup(args):
+    for it in range(args.its+1):
+        diag_dir = osp.join(args.scratch_dir, f'iteration_{it}', 'sc_contacts_diag')
+        if osp.exists(diag_dir):
+            rmtree(diag_dir)
+
+
+    # move files from scratch to odir
+    move(args.scratch_dir, args.odir)
+
 def main():
     args = getArgs()
     if args.mode == 'xyz_diffusion':
-        xyz_diffusion()
+        xyz_diffusion(args)
     elif args.mode == 'contact_diffusion':
-        contact_diffusion()
+        contact_diffusion(args)
     elif args.mode == 'contact_laplacian':
-        contact_laplacian()
+        contact_laplacian(args)
+
+    cleanup(args)
+
 
 
 if __name__ == '__main__':

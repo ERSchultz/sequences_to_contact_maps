@@ -12,10 +12,11 @@ cd $dataset
 
 rm -r sample19
 
-for i in 13 14 15
+for i in 1 2 3 4 5 6 7 8 9 10 11 12
 do
   cd "${datset}/sample${i}"
   rm -r GNN* &
   rm -r PCA* &
+  rm -r ground* &
   wait
 done
