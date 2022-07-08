@@ -10,11 +10,9 @@
 dataset="/project2/depablo/erschultz/dataset_05_18_22/samples"
 cd $dataset
 
-rm -r sample19
-
 for i in 1 2 3 4 5 6 7 8 9 10 11 12
 do
-  cd "${datset}/sample${i}"
+  cd "${dataset}/sample${i}"
   rm -r GNN* &
   rm -r PCA* &
   rm -r ground* &
