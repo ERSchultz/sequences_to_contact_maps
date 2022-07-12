@@ -74,6 +74,8 @@ Thoughts:
 ---if using a term like BIn Zhang CTCF, if you delete term 3 do you see weaker TAD boundaries????
 
 
+Can we use the GNN and the MLP as initial guesses for max entropy? How much faster is this than the regular max ent approach?
+
 Currently, the diagonal effect is O(n^2), because we have to check each pair of beads in a grid cell to see what their distance is. What if we just kept track of the number of beads according to each size bin?
 
 

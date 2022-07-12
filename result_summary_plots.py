@@ -471,7 +471,7 @@ def main():
     print(args)
 
     ## load data ##
-    x, _, chi, e, s, y, ydiag = load_all(args.sample_folder, True, args.data_folder, args.log_file, experimental = args.experimental, throw_exception = False)
+    x, _, chi, chi_diag, e, s, y, ydiag = load_all(args.sample_folder, True, args.data_folder, args.log_file, experimental = args.experimental, throw_exception = False)
     plot_matrix(e, ofile = osp.join(args.sample_folder, 'e.png'), title = 'E', vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
 

@@ -9,7 +9,7 @@
 dirname="/home/erschultz/sequences_to_contact_maps"
 # dirname="/home/erschultz"
 # dirname='/project2/depablo/erschultz'
-dataset="dataset_04_27_22"
+dataset="dataset_05_18_22"
 sample='none'
 sampleFolder='none'
 method='none'
