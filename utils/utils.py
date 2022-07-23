@@ -80,7 +80,7 @@ class DiagonalPreprocessing():
 
     def genomic_distance_statistics(y, mode = 'freq', stat = 'mean',
                         zero_diag = False, zero_offset = 1,
-                        plot = False, ofile = None):
+                        plot = False, ofile = None, normalize = None):
         '''
         Calculate statistics of contact frequency/probability as a function of genomic distance
         (i.e. along a give diagonal)
@@ -92,6 +92,7 @@ class DiagonalPreprocessing():
             zero_offset: all diagonals up to zero_offset will be zero-d
             plot: True to plot stat_per_diagonal
             ofile: file path to plot to (None for plt.show())
+            normalize: divide each value in stat_per_diagonal by value in normalize
 
         Outputs:
             stat_per_diagonal: numpy array where result[d] is the contact frequency/probability stat at distance d
@@ -114,6 +115,10 @@ class DiagonalPreprocessing():
         stat_per_diagonal = np.zeros_like(distances).astype(float)
         for d in distances:
             stat_per_diagonal[d] = np_stat(np.diagonal(y, offset = d))
+
+
+        if isinstance(normalize, np.ndarray) or isinstance(normalize, float):
+            stat_per_diagonal = np.divide(stat_per_diagonal, normalize)
 
         if plot:
             plt.plot(stat_per_diagonal)

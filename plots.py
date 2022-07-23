@@ -8,12 +8,11 @@ from shutil import rmtree
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-
 from utils.argparse_utils import (argparse_setup, finalize_opt,
                                   get_base_parser, get_opt_header, opt2list)
 from utils.plotting_utils import (plot_centroid_distance, plot_combined_models,
-                                  plot_sc_contact_maps, plot_xyz_gif,
-                                  plotting_script)
+                                  plot_diag_chi, plot_sc_contact_maps,
+                                  plot_xyz_gif, plotting_script)
 from utils.utils import DiagonalPreprocessing
 from utils.xyz_utils import xyz_load, xyz_write
 
@@ -180,6 +179,93 @@ def plot_diag_vs_diag_chi():
     plt.savefig(osp.join(osp.split(dir)[0], 'chi_diag.png'))
     plt.close()
 
+def plot_mean_vs_genomic_distance_comparison(dir, samples):
+    # normalize_dict = {}
+    # normalize_dict[512] = np.loadtxt(osp.join(dir, 'samples/sample203/meanDist.txt'))
+    # normalize_dict[1024] = np.loadtxt(osp.join(dir, 'samples/sample204/meanDist.txt'))
+    # normalize_dict[2048] = np.loadtxt(osp.join(dir, 'samples/sample205/meanDist.txt'))
+
+    cmap = matplotlib.cm.get_cmap('tab10')
+
+    # sort samples
+    samples_arr = []
+    m_arr = []
+    for sample in samples:
+        y = np.load(osp.join(dir, f'samples/sample{sample}', 'y.npy'))
+        m = len(y)
+        samples_arr.append(sample)
+        m_arr.append(m)
+    samples_sort = [samples_arr for _, samples_arr in sorted(zip(m_arr, samples_arr), reverse = True)]
+
+
+    fig, ax = plt.subplots()
+    ax2 = ax.twinx()
+    first = True
+    for sample in samples_sort:
+        y = np.load(osp.join(dir, f'samples/sample{sample}', 'y.npy'))
+        m = len(y)
+        print(sample, m)
+        meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob',
+                                                zero_diag = False, zero_offset = 0)
+        # meanDist = meanDist[:int(0.25*m)]
+
+        meanDist *= (1/np.max(meanDist))
+        ind = int(np.log2(m))
+        ax.plot(np.arange(0, len(meanDist)), meanDist, label = m, color = cmap(ind % cmap.N))
+
+        diag_chis_file = osp.join(dir, f'samples/sample{sample}', 'diag_chis.npy')
+        if osp.exists(diag_chis_file):
+            diag_chis = np.load(diag_chis_file)
+            # diag_chis = diag_chis[:int(0.25*len(diag_chis))]
+            ax2.plot(np.linspace(0, len(meanDist), len(diag_chis)), diag_chis, ls='--', color = cmap(ind % cmap.N))
+            ax2.set_ylabel('Diagonal Parameter', fontsize = 16)
+
+
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+    ax.set_ylabel('Contact Probability', fontsize = 16)
+    ax.set_xlabel('Polymer Distance', fontsize = 16)
+    ax.legend(loc='upper right', title='Beads')
+    plt.tight_layout()
+    plt.savefig(osp.join(dir, f'meanDist_{samples}.png'))
+    plt.close()
+
+    print('\n')
+
+    fig, ax = plt.subplots()
+    ax2 = ax.twinx()
+    first = True
+    for sample in samples_sort:
+        y = np.load(osp.join(dir, f'samples/sample{sample}', 'y.npy'))
+        m = len(y)
+        print(sample, m)
+        meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob',
+                                                zero_diag = False, zero_offset = 0)
+                                                # [:int(0.25*m)]
+        meanDist *= (1/np.max(meanDist))
+        ind = int(np.log2(m))
+        ax.plot(np.linspace(0, 1, len(meanDist)), meanDist, label = m, color = cmap(ind % cmap.N))
+
+        diag_chis_file = osp.join(dir, f'samples/sample{sample}', 'diag_chis.npy')
+        if osp.exists(diag_chis_file):
+            diag_chis = np.load(diag_chis_file)
+            # diag_chis = diag_chis[:int(0.25*len(diag_chis))]
+            diag_chis = diag_chis[:int(0.25*len(diag_chis))]
+            ax2.plot(np.linspace(0, 1, len(diag_chis)), diag_chis, ls='--', color = cmap(ind % cmap.N))
+            ax2.set_ylabel('Diagonal Parameter', fontsize = 16)
+
+
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+    ax.set_ylabel('Contact Probability', fontsize = 16)
+    ax.set_xlabel('Polymer Distance (%)', fontsize = 16)
+    ax.legend(loc='upper right', title='Beads')
+    plt.tight_layout()
+    plt.savefig(osp.join(dir, f'meanDist_{samples}_%.png'))
+    plt.close()
+
+    print('\n')
+
 
 def main():
     opt = argparse_setup()
@@ -195,6 +281,14 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    update_result_tables('ContactGNNEnergy', None, 'energy')
+    # update_result_tables('ContactGNNEnergy', None, 'energy')
+    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag', [200, 201, 202])
+    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag', [160, 161, 162, 163, 164])
+    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_combined_models('test', [154, 159])
     # main()
+    plot_diag_chi(np.array([25.27974, 4.89618, 6.25198, 6.64107, 6.82722, 7.42828, 6.97835, 6.65819,
+                7.48775, 7.14076, 6.99229, 7.06783, 6.76844, 7.06846, 6.90215, 6.92753,
+                7.08992, 7.23810, 7.42200, 7.54987, 8.35464, 8.76678, 9.05908, 10.20939,
+                10.51292, 11.51608, 12.68125, 13.95166, 16.26210, 15.83551, 16.99994, 18.53027]),
+                1024, '', dense=True)

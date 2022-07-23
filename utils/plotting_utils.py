@@ -24,8 +24,8 @@ from .argparse_utils import (ArgparserConverter, finalize_opt, get_base_parser,
 from .InteractionConverter import InteractionConverter
 from .load_utils import load_sc_contacts, load_X_psi
 from .neural_net_utils import get_data_loaders, get_dataset, load_saved_model
-from .utils import (calc_dist_strat_corr, calc_per_class_acc, compare_PCA,
-                    crop, triu_to_full)
+from .utils import (DiagonalPreprocessing, calc_dist_strat_corr,
+                    calc_per_class_acc, compare_PCA, crop, triu_to_full)
 from .xyz_utils import (find_dist_between_centroids, find_label_centroid,
                         xyz_load, xyz_to_contact_grid, xyz_write)
 
@@ -1292,6 +1292,115 @@ def plot_centroid_distance_sample(dir, sample):
     plt.close()
 
 ### Primary scripts ###
+def plot_diag_chi(chi_diag, m, path, dense = False, dense_cutoff = 0.0625,
+                    dense_loading = 0.5, ref = None):
+    '''
+    chi_diag: diagonal parameters
+    m: # of beads
+    path: save file path
+    dense: True for dense diagonal
+    dense_cutoff: cutoff for dense diagonal
+    dense_laoding: loading for dense diagonal`
+    ref: reference parameters
+    ref_label: label for reference parameters
+    '''
+    if not dense:
+        plt.plot(chi_diag)
+        plt.xlabel('Bin', fontsize = 16)
+        plt.ylabel('Diagonal Parameter', fontsize = 16)
+        plt.savefig(osp.join(path, 'chi_diag.png'))
+        plt.close()
+
+    diag_bins = len(chi_diag)
+    diag_chi_step = np.zeros(m)
+    for d in range(m):
+        if dense:
+            dividing_line = m * dense_cutoff
+
+            n_small_bins = int(dense_loading * diag_bins)
+            n_big_bins = diag_bins - n_small_bins
+            small_binsize = int(dividing_line / (n_small_bins))
+            big_binsize = int((m - dividing_line) / n_big_bins)
+
+            if d > dividing_line:
+                bin = n_small_bins + math.floor( (d - dividing_line) / big_binsize)
+            else:
+                bin =  math.floor( d / small_binsize)
+        else:
+            binsize = m / diag_bins
+            bin = int(d / binsize)
+        diag_chi_step[d] = chi_diag[bin]
+
+    plt.plot(diag_chi_step, color = 'k')
+    plt.xlabel('Polymer Distance', fontsize = 16)
+    plt.ylabel('Diagonal Parameter', fontsize = 16)
+    if ref is not None:
+        plt.plot(ref, color = 'k', ls = '--')
+    plt.savefig(osp.join(path, 'chi_diag_step.png'))
+    plt.close()
+
+def plot_mean_vs_genomic_distance(y, path, diag_chis, ofile = 'meanDist.png',
+                        dense = False, dense_cutoff = 0.0625, dense_loading = 0.5):
+    '''
+    Inputs:
+        y: contact map
+        path: save path
+        diag_chis: plot diagonal parameters on twin axis (None to skip)
+        ofile: save file name
+    '''
+    meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob',
+                                            zero_diag = False, zero_offset = 0)
+    fig, ax = plt.subplots()
+    ax2 = ax.twinx()
+    ax.plot(meanDist)
+    ax.set_yscale('log')
+
+    if diag_chis is not None:
+        m = len(y)
+        diag_bins = len(diag_chis)
+
+        # find chi transition points
+        diag_chi_step = np.zeros(m)
+        for d in range(m):
+            if dense:
+                dividing_line = m * dense_cutoff
+
+                n_small_bins = int(dense_loading * diag_bins)
+                n_big_bins = diag_bins - n_small_bins
+                small_binsize = int(dividing_line / (n_small_bins))
+                big_binsize = int((m - dividing_line) / n_big_bins)
+
+                if d > dividing_line:
+                    bin = n_small_bins + math.floor( (d - dividing_line) / big_binsize)
+                else:
+                    bin =  math.floor( d / small_binsize)
+            else:
+                binsize = m / diag_bins
+                bin = int(d / binsize)
+
+            diag_chi_step[d] = diag_chis[bin]
+
+        # start = np.log10(np.max(meanDist)*1.05)
+        # stop = np.log10(np.max(meanDist[-int(0.9*k):])*1.05)
+        # annotate_y_arr = np.logspace(start, stop, k)
+        # for i, diag_chi, annotate_y in zip(transitions, diag_chis, annotate_y_arr):
+        #     plt.axvline(i, linestyle = 'dashed', color = 'green')
+        #     plt.annotate(f'{np.round(diag_chi, 1)}', (i, annotate_y))
+
+        ax2.plot(diag_chi_step, color = 'k')
+        ax2.set_ylabel('Diagonal Parameter', fontsize=16)
+
+
+
+    ax.set_ylabel('Contact Probability', fontsize = 16)
+    ax.set_xlabel('Polymer Distance (beads)', fontsize = 16)
+    plt.tight_layout()
+    plt.savefig(osp.join(path, ofile))
+    plt.close()
+
+    np.savetxt(osp.join(path, 'meanDist.txt'), meanDist)
+    print('mean', np.mean(meanDist))
+
 def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
                     size_in = 6, minVal = None, maxVal = None, prcnt = False,
                     cmap = None, x_ticks = None, y_ticks = None):

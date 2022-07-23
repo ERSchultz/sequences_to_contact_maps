@@ -8,13 +8,13 @@ import pandas as pd
 from utils.dataset_classes import make_dataset
 from utils.InteractionConverter import InteractionConverter
 from utils.load_utils import load_all, load_X_psi, load_Y
-from utils.plotting_utils import (plot_matrix, plot_seq_binary,
-                                  plot_seq_exclusive)
+from utils.plotting_utils import (plot_diag_chi, plot_matrix,
+                                  plot_mean_vs_genomic_distance,
+                                  plot_seq_binary, plot_seq_exclusive)
 from utils.utils import DiagonalPreprocessing
 
 
 def chi_to_latex(chi, ofile):
-    # TODO
     with open(ofile, 'w') as f:
         f.write('\\begin{bmatrix}\n')
         for row in range(len(chi)):
@@ -327,39 +327,6 @@ def plot_genomic_distance_statistics(dataFolder):
             plot_genomic_distance_statistics_inner(dataFolder, ifile, ofile,
                                                     title, stat = stat)
 
-def plot_mean_vs_genomic_distance(y, path, diag_chis):
-    meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob',
-                                            zero_diag = True, zero_offset = 3)
-    plt.plot(meanDist)
-    plt.yscale('log')
-
-    if diag_chis is not None:
-        m = len(y)
-        k = len(diag_chis)
-        bin_size = m / k
-
-        # find chi transition points
-        transitions = [0]
-        prev_diag_chi = diag_chis[0]
-        for i in range(1, m):
-            diag_chi = diag_chis[math.floor(i/(m/k))]
-            if diag_chi != prev_diag_chi:
-                transitions.append(i)
-                prev_diag_chi = diag_chi
-
-        start = np.log10(np.max(meanDist)*1.05)
-        stop = np.log10(np.max(meanDist[-int(0.9*k):])*1.05)
-        annotate_y_arr = np.logspace(start, stop, k)
-        for i, diag_chi, annotate_y in zip(transitions, diag_chis, annotate_y_arr):
-            plt.axvline(i, linestyle = 'dashed', color = 'green')
-            plt.annotate(f'{np.round(diag_chi, 1)}', (i, annotate_y))
-
-    plt.ylabel('Contact Probability', fontsize = 16)
-    plt.xlabel('Polymer Distance (beads)', fontsize = 16)
-    plt.tight_layout()
-    plt.savefig(osp.join(path, 'meanDist.png'))
-    plt.close()
-
 
 ### basic plots
 def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, plot_chi = False, sampleID = None):
@@ -376,13 +343,29 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
                                                 save = True,
                                                 throw_exception = False)
 
+        config_file = osp.join(path, 'config.json')
+        if osp.exists(config_file):
+            with open(config_file, 'r') as f:
+                config = json.load(f)
+            if 'dense_diagonal_on' in config.keys():
+                dense = config['dense_diagonal_on']
+            else:
+                dense = False
+                cutoff = None
+                loading = None
+            if dense:
+                cutoff = config['dense_diagonal_cutoff']
+                loading = config['dense_diagonal_loading']
+
         if plot_y:
             plot_matrix(y, osp.join(path, 'y.png'), vmax = 'mean')
-            plot_matrix(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
-            y_log = np.log(y + 1e-8)
-            plot_matrix(y_log, osp.join(path, 'y_log.png'), title = 'log normalization', vmax = 'max')
+            # plot_matrix(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
+            # y_log = np.log(y + 1e-8)
+            # plot_matrix(y_log, osp.join(path, 'y_log.png'), title = 'log normalization', vmax = 'max')
 
-            plot_mean_vs_genomic_distance(y, path, chi_diag)
+            if chi_diag is not None:
+                plot_mean_vs_genomic_distance(y, path, chi_diag, ofile = 'meanDist_step.png')
+            plot_mean_vs_genomic_distance(y, path, None, ofile = 'meanDist.png')
 
             y_prcnt_path = osp.join(path, 'y_prcnt.npy')
             if osp.exists(y_prcnt_path):
@@ -400,11 +383,7 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
                 plot_matrix(chi, osp.join(path, 'chi.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
         if chi_diag is not None:
-            plt.plot(chi_diag)
-            plt.xlabel('Bin', fontsize = 16)
-            plt.ylabel('Diagonal Parameter', fontsize = 16)
-            plt.savefig(osp.join(path, 'chi_diag.png'))
-            plt.close()
+            plot_diag_chi(chi_diag, len(y), path, dense, cutoff, loading)
 
         if plot_energy:
             if s is not None:
@@ -429,12 +408,12 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
 if __name__ == '__main__':
     dir = '/project2/depablo/erschultz'
     dir = '/home/erschultz/sequences_to_contact_maps'
-    dir = '/home/erschultz'
+    # dir = '/home/erschultz'
 
-    dataset = 'dataset_test_diag'
+    dataset = 'dataset_05_18_22'
     data_dir = osp.join(dir, dataset)
     basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                    sampleID = [140, 141])
+                    sampleID = 1)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

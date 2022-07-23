@@ -61,7 +61,7 @@ Thoughts:
 --could combine with gene expression to find structural patterns that predict gene expression
 
 -can we do something interesting with higher-order chromatin interactions?
---does our model reproduce this?
+--does our model reproduce this? - even though hic only contains pairwise interactions?
 
 -cannot estimate structure exactly, but we can use simulation to robustly estimate structural properties of sc-hic-map
 
@@ -75,9 +75,5 @@ Thoughts:
 
 
 Can we use the GNN and the MLP as initial guesses for max entropy? How much faster is this than the regular max ent approach?
-
-Currently, the diagonal effect is O(n^2), because we have to check each pair of beads in a grid cell to see what their distance is. What if we just kept track of the number of beads according to each size bin?
-
-
 
 
