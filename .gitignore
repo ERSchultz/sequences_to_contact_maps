@@ -15,6 +15,10 @@ dataset_*
 !dataset_09_21_21/samples/sample1
 !dataset_09_21_21/samples/sample1/**
 !dataset_test/**
+single_cell*/schic*
+single_cell*/samples
+single_cell*/contact_diffusion*
+single_cell*/sc_contacts
 
 
 __pycache__

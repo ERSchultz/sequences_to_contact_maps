@@ -9,14 +9,14 @@
 dirname="/home/erschultz/sequences_to_contact_maps"
 # dirname="/home/erschultz"
 # dirname='/project2/depablo/erschultz'
-dataset="dataset_05_18_22"
+dataset="dataset_07_20_22"
 sample='none'
 sampleFolder='none'
 method='none'
 modelID='none'
 k='none'
 plot='true'
-experimental='false'
+experimental='true'
 overwrite='false'
 robust='false'
 scale='false'

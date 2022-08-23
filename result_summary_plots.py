@@ -472,8 +472,6 @@ def main():
 
     ## load data ##
     x, _, chi, chi_diag, e, s, y, ydiag = load_all(args.sample_folder, True, args.data_folder, args.log_file, experimental = args.experimental, throw_exception = False)
-    plot_matrix(e, ofile = osp.join(args.sample_folder, 'e.png'), title = 'E', vmax = 'max', vmin = 'min', cmap = 'blue-red')
-
 
     if args.method is not None:
         s_hat = load_method_S(args.root, args.sample_folder, args.sample, args.method, args.k, args.model_id)

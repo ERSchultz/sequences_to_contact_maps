@@ -331,7 +331,7 @@ def plot_genomic_distance_statistics(dataFolder):
 ### basic plots
 def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, plot_chi = False, sampleID = None):
     '''Generate basic plots of data in dataFolder.'''
-    in_paths = sorted(make_dataset(dataFolder))
+    in_paths = sorted(make_dataset(dataFolder, prefix = '1CDS2.'))
     for path in in_paths:
         if isinstance(sampleID, list) and int(osp.split(path)[1][6:]) not in sampleID:
             continue
@@ -359,6 +359,7 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
 
         if plot_y:
             plot_matrix(y, osp.join(path, 'y.png'), vmax = 'mean')
+            np.savetxt(osp.join(path, 'y.txt'), y)
             # plot_matrix(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
             # y_log = np.log(y + 1e-8)
             # plot_matrix(y_log, osp.join(path, 'y_log.png'), title = 'log normalization', vmax = 'max')
@@ -410,10 +411,10 @@ if __name__ == '__main__':
     dir = '/home/erschultz/sequences_to_contact_maps'
     # dir = '/home/erschultz'
 
-    dataset = 'dataset_05_18_22'
+    dataset = 'single_cell_nagano_2017'
     data_dir = osp.join(dir, dataset)
     basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                    sampleID = 1)
+                    sampleID = [207])
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)
