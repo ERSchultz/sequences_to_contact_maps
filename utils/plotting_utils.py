@@ -1291,16 +1291,39 @@ def plot_centroid_distance_sample(dir, sample):
     plt.savefig(osp.join(sample_dir, 'AC_dist_vs_i.png'))
     plt.close()
 
-### Primary scripts ###
-def plot_diag_chi(chi_diag, m, path, dense = False, dense_cutoff = 0.0625,
-                    dense_loading = 0.5, ref = None):
+#### Functions for plotting diag chis and contact probability curves ####
+def diag_chi_to_diag_chi_step(diag_chi, m, diag_cutoff, diag_start, dense,
+                            n_small_bins, small_binsize, big_binsize):
+    diag_bins = len(diag_chi)
+    diag_chi_step = np.zeros(m)
+    for d in range(diag_cutoff):
+        if d < diag_start:
+            continue
+        d_eff = d - diag_start
+        if dense:
+            dividing_line = n_small_bins * small_binsize
+
+            if d_eff > dividing_line:
+                bin = n_small_bins + math.floor( (d_eff - dividing_line) / big_binsize)
+            else:
+                bin =  math.floor( d_eff / small_binsize)
+        else:
+            binsize = m / diag_bins
+            bin = int(d_eff / binsize)
+        diag_chi_step[d] = diag_chi[bin]
+
+    return diag_chi_step
+
+def plot_diag_chi(chi_diag, m, path, start_cutoff, dense = False, n_small_bins = 0, n_big_bins = 0,
+            small_binsize = 0, big_binsize = 0, ref = None, ref_label = ''):
     '''
     chi_diag: diagonal parameters
     m: # of beads
     path: save file path
+    start_cutoff: tuple of diag_start and diag_cutoff
     dense: True for dense diagonal
-    dense_cutoff: cutoff for dense diagonal
-    dense_laoding: loading for dense diagonal`
+    num_bins: number of bins
+    binsize: list of bin sizes
     ref: reference parameters
     ref_label: label for reference parameters
     '''
@@ -1311,42 +1334,38 @@ def plot_diag_chi(chi_diag, m, path, dense = False, dense_cutoff = 0.0625,
         plt.savefig(osp.join(path, 'chi_diag.png'))
         plt.close()
 
-    diag_bins = len(chi_diag)
-    diag_chi_step = np.zeros(m)
-    for d in range(m):
-        if dense:
-            dividing_line = m * dense_cutoff
+    diag_start, diag_cutoff = start_cutoff
 
-            n_small_bins = int(dense_loading * diag_bins)
-            n_big_bins = diag_bins - n_small_bins
-            small_binsize = int(dividing_line / (n_small_bins))
-            big_binsize = int((m - dividing_line) / n_big_bins)
-
-            if d > dividing_line:
-                bin = n_small_bins + math.floor( (d - dividing_line) / big_binsize)
-            else:
-                bin =  math.floor( d / small_binsize)
-        else:
-            binsize = m / diag_bins
-            bin = int(d / binsize)
-        diag_chi_step[d] = chi_diag[bin]
+    diag_chi_step = diag_chi_to_diag_chi_step(chi_diag, m, diag_cutoff,
+                                            diag_start, dense, n_small_bins,
+                                            small_binsize, big_binsize)
 
     plt.plot(diag_chi_step, color = 'k')
     plt.xlabel('Polymer Distance', fontsize = 16)
     plt.ylabel('Diagonal Parameter', fontsize = 16)
     if ref is not None:
-        plt.plot(ref, color = 'k', ls = '--')
+        plt.plot(ref, color = 'k', ls = '--', label = ref_label)
+    if ref_label != '':
+        plt.legend()
     plt.savefig(osp.join(path, 'chi_diag_step.png'))
     plt.close()
 
-def plot_mean_vs_genomic_distance(y, path, diag_chis, ofile = 'meanDist.png',
-                        dense = False, dense_cutoff = 0.0625, dense_loading = 0.5):
+def plot_mean_vs_genomic_distance(y, path, diag_chis, ofile, start_cutoff = None,
+                        dense = False, n_small_bins = 0, n_big_bins = 0,
+                        small_binsize = 0, big_binsize = 0, logx = False):
     '''
     Inputs:
         y: contact map
         path: save path
         diag_chis: plot diagonal parameters on twin axis (None to skip)
         ofile: save file name
+        start_cutoff: tuple of diag_start and diag_cutoff
+        dense: True if dense_diagonal_on
+            n_small_bins: number of small bins
+            n_big_bins: number of big bins
+            small_binsize: size of small bins
+            big_binsize: size of big bin
+        logx: True to log-scale x axis
     '''
     meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob',
                                             zero_diag = False, zero_offset = 0)
@@ -1354,31 +1373,18 @@ def plot_mean_vs_genomic_distance(y, path, diag_chis, ofile = 'meanDist.png',
     ax2 = ax.twinx()
     ax.plot(meanDist)
     ax.set_yscale('log')
+    if logx:
+        ax.set_xscale('log')
 
     if diag_chis is not None:
+        diag_start, diag_cutoff = start_cutoff
         m = len(y)
         diag_bins = len(diag_chis)
 
         # find chi transition points
-        diag_chi_step = np.zeros(m)
-        for d in range(m):
-            if dense:
-                dividing_line = m * dense_cutoff
-
-                n_small_bins = int(dense_loading * diag_bins)
-                n_big_bins = diag_bins - n_small_bins
-                small_binsize = int(dividing_line / (n_small_bins))
-                big_binsize = int((m - dividing_line) / n_big_bins)
-
-                if d > dividing_line:
-                    bin = n_small_bins + math.floor( (d - dividing_line) / big_binsize)
-                else:
-                    bin =  math.floor( d / small_binsize)
-            else:
-                binsize = m / diag_bins
-                bin = int(d / binsize)
-
-            diag_chi_step[d] = diag_chis[bin]
+        diag_chi_step = diag_chi_to_diag_chi_step(diag_chis, m, diag_cutoff,
+                                                diag_start, dense, n_small_bins,
+                                                small_binsize, big_binsize)
 
         # start = np.log10(np.max(meanDist)*1.05)
         # stop = np.log10(np.max(meanDist[-int(0.9*k):])*1.05)
@@ -1388,7 +1394,9 @@ def plot_mean_vs_genomic_distance(y, path, diag_chis, ofile = 'meanDist.png',
         #     plt.annotate(f'{np.round(diag_chi, 1)}', (i, annotate_y))
 
         ax2.plot(diag_chi_step, color = 'k')
-        ax2.set_ylabel('Diagonal Parameter', fontsize=16)
+        ax2.set_ylabel('Diagonal Parameter', fontsize = 16)
+        if logx:
+            ax2.set_xscale('log')
 
 
 
@@ -1401,6 +1409,7 @@ def plot_mean_vs_genomic_distance(y, path, diag_chis, ofile = 'meanDist.png',
     np.savetxt(osp.join(path, 'meanDist.txt'), meanDist)
     print('mean', np.mean(meanDist))
 
+### Primary scripts ###
 def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
                     size_in = 6, minVal = None, maxVal = None, prcnt = False,
                     cmap = None, x_ticks = None, y_ticks = None):
@@ -1409,7 +1418,7 @@ def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
 
     Inputs:
         arr: numpy array
-        ofile: save location
+        ofile: save location (None to show instead)
         title: plot title
         vmax: maximum value for color bar, 'mean' to set as mean value
         size_in: size of figure x,y in inches

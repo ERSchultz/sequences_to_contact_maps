@@ -10,7 +10,7 @@ from .utils import DiagonalPreprocessing
 
 
 def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False,
-                samples = None):
+                samples = None, prefix = 'sample'):
     """
     Make list data file paths.
 
@@ -20,20 +20,22 @@ def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False,
         maxSample: ignore samples > maxSample
         verbose: True for verbose mode
         samples: list/set of samples to include, None for all samples
+        prefix: only folders starting with prefix will be considered
 
     Outputs:
         data_file_arr: list of data file paths
     """
     data_file_arr = []
     samples_dir = osp.join(dir, 'samples')
-    sample_ids = [int(file[6:]) for file in os.listdir(samples_dir) if 'sample' in file and file[6:].isnumeric()]
+    l = len(prefix)
+    sample_ids = [int(file[l:]) for file in os.listdir(samples_dir) if prefix in file and file[l:].isnumeric()]
     for sample_id in sorted(sample_ids):
         if sample_id < minSample:
             continue
         if sample_id > maxSample:
             continue
         if samples is None or sample_id in samples:
-            data_file = osp.join(samples_dir, f'sample{sample_id}')
+            data_file = osp.join(samples_dir, f'{prefix}{sample_id}')
             data_file_arr.append(data_file)
 
     return data_file_arr

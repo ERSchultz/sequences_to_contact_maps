@@ -5,6 +5,7 @@ import os.path as osp
 import sys
 import time
 
+import hicrep
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.sparse as sp
@@ -504,7 +505,6 @@ def compare_PCA(val_dataloader, imagePath, model, opt, count = 5):
     with open(osp.join(imagePath, 'PCA_results.txt'), 'w') as f:
         f.write(results)
 
-## other ##
 def round_up_by_10(val):
     """Rounds value up to the nearst multiple of 10."""
     assert val > 0, "val too small"
@@ -580,20 +580,28 @@ class SCC():
     def mean_filter(x, size):
         return uniform_filter(x, size, mode = 'constant') / (size)**2
 
-    def scc(self, x, y, h = 3, K = None, var_stabilized = False, verbose = False):
+    def scc(self, x, y, h = 3, K = None, var_stabilized = False, verbose = False,
+            distance = False):
         '''
         Compute scc between contact map x and y.
 
         Inputs:
             x: contact map
             y: contact map of same shape as x
-            h: span of mean filter (width = (1+2h))
-            K: maximum stratum (diagonal) to consider (None for all)
+            h: span of mean filter (width = (1+2h)) (None to skip)
+            K: maximum stratum (diagonal) to consider (None for all) (5 Mb recommended)
             var_stabilized: True to use var_stabilized r_2k
             verbose: True to print when nan found
+            distance: True to return 1 - scc
         '''
-        x = SCC.mean_filter(x.astype(np.float64), 1+2*h)
-        y = SCC.mean_filter(y.astype(np.float64), 1+2*h)
+        if len(x.shape) == 1:
+            x = triu_to_full(x)
+        if len(y.shape) == 1:
+            y = triu_to_full(y)
+
+        if h is not None:
+            x = SCC.mean_filter(x.astype(np.float64), 1+2*h)
+            y = SCC.mean_filter(y.astype(np.float64), 1+2*h)
 
         if K is None:
             K = len(y) - 2
@@ -601,7 +609,7 @@ class SCC():
         num = 0
         denom = 0
         nan_list = []
-        for k in range(1, K):
+        for k in range(K):
             # get stratum (diagonal) of contact map
             x_k = np.diagonal(x, k)
             y_k = np.diagonal(y, k)
@@ -619,12 +627,44 @@ class SCC():
                     print(x_k)
                     print(y_k)
 
-            num += N_k * r_2k * p_k
+            num_i = N_k * r_2k * p_k
+            if num_i > 0:
+                # negative values should be zero
+                num += num_i
             denom += N_k * r_2k
 
         if len(nan_list) > 0:
             print(f'{len(nan_list)} nans: k = {nan_list}')
-        return num / denom
+
+        scc = num / denom
+        if distance:
+            return 1 - scc
+        else:
+            return scc
+
+def hicrep_scc(fmcool1, fmcool2, h, K, binSize=-1, distance = False):
+    '''
+    Compute scc between contact map x and y.
+
+    Inputs:
+        x: contact map
+        y: contact map of same shape as x
+        h: span of mean filter (width = (1+2h)) (None to skip)
+        K: maximum stratum (diagonal) to consider (None for all) (5 Mb recommended)
+        distance: True to return 1 - scc
+    '''
+    cool1, binSize1 = readMcool(fmcool1, binSize)
+    cool2, binSize2 = readMcool(fmcool2, binSize)
+    if binSize == -1:
+        assert binSize1 == binSize2, f"bin size mismatch: {binSize1} vs {binSize2}"
+        binSize = binSize1
+
+
+    scc = hicrep.hicrepSCC()
+    if distance:
+        return 1 - scc
+    else:
+        return scc
 
 def test():
     scc = SCC()

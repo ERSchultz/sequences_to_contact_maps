@@ -2,9 +2,12 @@ import math
 import os
 import os.path as osp
 import sys
+import tarfile
 import time
 from shutil import rmtree
 
+import cooler
+import hicrep.utils
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as ss
@@ -26,8 +29,8 @@ from utils.energy_utils import s_to_E
 from utils.load_utils import load_sc_contacts, save_sc_contacts
 from utils.networks import get_model
 from utils.plotting_utils import plot_matrix, plot_top_PCs
-from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
-                         print_time, triu_to_full)
+from utils.utils import (SCC, DiagonalPreprocessing, calc_dist_strat_corr,
+                         crop, print_time, triu_to_full)
 from utils.xyz_utils import lammps_load
 
 
@@ -611,18 +614,59 @@ def sc_structure_vs_sc_sample():
         plt.savefig(osp.join(dir, 'sc vs sample.png'))
         plt.close()
 
+def tar_samples():
+    results = '/home/erschultz/sequences_to_contact_maps/results'
+    for dir in os.listdir(results):
+        print(dir)
+        for id in os.listdir(osp.join(results, dir)):
+            id_path = osp.join(results, dir, id)
+            if osp.isdir(id_path):
+                print('', id)
+                for file in os.listdir(id_path):
+                    file_path = osp.join(id_path, file)
+                    if file.startswith('sample') and osp.isdir(file_path):
+                        tar_path = osp.join(id_path, file.split('.')[0] + '.tar.gz')
+                        if not osp.exists(tar_path):
+                            print('  ', file_path)
+                            os.chdir(file_path)
+                            with tarfile.open(tar_path, "x:gz") as tar:
+                                for inner_file in os.listdir(file_path):
+                                    tar.add(inner_file)
+                        rmtree(file_path)
+
 def main():
-    # how to fill empty matrix by diagonal
-    m = 10
-    D = np.zeros((m,m))
-    diag_chis = [0, 5]
-    k = len(diag_chis)
-    for i in range(1, m):
-        rng = np.arange(m-i)
-        print(rng)
-        diag_chi = diag_chis[math.floor(i/(m/k))]
-        D[rng, rng+i] = diag_chi
-    print(D)
+    # how to convert cooler to dense
+    ifile = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017/samples/1CDS2.24/adj.mcool'
+    c1, binsize = hicrep.utils.readMcool(ifile, 50000)
+    print(c1.chromsizes)
+
+    y1 = c1.matrix(balance=False).fetch('19')
+    print(y1.shape)
+
+    ifile = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017/samples/1CDS2.28/adj.mcool'
+    c2, binsize = hicrep.utils.readMcool(ifile, 50000)
+
+    y2 = c2.matrix(balance=False).fetch('19')
+    print(y2.shape)
+
+    scc = SCC()
+
+    t0 = time.time()
+    for i in range(100):
+        val = hicrep.hicrepSCC(c1, c2, 1, 50000, False,
+                                ['19'])
+
+    tf = time.time()
+    print(val)
+    print_time(t0, tf, 'hicrepscc')
+
+    t0 = time.time()
+    for i in range(100):
+        val = scc.scc(y1, y2, 1, 1, False)
+    tf = time.time()
+    print(val)
+    print_time(t0, tf, 'scc')
+
 
 
 
@@ -630,6 +674,8 @@ def main():
 
 if __name__ == '__main__':
     # main()
+    tar_samples()
     # binom()
-    edit_argparse()
+    # edit_argparse()
+    # sc_nagano_to_dense()
     # debugModel('MLP')
