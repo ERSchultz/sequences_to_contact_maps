@@ -5,7 +5,7 @@
 #SBATCH --output=logFiles/diffusion.log
 #SBATCH --time=24:00:00
 
-odir="/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017"
+odir="/project2/depablo/erschultz/single_cell_nagano_2017"
 scratch='/scratch/midway2/erschultz'
 dir="${odir}/samples"
 k=2
@@ -13,7 +13,7 @@ experimental='true'
 jobs=15
 metric='scc'
 its=2
-downSampling=10
+downSampling=50
 plot='true'
 preprocessingMode='sparsity_filter'
 
