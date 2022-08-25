@@ -13,7 +13,7 @@ experimental='true'
 jobs=15
 metric='scc'
 its=2
-downSampling=50
+downSampling=1
 plot='true'
 preprocessingMode='sparsity_filter'
 
