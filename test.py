@@ -5,7 +5,7 @@ import os.path as osp
 import sys
 import tarfile
 import time
-from shutil import rmtree
+from shutil import copyfile, rmtree
 
 import cooler
 import hicrep.utils
@@ -774,10 +774,28 @@ def test_parallel():
     # print('diff')
     # print(D2 - D1)
 
+def prep_data_for_cluster():
+    dir = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017'
+    odir = osp.join(dir, 'samples_cluster')
+    if not osp.exists(odir):
+        os.mkdir(odir, mode = 0o755)
+    idir = osp.join(dir, 'samples')
+    for id in os.listdir(idir):
+        opath = osp.join(odir, id)
+        if not osp.exists(opath):
+            os.mkdir(opath, mode = 0o755)
+        ifile = osp.join(idir, id, 'y.npy')
+        if osp.exists(ifile):
+            y = np.load(ifile)
+            y_triu = y[np.triu_indices(len(y))]
+            np.save(osp.join(idir, id, 'y_triu.npy'), y_triu)
+            np.save(osp.join(odir, id, 'y_triu.npy'), y_triu)
+
 
 if __name__ == '__main__':
     # main()
-    test_parallel()
+    # test_parallel()
+    prep_data_for_cluster()
     # tar_samples()
     # binom()
     # edit_argparse()
