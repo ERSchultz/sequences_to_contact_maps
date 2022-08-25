@@ -22,8 +22,8 @@ from sklearn.metrics.pairwise import cosine_distances, euclidean_distances
 from utils.argparse_utils import ArgparserConverter
 from utils.load_utils import save_sc_contacts
 from utils.plotting_utils import plot_matrix
-from utils.utils import (SCC, DiagonalPreprocessing, pearson_round, print_size,
-                         print_time, triu_to_full)
+from utils.utils import (SCC, DiagonalPreprocessing, InnerProduct,
+                         pearson_round, print_size, print_time, triu_to_full)
 from utils.xyz_utils import lammps_load, xyz_load, xyz_to_contact_grid
 
 import dmaps  # https://github.com/ERSchultz/dmaps
@@ -562,6 +562,9 @@ class Diffusion():
             if isinstance(metric, str):
                 if metric == 'scc':
                     D = self.pairwise_distances_parallel(input, metric)
+                elif metric == 'inner_product':
+                    IP = InnerProduct(input, 10, jobs = args.jobs)
+                    D = IP.get_distance_matrix()
                 else:
                     D = self.pairwise_distances_chunk(input, metric)
             else:
@@ -658,9 +661,10 @@ class Diffusion():
         w = dmap.get_eigenvalues()
         print('w', w, file = args.log_file)
         order = np.argsort(v[:, 1])
-        print('\norder corr: ',
-            pearson_round(order, np.arange(0, args.N, 1), stat = 'spearman'),
-            file = args.log_file)
+        if not args.experimental:
+            print('\norder corr: ',
+                pearson_round(order, np.arange(0, args.N, 1), stat = 'spearman'),
+                file = args.log_file)
 
         return v, order
 
@@ -754,7 +758,7 @@ class Diffusion():
                 GP.process(args.jobs, args.log_file)
             else:
                 # diag processing
-                if args.metric == 'scc':
+                if args.metric == 'scc' or args.metric == 'inner_product':
                     input = osp.join(odir_prev, 'sc_contacts')
                 else:
                     diag_dir = osp.join(args.odir_i, 'sc_contacts_diag')
@@ -777,6 +781,9 @@ class Diffusion():
                     plot_eigenvectors(v, self.xyz, args.odir_i)
 
                 # update
+                if it == args.its:
+                    # skip update on last iteration
+                    continue
                 if args.update_mode == 'eig':
                     sc_contacts = updater.update_eig_chunk(v[:, 1],
                                             osp.join(odir_prev, 'sc_contacts'),

@@ -12,7 +12,7 @@ import scipy.sparse as sp
 import torch
 from numba import jit, njit
 from scipy.ndimage import uniform_filter
-from scipy.stats import pearsonr, spearmanr
+from scipy.stats import pearsonr, spearmanr, zscore
 from sklearn.decomposition import PCA
 from sympy import solve, symbols
 
@@ -549,6 +549,7 @@ def print_size(arr, name = '', file = sys.stdout):
             print(f'{name} size: {np.round(size, 1)} {size_name}', file = file)
             return
 
+# similarity measures
 class SCC():
     '''
     Class for calculation of SCC as defined by https://pubmed.ncbi.nlm.nih.gov/28855260/
@@ -701,6 +702,35 @@ def hicrep_scc(fmcool1, fmcool2, h, K, binSize=-1, distance = False):
         return 1 - scc
     else:
         return scc
+
+class InnerProduct():
+    '''Based off of InnerProduct from https://github.com/liu-bioinfo-lab/scHiCTools'''
+    def __init__(self, dir, K, jobs):
+        self.K = K
+        self.files = [osp.join(dir, f) for f in os.listdir(dir) if f.endswith('.npy')]
+
+        with multiprocessing.Pool(jobs) as p:
+            self.zscores = p.map(self.get_zscore_feature, self.files)
+        self.zscores = np.array(self.zscores)
+
+    def get_distance_matrix(self):
+        inner = self.zscores.dot(self.zscores.T) / self.zscores.shape[1]
+        inner[inner > 1] = 1
+        inner[inner < -1] = -1
+        distance_mat = np.sqrt(2 - 2 * inner)
+
+        return distance_mat
+
+    def get_zscore_feature(self, file):
+        y = np.load(file)
+        y = triu_to_full(y)
+        zscores = []
+        for k in range(self.K):
+            y_k = np.diagonal(y, k)
+            z = zscore(y_k)
+            z[np.isnan(z)] = 0
+            zscores.append(z)
+        return np.concatenate(zscores)
 
 def test():
     scc = SCC()
