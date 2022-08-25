@@ -358,7 +358,10 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
                 loading = config['dense_diagonal_loading']
 
         if plot_y:
-            plot_matrix(y, osp.join(path, 'y.png'), vmax = 'mean')
+            contacts = int(np.sum(y) / 2)
+            sparsity = np.round(np.count_nonzero(y) / len(y)**2 * 100, 2)
+            title = f'# contacts: {contacts}, sparsity: {sparsity}%'
+            plot_matrix(y, osp.join(path, 'y.png'), vmax = 'mean', title = title)
             np.savetxt(osp.join(path, 'y.txt'), y)
             # plot_matrix(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
             # y_log = np.log(y + 1e-8)
@@ -414,7 +417,7 @@ if __name__ == '__main__':
     dataset = 'single_cell_nagano_2017'
     data_dir = osp.join(dir, dataset)
     basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                    sampleID = [207])
+                    sampleID = [1,2])
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

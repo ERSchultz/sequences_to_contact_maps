@@ -567,20 +567,37 @@ class SCC():
         '''
         # x and y are stratums
         if var_stabilized:
+            # var_stabilized computes variance of ranks
             N_k = len(x_k)
             if N_k in self.r_2k_dict:
                 result = self.r_2k_dict[N_k]
             else:
-                result = np.var(np.arange(1, N_k+1)/N_k)
+                # variance is permutation invariant, so just use np.arange instead of computing ranks
+                # futher var(rank(x_k)) = var(rank(y_k)), so no need to compute for each
+                # this allows us to memoize the solution via self.r_2k_dict (solution depends only on N_k)
+                # memoization offers a marginal speedup when computing lots of scc's
+                result = np.var(np.arange(1, N_k+1)/N_k, ddof = 1)
                 self.r_2k_dict[N_k] = result
             return result
         else:
             return math.sqrt(np.var(x_k) * np.var(y_k))
 
-    def mean_filter(x, size):
-        return uniform_filter(x, size, mode = 'constant') / (size)**2
+    def scc_file(self, xfile, yfile, h = 1, K = None, var_stabilized = False, verbose = False,
+                distance = False):
+        '''Wrapper for scc that takes file path as input.'''
+        if xfile == yfile:
+            # save computation
+            result = 1 - distance
+            if verbose:
+                return result, None, None
+            else:
+                return result
 
-    def scc(self, x, y, h = 3, K = None, var_stabilized = False, verbose = False,
+        x = np.load(xfile)
+        y = np.load(yfile)
+        return self.scc(x, y, h, K, var_stabilized, verbose, distance)
+
+    def scc(self, x, y, h = 1, K = None, var_stabilized = False, verbose = False,
             distance = False):
         '''
         Compute scc between contact map x and y.
@@ -589,9 +606,9 @@ class SCC():
             x: contact map
             y: contact map of same shape as x
             h: span of mean filter (width = (1+2h)) (None to skip)
-            K: maximum stratum (diagonal) to consider (None for all) (5 Mb recommended)
+            K: maximum stratum (diagonal) to consider (None for all but last 2) (5 Mb recommended)
             var_stabilized: True to use var_stabilized r_2k
-            verbose: True to print when nan found
+            verbose: True to return diagonal correlations and weights
             distance: True to return 1 - scc
         '''
         if len(x.shape) == 1:
@@ -599,46 +616,65 @@ class SCC():
         if len(y.shape) == 1:
             y = triu_to_full(y)
 
-        if h is not None:
-            x = SCC.mean_filter(x.astype(np.float64), 1+2*h)
-            y = SCC.mean_filter(y.astype(np.float64), 1+2*h)
+        if h is not None and h > 0:
+            x = uniform_filter(x.astype(np.float64), 1+2*h, mode = 'constant')
+            y = uniform_filter(y.astype(np.float64), 1+2*h, mode = 'constant')
 
         if K is None:
             K = len(y) - 2
 
-        num = 0
-        denom = 0
         nan_list = []
+        p_arr = []
+        w_arr = []
         for k in range(K):
             # get stratum (diagonal) of contact map
             x_k = np.diagonal(x, k)
             y_k = np.diagonal(y, k)
 
+
+            # filter to subset of diagonals where at least 1 is nonzero
+            # i.e if x_k[i] == y_k[i] == 0, ignore element i
+            # use 1e-12 for numerical stability
+            x_zeros = np.argwhere(abs(x_k)<1e-12)
+            y_zeros = np.argwhere(abs(y_k)<1e-12)
+            both_zeros = np.intersect1d(x_zeros, y_zeros)
+            mask = np.ones(len(x_k), bool)
+            mask[both_zeros] = 0
+            x_k = x_k[mask]
+            y_k = y_k[mask]
+
             N_k = len(x_k)
-            r_2k = self.r_2k(x_k, y_k, var_stabilized)
-            p_k, _ = pearsonr(x_k, y_k)
 
-            if np.isnan(p_k):
-                # nan is hopefully rare so just set to 0
-                nan_list.append(k)
-                p_k = 0
-                if verbose:
-                    print(f'k={k}')
-                    print(x_k)
-                    print(y_k)
+            if N_k > 1:
+                # print()
+                # print(f'k={k}')
+                # print(f'N_k = {len(x_k)}')
+                # print('1', x_k)
+                # print('2', y_k)
+                p_k, _ = pearsonr(x_k, y_k)
 
-            num_i = N_k * r_2k * p_k
-            if num_i > 0:
-                # negative values should be zero
-                num += num_i
-            denom += N_k * r_2k
+                if np.isnan(p_k):
+                    # ignore nan
+                    nan_list.append(k)
+                else:
+                    p_arr.append(p_k)
+                    r_2k = self.r_2k(x_k, y_k, var_stabilized)
+                    w_k = N_k * r_2k
+                    w_arr.append(w_k)
 
-        if len(nan_list) > 0:
-            print(f'{len(nan_list)} nans: k = {nan_list}')
+        w_arr = np.array(w_arr)
+        p_arr = np.array(p_arr)
 
-        scc = num / denom
+        scc = np.sum(w_arr * p_arr / np.sum(w_arr))
+
+        # if verbose and len(nan_list) > 0:
+        #     print(f'{len(nan_list)} nans: k = {nan_list}')
+
         if distance:
-            return 1 - scc
+            scc =  1 - scc
+
+        if verbose:
+            return scc, p_arr, w_arr
         else:
             return scc
 

@@ -1,4 +1,5 @@
 import math
+import multiprocessing
 import os
 import os.path as osp
 import sys
@@ -16,6 +17,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from core_test_train import core_test_train
 from scipy import linalg
+from scipy.ndimage import uniform_filter
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
 from sklearn.decomposition import PCA
@@ -32,6 +34,8 @@ from utils.plotting_utils import plot_matrix, plot_top_PCs
 from utils.utils import (SCC, DiagonalPreprocessing, calc_dist_strat_corr,
                          crop, print_time, triu_to_full)
 from utils.xyz_utils import lammps_load
+
+import scHiCTools
 
 
 def test_num_workers():
@@ -615,6 +619,8 @@ def sc_structure_vs_sc_sample():
         plt.close()
 
 def tar_samples():
+    # iterates through results folder to find sample{i} folders
+    # compresses sample{i} folder to .tar.gz
     results = '/home/erschultz/sequences_to_contact_maps/results'
     for dir in os.listdir(results):
         print(dir)
@@ -636,45 +642,143 @@ def tar_samples():
 
 def main():
     # how to convert cooler to dense
-    ifile = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017/samples/1CDS2.24/adj.mcool'
-    c1, binsize = hicrep.utils.readMcool(ifile, 50000)
-    print(c1.chromsizes)
+    chrom = '10'
+    resolution = 50000
+    ubr = 500000
+    h = 2
+    K = int(ubr/resolution)+1
+    times = 30
 
-    y1 = c1.matrix(balance=False).fetch('19')
+    dir1 = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017/samples/1CDS2.1'
+    ifile = osp.join(dir1, 'adj.mcool')
+    c1, binsize = hicrep.utils.readMcool(ifile, resolution)
+
+    y1 = c1.matrix(balance=False).fetch(chrom)
+    np.savetxt(osp.join(dir1, f'chrom{chrom}.txt'), y1)
+    y1path = osp.join(dir1, f'chrom{chrom}.npy')
+    np.save(y1path, y1[np.triu_indices(len(y1))])
     print(y1.shape)
 
-    ifile = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017/samples/1CDS2.28/adj.mcool'
-    c2, binsize = hicrep.utils.readMcool(ifile, 50000)
+    dir2 = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017/samples/1CDS2.2'
+    ifile = osp.join(dir2, 'adj.mcool')
+    c2, binsize = hicrep.utils.readMcool(ifile, resolution)
 
-    y2 = c2.matrix(balance=False).fetch('19')
-    print(y2.shape)
+    y2 = c2.matrix(balance=False).fetch(chrom)
+    np.savetxt(osp.join(dir2, f'chrom{chrom}.txt'), y2)
+    y2path = osp.join(dir2, f'chrom{chrom}.npy')
+    np.save(y2path, y2[np.triu_indices(len(y2))])
 
-    scc = SCC()
 
     t0 = time.time()
-    for i in range(100):
-        val = hicrep.hicrepSCC(c1, c2, 1, 50000, False,
-                                ['19'])
+    for _ in range(times):
+        val = hicrep.hicrepSCC(c1, c2, h, ubr, False,
+                                [chrom])
 
     tf = time.time()
-    print(val)
+    # print(val)
     print_time(t0, tf, 'hicrepscc')
+    print()
 
     t0 = time.time()
-    for i in range(100):
-        val = scc.scc(y1, y2, 1, 1, False)
+    scc = SCC()
+    for _ in range(times):
+        val1, p, w = scc.scc(y1, y2, h, K, True, verbose = True)
     tf = time.time()
-    print(val)
+    # print(val1)
+    # print(p, p.shape,  w, w.shape)
     print_time(t0, tf, 'scc')
 
+    t0 = time.time()
+    scc = SCC()
+    for _ in range(times):
+        val2, p, w = scc.scc_file(y1path, y2path, h, K, True, verbose = True)
+    tf = time.time()
+    # print(val2)
+    # print(p, p.shape,  w, w.shape)
+    print_time(t0, tf, 'scc_file')
 
 
+    t0 = time.time()
+    scc = SCC()
+    mapping = []
+    for _ in range(times):
+        mapping.append((y1path, y2path, h, K, True))
+    with multiprocessing.Pool(15) as p:
+        result = p.starmap(scc.scc_file, mapping)
+    print(result)
+    tf = time.time()
+    print_time(t0, tf, 'scc_file_parallel')
 
+    assert val1 == val2
+    print(val1)
+
+def main2():
+    # scc comparison
+    # using bulk hic data
+    times = 100
+    h = 1
+
+    dir1 = '/home/erschultz/sequences_to_contact_maps/dataset_05_18_22/samples/sample3'
+    y1 = np.load(osp.join(dir1, 'y.npy'))
+    y1 = uniform_filter(y1.astype(np.float64), 1+2*2, mode = 'constant')
+    np.savetxt(osp.join(dir1, f'y.txt'), y1)
+
+    dir2 = osp.join(dir1, 'PCA-normalize/k4/replicate1')
+    y2 = np.load(osp.join(dir2, 'y.npy'))
+    y2 = uniform_filter(y2.astype(np.float64), 1+2*2, mode = 'constant')
+
+    np.savetxt(osp.join(dir2, f'y.txt'), y2)
+
+    scc = SCC()
+    t0 = time.time()
+    for _ in range(times):
+        val, p, w  = scc.scc(y1, y2, h, K = 10, var_stabilized = True, verbose = True)
+    tf = time.time()
+    print(val)
+    print(p, p.shape)
+    print(w, w.shape)
+    print_time(t0, tf, 'scc')
+
+def test_parallel():
+    input_dir = '/home/erschultz/scratch/contact_diffusion_kNN4scc/iteration_0/sc_contacts'
+    files = ['y_sc_6.npy', 'y_sc_11.npy', 'y_sc_0.npy', 'y_sc_8.npy', 'y_sc_9.npy', 'y_sc_10.npy', 'y_sc_7.npy', 'y_sc_4.npy', 'y_sc_5.npy', 'y_sc_3.npy', 'y_sc_2.npy', 'y_sc_1.npy']
+    scc = SCC()
+    N = len(files)
+    D1 = np.zeros((N, N))
+    mapping = []
+    for i in range(0, N):
+        ifile = osp.join(input_dir, files[i])
+        for j in range(i, N):
+            jfile = osp.join(input_dir, files[j])
+            mapping.append((ifile, jfile, 1, 10, True))
+            val = scc.scc_file(ifile, jfile, 1, 10, True)
+            D1[i,j]  = val
+
+    print(D1)
+    D1 = np.triu(D1) + np.triu(D1, 1).T
+    print(D1)
+    D1 = 1 - D1
+    print(D1, D1.shape)
+
+    # with multiprocessing.Pool(15) as p:
+    #     result = np.array(p.starmap(scc.scc_file, mapping))
+    #
+    # print('result')
+    # print(1-result, result.shape)
+    # print('triu')
+    # print(D1[np.triu_indices(len(D1))])
+    #
+    # # make symmetric and convert to distance
+    # D2 = 1 - triu_to_full(result)
+    #
+    # print('diff')
+    # print(D2 - D1)
 
 
 if __name__ == '__main__':
     # main()
-    tar_samples()
+    test_parallel()
+    # tar_samples()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()

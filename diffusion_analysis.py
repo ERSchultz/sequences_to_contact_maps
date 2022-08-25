@@ -33,22 +33,37 @@ def getArgs(default_dir='/home/erschultz/dataset_test_sc_traj/samples/combined')
     parser = argparse.ArgumentParser(description='Base parser')
     AC = ArgparserConverter()
 
+    # directories
     parser.add_argument('--dir', type=str, default=default_dir,
                         help='location of data')
     parser.add_argument('--scratch', type=AC.str2None, default='/home/erschultz/scratch',
                         help='scratch dir')
     parser.add_argument('--odir', type=str,
                         help='location to write to')
+
+    # data arguments
+    parser.add_argument('--experimental', type=AC.str2bool, default=False,
+                        help='True if using experimental data')
     parser.add_argument('--N_min', type=int, default=2000,
                         help='minimum sample index to keep')
+    parser.add_argument('--input_file_type', type = str, default='npy',
+                        help='file format in {mcool, npy}')
+    parser.add_argument('--down_sampling', type=int, default=50)
+    # required iff input_file_type == .mcool
+    parser.add_argument('--resolution', type=int, default=50000,
+                        help='resoultion for mcool file')
+    parser.add_argument('--chrom', type=str, default='10',
+                        help='specify chromosome for mcool file')
+
+    # algorithm arguments
     parser.add_argument('--mode', type=str, default='contact_diffusion')
     parser.add_argument('--update_mode', type=str, default='kNN')
+    parser.add_argument('--preprocessing_mode', type=str, default='identity')
     parser.add_argument('--k', type=int, default=2,
                         help='k for update_mode')
     parser.add_argument('--jobs', type=int, default=15)
     parser.add_argument('--sparse_format', action='store_true',
                         help='True to store sc_contacts in sparse format')
-    parser.add_argument('--down_sampling', type=int, default=50)
     parser.add_argument('--its', type=int, default=1,
                         help='number of iterations')
     parser.add_argument('--chunk_size', type=int, default=500,
@@ -57,16 +72,6 @@ def getArgs(default_dir='/home/erschultz/dataset_test_sc_traj/samples/combined')
                         help='True to plot');
     parser.add_argument('--metric', type=str, default='cosine',
                         help='distance metric to use')
-
-    # experimental data args
-    parser.add_argument('--experimental', type=AC.str2bool, default=False,
-                        help='True if using experimental data')
-    parser.add_argument('--resolution', type=int, default=50000,
-                        help='resoultion for mcool file')
-    parser.add_argument('--chrom', type=str, default='19',
-                        help='specify chromosome for mcool file')
-    # parser.add_argument('--region', type=str, default='60000000-111200000',
-    #                     help='region for mcool file')
 
     args = parser.parse_args()
     if args.odir is None:
@@ -87,12 +92,12 @@ def getArgs(default_dir='/home/erschultz/dataset_test_sc_traj/samples/combined')
     args.log_file_path = osp.join(args.scratch_dir, 'out.log')
     args.log_file = open(args.log_file_path, 'a')
 
+    # ensure consistent formatting
     args.update_mode = args.update_mode.lower()
+    args.input_file_type = args.input_file_type.strip('.')
 
-    if args.experimental:
-        args.input_file_type = 'mcool'
-    else:
-        args.input_file_type = 'npy'
+    if args.metric == 'scc':
+        assert args.preprocessing_mode != 'gaussian', "don't use gaussian with SCC"
 
     print(args, file = args.log_file)
     print(args)
@@ -336,9 +341,10 @@ def plot_contacts(dir, order, args):
                         y = c.matrix(balance=False).fetch(f'{args.chrom}')
                 elif args.input_file_type == 'npy':
                     ifile = osp.join(dir, f'y_sc_{file_i}.npy')
-                    if ospo.exists(ifile):
+                    if osp.exists(ifile):
                         y = np.load(ifile)
-                        y = triu_to_full(y, args.m)
+                        if len(y.shape) == 1:
+                            y = triu_to_full(y, args.m)
 
                 if y is None:
                     continue
@@ -399,12 +405,12 @@ def diag_processsing_chunk(dir, odir, args):
     print_time(t0, tf, 'diag', file = args.log_file)
 
 class PreProcessing():
-    def __init__(self, args, mode, file_type = 'npy'):
-        self.mode = mode
+    def __init__(self, args, files):
+        self.mode = args.preprocessing_mode
         self.resolution = args.resolution
         self.chrom = args.chrom
-        self.file_type = file_type.strip('.')
-        self.idir = args.sc_contacts_dir
+        self.file_type = args.input_file_type
+        self.files = files
         self.odir = osp.join(args.odir_i, 'sc_contacts')
         if not osp.exists(self.odir):
             os.mkdir(self.odir, mode = 0o755)
@@ -415,12 +421,19 @@ class PreProcessing():
         t0 = time.time()
 
         mapping = []
-        for file in os.listdir(self.idir):
-            if not file.endswith('.' + self.file_type):
+        ifile_dict = {}
+        i = 0
+        for ifile in self.files:
+            if not ifile.endswith('.' + self.file_type):
                 continue
-            ifile = osp.join(self.idir, file)
-            ofile = osp.join(self.odir, file)
+            ofile = osp.join(self.odir, f'y_sc_{i}.{self.file_type}')
+            ifile_dict[ifile] = i
             mapping.append((ifile, ofile))
+            i += 1
+
+        # save ifile_dict
+        with open(osp.join(self.odir, 'ifile_dict.json'), 'w') as f:
+            json.dump(ifile_dict, f, indent = 2)
 
         if self.mode == 'gaussian':
             fn = self.gaussian
@@ -428,6 +441,10 @@ class PreProcessing():
             fn = self.identity
         elif self.mode == 'sparsity_filter':
             fn = self.sparsity_filter
+        elif self.mode == 'triu':
+            fn = self.to_triu
+        else:
+            raise Exception(f"Unrecognized mode: {self.mode}")
 
         if jobs > 1:
             with multiprocessing.Pool(jobs) as p:
@@ -454,54 +471,64 @@ class PreProcessing():
         # TODO avoid doing this by just using the path to the ifile
         copyfile(ifile, ofile)
 
+    def to_triu(self, ifile, ofile):
+        y = self.load_file(ifile)
+        y = y[np.triu_indices(self.m)]
+        np.save(ofile, y)
+
     def sparsity_filter(self, ifile, ofile):
-        if self.file_type == 'mcool':
-            c, binsize = hicrep.utils.readMcool(ifile, self.resolution)
-            y = c.matrix(balance=False).fetch(f'{self.chrom}')
+        y = self.load_file(ifile)
+
+        if len(y.shape) == 1:
+            sparsity = np.count_nonzero(y) / len(y) * 100
+            # TODO test this against dense version
+        else:
             sparsity = np.count_nonzero(y) / len(y)**2 * 100
+
+        if sparsity > 0.1:
+            y = y[np.triu_indices(self.m)]
+            np.save(ofile, y)
+
+    def load_file(self, ifile):
+        if self.file_type == 'mcool':
+            c, _ = hicrep.utils.readMcool(ifile, self.resolution)
+            y = c.matrix(balance=False).fetch(f'{self.chrom}')
         elif self.file_type == 'npy':
             y = np.load(ifile)
-            sparsity = np.count_nonzero(y) / len(y) * 100 # TODO test this against dense version
         else:
             raise Exception(f'Unaccepted file type: {self.file_type}')
 
-        if sparsity > 0.1:
-            copyfile(ifile, ofile)
+        return y
 
 
 class Diffusion():
     def __init__(self, args, contacts = False):
         self.args = args
+        self.files = [] # keep track of current list files to use
         # load data
         t0 = time.time()
         if args.experimental:
             self.xyz = None
             assert contacts
-            args.sc_contacts_dir = osp.join(args.odir, 'sc_contacts')
-            if not osp.exists(args.sc_contacts_dir):
-                os.mkdir(args.sc_contacts_dir, mode = 0o755)
             files = sorted(os.listdir(args.dir), key = lambda x: int(x.split('.')[1]))
 
-            i_file_dict = {}
-            i=0
-            for file in files:
-                file_path = osp.join(args.dir, file, 'adj.mcool')
+            for file in files[::args.down_sampling]:
+                if args.input_file_type == 'mcool':
+                    file_path = osp.join(args.dir, file, 'adj.mcool')
+                elif args.input_file_type == 'npy':
+                    file_path = osp.join(args.dir, file, 'y.npy')
                 if osp.exists(file_path):
-                    i_file_dict[i] = file
+                    self.files.append(file_path)
 
-                    ofile_path = osp.join(args.sc_contacts_dir, f'y_sc_{i}.mcool')
-                    copyfile(file_path, ofile_path)
-                    i+=1
-            args.N = len(i_file_dict)
-            args.m = None
-            # args.m = (int(args.region.split('-')[1]) - int(args.region.split('-')[0])) / args.resolution
+            args.N = len(self.files)
+            if args.input_file_type == 'npy':
+                y = np.load(self.files[-1])
+                args.m = len(y)
+            else:
+                args.m = None
 
             # get N
             print(f'N={args.N}', file = args.log_file)
-
-            # save i_file_dict
-            with open(osp.join(args.sc_contacts_dir, 'i_file_dict.json'), 'w') as f:
-                json.dump(i_file_dict, f, indent = 2)
         else:
             npy_file = osp.join(args.dir, 'xyz.npy')
             xyz_file = osp.join(args.dir, 'data_out/output.xyz')
@@ -533,7 +560,10 @@ class Diffusion():
         t0 = time.time()
         try:
             if isinstance(metric, str):
-                D = self.pairwise_distances_chunk(input, metric)
+                if metric == 'scc':
+                    D = self.pairwise_distances_parallel(input, metric)
+                else:
+                    D = self.pairwise_distances_chunk(input, metric)
             else:
                 dist = dmaps.DistanceMatrix(input)
                 dist.compute(metric=metric)
@@ -551,23 +581,34 @@ class Diffusion():
 
         return D
 
-    # def pairwise_distance_scc()
-    #     for i in range(N):
-    #         if i % 10 == 0:
-    #             print(i)
-    #         ifile = osp.join(input_dir, files[i])
-    #         icool, _ = hicrep.utils.readMcool(ifile, args.resolution)
-    #         for j in range(i):
-    #             jfile = osp.join(input_dir, files[j])
-    #             jcool, _ = hicrep.utils.readMcool(jfile, args.resolution)
-    #             assert metric == 'scc'
-    #             D[i,j] = hicrep.hicrepSCC(icool, jcool, 1, 50000, False,
-    #                                     [args.chrom])
+    def pairwise_distances_parallel(self, input_dir, metric):
+        scc = SCC()
+        args = self.args
+        files = [f for f in os.listdir(input_dir) if f.endswith(args.input_file_type)]
+        N = len(files)
+        D = np.zeros((N, N))
+        mapping = []
+        for i in range(0, N):
+            ifile = osp.join(input_dir, files[i])
+            for j in range(i, N):
+                # note that this ordering of the double loop is essential for triu_to_full to work
+                jfile = osp.join(input_dir, files[j])
+                mapping.append((ifile, jfile, 1, 10, True))
+
+        assert metric == 'scc', f'other metrics not supported yet: {metric}'
+        with multiprocessing.Pool(args.jobs) as p:
+            result = np.array(p.starmap(scc.scc_file, mapping))
+
+        # make symmetric and convert to distance
+        D = 1 - triu_to_full(result)
+
+        return D
 
     def pairwise_distances_chunk(self, input_dir, metric):
         scc = SCC()
         args = self.args
         files = [f for f in os.listdir(input_dir) if f.endswith(args.input_file_type)]
+        print(files)
         N = len(files)
         D = np.zeros((N, N))
         for i in range(0, N, args.chunk_size):
@@ -589,13 +630,10 @@ class Diffusion():
                         Y[k] = np.load(osp.join(input_dir, file))
 
                 if metric == 'scc':
-                    D_ij = np.zeros((len(X), len(Y)))
-                    for xi, x in enumerate(X):
-                        x = triu_to_full(x)
-                        for yi in range(xi):
-                            y = triu_to_full(Y[yi])
-                            D_ij[xi,yi] = 1 - scc.scc(x, y, K = 200)
-                    D_ij = np.tril(D_ij) + np.tril(D_ij, 1).T
+                    D_ij = pairwise_distances(X, Y, metric = scc.scc, h = 1, K = 10,
+                                                var_stabilized = True,
+                                                n_jobs = args.jobs)
+                    D_ij = 1 - D_ij # convert to distance
                 else:
                     D_ij = pairwise_distances(X, Y, metric = metric)
                 D[i:i+i_len, j:j+j_len] = D_ij
@@ -712,11 +750,7 @@ class Diffusion():
             print(f"Iteration {it}", file = args.log_file)
             if it == 0:
                 # apply gaussian
-                if args.metric == 'scc':
-                    GP = PreProcessing(args, 'sparsity_filter', args.input_file_type)
-                else:
-                    # SCC contains merging step
-                    GP = PreProcessing(args, 'gaussian')
+                GP = PreProcessing(args, self.files)
                 GP.process(args.jobs, args.log_file)
             else:
                 # diag processing
