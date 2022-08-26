@@ -585,9 +585,9 @@ class SCC():
 
     def scc_file(self, xfile, yfile, h = 1, K = None, var_stabilized = False, verbose = False,
                 distance = False):
-        '''Wrapper for scc that takes file path as input.'''
+        '''Wrapper for scc that takes file path as input. Must be .npy file.'''
         if xfile == yfile:
-            # save computation
+            # no need to compute
             result = 1 - distance
             if verbose:
                 return result, None, None
@@ -598,7 +598,7 @@ class SCC():
         y = np.load(yfile)
         return self.scc(x, y, h, K, var_stabilized, verbose, distance)
 
-    def scc(self, x, y, h = 1, K = None, var_stabilized = False, verbose = False,
+    def scc(self, x, y, h = 1, K = 10, var_stabilized = True, verbose = False,
             distance = False):
         '''
         Compute scc between contact map x and y.
@@ -606,9 +606,9 @@ class SCC():
         Inputs:
             x: contact map
             y: contact map of same shape as x
-            h: span of mean filter (width = (1+2h)) (None to skip)
-            K: maximum stratum (diagonal) to consider (None for all but last 2) (5 Mb recommended)
-            var_stabilized: True to use var_stabilized r_2k
+            h: span of mean filter (width = (1+2h)) (None or 0 to skip)
+            K: maximum stratum (diagonal) to consider (5 Mb recommended)
+            var_stabilized: True to use var_stabilized r_2k (default = True)
             verbose: True to return diagonal correlations and weights
             distance: True to return 1 - scc
         '''
@@ -620,9 +620,6 @@ class SCC():
         if h is not None and h > 0:
             x = uniform_filter(x.astype(np.float64), 1+2*h, mode = 'constant')
             y = uniform_filter(y.astype(np.float64), 1+2*h, mode = 'constant')
-
-        if K is None:
-            K = len(y) - 2
 
         nan_list = []
         p_arr = []
@@ -647,11 +644,6 @@ class SCC():
             N_k = len(x_k)
 
             if N_k > 1:
-                # print()
-                # print(f'k={k}')
-                # print(f'N_k = {len(x_k)}')
-                # print('1', x_k)
-                # print('2', y_k)
                 p_k, _ = pearsonr(x_k, y_k)
 
                 if np.isnan(p_k):
@@ -705,9 +697,14 @@ def hicrep_scc(fmcool1, fmcool2, h, K, binSize=-1, distance = False):
 
 class InnerProduct():
     '''Based off of InnerProduct from https://github.com/liu-bioinfo-lab/scHiCTools'''
-    def __init__(self, dir, K, jobs):
+    def __init__(self, dir = None, files = None, K = 10, jobs = 10):
         self.K = K
-        self.files = [osp.join(dir, f) for f in os.listdir(dir) if f.endswith('.npy')]
+        if dir is not None:
+            self.files = [osp.join(dir, f) for f in os.listdir(dir) if f.endswith('.npy')]
+        else:
+            assert files is not None
+            self.files = files
+
 
         with multiprocessing.Pool(jobs) as p:
             self.zscores = p.map(self.get_zscore_feature, self.files)
@@ -731,20 +728,3 @@ class InnerProduct():
             z[np.isnan(z)] = 0
             zscores.append(z)
         return np.concatenate(zscores)
-
-def test():
-    scc = SCC()
-    dir = '/home/erschultz/sequences_to_contact_maps/dataset_05_18_22/samples/sample1'
-    x = np.load(osp.join(dir, 'y.npy'))
-    dir = osp.join(dir, 'GNN-150-E-diagOn/knone/replicate1/y.npy')
-    y = np.load(dir)
-
-    for _ in range(2):
-        t0 = time.time()
-        print(scc.scc(x,y, var_stabilized = False, verbose = True))
-        tf = time.time()
-        print_time(t0, tf, 'scc')
-
-
-if __name__ == '__main__':
-    test()

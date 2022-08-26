@@ -52,8 +52,8 @@ TODOS:
 
 Thoughts:
 -order parameters:
---quantify 3d locations of genes - e.g. peripheral vs central or distance between promoters and enhancers 
----hic already identifies promoter enhancer contacts - but not distances or durations 
+--quantify 3d locations of genes - e.g. peripheral vs central or distance between promoters and enhancers
+---hic already identifies promoter enhancer contacts - but not distances or durations
 ---hic already identifies A/B separation
 -density of A vs B?
 
@@ -65,21 +65,19 @@ Thoughts:
 
 -cannot estimate structure exactly, but we can use simulation to robustly estimate structural properties of sc-hic-map
 
--TADS: 
+-TADS:
 --hybrid MC-MD for TADs??
 --can we do TADs in TICG in 'unsupervised' manner (i.e. requiring only hic data)?
 ---e.g. use TAD caller and define start and end as those loci
 --does a TICG simulation with only diagonal effect show TAD-like patterns for single frames??
 ---look at pairwise spatial distance matrix
----if using a term like BIn Zhang CTCF, if you delete term 3 do you see weaker TAD boundaries????
+---if using a term like Bin Zhang CTCF, if you delete term 3 do you see weaker TAD boundaries????
 
 Finite size effect:
 2) I think this result is more of a commentary on the parameters of our model than of the biological implications. This means that we can’t take parameters used to simulate a given amount of DNA and re-use them to simulate a longer stretch of DNA. Therefore, our parameters aren’t thermodynamically meaningful, but that’s ok because we don’t care about the thermodynamic meaning of the diagonal parameters. 3) If we scale up to simulate entire chromosomes, the deviation is no longer an artifact - it's a result. 4) With large simulations, the interactions at longer distance will become increasingly rare and are generally less interesting. So simulation artifacts aren’t as concerning.
 
-Challenge: I’m not sure how to leverage this to train the MLP. If only the first 25% of the contact probability curve can be considered as genuine, what can we say about the parameters for the remaining 75% of the chain? If the parameters have some function relationship (e.g. Aln(Bd+C) where d is distance*), then I could reasonably expect to estimate A,B,C given a subset of the contact probability curve. That is, I could generate simulations of size 2048, crop the probability curve to the first 25% (512) and train on that. At test time, if I want to predict parameters for 8192, I would need to crop to 512. 
+Challenge: I’m not sure how to leverage this to train the MLP. If only the first 25% of the contact probability curve can be considered as genuine, what can we say about the parameters for the remaining 75% of the chain? If the parameters have some function relationship (e.g. Aln(Bd+C) where d is distance*), then I could reasonably expect to estimate A,B,C given a subset of the contact probability curve. That is, I could generate simulations of size 2048, crop the probability curve to the first 25% (512) and train on that. At test time, if I want to predict parameters for 8192, I would need to crop to 512.
 
-*I’ve explored this particular functional form with synthetic data, but I suspect that what we really want is the parameters to decay/plateau to some value rather than increase to infinity as d increases.  
+*I’ve explored this particular functional form with synthetic data, but I suspect that what we really want is the parameters to decay/plateau to some value rather than increase to infinity as d increases.
 
 Can we use the GNN and the MLP as initial guesses for max entropy? How much faster is this than the regular max ent approach?
-
-

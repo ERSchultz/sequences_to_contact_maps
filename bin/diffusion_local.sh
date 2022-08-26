@@ -7,7 +7,7 @@ experimental='true'
 jobs=15
 metric='inner_product'
 its=1
-downSampling=1
+downSampling=40
 plot='true'
 preprocessingMode='sparsity_filter'
 

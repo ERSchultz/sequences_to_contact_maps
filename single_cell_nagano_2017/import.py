@@ -1,4 +1,5 @@
 import csv
+import json
 import multiprocessing
 import os
 import os.path as osp
@@ -6,6 +7,10 @@ import pickle
 import subprocess
 import time
 
+import bioframe  # open2c https://github.com/open2c/bioframe
+import cooltools  # https://cooltools.readthedocs.io/en/latest/index.html
+import hicrep
+import matplotlib.pyplot as plt
 import numpy as np
 from hic2cool import hic2cool_convert  # https://github.com/4dn-dcic/hic2cool
 
@@ -79,13 +84,13 @@ def adj_to_pre(dir):
             wr.writerows(rows)
     print('Finished writing juicer_pre_ifiles')
 
-def pre_to_hic(dir, jobs = 15):
+def pre_to_hic(dir, jobs = 19):
     # create hic file with Pre
     t0 = time.time()
 
-    sc_files = os.listdir(osp.join(dir, 'schic_hyb_1CDS2_adj_files'))
+    sc_files = os.listdir(osp.join(dir, 'samples'))
     jar_file = '/home/erschultz/juicer/scripts/common/juicer_tools.jar'
-    resolutions = '2500000,1000000,500000,250000,100000,50000,25000,10000'
+    resolutions = '2500000,1000000,500000,250000,100000,50000,25000,10000,1000'
 
     mapping = []
     for i, sc_file in enumerate(sc_files):
@@ -104,7 +109,6 @@ def pre_to_hic(dir, jobs = 15):
 
 def hic_to_cool(dir):
     sc_files = os.listdir(osp.join(dir, 'samples'))
-    mapping = []
     for i, sc_file in enumerate(sc_files):
         sc_dir = osp.join(dir, 'samples', sc_file)
         print(sc_file)
@@ -112,11 +116,124 @@ def hic_to_cool(dir):
         ofile = osp.join(sc_dir, f'adj.mcool')
         hic2cool_convert(ifile, ofile)
 
+def cell_cycle_phasing(dir):
+    samples = [osp.join(dir, 'samples', f) for f in os.listdir(osp.join(dir, 'samples'))]
+
+    # Use bioframe to fetch the genomic features from the UCSC.
+    chromsizes = bioframe.fetch_chromsizes('mm9')
+    cens = bioframe.fetch_centromeres('mm9')
+    # create a view with chromosome arms using chromosome sizes and definition of centromeres
+    arms = bioframe.make_chromarms(chromsizes,  cens)
+
+    # convert 'chr{i}' to '{i}'
+    arms['chrom'] = arms['chrom'].str.replace('chr','')
+    arms = arms[arms['chrom'] != 'M'] # ignore mitochondrial
+    arms = arms[arms['chrom'] == '10'] # TODO only considering chr10
+
+    mapping = [(f, arms) for f in samples]
+    # with multiprocessing.Pool(15) as p:
+    #     p.starmap(contact_distance_profile, mapping)
+
+    phase_dict = {}
+    for f in samples:
+        ifile = osp.join(f, 'p_s.npy')
+        p_s = np.load(ifile)
+        # TODO, check for off by one error
+        near = np.sum(p_s[2:220])
+        mitotic = np.sum(p_s[220:1130])
+        tot = np.nansum(p_s)
+        prcnt_near = near / tot * 100
+        prcnt_mitotic = mitotic / tot * 100
+
+        # assign initial phase
+        if prcnt_mitotic < 30 and prcnt_near < 50:
+            phase = 'post-M'
+        elif prcnt_near > 50 and (prcnt_near + 1.8 * prcnt_mitotic) > 100:
+            phase = 'pre-M'
+        elif prcnt_near < 63:
+            phase = 'G1'
+        elif prcnt_near < 78.5:
+            phase = 'S'
+        else:
+            phase = 'G2'
+
+        phase_dict[f] = phase
+
+        with open(osp.join(f, 'phase.txt'), 'w') as f:
+            f.write(phase)
+
+    with open(osp.join(dir, 'phase_dict.json'), 'w') as f:
+        json.dump(phase_dict, f, indent = 2)
+
+
+
+def contact_distance_profile(sample, arms):
+    ifile = osp.join(sample, 'adj.mcool')
+    resolution = 10000
+    clr, _ = hicrep.utils.readMcool(ifile, resolution)
+
+    # select only those chromosomes available in cooler
+    arms = arms[arms.chrom.isin(clr.chromnames)].reset_index(drop=True)
+
+    # calculate P(s)
+    cvd = cooltools.expected_cis(clr=clr,
+                                view_df=arms,
+                                smooth=False,
+                                aggregate_smoothed=False,
+                                clr_weight_name=None,
+                                nproc=1)
+
+    cvd['s_bp'] = cvd['dist']* resolution
+
+    # savetxt
+    for region in arms['name']:
+        p_s = cvd['count.avg'].loc[cvd['region1']==region]
+        p_s = np.array(p_s)
+        np.save(osp.join(sample, 'p_s.npy'), p_s)
+        return
+
+    # plot
+    f, ax = plt.subplots(1,1)
+
+    for region in arms['name']:
+        ax.loglog(
+            cvd['s_bp'].loc[cvd['region1']==region],
+            cvd['count.avg'].loc[cvd['region1']==region], label = region
+        )
+    ax.set_xlabel('separation, bp0', fontsize = 16)
+    ax.set_ylabel('IC contact frequency', fontsize = 16)
+    ax.set_aspect(1.0)
+    ax.grid(lw=0.5)
+    ax.legend()
+    ax.axline((22600, 1), (22600, 2), color = 'k')
+    ax.axline((2200000, 1), (2200000, 2), color = 'k')
+    ax.axline((22600000, 1), (22600000, 2), color = 'k')
+    plt.tight_layout()
+    plt.savefig(osp.join(sample, 'P_s.png'))
+
 def main():
     dir = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017'
     # adj_to_pre(dir)
     # pre_to_hic(dir)
-    hic_to_cool(dir)
+    # hic_to_cool(dir)
+    cell_cycle_phasing(dir)
+    # timer(dir)
+
+def timer(dir):
+    # track progress of pre_to_hic
+    sc_files = os.listdir(osp.join(dir, 'samples'))
+
+    mapping = []
+    done = 0
+    undone = 0
+    for sc_file in sc_files:
+        ofile = osp.join(dir, 'samples', sc_file, f'adj.hic')
+        t = osp.getmtime(ofile)
+        if t < 1660000000:
+            undone += 1
+        else:
+            done += 1
+    print(done / (undone + done))
 
 if __name__ == '__main__':
     main()

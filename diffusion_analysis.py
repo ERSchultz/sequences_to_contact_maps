@@ -218,10 +218,17 @@ class Updater():
 def plot_eigenvectors_inner(v, odir, fig_label, labels = None):
     N = len(v)
     if labels is not None:
-        if np.min(labels) == 1:
-            labels -= 1
-            # switch to zero based indexing
-        k = len(np.unique(labels))
+        if isinstance(labels, np.ndarray):
+            if np.min(labels) == 1:
+                labels -= 1
+                # switch to zero based indexing
+            possible_labels = np.unique(labels)
+            k = len(possible_labels)
+        elif isinstance(labels, list):
+            possible_labels = list(set(labels))
+            k = len(possible_labels)
+            labels = np.array(labels)
+
         if k <= 10:
             cmap = matplotlib.cm.get_cmap('tab10')
         else:
@@ -234,7 +241,7 @@ def plot_eigenvectors_inner(v, odir, fig_label, labels = None):
         sc = plt.scatter(v[:,1]/v[:,0], v[:,2]/v[:,0], c = np.arange(0, N, 1))
         plt.colorbar(sc)
     else:
-        for cluster, c in zip(range(k), colors):
+        for cluster, c in zip(possible_labels, colors):
             ind = np.argwhere(labels == cluster)
             plt.scatter(v[ind, 1]/v[ind, 0], v[ind, 2]/v[ind, 0], color = c['color'],
                         label = cluster)
@@ -250,7 +257,7 @@ def plot_eigenvectors_inner(v, odir, fig_label, labels = None):
         sc = plt.scatter(v[:,2]/v[:,0], v[:,3]/v[:,0], c = np.arange(0, N, 1))
         plt.colorbar(sc)
     else:
-        for cluster, c in zip(range(k), colors):
+        for cluster, c in zip(possible_labels, colors):
             ind = np.argwhere(labels == cluster)
             plt.scatter(v[ind, 2]/v[ind, 0], v[ind, 3]/v[ind, 0], color = c['color'],
                         label = cluster)
@@ -269,7 +276,7 @@ def plot_eigenvectors_inner(v, odir, fig_label, labels = None):
                         c = np.arange(0, N, 1))
         plt.colorbar(sc)
     else:
-        for cluster, c in zip(range(k), colors):
+        for cluster, c in zip(possible_labels, colors):
             ind = np.argwhere(labels == cluster)
             ax.scatter(v[ind,1]/v[ind,0], v[ind,2]/v[ind,0], v[ind,3]/v[ind,0],
                         color = c['color'], label = cluster)
@@ -281,7 +288,7 @@ def plot_eigenvectors_inner(v, odir, fig_label, labels = None):
     plt.savefig(osp.join(odir, f'projection234_{fig_label}.png'))
     plt.close()
 
-def plot_eigenvectors(v, xyz, odir):
+def plot_eigenvectors(v, xyz, odir, files = None):
     N = len(v)
 
     # color by order
@@ -303,6 +310,23 @@ def plot_eigenvectors(v, xyz, odir):
 
     # color by kmeans
     plot_eigenvectors_inner(v, odir, 'kmeans', kmeans.labels_)
+
+    # if files is not None:
+    dir = osp.split(files[0])[0]
+    with open(osp.join(dir, 'ifile_dict.json'), 'r') as f:
+        ifile_dict = json.load(f)
+
+    dir = osp.split(list(ifile_dict.values())[0])[0]
+    with open(osp.join(dir, 'phase_dict.json'), 'r') as f:
+        phase_dict = json.load(f)
+
+    phase_list = []
+    for file in files:
+        dir = ifile_dict[osp.split(file)[1]]
+        phase = phase_dict[dir]
+        phase_list.append(phase)
+
+    plot_eigenvectors_inner(v, odir, 'phases', phase_list)
 
     if xyz is not None:
         _, _, d = xyz.shape
@@ -371,6 +395,16 @@ def plot_contacts(dir, order, args):
             frames.append(imageio.imread(filename))
 
         imageio.mimsave(osp.join(odir, 'sc_contacts.gif'), frames, format='GIF', fps=2)
+
+def plot_gif_michrom():
+    dir = '/home/erschultz/michrom/project/chr_05/chr_05_02_copy/contact_diffusion'
+    filenames = [osp.join(dir, f'cluster{i}_contacts.png') for i in [1, 3, 0, 4, 2]]
+    frames = []
+    for filename in filenames:
+        frames.append(imageio.imread(filename))
+
+
+    imageio.mimsave(osp.join(dir, 'clusters.gif'), frames, format='GIF', fps=1)
 ## end section
 
 def diag_processsing_chunk(dir, odir, args):
@@ -405,17 +439,17 @@ def diag_processsing_chunk(dir, odir, args):
     print_time(t0, tf, 'diag', file = args.log_file)
 
 class PreProcessing():
-    def __init__(self, args, files):
-        self.mode = args.preprocessing_mode
-        self.resolution = args.resolution
-        self.chrom = args.chrom
+    def __init__(self, args):
+        self.mode = args.args.preprocessing_mode
+        self.resolution = args.args.resolution
+        self.chrom = args.args.chrom
         self.file_type = args.input_file_type
-        self.files = files
+        self.files = args.files
+        self.m = args.m
+
         self.odir = osp.join(args.odir_i, 'sc_contacts')
         if not osp.exists(self.odir):
             os.mkdir(self.odir, mode = 0o755)
-
-        self.m = args.m
 
     def process(self, jobs, log_file = sys.stdout):
         t0 = time.time()
@@ -426,8 +460,9 @@ class PreProcessing():
         for ifile in self.files:
             if not ifile.endswith('.' + self.file_type):
                 continue
-            ofile = osp.join(self.odir, f'y_sc_{i}.{self.file_type}')
-            ifile_dict[ifile] = i
+            ofile_name = f'y_sc_{i}.{self.file_type}'
+            ofile = osp.join(self.odir, ofile_name)
+            ifile_dict[ofile_name] = osp.split(ifile)[0]
             mapping.append((ifile, ofile))
             i += 1
 
@@ -503,14 +538,28 @@ class PreProcessing():
 
 class Diffusion():
     def __init__(self, args, contacts = False):
+        # copy params from args
         self.args = args
+        self.experimental = args.experimental
+        self.input_file_type = args.input_file_type
+        self.log_file = args.log_file
+        self.jobs = args.jobs
+        self.k = args.k
+        self.its = args.its
+        self.scratch_dir = args.scratch_dir
+        self.chunk_size = args.chunk_size
+        self.update_mode = args.update_mode
+        self.metric = args.metric
+        self.plot = args.plot
+
         self.files = [] # keep track of current list files to use
         # load data
         t0 = time.time()
-        if args.experimental:
+        if self.experimental:
             self.xyz = None
             assert contacts
-            files = sorted(os.listdir(args.dir), key = lambda x: int(x.split('.')[1]))
+            files = [f for f in os.listdir(args.dir) if osp.isdir(osp.join(args.dir, f))]
+            files = sorted(files, key = lambda x: int(x.split('.')[1]))
 
             for file in files[::args.down_sampling]:
                 if args.input_file_type == 'mcool':
@@ -520,15 +569,14 @@ class Diffusion():
                 if osp.exists(file_path):
                     self.files.append(file_path)
 
-            args.N = len(self.files)
-            if args.input_file_type == 'npy':
+            self.N = len(self.files)
+            if self.input_file_type == 'npy':
                 y = np.load(self.files[-1])
-                args.m = len(y)
+                self.m = len(y)
             else:
-                args.m = None
+                self.m = None
 
-            # get N
-            print(f'N={args.N}', file = args.log_file)
+            print(f'N={self.N}, m={self.m}', file = self.log_file)
         else:
             npy_file = osp.join(args.dir, 'xyz.npy')
             xyz_file = osp.join(args.dir, 'data_out/output.xyz')
@@ -555,51 +603,47 @@ class Diffusion():
         tf = time.time()
         print_time(t0, tf, 'load')
 
-    def compute_distance(self, input, metric):
-        args = self.args
+    def compute_distance(self):
         t0 = time.time()
         try:
-            if isinstance(metric, str):
-                if metric == 'scc':
-                    D = self.pairwise_distances_parallel(input, metric)
-                elif metric == 'inner_product':
-                    IP = InnerProduct(input, 10, jobs = args.jobs)
+            if isinstance(self.metric, str):
+                if self.metric == 'scc':
+                    D = self.pairwise_distances_parallel()
+                elif self.metric == 'inner_product':
+                    IP = InnerProduct(files = self.files, K = 20, jobs = self.jobs)
                     D = IP.get_distance_matrix()
                 else:
-                    D = self.pairwise_distances_chunk(input, metric)
+                    D = self.pairwise_distances_chunk()
             else:
                 dist = dmaps.DistanceMatrix(input)
                 dist.compute(metric=metric)
                 D = dist.get_distances()
         except Exception as e:
-            print(e, file = args.log_file)
+            print(e, file = self.log_file)
             raise
             return None
 
-        plot_matrix(D, ofile = osp.join(args.odir_i, 'distances.png'),
+        plot_matrix(D, ofile = osp.join(self.odir_i, 'distances.png'),
                         vmin = 'min', vmax = 'max')
-        np.savetxt(osp.join(args.odir_i, 'distances.txt'), D)
+        np.savetxt(osp.join(self.odir_i, 'distances.txt'), D)
         tf = time.time()
-        print_time(t0, tf, 'distance', file = args.log_file)
+        print_time(t0, tf, 'distance', file = self.log_file)
 
         return D
 
-    def pairwise_distances_parallel(self, input_dir, metric):
+    def pairwise_distances_parallel(self):
+        assert self.metric == 'scc', f'other metrics not supported yet: {metric}'
         scc = SCC()
-        args = self.args
-        files = [f for f in os.listdir(input_dir) if f.endswith(args.input_file_type)]
-        N = len(files)
-        D = np.zeros((N, N))
+        D = np.zeros((self.N, self.N))
         mapping = []
-        for i in range(0, N):
-            ifile = osp.join(input_dir, files[i])
-            for j in range(i, N):
+        for i in range(0, self.N):
+            ifile = self.files[i]
+            for j in range(i, self.N):
                 # note that this ordering of the double loop is essential for triu_to_full to work
-                jfile = osp.join(input_dir, files[j])
-                mapping.append((ifile, jfile, 1, 10, True))
+                jfile = self.files[j]
+                mapping.append((ifile, jfile, 1, 20, True))
 
-        assert metric == 'scc', f'other metrics not supported yet: {metric}'
-        with multiprocessing.Pool(args.jobs) as p:
+        with multiprocessing.Pool(self.jobs) as p:
             result = np.array(p.starmap(scc.scc_file, mapping))
 
         # make symmetric and convert to distance
@@ -609,36 +653,26 @@ class Diffusion():
 
     def pairwise_distances_chunk(self, input_dir, metric):
         scc = SCC()
-        args = self.args
-        files = [f for f in os.listdir(input_dir) if f.endswith(args.input_file_type)]
-        print(files)
-        N = len(files)
-        D = np.zeros((N, N))
-        for i in range(0, N, args.chunk_size):
-            i_len = len(files[i:i + args.chunk_size])
+        D = np.zeros((self.N, self.N))
+        for i in range(0, self.N, self.chunk_size):
+            i_len = len(files[i:i + self.chunk_size])
 
             # get X chunk
-            X = np.zeros((i_len, int(args.m*(args.m+1)/2)))
-            for k, file in enumerate(files[i:i + args.chunk_size]):
+            X = np.zeros((i_len, int(self.m*(self.m+1)/2)))
+            for k, file in enumerate(files[i:i + self.chunk_size]):
                 X[k] = np.load(osp.join(input_dir, file))
 
             # get Y chunk
-            for j in range(i, N, args.chunk_size):
-                j_len = len(files[j:j + args.chunk_size])
+            for j in range(i, N, self.chunk_size):
+                j_len = len(files[j:j + self.chunk_size])
                 if j == i:
                     Y = X
                 else:
-                    Y = np.zeros((j_len, int(args.m*(args.m+1)/2)))
-                    for k, file in enumerate(files[j:j + args.chunk_size]):
+                    Y = np.zeros((j_len, int(self.m*(self.m+1)/2)))
+                    for k, file in enumerate(files[j:j + self.chunk_size]):
                         Y[k] = np.load(osp.join(input_dir, file))
 
-                if metric == 'scc':
-                    D_ij = pairwise_distances(X, Y, metric = scc.scc, h = 1, K = 10,
-                                                var_stabilized = True,
-                                                n_jobs = args.jobs)
-                    D_ij = 1 - D_ij # convert to distance
-                else:
-                    D_ij = pairwise_distances(X, Y, metric = metric)
+                D_ij = pairwise_distances(X, Y, metric = metric)
                 D[i:i+i_len, j:j+j_len] = D_ij
 
         # make symmetric
@@ -647,24 +681,23 @@ class Diffusion():
         return D
 
     def compute_eigenvectors(self, D):
-        args = self.args
         try:
             dmap = dmaps.DiffusionMap(D)
-            eps = self.tune_epsilon(dmap, osp.join(args.odir_i, 'tuning.png'))
+            eps = self.tune_epsilon(dmap, osp.join(self.odir_i, 'tuning.png'))
             dmap.set_kernel_bandwidth(eps)
             dmap.compute(5, 0.5)
         except Exception as e:
-            print(e, file = args.log_file)
+            print(e, file = self.log_file)
             return None, None
 
         v = dmap.get_eigenvectors()
         w = dmap.get_eigenvalues()
-        print('w', w, file = args.log_file)
+        print('w', w, file = self.log_file)
         order = np.argsort(v[:, 1])
-        if not args.experimental:
+        if not self.experimental:
             print('\norder corr: ',
-                pearson_round(order, np.arange(0, args.N, 1), stat = 'spearman'),
-                file = args.log_file)
+                pearson_round(order, np.arange(0, self.N, 1), stat = 'spearman'),
+                file = self.log_file)
 
         return v, order
 
@@ -742,32 +775,31 @@ class Diffusion():
         plot_eigenvectors(v, xyz.reshape(-1, m, 3), args.odir)
 
     def contact_diffusion(self):
-        args = self.args
-
         order = None
         odir_prev = None
-        updater = Updater(args.k, args.log_file)
-        for it in range(args.its+1):
-            args.odir_i = osp.join(args.scratch_dir, f'iteration_{it}')
-            os.mkdir(args.odir_i, mode = 0o755)
+        updater = Updater(self.k, self.log_file)
+        for it in range(self.its+1):
+            self.odir_i = osp.join(self.scratch_dir, f'iteration_{it}')
+            os.mkdir(self.odir_i, mode = 0o755)
             print(f"Iteration {it}")
-            print(f"Iteration {it}", file = args.log_file)
+            print(f"Iteration {it}", file = self.log_file)
+            print(self.files)
             if it == 0:
                 # apply gaussian
-                GP = PreProcessing(args, self.files)
-                GP.process(args.jobs, args.log_file)
+                GP = PreProcessing(self)
+                GP.process(self.jobs, self.log_file)
+                self.files = [osp.join(GP.odir, f) for f in sorted(os.listdir(GP.odir)) if f.endswith(self.input_file_type)]
+                self.N = len(self.files) # update in case PreProcessing filtered some files
             else:
                 # diag processing
-                if args.metric == 'scc' or args.metric == 'inner_product':
-                    input = osp.join(odir_prev, 'sc_contacts')
-                else:
-                    diag_dir = osp.join(args.odir_i, 'sc_contacts_diag')
+                if self.metric not in {'scc', 'inner_product'}:
+                    diag_dir = osp.join(self.odir_i, 'sc_contacts_diag')
                     diag_processsing_chunk(osp.join(odir_prev, 'sc_contacts'),
                                     diag_dir, args)
-                    input = diag_dir
+                    self.files = [osp.join(diag_dir, f) for f in sorted(os.listdir(diag_dir))]
 
                 # compute distance
-                D = self.compute_distance(input, args.metric)
+                D = self.compute_distance()
                 if D is None:
                     break
 
@@ -776,45 +808,43 @@ class Diffusion():
                 if v is None:
                     break
 
-                np.savetxt(osp.join(args.odir_i, 'order.txt'), order, fmt='%i')
-                if args.plot:
-                    plot_eigenvectors(v, self.xyz, args.odir_i)
+                np.savetxt(osp.join(self.odir_i, 'order.txt'), order, fmt='%i')
+                if self.plot:
+                    plot_eigenvectors(v, self.xyz, self.odir_i, self.files)
 
                 # update
-                if it == args.its:
+                if it == self.its:
                     # skip update on last iteration
                     continue
-                if args.update_mode == 'eig':
+                if self.update_mode == 'eig':
                     sc_contacts = updater.update_eig_chunk(v[:, 1],
                                             osp.join(odir_prev, 'sc_contacts'),
-                                            args.odir_i)
-                elif args.update_mode == 'knn':
+                                            self.odir_i)
+                elif self.update_mode == 'knn':
                     sc_contacts = updater.update_kNN_chunk(v[:,1:4],
                                             osp.join(odir_prev, 'sc_contacts'),
-                                            args.odir_i)
+                                            self.odir_i)
+                # TODO update self.files
 
             # Plots
-            if args.plot:
+            if self.plot:
                 t0 = time.time()
-                plot_contacts(osp.join(args.odir_i, 'sc_contacts'), order, args)
+                plot_contacts(osp.join(self.odir_i, 'sc_contacts'), order, self)
                 tf = time.time()
-                print_time(t0, tf, 'plot', file = args.log_file)
-            print('\n', file = args.log_file)
-            odir_prev = args.odir_i
+                print_time(t0, tf, 'plot', file = self.log_file)
+            print('\n', file = self.log_file)
 
     def contact_laplacian(self):
-        args = self.args
-
         order = None
         odir_prev = None
-        for it in range(args.its+1):
-            args.odir_i = osp.join(args.scratch_dir, f'iteration_{it}')
-            os.mkdir(args.odir_i, mode = 0o755)
+        for it in range(self.its+1):
+            self.odir_i = osp.join(self.scratch_dir, f'iteration_{it}')
+            os.mkdir(self.odir_i, mode = 0o755)
             print(f"Iteration {it}")
             if it > 0:
                 # diag processing
                 sc_contacts_diag = diag_processsing(osp.join(odir_prev, 'sc_contacts'),
-                                osp.join(args.odir_i, 'sc_contacts_diag'), args)
+                                osp.join(self.odir_i, 'sc_contacts_diag'), args)
                 print_size(sc_contacts_diag, 'sc_contacts_diag')
 
                 # compute distance
@@ -822,23 +852,23 @@ class Diffusion():
                 D = pairwise_distances(sc_contacts_diag, sc_contacts_diag,
                                                 metric = 'correlation')
                 del sc_contacts_diag # no longer needed
-                plot_matrix(D, ofile = osp.join(args.odir_i, 'distances.png'),
+                plot_matrix(D, ofile = osp.join(self.odir_i, 'distances.png'),
                                 vmin = 'min', vmax = 'max')
                 tf = time.time()
                 print_time(t0, tf, 'distance')
 
                 # compute adjacency
-                eps_final = self.tune_epsilon(D, ofile = osp.join(args.odir_i, 'tuning.png'))
+                eps_final = self.tune_epsilon(D, ofile = osp.join(self.odir_i, 'tuning.png'))
                 A = np.exp(-1/2 * D**2 / eps_final)
-                plot_matrix(A, ofile = osp.join(args.odir_i, 'A.png'),
+                plot_matrix(A, ofile = osp.join(self.odir_i, 'A.png'),
                                 vmin = 'min', vmax = 'max')
 
                 # compute laplacian
                 A_tilde = laplacian(A, normed = True)
-                plot_matrix(A_tilde, ofile = osp.join(args.odir_i, 'A_tilde.png'),
+                plot_matrix(A_tilde, ofile = osp.join(self.odir_i, 'A_tilde.png'),
                                 vmin = np.min(A_tilde), vmax = np.max(A_tilde),
                                 cmap = 'blue-red')
-                np.savetxt(osp.join(args.odir_i, 'A_tilde.txt'), A_tilde, fmt='%.2f')
+                np.savetxt(osp.join(self.odir_i, 'A_tilde.txt'), A_tilde, fmt='%.2f')
 
                 # compute eigenvectors
                 w, v = np.linalg.eig(A_tilde)
@@ -855,38 +885,24 @@ class Diffusion():
                 print('\n\norder corr: ', pearson_round(order, np.arange(0, N, 1),
                                                         stat = 'spearman'))
 
-                np.savetxt(osp.join(args.odir_i, 'order.txt'), order, fmt='%i')
-                if args.plot:
-                    plot_eigenvectors(v, xyz, args.odir_i)
+                np.savetxt(osp.join(self.odir_i, 'order.txt'), order, fmt='%i')
+                if self.plot:
+                    plot_eigenvectors(v, xyz, self.odir_i)
 
-                if args.update_mode == 'eig':
+                if self.update_mode == 'eig':
                     sc_contacts = Updater.update_eig_chunk(v[:, 1], osp.join(odir_prev, 'sc_contacts'), args.odir_i)
             else:
                 # apply gaussian
                 GP = GaussianProcessing(args)
-                GP.process(args.jobs)
+                GP.process(self.jobs)
 
             # Plots
             t0 = time.time()
-            plot_contacts(osp.join(args.odir_i, 'sc_contacts'), order, args)
+            plot_contacts(osp.join(self.odir_i, 'sc_contacts'), order, args)
             tf = time.time()
             print_time(t0, tf, 'plot')
             print('\n')
-            odir_prev = args.odir_i
-
-def plot_gif_michrom():
-    dir = '/home/erschultz/michrom/project/chr_05/chr_05_02_copy/contact_diffusion'
-    filenames = [osp.join(dir, f'cluster{i}_contacts.png') for i in [1, 3, 0, 4, 2]]
-    frames = []
-    for filename in filenames:
-        frames.append(imageio.imread(filename))
-
-
-    imageio.mimsave(osp.join(dir, 'clusters.gif'), frames, format='GIF', fps=1)
-
-    # # remove files
-    # for filename in set(filenames):
-    #     os.remove(filename)
+            odir_prev = self.odir_i
 
 def cleanup(args):
     for it in range(args.its+1):

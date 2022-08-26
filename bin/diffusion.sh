@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=diffusion
-#SBATCH --partition=depablo-gpu
-#SBATCH --ntasks=16
+#SBATCH --partition=depablo-ivyb
+#SBATCH --ntasks=20
 #SBATCH --output=logFiles/diffusion.log
 #SBATCH --time=24:00:00
 
@@ -10,7 +10,7 @@ scratch='/scratch/midway2/erschultz'
 dir="${odir}/samples"
 k=2
 experimental='true'
-jobs=15
+jobs=20
 metric='scc'
 its=2
 downSampling=1
