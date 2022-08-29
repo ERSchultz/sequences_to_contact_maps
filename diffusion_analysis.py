@@ -20,14 +20,18 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import pairwise_distances, silhouette_score
 from sklearn.metrics.pairwise import cosine_distances, euclidean_distances
 from utils.argparse_utils import ArgparserConverter
-from utils.load_utils import save_sc_contacts
+from utils.load_utils import load_contact_map, save_sc_contacts
 from utils.plotting_utils import plot_matrix
-from utils.utils import (SCC, DiagonalPreprocessing, InnerProduct,
-                         pearson_round, print_size, print_time, triu_to_full)
+from utils.similarity_measures import SCC, InnerProduct
+from utils.utils import (DiagonalPreprocessing, pearson_round, print_size,
+                         print_time, triu_to_full)
 from utils.xyz_utils import lammps_load, xyz_load, xyz_to_contact_grid
 
 import dmaps  # https://github.com/ERSchultz/dmaps
 
+## mm9 chromosomes
+CHROMS = [str(i) for i in range(1,20)]
+# CHROMS.extend(['X', 'Y'])
 
 def getArgs(default_dir='/home/erschultz/dataset_test_sc_traj/samples/combined'):
     parser = argparse.ArgumentParser(description='Base parser')
@@ -49,11 +53,11 @@ def getArgs(default_dir='/home/erschultz/dataset_test_sc_traj/samples/combined')
     parser.add_argument('--input_file_type', type = str, default='npy',
                         help='file format in {mcool, npy}')
     parser.add_argument('--down_sampling', type=int, default=50)
-    # required iff input_file_type == .mcool
+    # required iff input_file_type == mcool
     parser.add_argument('--resolution', type=int, default=50000,
-                        help='resoultion for mcool file')
-    parser.add_argument('--chrom', type=str, default='10',
-                        help='specify chromosome for mcool file')
+                        help='resolution for mcool file')
+    parser.add_argument('--chroms', type=AC.str2list,
+                        help='specify chromosomes for mcool file ("All" for all chr)')
 
     # algorithm arguments
     parser.add_argument('--mode', type=str, default='contact_diffusion')
@@ -95,6 +99,10 @@ def getArgs(default_dir='/home/erschultz/dataset_test_sc_traj/samples/combined')
     # ensure consistent formatting
     args.update_mode = args.update_mode.lower()
     args.input_file_type = args.input_file_type.strip('.')
+    if args.chroms[0] == 'all':
+        args.chroms = CHROMS
+    if args.input_file_type == 'npy':
+        args.chroms = [None]
 
     if args.metric == 'scc':
         assert args.preprocessing_mode != 'gaussian', "don't use gaussian with SCC"
@@ -135,7 +143,7 @@ class Updater():
                 y_queue.append(np.load(fpath))
 
             # calculate average
-            y_new = np.mean(y_queue, axis = 0)
+            y_new = np.median(y_queue, axis = 0)
             np.save(osp.join(odir, f'y_sc_{where[i]}.npy'), y_new)
 
             # pop first entry of queue
@@ -231,14 +239,20 @@ def plot_eigenvectors_inner(v, odir, fig_label, labels = None):
 
         if k <= 10:
             cmap = matplotlib.cm.get_cmap('tab10')
-        else:
+        elif k <= 20:
             cmap = matplotlib.cm.get_cmap('tab20')
-        ind = np.arange(k) % cmap.N
-        colors = plt.cycler('color', cmap(ind))
+        else:
+            cmap = None
+
+        if cmap is not None:
+            ind = np.arange(k) % cmap.N
+            colors = plt.cycler('color', cmap(ind))
+    else:
+        labels = np.arange(0, N, 1)
 
     # eig 2 and 3
-    if labels is None:
-        sc = plt.scatter(v[:,1]/v[:,0], v[:,2]/v[:,0], c = np.arange(0, N, 1))
+    if cmap is None:
+        sc = plt.scatter(v[:,1]/v[:,0], v[:,2]/v[:,0], c = labels)
         plt.colorbar(sc)
     else:
         for cluster, c in zip(possible_labels, colors):
@@ -253,8 +267,8 @@ def plot_eigenvectors_inner(v, odir, fig_label, labels = None):
     plt.close()
 
     # eig 3 and 4
-    if labels is None:
-        sc = plt.scatter(v[:,2]/v[:,0], v[:,3]/v[:,0], c = np.arange(0, N, 1))
+    if cmap is None:
+        sc = plt.scatter(v[:,2]/v[:,0], v[:,3]/v[:,0], c = labels)
         plt.colorbar(sc)
     else:
         for cluster, c in zip(possible_labels, colors):
@@ -271,9 +285,9 @@ def plot_eigenvectors_inner(v, odir, fig_label, labels = None):
     # eig 2, 3, 4
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
-    if labels is None:
+    if cmap is None:
         sc = ax.scatter(v[:,1]/v[:,0], v[:,2]/v[:,0], v[:,3]/v[:,0],
-                        c = np.arange(0, N, 1))
+                        c = labels)
         plt.colorbar(sc)
     else:
         for cluster, c in zip(possible_labels, colors):
@@ -292,7 +306,7 @@ def plot_eigenvectors(v, xyz, odir, files = None):
     N = len(v)
 
     # color by order
-    plot_eigenvectors_inner(v, odir, 'time')
+    # plot_eigenvectors_inner(v, odir, 'time')
 
     # k_means
     num_vecs = 3
@@ -311,7 +325,6 @@ def plot_eigenvectors(v, xyz, odir, files = None):
     # color by kmeans
     plot_eigenvectors_inner(v, odir, 'kmeans', kmeans.labels_)
 
-    # if files is not None:
     dir = osp.split(files[0])[0]
     with open(osp.join(dir, 'ifile_dict.json'), 'r') as f:
         ifile_dict = json.load(f)
@@ -327,6 +340,16 @@ def plot_eigenvectors(v, xyz, odir, files = None):
         phase_list.append(phase)
 
     plot_eigenvectors_inner(v, odir, 'phases', phase_list)
+
+    read_count_list = []
+    for file in files:
+        y_list = load_contact_map(file, None, 500000)
+        read_count = 0
+        for y in y_list:
+            read_count += np.sum(y)
+        read_count_list.append(read_count)
+
+    plot_eigenvectors_inner(v, odir, 'read_count', read_count_list)
 
     if xyz is not None:
         _, _, d = xyz.shape
@@ -362,7 +385,7 @@ def plot_contacts(dir, order, args):
                     ifile = osp.join(dir, f'y_sc_{file_i}.mcool')
                     if osp.exists(ifile):
                         c, binsize = hicrep.utils.readMcool(ifile, args.resolution)
-                        y = c.matrix(balance=False).fetch(f'{args.chrom}')
+                        y = c.matrix(balance=False).fetch(f'{args.chroms[0]}')
                 elif args.input_file_type == 'npy':
                     ifile = osp.join(dir, f'y_sc_{file_i}.npy')
                     if osp.exists(ifile):
@@ -441,8 +464,8 @@ def diag_processsing_chunk(dir, odir, args):
 class PreProcessing():
     def __init__(self, args):
         self.mode = args.args.preprocessing_mode
-        self.resolution = args.args.resolution
-        self.chrom = args.args.chrom
+        self.resolution = args.resolution
+        self.chroms = args.chroms
         self.file_type = args.input_file_type
         self.files = args.files
         self.m = args.m
@@ -476,6 +499,14 @@ class PreProcessing():
             fn = self.identity
         elif self.mode == 'sparsity_filter':
             fn = self.sparsity_filter
+
+            dir = osp.split(osp.split(ifile)[0])[0]
+            file = osp.join(dir, 'read_count_dict.json')
+            if osp.exists(file):
+                with open(file, 'r') as f:
+                    self.read_count_dict = json.load(f)
+            else:
+                self.read_count_dict = None
         elif self.mode == 'triu':
             fn = self.to_triu
         else:
@@ -507,34 +538,27 @@ class PreProcessing():
         copyfile(ifile, ofile)
 
     def to_triu(self, ifile, ofile):
-        y = self.load_file(ifile)
+        y = load_contact_map(ifile)
         y = y[np.triu_indices(self.m)]
         np.save(ofile, y)
 
     def sparsity_filter(self, ifile, ofile):
-        y = self.load_file(ifile)
+        if self.read_count_dict is None:
+            y = load_contact_map(ifile)
 
-        if len(y.shape) == 1:
-            sparsity = np.count_nonzero(y) / len(y) * 100
-            # TODO test this against dense version
+            if len(y.shape) == 1:
+                sparsity = np.count_nonzero(y) / len(y) * 100
+                # TODO test this against dense version
+            else:
+                sparsity = np.count_nonzero(y) / len(y)**2 * 100
+
+            if sparsity > 0.1:
+                y = y[np.triu_indices(self.m)]
+                np.save(ofile, y)
         else:
-            sparsity = np.count_nonzero(y) / len(y)**2 * 100
-
-        if sparsity > 0.1:
-            y = y[np.triu_indices(self.m)]
-            np.save(ofile, y)
-
-    def load_file(self, ifile):
-        if self.file_type == 'mcool':
-            c, _ = hicrep.utils.readMcool(ifile, self.resolution)
-            y = c.matrix(balance=False).fetch(f'{self.chrom}')
-        elif self.file_type == 'npy':
-            y = np.load(ifile)
-        else:
-            raise Exception(f'Unaccepted file type: {self.file_type}')
-
-        return y
-
+            read_count = self.read_count_dict[osp.split(ifile)[0]]
+            if read_count > 1000:
+                copyfile(ifile, ofile)
 
 class Diffusion():
     def __init__(self, args, contacts = False):
@@ -551,6 +575,8 @@ class Diffusion():
         self.update_mode = args.update_mode
         self.metric = args.metric
         self.plot = args.plot
+        self.chroms = args.chroms
+        self.resolution = args.resolution
 
         self.files = [] # keep track of current list files to use
         # load data
@@ -610,8 +636,13 @@ class Diffusion():
                 if self.metric == 'scc':
                     D = self.pairwise_distances_parallel()
                 elif self.metric == 'inner_product':
-                    IP = InnerProduct(files = self.files, K = 20, jobs = self.jobs)
-                    D = IP.get_distance_matrix()
+                    D_arr = []
+                    for chrom in self.chroms:
+                        IP = InnerProduct(files = self.files, K = 20, jobs = self.jobs,
+                                            resolution = self.resolution, chr = chrom)
+                        D_arr.append(IP.get_distance_matrix())
+                    D_arr = np.array(D_arr)
+                    D = np.mean(D_arr, axis = 0)
                 else:
                     D = self.pairwise_distances_chunk()
             else:
@@ -634,22 +665,31 @@ class Diffusion():
     def pairwise_distances_parallel(self):
         assert self.metric == 'scc', f'other metrics not supported yet: {metric}'
         scc = SCC()
-        D = np.zeros((self.N, self.N))
-        mapping = []
-        for i in range(0, self.N):
-            ifile = self.files[i]
-            for j in range(i, self.N):
-                # note that this ordering of the double loop is essential for triu_to_full to work
-                jfile = self.files[j]
-                mapping.append((ifile, jfile, 1, 20, True))
+        D_arr = []
+        for chrom in self.chroms:
+            mapping = []
+            for i in range(0, self.N):
+                ifile = self.files[i]
+                for j in range(i, self.N):
+                    # note that this ordering of the double loop is essential for triu_to_full to work
+                    jfile = self.files[j]
+                    mapping.append((ifile, jfile, 1, 20, True, False, False,
+                                    chrom, self.resolution))
 
-        with multiprocessing.Pool(self.jobs) as p:
-            result = np.array(p.starmap(scc.scc_file, mapping))
+            with multiprocessing.Pool(self.jobs) as p:
+                result = np.array(p.starmap(scc.scc_file, mapping))
 
-        # make symmetric and convert to distance
-        D = 1 - triu_to_full(result)
+            # make symmetric and convert to distance
+            D = 1 - triu_to_full(result)
+
+            D_arr.append(D)
+
+        D_arr = np.array(D_arr)
+        D = np.mean(D_arr, axis = 0)
 
         return D
+
+
 
     def pairwise_distances_chunk(self, input_dir, metric):
         scc = SCC()
@@ -776,16 +816,16 @@ class Diffusion():
 
     def contact_diffusion(self):
         order = None
-        odir_prev = None
         updater = Updater(self.k, self.log_file)
         for it in range(self.its+1):
             self.odir_i = osp.join(self.scratch_dir, f'iteration_{it}')
+            odir_prev = osp.join(self.scratch_dir, f'iteration_{it-1}')
             os.mkdir(self.odir_i, mode = 0o755)
             print(f"Iteration {it}")
             print(f"Iteration {it}", file = self.log_file)
             print(self.files)
             if it == 0:
-                # apply gaussian
+                # apply preprocessing
                 GP = PreProcessing(self)
                 GP.process(self.jobs, self.log_file)
                 self.files = [osp.join(GP.odir, f) for f in sorted(os.listdir(GP.odir)) if f.endswith(self.input_file_type)]
@@ -824,7 +864,7 @@ class Diffusion():
                     sc_contacts = updater.update_kNN_chunk(v[:,1:4],
                                             osp.join(odir_prev, 'sc_contacts'),
                                             self.odir_i)
-                # TODO update self.files
+                # TODO update self.files after update
 
             # Plots
             if self.plot:
@@ -833,76 +873,6 @@ class Diffusion():
                 tf = time.time()
                 print_time(t0, tf, 'plot', file = self.log_file)
             print('\n', file = self.log_file)
-
-    def contact_laplacian(self):
-        order = None
-        odir_prev = None
-        for it in range(self.its+1):
-            self.odir_i = osp.join(self.scratch_dir, f'iteration_{it}')
-            os.mkdir(self.odir_i, mode = 0o755)
-            print(f"Iteration {it}")
-            if it > 0:
-                # diag processing
-                sc_contacts_diag = diag_processsing(osp.join(odir_prev, 'sc_contacts'),
-                                osp.join(self.odir_i, 'sc_contacts_diag'), args)
-                print_size(sc_contacts_diag, 'sc_contacts_diag')
-
-                # compute distance
-                t0 = time.time()
-                D = pairwise_distances(sc_contacts_diag, sc_contacts_diag,
-                                                metric = 'correlation')
-                del sc_contacts_diag # no longer needed
-                plot_matrix(D, ofile = osp.join(self.odir_i, 'distances.png'),
-                                vmin = 'min', vmax = 'max')
-                tf = time.time()
-                print_time(t0, tf, 'distance')
-
-                # compute adjacency
-                eps_final = self.tune_epsilon(D, ofile = osp.join(self.odir_i, 'tuning.png'))
-                A = np.exp(-1/2 * D**2 / eps_final)
-                plot_matrix(A, ofile = osp.join(self.odir_i, 'A.png'),
-                                vmin = 'min', vmax = 'max')
-
-                # compute laplacian
-                A_tilde = laplacian(A, normed = True)
-                plot_matrix(A_tilde, ofile = osp.join(self.odir_i, 'A_tilde.png'),
-                                vmin = np.min(A_tilde), vmax = np.max(A_tilde),
-                                cmap = 'blue-red')
-                np.savetxt(osp.join(self.odir_i, 'A_tilde.txt'), A_tilde, fmt='%.2f')
-
-                # compute eigenvectors
-                w, v = np.linalg.eig(A_tilde)
-                v = v[:, np.argsort(w)]
-                w = np.sort(w)
-                print('w', w[:10])
-                # get first nonzero eigenvector of A_tilde
-                lmbda = w[0]; i = 0
-                while lmbda <= 1e-12 and i < len(w):
-                    i += 1
-                    lmbda = w[i]
-                assert i == 1, "first nonzero eigenvector is not 2nd vector"
-                order = np.argsort(v[:, i])
-                print('\n\norder corr: ', pearson_round(order, np.arange(0, N, 1),
-                                                        stat = 'spearman'))
-
-                np.savetxt(osp.join(self.odir_i, 'order.txt'), order, fmt='%i')
-                if self.plot:
-                    plot_eigenvectors(v, xyz, self.odir_i)
-
-                if self.update_mode == 'eig':
-                    sc_contacts = Updater.update_eig_chunk(v[:, 1], osp.join(odir_prev, 'sc_contacts'), args.odir_i)
-            else:
-                # apply gaussian
-                GP = GaussianProcessing(args)
-                GP.process(self.jobs)
-
-            # Plots
-            t0 = time.time()
-            plot_contacts(osp.join(self.odir_i, 'sc_contacts'), order, args)
-            tf = time.time()
-            print_time(t0, tf, 'plot')
-            print('\n')
-            odir_prev = self.odir_i
 
 def cleanup(args):
     for it in range(args.its+1):
@@ -921,8 +891,6 @@ def main():
     elif args.mode == 'contact_diffusion':
         diff = Diffusion(args, True)
         diff.contact_diffusion()
-    elif args.mode == 'contact_laplacian':
-        Diffusion(args).contact_laplacian()
 
     cleanup(args)
 

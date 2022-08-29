@@ -6,6 +6,7 @@ import sys
 import time
 from shutil import rmtree
 
+import hicrep
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.sparse as sp
@@ -430,3 +431,21 @@ def sparsify_contact_map(contact_map):
             where2 = rng.choice(where.reshape(-1))
             contact_map[i, where2] = 1
     return contact_map + contact_map.T
+
+def load_contact_map(file, chrom = None, resolution = None):
+    file_type = file.split('.')[1]
+    if file_type == 'mcool':
+        assert resolution is not None
+        clr, _ = hicrep.utils.readMcool(file, resolution)
+        if chrom is None:
+            y = []
+            for chrom in clr.chromnames:
+                y.append(clr.matrix(balance=False).fetch(f'{chrom}'))
+        else:
+            y = clr.matrix(balance=False).fetch(f'{chrom}')
+    elif file_type == 'npy':
+        y = np.load(file)
+    else:
+        raise Exception(f'Unaccepted file type: {file_type}')
+
+    return y

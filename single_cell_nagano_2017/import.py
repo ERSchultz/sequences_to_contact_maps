@@ -165,7 +165,37 @@ def cell_cycle_phasing(dir):
     with open(osp.join(dir, 'phase_dict.json'), 'w') as f:
         json.dump(phase_dict, f, indent = 2)
 
+def read_count(dir):
+    samples = [osp.join(dir, 'samples', f) for f in os.listdir(osp.join(dir, 'samples'))]
+    samples = [f for f in samples if osp.isdir(f)]
 
+    # read_count_dict = {}
+    # for f in samples:
+    #     clr, _ = hicrep.utils.readMcool(osp.join(f, 'adj.mcool'), 2500000)
+    #     y_list = []
+    #     for chrom in clr.chromnames:
+    #         y_list.append(clr.matrix(balance=False).fetch(f'{chrom}'))
+    #     read_count = 0
+    #     for y in y_list:
+    #         read_count += np.sum(np.triu(y))
+    #     read_count_dict[f] = int(read_count)
+    #
+    #     with open(osp.join(f, 'read_count.txt'), 'w') as f:
+    #         f.write(str(read_count))
+    #
+    # with open(osp.join(dir, 'samples/read_count_dict.json'), 'w') as f:
+    #     json.dump(read_count_dict, f, indent = 2)
+
+
+    with open(osp.join(dir, 'samples/read_count_dict.json'), 'r') as f:
+        read_count_dict = json.load(f)
+
+    values = list(read_count_dict.values())
+    min_val = np.min(values)
+    max_val = np.max(values)
+    plt.hist(values, bins = np.logspace(np.log10(min_val), np.log10(max_val), 20))
+    plt.xscale('log')
+    plt.show()
 
 def contact_distance_profile(sample, arms):
     ifile = osp.join(sample, 'adj.mcool')
@@ -216,7 +246,8 @@ def main():
     # adj_to_pre(dir)
     # pre_to_hic(dir)
     # hic_to_cool(dir)
-    cell_cycle_phasing(dir)
+    # cell_cycle_phasing(dir)
+    read_count(dir)
     # timer(dir)
 
 def timer(dir):
