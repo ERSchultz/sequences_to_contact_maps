@@ -94,12 +94,15 @@ def pre_to_hic(dir, jobs = 19):
 
     mapping = []
     for i, sc_file in enumerate(sc_files):
-        sc_dir = osp.join(dir, 'samples', sc_file)
-        ifile = osp.join(sc_dir, 'juicer_pre_ifile.txt')
-        ofile = osp.join(sc_dir, f'adj.hic')
-        command = f'java -Xmx2g -jar {jar_file} pre {ifile} {ofile} mm9 -d -r {resolutions}'
-        log_file = osp.join(sc_dir, 'pre.log')
-        mapping.append((command, log_file))
+        if sc_file in {'1CDS2.346', '1CDS2.513'}:
+            sc_dir = osp.join(dir, 'samples', sc_file)
+            ifile = osp.join(sc_dir, 'juicer_pre_ifile.txt')
+            ofile = osp.join(sc_dir, f'adj.hic')
+            command = f'java -Xmx2g -jar {jar_file} pre {ifile} {ofile} mm9 -d -r {resolutions}'
+            log_file = osp.join(sc_dir, 'pre.log')
+            mapping.append((command, log_file))
+
+    print(mapping)
 
     with multiprocessing.Pool(jobs) as p:
         p.starmap(bash, mapping)
@@ -107,14 +110,27 @@ def pre_to_hic(dir, jobs = 19):
     tf = time.time()
     print(f'Finished writing hic files in {np.round(tf-t0, 1)} seconds')
 
-def hic_to_cool(dir):
-    sc_files = os.listdir(osp.join(dir, 'samples'))
+def hic_to_cool(dir, resolution = None):
+    sc_files = sorted(os.listdir(osp.join(dir, 'samples')))
+    errors = []
     for i, sc_file in enumerate(sc_files):
         sc_dir = osp.join(dir, 'samples', sc_file)
-        print(sc_file)
         ifile = osp.join(sc_dir, f'adj.hic')
-        ofile = osp.join(sc_dir, f'adj.mcool')
-        hic2cool_convert(ifile, ofile)
+        try:
+            if resolution is not None:
+                ofile = osp.join(sc_dir, f'adj_{resolution}.cool')
+                hic2cool_convert(ifile, ofile, resolution)
+            else:
+                ofile = osp.join(sc_dir, 'adj.mcool')
+                hic2cool_convert(ifile, ofile)
+        except Exception as e:
+            errors.append((ifile, e))
+
+    for ifile, e in errors:
+        print(ifile)
+        print(e)
+        print()
+
 
 def cell_cycle_phasing(dir):
     samples = [osp.join(dir, 'samples', f) for f in os.listdir(osp.join(dir, 'samples'))]
@@ -245,14 +261,15 @@ def main():
     dir = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017'
     # adj_to_pre(dir)
     # pre_to_hic(dir)
-    # hic_to_cool(dir)
+    hic_to_cool(dir, 500000)
     # cell_cycle_phasing(dir)
-    read_count(dir)
+    # read_count(dir)
     # timer(dir)
 
 def timer(dir):
     # track progress of pre_to_hic
     sc_files = os.listdir(osp.join(dir, 'samples'))
+    sc_files = [f for f in sc_files if not f.endswith('.json')]
 
     mapping = []
     done = 0
@@ -260,7 +277,8 @@ def timer(dir):
     for sc_file in sc_files:
         ofile = osp.join(dir, 'samples', sc_file, f'adj.hic')
         t = osp.getmtime(ofile)
-        if t < 1660000000:
+        # print(ofile, t)
+        if t < 1661500000:
             undone += 1
         else:
             done += 1

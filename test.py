@@ -31,8 +31,9 @@ from utils.energy_utils import s_to_E
 from utils.load_utils import load_sc_contacts, save_sc_contacts
 from utils.networks import get_model
 from utils.plotting_utils import plot_matrix, plot_top_PCs
-from utils.utils import (SCC, DiagonalPreprocessing, calc_dist_strat_corr,
-                         crop, print_time, triu_to_full)
+from utils.similarity_measures import SCC
+from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
+                         print_time, triu_to_full)
 from utils.xyz_utils import lammps_load
 
 import scHiCTools
@@ -784,12 +785,11 @@ def prep_data_for_cluster():
         opath = osp.join(odir, id)
         if not osp.exists(opath):
             os.mkdir(opath, mode = 0o755)
-        ifile = osp.join(idir, id, 'y.npy')
+        ifile = osp.join(idir, id, 'adj_50000.cool')
         if osp.exists(ifile):
-            y = np.load(ifile)
-            y_triu = y[np.triu_indices(len(y))]
-            np.save(osp.join(idir, id, 'y_triu.npy'), y_triu)
-            np.save(osp.join(odir, id, 'y_triu.npy'), y_triu)
+            ofile = osp.join(odir, id, 'adj_50000.cool')
+            copyfile(ifile, ofile)
+
 
 
 if __name__ == '__main__':

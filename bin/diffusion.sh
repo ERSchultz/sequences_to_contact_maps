@@ -16,7 +16,7 @@ its=1
 downSampling=1
 plot='true'
 preprocessingMode='sparsity_filter'
-inputFileType='mcool'
+inputFileType='cool'
 chroms='all'
 
 conda activate python3.9_pytorch1.9_cuda10.2

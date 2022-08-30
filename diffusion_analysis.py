@@ -51,13 +51,13 @@ def getArgs(default_dir='/home/erschultz/dataset_test_sc_traj/samples/combined')
     parser.add_argument('--N_min', type=int, default=2000,
                         help='minimum sample index to keep')
     parser.add_argument('--input_file_type', type = str, default='npy',
-                        help='file format in {mcool, npy}')
+                        help='file format in {cool, mcool, npy}')
     parser.add_argument('--down_sampling', type=int, default=50)
     # required iff input_file_type == mcool
     parser.add_argument('--resolution', type=int, default=50000,
-                        help='resolution for mcool file')
+                        help='resolution for cool/mcool file')
     parser.add_argument('--chroms', type=AC.str2list,
-                        help='specify chromosomes for mcool file ("All" for all chr)')
+                        help='specify chromosomes for cool/mcool file ("All" for all chr)')
 
     # algorithm arguments
     parser.add_argument('--mode', type=str, default='contact_diffusion')
@@ -329,8 +329,8 @@ def plot_eigenvectors(v, xyz, odir, files = None):
     with open(osp.join(dir, 'ifile_dict.json'), 'r') as f:
         ifile_dict = json.load(f)
 
-    dir = osp.split(list(ifile_dict.values())[0])[0]
-    with open(osp.join(dir, 'phase_dict.json'), 'r') as f:
+    data_dir = osp.split(list(ifile_dict.values())[0])[0]
+    with open(osp.join(data_dir, 'phase_dict.json'), 'r') as f:
         phase_dict = json.load(f)
 
     phase_list = []
@@ -341,12 +341,14 @@ def plot_eigenvectors(v, xyz, odir, files = None):
 
     plot_eigenvectors_inner(v, odir, 'phases', phase_list)
 
+    file = osp.join(data_dir, 'read_count_dict.json')
+    with open(file, 'r') as f:
+        read_count_dict = json.load(f)
+
     read_count_list = []
     for file in files:
-        y_list = load_contact_map(file, None, 500000)
-        read_count = 0
-        for y in y_list:
-            read_count += np.sum(y)
+        dir = ifile_dict[osp.split(file)[1]]
+        read_count = read_count_dict[dir]
         read_count_list.append(read_count)
 
     plot_eigenvectors_inner(v, odir, 'read_count', read_count_list)
@@ -381,20 +383,20 @@ def plot_contacts(dir, order, args):
         for i, file_i in enumerate(order):
             if i % (args.N // 10) == 0:
                 y = None
-                if args.input_file_type == 'mcool':
-                    ifile = osp.join(dir, f'y_sc_{file_i}.mcool')
-                    if osp.exists(ifile):
-                        c, binsize = hicrep.utils.readMcool(ifile, args.resolution)
-                        y = c.matrix(balance=False).fetch(f'{args.chroms[0]}')
-                elif args.input_file_type == 'npy':
-                    ifile = osp.join(dir, f'y_sc_{file_i}.npy')
-                    if osp.exists(ifile):
-                        y = np.load(ifile)
-                        if len(y.shape) == 1:
-                            y = triu_to_full(y, args.m)
-
-                if y is None:
+                ifile = osp.join(dir, f'y_sc_{file_i}.{args.input_file_type}')
+                if not osp.exists(ifile):
                     continue
+
+                if args.input_file_type == 'mcool' :
+                    clr, _ = hicrep.utils.readMcool(ifile, args.resolution)
+                    y = clr.matrix(balance=False).fetch(f'{args.chroms[0]}')
+                elif args.input_file_type == 'cool':
+                    clr, _ = hicrep.utils.readMcool(ifile, -1)
+                    y = clr.matrix(balance=False).fetch(f'{args.chroms[0]}')
+                elif args.input_file_type == 'npy':
+                    y = np.load(ifile)
+                    if len(y.shape) == 1:
+                        y = triu_to_full(y, args.m)
 
                 contacts = int(np.sum(y) / 2)
                 sparsity = np.round(np.count_nonzero(y) / len(y)**2 * 100, 2)
@@ -590,6 +592,8 @@ class Diffusion():
             for file in files[::args.down_sampling]:
                 if args.input_file_type == 'mcool':
                     file_path = osp.join(args.dir, file, 'adj.mcool')
+                elif args.input_file_type == 'cool':
+                    file_path = osp.join(args.dir, file, f'adj_{self.resolution}.cool')
                 elif args.input_file_type == 'npy':
                     file_path = osp.join(args.dir, file, 'y.npy')
                 if osp.exists(file_path):
@@ -625,6 +629,8 @@ class Diffusion():
                 args.sc_contacts_dir = osp.join(args.odir, 'sc_contacts')
                 save_sc_contacts(self.xyz, args.sc_contacts_dir, args.jobs, sparsify = True,
                                 overwrite = True)
+
+        print(self.files)
 
         tf = time.time()
         print_time(t0, tf, 'load')
@@ -826,9 +832,9 @@ class Diffusion():
             print(self.files)
             if it == 0:
                 # apply preprocessing
-                GP = PreProcessing(self)
-                GP.process(self.jobs, self.log_file)
-                self.files = [osp.join(GP.odir, f) for f in sorted(os.listdir(GP.odir)) if f.endswith(self.input_file_type)]
+                PP = PreProcessing(self)
+                PP.process(self.jobs, self.log_file)
+                self.files = [osp.join(PP.odir, f) for f in sorted(os.listdir(PP.odir)) if f.endswith(self.input_file_type)]
                 self.N = len(self.files) # update in case PreProcessing filtered some files
             else:
                 # diag processing

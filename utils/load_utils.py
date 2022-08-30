@@ -434,7 +434,17 @@ def sparsify_contact_map(contact_map):
 
 def load_contact_map(file, chrom = None, resolution = None):
     file_type = file.split('.')[1]
-    if file_type == 'mcool':
+    if file_type == 'cool':
+        clr, binsize = hicrep.utils.readMcool(file, -1)
+        if resolution is not None:
+            assert resolution == binsize, f"{resolution} != {binsize}"
+        if chrom is None:
+            y = []
+            for chrom in clr.chromnames:
+                y.append(clr.matrix(balance=False).fetch(f'{chrom}'))
+        else:
+            y = clr.matrix(balance=False).fetch(f'{chrom}')
+    elif file_type == 'mcool':
         assert resolution is not None
         clr, _ = hicrep.utils.readMcool(file, resolution)
         if chrom is None:
