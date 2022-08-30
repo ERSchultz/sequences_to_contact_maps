@@ -7,6 +7,7 @@ import sys
 import time
 from shutil import copyfile, move, rmtree
 
+import dmaps  # https://github.com/ERSchultz/dmaps
 import hicrep
 import hicrep.utils
 import imageio.v2 as imageio
@@ -26,8 +27,6 @@ from utils.similarity_measures import SCC, InnerProduct
 from utils.utils import (DiagonalPreprocessing, pearson_round, print_size,
                          print_time, triu_to_full)
 from utils.xyz_utils import lammps_load, xyz_load, xyz_to_contact_grid
-
-import dmaps  # https://github.com/ERSchultz/dmaps
 
 ## mm9 chromosomes
 CHROMS = [str(i) for i in range(1,20)]
@@ -302,7 +301,7 @@ def plot_eigenvectors_inner(v, odir, fig_label, labels = None):
     plt.savefig(osp.join(odir, f'projection234_{fig_label}.png'))
     plt.close()
 
-def plot_eigenvectors(v, xyz, odir, files = None):
+def plot_eigenvectors(v, xyz, data_dir, odir, files = None):
     N = len(v)
 
     # color by order
@@ -329,7 +328,6 @@ def plot_eigenvectors(v, xyz, odir, files = None):
     with open(osp.join(dir, 'ifile_dict.json'), 'r') as f:
         ifile_dict = json.load(f)
 
-    data_dir = osp.split(list(ifile_dict.values())[0])[0]
     with open(osp.join(data_dir, 'phase_dict.json'), 'r') as f:
         phase_dict = json.load(f)
 
@@ -487,7 +485,7 @@ class PreProcessing():
                 continue
             ofile_name = f'y_sc_{i}.{self.file_type}'
             ofile = osp.join(self.odir, ofile_name)
-            ifile_dict[ofile_name] = osp.split(ifile)[0]
+            ifile_dict[ofile_name] = osp.split(osp.split(ifile)[0])[1]
             mapping.append((ifile, ofile))
             i += 1
 
@@ -558,7 +556,8 @@ class PreProcessing():
                 y = y[np.triu_indices(self.m)]
                 np.save(ofile, y)
         else:
-            read_count = self.read_count_dict[osp.split(ifile)[0]]
+            id = osp.split(osp.split(ifile)[0])[1]
+            read_count = self.read_count_dict[id]
             if read_count > 1000:
                 copyfile(ifile, ofile)
 
@@ -579,6 +578,7 @@ class Diffusion():
         self.plot = args.plot
         self.chroms = args.chroms
         self.resolution = args.resolution
+        self.dir = args.dir
 
         self.files = [] # keep track of current list files to use
         # load data
@@ -586,16 +586,16 @@ class Diffusion():
         if self.experimental:
             self.xyz = None
             assert contacts
-            files = [f for f in os.listdir(args.dir) if osp.isdir(osp.join(args.dir, f))]
+            files = [f for f in os.listdir(self.dir) if osp.isdir(osp.join(self.dir, f))]
             files = sorted(files, key = lambda x: int(x.split('.')[1]))
 
             for file in files[::args.down_sampling]:
                 if args.input_file_type == 'mcool':
-                    file_path = osp.join(args.dir, file, 'adj.mcool')
+                    file_path = osp.join(self.dir, file, 'adj.mcool')
                 elif args.input_file_type == 'cool':
-                    file_path = osp.join(args.dir, file, f'adj_{self.resolution}.cool')
+                    file_path = osp.join(self.dir, file, f'adj_{self.resolution}.cool')
                 elif args.input_file_type == 'npy':
-                    file_path = osp.join(args.dir, file, 'y.npy')
+                    file_path = osp.join(self.dir, file, 'y.npy')
                 if osp.exists(file_path):
                     self.files.append(file_path)
 
@@ -608,9 +608,9 @@ class Diffusion():
 
             print(f'N={self.N}, m={self.m}', file = self.log_file)
         else:
-            npy_file = osp.join(args.dir, 'xyz.npy')
-            xyz_file = osp.join(args.dir, 'data_out/output.xyz')
-            lammps_file = osp.join(args.dir, 'traj.dump.lammpstrj')
+            npy_file = osp.join(self.dir, 'xyz.npy')
+            xyz_file = osp.join(self.dir, 'data_out/output.xyz')
+            lammps_file = osp.join(self.dir, 'traj.dump.lammpstrj')
             if osp.exists(npy_file):
                 self.xyz = np.load(npy_file)
                 self.xyz = self.xyz[::args.down_sampling]
@@ -629,8 +629,6 @@ class Diffusion():
                 args.sc_contacts_dir = osp.join(args.odir, 'sc_contacts')
                 save_sc_contacts(self.xyz, args.sc_contacts_dir, args.jobs, sparsify = True,
                                 overwrite = True)
-
-        print(self.files)
 
         tf = time.time()
         print_time(t0, tf, 'load')
@@ -818,7 +816,7 @@ class Diffusion():
         v, _ = self.compute_eigenvectors(D)
 
         # plot
-        plot_eigenvectors(v, xyz.reshape(-1, m, 3), args.odir)
+        plot_eigenvectors(v, xyz.reshape(-1, m, 3), self.dir, self.odir)
 
     def contact_diffusion(self):
         order = None
@@ -856,7 +854,7 @@ class Diffusion():
 
                 np.savetxt(osp.join(self.odir_i, 'order.txt'), order, fmt='%i')
                 if self.plot:
-                    plot_eigenvectors(v, self.xyz, self.odir_i, self.files)
+                    plot_eigenvectors(v, self.xyz, self.dir, self.odir_i, self.files)
 
                 # update
                 if it == self.its:

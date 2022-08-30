@@ -134,6 +134,7 @@ def hic_to_cool(dir, resolution = None):
 
 def cell_cycle_phasing(dir):
     samples = [osp.join(dir, 'samples', f) for f in os.listdir(osp.join(dir, 'samples'))]
+    samples = [f for f in samples if osp.isdir(f)]
 
     # Use bioframe to fetch the genomic features from the UCSC.
     chromsizes = bioframe.fetch_chromsizes('mm9')
@@ -173,12 +174,12 @@ def cell_cycle_phasing(dir):
         else:
             phase = 'G2'
 
-        phase_dict[f] = phase
+        phase_dict[osp.split(f)[1]] = phase
 
         with open(osp.join(f, 'phase.txt'), 'w') as f:
             f.write(phase)
 
-    with open(osp.join(dir, 'phase_dict.json'), 'w') as f:
+    with open(osp.join(dir, 'samples/phase_dict.json'), 'w') as f:
         json.dump(phase_dict, f, indent = 2)
 
 def read_count(dir):
@@ -194,7 +195,7 @@ def read_count(dir):
     #     read_count = 0
     #     for y in y_list:
     #         read_count += np.sum(np.triu(y))
-    #     read_count_dict[f] = int(read_count)
+    #     read_count_dict[osp.split(f)[1]] = int(read_count)
     #
     #     with open(osp.join(f, 'read_count.txt'), 'w') as f:
     #         f.write(str(read_count))
@@ -209,7 +210,7 @@ def read_count(dir):
     values = list(read_count_dict.values())
     min_val = np.min(values)
     max_val = np.max(values)
-    plt.hist(values, bins = np.logspace(np.log10(min_val), np.log10(max_val), 20))
+    plt.hist(values, bins = np.logspace(np.log10(min_val), np.log10(max_val), 30))
     plt.xscale('log')
     plt.show()
 
@@ -261,9 +262,9 @@ def main():
     dir = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017'
     # adj_to_pre(dir)
     # pre_to_hic(dir)
-    hic_to_cool(dir, 500000)
+    # hic_to_cool(dir, 500000)
     # cell_cycle_phasing(dir)
-    # read_count(dir)
+    read_count(dir)
     # timer(dir)
 
 def timer(dir):
