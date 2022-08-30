@@ -21,4 +21,4 @@ chroms='all'
 
 conda activate python3.9_pytorch1.9_cuda10.2
 
-python3 /home/erschultz/sequences_to_contact_maps/diffusion_analysis.py --dir $dir --odir $odir --k $k --experimental $experimental --jobs $jobs --metric $metric --its $its --down_sampling $downSampling --plot $plot --preprocessing_mode $preprocessingMode --input_file_type $inputFileType --chroms $chroms
+python3 /home/erschultz/sequences_to_contact_maps/diffusion_analysis.py --dir $dir --odir $odir --scratch $scratch --k $k --experimental $experimental --jobs $jobs --metric $metric --its $its --down_sampling $downSampling --plot $plot --preprocessing_mode $preprocessingMode --input_file_type $inputFileType --chroms $chroms
