@@ -827,7 +827,6 @@ class Diffusion():
             os.mkdir(self.odir_i, mode = 0o755)
             print(f"Iteration {it}")
             print(f"Iteration {it}", file = self.log_file)
-            print(self.files)
             if it == 0:
                 # apply preprocessing
                 PP = PreProcessing(self)
