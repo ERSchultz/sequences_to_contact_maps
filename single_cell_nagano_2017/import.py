@@ -262,9 +262,9 @@ def main():
     dir = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017'
     # adj_to_pre(dir)
     # pre_to_hic(dir)
-    # hic_to_cool(dir, 500000)
+    hic_to_cool(dir, 500000)
     # cell_cycle_phasing(dir)
-    read_count(dir)
+    # read_count(dir)
     # timer(dir)
 
 def timer(dir):

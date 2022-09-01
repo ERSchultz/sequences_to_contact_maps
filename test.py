@@ -11,6 +11,7 @@ import cooler
 import hicrep.utils
 import matplotlib.pyplot as plt
 import numpy as np
+import scHiCTools
 import scipy.stats as ss
 import torch
 import torch.nn as nn
@@ -35,8 +36,6 @@ from utils.similarity_measures import SCC
 from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
                          print_time, triu_to_full)
 from utils.xyz_utils import lammps_load
-
-import scHiCTools
 
 
 def test_num_workers():
@@ -785,9 +784,9 @@ def prep_data_for_cluster():
         opath = osp.join(odir, id)
         if not osp.exists(opath):
             os.mkdir(opath, mode = 0o755)
-        ifile = osp.join(idir, id, 'adj_50000.cool')
+        ifile = osp.join(idir, id, 'adj_500000.cool')
         if osp.exists(ifile):
-            ofile = osp.join(odir, id, 'adj_50000.cool')
+            ofile = osp.join(odir, id, 'adj_500000.cool')
             copyfile(ifile, ofile)
 
 

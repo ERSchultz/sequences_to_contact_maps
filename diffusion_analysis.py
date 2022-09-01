@@ -558,7 +558,7 @@ class PreProcessing():
         else:
             id = osp.split(osp.split(ifile)[0])[1]
             read_count = self.read_count_dict[id]
-            if read_count > 1000:
+            if read_count > 5000:
                 copyfile(ifile, ofile)
 
 class Diffusion():
