@@ -89,10 +89,12 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
         saveDict = torch.load(dir, map_location=torch.device('cpu'))
         train_loss_arr = saveDict['train_loss']
         val_loss_arr = saveDict['val_loss']
-        l1 = ax.plot(np.arange(1, len(train_loss_arr)+1), train_loss_arr, ls = styles[0], color = c)
+        l1 = ax.plot(np.arange(1, len(train_loss_arr)+1), train_loss_arr,
+                    ls = styles[0], color = c)
         if log_y:
             ax.set_yscale('log')
-        l2 = ax.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr, ls = styles[1], color = c)
+        l2 = ax.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr,
+                    ls = styles[1], color = c)
         labels.append(opt2list(opt)[diff_pos])
 
     for c, label_i in zip(colors, labels):
@@ -128,7 +130,8 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
         preprocessing_norm = opt.preprocessing_norm.capitalize()
     else:
          preprocessing_norm = 'None'
-    plt.title('Y Preprocessing: {}, Norm: {}'.format(preprocessing, preprocessing_norm), fontsize = 16)
+    plt.title(f'Y Preprocessing: {preprocessing}, Norm: {preprocessing_norm}',
+                fontsize = 16)
 
     plt.tight_layout()
     if log_y:
@@ -144,7 +147,8 @@ def plotModelFromDir(dir, imagePath, opt = None, log_y = False):
     val_loss_arr = saveDict['val_loss']
     plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt, log_y)
 
-def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None, log_y = False):
+def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None,
+                        log_y = False):
     """Plots loss as function of epoch."""
     plt.plot(np.arange(1, len(train_loss_arr)+1), train_loss_arr, label = 'Training')
     plt.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr, label = 'Validation')
@@ -239,7 +243,8 @@ def plot_seq_binary(seq, show = False, save = True, title = None, labels = None,
         plt.show()
     plt.close()
 
-def plot_seq_exclusive(seq, labels=None, X=None, show = False, save = True, title = None, ofile = 'seq.png'):
+def plot_seq_exclusive(seq, labels=None, X=None, show = False, save = True,
+                        title = None, ofile = 'seq.png'):
     '''Plotting function for mutually exclusive binary particle types'''
     # TODO make figure wider and less tall
     m, k = seq.shape
@@ -1292,9 +1297,31 @@ def plot_centroid_distance_sample(dir, sample):
     plt.close()
 
 #### Functions for plotting diag chis and contact probability curves ####
-def diag_chi_to_diag_chi_step(diag_chi, m, diag_cutoff, diag_start, dense,
-                            n_small_bins, small_binsize, big_binsize):
+def get_diag_chi_step(config):
+    m = config['nbeads']
+    diag_chi = config['diag_chis']
     diag_bins = len(diag_chi)
+
+    if 'diag_start' in config.keys():
+        diag_start = config['diag_start']
+    else:
+        diag_start = 0
+
+    if 'diag_cutoff' in config.keys():
+        diag_cutoff = config['diag_cutoff']
+    else:
+        diag_cutoff = m
+
+    if 'dense_diagonal_on' in config.keys():
+        dense = config['dense_diagonal_on']
+    else:
+        dense = False
+
+    if dense:
+        n_small_bins = config['n_small_bins']
+        small_binsize = config['small_binsize']
+        big_binsize = config['big_binsize']
+
     diag_chi_step = np.zeros(m)
     for d in range(diag_cutoff):
         if d < diag_start:
@@ -1314,33 +1341,35 @@ def diag_chi_to_diag_chi_step(diag_chi, m, diag_cutoff, diag_start, dense,
 
     return diag_chi_step
 
-def plot_diag_chi(chi_diag, m, path, start_cutoff, dense = False, n_small_bins = 0, n_big_bins = 0,
-            small_binsize = 0, big_binsize = 0, ref = None, ref_label = ''):
+def plot_diag_chi(config, path, ref = None, ref_label = ''):
     '''
-    chi_diag: diagonal parameters
-    m: # of beads
+    config: config file
     path: save file path
-    start_cutoff: tuple of diag_start and diag_cutoff
-    dense: True for dense diagonal
-    num_bins: number of bins
-    binsize: list of bin sizes
     ref: reference parameters
     ref_label: label for reference parameters
     '''
+    if config is None:
+        return
+
+    if 'dense_diagonal_on' in config.keys():
+        dense = config['dense_diagonal_on']
+    else:
+        dense = False
+
     if not dense:
-        plt.plot(chi_diag)
+        if 'diag_chi' in config.keys():
+            diag_chi = config['diag_chis']
+        else:
+            return
+        plt.plot(diag_chi)
         plt.xlabel('Bin', fontsize = 16)
         plt.ylabel('Diagonal Parameter', fontsize = 16)
         plt.savefig(osp.join(path, 'chi_diag.png'))
         plt.close()
 
-    diag_start, diag_cutoff = start_cutoff
+    diag_chis_step = get_diag_chi_step(config)
 
-    diag_chi_step = diag_chi_to_diag_chi_step(chi_diag, m, diag_cutoff,
-                                            diag_start, dense, n_small_bins,
-                                            small_binsize, big_binsize)
-
-    plt.plot(diag_chi_step, color = 'k')
+    plt.plot(diag_chis_step, color = 'k')
     plt.xlabel('Polymer Distance', fontsize = 16)
     plt.ylabel('Diagonal Parameter', fontsize = 16)
     if ref is not None:
@@ -1350,64 +1379,65 @@ def plot_diag_chi(chi_diag, m, path, start_cutoff, dense = False, n_small_bins =
     plt.savefig(osp.join(path, 'chi_diag_step.png'))
     plt.close()
 
-def plot_mean_vs_genomic_distance(y, path, diag_chis, ofile, start_cutoff = None,
-                        dense = False, n_small_bins = 0, n_big_bins = 0,
-                        small_binsize = 0, big_binsize = 0, logx = False):
+def plot_mean_vs_genomic_distance(y, path, ofile, diag_chis_step = None,
+                                config = None, logx = False):
     '''
     Inputs:
         y: contact map
         path: save path
-        diag_chis: plot diagonal parameters on twin axis (None to skip)
         ofile: save file name
-        start_cutoff: tuple of diag_start and diag_cutoff
-        dense: True if dense_diagonal_on
-            n_small_bins: number of small bins
-            n_big_bins: number of big bins
-            small_binsize: size of small bins
-            big_binsize: size of big bin
+        diag_chis_step: diagonal chi parameter as function of d (None to skip)
+        config: config file (None to skip)
         logx: True to log-scale x axis
     '''
     meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob',
                                             zero_diag = False, zero_offset = 0)
+    if config is not None:
+        diag_chis_step = get_diag_chi_step(config)
+
+    plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, None)
+
+    np.savetxt(osp.join(path, 'meanDist.txt'), meanDist)
+    print('mean', np.mean(meanDist))
+
+def plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, ref, norm = False):
+    '''
+    Inputs:
+        meanDist: contact map
+        path: save path
+        ofile: save file name
+        diag_chis_step: diagonal chi parameter as function of d (None to skip)
+        logx: True to log-scale x axis
+    '''
+    meanDist = meanDist.copy()
+    if ref is not None:
+        ref = ref.copy()
+    if norm:
+        meanDist /= np.max(meanDist)
+        if ref is not None:
+            ref /= np.max(ref)
+
     fig, ax = plt.subplots()
     ax2 = ax.twinx()
     ax.plot(meanDist)
+    if ref is not None:
+        ax.plot(ref, label = 'reference')
+        ax.legend()
     ax.set_yscale('log')
     if logx:
         ax.set_xscale('log')
 
-    if diag_chis is not None:
-        diag_start, diag_cutoff = start_cutoff
-        m = len(y)
-        diag_bins = len(diag_chis)
-
-        # find chi transition points
-        diag_chi_step = diag_chi_to_diag_chi_step(diag_chis, m, diag_cutoff,
-                                                diag_start, dense, n_small_bins,
-                                                small_binsize, big_binsize)
-
-        # start = np.log10(np.max(meanDist)*1.05)
-        # stop = np.log10(np.max(meanDist[-int(0.9*k):])*1.05)
-        # annotate_y_arr = np.logspace(start, stop, k)
-        # for i, diag_chi, annotate_y in zip(transitions, diag_chis, annotate_y_arr):
-        #     plt.axvline(i, linestyle = 'dashed', color = 'green')
-        #     plt.annotate(f'{np.round(diag_chi, 1)}', (i, annotate_y))
-
-        ax2.plot(diag_chi_step, color = 'k')
+    if diag_chis_step is not None:
+        ax2.plot(diag_chis_step, color = 'k')
         ax2.set_ylabel('Diagonal Parameter', fontsize = 16)
         if logx:
             ax2.set_xscale('log')
-
-
 
     ax.set_ylabel('Contact Probability', fontsize = 16)
     ax.set_xlabel('Polymer Distance (beads)', fontsize = 16)
     plt.tight_layout()
     plt.savefig(osp.join(path, ofile))
     plt.close()
-
-    np.savetxt(osp.join(path, 'meanDist.txt'), meanDist)
-    print('mean', np.mean(meanDist))
 
 ### Primary scripts ###
 def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
@@ -1529,7 +1559,8 @@ def plot_matrix_gif(arr, dir, ofile = None, title = None, vmin = 0, vmax = 1,
     for filename in set(filenames):
         os.remove(filename)
 
-def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None, dataset = None):
+def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None,
+                    dataset = None):
     if model is None:
         model, train_loss_arr, val_loss_arr = load_saved_model(opt, verbose = True)
 

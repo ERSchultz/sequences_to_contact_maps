@@ -27,6 +27,7 @@ __pycache__
 neural_net_utils/__pycache_
 
 # results
+results/**
 results/test/**
 !results/ContactGNNEnergy
 !results/ContactGNNEnergy/**

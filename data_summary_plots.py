@@ -412,12 +412,12 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
 if __name__ == '__main__':
     dir = '/project2/depablo/erschultz'
     dir = '/home/erschultz/sequences_to_contact_maps'
-    dir = '/home/erschultz'
+    # dir = '/home/erschultz'
 
-    dataset = 'dataset_test'
+    dataset = 'dataset_soren'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = False, plot_energy = False, plot_x = True,
-                    sampleID = [1, 2, 3])
+    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
+                    sampleID = [1])
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)
