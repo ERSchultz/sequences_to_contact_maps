@@ -7,7 +7,8 @@ import numpy as np
 import pandas as pd
 from utils.dataset_classes import make_dataset
 from utils.InteractionConverter import InteractionConverter
-from utils.load_utils import load_all, load_X_psi, load_Y
+from utils.knightRuiz import knightRuiz
+from utils.load_utils import load_all, load_contact_map, load_X_psi, load_Y
 from utils.plotting_utils import (plot_diag_chi, plot_matrix,
                                   plot_mean_vs_genomic_distance,
                                   plot_seq_binary, plot_seq_exclusive)
@@ -103,7 +104,8 @@ def getFrequencies(dataFolder, preprocessing, m, k, chi = None, save = True):
         np.save(freq_path, freq_arr)
     return freq_arr
 
-def plotFrequenciesForSample(freq_arr, dataFolder, preprocessing, k, sampleid, split = 'type', xmax = None, log = False):
+def plotFrequenciesForSample(freq_arr, dataFolder, preprocessing, k, sampleid,
+                            split = 'type', xmax = None, log = False):
     """
     Plotting function for frequency distributions corresponding to only one sample.
 
@@ -271,7 +273,8 @@ def freqSampleDistributionPlots(dataFolder, sample_id, m = 1024, k = None, split
             plotFrequenciesForSample(freq_arr, dataFolder, preprocessing, k, sampleid = sample_id, split = split)
 
 ### Plotting contact frequency as function of genomic distance
-def plot_genomic_distance_statistics_inner(datafolder, ifile, ofile, title,  mode = 'freq', stat = 'mean'):
+def plot_genomic_distance_statistics_inner(datafolder, ifile, ofile, title,
+                                            mode = 'freq', stat = 'mean'):
     """
     Function to plot expected interaction frequency as a function of genomic distance for all samples in dataFolder.
 
@@ -364,13 +367,21 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
             title = f'# contacts: {contacts}, sparsity: {sparsity}%'
             plot_matrix(y, osp.join(path, 'y.png'), vmax = 'mean', title = title)
             np.savetxt(osp.join(path, 'y.txt'), y)
-            # plot_matrix(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
-            # y_log = np.log(y + 1e-8)
-            # plot_matrix(y_log, osp.join(path, 'y_log.png'), title = 'log normalization', vmax = 'max')
 
-            if config is not None:
-                plot_mean_vs_genomic_distance(y, path, 'meanDist_step.png', config = config)
-            plot_mean_vs_genomic_distance(y, path, 'meanDist.png')
+            y_kr = knightRuiz(y)
+            np.save(osp.join(path, 'y_kr.npy'), y_kr)
+            plot_matrix(y_kr, osp.join(path, 'y_kr.png'), title = 'kr normalization', vmax = 'mean')
+
+
+            plot_matrix(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
+
+            y_log = np.log(y + 1e-8)
+            plot_matrix(y_log, osp.join(path, 'y_log.png'), title = 'log normalization', vmax = 'max')
+
+            meanDist = plot_mean_vs_genomic_distance(y, path, 'meanDist.png', config = config)
+            np.savetxt(osp.join(path, 'meanDist.txt'), meanDist)
+            plot_mean_vs_genomic_distance(y_kr, path, 'meanDist_kr.png', ref = meanDist, ref_label = 'not KR')
+            plot_mean_vs_genomic_distance(y, path, 'meanDist_log.png', logx = True, config = config)
 
             y_prcnt_path = osp.join(path, 'y_prcnt.npy')
             if osp.exists(y_prcnt_path):
@@ -387,7 +398,9 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
             if plot_chi:
                 plot_matrix(chi, osp.join(path, 'chi.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
 
-        plot_diag_chi(config, path)
+        # plot diag chi
+        diag_chis_continuous_file = osp.join(path, 'diag_chis_continuous.npy')
+        plot_diag_chi(config, path, ref = diag_chis_continuous_file, ref_label = 'continuous')
 
         if plot_energy:
             if s is not None:
@@ -414,10 +427,10 @@ if __name__ == '__main__':
     dir = '/home/erschultz/sequences_to_contact_maps'
     # dir = '/home/erschultz'
 
-    dataset = 'dataset_soren'
+    dataset = 'single_cell_nagano_imputed'
     data_dir = osp.join(dir, dataset)
     basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                    sampleID = [1])
+                    sampleID = None)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

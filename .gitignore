@@ -36,3 +36,4 @@ results/*/*combined
 # chip_seq
 chip_seq_data/*
 !chip_seq_data/*.py
+!chip_seq_data/*.txt

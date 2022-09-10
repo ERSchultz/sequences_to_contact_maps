@@ -7,25 +7,24 @@ import sys
 import time
 from shutil import copyfile, move, rmtree
 
+import cooler
 import dmaps  # https://github.com/ERSchultz/dmaps
 import hicrep
-import hicrep.utils
 import imageio.v2 as imageio
 import matplotlib.cm
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage import gaussian_filter
-from scipy.sparse.csgraph import laplacian
 from sklearn.cluster import KMeans
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import pairwise_distances, silhouette_score
-from sklearn.metrics.pairwise import cosine_distances, euclidean_distances
+from sklearn.metrics.pairwise import euclidean_distances
 from utils.argparse_utils import ArgparserConverter
 from utils.load_utils import load_contact_map, save_sc_contacts
 from utils.plotting_utils import plot_matrix
 from utils.similarity_measures import SCC, InnerProduct
-from utils.utils import (DiagonalPreprocessing, pearson_round, print_size,
-                         print_time, triu_to_full)
+from utils.utils import (DiagonalPreprocessing, pearson_round, print_time,
+                         triu_to_full)
 from utils.xyz_utils import lammps_load, xyz_load, xyz_to_contact_grid
 
 ## mm9 chromosomes
@@ -111,9 +110,11 @@ def getArgs(default_dir='/home/erschultz/dataset_test_sc_traj/samples/combined')
     return args
 
 class Updater():
-    def __init__(self, k, log_file = sys.stdout):
+    def __init__(self, k, log_file = sys.stdout, file_type = 'npy'):
         self.k = k
         self.log_file = log_file
+        self.file_type = file_type
+        self.files = None # must be updated manually TODO
 
     def update_eig_chunk(self, vi, dir, odir):
         '''
@@ -192,7 +193,7 @@ class Updater():
 
         return sc_contacts
 
-    def update_kNN_chunk(self, v, dir, odir):
+    def update_kNN_chunk(self, v, odir):
         '''
         Update sc contact maps based on kNN in eigenspace v.
 
@@ -208,15 +209,28 @@ class Updater():
         D = euclidean_distances(v, v)
 
         # merge adjacent contacts
-        for i in range(N):
-            y_list = []
+        for i, file in enumerate(self.files):
+
             nn = np.argpartition(D[i], self.k+1)[:self.k+1] # include self + kNN
+            y_list = []
             for j in nn:
-                y_list.append(np.load(osp.join(dir, f'y_sc_{j}.npy')))
+                if self.file_type == 'npy':
+                    y_list.append(np.load(self.files[j]))
+                elif self.file_type == 'cool':
+                    y_list.append(self.files[j])
+                elif self.file_type == 'mcool':
+                    y_list.append(self.files[j]+'::resolutions/50000')
 
             # calculate average
-            y_new = np.mean(y_list, axis = 0)
-            np.save(osp.join(odir, f'y_sc_{i}.npy'), y_new)
+            ofile = osp.join(odir, osp.split(file)[1])
+            if self.file_type == 'npy':
+                y_new = np.mean(y_list, axis = 0)
+                np.save(ofile, y_new)
+            elif self.file_type == 'cool' :
+                cooler.merge_coolers(ofile, y_list, 10000)
+            elif self.file_type == 'mcool':
+                temp = ofile.split('.')[0]+'.cool'
+                cooler.merge_coolers(temp, y_list, 10000)
 
         tf = time.time()
         print_time(t0, tf, 'update', file = self.log_file)
@@ -344,12 +358,19 @@ def plot_eigenvectors(v, xyz, data_dir, odir, files = None):
         read_count_dict = json.load(f)
 
     read_count_list = []
+    # min_read_count_list = []
     for file in files:
         dir = ifile_dict[osp.split(file)[1]]
-        read_count = read_count_dict[dir]
+        chrom_dict = read_count_dict[dir]
+        read_count = chrom_dict['total']
         read_count_list.append(read_count)
 
+        # min_read_count = np.min(list(chrom_dict.values()))
+        # min_read_count_list.append(min_read_count)
+
     plot_eigenvectors_inner(v, odir, 'read_count', read_count_list)
+
+    # plot_eigenvectors_inner(v, odir, 'min_read_count', min_read_count_list)
 
     if xyz is not None:
         _, _, d = xyz.shape
@@ -368,6 +389,7 @@ def plot_eigenvectors(v, xyz, data_dir, odir, files = None):
             plot_eigenvectors_inner(v, odir, 'ground_truth', xyz[:, 0, 3])
 
 def plot_contacts(dir, order, args):
+    input_file_type = args.input_file_type
     for order, folder in zip([range(args.N), order], ['sc_contacts_time', 'sc_contacts_traj']):
         if order is None:
             continue
@@ -381,17 +403,27 @@ def plot_contacts(dir, order, args):
         for i, file_i in enumerate(order):
             if i % (args.N // 10) == 0:
                 y = None
-                ifile = osp.join(dir, f'y_sc_{file_i}.{args.input_file_type}')
-                if not osp.exists(ifile):
+                ifile = osp.join(dir, f'y_sc_{file_i}.{input_file_type}')
+                file_found = False
+                if osp.exists(ifile):
+                    file_found = True
+                elif input_file_type == 'mcool':
+                    # look for cool`
+                    ifile = osp.join(dir, f'y_sc_{file_i}.cool')
+                    if osp.exists(ifile):
+                        file_found = True
+                        input_file_type = 'cool'
+
+                if not file_found:
                     continue
 
-                if args.input_file_type == 'mcool' :
-                    clr, _ = hicrep.utils.readMcool(ifile, args.resolution)
+                if input_file_type == 'mcool' :
+                    clr, _ = hicrep.utils.readMcool(ifile, 50000)
                     y = clr.matrix(balance=False).fetch(f'{args.chroms[0]}')
-                elif args.input_file_type == 'cool':
+                elif input_file_type == 'cool':
                     clr, _ = hicrep.utils.readMcool(ifile, -1)
                     y = clr.matrix(balance=False).fetch(f'{args.chroms[0]}')
-                elif args.input_file_type == 'npy':
+                elif input_file_type == 'npy':
                     y = np.load(ifile)
                     if len(y.shape) == 1:
                         y = triu_to_full(y, args.m)
@@ -403,9 +435,9 @@ def plot_contacts(dir, order, args):
                 ofile = osp.join(odir, f'y_sc_{i}.png')
                 filenames.append(ofile)
                 if args.jobs > 1:
-                    mapping.append((y, ofile, title, 0, 'abs_max'))
+                    mapping.append((y, ofile, title, 0, 'mean'))
                 else:
-                    plot_matrix(y, ofile, title, vmax = 'abs_max')
+                    plot_matrix(y, ofile, title, vmax = 'mean')
 
         if args.jobs > 1:
             with multiprocessing.Pool(args.jobs) as p:
@@ -557,7 +589,7 @@ class PreProcessing():
                 np.save(ofile, y)
         else:
             id = osp.split(osp.split(ifile)[0])[1]
-            read_count = self.read_count_dict[id]
+            read_count = self.read_count_dict[id]['total']
             if read_count > 5000:
                 copyfile(ifile, ofile)
 
@@ -693,8 +725,6 @@ class Diffusion():
 
         return D
 
-
-
     def pairwise_distances_chunk(self, input_dir, metric):
         scc = SCC()
         D = np.zeros((self.N, self.N))
@@ -820,7 +850,7 @@ class Diffusion():
 
     def contact_diffusion(self):
         order = None
-        updater = Updater(self.k, self.log_file)
+        updater = Updater(self.k, self.log_file, self.input_file_type)
         for it in range(self.its+1):
             self.odir_i = osp.join(self.scratch_dir, f'iteration_{it}')
             odir_prev = osp.join(self.scratch_dir, f'iteration_{it-1}')
@@ -832,6 +862,7 @@ class Diffusion():
                 PP = PreProcessing(self)
                 PP.process(self.jobs, self.log_file)
                 self.files = [osp.join(PP.odir, f) for f in sorted(os.listdir(PP.odir)) if f.endswith(self.input_file_type)]
+                updater.files = self.files
                 self.N = len(self.files) # update in case PreProcessing filtered some files
             else:
                 # diag processing
@@ -856,16 +887,11 @@ class Diffusion():
                     plot_eigenvectors(v, self.xyz, self.dir, self.odir_i, self.files)
 
                 # update
-                if it == self.its:
-                    # skip update on last iteration
-                    continue
                 if self.update_mode == 'eig':
                     sc_contacts = updater.update_eig_chunk(v[:, 1],
-                                            osp.join(odir_prev, 'sc_contacts'),
                                             self.odir_i)
                 elif self.update_mode == 'knn':
                     sc_contacts = updater.update_kNN_chunk(v[:,1:4],
-                                            osp.join(odir_prev, 'sc_contacts'),
                                             self.odir_i)
                 # TODO update self.files after update
 

@@ -2,15 +2,15 @@
 
 odir="/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017"
 dir="${odir}/samples"
-k=3
+k=8
 experimental='true'
-jobs=15
+jobs=14
 metric='scc'
 its=1
-downSampling=10
+downSampling=1
 plot='true'
 preprocessingMode='sparsity_filter'
-inputFileType='cool'
+inputFileType='mcool'
 chroms='all'
 resolution=500000
 

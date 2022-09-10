@@ -94,7 +94,7 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    opt.data_folder = "/home/erschultz/dataset_test_diag1024"
+    opt.data_folder = "/home/erschultz/dataset_test_bond_length_max_diag"
     opt.scratch = '/home/erschultz/scratch'
 
     # architecture
@@ -204,14 +204,14 @@ def debugModel(model_type):
         opt.use_bias = True
         opt.num_heads = 2
     elif model_type == 'MLP':
-        opt.preprocessing_norm='instance'
+        opt.preprocessing_norm='max'
         opt.random_split=True
-        opt.hidden_sizes_list=AC.str2list('1000-'*6 + '20')
+        opt.hidden_sizes_list=AC.str2list('1000-'*6 + '33')
         opt.act='prelu'
         opt.out_act='prelu'
-        opt.output_mode='diag_chi'
-        opt.log_preprocessing='ln'
-        opt.y_zero_diag_count=4
+        opt.output_mode='diag_chi_bond_length'
+        opt.log_preprocessing=None
+        opt.y_zero_diag_count=0
         # opt.training_norm='batch'
         opt.dropout=False
         opt.dropout_p=0.1
@@ -219,10 +219,10 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 80
+    opt.n_epochs = 50
     opt.lr = 1e-3
     opt.batch_size = 10
-    opt.milestones = [20, 50]
+    opt.milestones = [20, 40]
     opt.gamma = 0.1
 
     # other
@@ -640,77 +640,6 @@ def tar_samples():
                                     tar.add(inner_file)
                         rmtree(file_path)
 
-def main():
-    # how to convert cooler to dense
-    chrom = '10'
-    resolution = 50000
-    ubr = 500000
-    h = 2
-    K = int(ubr/resolution)+1
-    times = 30
-
-    dir1 = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017/samples/1CDS2.1'
-    ifile = osp.join(dir1, 'adj.mcool')
-    c1, binsize = hicrep.utils.readMcool(ifile, resolution)
-
-    y1 = c1.matrix(balance=False).fetch(chrom)
-    np.savetxt(osp.join(dir1, f'chrom{chrom}.txt'), y1)
-    y1path = osp.join(dir1, f'chrom{chrom}.npy')
-    np.save(y1path, y1[np.triu_indices(len(y1))])
-    print(y1.shape)
-
-    dir2 = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017/samples/1CDS2.2'
-    ifile = osp.join(dir2, 'adj.mcool')
-    c2, binsize = hicrep.utils.readMcool(ifile, resolution)
-
-    y2 = c2.matrix(balance=False).fetch(chrom)
-    np.savetxt(osp.join(dir2, f'chrom{chrom}.txt'), y2)
-    y2path = osp.join(dir2, f'chrom{chrom}.npy')
-    np.save(y2path, y2[np.triu_indices(len(y2))])
-
-
-    t0 = time.time()
-    for _ in range(times):
-        val = hicrep.hicrepSCC(c1, c2, h, ubr, False,
-                                [chrom])
-
-    tf = time.time()
-    # print(val)
-    print_time(t0, tf, 'hicrepscc')
-    print()
-
-    t0 = time.time()
-    scc = SCC()
-    for _ in range(times):
-        val1, p, w = scc.scc(y1, y2, h, K, True, verbose = True)
-    tf = time.time()
-    # print(val1)
-    # print(p, p.shape,  w, w.shape)
-    print_time(t0, tf, 'scc')
-
-    t0 = time.time()
-    scc = SCC()
-    for _ in range(times):
-        val2, p, w = scc.scc_file(y1path, y2path, h, K, True, verbose = True)
-    tf = time.time()
-    # print(val2)
-    # print(p, p.shape,  w, w.shape)
-    print_time(t0, tf, 'scc_file')
-
-
-    t0 = time.time()
-    scc = SCC()
-    mapping = []
-    for _ in range(times):
-        mapping.append((y1path, y2path, h, K, True))
-    with multiprocessing.Pool(15) as p:
-        result = p.starmap(scc.scc_file, mapping)
-    print(result)
-    tf = time.time()
-    print_time(t0, tf, 'scc_file_parallel')
-
-    assert val1 == val2
-    print(val1)
 
 def main2():
     # scc comparison
@@ -789,12 +718,84 @@ def prep_data_for_cluster():
             ofile = osp.join(odir, id, 'adj_500000.cool')
             copyfile(ifile, ofile)
 
+def test_merge_cool():
+    chrom=10
+    res=500000
+    dir = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017/samples'
+    folders = [osp.join(dir, f) for f in os.listdir(dir)]
+    folders = [f for f in folders if osp.isdir(f)]
+
+    a = osp.join(folders[0], 'adj.mcool')
+    clr_a, _ = hicrep.utils.readMcool(a, res)
+    y_a = clr_a.matrix(balance=False).fetch(f'{chrom}')
+
+    b = osp.join(folders[1], 'adj.mcool')
+    clr_b, _ = hicrep.utils.readMcool(b, res)
+    y_b = clr_b.matrix(balance=False).fetch(f'{chrom}')
+
+    c = osp.join(dir, 'test.cool')
+    loc = [i+f'::resolutions/{res}' for i in [a, b]]
+    print(loc)
+    # loc = [a,b]
+    cooler.merge_coolers(c, loc, 10000)
+
+    clr_c, _ = hicrep.utils.readMcool(c, -1)
+    y_c = clr_c.matrix(balance=False).fetch(f'{chrom}')
+
+    d = osp.join(dir, 'test.mcool')
+    cooler.zoomify_cooler(c, d, [res], 10000)
+
+    clr_d, _ = hicrep.utils.readMcool(d, res)
+    y_d = clr_d.matrix(balance=False).fetch(f'{chrom}')
+
+    print(y_a)
+    print(y_b)
+    print(y_c)
+    print(y_d)
+
+def main3():
+    # is there a curve in training that matches experimental curve well?
+    dir = '/home/erschultz/sequences_to_contact_maps/'
+    data_dir = osp.join(dir, 'single_cell_nagano_imputed/samples/sample443')
+    file = osp.join(data_dir, 'y.npy')
+    y_exp = np.load(file)[:1024, :1024]
+    meanDist_ref = DiagonalPreprocessing.genomic_distance_statistics(y_exp, 'prob')
+    meanDist_ref_filt = meanDist_ref.copy()
+    meanDist_ref_filt[50:] = uniform_filter(meanDist_ref_filt[50:], 3, mode = 'constant')
+    plt.plot(meanDist_ref)
+    plt.plot(meanDist_ref_filt, label = 'filter')
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.legend()
+    plt.show()
+
+    dir = '/home/erschultz/dataset_test_log'
+    # sort samples
+    min_MSE = 1000
+    best_sample = None
+    for sample in range(4000):
+        file = osp.join(dir, f'samples/sample{sample}', 'y.npy')
+        if osp.exists(file):
+            y = np.load(file)
+            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
+            # meanDist = np.log(meanDist)
+            mse = mean_squared_error(meanDist, meanDist_ref)
+            if mse < min_MSE:
+                min_MSE = mse
+                best_sample = sample
+                print(sample, mse)
+
+    print(best_sample)
+
+
+
 
 
 if __name__ == '__main__':
-    # main()
+    main3()
+    # test_merge_cool()
     # test_parallel()
-    prep_data_for_cluster()
+    # prep_data_for_cluster()
     # tar_samples()
     # binom()
     # edit_argparse()

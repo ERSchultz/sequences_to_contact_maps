@@ -45,10 +45,15 @@ def load_X_psi(sample_folder, throw_exception = True, verbose = False):
 def load_Y(sample_folder, throw_exception = True):
     y_file = osp.join(sample_folder, 'y.npy')
     y_file2 = osp.join(sample_folder, 'data_out/contacts.txt')
+    y_file3 = osp.join(sample_folder, 'y.cool')
     if osp.exists(y_file):
         y = np.load(y_file)
     elif osp.exists(y_file2):
         y = np.loadtxt(y_file2)
+        np.save(y_file, y) # save in proper place
+    elif osp.exists(y_file3):
+        clr, binsize = hicrep.utils.readMcool(y_file3, -1)
+        y = clr.matrix(balance=False).fetch('10')
         np.save(y_file, y) # save in proper place
     elif throw_exception:
         raise Exception(f'y not found for {sample_folder}')

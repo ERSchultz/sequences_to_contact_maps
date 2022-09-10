@@ -186,30 +186,36 @@ def read_count(dir):
     samples = [osp.join(dir, 'samples', f) for f in os.listdir(osp.join(dir, 'samples'))]
     samples = [f for f in samples if osp.isdir(f)]
 
-    # read_count_dict = {}
+    # read_count_dict = {} # sample id : chrom_read_count_dict
     # for f in samples:
+    #     chrom_read_count_dict = {} # chrom : read count
     #     clr, _ = hicrep.utils.readMcool(osp.join(f, 'adj.mcool'), 2500000)
-    #     y_list = []
+    #     tot_read_count = 0
     #     for chrom in clr.chromnames:
-    #         y_list.append(clr.matrix(balance=False).fetch(f'{chrom}'))
-    #     read_count = 0
-    #     for y in y_list:
-    #         read_count += np.sum(np.triu(y))
-    #     read_count_dict[osp.split(f)[1]] = int(read_count)
+    #         y = clr.matrix(balance=False).fetch(f'{chrom}')
+    #         read_count = int(np.sum(np.triu(y, 1)))
+    #         tot_read_count += read_count
+    #         chrom_read_count_dict[chrom] = read_count
+    #     chrom_read_count_dict['total'] = tot_read_count
+    #     read_count_dict[osp.split(f)[1]] = chrom_read_count_dict
     #
-    #     with open(osp.join(f, 'read_count.txt'), 'w') as f:
-    #         f.write(str(read_count))
+    #     with open(osp.join(f, 'read_count.json'), 'w') as f:
+    #         json.dump(chrom_read_count_dict, f, indent = 2)
     #
     # with open(osp.join(dir, 'samples/read_count_dict.json'), 'w') as f:
     #     json.dump(read_count_dict, f, indent = 2)
 
-
     with open(osp.join(dir, 'samples/read_count_dict.json'), 'r') as f:
         read_count_dict = json.load(f)
 
-    values = list(read_count_dict.values())
+    values = []
+    for id, chrom_read_count_dict in read_count_dict.items():
+        read_count = chrom_read_count_dict['total']
+        if read_count > 0:
+            values.append(read_count)
     min_val = np.min(values)
     max_val = np.max(values)
+    print(min_val, max_val)
     plt.hist(values, bins = np.logspace(np.log10(min_val), np.log10(max_val), 30))
     plt.xscale('log')
     plt.show()
@@ -262,9 +268,9 @@ def main():
     dir = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017'
     # adj_to_pre(dir)
     # pre_to_hic(dir)
-    hic_to_cool(dir, 500000)
+    # hic_to_cool(dir, 500000)
     # cell_cycle_phasing(dir)
-    # read_count(dir)
+    read_count(dir)
     # timer(dir)
 
 def timer(dir):

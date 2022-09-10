@@ -10,9 +10,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from utils.argparse_utils import (argparse_setup, finalize_opt,
                                   get_base_parser, get_opt_header, opt2list)
-from utils.plotting_utils import (plot_centroid_distance, plot_combined_models,
-                                  plot_diag_chi, plot_sc_contact_maps,
-                                  plot_xyz_gif, plotting_script)
+from utils.load_utils import load_contact_map
+from utils.plotting_utils import (get_diag_chi_step, plot_centroid_distance,
+                                  plot_combined_models, plot_diag_chi,
+                                  plot_sc_contact_maps, plot_xyz_gif,
+                                  plotting_script)
 from utils.utils import DiagonalPreprocessing
 from utils.xyz_utils import xyz_load, xyz_write
 
@@ -179,94 +181,141 @@ def plot_diag_vs_diag_chi():
     plt.savefig(osp.join(osp.split(dir)[0], 'chi_diag.png'))
     plt.close()
 
-def plot_mean_vs_genomic_distance_comparison(dir, samples, percent = False):
-    # normalize_dict = {}
-    # normalize_dict[512] = np.loadtxt(osp.join(dir, 'samples/sample203/meanDist.txt'))
-    # normalize_dict[1024] = np.loadtxt(osp.join(dir, 'samples/sample204/meanDist.txt'))
-    # normalize_dict[2048] = np.loadtxt(osp.join(dir, 'samples/sample205/meanDist.txt'))
-
+def plot_mean_vs_genomic_distance_comparison(dir, samples = None, percent = False,
+                                        ref_file = None, norm = False, logx = True,
+                                        label = 'sample', params = True,
+                                        zero_diag = False,
+                                        zero_diag_offset = 1):
     cmap = matplotlib.cm.get_cmap('tab10')
+
+    if samples is None:
+        samples = range(4000)
+        ofile = osp.join(dir, f'meanDist_{label}.png')
+    else:
+        ofile = osp.join(dir, f'meanDist_{samples}_{label}.png')
 
     # sort samples
     samples_arr = []
-    m_arr = []
     for sample in samples:
-        y = np.load(osp.join(dir, f'samples/sample{sample}', 'y.npy'))
-        m = len(y)
-        samples_arr.append(sample)
-        m_arr.append(m)
-    samples_sort = [samples_arr for _, samples_arr in sorted(zip(m_arr, samples_arr), reverse = True)]
-
-    # get param type
-    val = None
-    with open(osp.join(dir, f'samples/sample{samples_sort[0]}', 'params.log'), 'r') as f:
-        line = f.readline()
-        while line != '':
-            line = f.readline()
-            if line.startswith('Diag chi args:'):
-                line = f.readline().split(', ')
-                for arg in line:
-                    if arg.startswith('diag_chi_method'):
-                        val = arg.split('=')[1]
-
+        file = osp.join(dir, f'samples/sample{sample}', 'y.npy')
+        if osp.exists(file):
+            y = np.load(file)
+            samples_arr.append(sample)
+    samples_sort = [samples_arr for samples_arr in sorted(samples_arr, reverse = True)]
 
     fig, ax = plt.subplots()
     ax2 = ax.twinx()
-    first = True
-    for sample in samples_sort:
+
+    # process ref_file
+    if ref_file is not None and osp.exists(ref_file):
+        y = load_contact_map(ref_file, chrom = 15)
+        meanDist_ref = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob',
+                                        zero_diag = zero_diag,
+                                        zero_offset = zero_diag_offset)
+        print(meanDist_ref)
+        if norm:
+            meanDist_ref /= np.max(meanDist_ref)
+        ax.plot(meanDist_ref, label = 'ref', color = 'k')
+
+    for i, sample in enumerate(samples_sort):
         sample_dir = osp.join(dir, f'samples/sample{sample}')
         y = np.load(osp.join(sample_dir, 'y.npy'))
         m = len(y)
-        print(sample, m)
+        print(f'sample {sample}, m {m}')
 
-        with open(osp.join(sample_dir, 'config.json'), 'r') as f:
-            config = json.load(f)
-            if config['dense_diagonal_on']:
-                n_small_bins = config['n_small_bins']
-                small_binsize = config['small_binsize']
-                big_binsize = config['big_binsize']
-                dividing_line = n_small_bins * small_binsize
+        config_file = osp.join(sample_dir, 'config.json')
+        config = None
+        if osp.exists(config_file):
+            with open(config_file, 'r') as f:
+                config = json.load(f)
+                phi = config['phi_chromatin']
+                bond_length = config['bond_length']
+
+        # get param args
+        method = None
+        slope = None
+        scale = None
+        constant = None
+        file = osp.join(dir, f'samples/sample{sample}', 'params.log')
+        if osp.exists(file):
+            with open(file, 'r') as f:
+                line = f.readline()
+                while line != '':
+                    line = f.readline()
+                    if line.startswith('Diag chi args:'):
+                        line = f.readline().split(', ')
+                        for arg in line:
+                            if arg.startswith('diag_chi_method'):
+                                method = arg.split('=')[1]
+                            elif arg.startswith('diag_chi_slope'):
+                                slope = float(arg.split('=')[1])
+                            elif arg.startswith('diag_chi_scale'):
+                                scale = float(arg.split('=')[1])
+                            elif arg.startswith('diag_chi_constant'):
+                                constant = float(arg.split('=')[1])
 
         meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob',
-                                                zero_diag = False, zero_offset = 0)
+                                        zero_diag = zero_diag,
+                                        zero_offset = zero_diag_offset)
+        print('meanDist', meanDist)
 
-        # meanDist *= (1/np.max(meanDist))
+        if norm:
+            meanDist /= np.max(meanDist)
         # print(meanDist)
-        ind = int(np.log2(m))
-        ax.plot(np.arange(0, len(meanDist)), meanDist, label = m, color = cmap(ind % cmap.N))
+        ind = None
 
-        diag_chis_file = osp.join(dir, f'samples/sample{sample}', 'diag_chis.npy')
-        if osp.exists(diag_chis_file):
-            diag_chis = np.load(diag_chis_file)
+        if label == 'm':
+            fig_label = m
+            ind = int(np.log2(m))
+        elif label == 'chi':
+            fig_label = None
+            ind = i
+        elif label == 'bond_length':
+            fig_label = bond_length
+            ind = i
+        elif label == 'phi_chromatin':
+            fig_label = phi
+            ind = i
+        elif label == 'sample':
+            fig_label = sample
+        elif label == 'scale':
+            fig_label = scale
+            ind = int(scale)
+        elif label == 'slope':
+            fig_label = slope
+            ind = int(np.log2(slope))
+        elif label == 'constant':
+            fig_label = constant
+            ind = int((constant + 15) / 5)
+            print(ind)
+        else:
+            fig_label = None
+        if ind is not None:
+            ax.plot(np.arange(0, len(meanDist)), meanDist, label = fig_label, color = cmap(ind % cmap.N))
+        else:
+            ax.plot(np.arange(0, len(meanDist)), meanDist, label = fig_label)
 
+
+        if params and config is not None:
             # find chi transition points
-            diag_chi_step = np.zeros(m)
-            for d in range(m):
-                if config['dense_diagonal_on']:
-                    dividing_line = n_small_bins * small_binsize
+            diag_chi_step = get_diag_chi_step(config)
 
-                    if d > dividing_line:
-                        bin = n_small_bins + math.floor( (d - dividing_line) / big_binsize)
-                    else:
-                        bin =  math.floor( d / small_binsize)
-                else:
-                    binsize = m / len(diag_chis)
-                    bin = int(d / binsize)
-
-                diag_chi_step[d] = diag_chis[bin]
-
-            ax2.plot(diag_chi_step, ls='--', color = cmap(ind % cmap.N))
+            if ind is not None:
+                ax2.plot(diag_chi_step, ls='--', color = cmap(ind % cmap.N))
+            else:
+                ax2.plot(diag_chi_step, ls='--')
             ax2.set_ylabel('Diagonal Parameter', fontsize = 16)
 
 
     ax.set_yscale('log')
-    ax.set_xscale('log')
+    if logx:
+        ax.set_xscale('log')
     ax.set_ylabel('Contact Probability', fontsize = 16)
     ax.set_xlabel('Polymer Distance', fontsize = 16)
-    ax.legend(loc='upper right', title='Beads')
-    plt.title(val)
+    ax.legend(loc='upper right', title=label)
+    plt.title(method)
     plt.tight_layout()
-    plt.savefig(osp.join(dir, f'meanDist_{samples}.png'))
+    plt.savefig(ofile)
     plt.close()
 
     print('\n')
@@ -274,7 +323,6 @@ def plot_mean_vs_genomic_distance_comparison(dir, samples, percent = False):
     if percent:
         fig, ax = plt.subplots()
         ax2 = ax.twinx()
-        first = True
         for sample in samples_sort:
             y = np.load(osp.join(dir, f'samples/sample{sample}', 'y.npy'))
             m = len(y)
@@ -282,7 +330,8 @@ def plot_mean_vs_genomic_distance_comparison(dir, samples, percent = False):
             meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob',
                                                     zero_diag = False, zero_offset = 0)
                                                     # [:int(0.25*m)]
-            # meanDist *= (1/np.max(meanDist))
+            if norm:
+                meanDist *= (1/np.max(meanDist))
             ind = int(np.log2(m))
             ax.plot(np.linspace(0, 1, len(meanDist)), meanDist, label = m, color = cmap(ind % cmap.N))
 
@@ -296,17 +345,17 @@ def plot_mean_vs_genomic_distance_comparison(dir, samples, percent = False):
 
 
         ax.set_yscale('log')
-        ax.set_xscale('log')
+        if logx:
+            ax.set_xscale('log')
         ax.set_ylabel('Contact Probability', fontsize = 16)
         ax.set_xlabel('Polymer Distance (%)', fontsize = 16)
         ax.legend(loc='upper right', title='Beads')
-        plt.title(val)
+        plt.title(method)
         plt.tight_layout()
         plt.savefig(osp.join(dir, f'meanDist_{samples}_%.png'))
         plt.close()
 
         print('\n')
-
 
 def main():
     opt = argparse_setup()
@@ -323,11 +372,20 @@ if __name__ == '__main__':
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
     # update_result_tables('ContactGNNEnergy', None, 'energy')
-    plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag', [160, 161, 162, 163, 164])
-    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag', [230, 231, 232, 233, 234])
-    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag', [210, 211, 212, 213, 214])
-    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag', [220, 221, 222, 223, 224])
-    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag', [160, 161, 162, 163, 164])
+
+    dir = '/home/erschultz/sequences_to_contact_maps/'
+    data_dir = osp.join(dir, 'single_cell_nagano_imputed/samples/sample443')
+    file = osp.join(data_dir, 'y.npy')
+    # data_dir = osp.join(dir, 'dataset_soren/samples/sample1')
+    # file = osp.join(data_dir, 'y_kr.npy')
+    # data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample4')
+    # file = osp.join(data_dir, 'y.npy')
+    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
+    plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_log', [363, 875, 1308, 1883], ref_file = file)
+    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_soren', [11,12], ref_file = file)
+    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024', [201, 211, 221 ,231, 241], ref_file = file)
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
+    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
+    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/single_cell_nagano_imputed', [65, 84, 244, 390, 443])
     # plot_combined_models('test', [154, 159])
     # main()

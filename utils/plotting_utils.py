@@ -25,7 +25,8 @@ from .InteractionConverter import InteractionConverter
 from .load_utils import load_sc_contacts, load_X_psi
 from .neural_net_utils import get_data_loaders, get_dataset, load_saved_model
 from .utils import (DiagonalPreprocessing, calc_dist_strat_corr,
-                    calc_per_class_acc, compare_PCA, crop, triu_to_full)
+                    calc_per_class_acc, compare_PCA, crop, get_diag_chi_step,
+                    triu_to_full)
 from .xyz_utils import (find_dist_between_centroids, find_label_centroid,
                         xyz_load, xyz_to_contact_grid, xyz_write)
 
@@ -1297,50 +1298,6 @@ def plot_centroid_distance_sample(dir, sample):
     plt.close()
 
 #### Functions for plotting diag chis and contact probability curves ####
-def get_diag_chi_step(config):
-    m = config['nbeads']
-    diag_chi = config['diag_chis']
-    diag_bins = len(diag_chi)
-
-    if 'diag_start' in config.keys():
-        diag_start = config['diag_start']
-    else:
-        diag_start = 0
-
-    if 'diag_cutoff' in config.keys():
-        diag_cutoff = config['diag_cutoff']
-    else:
-        diag_cutoff = m
-
-    if 'dense_diagonal_on' in config.keys():
-        dense = config['dense_diagonal_on']
-    else:
-        dense = False
-
-    if dense:
-        n_small_bins = config['n_small_bins']
-        small_binsize = config['small_binsize']
-        big_binsize = config['big_binsize']
-
-    diag_chi_step = np.zeros(m)
-    for d in range(diag_cutoff):
-        if d < diag_start:
-            continue
-        d_eff = d - diag_start
-        if dense:
-            dividing_line = n_small_bins * small_binsize
-
-            if d_eff > dividing_line:
-                bin = n_small_bins + math.floor( (d_eff - dividing_line) / big_binsize)
-            else:
-                bin =  math.floor( d_eff / small_binsize)
-        else:
-            binsize = m / diag_bins
-            bin = int(d_eff / binsize)
-        diag_chi_step[d] = diag_chi[bin]
-
-    return diag_chi_step
-
 def plot_diag_chi(config, path, ref = None, ref_label = ''):
     '''
     config: config file
@@ -1351,37 +1308,30 @@ def plot_diag_chi(config, path, ref = None, ref_label = ''):
     if config is None:
         return
 
-    if 'dense_diagonal_on' in config.keys():
-        dense = config['dense_diagonal_on']
-    else:
-        dense = False
-
-    if not dense:
-        if 'diag_chi' in config.keys():
-            diag_chi = config['diag_chis']
-        else:
-            return
-        plt.plot(diag_chi)
-        plt.xlabel('Bin', fontsize = 16)
-        plt.ylabel('Diagonal Parameter', fontsize = 16)
-        plt.savefig(osp.join(path, 'chi_diag.png'))
-        plt.close()
-
     diag_chis_step = get_diag_chi_step(config)
-
     plt.plot(diag_chis_step, color = 'k')
     plt.xlabel('Polymer Distance', fontsize = 16)
     plt.ylabel('Diagonal Parameter', fontsize = 16)
     if ref is not None:
+        if isinstance(ref, np.ndarray):
+            pass
+        elif osp.exists(ref):
+            ref = np.load(ref)
         plt.plot(ref, color = 'k', ls = '--', label = ref_label)
-    if ref_label != '':
-        plt.legend()
-    plt.savefig(osp.join(path, 'chi_diag_step.png'))
+        if ref_label != '':
+            plt.legend()
+
+    ofile = osp.join(path, 'chi_diag_step.png')
+    print(ofile)
+    plt.savefig(ofile)
     plt.close()
 
 def plot_mean_vs_genomic_distance(y, path, ofile, diag_chis_step = None,
-                                config = None, logx = False):
+                                config = None, logx = False, ref = None,
+                                ref_label = 'reference'):
     '''
+    Wrapper for plot_mean_dist that takes contact map as input.
+
     Inputs:
         y: contact map
         path: save path
@@ -1395,12 +1345,12 @@ def plot_mean_vs_genomic_distance(y, path, ofile, diag_chis_step = None,
     if config is not None:
         diag_chis_step = get_diag_chi_step(config)
 
-    plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, None)
+    plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, ref, ref_label)
 
-    np.savetxt(osp.join(path, 'meanDist.txt'), meanDist)
-    print('mean', np.mean(meanDist))
+    return meanDist
 
-def plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, ref, norm = False):
+def plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, ref,
+                    ref_label = 'reference', norm = False):
     '''
     Inputs:
         meanDist: contact map
@@ -1421,7 +1371,7 @@ def plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, ref, norm = Fals
     ax2 = ax.twinx()
     ax.plot(meanDist)
     if ref is not None:
-        ax.plot(ref, label = 'reference')
+        ax.plot(ref, label = ref_label)
         ax.legend()
     ax.set_yscale('log')
     if logx:
@@ -1602,5 +1552,5 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None,
                 plotParticleDistribution(val_dataloader, model, opt, use_latent = True)
         elif opt.output_mode.startswith('energy'):
             plotEnergyPredictions(val_dataloader, model, opt)
-        elif opt.output_mode == 'diag_chi':
+        elif opt.output_mode.startswith('diag_chi'):
             plotDiagChiPredictions(val_dataloader, model, opt)
