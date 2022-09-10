@@ -542,8 +542,11 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
         elif (file == 's.npy' or file == 'e.npy') and output_mode.startswith('energy'):
             # only need s.npy if neural net output is energy
             move_file = True
-        elif file == 'config.json' and output_mode.startswith('diag_chi'):
+        elif file == 'config.json' and output_mode.startswith('diag'):
             # need to config to get diag_chi
+            move_file = True
+        elif file == 'params.log' and output_mode.startswith('diag_param'):
+            # need params log to get diag_chi params
             move_file = True
 
         if move_file:

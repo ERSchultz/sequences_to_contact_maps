@@ -12,7 +12,7 @@ cd ~/sequences_to_contact_maps
 
 source activate python3.9_pytorch1.9
 
-dirname="/home/erschultz/dataset_test_bond_length_max_diag"
+dirname="/home/erschultz/dataset_test_log"
 scratch="/home/erschultz/scratch"
 modelType='MLP'
 
@@ -20,20 +20,20 @@ modelType='MLP'
 preprocessingNorm='mean'
 logPreprocessing='none'
 yZeroDiagCount=0
-outputMode='diag_chi_bond_length'
+outputMode='diag_chi_step_bond_length'
 
 # architecture
 m=1024
-hiddenSizesList='1000-1000-1000-1000-1000-1000-33'
+hiddenSizesList='1000-1000-1000-1000-1000-1000-1025'
 act='prelu'
 outAct='prelu'
 
 # hyperparameters
-nEpochs=50
+nEpochs=80
 lr=1e-3
-batchSize=10
-numWorkers=4
-milestones='20-40'
+batchSize=32
+numWorkers=8
+milestones='50'
 gamma=0.1
 splitSizes='none'
 splitPercents='0.8-0.2-0'

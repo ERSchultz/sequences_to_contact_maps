@@ -1535,7 +1535,7 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None,
         elif opt.output_mode.startswith('energy'):
             pass
             # TODO
-        elif opt.output_mode.startswith('diag_chi'):
+        elif opt.output_mode.startswith('diag'):
             pass
             # TODO
         else:
@@ -1552,5 +1552,5 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None,
                 plotParticleDistribution(val_dataloader, model, opt, use_latent = True)
         elif opt.output_mode.startswith('energy'):
             plotEnergyPredictions(val_dataloader, model, opt)
-        elif opt.output_mode.startswith('diag_chi'):
+        elif opt.output_mode.startswith('diag'):
             plotDiagChiPredictions(val_dataloader, model, opt)

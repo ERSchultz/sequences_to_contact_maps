@@ -200,7 +200,6 @@ class DiagFunctions(Dataset):
     def __getitem__(self, index):
         if len(self.paths[index]) == 0:
             return
-        print(self.paths[index])
 
         # get meanDist
         meanDist_file = osp.join(self.paths[index], 'meanDist.npy')
@@ -245,7 +244,6 @@ class DiagFunctions(Dataset):
         if self.output_mode is not None:
             # load config
             config_file = osp.join(self.paths[index], 'config.json')
-            chi_diag = None
             if osp.exists(config_file):
                 with open(config_file, 'r') as f:
                     config = json.load(f)
@@ -255,18 +253,38 @@ class DiagFunctions(Dataset):
             # get diag chi
             if self.output_mode.startswith('diag_chi_step'):
                 chi_diag = get_diag_chi_step(config)
-            else:
+            elif self.output_mode.startswith('diag_chi'):
                 chi_diag = np.array(config["diag_chis"])
+            elif self.output_mode.startswith('diag_param'):
+                param_file = osp.join(self.paths[index], 'params.npy')
+                if osp.exists(param_file):
+                    chi_diag = np.load(param_file)
+                else:
+                    params_log_file = osp.join(self.paths[index], 'params.log')
+                    with open(params_log_file, 'r') as f:
+                        line = f.readline()
+                        while line != '':
+                            line = f.readline()
+                            if line.startswith('Diag chi args:'):
+                                line = f.readline().split(', ')
+                                for arg in line:
+                                    if arg.startswith('diag_chi_slope'):
+                                        slope = float(arg.split('=')[1])/1000
+                                    elif arg.startswith('diag_chi_scale'):
+                                        scale = float(arg.split('=')[1])
+                                    elif arg.startswith('diag_chi_constant'):
+                                        constant = float(arg.split('=')[1])
+                    chi_diag = np.array([scale, slope, constant])
+                    np.save(param_file, chi_diag)
 
             # get bond_length
             if 'bond_length' in self.output_mode:
                 bond_length = config['bond_length']
-                y_arr = np.append(chi_diag, bond_length)
-            else:
-                y_arr = chi_diag
+                chi_diag = np.append(chi_diag, bond_length)
 
-            Y = torch.tensor(y_arr, dtype = torch.float32)
-            result = result.append(Y)
+
+            Y = torch.tensor(chi_diag, dtype = torch.float32)
+            result.append(Y)
 
         if self.names:
             result.append(self.paths[index])
