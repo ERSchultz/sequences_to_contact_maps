@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 
-from .utils import DiagonalPreprocessing
+from .utils import DiagonalPreprocessing, get_diag_chi_step
 
 
 def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False,
@@ -174,6 +174,7 @@ class DiagFunctions(Dataset):
     and corresponding diagonal chi functions (y).
     '''
     def __init__(self, dirname, crop, norm, log, zero_diag_count,
+                    output_mode,
                     min_sample = 0, max_sample = float('inf'), names = False,
                     samples = None):
         '''
@@ -183,12 +184,14 @@ class DiagFunctions(Dataset):
             norm (str): type of normalization (only instance currently accepted)
             log (str): typue of log preprocessing (None to skip)
             zero_diag_count (int): number of diagonals to zero
+            output_mode (str): type of data to output
         '''
         super(DiagFunctions, self).__init__()
         self.crop = crop
-        assert norm is None or norm == 'instance', f'Unaccepted norm: {norm}'
+        assert norm is None or norm in {'max', 'mean'}, f'Unaccepted norm: {norm}'
         self.norm = norm
         self.log = log
+        self.output_mode = output_mode
         self.zero_diag_count = zero_diag_count
         self.names = names
         self.paths = sorted(make_dataset(dirname, minSample = min_sample,
@@ -197,6 +200,7 @@ class DiagFunctions(Dataset):
     def __getitem__(self, index):
         if len(self.paths[index]) == 0:
             return
+        print(self.paths[index])
 
         # get meanDist
         meanDist_file = osp.join(self.paths[index], 'meanDist.npy')
@@ -204,10 +208,14 @@ class DiagFunctions(Dataset):
             meanDist = np.load(meanDist_file)
         else:
             y = np.load(osp.join(self.paths[index], 'y.npy')).astype(np.float64)
+            if self.crop is not None:
+                y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
             if self.zero_diag_count > 0:
                 y = np.triu(y, self.zero_diag_count)
-            if self.norm == 'instance':
+            if self.norm == 'max':
                 y /= np.max(y)
+            elif self.norm == 'mean':
+                y /= np.mean(np.diagonal(y))
 
             if self.log is not None:
                 if self.log == 'ln':
@@ -224,23 +232,42 @@ class DiagFunctions(Dataset):
                     raise Exception(f'Unrecognized log transform: {self.log}')
 
             meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
-            np.save(meanDist_file, meanDist)
 
-        if self.crop is not None:
-            meanDist = meanDist[self.crop[0]:self.crop[1]]
-
-        # get chi_diag
-        config_file = osp.join(self.paths[index], 'config.json')
-        if osp.exists(config_file):
-            with open(config_file, 'r') as f:
-                config = json.load(f)
-                if "diag_chis" in config:
-                    chi_diag = np.array(config["diag_chis"])
+            if self.output_mode is not None:
+                # if in predict mode not need to save
+                np.save(meanDist_file, meanDist)
 
         meanDist = torch.tensor(meanDist, dtype = torch.float32)
-        print('meanDist', meanDist, meanDist.shape)
-        chi_diag = torch.tensor(chi_diag, dtype = torch.float32)
-        result = [meanDist, chi_diag]
+        # print('meanDist', meanDist, meanDist.shape)
+        result = [meanDist]
+
+        # get Y
+        if self.output_mode is not None:
+            # load config
+            config_file = osp.join(self.paths[index], 'config.json')
+            chi_diag = None
+            if osp.exists(config_file):
+                with open(config_file, 'r') as f:
+                    config = json.load(f)
+            else:
+                raise Exception(f'config_file does not exist for {self.paths[index]}')
+
+            # get diag chi
+            if self.output_mode.startswith('diag_chi_step'):
+                chi_diag = get_diag_chi_step(config)
+            else:
+                chi_diag = np.array(config["diag_chis"])
+
+            # get bond_length
+            if 'bond_length' in self.output_mode:
+                bond_length = config['bond_length']
+                y_arr = np.append(chi_diag, bond_length)
+            else:
+                y_arr = chi_diag
+
+            Y = torch.tensor(y_arr, dtype = torch.float32)
+            result = result.append(Y)
+
         if self.names:
             result.append(self.paths[index])
 

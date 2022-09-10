@@ -64,7 +64,7 @@ def get_base_parser():
                         help='type of pre-processing for y')
     parser.add_argument('--y_zero_diag_count', type=int, default=0,
                         help='number of diagonals of y set to 0')
-    parser.add_argument('--log_preprocessing', type=str,
+    parser.add_argument('--log_preprocessing', type=AC.str2None,
                         help='type of log transform input data (None to skip)')
     parser.add_argument('--preprocessing_norm', type=AC.str2None, default='batch',
                         help='type of [0,1] normalization for y')
@@ -542,7 +542,7 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
         elif (file == 's.npy' or file == 'e.npy') and output_mode.startswith('energy'):
             # only need s.npy if neural net output is energy
             move_file = True
-        elif file == 'config.json' and output_mode == 'diag_chi':
+        elif file == 'config.json' and output_mode.startswith('diag_chi'):
             # need to config to get diag_chi
             move_file = True
 

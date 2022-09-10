@@ -50,9 +50,10 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
         print('\n'*3)
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':
         dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)
-    elif opt.output_mode == 'diag_chi':
+    elif opt.model_type.upper() == 'MLP':
         dataset = DiagFunctions(opt.data_folder, opt.crop, opt.preprocessing_norm,
                                 opt.log_preprocessing, opt.y_zero_diag_count,
+                                opt.output_mode,
                                 names = names, samples = samples)
     else:
         dataset = SequencesContacts(opt.data_folder, opt.toxx, opt.toxx_mode,
