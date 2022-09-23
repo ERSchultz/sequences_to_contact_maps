@@ -9,7 +9,7 @@
 dirname="/home/erschultz/sequences_to_contact_maps"
 # dirname="/home/erschultz"
 # dirname='/project2/depablo/erschultz'
-dataset="dataset_soren"
+dataset="single_cell_nagano_imputed"
 sample='none'
 sampleFolder='none'
 method='none'
@@ -24,7 +24,7 @@ svd='false'
 
 source activate python3.9_pytorch1.9
 
-for i in 1 2
+for i in 443
 # 4 6 8
 # 1 2 3 4 6 7 8 9 11 12 13 14 15 17 18 19 20 21 23 24
 do

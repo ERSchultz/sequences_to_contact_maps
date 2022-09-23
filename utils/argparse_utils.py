@@ -61,13 +61,13 @@ def get_base_parser():
     parser.add_argument('--toxx_mode', type=str, default='mean',
                         help='mode for toxx (default mean)')
     parser.add_argument('--y_preprocessing', type=AC.str2None,
-                        help='type of pre-processing for y')
+                        help='type of pre-processing for contact map')
     parser.add_argument('--y_zero_diag_count', type=int, default=0,
                         help='number of diagonals of y set to 0')
     parser.add_argument('--log_preprocessing', type=AC.str2None,
                         help='type of log transform input data (None to skip)')
     parser.add_argument('--preprocessing_norm', type=AC.str2None, default='batch',
-                        help='type of [0,1] normalization for y')
+                        help='type of [0,1] normalization for input data')
     parser.add_argument('--min_subtraction', type=AC.str2bool, default=True,
                         help='if min subtraction should be used for preprocessing_norm')
     parser.add_argument('--x_reshape', type=AC.str2bool, default=True,
@@ -547,6 +547,9 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
             move_file = True
         elif file == 'params.log' and output_mode.startswith('diag_param'):
             # need params log to get diag_chi params
+            move_file = True
+        elif file == 'diag_chis_continuous.npy' and output_mode.startswith('diag'):
+            # need to load this file regardless of which version of diag
             move_file = True
 
         if move_file:

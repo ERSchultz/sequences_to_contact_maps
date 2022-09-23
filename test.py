@@ -1,4 +1,3 @@
-import math
 import multiprocessing
 import os
 import os.path as osp
@@ -11,7 +10,6 @@ import cooler
 import hicrep.utils
 import matplotlib.pyplot as plt
 import numpy as np
-import scHiCTools
 import scipy.stats as ss
 import torch
 import torch.nn as nn
@@ -36,6 +34,8 @@ from utils.similarity_measures import SCC
 from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
                          print_time, triu_to_full)
 from utils.xyz_utils import lammps_load
+
+import scHiCTools
 
 
 def test_num_workers():
@@ -94,7 +94,7 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    opt.data_folder = "/home/erschultz/dataset_test_bond_length_max_diag"
+    opt.data_folder = "/home/erschultz/sequences_to_contact_maps/dataset_05_12_22"
     opt.scratch = '/home/erschultz/scratch'
 
     # architecture
@@ -175,8 +175,8 @@ def debugModel(model_type):
         opt.log_preprocessing = None
         opt.head_architecture = 'bilinear_asym'
         opt.head_hidden_sizes_list = None
-        opt.crop=[0,4]
-        opt.m = 4
+        opt.crop=[0,512]
+        opt.m = 512
         opt.use_bias = True
         opt.num_heads = 2
         opt.concat_heads = True
@@ -204,12 +204,12 @@ def debugModel(model_type):
         opt.use_bias = True
         opt.num_heads = 2
     elif model_type == 'MLP':
-        opt.preprocessing_norm='max'
+        opt.preprocessing_norm='mean'
         opt.random_split=True
-        opt.hidden_sizes_list=AC.str2list('1000-'*6 + '33')
+        opt.hidden_sizes_list=AC.str2list('1000-'*6 + '4')
         opt.act='prelu'
         opt.out_act='prelu'
-        opt.output_mode='diag_chi_bond_length'
+        opt.output_mode='diag_param'
         opt.log_preprocessing=None
         opt.y_zero_diag_count=0
         # opt.training_norm='batch'
@@ -219,10 +219,10 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 50
+    opt.n_epochs = 1
     opt.lr = 1e-3
-    opt.batch_size = 10
-    opt.milestones = [20, 40]
+    opt.batch_size = 1
+    opt.milestones = None
     opt.gamma = 0.1
 
     # other
@@ -769,7 +769,7 @@ def main3():
     plt.legend()
     plt.show()
 
-    dir = '/home/erschultz/dataset_test_log'
+    dir = '/home/erschultz/dataset_test_logistic'
     # sort samples
     min_MSE = 1000
     best_sample = None
@@ -792,7 +792,7 @@ def main3():
 
 
 if __name__ == '__main__':
-    main3()
+    # main3()
     # test_merge_cool()
     # test_parallel()
     # prep_data_for_cluster()
@@ -800,4 +800,4 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    # debugModel('MLP')
+    debugModel('ContactGNNEnergy')

@@ -2,10 +2,13 @@ import json
 import os
 import os.path as osp
 
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
+from scipy.ndimage import uniform_filter
 from torch.utils.data import Dataset
 
+from .argparse_utils import ArgparserConverter
 from .utils import DiagonalPreprocessing, get_diag_chi_step
 
 
@@ -216,25 +219,28 @@ class DiagFunctions(Dataset):
             elif self.norm == 'mean':
                 y /= np.mean(np.diagonal(y))
 
+            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
+
             if self.log is not None:
                 if self.log == 'ln':
-                    y = np.log(y+1e-8)
+                    meanDist = np.log(meanDist+1e-8)
                 elif self.log.isdigit():
                     val = int(self.log)
                     if val == 2:
-                        y = np.log2(y+1e-8)
+                        meanDist = np.log2(meanDist+1e-8)
                     elif val == 10:
-                        y = np.log10(y+1e-8)
+                        meanDist = np.log10(meanDist+1e-8)
                     else:
                         raise Exception(f'Unaccepted log base: {val}')
                 else:
                     raise Exception(f'Unrecognized log transform: {self.log}')
 
-            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
-
             if self.output_mode is not None:
-                # if in predict mode not need to save
+                # only save if not in predict_mode
                 np.save(meanDist_file, meanDist)
+            else:
+                # smoothing filter
+                meanDist[50:] = uniform_filter(meanDist[50:], 3, mode = 'constant')
 
         meanDist = torch.tensor(meanDist, dtype = torch.float32)
         # print('meanDist', meanDist, meanDist.shape)
@@ -253,6 +259,8 @@ class DiagFunctions(Dataset):
             # get diag chi
             if self.output_mode.startswith('diag_chi_step'):
                 chi_diag = get_diag_chi_step(config)
+            elif self.output_mode.startswith('diag_chi_continuous'):
+                chi_diag = np.load(osp.join(self.paths[index], 'diag_chis_continuous.npy'))
             elif self.output_mode.startswith('diag_chi'):
                 chi_diag = np.array(config["diag_chis"])
             elif self.output_mode.startswith('diag_param'):
@@ -261,6 +269,7 @@ class DiagFunctions(Dataset):
                     chi_diag = np.load(param_file)
                 else:
                     params_log_file = osp.join(self.paths[index], 'params.log')
+                    AC = ArgparserConverter()
                     with open(params_log_file, 'r') as f:
                         line = f.readline()
                         while line != '':
@@ -268,13 +277,24 @@ class DiagFunctions(Dataset):
                             if line.startswith('Diag chi args:'):
                                 line = f.readline().split(', ')
                                 for arg in line:
-                                    if arg.startswith('diag_chi_slope'):
+                                    if arg.startswith('diag_chi_method'):
+                                        method = arg.split('=')[1].strip("'")
+                                    elif arg.startswith('diag_chi_slope'):
                                         slope = float(arg.split('=')[1])/1000
                                     elif arg.startswith('diag_chi_scale'):
-                                        scale = float(arg.split('=')[1])
+                                        scale = AC.str2float(arg.split('=')[1])
                                     elif arg.startswith('diag_chi_constant'):
                                         constant = float(arg.split('=')[1])
-                    chi_diag = np.array([scale, slope, constant])
+                                    elif arg.startswith('diag_chi_midpoint'):
+                                        midpoint = float(arg.split('=')[1])
+                                    elif arg.startswith('min_diag_chi'):
+                                        min_val = float(arg.split('=')[1])
+                                    elif arg.startswith('max_diag_chi'):
+                                        max_val = float(arg.split('=')[1])
+                    if method == 'logistic':
+                        chi_diag = np.array([min_val, max_val, slope, midpoint])
+                    elif method == 'log':
+                        chi_diag = np.array([scale, slope, constant])
                     np.save(param_file, chi_diag)
 
             # get bond_length

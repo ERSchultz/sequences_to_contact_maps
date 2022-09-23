@@ -1,3 +1,4 @@
+import json
 import math
 import multiprocessing
 import os
@@ -16,7 +17,7 @@ from scipy.ndimage import gaussian_filter
 from scipy.stats import pearsonr
 from sklearn import metrics
 from sklearn.decomposition import PCA
-from sklearn.metrics import silhouette_score
+from sklearn.metrics import mean_squared_error, silhouette_score
 from sympy import solve, symbols
 
 from .argparse_utils import (ArgparserConverter, finalize_opt, get_base_parser,
@@ -605,56 +606,67 @@ def plotPredictions(val_dataloader, model, opt, count = 5):
 def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
     print('Prediction Results:', file = opt.log_file)
 
-    if opt.loss == 'mse':
-        loss_title = 'MSE Loss'
-    elif opt.loss == 'cross_entropy':
-        loss_title = 'Cross Entropy Loss'
-    elif opt.loss == 'BCE':
-        loss_title = 'Binary Cross Entropy Loss'
-    else:
-        loss_title = 'Loss'
-
     loss_arr = np.zeros(min(count, opt.valN))
     for i, data in enumerate(val_dataloader):
         if i == count:
             break
 
-        if opt.GNN_mode:
-            data = data.to(opt.device)
-            y = data.y
-            yhat = model(data)
-            path = data.path[0]
-        else:
-            x, y, path = data
-            x = x.to(opt.device)
-            y = y.to(opt.device)
-            path = path[0]
-            yhat = model(x)
-
-        loss = opt.criterion(yhat, y).item()
-        y = y.cpu().numpy().reshape((-1))
-
-        sample = osp.split(path)[-1]
-        subpath = osp.join(opt.ofile_folder, sample)
-        print('{}: {}'.format(subpath, loss), file = opt.log_file)
-        if not osp.exists(subpath):
-            os.mkdir(subpath, mode = 0o755)
-
+        x, _, path = data
+        x = x.to(opt.device)
+        path = path[0]
+        yhat = model(x)
         yhat = yhat.cpu().detach().numpy().reshape((-1))
 
+        y = np.load(osp.join(path, 'diag_chis_continuous.npy'))
+
+        # format yhat
+        if 'bond_length' in opt.output_mode:
+            bond_length_hat = yhat[-1]
+            yhat = yhat[:-1]
+        if opt.output_mode == 'diag_chi_continuous' or opt.output_mode == 'diag_chi_step':
+            # no need to do anything
+            pass
+        elif opt.output_mode.startswith('diag_chi'):
+            with open(osp.join(path, 'config.json'), 'r') as f:
+                config = json.load(f)
+            yhat = get_diag_chi_step(config, yhat)
+        elif opt.output_mode.startswith('diag_param'):
+            d_arr = np.arange(len(y))
+            with open(osp.join(path, 'params.log'), 'r') as f:
+                line = f.readline()
+                while line != '':
+                    line = f.readline()
+                    if line.startswith('Diag chi args:'):
+                        line = f.readline().split(', ')
+                        for arg in line:
+                            if arg.startswith('diag_chi_method'):
+                                method = arg.split('=')[1].strip("'")
+            if method == 'logistic':
+                print('predicted params:', yhat)
+                min_val, max_val, slope, midpoint = yhat
+                yhat = (max_val - min_val)/(1 + np.exp(-1*slope * (d_arr - midpoint))) + min_val
+            elif method == 'log':
+                scale, slope, constant = yhat
+                yhat = scale * np.log(slope * d_arr + 1) + args.constant
+
+        loss = mean_squared_error(y, yhat)
         loss_arr[i] = loss
         if opt.verbose:
             print('y', y)
             print('yhat', yhat)
 
-        plt.plot(y, label = 'ground truth')
-        plt.plot(yhat, label = 'estimate')
-        plt.xlabel('bin', fontsize = 16)
-        plt.ylabel('diag chi', fontsize = 16)
-        plt.title(f'{loss_title}: {np.round(loss, 3)}')
-        plt.legend()
-        plt.savefig(osp.join(subpath, 'diag_chi_hat.png'))
-        plt.close()
+        sample = osp.split(path)[-1]
+        subpath = osp.join(opt.ofile_folder, sample)
+        print('{}: {}'.format(subpath, plot_diag_chi), file = opt.log_file)
+        if not osp.exists(subpath):
+            os.mkdir(subpath, mode = 0o755)
+
+        plot_diag_chi(None, subpath, y, 'ground_truth', False,
+                    'diag_chi_hat.png', yhat, title = f'MSE: {np.round(loss, 3)}',
+                    label = 'estimate')
+        plot_diag_chi(None, subpath, y, 'ground_truth', True,
+                    'diag_chi_hat_log.png', yhat, title = f'MSE: {np.round(loss, 3)}',
+                    label = 'estimate')
 
         np.savetxt(osp.join(subpath, 'diag_chi.txt'), y, fmt = '%.3f')
         np.savetxt(osp.join(subpath, 'diag_chi_hat.txt'), yhat, fmt = '%.3f')
@@ -1298,7 +1310,9 @@ def plot_centroid_distance_sample(dir, sample):
     plt.close()
 
 #### Functions for plotting diag chis and contact probability curves ####
-def plot_diag_chi(config, path, ref = None, ref_label = ''):
+def plot_diag_chi(config, path, ref = None, ref_label = '', logx = False,
+                ofile = None, diag_chis_step = None, ylim = (None, None),
+                title = None, label = ''):
     '''
     config: config file
     path: save file path
@@ -1306,23 +1320,37 @@ def plot_diag_chi(config, path, ref = None, ref_label = ''):
     ref_label: label for reference parameters
     '''
     if config is None:
-        return
+        assert diag_chis_step is not None
+    else:
+        diag_chis_step = get_diag_chi_step(config)
 
-    diag_chis_step = get_diag_chi_step(config)
-    plt.plot(diag_chis_step, color = 'k')
-    plt.xlabel('Polymer Distance', fontsize = 16)
-    plt.ylabel('Diagonal Parameter', fontsize = 16)
+    fig, ax = plt.subplots()
+    ax.plot(diag_chis_step, color = 'k', label = label)
+    ax.set_xlabel('Polymer Distance', fontsize = 16)
+    ax.set_ylabel('Diagonal Parameter', fontsize = 16)
     if ref is not None:
         if isinstance(ref, np.ndarray):
             pass
         elif osp.exists(ref):
             ref = np.load(ref)
-        plt.plot(ref, color = 'k', ls = '--', label = ref_label)
+        ax.plot(ref, color = 'k', ls = '--', label = ref_label)
         if ref_label != '':
             plt.legend()
 
-    ofile = osp.join(path, 'chi_diag_step.png')
-    print(ofile)
+    ax.set_ylim(ylim[0], ylim[1])
+    if logx:
+        ax.set_xscale('log')
+    if title is not None:
+        plt.title(title)
+
+    if ofile is None:
+        if logx:
+            ofile = osp.join(path, 'chi_diag_step_log.png')
+        else:
+            ofile = osp.join(path, 'chi_diag_step.png')
+    else:
+        ofile = osp.join(path, ofile)
+
     plt.savefig(ofile)
     plt.close()
 
@@ -1350,7 +1378,8 @@ def plot_mean_vs_genomic_distance(y, path, ofile, diag_chis_step = None,
     return meanDist
 
 def plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, ref,
-                    ref_label = 'reference', norm = False):
+                    ref_label = 'reference', label = '', color = 'blue',
+                    title = None):
     '''
     Inputs:
         meanDist: contact map
@@ -1362,29 +1391,34 @@ def plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, ref,
     meanDist = meanDist.copy()
     if ref is not None:
         ref = ref.copy()
-    if norm:
-        meanDist /= np.max(meanDist)
-        if ref is not None:
-            ref /= np.max(ref)
 
     fig, ax = plt.subplots()
-    ax2 = ax.twinx()
-    ax.plot(meanDist)
     if ref is not None:
-        ax.plot(ref, label = ref_label)
-        ax.legend()
+        ax.plot(ref, label = ref_label, color = 'k')
+    ax.plot(meanDist, label = label, color = color)
+    ax.legend(loc='upper left')
     ax.set_yscale('log')
     if logx:
         ax.set_xscale('log')
 
     if diag_chis_step is not None:
-        ax2.plot(diag_chis_step, color = 'k')
+        ax2 = ax.twinx()
+        ax2.plot(diag_chis_step, ls = '--', label = 'Parameters', color = color)
         ax2.set_ylabel('Diagonal Parameter', fontsize = 16)
         if logx:
             ax2.set_xscale('log')
+        ax2.legend(loc='upper right')
+    else:
+        x = np.arange(1, 10).astype(np.float64)
+        ax.plot(x, np.power(x, -1)/4, color = 'grey', ls = '--', label='-1')
+        x = np.arange(10, 100).astype(np.float64)
+        ax.plot(x, np.power(x, -1.5), color = 'grey', ls = ':', label='-3/2')
+        ax.legend(loc='upper right')
 
     ax.set_ylabel('Contact Probability', fontsize = 16)
     ax.set_xlabel('Polymer Distance (beads)', fontsize = 16)
+    if title is not None:
+        plt.title(title)
     plt.tight_layout()
     plt.savefig(osp.join(path, ofile))
     plt.close()

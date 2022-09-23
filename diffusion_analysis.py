@@ -8,7 +8,6 @@ import time
 from shutil import copyfile, move, rmtree
 
 import cooler
-import dmaps  # https://github.com/ERSchultz/dmaps
 import hicrep
 import imageio.v2 as imageio
 import matplotlib.cm
@@ -26,6 +25,8 @@ from utils.similarity_measures import SCC, InnerProduct
 from utils.utils import (DiagonalPreprocessing, pearson_round, print_time,
                          triu_to_full)
 from utils.xyz_utils import lammps_load, xyz_load, xyz_to_contact_grid
+
+import dmaps  # https://github.com/ERSchultz/dmaps
 
 ## mm9 chromosomes
 CHROMS = [str(i) for i in range(1,20)]
@@ -54,7 +55,7 @@ def getArgs(default_dir='/home/erschultz/dataset_test_sc_traj/samples/combined')
     # required iff input_file_type == mcool
     parser.add_argument('--resolution', type=int, default=50000,
                         help='resolution for cool/mcool file')
-    parser.add_argument('--chroms', type=AC.str2list,
+    parser.add_argument('--chroms', type=AC.str2list, default='all',
                         help='specify chromosomes for cool/mcool file ("All" for all chr)')
 
     # algorithm arguments
@@ -775,7 +776,7 @@ class Diffusion():
 
         return v, order
 
-    def tune_epsilon(self, input, ofile):
+    def tune_epsilon(input, ofile):
         X = np.arange(-12, 20, 1)
         epsilons = np.exp(X)
         Y = np.zeros_like(epsilons)
@@ -829,7 +830,8 @@ class Diffusion():
         plt.xlabel(r'ln($\epsilon$)', fontsize = 16)
         plt.ylabel(r'ln$\sum_{i,j}A_{i,j}$', fontsize = 16)
         plt.tight_layout()
-        plt.savefig(ofile)
+        if ofile is not None:
+            plt.savefig(ofile)
         plt.close()
 
         return eps_final
@@ -923,8 +925,46 @@ def main():
 
     cleanup(args)
 
+def test():
+    dir = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017'
+
+    d_file = osp.join(dir, 'contact_diffusion_kNN8scc/iteration_1/distances.txt')
+    D = np.loadtxt(d_file)
+
+    # compute eigenvectors
+    dmap = dmaps.DiffusionMap(D)
+    eps = Diffusion.tune_epsilon(dmap, None)
+    dmap.set_kernel_bandwidth(eps)
+    dmap.compute(5, 0.5)
+
+    v = dmap.get_eigenvectors()
+    w = dmap.get_eigenvalues()
+    print('w', w)
+    order = np.argsort(v[:, 1])
+    print(v)
+
+    with open(osp.join(dir, 'contact_diffusion_kNN8scc/iteration_0/sc_contacts/ifile_dict.json'), 'r') as f:
+        ifile_dict = json.load(f)
+
+    data_dir = osp.join(dir, 'samples')
+    with open(osp.join(data_dir, 'phase_dict.json'), 'r') as f:
+        phase_dict = json.load(f)
+
+    phase_list = []
+    files = os.listdir(osp.join(dir, 'contact_diffusion_kNN8scc/iteration_0/sc_contacts'))
+    files = [f for f in files if f.endswith('.mcool')]
+    for file in files:
+        fdir = ifile_dict[osp.split(file)[1]]
+        phase = phase_dict[fdir]
+        phase_list.append(phase)
+    print(phase_list)
+
+    plot_eigenvectors_inner(v, osp.join(dir, 'contact_diffusion_kNN8scc/iteration_1/temp'), 'phases', phase_list)
+
+
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    test()
     # plot_gif_michrom()

@@ -10,6 +10,7 @@ import numpy as np
 import scipy.sparse as sp
 import torch
 from numba import jit, njit
+from scipy.ndimage import uniform_filter
 from scipy.stats import pearsonr, spearmanr
 from sklearn.decomposition import PCA
 from sympy import solve, symbols
@@ -79,7 +80,8 @@ class DiagonalPreprocessing():
 
     def genomic_distance_statistics(y, mode = 'freq', stat = 'mean',
                         zero_diag = False, zero_offset = 1,
-                        plot = False, ofile = None, normalize = None):
+                        plot = False, ofile = None, normalize = None,
+                        smoothen = False):
         '''
         Calculate statistics of contact frequency/probability as a function of genomic distance
         (i.e. along a give diagonal)
@@ -92,11 +94,14 @@ class DiagonalPreprocessing():
             plot: True to plot stat_per_diagonal
             ofile: file path to plot to (None for plt.show())
             normalize: divide each value in stat_per_diagonal by value in normalize
+            smoothen: True to apply box filter to contact map
 
         Outputs:
             stat_per_diagonal: numpy array where result[d] is the contact frequency/probability stat at distance d
         '''
         y = y.copy().astype(np.float64)
+        if smoothen:
+            y = uniform_filter(y, 3, mode = 'constant')
         if mode == 'prob':
             y /= np.mean(np.diagonal(y))
 
@@ -127,7 +132,7 @@ class DiagonalPreprocessing():
                 plt.show()
             plt.close()
 
-        return stat_per_diagonal
+        return np.array(stat_per_diagonal)
 
     def process(y, mean_per_diagonal, triu = False):
         """

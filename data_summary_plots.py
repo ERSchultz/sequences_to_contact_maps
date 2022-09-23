@@ -368,9 +368,9 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
             plot_matrix(y, osp.join(path, 'y.png'), vmax = 'mean', title = title)
             np.savetxt(osp.join(path, 'y.txt'), y)
 
-            y_kr = knightRuiz(y)
-            np.save(osp.join(path, 'y_kr.npy'), y_kr)
-            plot_matrix(y_kr, osp.join(path, 'y_kr.png'), title = 'kr normalization', vmax = 'mean')
+            # y_kr = knightRuiz(y)
+            # np.save(osp.join(path, 'y_kr.npy'), y_kr)
+            # plot_matrix(y_kr, osp.join(path, 'y_kr.png'), title = 'kr normalization', vmax = 'mean')
 
 
             plot_matrix(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
@@ -380,7 +380,7 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
 
             meanDist = plot_mean_vs_genomic_distance(y, path, 'meanDist.png', config = config)
             np.savetxt(osp.join(path, 'meanDist.txt'), meanDist)
-            plot_mean_vs_genomic_distance(y_kr, path, 'meanDist_kr.png', ref = meanDist, ref_label = 'not KR')
+            # plot_mean_vs_genomic_distance(y_kr, path, 'meanDist_kr_log.png', ref = meanDist, ref_label = 'not KR', logx = True)
             plot_mean_vs_genomic_distance(y, path, 'meanDist_log.png', logx = True, config = config)
 
             y_prcnt_path = osp.join(path, 'y_prcnt.npy')
@@ -400,7 +400,8 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
 
         # plot diag chi
         diag_chis_continuous_file = osp.join(path, 'diag_chis_continuous.npy')
-        plot_diag_chi(config, path, ref = diag_chis_continuous_file, ref_label = 'continuous')
+        if config is not None:
+            plot_diag_chi(config, path, ref = diag_chis_continuous_file, ref_label = 'continuous')
 
         if plot_energy:
             if s is not None:
@@ -430,7 +431,7 @@ if __name__ == '__main__':
     dataset = 'single_cell_nagano_imputed'
     data_dir = osp.join(dir, dataset)
     basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                    sampleID = None)
+                    sampleID = 390)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

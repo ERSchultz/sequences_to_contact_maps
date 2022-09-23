@@ -8,6 +8,7 @@ from shutil import rmtree
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.ndimage import uniform_filter
 from utils.argparse_utils import (argparse_setup, finalize_opt,
                                   get_base_parser, get_opt_header, opt2list)
 from utils.load_utils import load_contact_map
@@ -183,6 +184,7 @@ def plot_diag_vs_diag_chi():
 
 def plot_mean_vs_genomic_distance_comparison(dir, samples = None, percent = False,
                                         ref_file = None, norm = False, logx = True,
+                                        ln_transform = False,
                                         label = 'sample', params = True,
                                         zero_diag = False,
                                         zero_diag_offset = 1):
@@ -212,9 +214,11 @@ def plot_mean_vs_genomic_distance_comparison(dir, samples = None, percent = Fals
         meanDist_ref = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob',
                                         zero_diag = zero_diag,
                                         zero_offset = zero_diag_offset)
-        print(meanDist_ref)
+        meanDist_ref[50:] = uniform_filter(meanDist_ref[50:], 3, mode = 'constant')
         if norm:
             meanDist_ref /= np.max(meanDist_ref)
+        if ln_transform:
+            meanDist_ref = np.log(meanDist_ref+1e-8)
         ax.plot(meanDist_ref, label = 'ref', color = 'k')
 
     for i, sample in enumerate(samples_sort):
@@ -250,14 +254,20 @@ def plot_mean_vs_genomic_distance_comparison(dir, samples = None, percent = Fals
                             elif arg.startswith('diag_chi_slope'):
                                 slope = float(arg.split('=')[1])
                             elif arg.startswith('diag_chi_scale'):
-                                scale = float(arg.split('=')[1])
+                                scale = arg.split('=')[1]
+                                if scale == 'None':
+                                    scale = None
+                                else:
+                                    scale = float(scale)
                             elif arg.startswith('diag_chi_constant'):
                                 constant = float(arg.split('=')[1])
 
         meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob',
                                         zero_diag = zero_diag,
                                         zero_offset = zero_diag_offset)
-        print('meanDist', meanDist)
+        meanDist[50:] = uniform_filter(meanDist[50:], 3, mode = 'constant')
+        if ln_transform:
+            meanDist = np.log(meanDist+1e-8)
 
         if norm:
             meanDist /= np.max(meanDist)
@@ -307,7 +317,8 @@ def plot_mean_vs_genomic_distance_comparison(dir, samples = None, percent = Fals
             ax2.set_ylabel('Diagonal Parameter', fontsize = 16)
 
 
-    ax.set_yscale('log')
+    if not ln_transform:
+        ax.set_yscale('log')
     if logx:
         ax.set_xscale('log')
     ax.set_ylabel('Contact Probability', fontsize = 16)
@@ -371,7 +382,7 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    # update_result_tables('ContactGNNEnergy', None, 'energy')
+    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     dir = '/home/erschultz/sequences_to_contact_maps/'
     data_dir = osp.join(dir, 'single_cell_nagano_imputed/samples/sample443')
@@ -381,8 +392,8 @@ if __name__ == '__main__':
     # data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample4')
     # file = osp.join(data_dir, 'y.npy')
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_log', [363, 875, 1308, 1883], ref_file = file)
-    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_soren', [11,12], ref_file = file)
+    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_logistic', [3960, 3517, 2812, 3148], ref_file = file)
+    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [11,12, 13, 14])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024', [201, 211, 221 ,231, 241], ref_file = file)
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
