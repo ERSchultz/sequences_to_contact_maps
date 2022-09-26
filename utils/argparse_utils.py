@@ -524,20 +524,16 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
         # change to True to move file
         # defaults to not moving file (saves space on scratch and move time)
 
+        fname = file.split('.')[0]
+
         if file == 'xx.npy' and toxx:
             # only need xx.npy if toxx is True
             move_file = True
         elif file == 'y.npy' and y_preprocessing is None:
             # only need y.npy if not using preprocessing
             move_file = True
-        elif file == 'y_prcnt.npy' and y_preprocessing == 'prcnt':
-            # only need y_prcnt.npy if using percentile preprocessing
-            move_file = True
-        elif file == 'y_diag.npy' and y_preprocessing == 'diag':
-            # only need y_diag.npy if using diagonal preprocessing
-            move_file = True
-        elif file == 'y_diag_batch.npy' and y_preprocessing == 'diag_batch':
-            # only need y_diag_batch.npy if using batch diagonal preprocessing
+        elif y_preprocessing is not None and fname.endswith(y_preprocessing):
+            # need file correspondi nto y_preprocessing
             move_file = True
         elif (file == 's.npy' or file == 'e.npy') and output_mode.startswith('energy'):
             # only need s.npy if neural net output is energy

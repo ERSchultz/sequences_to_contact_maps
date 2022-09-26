@@ -9,6 +9,7 @@
 #SBATCH --mem-per-cpu=2000
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=erschultz@uchicago.edu
+#SBATCH --wait=22811370
 
 cd ~/sequences_to_contact_maps
 
@@ -26,8 +27,10 @@ EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
-id=163
-for lr in 1e-4
+
+id=164
+lr=1e-4
+for yPreprocessing in '5000_diag' '1000_diag' '2500_diag' 'diag'
 do
   train
   id=$(( $id + 1 ))

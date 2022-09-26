@@ -93,7 +93,7 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    opt.data_folder = "/home/erschultz/sequences_to_contact_maps/dataset_05_12_22"
+    opt.data_folder = "/home/erschultz/sequences_to_contact_maps/dataset_04_27_22"
     opt.scratch = '/home/erschultz/scratch'
 
     # architecture
@@ -151,6 +151,7 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
+        opt.y_preprocessing='5000_diag'
         opt.loss = 'mse'
         opt.preprocessing_norm = 'instance'
         opt.message_passing='gat'
@@ -692,7 +693,7 @@ def downsample_simulation():
     # uses data_out/output.xyz to generate contact map as if you had
     # only ran a shorter simulation
     # use this to assess GNN robustness to simulation length
-    dir = '/project2/depablo/erschultz/dataset_04_27_22'
+    dir = '/home/erschultz/sequences_to_contact_maps/dataset_04_27_22'
     files = make_dataset(dir)
 
     with multiprocessing.Pool(20) as p:
@@ -723,6 +724,6 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # compare_y_normalization_methods()
-    downsample_simulation()
+    # downsample_simulation()

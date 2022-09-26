@@ -234,6 +234,12 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y_path = osp.join(raw_folder, 'y.npy')
         elif self.y_preprocessing == 'diag':
             y_path = osp.join(raw_folder, 'y_diag.npy')
+        elif self.y_preprocessing == '1000_diag':
+            y_path = osp.join(raw_folder, 'y1000_diag.npy')
+        elif self.y_preprocessing == '2500_diag':
+            y_path = osp.join(raw_folder, 'y2500_diag.npy')
+        elif self.y_preprocessing == '5000_diag':
+            y_path = osp.join(raw_folder, 'y5000_diag.npy')
         elif self.y_preprocessing == 'prcnt':
             y_path = osp.join(raw_folder, 'y_prcnt.npy')
         elif self.y_preprocessing == 'diag_batch':
