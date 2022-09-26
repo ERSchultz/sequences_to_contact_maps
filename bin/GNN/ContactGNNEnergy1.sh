@@ -26,7 +26,7 @@ EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
-id=162
+id=163
 for lr in 1e-4
 do
   train

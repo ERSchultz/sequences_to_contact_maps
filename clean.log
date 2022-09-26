@@ -1,6 +1,6 @@
-Namespace(data_folder='/project2/depablo/erschultz/dataset_05_12_22', GNN_file_name='ContactGNNEnergy1', GNN_path=None, clean_scratch=False, scratch='/scratch/midway2/erschultz')
+Namespace(data_folder='/project2/depablo/erschultz/dataset_04_27_22', GNN_file_name='ContactGNNEnergy1', GNN_path=None, clean_scratch=False, scratch='/scratch/midway2/erschultz')
 None True
 
 here
-/scratch/midway2/erschultz/dataset_05_12_22/ContactGNNEnergy1
-Removing /scratch/midway2/erschultz/dataset_05_12_22/ContactGNNEnergy1
+/scratch/midway2/erschultz/dataset_04_27_22/ContactGNNEnergy1
+/scratch/midway2/erschultz/dataset_04_27_22/ContactGNNEnergy1 does not exist - cannot remove
