@@ -248,40 +248,6 @@ def debugModel(model_type):
     if opt.use_scratch:
         rmtree(opt.data_folder)
 
-class ContactGNNEnergyTest(nn.Module):
-    def __init__(self, m, head_hidden_sizes_list):
-        super(ContactGNNEnergyTest, self).__init__()
-        self.m = m
-
-        ### Head Architecture ###
-        head = []
-        self.to2D = AverageTo2d(mode = 'outer')
-        input_size = 4 # outer squares size
-        for i, output_size in enumerate(head_hidden_sizes_list):
-            head.append(nn.Linear(input_size, output_size, bias=False))
-            input_size = output_size
-
-        self.head = nn.Sequential(*head)
-        with torch.no_grad():
-            self.head[0].weight = nn.Parameter(torch.tensor([-1, 1, 1, 0],
-                                                dtype = torch.float32))
-
-    def forward(self, latent):
-        _, output_size = latent.shape
-        print('a', latent, latent.shape)
-        latent = latent.reshape(-1, self.m, output_size)
-        latent = latent.permute(0, 2, 1)
-        print('b', latent, latent.shape)
-        print(latent[:, :, 1], latent[:, :, 2])
-        latent = self.to2D(latent)
-        print('c', latent, latent.shape)
-        print(latent[:, :, 1, 2])
-        latent = latent.permute(0, 2, 3, 1)
-        print('d', latent, latent.shape)
-        out = self.head(latent)
-        print('e', out, out.shape)
-
-        return out
 
 def binom():
     dir = '/home/erschultz/sequences_to_contact_maps/dataset_04_27_22/samples/sample1'
@@ -556,6 +522,8 @@ def plot_binom_helper2(x, y, xlabel, ylabel, ofile):
     plt.close()
 
 def sc_structure_vs_sc_sample():
+    # is sampling from bulk contact map the same as the individual structures
+    # from the TICG model
     n_samples = 10
     for sample in [5, 15, 25, 34, 35]:
         dir = f'/home/erschultz/dataset_test_diag/samples/sample{sample}'
@@ -668,41 +636,6 @@ def main2():
     print(w, w.shape)
     print_time(t0, tf, 'scc')
 
-def test_parallel():
-    input_dir = '/home/erschultz/scratch/contact_diffusion_kNN4scc/iteration_0/sc_contacts'
-    files = ['y_sc_6.npy', 'y_sc_11.npy', 'y_sc_0.npy', 'y_sc_8.npy', 'y_sc_9.npy', 'y_sc_10.npy', 'y_sc_7.npy', 'y_sc_4.npy', 'y_sc_5.npy', 'y_sc_3.npy', 'y_sc_2.npy', 'y_sc_1.npy']
-    scc = SCC()
-    N = len(files)
-    D1 = np.zeros((N, N))
-    mapping = []
-    for i in range(0, N):
-        ifile = osp.join(input_dir, files[i])
-        for j in range(i, N):
-            jfile = osp.join(input_dir, files[j])
-            mapping.append((ifile, jfile, 1, 10, True))
-            val = scc.scc_file(ifile, jfile, 1, 10, True)
-            D1[i,j]  = val
-
-    print(D1)
-    D1 = np.triu(D1) + np.triu(D1, 1).T
-    print(D1)
-    D1 = 1 - D1
-    print(D1, D1.shape)
-
-    # with multiprocessing.Pool(15) as p:
-    #     result = np.array(p.starmap(scc.scc_file, mapping))
-    #
-    # print('result')
-    # print(1-result, result.shape)
-    # print('triu')
-    # print(D1[np.triu_indices(len(D1))])
-    #
-    # # make symmetric and convert to distance
-    # D2 = 1 - triu_to_full(result)
-    #
-    # print('diff')
-    # print(D2 - D1)
-
 def prep_data_for_cluster():
     dir = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017'
     odir = osp.join(dir, 'samples_cluster')
@@ -718,45 +651,10 @@ def prep_data_for_cluster():
             ofile = osp.join(odir, id, 'adj_500000.cool')
             copyfile(ifile, ofile)
 
-def test_merge_cool():
-    chrom=10
-    res=500000
-    dir = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017/samples'
-    folders = [osp.join(dir, f) for f in os.listdir(dir)]
-    folders = [f for f in folders if osp.isdir(f)]
-
-    a = osp.join(folders[0], 'adj.mcool')
-    clr_a, _ = hicrep.utils.readMcool(a, res)
-    y_a = clr_a.matrix(balance=False).fetch(f'{chrom}')
-
-    b = osp.join(folders[1], 'adj.mcool')
-    clr_b, _ = hicrep.utils.readMcool(b, res)
-    y_b = clr_b.matrix(balance=False).fetch(f'{chrom}')
-
-    c = osp.join(dir, 'test.cool')
-    loc = [i+f'::resolutions/{res}' for i in [a, b]]
-    print(loc)
-    # loc = [a,b]
-    cooler.merge_coolers(c, loc, 10000)
-
-    clr_c, _ = hicrep.utils.readMcool(c, -1)
-    y_c = clr_c.matrix(balance=False).fetch(f'{chrom}')
-
-    d = osp.join(dir, 'test.mcool')
-    cooler.zoomify_cooler(c, d, [res], 10000)
-
-    clr_d, _ = hicrep.utils.readMcool(d, res)
-    y_d = clr_d.matrix(balance=False).fetch(f'{chrom}')
-
-    print(y_a)
-    print(y_b)
-    print(y_c)
-    print(y_d)
-
-def main3():
+def find_best_p_s():
     # is there a curve in training that matches experimental curve well?
     dir = '/home/erschultz/sequences_to_contact_maps/'
-    data_dir = osp.join(dir, 'single_cell_nagano_imputed/samples/sample443')
+    data_dir = osp.join(dir, 'single_cell_nagano_imputed/samples/sample443') # experimental data sample
     file = osp.join(data_dir, 'y.npy')
     y_exp = np.load(file)[:1024, :1024]
     meanDist_ref = DiagonalPreprocessing.genomic_distance_statistics(y_exp, 'prob')
@@ -769,7 +667,7 @@ def main3():
     plt.legend()
     plt.show()
 
-    dir = '/home/erschultz/dataset_test_logistic'
+    dir = '/home/erschultz/dataset_test_logistic' # simulated data dir
     # sort samples
     min_MSE = 1000
     best_sample = None
@@ -787,17 +685,19 @@ def main3():
 
     print(best_sample)
 
-
+def compare_y_normalization_methods():
+    dir = '/home/erschultz/sequences_to_contact_maps/dataset_05_12_22/samples/sample1'
+    y = np.load(osp.join(dir, 'y.npy'))
 
 
 
 if __name__ == '__main__':
     # main3()
     # test_merge_cool()
-    # test_parallel()
     # prep_data_for_cluster()
     # tar_samples()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
+    compare_y_normalization_methods()

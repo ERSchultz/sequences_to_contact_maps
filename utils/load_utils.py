@@ -85,7 +85,6 @@ def load_Y_diag(sample_folder, throw_exception = False):
 
     return ydiag
 
-
 def load_E_S(sample_folder, psi = None, chi = None, save = False, throw_exception = True):
     '''
     Load E and S.

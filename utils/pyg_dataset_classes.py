@@ -236,9 +236,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y_path = osp.join(raw_folder, 'y_diag.npy')
         elif self.y_preprocessing == 'prcnt':
             y_path = osp.join(raw_folder, 'y_prcnt.npy')
-        # elif self.y_preprocessing == 'diag_instance':
-        #     # deprecated
-        #     y_path = osp.join(raw_folder, 'y_diag_instance.npy')
         elif self.y_preprocessing == 'diag_batch':
             y_path = osp.join(raw_folder, 'y_diag_batch.npy')
         else:
@@ -247,7 +244,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
         y = np.load(y_path)
         if self.crop is not None:
             y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
-
 
         if self.y_norm == 'instance':
             self.ymax = np.max(y)

@@ -1408,12 +1408,12 @@ def plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, ref,
         if logx:
             ax2.set_xscale('log')
         ax2.legend(loc='upper right')
-    else:
-        x = np.arange(1, 10).astype(np.float64)
-        ax.plot(x, np.power(x, -1)/4, color = 'grey', ls = '--', label='-1')
-        x = np.arange(10, 100).astype(np.float64)
-        ax.plot(x, np.power(x, -1.5), color = 'grey', ls = ':', label='-3/2')
-        ax.legend(loc='upper right')
+    # else:
+    #     x = np.arange(1, 10).astype(np.float64)
+    #     ax.plot(x, np.power(x, -1)/4, color = 'grey', ls = '--', label='-1')
+    #     x = np.arange(10, 100).astype(np.float64)
+    #     ax.plot(x, np.power(x, -1.5), color = 'grey', ls = ':', label='-3/2')
+    #     ax.legend(loc='upper right')
 
     ax.set_ylabel('Contact Probability', fontsize = 16)
     ax.set_xlabel('Polymer Distance (beads)', fontsize = 16)

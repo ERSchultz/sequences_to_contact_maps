@@ -368,20 +368,33 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
             plot_matrix(y, osp.join(path, 'y.png'), vmax = 'mean', title = title)
             np.savetxt(osp.join(path, 'y.txt'), y)
 
-            # y_kr = knightRuiz(y)
-            # np.save(osp.join(path, 'y_kr.npy'), y_kr)
-            # plot_matrix(y_kr, osp.join(path, 'y_kr.png'), title = 'kr normalization', vmax = 'mean')
+            meanDist = plot_mean_vs_genomic_distance(y, path, 'meanDist.png', config = config)
+            np.savetxt(osp.join(path, 'meanDist.txt'), meanDist)
+            plot_mean_vs_genomic_distance(y, path, 'meanDist_log.png', logx = True, config = config)
 
+            y_kr_file = osp.join(path, 'y_kr.npy')
+            if osp.exists(y_kr_file):
+                y_kr = np.load(y_kr_file)
+            else:
+                y_kr = knightRuiz(y)
+                np.save(y_kr_file, y_kr)
+            plot_matrix(y_kr, osp.join(path, 'y_kr.png'), title = 'kr normalization', vmax = 'mean')
+            plot_mean_vs_genomic_distance(y_kr, path, 'meanDistKR_log.png',
+                                        ref = meanDist, ref_label = 'not KR', logx = True)
+            meanDist_kr = DiagonalPreprocessing.genomic_distance_statistics(y_kr)
+            y_kr_diag = DiagonalPreprocessing.process(y_kr, meanDist_kr)
+            plot_matrix(y_kr_diag, osp.join(path, 'y_kr_diag.png'), title = 'kr + diag normalization', vmax = 'max')
 
             plot_matrix(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
 
-            y_log = np.log(y + 1e-8)
+            y_log = np.log(y + 1)
             plot_matrix(y_log, osp.join(path, 'y_log.png'), title = 'log normalization', vmax = 'max')
+            plot_mean_vs_genomic_distance(y_log, path, 'meanDistLog.png', config = config)
+            meanDistLog = DiagonalPreprocessing.genomic_distance_statistics(y_log)
+            np.savetxt(osp.join(path, 'meanDistLog.txt'), meanDistLog)
+            y_log_diag = DiagonalPreprocessing.process(y_log, meanDistLog)
+            plot_matrix(y_log_diag, osp.join(path, 'y_log_diag.png'), title = 'log + diag normalization', vmax = 'max')
 
-            meanDist = plot_mean_vs_genomic_distance(y, path, 'meanDist.png', config = config)
-            np.savetxt(osp.join(path, 'meanDist.txt'), meanDist)
-            # plot_mean_vs_genomic_distance(y_kr, path, 'meanDist_kr_log.png', ref = meanDist, ref_label = 'not KR', logx = True)
-            plot_mean_vs_genomic_distance(y, path, 'meanDist_log.png', logx = True, config = config)
 
             y_prcnt_path = osp.join(path, 'y_prcnt.npy')
             if osp.exists(y_prcnt_path):
@@ -428,10 +441,10 @@ if __name__ == '__main__':
     dir = '/home/erschultz/sequences_to_contact_maps'
     # dir = '/home/erschultz'
 
-    dataset = 'single_cell_nagano_imputed'
+    dataset = 'dataset_05_12_22'
     data_dir = osp.join(dir, dataset)
     basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                    sampleID = 390)
+                    sampleID = 1)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

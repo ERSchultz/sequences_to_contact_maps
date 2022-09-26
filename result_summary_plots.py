@@ -280,8 +280,14 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
     PC_y_diag = plot_top_PCs(ydiag, 'y_diag', args.odir, args.log_file, count = 6,
                         plot = args.plot_baseline, verbose = args.verbose,
                         scale = args.scale, svd = args.svd)
-    y_log = np.log(y + 1e-8)
+    y_log = np.log(y + 1)
     PC_y_log = plot_top_PCs(y_log, 'y_log', args.odir, args.log_file, count = 2,
+                        plot = args.plot_baseline, verbose = args.verbose,
+                        scale = args.scale, svd = args.svd)
+    meanDistLog = DiagonalPreprocessing.genomic_distance_statistics(y_log)
+    y_log_diag = DiagonalPreprocessing.process(y_log, meanDistLog)
+    plot_matrix(y_log_diag, osp.join(args.odir, 'y_log_diag.png'), vmax = 'max')
+    PC_y_log_diag = plot_top_PCs(y_log_diag, 'y_log_diag', args.odir, args.log_file, count = 2,
                         plot = args.plot_baseline, verbose = args.verbose,
                         scale = args.scale, svd = args.svd)
     p = ydiag/np.max(ydiag)
