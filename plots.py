@@ -186,12 +186,13 @@ def plot_mean_vs_genomic_distance_comparison(dir, samples = None, percent = Fals
                                         ref_file = None, norm = False, logx = True,
                                         ln_transform = False,
                                         label = 'sample', params = True,
-                                        zero_diag = False,
-                                        zero_diag_offset = 1):
+                                        zero_diag = False, zero_diag_offset = 1,
+                                        skip_samples = []):
     cmap = matplotlib.cm.get_cmap('tab10')
 
     if samples is None:
-        samples = range(4000)
+        samples = [f[6:] for f in os.listdir(osp.join(dir, 'samples')) if f.startswith('sample')]
+        samples = [f for f in samples if f not in skip_samples]
         ofile = osp.join(dir, f'meanDist_{label}.png')
     else:
         ofile = osp.join(dir, f'meanDist_{samples}_{label}.png')
@@ -233,7 +234,8 @@ def plot_mean_vs_genomic_distance_comparison(dir, samples = None, percent = Fals
             with open(config_file, 'r') as f:
                 config = json.load(f)
                 phi = config['phi_chromatin']
-                bond_length = config['bond_length']
+                if 'bond_length' in config:
+                    bond_length = config['bond_length']
 
         # get param args
         method = None
@@ -317,10 +319,14 @@ def plot_mean_vs_genomic_distance_comparison(dir, samples = None, percent = Fals
             ax2.set_ylabel('Diagonal Parameter', fontsize = 16)
 
 
+
     if not ln_transform:
         ax.set_yscale('log')
     if logx:
         ax.set_xscale('log')
+    ymin, ymax = ax2.get_ylim()
+    ax2.set_ylim(None, ymax + 10)
+    ax.set_ylim(10**-6, None)
     ax.set_ylabel('Contact Probability', fontsize = 16)
     ax.set_xlabel('Polymer Distance', fontsize = 16)
     ax.legend(loc='upper right', title=label)
@@ -397,6 +403,6 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024', [201, 211, 221 ,231, 241], ref_file = file)
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
-    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/single_cell_nagano_imputed', [65, 84, 244, 390, 443])
+    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_04_27_22', skip_samples = ['1','2'])
     # plot_combined_models('test', [154, 159])
     # main()

@@ -246,7 +246,8 @@ def plotFrequenciesSampleSubplot(freq_arr, dataFolder, preprocessing, k, split =
     plt.savefig(osp.join(dataFolder, 'freq_count_multisample_preprocessing_{}_split_{}.png'.format(preprocessing, split)))
     plt.close()
 
-def freqSampleDistributionPlots(dataFolder, sample_id, m = 1024, k = None, splits = [None, 'psi']):
+def freqSampleDistributionPlots(dataFolder, sample_id, m = 1024, k = None,
+                                splits = [None, 'psi']):
     '''Wrapper function for plotFrequenciesForSample and plotFrequenciesSampleSubplot.'''
     chi_path1 = osp.join(dataFolder, 'chis.npy')
     chi_path2 = osp.join(dataFolder, 'samples/sample{}'.format(sample_id), 'chis.npy')
@@ -270,13 +271,15 @@ def freqSampleDistributionPlots(dataFolder, sample_id, m = 1024, k = None, split
         for split in splits:
             print('\t', split)
             # plotFrequenciesSampleSubplot(freq_arr, dataFolder, preprocessing, k, split)
-            plotFrequenciesForSample(freq_arr, dataFolder, preprocessing, k, sampleid = sample_id, split = split)
+            plotFrequenciesForSample(freq_arr, dataFolder, preprocessing, k,
+                                    sampleid = sample_id, split = split)
 
 ### Plotting contact frequency as function of genomic distance
 def plot_genomic_distance_statistics_inner(datafolder, ifile, ofile, title,
                                             mode = 'freq', stat = 'mean'):
     """
-    Function to plot expected interaction frequency as a function of genomic distance for all samples in dataFolder.
+    Function to plot expected interaction frequency as a function of genomic distance
+    for all samples in dataFolder.
 
     Inputs:
         dataFolder: location of data to plot
@@ -332,13 +335,15 @@ def plot_genomic_distance_statistics(dataFolder):
 
 
 ### basic plots
-def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, plot_chi = False, sampleID = None):
+def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
+                plot_chi = False, sampleID = None):
     '''Generate basic plots of data in dataFolder.'''
-    in_paths = sorted(make_dataset(dataFolder))
+    in_paths = sorted(make_dataset(dataFolder, use_ids = False))
     for path in in_paths:
-        if isinstance(sampleID, list) and int(osp.split(path)[1][6:]) not in sampleID:
+        id = osp.split(path)[1][6:]
+        if isinstance(sampleID, list) and id not in sampleID:
             continue
-        elif isinstance(sampleID, int) and osp.split(path)[1] != f'sample{sampleID}':
+        elif isinstance(sampleID, int) and int(id) != sampleID:
             continue
         print(path)
 
@@ -383,9 +388,11 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
                                         ref = meanDist, ref_label = 'not KR', logx = True)
             meanDist_kr = DiagonalPreprocessing.genomic_distance_statistics(y_kr)
             y_kr_diag = DiagonalPreprocessing.process(y_kr, meanDist_kr)
-            plot_matrix(y_kr_diag, osp.join(path, 'y_kr_diag.png'), title = 'kr + diag normalization', vmax = 'max')
+            plot_matrix(y_kr_diag, osp.join(path, 'y_kr_diag.png'),
+                        title = 'kr + diag normalization', vmax = 'max')
 
-            plot_matrix(ydiag, osp.join(path, 'y_diag.png'), title = 'diag normalization', vmax = 'max')
+            plot_matrix(ydiag, osp.join(path, 'y_diag.png'),
+                        title = f'Sample {id}\ndiag normalization', vmax = 'max')
 
             y_log = np.log(y + 1)
             plot_matrix(y_log, osp.join(path, 'y_log.png'), title = 'log normalization', vmax = 'max')
@@ -393,18 +400,14 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True, p
             meanDistLog = DiagonalPreprocessing.genomic_distance_statistics(y_log)
             np.savetxt(osp.join(path, 'meanDistLog.txt'), meanDistLog)
             y_log_diag = DiagonalPreprocessing.process(y_log, meanDistLog)
-            plot_matrix(y_log_diag, osp.join(path, 'y_log_diag.png'), title = 'log + diag normalization', vmax = 'max')
-
+            plot_matrix(y_log_diag, osp.join(path, 'y_log_diag.png'),
+                        title = 'log + diag normalization', vmax = 'max')
 
             y_prcnt_path = osp.join(path, 'y_prcnt.npy')
             if osp.exists(y_prcnt_path):
                 y_prcnt = np.load(y_prcnt_path)
-                plot_matrix(y_prcnt, osp.join(path, 'y_prcnt.png'), title = 'prcnt normalization', vmax = 'max', prcnt = True)
-
-            y_diag_batch_path = osp.join(path, 'y_diag_batch.npy')
-            if osp.exists(y_diag_batch_path):
-                y_diag_batch = np.load(y_diag_batch_path)
-                plot_matrix(y_diag_batch, osp.join(path, 'y_diag_batch.png'), title = 'diag normalization', vmax = 'max')
+                plot_matrix(y_prcnt, osp.join(path, 'y_prcnt.png'),
+                            title = 'prcnt normalization', vmax = 'max', prcnt = True)
 
         if chi is not None:
             chi_to_latex(chi, ofile = osp.join(path, 'chis.tek'))
@@ -441,10 +444,9 @@ if __name__ == '__main__':
     dir = '/home/erschultz/sequences_to_contact_maps'
     # dir = '/home/erschultz'
 
-    dataset = 'dataset_05_12_22'
+    dataset = 'dataset_04_27_22'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                    sampleID = 1)
+    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False, sampleID = None)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

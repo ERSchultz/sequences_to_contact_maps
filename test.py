@@ -26,6 +26,7 @@ from sklearn.utils.extmath import svd_flip
 from utils.argparse_utils import (ArgparserConverter, finalize_opt,
                                   get_base_parser)
 from utils.base_networks import AverageTo2d
+from utils.dataset_classes import make_dataset
 from utils.energy_utils import s_to_E
 from utils.load_utils import load_sc_contacts, save_sc_contacts
 from utils.networks import get_model
@@ -33,7 +34,7 @@ from utils.plotting_utils import plot_matrix, plot_top_PCs
 from utils.similarity_measures import SCC
 from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
                          print_time, triu_to_full)
-from utils.xyz_utils import lammps_load
+from utils.xyz_utils import lammps_load, xyz_load, xyz_to_contact_grid
 
 import scHiCTools
 
@@ -689,6 +690,31 @@ def compare_y_normalization_methods():
     dir = '/home/erschultz/sequences_to_contact_maps/dataset_05_12_22/samples/sample1'
     y = np.load(osp.join(dir, 'y.npy'))
 
+def downsample_simulation():
+    # uses data_out/output.xyz to generate contact map as if you had
+    # only ran a shorter simulation
+    # use this to assess GNN robustness to simulation length
+    dir = '/project2/depablo/erschultz/dataset_04_27_22'
+    files = make_dataset(dir)
+
+    with multiprocessing.Pool(20) as p:
+        p.map(down_sample_simulation_inner, files)
+
+def down_sample_simulation_inner(file):
+    print(file)
+    xyz_file = osp.join(file, 'data_out', 'output.xyz')
+    xyz = xyz_load(xyz_file, multiple_timesteps = True, N_min = 1)
+    for ymax in [1000, 2500, 5000]:
+        y = xyz_to_contact_grid(xyz[:ymax], 28.7)
+        np.save(osp.join(file, f'y{ymax}.npy'), y)
+        plot_matrix(y, osp.join(file, f'y{ymax}.png'), vmax='mean')
+
+        meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
+        ydiag = DiagonalPreprocessing.process(y, meanDist)
+        np.save(osp.join(file, f'y{ymax}_diag.npy'), ydiag) # save in proper place
+        plot_matrix(ydiag, osp.join(file, f'y{ymax}_diag.png'), vmax='max')
+
+
 
 
 if __name__ == '__main__':
@@ -700,4 +726,5 @@ if __name__ == '__main__':
     # edit_argparse()
     # sc_nagano_to_dense()
     # debugModel('ContactGNNEnergy')
-    compare_y_normalization_methods()
+    # compare_y_normalization_methods()
+    downsample_simulation()

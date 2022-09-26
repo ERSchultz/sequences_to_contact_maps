@@ -189,13 +189,6 @@ def xyz_to_contact_grid(xyz, grid_size, sparse_format = False, dtype = np.int32)
                 for j in bead_list:
                     contact_map[i,j] += 1
 
-            # for i in range(len(bead_list)):
-            #     bead_i = bead_list[i]
-            #     for j in range(i):
-            #         bead_j = bead_list[j]
-            #         contact_map[bead_i, bead_j] += 1
-            #         contact_map[bead_j, bead_i] += 1
-
     if sparse_format:
         return csr_array(contact_map)
 

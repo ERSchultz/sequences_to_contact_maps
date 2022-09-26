@@ -1452,6 +1452,7 @@ def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
                                                      [(0,    'white'),
                                                       (1,    'red')], N=126)
     elif cmap.replace('-', '').lower() == 'bluered':
+        vmin = vmax = 'center'
         cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                  [(0, 'blue'),
                                                  (0.5, 'white'),
@@ -1481,19 +1482,25 @@ def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
     plt.figure(figsize = (size_in, size_in))
 
     # set min and max
-    if vmin == 'min':
+    if vmin == 'center':
         vmin = np.percentile(arr, 1)
-        # uses 1st percentile instead of absolute min
-    elif vmin == 'abs_min':
-        vmin = np.min(arr)
-
-    if vmax == 'mean':
-        vmax = np.mean(arr)
-    elif vmax == 'max':
         vmax = np.percentile(arr, 99)
-        # uses 99th percentile instead of absolute max
-    elif vmax == 'abs_max':
-        vmax = np.max(arr)
+        vmax = max(vmax, vmin * -1)
+        vmin = vmax * -1
+    else:
+        if vmin == 'min':
+            vmin = np.percentile(arr, 1)
+            # uses 1st percentile instead of absolute min
+        elif vmin == 'abs_min':
+            vmin = np.min(arr)
+
+        if vmax == 'mean':
+            vmax = np.mean(arr)
+        elif vmax == 'max':
+            vmax = np.percentile(arr, 99)
+            # uses 99th percentile instead of absolute max
+        elif vmax == 'abs_max':
+            vmax = np.max(arr)
 
     ax = sns.heatmap(arr, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap)
     if x_ticks is None:

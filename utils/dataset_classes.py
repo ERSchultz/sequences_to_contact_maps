@@ -13,7 +13,7 @@ from .utils import DiagonalPreprocessing, get_diag_chi_step
 
 
 def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False,
-                samples = None, prefix = 'sample'):
+                samples = None, prefix = 'sample', use_ids = True):
     """
     Make list data file paths.
 
@@ -24,6 +24,7 @@ def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False,
         verbose: True for verbose mode
         samples: list/set of samples to include, None for all samples
         prefix: only folders starting with prefix will be considered
+        use_ids:
 
     Outputs:
         data_file_arr: list of data file paths
@@ -31,15 +32,23 @@ def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False,
     data_file_arr = []
     samples_dir = osp.join(dir, 'samples')
     l = len(prefix)
-    sample_ids = [int(file[l:]) for file in os.listdir(samples_dir) if prefix in file and file[l:].isnumeric()]
-    for sample_id in sorted(sample_ids):
-        if sample_id < minSample:
-            continue
-        if sample_id > maxSample:
-            continue
-        if samples is None or sample_id in samples:
-            data_file = osp.join(samples_dir, f'{prefix}{sample_id}')
-            data_file_arr.append(data_file)
+    sample_files = [f for f in os.listdir(samples_dir) if prefix in f]
+
+    if use_ids:
+        sample_ids = [file[l:] for file in sample_files]
+        for sample_id in sorted(sample_ids):
+            if sample_id.isnumeric():
+                sample_id = int(sample_id)
+                if sample_id < minSample:
+                    continue
+                if sample_id > maxSample:
+                    continue
+            if samples is None or sample_id in samples:
+                data_file = osp.join(samples_dir, f'{prefix}{sample_id}')
+                data_file_arr.append(data_file)
+    else:
+        for file in sample_files:
+            data_file_arr.append(osp.join(samples_dir, file))
 
     return data_file_arr
 

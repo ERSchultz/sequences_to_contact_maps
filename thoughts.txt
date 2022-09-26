@@ -81,3 +81,14 @@ Challenge: I’m not sure how to leverage this to train the MLP. If only the fir
 *I’ve explored this particular functional form with synthetic data, but I suspect that what we really want is the parameters to decay/plateau to some value rather than increase to infinity as d increases.
 
 Can we use the GNN and the MLP as initial guesses for max entropy? How much faster is this than the regular max ent approach?
+
+
+
+Problem with GNN:
+Even given the same plaid params, if you change the diag params, you get a different diag normalized contact map. The eigenvectors/PCs of the diag normalized contact map are unchanged, but the magnitudes are changed. The totally makes sense based on the physics of the model. For example, if all diag params are 0, then plaid params in [-1, 1] will have a huge effect. If diag params, are in [0, 40], plaid params in [-1, 1] are rapidly washed out.
+
+Solution(?): jointly estimate the params, we can think of the parameters as one big matrix. If Y is contact map, E is plaid params, and D is diag params, then W = E + D is net param. Really what the GNN should be doing is learning the appropriate E given D such that the simulation outputs Y. Accordingly, we can use the MLP to estimate D, use this as edge features in the GNN and then use the GNN to learn plaid parameters, E. The GNN can return E or W. 
+
+To test this, we need a dataset with a range of plaid patterns AND a range of diag patterns. Imagine that we had solved the diag problem - i.e. we had a really good MLP that could estimate D from Y. Since our MLP isn't quite that good, let's just use the ground truth D as input to the GNN. Does this help the GNN? It shouldn't hurt the GNN...
+
+Unrelated, should also probably crop to the first 200? subdiagonals, anythign past that is more likely to be noise, and likely unneeded even if there is information there. This really shouldn't cause any issues.
