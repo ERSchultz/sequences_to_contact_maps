@@ -9,7 +9,7 @@
 #SBATCH --mem-per-cpu=2000
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=erschultz@uchicago.edu
-#SBATCH --wait=22811370
+#SBATCH --dependency=afterok:22811370
 
 cd ~/sequences_to_contact_maps
 
