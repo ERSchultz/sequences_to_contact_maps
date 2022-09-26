@@ -36,8 +36,6 @@ from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
                          print_time, triu_to_full)
 from utils.xyz_utils import lammps_load, xyz_load, xyz_to_contact_grid
 
-import scHiCTools
-
 
 def test_num_workers():
     opt = argparseSetup() # get default args
