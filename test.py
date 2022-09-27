@@ -693,7 +693,7 @@ def downsample_simulation():
     # uses data_out/output.xyz to generate contact map as if you had
     # only ran a shorter simulation
     # use this to assess GNN robustness to simulation length
-    dir = '/home/erschultz/sequences_to_contact_maps/dataset_04_27_22'
+    dir = '/project2/depablo/erschultz/dataset_04_27_22'
     files = make_dataset(dir)
 
     with multiprocessing.Pool(20) as p:
@@ -704,14 +704,16 @@ def down_sample_simulation_inner(file):
     xyz_file = osp.join(file, 'data_out', 'output.xyz')
     xyz = xyz_load(xyz_file, multiple_timesteps = True, N_min = 1)
     for ymax in [1000, 2500, 5000]:
-        y = xyz_to_contact_grid(xyz[:ymax], 28.7)
-        np.save(osp.join(file, f'y{ymax}.npy'), y)
-        plot_matrix(y, osp.join(file, f'y{ymax}.png'), vmax='mean')
+        y_diag_ofile = osp.join(file, f'y{ymax}_diag.npy')
+        if not osp.exists(y_diag_ofile):
+            y = xyz_to_contact_grid(xyz[:ymax], 28.7)
+            np.save(osp.join(file, f'y{ymax}.npy'), y)
+            plot_matrix(y, osp.join(file, f'y{ymax}.png'), vmax='mean')
 
-        meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
-        ydiag = DiagonalPreprocessing.process(y, meanDist)
-        np.save(osp.join(file, f'y{ymax}_diag.npy'), ydiag) # save in proper place
-        plot_matrix(ydiag, osp.join(file, f'y{ymax}_diag.png'), vmax='max')
+            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
+            ydiag = DiagonalPreprocessing.process(y, meanDist)
+            np.save(y_diag_ofile, ydiag)
+            plot_matrix(ydiag, osp.join(file, f'y{ymax}_diag.png'), vmax='max')
 
 
 
@@ -724,6 +726,6 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
     # compare_y_normalization_methods()
-    # downsample_simulation()
+    downsample_simulation()

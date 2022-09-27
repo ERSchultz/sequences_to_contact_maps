@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=test
 #SBATCH --output=logFiles/test.out
-#SBATCH --time=4:30:00
+#SBATCH --time=6:30:00
 #SBATCH --partition=depablo-ivyb
 #SBATCH --ntasks=20
 #SBATCH --mem-per-cpu=2000
