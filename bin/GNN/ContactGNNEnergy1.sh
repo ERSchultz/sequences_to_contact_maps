@@ -29,8 +29,8 @@ numHeads=8
 
 
 id=164
-lr=1e-4
-for yPreprocessing in '5000_diag' '1000_diag' '2500_diag' 'diag'
+yPreprocessing='5000_diag'
+for lr in 1e-4
 do
   train
   id=$(( $id + 1 ))
