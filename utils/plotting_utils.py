@@ -19,6 +19,7 @@ from sklearn import metrics
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error, silhouette_score
 from sympy import solve, symbols
+from utils.energy_utils import calculate_diag_chi_step
 
 from .argparse_utils import (ArgparserConverter, finalize_opt, get_base_parser,
                              get_opt_header, opt2list)
@@ -26,8 +27,7 @@ from .InteractionConverter import InteractionConverter
 from .load_utils import load_sc_contacts, load_X_psi
 from .neural_net_utils import get_data_loaders, get_dataset, load_saved_model
 from .utils import (DiagonalPreprocessing, calc_dist_strat_corr,
-                    calc_per_class_acc, compare_PCA, crop, get_diag_chi_step,
-                    triu_to_full)
+                    calc_per_class_acc, compare_PCA, crop, triu_to_full)
 from .xyz_utils import (find_dist_between_centroids, find_label_centroid,
                         xyz_load, xyz_to_contact_grid, xyz_write)
 
@@ -629,7 +629,7 @@ def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
         elif opt.output_mode.startswith('diag_chi'):
             with open(osp.join(path, 'config.json'), 'r') as f:
                 config = json.load(f)
-            yhat = get_diag_chi_step(config, yhat)
+            yhat = calculate_diag_chi_step(config, yhat)
         elif opt.output_mode.startswith('diag_param'):
             d_arr = np.arange(len(y))
             with open(osp.join(path, 'params.log'), 'r') as f:
@@ -1322,7 +1322,7 @@ def plot_diag_chi(config, path, ref = None, ref_label = '', logx = False,
     if config is None:
         assert diag_chis_step is not None
     else:
-        diag_chis_step = get_diag_chi_step(config)
+        diag_chis_step = calculate_diag_chi_step(config)
 
     fig, ax = plt.subplots()
     ax.plot(diag_chis_step, color = 'k', label = label)
@@ -1354,6 +1354,8 @@ def plot_diag_chi(config, path, ref = None, ref_label = '', logx = False,
     plt.savefig(ofile)
     plt.close()
 
+    return diag_chis_step
+
 def plot_mean_vs_genomic_distance(y, path, ofile, diag_chis_step = None,
                                 config = None, logx = False, ref = None,
                                 ref_label = 'reference'):
@@ -1371,7 +1373,7 @@ def plot_mean_vs_genomic_distance(y, path, ofile, diag_chis_step = None,
     meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob',
                                             zero_diag = False, zero_offset = 0)
     if config is not None:
-        diag_chis_step = get_diag_chi_step(config)
+        diag_chis_step = calculate_diag_chi_step(config)
 
     plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, ref, ref_label)
 

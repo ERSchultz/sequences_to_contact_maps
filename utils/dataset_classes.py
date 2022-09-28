@@ -9,7 +9,8 @@ from scipy.ndimage import uniform_filter
 from torch.utils.data import Dataset
 
 from .argparse_utils import ArgparserConverter
-from .utils import DiagonalPreprocessing, get_diag_chi_step
+from .energy_utils import calculate_diag_chi_step
+from .utils import DiagonalPreprocessing
 
 
 def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False,
@@ -38,10 +39,10 @@ def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False,
         sample_ids = [file[l:] for file in sample_files]
         for sample_id in sorted(sample_ids):
             if sample_id.isnumeric():
-                sample_id = int(sample_id)
-                if sample_id < minSample:
+                sample_id_int = int(sample_id)
+                if sample_id_int < minSample:
                     continue
-                if sample_id > maxSample:
+                if sample_id_int > maxSample:
                     continue
             if samples is None or sample_id in samples:
                 data_file = osp.join(samples_dir, f'{prefix}{sample_id}')
@@ -267,7 +268,7 @@ class DiagFunctions(Dataset):
 
             # get diag chi
             if self.output_mode.startswith('diag_chi_step'):
-                chi_diag = get_diag_chi_step(config)
+                chi_diag = calculate_diag_chi_step(config)
             elif self.output_mode.startswith('diag_chi_continuous'):
                 chi_diag = np.load(osp.join(self.paths[index], 'diag_chis_continuous.npy'))
             elif self.output_mode.startswith('diag_chi'):

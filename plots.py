@@ -11,11 +11,11 @@ import numpy as np
 from scipy.ndimage import uniform_filter
 from utils.argparse_utils import (argparse_setup, finalize_opt,
                                   get_base_parser, get_opt_header, opt2list)
+from utils.energy_utils import calculate_diag_chi_step
 from utils.load_utils import load_contact_map
-from utils.plotting_utils import (get_diag_chi_step, plot_centroid_distance,
-                                  plot_combined_models, plot_diag_chi,
-                                  plot_sc_contact_maps, plot_xyz_gif,
-                                  plotting_script)
+from utils.plotting_utils import (plot_centroid_distance, plot_combined_models,
+                                  plot_diag_chi, plot_sc_contact_maps,
+                                  plot_xyz_gif, plotting_script)
 from utils.utils import DiagonalPreprocessing
 from utils.xyz_utils import xyz_load, xyz_write
 
@@ -310,7 +310,7 @@ def plot_mean_vs_genomic_distance_comparison(dir, samples = None, percent = Fals
 
         if params and config is not None:
             # find chi transition points
-            diag_chi_step = get_diag_chi_step(config)
+            diag_chi_step = calculate_diag_chi_step(config)
 
             if ind is not None:
                 ax2.plot(diag_chi_step, ls='--', color = cmap(ind % cmap.N))

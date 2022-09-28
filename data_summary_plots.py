@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from utils.dataset_classes import make_dataset
+from utils.energy_utils import calculate_D
 from utils.InteractionConverter import InteractionConverter
 from utils.knightRuiz import knightRuiz
 from utils.load_utils import load_all, load_contact_map, load_X_psi, load_Y
@@ -115,7 +116,9 @@ def plotFrequenciesForSample(freq_arr, dataFolder, preprocessing, k, sampleid,
         preprocessing: type of preprocessing {'None', 'diag', 'diag_instance'}
         sampleid: int, which sample id to plot
         k: number of epigentic marks, used for InteractionConverter
-        split: how to split data into subplots: None for no subplots, type for subplot on interaction type, psi for sublot on interation psi
+        split: how to split data into subplots: None for no subplots,
+                                    type for subplot on interaction type,
+                                    psi for sublot on interation psi
         xmax: x axis limit
     """
     freq_pd = pd.DataFrame(freq_arr, columns = ['freq', 'sampleID', 'type', 'psi']) # cols = freq, sampleid, interaction_type
@@ -200,7 +203,9 @@ def plotFrequenciesSampleSubplot(freq_arr, dataFolder, preprocessing, k, split =
         dataFolder: location of data, used for saving image
         preprocessing: type of preprocessing {'None', 'diag', 'diag_instance'}
         k: number of epigentic marks, used for InteractionConverter
-        split: how to split data within each subplot: None for no split, type for split on interaction type, psi for split on interation psi
+        split: how to split data within each subplot: None for no split,
+                                    type for split on interaction type,
+                                    psi for split on interation psi
     """
     freq_pd = pd.DataFrame(freq_arr, columns = ['freq', 'sampleID', 'type', 'psi']) # cols = freq, sampleid, interaction_type, psi
     converter = InteractionConverter(k)
@@ -243,7 +248,7 @@ def plotFrequenciesSampleSubplot(freq_arr, dataFolder, preprocessing, k, split =
     else:
         fig.suptitle('{} preprocessing'.format(preprocessing), fontsize = 16, y = 1)
 
-    plt.savefig(osp.join(dataFolder, 'freq_count_multisample_preprocessing_{}_split_{}.png'.format(preprocessing, split)))
+    plt.savefig(osp.join(dataFolder, f'freq_count_multisample_preprocessing_{preprocessing}_split_{split}.png'))
     plt.close()
 
 def freqSampleDistributionPlots(dataFolder, sample_id, m = 1024, k = None,
@@ -343,8 +348,11 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
         id = osp.split(path)[1][6:]
         if isinstance(sampleID, list) and id not in sampleID:
             continue
-        elif isinstance(sampleID, int) and int(id) != sampleID:
-            continue
+        elif isinstance(sampleID, int):
+            if not id.isnumeric():
+                continue
+            elif int(id) != sampleID:
+                continue
         print(path)
 
         x, psi, chi, _, e, s, y, ydiag = load_all(path, data_folder = dataFolder,
@@ -393,6 +401,19 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
 
             plot_matrix(ydiag, osp.join(path, 'y_diag.png'),
                         title = f'Sample {id}\ndiag normalization', vmax = 'max')
+            ydiag_log = np.log(ydiag)
+            plot_matrix(ydiag_log, osp.join(path, 'y_diag_log.png'), title = 'diag + log normalization', cmap = 'bluered')
+
+            for fname in ['y1000_diag.npy', 'y2500_diag.npy', 'y5000_diag.npy']:
+                fpath = osp.join(path, fname)
+                if osp.exists(fpath):
+                    y_temp = np.load(fpath)
+                    ydiag_log_temp = np.log(y_temp)
+                    plot_matrix(y_temp, fpath.split('.')[0]+'.png', title = 'diag normalization', vmax = 'max')
+                    plot_matrix(ydiag_log_temp, fpath.split('.')[0]+'_log.png', title = 'diag + log normalization', cmap = 'bluered')
+
+
+
 
             y_log = np.log(y + 1)
             plot_matrix(y_log, osp.join(path, 'y_log.png'), title = 'log normalization', vmax = 'max')
@@ -412,22 +433,32 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
         if chi is not None:
             chi_to_latex(chi, ofile = osp.join(path, 'chis.tek'))
             if plot_chi:
-                plot_matrix(chi, osp.join(path, 'chi.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
+                plot_matrix(chi, osp.join(path, 'chi.png'), vmax = 'max', vmin = 'min',
+                            cmap = 'blue-red')
 
         # plot diag chi
         diag_chis_continuous_file = osp.join(path, 'diag_chis_continuous.npy')
         if config is not None:
-            plot_diag_chi(config, path, ref = diag_chis_continuous_file, ref_label = 'continuous')
+            diag_chis_step = plot_diag_chi(config, path, ref = diag_chis_continuous_file, ref_label = 'continuous')
+            D = calculate_D(diag_chis_step)
+            plot_matrix(D, osp.join(path, 'D.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
+
 
         if plot_energy:
             if s is not None:
-                plot_matrix(s, osp.join(path, 's.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
+                plot_matrix(s, osp.join(path, 's.png'), vmax = 'max', vmin = 'min',
+                            cmap = 'blue-red')
                 s_sym = (s + s.T)/2
                 np.save(osp.join(path, 's_sym.npy'), s_sym)
-                plot_matrix(s, osp.join(path, 's_sym.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
+                plot_matrix(s, osp.join(path, 's_sym.png'), vmax = 'max', vmin = 'min',
+                            cmap = 'blue-red')
 
             if e is not None:
-                plot_matrix(e, osp.join(path, 'e.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
+                plot_matrix(e, osp.join(path, 'e.png'), vmax = 'max', vmin = 'min',
+                            cmap = 'blue-red')
+                ED = e + D
+                plot_matrix(ED, osp.join(path, 'ED.png'), vmax = 'max', vmin = 'min',
+                            cmap = 'blue-red')
 
         if plot_x:
             x_path = osp.join(path, 'x.npy')
@@ -446,7 +477,7 @@ if __name__ == '__main__':
 
     dataset = 'dataset_04_27_22'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False, sampleID = None)
+    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False, sampleID = 1)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

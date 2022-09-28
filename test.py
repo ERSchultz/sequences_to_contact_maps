@@ -34,7 +34,8 @@ from utils.plotting_utils import plot_matrix, plot_top_PCs
 from utils.similarity_measures import SCC
 from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
                          print_time, triu_to_full)
-from utils.xyz_utils import lammps_load, xyz_load, xyz_to_contact_grid
+from utils.xyz_utils import (lammps_load, xyz_load, xyz_to_contact_distance,
+                             xyz_to_contact_grid)
 
 
 def test_num_workers():
@@ -693,8 +694,9 @@ def downsample_simulation():
     # uses data_out/output.xyz to generate contact map as if you had
     # only ran a shorter simulation
     # use this to assess GNN robustness to simulation length
-    dir = '/project2/depablo/erschultz/dataset_04_27_22'
+    dir = '/home/erschultz/sequences_to_contact_maps/dataset_04_27_22'
     files = make_dataset(dir)
+    files = [f for f in files if f.endswith('long')]
 
     with multiprocessing.Pool(20) as p:
         p.map(down_sample_simulation_inner, files)
@@ -706,7 +708,7 @@ def down_sample_simulation_inner(file):
     for ymax in [1000, 2500, 5000]:
         y_diag_ofile = osp.join(file, f'y{ymax}_diag.npy')
         if not osp.exists(y_diag_ofile):
-            y = xyz_to_contact_grid(xyz[:ymax], 28.7)
+            y = xyz_to_contact_grid(xyz[:ymax], 28.7, verbose = True)
             np.save(osp.join(file, f'y{ymax}.npy'), y)
             plot_matrix(y, osp.join(file, f'y{ymax}.png'), vmax='mean')
 

@@ -251,6 +251,12 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if self.crop is not None:
             y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
 
+        # TODO triu
+        if False:
+            k = 5 # number of sub diagonals to keep
+            y = np.tril(y, k)
+            y = np.triu(y, -k)
+
         if self.y_norm == 'instance':
             self.ymax = np.max(y)
             self.ymin = np.min(y)
