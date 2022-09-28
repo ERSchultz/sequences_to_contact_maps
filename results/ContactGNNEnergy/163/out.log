@@ -125,3 +125,20 @@ Epoch 54, loss = 2.1396
 Mean test/val loss: 2.1858
 
 Epoch 56, loss = 2.1332
+Mean test/val loss: 2.1624
+
+Epoch 58, loss = 2.1272
+Mean test/val loss: 2.1580
+
+Epoch 60, loss = 2.1195
+Mean test/val loss: 2.1526
+
+Epoch 62, loss = 2.1149
+Mean test/val loss: 2.1489
+
+Epoch 64, loss = 2.1105
+Mean test/val loss: 2.1562
+
+Epoch 66, loss = 2.1049
+Mean test/val loss: 2.1451
+
