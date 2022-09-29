@@ -1,6 +1,2 @@
-Namespace(data_folder='/project2/depablo/erschultz/dataset_04_27_22', GNN_file_name='ContactGNNEnergy3', GNN_path=None, clean_scratch=False, scratch='/scratch/midway2/erschultz')
-None True
-
 here
-/scratch/midway2/erschultz/dataset_04_27_22/ContactGNNEnergy3
-Removing /scratch/midway2/erschultz/dataset_04_27_22/ContactGNNEnergy3
+Removing /scratch/midway2/erschultz/dataset_09_26_22/ContactGNNEnergy2

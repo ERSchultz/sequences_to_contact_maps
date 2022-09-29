@@ -6,6 +6,7 @@
 #SBATCH --time=2:00:00
 
 
-dataset="/home/erschultz/scratch-midway2"
+dir="/home/erschultz/scratch-midway2"
+cd $dir
 
 rm -r dataset_04*
