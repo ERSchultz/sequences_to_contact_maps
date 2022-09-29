@@ -181,7 +181,7 @@ def debugModel(model_type):
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True
-        opt.max_diagonal=100
+        # opt.max_diagonal=100
     elif model_type == 'ContactGNNDiag':
         opt.loss = 'mse'
         opt.preprocessing_norm = 'instance'
@@ -221,15 +221,15 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 3
+    opt.n_epochs = 2
     opt.lr = 1e-3
     opt.batch_size = 2
     opt.milestones = None
     opt.gamma = 0.1
 
     # other
-    opt.plot = True
-    opt.plot_predictions = True
+    opt.plot = False
+    opt.plot_predictions = False
     opt.verbose = False
     opt.print_params = False
     opt.gpus = 1
@@ -237,7 +237,7 @@ def debugModel(model_type):
     opt.use_scratch = True
     opt.print_mod = 1
     opt.num_workers = 4
-    opt.use_scratch_parallel = True
+    opt.use_scratch_parallel = False
     # opt.id = 12
     # opt.resume_training = True
 

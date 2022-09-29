@@ -25,10 +25,11 @@ hiddenSizesList='8-8-8'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
+maxDiagonal=400
 
 
-id=166
-yPreprocessing='1000_diag'
+id=170
+yPreprocessing='diag'
 for lr in 1e-4
 do
   train
