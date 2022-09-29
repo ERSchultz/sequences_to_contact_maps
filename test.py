@@ -155,9 +155,9 @@ def debugModel(model_type):
         opt.y_preprocessing='diag'
         opt.loss = 'mse'
         opt.preprocessing_norm = None
-        opt.message_passing='signedconv'
+        opt.message_passing='gat'
         opt.GNN_mode = True
-        opt.output_mode = 'energy_sym'
+        opt.output_mode = 'energy_sym_diag'
         opt.encoder_hidden_sizes_list=[100,100,64]
         opt.update_hidden_sizes_list=[100,100,64]
         opt.hidden_sizes_list=[8,8,8]
@@ -174,14 +174,14 @@ def debugModel(model_type):
         opt.sparsify_threshold = 0.405
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = 'ln'
-        opt.head_architecture = 'inner'
+        opt.head_architecture = 'bilinear'
         opt.head_hidden_sizes_list = None
         # opt.crop=[0,512]
         # opt.m = 512
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True
-        opt.max_diagonal=500
+        # opt.max_diagonal=500
     elif model_type == 'ContactGNNDiag':
         opt.loss = 'mse'
         opt.preprocessing_norm = 'instance'
@@ -221,15 +221,15 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 2
-    opt.lr = 1e-3
+    opt.n_epochs = 20
+    opt.lr = 1e-4
     opt.batch_size = 2
     opt.milestones = None
     opt.gamma = 0.1
 
     # other
-    opt.plot = False
-    opt.plot_predictions = False
+    opt.plot = True
+    opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = False
     opt.gpus = 1

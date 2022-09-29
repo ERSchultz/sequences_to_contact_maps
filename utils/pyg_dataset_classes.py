@@ -155,8 +155,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             if self.output != 'contact':
                 del graph.contact_map
-            if not self.output.startswith('diag'):
-                del graph.diag_chis_continuous
 
             if self.output is not None and self.output.startswith('energy'):
                 # first look for s
@@ -183,11 +181,13 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     chi = torch.tensor(chi, dtype = torch.float32)
                     graph.energy = x @ chi @ x.t()
 
-                if self.output == 'energy_sym':
+                if self.output.startswith('energy_sym'):
                     graph.energy = (graph.energy + graph.energy.t()) / 2
-            elif self.output == 'diag_chi':
-                D = calculate_D(graph.diag_chis_continuous)
-                graph.y = torch.tensor(D, dtype = torch.float32)
+                if self.output.startswith('energy_sym_diag'):
+                    D = calculate_D(graph.diag_chis_continuous)
+                    graph.energy += torch.tensor(D, dtype = torch.float32)
+
+            del graph.diag_chis_continuous
 
             torch.save(graph, self.processed_paths[i])
 

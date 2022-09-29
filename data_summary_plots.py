@@ -450,15 +450,19 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
                             cmap = 'blue-red')
                 s_sym = (s + s.T)/2
                 np.save(osp.join(path, 's_sym.npy'), s_sym)
-                plot_matrix(s, osp.join(path, 's_sym.png'), vmax = 'max', vmin = 'min',
+                plot_matrix(s_sym, osp.join(path, 's_sym.png'), vmax = 'max', vmin = 'min',
+                            cmap = 'blue-red')
+
+                SD = s_sym + D
+                plot_matrix(SD, osp.join(path, 'SD.png'), vmax = 'max', vmin = 'min',
                             cmap = 'blue-red')
 
             if e is not None:
                 plot_matrix(e, osp.join(path, 'e.png'), vmax = 'max', vmin = 'min',
                             cmap = 'blue-red')
-                ED = e + D
-                plot_matrix(ED, osp.join(path, 'ED.png'), vmax = 'max', vmin = 'min',
-                            cmap = 'blue-red')
+                # ED = e + D
+                # plot_matrix(ED, osp.join(path, 'ED.png'), vmax = 'max', vmin = 'min',
+                #             cmap = 'blue-red')
 
         if plot_x:
             x_path = osp.join(path, 'x.npy')
@@ -473,11 +477,11 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
 if __name__ == '__main__':
     dir = '/project2/depablo/erschultz'
     dir = '/home/erschultz/sequences_to_contact_maps'
-    # dir = '/home/erschultz'
+    dir = '/home/erschultz'
 
-    dataset = 'dataset_04_27_22'
+    dataset = 'dataset_9_29_22'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False, sampleID = 1)
+    basic_plots(data_dir, plot_y = False, plot_energy = True, plot_x = False, sampleID = 1)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

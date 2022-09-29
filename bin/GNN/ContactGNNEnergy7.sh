@@ -18,15 +18,22 @@ source activate python3.9_pytorch1.9_cuda10.2
 rootName='ContactGNNEnergy7' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_04_27_22"
 m=1024
-yLogTransform='ln'
-sparsifyThresholdUpper='none'
-sparsifyThreshold=0.405
+messagePassing='GAT'
+preTransforms='degree-ContactDistance-GeneticDistance-DiagonalParameterDistance'
+useEdgeAttr='true'
+hiddenSizesList='8-8-8'
+EncoderHiddenSizesList='100-100-64'
+updateHiddenSizesList='100-100-64'
+numHeads=8
+outputMode='energy_sym_diag'
 
+# should be really easy - check if head arch makes net energy prediction impossible
 
-id=155
-for lr in 1e-3
+id=173
+yPreprocessing='diag'
+for lr in 1e-4
 do
   train
   id=$(( $id + 1 ))
 done
-python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --GNN_file_name $rootName --scratch $scratch
+python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --GNN_file_name $rootName --scratch $scratch > clean.log

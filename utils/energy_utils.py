@@ -84,5 +84,6 @@ def calculate_D(diag_chi_continuous):
     for d in range(m):
         rng = np.arange(m-d)
         D[rng, rng+d] = diag_chi_continuous[d]
+        D[rng+d, rng] = diag_chi_continuous[d]
 
     return D
