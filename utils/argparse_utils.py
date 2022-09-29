@@ -13,7 +13,8 @@ import torch.nn.functional as F
 import torch_geometric.transforms
 
 from .pyg_fns import (AdjPCATransform, AdjTransform, ContactDistance, Degree,
-                      GeneticDistance, GeneticPosition, OneHotGeneticPosition,
+                      DiagonalParameterDistance, GeneticDistance,
+                      GeneticPosition, OneHotGeneticPosition,
                       WeightedLocalDegreeProfile)
 
 
@@ -469,6 +470,13 @@ def process_transforms(opt):
             opt.node_transforms.append('OneHotGeneticPosition')
             opt.node_feature_size += opt.m
             processed.append(OneHotGeneticPosition())
+        elif t_str[0] == 'diagonalparameterdistance':
+            opt.edge_transforms.append(f'DiagonalParameterDistance')
+            assert opt.use_edge_attr or opt.use_edge_weights
+            if opt.use_edge_attr:
+                opt.edge_dim += 1
+            processed.append(DiagonalParameterDistance(split_edges = opt.split_neg_pos_edges,
+                                            convert_to_attr = opt.use_edge_attr))
         else:
             raise Exception(f"Invalid transform {t_str} for id={opt.id}")
     if len(processed) > 0:
@@ -553,7 +561,7 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
         elif file == 'params.log' and output_mode.startswith('diag_param'):
             # need params log to get diag_chi params
             move_file = True
-        elif file == 'diag_chis_continuous.npy' and (output_mode.startswith('diag') or False):
+        elif file == 'diag_chis_continuous.npy' and (output_mode.startswith('diag') or output_mode.startswith('energy')):
             # need to load this file regardless of which version of diag
             move_file = True
 

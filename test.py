@@ -154,8 +154,8 @@ def debugModel(model_type):
     elif model_type == 'ContactGNNEnergy':
         opt.y_preprocessing='diag'
         opt.loss = 'mse'
-        opt.preprocessing_norm = 'instance'
-        opt.message_passing='gat'
+        opt.preprocessing_norm = None
+        opt.message_passing='signedconv'
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym'
         opt.encoder_hidden_sizes_list=[100,100,64]
@@ -169,19 +169,19 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         opt.transforms=AC.str2list('empty')
-        opt.pre_transforms=AC.str2list('degree-contactdistance-GeneticDistance_log')
+        opt.pre_transforms=AC.str2list('degree-contactdistance-GeneticDistance-diagonalparameterdistance')
         opt.split_edges_for_feature_augmentation = False
-        opt.sparsify_threshold = 0.176
+        opt.sparsify_threshold = 0.405
         opt.sparsify_threshold_upper = None
-        opt.log_preprocessing = None
-        opt.head_architecture = 'bilinear'
+        opt.log_preprocessing = 'ln'
+        opt.head_architecture = 'inner'
         opt.head_hidden_sizes_list = None
-        opt.crop=[0,512]
-        opt.m = 512
+        # opt.crop=[0,512]
+        # opt.m = 512
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True
-        # opt.max_diagonal=100
+        opt.max_diagonal=500
     elif model_type == 'ContactGNNDiag':
         opt.loss = 'mse'
         opt.preprocessing_norm = 'instance'

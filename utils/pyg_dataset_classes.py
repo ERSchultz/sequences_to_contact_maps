@@ -18,6 +18,7 @@ import torch_geometric.utils
 from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 
 from .dataset_classes import make_dataset
+from .energy_utils import calculate_D
 
 
 class ContactsGraph(torch_geometric.data.Dataset):
@@ -69,6 +70,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.output = output
         self.crop = crop
         self.samples = None
+        self.num_edges_list = [] # list of number of edges per graph
         self.degree_list = [] # created in self.process()
         self.verbose = verbose
         self.file_paths = make_dataset(self.dirname, maxSample = max_sample, samples = samples)
@@ -103,13 +105,17 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if verbose:
             print('Dataset construction time: '
                     f'{np.round((time.time() - t0) / 60, 3)} minutes', file = ofile)
+            print('Average num edges per graph: ',
+                    f'{np.mean(self.num_edges_list)}', file = ofile)
+            print('Average num edges per graph: ',
+                    f'{np.mean(self.num_edges_list)}')
 
-        if verbose and self.degree_list:
-            # self.degree_list will be None if loading already processed dataset
-            self.degree_list = np.array(self.degree_list)
-            mean_deg = np.round(np.mean(self.degree_list, axis = 1), 2)
-            std_deg = np.round(np.std(self.degree_list, axis = 1), 2)
-            print('Mean degree: {} +- {}\n'.format(mean_deg, std_deg), file = ofile)
+            if self.degree_list:
+                # self.degree_list will be None if loading already processed dataset
+                self.degree_list = np.array(self.degree_list)
+                mean_deg = np.round(np.mean(self.degree_list, axis = 1), 2)
+                std_deg = np.round(np.std(self.degree_list, axis = 1), 2)
+                print('Mean degree: {} +- {}\n'.format(mean_deg, std_deg), file = ofile)
 
     @property
     def raw_file_names(self):
@@ -124,6 +130,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             sample = int(osp.split(raw_folder)[1][6:])
             x, psi = self.process_x_psi(raw_folder)
             self.contact_map = self.process_y(raw_folder)
+            self.diag_chis_continuous = self.process_diag_params(raw_folder)
             edge_index, pos_edge_index, neg_edge_index = self.generate_edge_index()
 
             if self.use_node_features:
@@ -136,9 +143,11 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.num_nodes = self.m
             graph.pos_edge_index = pos_edge_index
             graph.neg_edge_index = neg_edge_index
+
+            # copy these temporarily
             graph.weighted_degree = self.weighted_degree
-            # graph.weighted_degree needed for pre_transform -  delete later to save RAM
             graph.contact_map = self.contact_map
+            graph.diag_chis_continuous = self.diag_chis_continuous
 
             if self.pre_transform is not None:
                 graph = self.pre_transform(graph)
@@ -146,6 +155,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             if self.output != 'contact':
                 del graph.contact_map
+            if not self.output.startswith('diag'):
+                del graph.diag_chis_continuous
 
             if self.output is not None and self.output.startswith('energy'):
                 # first look for s
@@ -175,21 +186,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 if self.output == 'energy_sym':
                     graph.energy = (graph.energy + graph.energy.t()) / 2
             elif self.output == 'diag_chi':
-                chi_diag = None
-                config_file = osp.join(raw_folder, 'config.json')
-                if osp.exists(config_file):
-                    with open(config_file, 'r') as f:
-                        config = json.load(f)
-                        if "diag_chis" in config:
-                            chi_diag = np.array(config["diag_chis"])
-                if chi_diag is None:
-                    raise Exception(f'chi_diag not found for {config_file}')
-                D = np.zeros((self.m, self.m))
-                k = len(chi_diag)
-                for d in range(self.m):
-                    rng = np.arange(self.m-d)
-                    diag_chi = chi_diag[math.floor(d/(self.m/k))]
-                    D[rng, rng+d] = diag_chi
+                D = calculate_D(graph.diag_chis_continuous)
                 graph.y = torch.tensor(D, dtype = torch.float32)
 
             torch.save(graph, self.processed_paths[i])
@@ -270,17 +267,19 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
         if self.y_log_transform is not None:
             if self.y_log_transform == 'ln':
-                y = np.log(y+1e-8)
+                y = np.log(y)
             elif self.y_log_transform.isdigit():
                 val = int(self.y_log_transform)
                 if val == 2:
-                    y = np.log2(y+1e-8)
+                    y = np.log2(y)
                 elif val == 10:
-                    y = np.log10(y+1e-8)
+                    y = np.log10(y)
                 else:
                     raise Exception(f'Unaccepted log base: {val}')
             else:
                 raise Exception(f'Unrecognized log transform: {self.y_log_transform}')
+
+            y[np.isinf(y)] = 0
 
         if self.sparsify_threshold is not None:
             y[np.abs(y) < self.sparsify_threshold] = 0
@@ -291,6 +290,14 @@ class ContactsGraph(torch_geometric.data.Dataset):
         # self.plotDegreeProfile(y)
         y = torch.tensor(y, dtype = torch.float32)
         return y
+
+    def process_diag_params(self, raw_folder):
+        path = osp.join(raw_folder, 'diag_chis_continuous.npy')
+        if osp.exists(path):
+            return torch.tensor(np.load(path), dtype = torch.float32)
+        else:
+            raise Exception(f'chi_diag not found for {raw_folder}')
+
 
     def get(self, index):
          data = torch.load(self.processed_paths[index])
@@ -315,6 +322,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def generate_edge_index(self):
         edge_index = self.contact_map.nonzero().t()
+        self.num_edges_list.append(edge_index.shape[1])
         if self.split_neg_pos:
             if self.y_log_transform:
                 split_val = 0

@@ -26,8 +26,11 @@ EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
+# does ln transform matter
+yLogTransform='ln'
+sparsifyThreshold=0.405
 
-id=167
+id=171
 yPreprocessing='diag'
 for lr in 1e-4
 do

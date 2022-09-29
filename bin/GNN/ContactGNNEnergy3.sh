@@ -25,8 +25,9 @@ hiddenSizesList='8-8-8'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
-maxDiagonal=400
+maxDiagonal=512
 
+# is max diagonal faster
 
 id=170
 yPreprocessing='diag'

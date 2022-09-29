@@ -15,6 +15,8 @@ from torch_geometric.utils import (add_self_loops, degree, remove_self_loops,
 from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 from torch_sparse import SparseTensor, matmul, set_diag
 
+from .energy_utils import calculate_D
+
 
 # node transforms
 class WeightedLocalDegreeProfile(BaseTransform):
@@ -202,7 +204,6 @@ class GeneticPosition(BaseTransform):
         return (f'{self.__class__.__name__}'
                 f'(center={self.center}, norm={self.norm})')
 
-
 # edge transforms
 class GeneticDistance(BaseTransform):
     '''
@@ -248,7 +249,7 @@ class GeneticDistance(BaseTransform):
             row, col = data.pos_edge_index
             dist = torch.norm(pos[col] - pos[row], p=2, dim=-1)
             if self.norm and dist.numel() > 0:
-                dist = dist / (dist.max() if self.max is None else self.max)
+                dist = dist / (data.num_nodes if self.max is None else self.max)
             if self.log:
                 dist = np.log(dist)
             elif self.log10:
@@ -289,7 +290,7 @@ class GeneticDistance(BaseTransform):
                 dist = dist.reshape(-1, 1)
 
             if self.norm and dist.numel() > 0:
-                dist = dist / (dist.max() if self.max is None else self.max)
+                dist = dist / (data.num_nodes if self.max is None else self.max)
             if self.log:
                 dist = torch.log(dist)
             elif self.log10:
@@ -395,10 +396,9 @@ class DiagonalParameterDistance(BaseTransform):
         self.split_edges = split_edges # bool
         self.convert_to_attr = convert_to_attr # bool, converts to 2d array
 
-
     def __call__(self, data):
-        pos = torch.arange(0, data.num_nodes, dtype=torch.float32).reshape(data.num_nodes, 1)
-
+        D = calculate_D(data.diag_chis_continuous)
+        D = torch.tensor(D, dtype = torch.float32)
         if self.split_edges:
             # positive
             if 'pos_edge_attr' in data._mapping:
@@ -407,46 +407,57 @@ class DiagonalParameterDistance(BaseTransform):
                 pseudo = None
 
             row, col = data.pos_edge_index
-            # dist = torch.norm(pos[col] - pos[row], p=2, dim=-1)
-
+            pos_edge_attr = D[row, col]
             if self.convert_to_attr:
-                dist = dist.reshape(-1, 1)
+                pos_edge_attr = pos_edge_attr.reshape(-1, 1)
 
             if pseudo is not None and self.cat:
                 pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
-                data.pos_edge_attr = torch.cat([pseudo, dist.type_as(pseudo)], dim=-1)
+                data.pos_edge_attr = torch.cat([pseudo, pos_edge_attr.type_as(pseudo)], dim=-1)
             else:
-                data.pos_edge_attr = dist
+                data.pos_edge_attr = pos_edge_attr
 
             # negative
             if 'neg_edge_attr' in data._mapping:
                 pseudo = data.neg_edge_attr
             else:
                 pseudo = None
-
             row, col = data.neg_edge_index
-            # dist = torch.norm(pos[col] - pos[row], p=2, dim=-1)
-
+            neg_edge_attr = D[row, col]
             if self.convert_to_attr:
-                dist = dist.reshape(-1, 1)
+                neg_edge_attr = neg_edge_attr.reshape(-1, 1)
 
             if pseudo is not None and self.cat:
                 pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
-                data.neg_edge_attr = torch.cat([pseudo, dist.type_as(pseudo)], dim=-1)
+                data.neg_edge_attr = torch.cat([pseudo, neg_edge_attr.type_as(pseudo)], dim=-1)
             else:
-                data.neg_edge_attr = dist
+                data.neg_edge_attr = neg_edge_attr
 
         else:
             (row, col), pseudo = data.edge_index, data.edge_attr
-            # dist = torch.norm(pos[col] - pos[row], p=2, dim=-1).view(-1, 1)
+            edge_attr = D[row, col]
+            if self.convert_to_attr:
+                edge_attr = edge_attr.reshape(-1, 1)
 
             if pseudo is not None and self.cat:
                 pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
-                data.edge_attr = torch.cat([pseudo, dist.type_as(pseudo)], dim=-1)
+                data.edge_attr = torch.cat([pseudo, edge_attr.type_as(pseudo)], dim=-1)
             else:
-                data.edge_attr = dist
+                data.edge_attr = edge_attr
 
         return data
+
+def _call_inner(edge_index, edge_attr, data):
+    (row, col), pseudo = edge_index, edge_attr
+    edge_attr = data.contact_map[row, col]
+    if self.convert_to_attr:
+        edge_attr = edge_attr.reshape(-1, 1)
+
+    if pseudo is not None and self.cat:
+        pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
+        edge_attr = torch.cat([pseudo, edge_attr.type_as(pseudo)], dim=-1)
+    else:
+        edge_attr = edge_attr
 
     def __repr__(self) -> str:
         return (f'{self.__class__.__name__}(norm={self.norm}, '

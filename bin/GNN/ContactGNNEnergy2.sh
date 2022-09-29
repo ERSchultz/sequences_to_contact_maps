@@ -26,6 +26,7 @@ EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
+# reference
 
 id=168
 yPreprocessing='diag'

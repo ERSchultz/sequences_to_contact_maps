@@ -27,6 +27,7 @@ updateHiddenSizesList='100-100-64'
 numHeads=8
 headArchitecture='inner'
 
+# is inner head arch faster?
 
 id=169
 yPreprocessing='diag'

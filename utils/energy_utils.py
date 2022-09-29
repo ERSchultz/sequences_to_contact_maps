@@ -80,11 +80,9 @@ def calculate_diag_chi_step(config, diag_chi = None):
 
 def calculate_D(diag_chi_continuous):
     m = len(diag_chi_continuous)
-    D = np.zeros((m,m))
-    # TODO could be faster
-    for i in range(m):
-        for j in range(m):
-            d = abs(i-j)
-            D[i,j] = diag_chi_continuous[d]
+    D = np.zeros((m, m))
+    for d in range(m):
+        rng = np.arange(m-d)
+        D[rng, rng+d] = diag_chi_continuous[d]
 
     return D

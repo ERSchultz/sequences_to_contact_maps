@@ -45,7 +45,7 @@ numHeads=1
 
 # hyperparameters
 nEpochs=100
-batchSize=2
+batchSize=1
 numWorkers=4
 milestones='50'
 gamma=0.1
