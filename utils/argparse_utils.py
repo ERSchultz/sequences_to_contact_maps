@@ -437,8 +437,7 @@ def process_transforms(opt):
             assert opt.use_edge_attr or opt.use_edge_weights
             if opt.use_edge_attr:
                 opt.edge_dim += 1
-            processed.append(ContactDistance(split_val = split,
-                                            split_edges = opt.split_neg_pos_edges,
+            processed.append(ContactDistance(split_edges = opt.split_neg_pos_edges,
                                             convert_to_attr = opt.use_edge_attr))
         elif t_str[0] == 'geneticdistance':
             opt.edge_transforms.append(f'GeneticDistance')
@@ -446,12 +445,15 @@ def process_transforms(opt):
             if opt.use_edge_attr:
                 opt.edge_dim += 1
             log = False
+            log10 = False
             for mode_str in t_str[1:]:
                 if mode_str == 'log':
                     log = True
+                if mode_str == 'log10':
+                    log10 = True
             processed.append(GeneticDistance(split_edges = opt.split_neg_pos_edges,
                                             convert_to_attr = opt.use_edge_attr,
-                                            log = log))
+                                            log = log, log10 = log10))
         elif t_str[0] == 'geneticposition':
             center = False
             norm = False
@@ -474,8 +476,10 @@ def process_transforms(opt):
     else:
         opt.pre_transforms_processed = None
 
+    # these are used in opt2list for making results table
     opt.edge_transforms = sorted(opt.edge_transforms)
     opt.node_transforms = sorted(opt.node_transforms)
+    # see pre_transforms_processed for more complete description of transforms
 
 def copy_data_to_scratch(opt):
     t0 = time.time()
@@ -549,7 +553,7 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
         elif file == 'params.log' and output_mode.startswith('diag_param'):
             # need params log to get diag_chi params
             move_file = True
-        elif file == 'diag_chis_continuous.npy' and output_mode.startswith('diag'):
+        elif file == 'diag_chis_continuous.npy' and (output_mode.startswith('diag') or False):
             # need to load this file regardless of which version of diag
             move_file = True
 

@@ -55,18 +55,28 @@ class WeightedLocalDegreeProfile(BaseTransform):
 
 class Degree(BaseTransform):
     '''
-    Appends degree features to feature vector.
+    Appends degree features to node feature vector.
 
     Reference code: https://pytorch-geometric.readthedocs.io/en/latest/_modules/
         torch_geometric/transforms/target_indegree.html#TargetIndegree
     '''
     def __init__(self, norm = True, max_val = None, weighted = False,
                 split_edges = False, split_val = 0):
+        '''
+        Inputs:
+            norm: True to normalize degree by dividing by max_val
+            max_val: value for norm, if None uses maximum degree
+            weighted: True for weighted degree, False for count
+            split_edges: True to divide edges based on split_val
+            split_val: split value for split_edges
+        '''
         self.norm = norm # bool
         self.max = max_val # float
         self.weighted = weighted # bool
         self.split_edges = split_edges # bool
         self.split_val = split_val # float
+        # values less than split_val are one type of edge
+        # values greater than split_val are second type of edge
 
     def __call__(self, data):
         if self.weighted:
@@ -108,8 +118,8 @@ class Degree(BaseTransform):
         return data
 
     def __repr__(self) -> str:
-        return (f'{self.__class__.__name__} ('
-                f'norm={self.norm}, max={self.max}, '
+        return (f'{self.__class__.__name__}'
+                f'(norm={self.norm}, max={self.max}, '
                 f'weighted={self.weighted}, split_edges={self.split_edges}, '
                 f'split_val={self.split_val})')
 
@@ -204,13 +214,25 @@ class GeneticDistance(BaseTransform):
     '''
     def __init__(self, norm = True, max_val = None, cat = True,
                 split_edges = False, convert_to_attr = False,
-                log = False):
+                log = False, log10 = False):
+        '''
+        Inputs:
+            norm: True to normalize distances by dividing by max_val
+            max_val: value for norm, if None uses maximum distance
+            cat: True to concatenate attr, False to overwrite
+            split_edges: True if graph has 'positive' and 'negative' edges
+            convert_to_attr: True for edge attr, False for edge weight
+            log: ln transform
+            log10: log10 transform
+        '''
         self.norm = norm
         self.max = max_val
         self.cat = cat
         self.split_edges = split_edges # bool
         self.convert_to_attr = convert_to_attr # bool, converts to 2d array
-        self.log = False # apply ln transform
+        self.log = log # apply ln transform
+        self.log10 = log10 # apply log10 transform
+        assert not self.log or not self.log10, "only one can be True"
 
 
     def __call__(self, data):
@@ -229,6 +251,8 @@ class GeneticDistance(BaseTransform):
                 dist = dist / (dist.max() if self.max is None else self.max)
             if self.log:
                 dist = np.log(dist)
+            elif self.log10:
+                dist = np.log10(dist)
             if self.convert_to_attr:
                 dist = dist.reshape(-1, 1)
 
@@ -260,12 +284,16 @@ class GeneticDistance(BaseTransform):
 
         else:
             (row, col), pseudo = data.edge_index, data.edge_attr
-            dist = torch.norm(pos[col] - pos[row], p=2, dim=-1).view(-1, 1)
+            dist = torch.norm(pos[col] - pos[row], p=2, dim=-1)
+            if self.convert_to_attr:
+                dist = dist.reshape(-1, 1)
 
             if self.norm and dist.numel() > 0:
                 dist = dist / (dist.max() if self.max is None else self.max)
             if self.log:
-                dist = np.log(dist)
+                dist = torch.log(dist)
+            elif self.log10:
+                dist = torch.log10(dist)
 
             if pseudo is not None and self.cat:
                 pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
@@ -283,12 +311,18 @@ class ContactDistance(BaseTransform):
     '''
     Appends contact map entries to edge attr vector.
     '''
-    def __init__(self, cat = True, split_edges = False, split_val = 0,
+    def __init__(self, cat = True, split_edges = False,
                     convert_to_attr = False):
+        '''
+        Inputs:
+            cat: True to concatenate attr, False to overwrite
+            split_edges: True if graph has 'positive' and 'negative' edges
+            convert_to_attr: True for edge attr, False for edge weight
+        '''
         self.cat = cat
         self.split_edges = split_edges # bool
-        self.split_val = split_val # float
         self.convert_to_attr = convert_to_attr # bool, converts to 2d array
+        # else would be an edge weight
 
     def __call__(self, data):
         if self.split_edges:
@@ -341,8 +375,83 @@ class ContactDistance(BaseTransform):
 
 
     def __repr__(self) -> str:
-        return (f'{self.__class__.__name__}, '
-                f'({self.convert_to_attr})')
+        return (f'{self.__class__.__name__}'
+                f'(convert_to_attr={self.convert_to_attr})')
+
+# edge transforms
+class DiagonalParameterDistance(BaseTransform):
+    '''
+    Appends diagonal parameter to features to edge attr vector.
+    '''
+    def __init__(self, cat = True, split_edges = False, convert_to_attr = False):
+        '''
+        Inputs:
+            cat: True to concatenate attr, False to overwrite
+            split_edges: consider 'positive' and 'negative' edges separately
+            convert_to_attr: True for edge attr, False for edge weight
+
+        '''
+        self.cat = cat
+        self.split_edges = split_edges # bool
+        self.convert_to_attr = convert_to_attr # bool, converts to 2d array
+
+
+    def __call__(self, data):
+        pos = torch.arange(0, data.num_nodes, dtype=torch.float32).reshape(data.num_nodes, 1)
+
+        if self.split_edges:
+            # positive
+            if 'pos_edge_attr' in data._mapping:
+                pseudo = data.pos_edge_attr
+            else:
+                pseudo = None
+
+            row, col = data.pos_edge_index
+            # dist = torch.norm(pos[col] - pos[row], p=2, dim=-1)
+
+            if self.convert_to_attr:
+                dist = dist.reshape(-1, 1)
+
+            if pseudo is not None and self.cat:
+                pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
+                data.pos_edge_attr = torch.cat([pseudo, dist.type_as(pseudo)], dim=-1)
+            else:
+                data.pos_edge_attr = dist
+
+            # negative
+            if 'neg_edge_attr' in data._mapping:
+                pseudo = data.neg_edge_attr
+            else:
+                pseudo = None
+
+            row, col = data.neg_edge_index
+            # dist = torch.norm(pos[col] - pos[row], p=2, dim=-1)
+
+            if self.convert_to_attr:
+                dist = dist.reshape(-1, 1)
+
+            if pseudo is not None and self.cat:
+                pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
+                data.neg_edge_attr = torch.cat([pseudo, dist.type_as(pseudo)], dim=-1)
+            else:
+                data.neg_edge_attr = dist
+
+        else:
+            (row, col), pseudo = data.edge_index, data.edge_attr
+            # dist = torch.norm(pos[col] - pos[row], p=2, dim=-1).view(-1, 1)
+
+            if pseudo is not None and self.cat:
+                pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
+                data.edge_attr = torch.cat([pseudo, dist.type_as(pseudo)], dim=-1)
+            else:
+                data.edge_attr = dist
+
+        return data
+
+    def __repr__(self) -> str:
+        return (f'{self.__class__.__name__}(norm={self.norm}, '
+                f'max_value={self.max})')
+
 
 # message passing
 class WeightedSignedConv(MessagePassing):
