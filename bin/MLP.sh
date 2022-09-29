@@ -1,19 +1,22 @@
 #! /bin/bash
 #SBATCH --job-name=MLP
 #SBATCH --output=logFiles/MLP.out
-#SBATCH --time=01:00:00
+#SBATCH --time=06:00:00
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=4
+#SBATCH --ntasks-per-node=10
 #SBATCH --mem-per-cpu=2000
 
 cd ~/sequences_to_contact_maps
 
 source activate python3.9_pytorch1.9
+source activate python3.9_pytorch1.9_cuda10.2
 
-dirname="/home/erschultz/dataset_test_logistic"
-scratch="/home/erschultz/scratch"
+# dirname="/home/erschultz/dataset_test_logistic"
+# scratch="/home/erschultz/scratch"
+dirname="/project2/depablo/erschultz/dataset_09_26_22"
+scratch='/scratch/midway2/erschultz'
 modelType='MLP'
 
 # preprocessing
