@@ -42,7 +42,7 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
                                 opt.log_preprocessing, opt.preprocessing_norm, opt.min_subtraction,
                                 opt.use_node_features,
                                 opt.sparsify_threshold, opt.sparsify_threshold_upper,
-                                opt.split_neg_pos_edges,
+                                opt.split_neg_pos_edges, opt.max_diagonal,
                                 opt.transforms_processed, opt.pre_transforms_processed,
                                 opt.output_mode, opt.crop, opt.log_file, verbose,
                                 max_sample, samples)

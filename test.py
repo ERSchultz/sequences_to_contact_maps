@@ -94,11 +94,11 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    opt.data_folder = "/home/erschultz/sequences_to_contact_maps/dataset_04_27_22"
+    opt.data_folder = "/home/erschultz/dataset_9_29_22"
     opt.scratch = '/home/erschultz/scratch'
 
     # architecture
-    opt.m = 1024
+    opt.m = 2048
     opt.y_preprocessing = None
     opt.split_percents=[0.8,0.2,0.0]
     # opt.split_percents = None
@@ -152,15 +152,15 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing='5000_diag'
+        opt.y_preprocessing='diag'
         opt.loss = 'mse'
         opt.preprocessing_norm = 'instance'
         opt.message_passing='gat'
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym'
-        opt.encoder_hidden_sizes_list=None
-        opt.update_hidden_sizes_list=None
-        opt.hidden_sizes_list=[3,3]
+        opt.encoder_hidden_sizes_list=[100,100,64]
+        opt.update_hidden_sizes_list=[100,100,64]
+        opt.hidden_sizes_list=[8,8,8]
         opt.act = 'relu'
         opt.inner_act = 'relu'
         opt.out_act = 'relu'
@@ -169,17 +169,17 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         opt.transforms=AC.str2list('empty')
-        opt.pre_transforms=AC.str2list('degree-contactdistance')
+        opt.pre_transforms=AC.str2list('degree-contactdistance-GeneticDistance')
         opt.split_edges_for_feature_augmentation = False
         opt.sparsify_threshold = 0.176
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'bilinear_asym'
+        opt.head_architecture = 'bilinear'
         opt.head_hidden_sizes_list = None
-        opt.crop=[0,512]
-        opt.m = 512
+        # opt.crop=[0,512]
+        # opt.m = 512
         opt.use_bias = True
-        opt.num_heads = 2
+        opt.num_heads = 8
         opt.concat_heads = True
     elif model_type == 'ContactGNNDiag':
         opt.loss = 'mse'
@@ -220,9 +220,9 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 1
+    opt.n_epochs = 3
     opt.lr = 1e-3
-    opt.batch_size = 1
+    opt.batch_size = 2
     opt.milestones = None
     opt.gamma = 0.1
 
@@ -231,7 +231,7 @@ def debugModel(model_type):
     opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = False
-    opt.gpus = 0
+    opt.gpus = 1
     opt.delete_root = True
     opt.use_scratch = True
     opt.print_mod = 1
@@ -694,9 +694,8 @@ def downsample_simulation():
     # uses data_out/output.xyz to generate contact map as if you had
     # only ran a shorter simulation
     # use this to assess GNN robustness to simulation length
-    dir = '/home/erschultz/sequences_to_contact_maps/dataset_04_27_22'
+    dir = '/home/erschultz/dataset_test'
     files = make_dataset(dir)
-    files = [f for f in files if f.endswith('long')]
 
     with multiprocessing.Pool(20) as p:
         p.map(down_sample_simulation_inner, files)
@@ -705,17 +704,17 @@ def down_sample_simulation_inner(file):
     print(file)
     xyz_file = osp.join(file, 'data_out', 'output.xyz')
     xyz = xyz_load(xyz_file, multiple_timesteps = True, N_min = 1)
-    for ymax in [1000, 2500, 5000]:
-        y_diag_ofile = osp.join(file, f'y{ymax}_diag.npy')
+    for ymax in [1000, 2500, 5000, 10000]:
+        y_diag_ofile = osp.join(file, f'y_diag_dist{ymax}.npy')
         if not osp.exists(y_diag_ofile):
-            y = xyz_to_contact_grid(xyz[:ymax], 28.7, verbose = True)
-            np.save(osp.join(file, f'y{ymax}.npy'), y)
-            plot_matrix(y, osp.join(file, f'y{ymax}.png'), vmax='mean')
+            y = xyz_to_contact_distance(xyz[:ymax], 28.7, verbose = True)
+            np.save(osp.join(file, f'y_dist{ymax}.npy'), y)
+            plot_matrix(y, osp.join(file, f'y_dist{ymax}.png'), vmax='mean')
 
             meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
             ydiag = DiagonalPreprocessing.process(y, meanDist)
             np.save(y_diag_ofile, ydiag)
-            plot_matrix(ydiag, osp.join(file, f'y{ymax}_diag.png'), vmax='max')
+            plot_matrix(ydiag, osp.join(file, f'y_diag_dist{ymax}.png'), vmax='max')
 
 
 
@@ -728,6 +727,6 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # compare_y_normalization_methods()
-    downsample_simulation()
+    # downsample_simulation()

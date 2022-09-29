@@ -34,7 +34,6 @@ def clean_directories(data_folder = 'dataset_04_18_21', GNN_path = None, GNN_fil
                         help='True clean scratch')
     parser.add_argument('--scratch', type=str, default=None)
     opt = parser.parse_args()
-    print(opt)
 
     if opt.scratch is not None:
         opt.data_folder = osp.join(opt.scratch, osp.split(opt.data_folder)[-1])
@@ -42,12 +41,9 @@ def clean_directories(data_folder = 'dataset_04_18_21', GNN_path = None, GNN_fil
     if opt.clean_scratch and opt.scratch:
         rmtree(opt.data_folder)
     else:
-        print(opt.GNN_path, opt.GNN_path is None)
-        print()
         if opt.GNN_path is None and opt.GNN_file_name is not None:
             print('here')
             opt.GNN_path = osp.join(opt.data_folder, opt.GNN_file_name)
-        print(opt.GNN_path)
 
         if osp.exists(opt.GNN_path):
             print('Removing {}'.format(opt.GNN_path))

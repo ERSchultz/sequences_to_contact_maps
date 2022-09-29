@@ -176,6 +176,8 @@ def get_base_parser():
                         help='number of attention heads for relevant MPGNN')
     parser.add_argument('--concat_heads', type=AC.str2bool, default=True,
                         help='False to average instead of concat attention heads')
+    parser.add_argument('--max_diagonal', type=AC.str2int,
+                        help='Maximum diagonal to consider')
 
     # SimpleEpiNet args
     parser.add_argument('--kernel_w_list', type=AC.str2list,
@@ -524,7 +526,7 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
         # change to True to move file
         # defaults to not moving file (saves space on scratch and move time)
 
-        fname = file.split('.')[0]
+        fname, ftype = file.split('.')
 
         if file == 'xx.npy' and toxx:
             # only need xx.npy if toxx is True
@@ -532,8 +534,8 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
         elif file == 'y.npy' and y_preprocessing is None:
             # only need y.npy if not using preprocessing
             move_file = True
-        elif y_preprocessing is not None and fname.endswith(y_preprocessing):
-            # need file correspondi nto y_preprocessing
+        elif y_preprocessing is not None and fname.endswith(y_preprocessing) and ftype == 'npy':
+            # need file corresponding to y_preprocessing
             move_file = True
         elif (file == 's.npy' or file == 'e.npy') and output_mode.startswith('energy'):
             # only need s.npy if neural net output is energy

@@ -267,7 +267,7 @@ def plot_mean_vs_genomic_distance_comparison(dir, samples = None, percent = Fals
         meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob',
                                         zero_diag = zero_diag,
                                         zero_offset = zero_diag_offset)
-        meanDist[50:] = uniform_filter(meanDist[50:], 3, mode = 'constant')
+        # meanDist[50:] = uniform_filter(meanDist[50:], 3, mode = 'constant')
         if ln_transform:
             meanDist = np.log(meanDist+1e-8)
 
@@ -388,7 +388,7 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     dir = '/home/erschultz/sequences_to_contact_maps/'
     data_dir = osp.join(dir, 'single_cell_nagano_imputed/samples/sample443')
@@ -403,6 +403,6 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024', [201, 211, 221 ,231, 241], ref_file = file)
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
-    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_04_27_22', skip_samples = ['1','2'])
-    # plot_combined_models('test', [154, 159])
+    plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_9_26_22')
+    # plot_combined_models('ContactGNNEnergy', [164, 165, 166, 167])
     # main()

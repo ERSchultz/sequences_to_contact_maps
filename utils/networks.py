@@ -659,6 +659,8 @@ class ContactGNN(nn.Module):
             init = torch.randn((input_size, input_size))
             self.W = nn.Parameter(init)
             self.sym = Symmetrize2D()
+        elif self.head_architecture == 'inner':
+            self.head = None
         elif self.head_architecture in self.to2D.mode_options:
             # Uses linear layers according to head_hidden_sizes_list after converting to 2D
             self.to2D.mode = self.head_architecture # change mode
@@ -741,6 +743,10 @@ class ContactGNN(nn.Module):
                 out = torch.einsum('nik,njk->nij', latent @ self.W, latent)
             else:
                 out = torch.einsum('nik,njk->nij', latent @ self.sym(self.W), latent)
+        elif self.head_architecture == 'inner':
+            _, output_size = latent.shape
+            latent = latent.reshape(-1, self.m, output_size)
+            out = torch.einsum('nik, njk->nij', latent, latent)
         elif self.head_architecture in self.to2D.mode_options:
             _, output_size = latent.shape
             latent = latent.reshape(-1, self.m, output_size)

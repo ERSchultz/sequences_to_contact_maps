@@ -27,7 +27,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 y_log_transform = None, y_norm = 'instance', min_subtraction = True,
                 use_node_features = True,
                 sparsify_threshold = None, sparsify_threshold_upper = None,
-                split_neg_pos_edges = False,
+                split_neg_pos_edges = False, max_diagonal = None,
                 transform = None, pre_transform = None, output = 'contact',
                 crop = None, ofile = sys.stdout, verbose = True,
                 max_sample = float('inf'), samples = None):
@@ -44,6 +44,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             sparsify_threshold: lower threshold for sparsifying contact map (None to skip)
             sparsify_threshold_upper: upper threshold for sparsifying contact map (None to skip)
             split_neg_pos_edges: True to split negative and positive edges for training
+            max_diagonal: maximum diagonal of adjacency matrix to consider
             transform: list of transforms
             pre_transform: list of transforms
             output: output mode ('contact', 'energy', 'energy_sym')
@@ -64,6 +65,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.sparsify_threshold = sparsify_threshold
         self.sparsify_threshold_upper = sparsify_threshold_upper
         self.split_neg_pos = split_neg_pos_edges
+        self.max_diagonal = max_diagonal
         self.output = output
         self.crop = crop
         self.samples = None
@@ -251,11 +253,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if self.crop is not None:
             y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
 
-        # TODO triu
-        if False:
-            k = 5 # number of sub diagonals to keep
-            y = np.tril(y, k)
-            y = np.triu(y, -k)
+        if self.max_diagonal is not None:
+            y = np.tril(y, self.max_diagonal)
+            y = np.triu(y, -self.max_diagonal)
 
         if self.y_norm == 'instance':
             self.ymax = np.max(y)
