@@ -526,6 +526,9 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
         # change to True to move file
         # defaults to not moving file (saves space on scratch and move time)
 
+        if '.' not in file:
+            continue
+
         fname, ftype = file.split('.')
 
         if file == 'xx.npy' and toxx:

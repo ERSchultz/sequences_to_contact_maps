@@ -181,6 +181,7 @@ def debugModel(model_type):
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True
+        opt.max_diagonal=100
     elif model_type == 'ContactGNNDiag':
         opt.loss = 'mse'
         opt.preprocessing_norm = 'instance'
@@ -235,6 +236,8 @@ def debugModel(model_type):
     opt.delete_root = True
     opt.use_scratch = True
     opt.print_mod = 1
+    opt.num_workers = 4
+    opt.use_scratch_parallel = True
     # opt.id = 12
     # opt.resume_training = True
 
