@@ -27,10 +27,14 @@ __pycache__
 neural_net_utils/__pycache_
 
 # results
-results/**
 results/test/**
-!results/ContactGNNEnergy
-!results/ContactGNNEnergy/**
+results/UNet/**
+results/SequenceFCAutoencoder/**
+results/GNNAutoencoder*/**
+results/DeepC/**
+results/ContactGNN/**
+results/Akita/**
+results/MLP/*.pt
 results/*/*combined
 
 # chip_seq
