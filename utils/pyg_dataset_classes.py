@@ -184,6 +184,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 if self.output.startswith('energy_sym'):
                     graph.energy = (graph.energy + graph.energy.t()) / 2
                 if self.output.startswith('energy_sym_diag'):
+                    print('here')
                     D = calculate_D(graph.diag_chis_continuous)
                     graph.energy += torch.tensor(D, dtype = torch.float32)
 

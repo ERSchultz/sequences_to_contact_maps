@@ -403,6 +403,11 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
                         title = f'Sample {id}\ndiag normalization', vmax = 'max')
             ydiag_log = np.log(ydiag)
             plot_matrix(ydiag_log, osp.join(path, 'y_diag_log.png'), title = 'diag + log normalization', cmap = 'bluered')
+            y_diag_log_triu = ydiag_log.copy()
+            y_diag_log_triu = np.tril(y_diag_log_triu, 512)
+            y_diag_log_triu = np.triu(y_diag_log_triu, -512)
+            plot_matrix(y_diag_log_triu, osp.join(path, 'y_diag_log_triu.png'), title = 'diag + log + triu normalization', cmap = 'bluered')
+
 
             for fname in ['y1000_diag.npy', 'y2500_diag.npy', 'y5000_diag.npy']:
                 fpath = osp.join(path, fname)
@@ -411,7 +416,6 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
                     ydiag_log_temp = np.log(y_temp)
                     plot_matrix(y_temp, fpath.split('.')[0]+'.png', title = 'diag normalization', vmax = 'max')
                     plot_matrix(ydiag_log_temp, fpath.split('.')[0]+'_log.png', title = 'diag + log normalization', cmap = 'bluered')
-
 
 
 
@@ -441,7 +445,7 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
         if config is not None:
             diag_chis_step = plot_diag_chi(config, path, ref = diag_chis_continuous_file, ref_label = 'continuous')
             D = calculate_D(diag_chis_step)
-            plot_matrix(D, osp.join(path, 'D.png'), vmax = 'max', vmin = 'min', cmap = 'blue-red')
+            plot_matrix(D, osp.join(path, 'D.png'), vmax = 'max', vmin = 0)
 
 
         if plot_energy:
@@ -477,11 +481,11 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
 if __name__ == '__main__':
     dir = '/project2/depablo/erschultz'
     dir = '/home/erschultz/sequences_to_contact_maps'
-    dir = '/home/erschultz'
+    # dir = '/home/erschultz'
 
-    dataset = 'dataset_9_29_22'
+    dataset = 'dataset_04_27_22'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = False, plot_energy = True, plot_x = False, sampleID = 1)
+    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False, sampleID = 1)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

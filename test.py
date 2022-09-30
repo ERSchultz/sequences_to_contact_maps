@@ -157,7 +157,7 @@ def debugModel(model_type):
         opt.preprocessing_norm = None
         opt.message_passing='gat'
         opt.GNN_mode = True
-        opt.output_mode = 'energy_sym_diag'
+        opt.output_mode = 'energy_sym'
         opt.encoder_hidden_sizes_list=[100,100,64]
         opt.update_hidden_sizes_list=[100,100,64]
         opt.hidden_sizes_list=[8,8,8]
@@ -221,7 +221,7 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 20
+    opt.n_epochs = 3
     opt.lr = 1e-4
     opt.batch_size = 2
     opt.milestones = None

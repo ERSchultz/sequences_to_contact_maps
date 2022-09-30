@@ -29,7 +29,7 @@ outputMode='energy_sym_diag'
 
 # should be really easy - check if head arch makes net energy prediction impossible
 
-id=173
+id=174
 yPreprocessing='diag'
 for lr in 1e-4
 do
