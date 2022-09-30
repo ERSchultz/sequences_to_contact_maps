@@ -69,7 +69,7 @@ none
 --lr
 1e-4
 --batch_size
-4
+1
 --num_workers
 4
 --milestones
