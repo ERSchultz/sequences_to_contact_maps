@@ -81,3 +81,20 @@ Epoch 24, loss = 6.8338
 Mean test/val loss: 6.8606
 
 Epoch 26, loss = 6.7517
+Mean test/val loss: 6.6772
+
+Epoch 28, loss = 6.6840
+Mean test/val loss: 6.8517
+
+Epoch 30, loss = 6.5989
+Mean test/val loss: 6.5350
+
+Epoch 32, loss = 6.5897
+Mean test/val loss: 6.4915
+
+Epoch 34, loss = 6.4784
+Mean test/val loss: 6.3130
+
+Epoch 36, loss = 6.4620
+Mean test/val loss: 6.3499
+
