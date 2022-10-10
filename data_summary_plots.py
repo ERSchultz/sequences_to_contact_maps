@@ -402,11 +402,30 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
             plot_matrix(ydiag, osp.join(path, 'y_diag.png'),
                         title = f'Sample {id}\ndiag normalization', vmax = 'max')
             ydiag_log = np.log(ydiag)
-            plot_matrix(ydiag_log, osp.join(path, 'y_diag_log.png'), title = 'diag + log normalization', cmap = 'bluered')
+            ydiag_log[np.isinf(ydiag_log)] = 0
+            nonzero = np.count_nonzero(ydiag_log)
+            prcnt = np.round(nonzero / 1024**2 * 100, 1)
+            plot_matrix(ydiag_log, osp.join(path, 'y_diag_log.png'), title = f'diag + log normalization\nEdges={nonzero} ({prcnt}%)', cmap = 'bluered')
+
+            ydiag_log_sparse = ydiag_log.copy()
+            ydiag_log_sparse[np.abs(ydiag_log_sparse) < 0.405] = 0
+            nonzero = np.count_nonzero(ydiag_log_sparse)
+            prcnt = np.round(nonzero / 1024**2 * 100, 1)
+            plot_matrix(ydiag_log_sparse, osp.join(path, 'ydiag_log_sparse.png'), title = f'diag + log normalization + sparse\nEdges={nonzero} ({prcnt}%)', cmap = 'bluered')
+
             y_diag_log_triu = ydiag_log.copy()
             y_diag_log_triu = np.tril(y_diag_log_triu, 512)
             y_diag_log_triu = np.triu(y_diag_log_triu, -512)
-            plot_matrix(y_diag_log_triu, osp.join(path, 'y_diag_log_triu.png'), title = 'diag + log + triu normalization', cmap = 'bluered')
+            nonzero = np.count_nonzero(y_diag_log_triu)
+            prcnt = np.round(nonzero / 1024**2 * 100, 1)
+            plot_matrix(y_diag_log_triu, osp.join(path, 'y_diag_log_triu.png'), title = f'diag + log + triu normalization\nEdges={nonzero} ({prcnt}%)', cmap = 'bluered')
+
+            y_diag_log_sparse_triu = ydiag_log_sparse.copy()
+            y_diag_log_sparse_triu = np.tril(y_diag_log_sparse_triu, 512)
+            y_diag_log_sparse_triu = np.triu(y_diag_log_sparse_triu, -512)
+            nonzero = np.count_nonzero(y_diag_log_sparse_triu)
+            prcnt = np.round(nonzero / 1024**2 * 100, 1)
+            plot_matrix(y_diag_log_sparse_triu, osp.join(path, 'y_diag_log_sparse_triu.png'), title = f'diag + log normalization + sparse + triu\nEdges={nonzero} ({prcnt}%)', cmap = 'bluered')
 
 
             for fname in ['y1000_diag.npy', 'y2500_diag.npy', 'y5000_diag.npy']:
@@ -416,7 +435,6 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
                     ydiag_log_temp = np.log(y_temp)
                     plot_matrix(y_temp, fpath.split('.')[0]+'.png', title = 'diag normalization', vmax = 'max')
                     plot_matrix(ydiag_log_temp, fpath.split('.')[0]+'_log.png', title = 'diag + log normalization', cmap = 'bluered')
-
 
 
             y_log = np.log(y + 1)
@@ -485,7 +503,7 @@ if __name__ == '__main__':
 
     dataset = 'dataset_04_27_22'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False, sampleID = 1)
+    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False, sampleID = ['20'])
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

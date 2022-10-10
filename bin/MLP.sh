@@ -15,7 +15,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 
 # dirname="/home/erschultz/dataset_test_logistic"
 # scratch="/home/erschultz/scratch"
-dirname="/project2/depablo/erschultz/dataset_09_26_22"
+dirname="/project2/depablo/erschultz/dataset_09_30_22"
 scratch='/scratch/midway2/erschultz'
 modelType='MLP'
 
