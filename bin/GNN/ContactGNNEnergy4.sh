@@ -16,7 +16,7 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 
 rootName='ContactGNNEnergy4' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_09_26_22"
+dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='GAT'
 preTransforms='degree-ContactDistance-GeneticDistance'

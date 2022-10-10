@@ -1,96 +1,66 @@
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample2: No such file or directory
-rm: rm: rm: cannot remove ‘nmf*’cannot remove ‘PCA*’cannot remove ‘k_means*’: No such file or directory: No such file or directory
+rm: cannot remove ‘dataset_04*’: No such file or directory
+rm: cannot remove ‘nmf*’: No such file or directory
+rm: rm: rm: cannot remove ‘k_means*’cannot remove ‘PCA*’cannot remove ‘nmf*’: No such file or directory: No such file or directory
 
 : No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample3: No such file or directory
+rm: cannot remove ‘k_means*’: No such file or directory
+rm: cannot remove ‘PCA*’rm: : No such file or directorycannot remove ‘nmf*’
+: No such file or directory
+/tmp/slurmd/job22887165/slurm_script: line 20: cd: /project2/depablo/erschultz/dataset_09_21_21/samples/sample5: No such file or directory
+rm: cannot remove ‘k_means*’: No such file or directory
+rm: cannot remove ‘nmf*’: No such file or directory
+rm: cannot remove ‘PCA*’: No such file or directory
+rm: cannot remove ‘k_means*’: No such file or directory
+rm: cannot remove ‘PCA*’: No such file or directory
+rm: cannot remove ‘nmf*’: No such file or directory
+rm: cannot remove ‘k_means*’: No such file or directory
+rm: cannot remove ‘nmf*’: No such file or directory
+rm: cannot remove ‘PCA*’: No such file or directory
+rm: cannot remove ‘nmf*’: No such file or directory
+rm: rm: rm: cannot remove ‘PCA*’cannot remove ‘nmf*’cannot remove ‘k_means*’: No such file or directory: No such file or directory
+: No such file or directory
+
+/tmp/slurmd/job22887165/slurm_script: line 20: cd: /project2/depablo/erschultz/dataset_09_21_21/samples/sample10: No such file or directory
 rm: cannot remove ‘k_means*’rm: : No such file or directorycannot remove ‘PCA*’
 : No such file or directory
 rm: cannot remove ‘nmf*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample4: No such file or directory
 rm: cannot remove ‘k_means*’: No such file or directoryrm: 
 cannot remove ‘PCA*’: No such file or directory
 rm: cannot remove ‘nmf*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample5: No such file or directory
-rm: cannot remove ‘k_means*’rm: : No such file or directorycannot remove ‘PCA*’
-: No such file or directory
-rm: cannot remove ‘nmf*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample6: No such file or directory
-rm: cannot remove ‘k_means*’: No such file or directory
-rm: cannot remove ‘nmf*’: No such file or directory
-rm: cannot remove ‘PCA*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample7: No such file or directory
-rm: cannot remove ‘k_means*’: No such file or directory
-rm: cannot remove ‘PCA*’: No such file or directory
-rm: cannot remove ‘nmf*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample8: No such file or directory
-rm: cannot remove ‘k_means*’: No such file or directory
-rm: cannot remove ‘PCA*’: No such file or directory
-rm: cannot remove ‘nmf*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample9: No such file or directory
-rm: cannot remove ‘k_means*’: No such file or directory
-rm: cannot remove ‘PCA*’: No such file or directory
-rm: cannot remove ‘nmf*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample10: No such file or directory
-rm: cannot remove ‘k_means*’: No such file or directory
-rm: cannot remove ‘PCA*’: No such file or directory
-rm: cannot remove ‘nmf*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample11: No such file or directory
-rm: cannot remove ‘k_means*’: No such file or directory
-rm: cannot remove ‘PCA*’: No such file or directory
-rm: cannot remove ‘nmf*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample12: No such file or directory
-rm: cannot remove ‘k_means*’: No such file or directory
-rm: cannot remove ‘nmf*’: No such file or directory
-rm: cannot remove ‘PCA*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample13: No such file or directory
-rm: rm: cannot remove ‘k_means*’cannot remove ‘PCA*’: No such file or directory: No such file or directory
-
-rm: cannot remove ‘nmf*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample14: No such file or directory
-rm: cannot remove ‘k_means*’: No such file or directoryrm: 
-cannot remove ‘PCA*’: No such file or directory
-rm: cannot remove ‘nmf*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample15: No such file or directory
-rm: cannot remove ‘k_means*’rm: cannot remove ‘PCA*’: No such file or directory
-rm: : No such file or directorycannot remove ‘nmf*’
-: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample16: No such file or directory
-rm: cannot remove ‘k_means*’: No such file or directory
-rm: cannot remove ‘PCA*’: No such file or directory
-rm: cannot remove ‘nmf*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample17: No such file or directory
-rm: cannot remove ‘k_means*’: No such file or directory
-rm: rm: cannot remove ‘PCA*’cannot remove ‘nmf*’: No such file or directory: No such file or directory
-
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample18: No such file or directory
-rm: cannot remove ‘k_means*’: No such file or directoryrm: 
-cannot remove ‘PCA*’: No such file or directory
-rm: cannot remove ‘nmf*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample19: No such file or directory
-rm: cannot remove ‘k_means*’: No such file or directory
-rm: cannot remove ‘PCA*’: No such file or directory
-rm: cannot remove ‘nmf*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample20: No such file or directory
-rm: cannot remove ‘k_means*’: No such file or directory
-rm: rm: cannot remove ‘PCA*’cannot remove ‘nmf*’: No such file or directory: No such file or directory
-
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample21: No such file or directory
-rm: cannot remove ‘k_means*’: No such file or directory
-rm: cannot remove ‘PCA*’: No such file or directory
-rm: cannot remove ‘nmf*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample22: No such file or directory
-rm: cannot remove ‘k_means*’: No such file or directory
-rm: cannot remove ‘nmf*’: No such file or directory
-rm: cannot remove ‘PCA*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample23: No such file or directory
 rm: cannot remove ‘PCA*’rm: cannot remove ‘k_means*’: No such file or directory
 : No such file or directory
 rm: cannot remove ‘nmf*’: No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample24: No such file or directory
+rm: cannot remove ‘k_means*’: No such file or directory
+rm: cannot remove ‘nmf*’: No such file or directory
 rm: cannot remove ‘PCA*’: No such file or directory
-rm: cannot remove ‘k_means*’rm: cannot remove ‘nmf*’: No such file or directory
+rm: cannot remove ‘nmf*’: No such file or directory
+rm: rm: rm: cannot remove ‘k_means*’cannot remove ‘PCA*’cannot remove ‘nmf*’: No such file or directory: No such file or directory
 : No such file or directory
-/tmp/slurmd/job22886143/slurm_script: line 20: cd: /project2/depablo/erschultz//samples/sample25: No such file or directory
+
+/tmp/slurmd/job22887165/slurm_script: line 20: cd: /project2/depablo/erschultz/dataset_09_21_21/samples/sample16: No such file or directory
+rm: cannot remove ‘k_means*’: No such file or directory
+rm: cannot remove ‘PCA*’rm: : No such file or directorycannot remove ‘nmf*’
+: No such file or directory
+rm: rm: cannot remove ‘PCA*’cannot remove ‘k_means*’: No such file or directory: No such file or directory
+
+rm: cannot remove ‘nmf*’: No such file or directory
+rm: cannot remove ‘k_means*’: No such file or directory
+rm: cannot remove ‘PCA*’: No such file or directoryrm: 
+cannot remove ‘nmf*’: No such file or directory
 rm: cannot remove ‘k_means*’: No such file or directory
 rm: cannot remove ‘PCA*’: No such file or directory
+rm: cannot remove ‘nmf*’: No such file or directory
+rm: cannot remove ‘nmf*’: No such file or directory
+rm: rm: rm: cannot remove ‘k_means*’cannot remove ‘PCA*’cannot remove ‘nmf*’: No such file or directory: No such file or directory
+: No such file or directory
+
+/tmp/slurmd/job22887165/slurm_script: line 20: cd: /project2/depablo/erschultz/dataset_09_21_21/samples/sample22: No such file or directory
+rm: cannot remove ‘k_means*’: No such file or directory
+rm: cannot remove ‘PCA*’: No such file or directory
+rm: cannot remove ‘nmf*’: No such file or directory
+rm: rm: rm: cannot remove ‘PCA*’cannot remove ‘nmf*’cannot remove ‘k_means*’: No such file or directory: No such file or directory
+: No such file or directory
+
+rm: rm: cannot remove ‘k_means*’cannot remove ‘PCA*’: No such file or directory: No such file or directory
+
 rm: cannot remove ‘nmf*’: No such file or directory
