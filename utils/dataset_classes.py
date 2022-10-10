@@ -44,7 +44,7 @@ def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False,
                     continue
                 if sample_id_int > maxSample:
                     continue
-            if samples is None or sample_id in samples:
+            if (samples is None) or (sample_id in samples) or (sample_id.isnumeric() and int(sample_id) in samples):
                 data_file = osp.join(samples_dir, f'{prefix}{sample_id}')
                 data_file_arr.append(data_file)
     else:

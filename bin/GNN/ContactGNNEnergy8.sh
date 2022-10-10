@@ -16,17 +16,24 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 
 rootName='ContactGNNEnergy8' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_04_27_22"
+dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
-yLogTransform='10'
-sparsifyThresholdUpper='none'
-sparsifyThreshold=0.405
+messagePassing='GAT'
+preTransforms='degree-ContactDistance-GeneticDistance-DiagonalParameterDistance_79'
+mlpModelID=79
+useEdgeAttr='true'
+hiddenSizesList='8-8-8'
+EncoderHiddenSizesList='100-100-64'
+updateHiddenSizesList='100-100-64'
+numHeads=8
 
+# is mlp diagonal param sufficient
 
-id=156
-for lr in 1e-3
+id=177
+yPreprocessing='diag'
+for lr in 1e-4
 do
   train
   id=$(( $id + 1 ))
 done
-python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --GNN_file_name $rootName --scratch $scratch
+python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --GNN_file_name $rootName --scratch $scratch > clean.log

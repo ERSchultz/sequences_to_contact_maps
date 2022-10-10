@@ -40,7 +40,7 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
 
         dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.m, opt.y_preprocessing,
                                 opt.log_preprocessing, opt.preprocessing_norm, opt.min_subtraction,
-                                opt.use_node_features,
+                                opt.use_node_features, opt.mlp_model_id,
                                 opt.sparsify_threshold, opt.sparsify_threshold_upper,
                                 opt.split_neg_pos_edges, opt.max_diagonal,
                                 opt.transforms_processed, opt.pre_transforms_processed,

@@ -17,8 +17,10 @@ import torch_geometric.transforms
 import torch_geometric.utils
 from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 
-from .dataset_classes import make_dataset
+from .argparse_utils import finalize_opt, get_base_parser
+from .dataset_classes import DiagFunctions, make_dataset
 from .energy_utils import calculate_D
+from .networks import get_model
 
 
 class ContactsGraph(torch_geometric.data.Dataset):
@@ -26,7 +28,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
     # https://github.com/rusty1s/pytorch_geometric/issues/1511
     def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag',
                 y_log_transform = None, y_norm = 'instance', min_subtraction = True,
-                use_node_features = True,
+                use_node_features = True, mlp_model_id = None,
                 sparsify_threshold = None, sparsify_threshold_upper = None,
                 split_neg_pos_edges = False, max_diagonal = None,
                 transform = None, pre_transform = None, output = 'contact',
@@ -42,6 +44,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y_norm: type of normalization ('instance', 'batch')
             min_subtraction: True to subtract min during normalization
             use_node_features: True to use bead labels as node features
+            mlp_model_id: id for mlp diagonal parameters (can be used as edge attr)
             sparsify_threshold: lower threshold for sparsifying contact map (None to skip)
             sparsify_threshold_upper: upper threshold for sparsifying contact map (None to skip)
             split_neg_pos_edges: True to split negative and positive edges for training
@@ -63,6 +66,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.y_norm = y_norm
         self.min_subtraction = min_subtraction
         self.use_node_features = use_node_features
+        self.mlp_model_id = mlp_model_id
         self.sparsify_threshold = sparsify_threshold
         self.sparsify_threshold_upper = sparsify_threshold_upper
         self.split_neg_pos = split_neg_pos_edges
@@ -130,7 +134,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             sample = int(osp.split(raw_folder)[1][6:])
             x, psi = self.process_x_psi(raw_folder)
             self.contact_map = self.process_y(raw_folder)
-            self.diag_chis_continuous = self.process_diag_params(raw_folder)
+            self.diag_chis_continuous, self.diag_chis_continuous_mlp = self.process_diag_params(raw_folder)
             edge_index, pos_edge_index, neg_edge_index = self.generate_edge_index()
 
             if self.use_node_features:
@@ -143,11 +147,13 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.num_nodes = self.m
             graph.pos_edge_index = pos_edge_index
             graph.neg_edge_index = neg_edge_index
+            graph.mlp_model_id = self.mlp_model_id
 
             # copy these temporarily
             graph.weighted_degree = self.weighted_degree
             graph.contact_map = self.contact_map
             graph.diag_chis_continuous = self.diag_chis_continuous
+            graph.diag_chis_continuous_mlp = self.diag_chis_continuous_mlp
 
             if self.pre_transform is not None:
                 graph = self.pre_transform(graph)
@@ -184,11 +190,11 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 if self.output.startswith('energy_sym'):
                     graph.energy = (graph.energy + graph.energy.t()) / 2
                 if self.output.startswith('energy_sym_diag'):
-                    print('here')
                     D = calculate_D(graph.diag_chis_continuous)
                     graph.energy += torch.tensor(D, dtype = torch.float32)
 
             del graph.diag_chis_continuous
+            del graph.diag_chis_continuous_mlp
 
             torch.save(graph, self.processed_paths[i])
 
@@ -197,8 +203,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 deg = np.array(torch_geometric.utils.degree(graph.edge_index[0],
                                                             graph.num_nodes))
                 self.degree_list.append(deg)
-
-
 
     def process_x_psi(self, raw_folder):
         '''
@@ -295,10 +299,75 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def process_diag_params(self, raw_folder):
         path = osp.join(raw_folder, 'diag_chis_continuous.npy')
         if osp.exists(path):
-            return torch.tensor(np.load(path), dtype = torch.float32)
+            diag_chis_gt = torch.tensor(np.load(path), dtype = torch.float32)
         else:
             raise Exception(f'chi_diag not found for {raw_folder}')
 
+        if self.mlp_model_id is None:
+            diag_chis_mlp = None
+        else:
+            # extract sample info
+            sample = osp.split(raw_folder)[1]
+            sample_id = int(sample[6:])
+            sample_path_split = osp.normpath(raw_folder).split(os.sep)
+
+            model_path = f'/home/erschultz/sequences_to_contact_maps/results/MLP/{self.mlp_model_id}'
+            argparse_path = osp.join(model_path, 'argparse.txt')
+            with open(argparse_path, 'r') as f:
+                for line in f:
+                    if line == '--data_folder\n':
+                        break
+                data_folder = f.readline().strip()
+                mlp_dataset = osp.split(data_folder)[1]
+
+            # set up argparse options
+            parser = get_base_parser()
+            sys.argv = [sys.argv[0]] # delete args from get_params, otherwise gnn opt will try and use them
+            opt = parser.parse_args(['@{}'.format(argparse_path)])
+            opt.id = int(self.mlp_model_id)
+            output_mode = opt.output_mode
+            opt = finalize_opt(opt, parser, local = True, debug = True)
+            opt.data_folder = osp.join('/',*sample_path_split[:-2]) # use sample_dataset not mlp_dataset
+            opt.log_file = sys.stdout # change
+            opt.output_mode = None # None for prediction mode
+            opt.crop = (0, self.m)
+
+            # get model
+            model = get_model(opt, False)
+            model.to(opt.device)
+            model_name = osp.join(opt.ofile_folder, 'model.pt')
+            if osp.exists(model_name):
+                save_dict = torch.load(model_name, map_location=torch.device('cpu'))
+                model.load_state_dict(save_dict['model_state_dict'])
+            else:
+                raise Exception('Model does not exist: {}'.format(model_name))
+            model.eval()
+
+            # get dataset
+            dataset = DiagFunctions(opt.data_folder, opt.crop, opt.preprocessing_norm,
+                                    opt.log_preprocessing, opt.y_zero_diag_count,
+                                    opt.output_mode,
+                                    names = False, samples = [sample_id])
+
+            # get prediction
+            for i, x in enumerate(dataset):
+                x = x[0]
+                x = x.to(opt.device)
+                yhat = model(x)
+                yhat = yhat.cpu().detach().numpy()
+                yhat = yhat.reshape((-1)).astype(np.float64)
+
+            if 'bond_length' in output_mode:
+                bond_length = yhat[-1]
+                yhat = yhat[:-1]
+                with open('bond_length.txt', 'w') as f:
+                    f.write(str(bond_length))
+                print('MLP bond_length:', bond_length)
+
+            assert output_mode.startswith('diag_chi_step') or output_mode.startswith('diag_chi_continuous')
+            diag_chis_mlp = yhat
+
+        return diag_chis_gt, diag_chis_mlp
 
     def get(self, index):
          data = torch.load(self.processed_paths[index])

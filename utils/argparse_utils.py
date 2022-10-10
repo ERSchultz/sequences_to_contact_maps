@@ -179,6 +179,8 @@ def get_base_parser():
                         help='False to average instead of concat attention heads')
     parser.add_argument('--max_diagonal', type=AC.str2int,
                         help='Maximum diagonal to consider')
+    parser.add_argument('--mlp_model_id', type=AC.str2int,
+                        help='Model ID for MLP diagonal parameters')
 
     # SimpleEpiNet args
     parser.add_argument('--kernel_w_list', type=AC.str2list,
@@ -473,12 +475,13 @@ def process_transforms(opt):
         elif t_str[0] == 'diagonalparameterdistance':
             opt.edge_transforms.append(f'DiagonalParameterDistance')
             assert opt.use_edge_attr or opt.use_edge_weights
+            mlp_id = None
+            if len(t_str) > 1 and t_str[1].isdigit():
+                mlp_id = int(t_str[1])
             if opt.use_edge_attr:
                 opt.edge_dim += 1
             processed.append(DiagonalParameterDistance(split_edges = opt.split_neg_pos_edges,
-                                            convert_to_attr = opt.use_edge_attr))
-        else:
-            raise Exception(f"Invalid transform {t_str} for id={opt.id}")
+                                            convert_to_attr = opt.use_edge_attr, id = mlp_id))
     if len(processed) > 0:
         opt.pre_transforms_processed = torch_geometric.transforms.Compose(processed)
     else:
@@ -546,8 +549,8 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
         if file == 'xx.npy' and toxx:
             # only need xx.npy if toxx is True
             move_file = True
-        elif file == 'y.npy' and y_preprocessing is None:
-            # only need y.npy if not using preprocessing
+        elif file == 'y.npy':
+            # always need this?
             move_file = True
         elif y_preprocessing is not None and fname.endswith(y_preprocessing) and ftype == 'npy':
             # need file corresponding to y_preprocessing
