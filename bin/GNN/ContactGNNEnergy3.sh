@@ -19,17 +19,18 @@ rootName='ContactGNNEnergy3' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='GAT'
-preTransforms='degree-ContactDistance-GeneticDistance'
+preTransforms='degree-ContactDistance-GeneticDistance-DiagonalParameterDistance'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
-maxDiagonal=512
 
-# is max diagonal faster
+yLogTransform='ln'
+sparsifyThreshold='none'
+# ln transform, but no sparsification
 
-id=170
+id=181
 yPreprocessing='diag'
 for lr in 1e-4
 do

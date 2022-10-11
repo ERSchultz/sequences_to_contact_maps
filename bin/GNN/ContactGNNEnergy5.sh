@@ -26,10 +26,14 @@ EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
-# does diagonal param help
+yLogTransform='none'
+sparsifyThreshold='none'
+yPreprocessing='log_diag'
+# no log/ln transform, no sparsification, using log_diag preprocessing
 
-id=172
-yPreprocessing='diag'
+# TODO consider 2nd ln transform and sparsification
+
+id=183
 for lr in 1e-4
 do
   train

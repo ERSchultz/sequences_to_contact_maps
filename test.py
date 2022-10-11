@@ -94,7 +94,7 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    opt.data_folder = "/home/erschultz/dataset_9_29_22"
+    opt.data_folder = "/home/erschultz/dataset_09_30_22"
     opt.scratch = '/home/erschultz/scratch'
 
     # architecture
@@ -152,7 +152,7 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing='diag'
+        opt.y_preprocessing='log'
         opt.loss = 'mse'
         opt.preprocessing_norm = None
         opt.message_passing='gat'
@@ -172,12 +172,12 @@ def debugModel(model_type):
         opt.pre_transforms=AC.str2list('degree-contactdistance-GeneticDistance-diagonalparameterdistance_79')
         opt.mlp_model_id=79
         opt.split_edges_for_feature_augmentation = False
-        opt.sparsify_threshold = 0.405
+        opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
-        opt.log_preprocessing = 'ln'
+        opt.log_preprocessing = None
         opt.head_architecture = 'bilinear'
         opt.head_hidden_sizes_list = None
-        opt.crop=[0,1024]
+        opt.crop = [0,1024]
         opt.m = 1024
         opt.use_bias = True
         opt.num_heads = 8
@@ -749,7 +749,7 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    # debugModel('ContactGNNEnergy')
-    save_log_diag()
+    debugModel('ContactGNNEnergy')
+    # save_log_diag()
     # compare_y_normalization_methods()
     # downsample_simulation()
