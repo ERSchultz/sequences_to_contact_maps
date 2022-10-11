@@ -301,7 +301,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if osp.exists(path):
             diag_chis_gt = torch.tensor(np.load(path), dtype = torch.float32)
         else:
-            raise Exception(f'chi_diag not found for {raw_folder}')
+            diag_chis_gt = None
+            if self.output is not None:
+                raise Exception(f'chi_diag not found for {raw_folder}')
 
         if self.mlp_model_id is None:
             diag_chis_mlp = None

@@ -19,16 +19,20 @@ rootName='ContactGNNEnergy2' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='GAT'
-preTransforms='degree-ContactDistance-GeneticDistance'
+preTransforms='degree-ContactDistance-GeneticDistance-DiagonalParameterDistance_79'
+mlpModelID=79
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
-# reference
+yLogTransform='ln'
+sparsifyThreshold=0.405
+splitSizes='900-200-0'
+# ln transform with MLP - on subset of data
 
-id=176
+id=180
 yPreprocessing='diag'
 for lr in 1e-4
 do

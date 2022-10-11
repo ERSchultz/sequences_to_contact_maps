@@ -598,7 +598,7 @@ def opt2list(opt):
         opt_list.extend([opt.use_node_features, opt.use_edge_weights, opt.use_edge_attr,
                         opt.node_transforms, opt.edge_transforms,
                         opt.split_edges_for_feature_augmentation,
-                        opt.sparsify_threshold, opt.sparsify_threshold_upper,
+                        opt.sparsify_threshold, opt.sparsify_threshold_upper, opt.max_diagonal,
                         opt.hidden_sizes_list, opt.message_passing, opt.update_hidden_sizes_list,
                          opt.head_architecture, opt.head_hidden_sizes_list])
 
@@ -649,7 +649,7 @@ def get_opt_header(model_type, GNN_mode):
         opt_list.extend(['use_node_features','use_edge_weights', 'use_edge_attr',
                         'node_transforms', 'edge_transforms',
                         'split_edges_for_feature_augmentation',
-                        'sparsify_threshold', 'sparsify_threshold_upper',
+                        'sparsify_threshold', 'sparsify_threshold_upper', 'max_diagonal',
                         'hidden_sizes_list', 'message_passing', 'update_hidden_sizes_list',
                         'head_architecture', 'head_hidden_sizes_list'])
     if model_type == 'simpleEpiNet':

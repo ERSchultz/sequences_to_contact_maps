@@ -503,7 +503,7 @@ if __name__ == '__main__':
 
     dataset = 'dataset_09_30_22'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False, sampleID = None)
+    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False, sampleID = 100)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)
