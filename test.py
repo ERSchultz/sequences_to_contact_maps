@@ -720,7 +720,25 @@ def down_sample_simulation_inner(file):
             np.save(y_diag_ofile, ydiag)
             plot_matrix(ydiag, osp.join(file, f'y_diag_dist{ymax}.png'), vmax='max')
 
+def save_log_diag():
+    root = '/home/erschultz/'
+    dataset = 'dataset_09_30_22'
+    dir = osp.join(root, dataset, 'samples')
+    paths = []
+    for sample in os.listdir(dir):
+        if sample.startswith('sample'):
+            paths.append(osp.join(dir, sample))
 
+    with multiprocessing.Pool(20) as p:
+        p.map(save_log_diag_inner, paths)
+
+def save_log_diag_inner(path):
+    y = np.load(osp.join(path, 'y.npy'))
+    y_log = np.log(y + 1)
+    np.save(osp.join(path, 'y_log'), y_log)
+    meanDistLog = DiagonalPreprocessing.genomic_distance_statistics(y_log)
+    y_log_diag = DiagonalPreprocessing.process(y_log, meanDistLog)
+    np.save(osp.join(path, 'y_log_diag'), y_log_diag)
 
 
 if __name__ == '__main__':
@@ -731,6 +749,7 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
+    save_log_diag()
     # compare_y_normalization_methods()
     # downsample_simulation()
