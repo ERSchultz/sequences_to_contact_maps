@@ -475,9 +475,13 @@ def process_transforms(opt):
         elif t_str[0] == 'diagonalparameterdistance':
             opt.edge_transforms.append(f'DiagonalParameterDistance')
             assert opt.use_edge_attr or opt.use_edge_weights
-            mlp_id = None
+
             if len(t_str) > 1 and t_str[1].isdigit():
                 mlp_id = int(t_str[1])
+                opt.edge_transforms.append(f'DiagonalParameterDistance{mlp_id}')
+            else:
+                mlp_id = None
+                opt.edge_transforms.append('DiagonalParameterDistance')
             if opt.use_edge_attr:
                 opt.edge_dim += 1
             processed.append(DiagonalParameterDistance(split_edges = opt.split_neg_pos_edges,

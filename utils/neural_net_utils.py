@@ -4,7 +4,7 @@ import os.path as osp
 import numpy as np
 import torch
 import torch_geometric
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 
 from .dataset_classes import DiagFunctions, Sequences, SequencesContacts
 from .networks import get_model
@@ -114,12 +114,18 @@ def split_dataset(dataset, opt):
     if opt.random_split:
         return torch.utils.data.random_split(dataset, [opt.trainN, opt.valN, opt.testN],
                                             torch.Generator().manual_seed(opt.seed))
-    else:
-        assert opt.GNN_mode, "pytorch datasets don't support slicing"
+    elif opt.GNN_mode:
         test_dataset = dataset[:opt.testN]
         val_dataset = dataset[opt.testN:opt.testN+opt.valN]
         train_dataset = dataset[opt.testN+opt.valN:opt.testN+opt.valN+opt.trainN]
-        return train_dataset, val_dataset, test_dataset
+    else:
+        # can't slice pytorch dataset, need to use Subset
+        test_dataset = Subset(dataset, range(opt.testN))
+        val_dataset = Subset(dataset, range(opt.testN, opt.testN+opt.valN))
+        train_dataset = Subset(dataset, range(opt.testN+opt.valN, opt.testN+opt.valN+opt.trainN))
+
+    assert len(test_dataset) == opt.testN and len(train_dataset) == opt.trainN
+    return train_dataset, val_dataset, test_dataset
 
 # pytorch helper functions
 def optimizer_to(optim, device = None):

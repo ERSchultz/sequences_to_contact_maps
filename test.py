@@ -98,12 +98,12 @@ def debugModel(model_type):
     opt.scratch = '/home/erschultz/scratch'
 
     # architecture
-    opt.m = 2048
+    opt.m = 1024
     opt.y_preprocessing = None
-    opt.split_percents=[0.8,0.2,0.0]
-    # opt.split_percents = None
-    # opt.split_sizes=[1, 2, 0]
-    opt.split_sizes=None
+    # opt.split_percents=[0.8,0.2,0.0]
+    opt.split_percents = None
+    opt.split_sizes=[1, 2, 0]
+    # opt.split_sizes=None
 
     if model_type == 'Akita':
         opt.kernel_w_list=AC.str2list('5-5-5')
@@ -208,7 +208,7 @@ def debugModel(model_type):
         opt.num_heads = 2
     elif model_type == 'MLP':
         opt.preprocessing_norm='mean'
-        opt.random_split=True
+        opt.random_split=False
         opt.hidden_sizes_list=AC.str2list('1000-'*6 + '4')
         opt.act='prelu'
         opt.out_act='prelu'
@@ -749,7 +749,7 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    # debugModel('ContactGNNEnergy')
-    save_log_diag()
+    debugModel('MLP')
+    # save_log_diag()
     # compare_y_normalization_methods()
     # downsample_simulation()
