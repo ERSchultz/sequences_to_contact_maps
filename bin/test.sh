@@ -1,8 +1,8 @@
 #! /bin/bash
 #SBATCH --job-name=test
 #SBATCH --output=logFiles/test.out
-#SBATCH --time=6:30:00
-#SBATCH --partition=depablo-ivyb
+#SBATCH --time=6:00:00
+#SBATCH --partition=depablo-gpu
 #SBATCH --ntasks=20
 #SBATCH --mem-per-cpu=2000
 #SBATCH --mail-type=FAIL

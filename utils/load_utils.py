@@ -184,26 +184,9 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None,
 
     return x, psi, chi, chi_diag, e, s, y, ydiag
 
-def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None,
-                throw_exception = True):
-    if max_it_folder is None:
-        # find final it
-        max_it = -1
-        for file in os.listdir(replicate_folder):
-            if osp.isdir(osp.join(replicate_folder, file)) and file.startswith('iteration'):
-                it = int(file[9:])
-                if it > max_it:
-                    max_it = it
+def load_max_ent_chi(k, path, throw_exception = True):
 
-        if max_it < 0:
-            if throw_exception:
-                raise Exception(f'max it not found for {replicate_folder}')
-            else:
-                return None
-
-        max_it_folder = osp.join(replicate_folder, f'iteration{max_it}')
-
-    config_file = osp.join(max_it_folder, 'config.json')
+    config_file = osp.join(path, 'config.json')
     if osp.exists(config_file):
         with open(config_file, 'rb') as f:
             config = json.load(f)
@@ -225,6 +208,28 @@ def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None,
                     return None
 
     return chi
+
+def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None,
+                throw_exception = True):
+    # wrapper for load_max_ent_chi to use final iteration
+    if max_it_folder is None:
+        # find final it
+        max_it = -1
+        for file in os.listdir(replicate_folder):
+            if osp.isdir(osp.join(replicate_folder, file)) and file.startswith('iteration'):
+                it = int(file[9:])
+                if it > max_it:
+                    max_it = it
+
+        if max_it < 0:
+            if throw_exception:
+                raise Exception(f'max it not found for {replicate_folder}')
+            else:
+                return None
+
+        max_it_folder = osp.join(replicate_folder, f'iteration{max_it}')
+    return load_max_ent_chi(k, max_it_folder, throw_exception = True)
+
 
 def load_final_max_ent_S(replicate_path, max_it_path = None):
     s_path = osp.join(replicate_path, 'resources', 's.npy')

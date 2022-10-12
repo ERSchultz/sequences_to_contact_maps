@@ -721,7 +721,7 @@ def down_sample_simulation_inner(file):
             plot_matrix(ydiag, osp.join(file, f'y_diag_dist{ymax}.png'), vmax='max')
 
 def save_log_diag():
-    root = '/home/erschultz/'
+    root = '/project2/depablo/erschultz/'
     dataset = 'dataset_09_30_22'
     dir = osp.join(root, dataset, 'samples')
     paths = []
@@ -749,7 +749,7 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
-    # save_log_diag()
+    # debugModel('ContactGNNEnergy')
+    save_log_diag()
     # compare_y_normalization_methods()
     # downsample_simulation()
