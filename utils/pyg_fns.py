@@ -1,4 +1,3 @@
-# temporary copy here - TODO better solution
 import os
 import os.path as osp
 from typing import Optional, Tuple, Union
@@ -20,58 +19,6 @@ from torch_sparse import SparseTensor, matmul, set_diag
 
 from .energy_utils import calculate_D
 
-
-# TODO import these
-def load_saved_model(opt, verbose = True):
-    model = get_model(opt, verbose)
-    model.to(opt.device)
-    model_name = osp.join(opt.ofile_folder, 'model.pt')
-    if osp.exists(model_name):
-        save_dict = torch.load(model_name, map_location=torch.device('cpu'))
-        model.load_state_dict(save_dict['model_state_dict'])
-        train_loss_arr = save_dict['train_loss']
-        val_loss_arr = save_dict['val_loss']
-        if verbose:
-            print('Model is loaded: {}'.format(model_name), file = opt.log_file)
-    else:
-        raise Exception('Model does not exist: {}'.format(model_name))
-    model.eval()
-
-    return model, train_loss_arr, val_loss_arr
-
-## dataset functions ##
-def get_dataset(opt, names = False, minmax = False, verbose = True, samples = None):
-    opt.root = None
-    if opt.GNN_mode:
-        if opt.split_sizes is not None and -1 not in opt.split_sizes:
-            max_sample = np.sum(opt.split_sizes)
-        else:
-            max_sample = float('inf')
-
-        dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.m, opt.y_preprocessing,
-                                opt.log_preprocessing, opt.preprocessing_norm, opt.min_subtraction,
-                                opt.use_node_features,
-                                opt.sparsify_threshold, opt.sparsify_threshold_upper,
-                                opt.split_neg_pos_edges, opt.max_diagonal,
-                                opt.transforms_processed, opt.pre_transforms_processed,
-                                opt.output_mode, opt.crop, opt.log_file, verbose,
-                                max_sample, samples)
-        opt.root = dataset.root
-        print('\n'*3)
-    elif opt.autoencoder_mode and opt.output_mode == 'sequence':
-        dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)
-    elif opt.model_type.upper() == 'MLP':
-        dataset = DiagFunctions(opt.data_folder, opt.crop, opt.preprocessing_norm,
-                                opt.log_preprocessing, opt.y_zero_diag_count,
-                                opt.output_mode,
-                                names = names, samples = samples)
-    else:
-        dataset = SequencesContacts(opt.data_folder, opt.toxx, opt.toxx_mode,
-                                    opt.y_preprocessing, opt.preprocessing_norm,
-                                    opt.x_reshape, opt.ydtype, opt.y_reshape,
-                                    opt.crop, opt.min_subtraction, names, minmax)
-
-    return dataset
 
 # node transforms
 class WeightedLocalDegreeProfile(BaseTransform):
@@ -445,19 +392,19 @@ class DiagonalParameterDistance(BaseTransform):
             cat: True to concatenate attr, False to overwrite
             split_edges: consider 'positive' and 'negative' edges separately
             convert_to_attr: True for edge attr, False for edge weight
-            mlp_id: ID of trained MLP model (if None, uses ground truth params)
+            id: ID of trained MLP model
         '''
         self.cat = cat
         self.split_edges = split_edges # bool
         self.convert_to_attr = convert_to_attr # bool, converts to 2d array
-        self.id = id
+        self.mlp_id = id
 
     def __call__(self, data):
         # get D
-        if self.id is None:
+        if self.mlp_id is None:
             D = calculate_D(data.diag_chis_continuous)
         else:
-            assert data.mlp_model_id == self.id
+            assert data.mlp_model_id == self.mlp_id
             D = calculate_D(data.diag_chis_continuous_mlp)
         D = torch.tensor(D, dtype = torch.float32)
 
@@ -508,6 +455,10 @@ class DiagonalParameterDistance(BaseTransform):
                 data.edge_attr = edge_attr
 
         return data
+
+    def __repr__(self) -> str:
+        return (f'{self.__class__.__name__}'
+                f'(mlp_id={self.mlp_id})')
 
 # message passing
 class WeightedSignedConv(MessagePassing):

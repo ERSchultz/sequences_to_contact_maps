@@ -339,8 +339,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             opt.crop = (0, self.m)
 
             # get model
-            model = get_model(opt, False)
-            model.to(opt.device)
+            model = get_model(opt, False).to(opt.device)
             model_name = osp.join(opt.ofile_folder, 'model.pt')
             if osp.exists(model_name):
                 save_dict = torch.load(model_name, map_location=torch.device('cpu'))

@@ -1,6 +1,6 @@
 #! /bin/bash
 #SBATCH --job-name=MLP
-#SBATCH --output=logFiles/MLP.out
+#SBATCH --output=logFiles/MLP2.out
 #SBATCH --time=06:00:00
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -10,7 +10,7 @@
 
 cd ~/sequences_to_contact_maps
 
-source bin/GNN/GNN_fns.sh
+source bin/MLP/MLP_fns.sh
 source activate python3.9_pytorch1.9
 source activate python3.9_pytorch1.9_cuda10.2
 
