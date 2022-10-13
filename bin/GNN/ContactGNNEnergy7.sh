@@ -25,11 +25,13 @@ hiddenSizesList='8-8-8'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
-outputMode='energy_sym_diag'
 
-# should be really easy - check if head arch makes net energy prediction impossible
+yLogTransform='ln'
+sparsifyThreshold='none'
+yPreprocessing='log_diag'
+# no sparsification, using log_diag preprocessing + log
 
-id=174
+id=185
 yPreprocessing='diag'
 for lr in 1e-4
 do

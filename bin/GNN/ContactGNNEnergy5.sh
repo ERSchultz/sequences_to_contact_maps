@@ -31,8 +31,6 @@ sparsifyThreshold='none'
 yPreprocessing='log_diag'
 # no log/ln transform, no sparsification, using log_diag preprocessing
 
-# TODO consider 2nd ln transform and sparsification
-
 id=183
 for lr in 1e-4
 do
