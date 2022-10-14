@@ -641,34 +641,34 @@ class WeightedGATv2Conv(MessagePassing):
         self.dropout = dropout
         self.add_self_loops = add_self_loops
         self.edge_dim = edge_dim
-        if edge_dim_MP:
-            self.edge_dim_MP = edge_dim
-        else:
-            self.edge_dim_MP = 0
+        self.edge_dim_MP = edge_dim_MP
         self.fill_value = fill_value
         self.share_weights = share_weights
 
 
         if isinstance(in_channels, int):
-            self.lin_l = Linear(in_channels + self.edge_dim_MP, heads * out_channels, bias=bias,
+            self.lin_l = Linear(in_channels, heads * out_channels, bias=bias,
                                 weight_initializer='glorot')
             if share_weights:
                 self.lin_r = self.lin_l
             else:
-                self.lin_r = Linear(in_channels + self.edge_dim_MP, heads * out_channels,
+                self.lin_r = Linear(in_channels, heads * out_channels,
                                     bias=bias, weight_initializer='glorot')
         else:
-            self.lin_l = Linear(in_channels[0] + self.edge_dim_MP, heads * out_channels,
+            self.lin_l = Linear(in_channels[0], heads * out_channels,
                                 bias=bias, weight_initializer='glorot')
             if share_weights:
                 self.lin_r = self.lin_l
             else:
-                self.lin_r = Linear(in_channels[1] + self.edge_dim_MP, heads * out_channels,
+                self.lin_r = Linear(in_channels[1], heads * out_channels,
                                     bias=bias, weight_initializer='glorot')
 
         self.att = Parameter(torch.Tensor(1, heads, out_channels))
 
         if edge_dim is not None:
+            # if edge_dim_MP:
+            #     self.lin_edge_MP = Linear(edge_dim, heads * out_channels, bias=False,
+            #                            weight_initializer='glorot')
             self.lin_edge = Linear(edge_dim, heads * out_channels, bias=False,
                                    weight_initializer='glorot')
         else:
@@ -777,6 +777,10 @@ class WeightedGATv2Conv(MessagePassing):
         if edge_attr is not None:
             if edge_attr.dim() == 1:
                 edge_attr = edge_attr.view(-1, 1)
+
+            # if self.edge_dim_MP:
+            #     assert self.lin_edge_MP is not None
+
             assert self.lin_edge is not None
             edge_attr = self.lin_edge(edge_attr)
             edge_attr = edge_attr.view(-1, self.heads, self.out_channels)
@@ -787,7 +791,11 @@ class WeightedGATv2Conv(MessagePassing):
         alpha = softmax(alpha, index, ptr, size_i)
         self._alpha = alpha
         alpha = F.dropout(alpha, p=self.dropout, training=self.training)
-        return x_j * alpha.unsqueeze(-1)
+
+        if self.edge_dim_MP:
+            return (x_j + edge_attr) * alpha.unsqueeze(-1)
+        else:
+            return x_j * alpha.unsqueeze(-1)
 
     def __repr__(self) -> str:
         return (f'{self.__class__.__name__}({self.in_channels}, '

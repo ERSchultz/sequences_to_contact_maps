@@ -16,6 +16,7 @@ from .pyg_fns import (AdjPCATransform, AdjTransform, ContactDistance, Degree,
                       DiagonalParameterDistance, GeneticDistance,
                       GeneticPosition, OneHotGeneticPosition,
                       WeightedLocalDegreeProfile)
+from .utils import DiagonalPreprocessing
 
 
 def get_base_parser():
@@ -473,7 +474,6 @@ def process_transforms(opt):
             opt.node_feature_size += opt.m
             processed.append(OneHotGeneticPosition())
         elif t_str[0] == 'diagonalparameterdistance':
-            opt.edge_transforms.append(f'DiagonalParameterDistance')
             assert opt.use_edge_attr or opt.use_edge_weights
 
             if len(t_str) > 1 and t_str[1].isdigit():
@@ -573,11 +573,29 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
             move_file = True
 
         if move_file:
-            # only move .npy files
             source_file = osp.join(sample_dir, file)
             destination_file = osp.join(scratch_sample_dir, file)
             if not osp.exists(destination_file):
                 shutil.copyfile(source_file, destination_file)
+
+    if y_preprocessing.startswith('sweep'):
+        sweep, *y_preprocessing = y_preprocessing.split('_')
+        sweep = int(sweep[5:])
+        if isinstance(y_preprocessing, list):
+            y_preprocessing = '_'.join(y_preprocessing)
+
+        y = np.loadtxt(osp.join(sample_dir, f'data_out/contacts{sweep}.txt'))
+        if y_preprocessing == 'log':
+            y_to_move = np.log(y+1)
+        elif y_preprocessing == 'log_diag':
+            y_log = np.log(y+1)
+            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y_log)
+            y_to_move = DiagonalPreprocessing.process(y_log, meanDist)
+        elif y_preprocessing == 'diag':
+            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
+            y_to_move = DiagonalPreprocessing.process(y, meanDist)
+
+        np.save(osp.join(scratch_sample_dir, f'y_sweep{sweep}_{y_preprocessing}'), y_to_move)
 
 def argparse_setup(local = False):
     """Helper function set up parser."""
@@ -881,11 +899,3 @@ class ArgparserConverter():
         else:
             raise Exception('float value expected.')
         return vstr
-
-def test():
-    s = '-200-0'
-    f = str2list(s)
-    print(f)
-
-if __name__ == '__main__':
-    test()

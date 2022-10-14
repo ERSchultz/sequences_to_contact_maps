@@ -9,7 +9,7 @@ import torch_geometric.nn as gnn
 # from .argparse_utils import finalize_opt, get_base_parser
 from .base_networks import (MLP, AverageTo2d, ConvBlock, DeconvBlock,
                             LinearBlock, Symmetrize2D, UnetBlock, act2module)
-from .pyg_fns import WeightedSignedConv
+from .pyg_fns import WeightedGATv2Conv, WeightedSignedConv
 
 
 ## model functions ##
@@ -550,7 +550,7 @@ class ContactGNN(nn.Module):
         if self.message_passing == 'identity':
             # debugging option to skip message passing
             self.model = None
-        elif self.message_passing in {'gcn', 'transformer', 'gat'}:
+        elif self.message_passing in {'gcn', 'transformer', 'gat', 'weighted_gat'}:
             if self.use_edge_attr:
                 inputs = 'x, edge_index, edge_attr'
             else:
@@ -568,6 +568,11 @@ class ContactGNN(nn.Module):
                     module = gnn.GATv2Conv(input_size, output_size,
                                             heads = num_heads, concat = concat_heads,
                                             edge_dim = self.edge_dim,
+                                            bias = use_bias)
+                elif self.message_passing == 'weighted_gat':
+                    module = WeightedGATv2Conv(input_size, output_size,
+                                            heads = num_heads, concat = concat_heads,
+                                            edge_dim = self.edge_dim, edge_dim_MP = True,
                                             bias = use_bias)
                 model.append((module, fn_header))
                 if concat_heads:
@@ -723,7 +728,7 @@ class ContactGNN(nn.Module):
             # latent = z_model(graph)
             # if opt.loss == 'BCE':
             #     latent = torch.sigmoid(latent)
-        elif self.message_passing in {'gcn', 'transformer', 'gat'}:
+        elif self.message_passing in {'gcn', 'transformer', 'gat', 'weighted_gat'}:
             latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
         elif self.message_passing == 'signedconv':
             if self.use_edge_attr:

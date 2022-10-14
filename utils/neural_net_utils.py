@@ -60,7 +60,6 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
                                     opt.y_preprocessing, opt.preprocessing_norm,
                                     opt.x_reshape, opt.ydtype, opt.y_reshape,
                                     opt.crop, opt.min_subtraction, names, minmax)
-
     return dataset
 
 def get_data_loaders(dataset, opt):
@@ -124,7 +123,9 @@ def split_dataset(dataset, opt):
         val_dataset = Subset(dataset, range(opt.testN, opt.testN+opt.valN))
         train_dataset = Subset(dataset, range(opt.testN+opt.valN, opt.testN+opt.valN+opt.trainN))
 
-    assert len(test_dataset) == opt.testN and len(train_dataset) == opt.trainN
+    assert len(test_dataset) == opt.testN, f"{len(test_dataset)} != {opt.testN}"
+    assert len(train_dataset) == opt.trainN, f"{len(train_dataset)} != {opt.trainN}"
+
     return train_dataset, val_dataset, test_dataset
 
 # pytorch helper functions

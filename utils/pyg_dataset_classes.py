@@ -236,26 +236,14 @@ class ContactsGraph(torch_geometric.data.Dataset):
         '''
         if self.y_preprocessing is None:
             y_path = osp.join(raw_folder, 'y.npy')
-        elif self.y_preprocessing == 'diag':
-            y_path = osp.join(raw_folder, 'y_diag.npy')
-        elif self.y_preprocessing == 'log':
-            y_path = osp.join(raw_folder, 'y_log.npy')
-        elif self.y_preprocessing == 'log_diag':
-            y_path = osp.join(raw_folder, 'y_log_diag.npy')
-        elif self.y_preprocessing == '1000_diag':
-            y_path = osp.join(raw_folder, 'y1000_diag.npy')
-        elif self.y_preprocessing == '2500_diag':
-            y_path = osp.join(raw_folder, 'y2500_diag.npy')
-        elif self.y_preprocessing == '5000_diag':
-            y_path = osp.join(raw_folder, 'y5000_diag.npy')
-        elif self.y_preprocessing == 'prcnt':
-            y_path = osp.join(raw_folder, 'y_prcnt.npy')
-        elif self.y_preprocessing == 'diag_batch':
-            y_path = osp.join(raw_folder, 'y_diag_batch.npy')
         else:
-            raise Exception("Unknown preprocessing: {}".format(self.y_preprocessing))
+            y_path = osp.join(raw_folder, f'y_{self.y_preprocessing}.npy')
 
-        y = np.load(y_path)
+        if osp.exists(y_path):
+            y = np.load(y_path)
+        else:
+            raise Exception(f"Unknown preprocessing: {self.y_preprocessing} or y_path missing: {y_path}")
+
         if self.crop is not None:
             y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
 
@@ -275,6 +263,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y = y / self.ymax
 
         if self.y_log_transform is not None:
+            assert not self.y_preprocessing.endswith('log'), "don't use log twice in a row"
             if self.y_log_transform == 'ln':
                 y = np.log(y)
             elif self.y_log_transform.isdigit():

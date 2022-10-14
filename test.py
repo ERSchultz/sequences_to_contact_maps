@@ -99,11 +99,10 @@ def debugModel(model_type):
 
     # architecture
     opt.m = 1024
-    opt.y_preprocessing = None
-    # opt.split_percents=[0.8,0.2,0.0]
-    opt.split_percents = None
-    opt.split_sizes=[1, 2, 0]
-    # opt.split_sizes=None
+    opt.split_percents=[0.8,0.2,0.0]
+    # opt.split_percents = None
+    # opt.split_sizes=[1, 2, 0]
+    opt.split_sizes=None
 
     if model_type == 'Akita':
         opt.kernel_w_list=AC.str2list('5-5-5')
@@ -152,10 +151,10 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing='log'
+        opt.y_preprocessing = 'sweep200000_log_diag'
         opt.loss = 'mse'
         opt.preprocessing_norm = None
-        opt.message_passing='gat'
+        opt.message_passing = 'weighted_gat'
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym'
         opt.encoder_hidden_sizes_list=[100,100,64]
@@ -169,16 +168,16 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         opt.transforms=AC.str2list('empty')
-        opt.pre_transforms=AC.str2list('degree-contactdistance-GeneticDistance-diagonalparameterdistance_79')
-        opt.mlp_model_id=79
+        opt.pre_transforms=AC.str2list('degree-contactdistance-GeneticDistance-diagonalparameterdistance')
+        opt.mlp_model_id=None
         opt.split_edges_for_feature_augmentation = False
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
         opt.head_architecture = 'bilinear'
         opt.head_hidden_sizes_list = None
-        opt.crop = [0,1024]
-        opt.m = 1024
+        opt.crop = [0,512]
+        opt.m = 512
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True
@@ -222,7 +221,7 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 3
+    opt.n_epochs = 1
     opt.lr = 1e-4
     opt.batch_size = 2
     opt.milestones = None
@@ -250,8 +249,8 @@ def debugModel(model_type):
 
     core_test_train(model, opt)
 
-    if opt.use_scratch:
-        rmtree(opt.data_folder)
+    # if opt.use_scratch:
+    #     rmtree(opt.data_folder)
 
 
 def binom():
@@ -591,29 +590,6 @@ def sc_structure_vs_sc_sample():
         plt.savefig(osp.join(dir, 'sc vs sample.png'))
         plt.close()
 
-def tar_samples():
-    # iterates through results folder to find sample{i} folders
-    # compresses sample{i} folder to .tar.gz
-    results = '/home/erschultz/sequences_to_contact_maps/results'
-    for dir in os.listdir(results):
-        print(dir)
-        for id in os.listdir(osp.join(results, dir)):
-            id_path = osp.join(results, dir, id)
-            if osp.isdir(id_path):
-                print('', id)
-                for file in os.listdir(id_path):
-                    file_path = osp.join(id_path, file)
-                    if file.startswith('sample') and osp.isdir(file_path):
-                        tar_path = osp.join(id_path, file.split('.')[0] + '.tar.gz')
-                        if not osp.exists(tar_path):
-                            print('  ', file_path)
-                            os.chdir(file_path)
-                            with tarfile.open(tar_path, "x:gz") as tar:
-                                for inner_file in os.listdir(file_path):
-                                    tar.add(inner_file)
-                        rmtree(file_path)
-
-
 def main2():
     # scc comparison
     # using bulk hic data
@@ -698,7 +674,7 @@ def downsample_simulation():
     # uses data_out/output.xyz to generate contact map as if you had
     # only ran a shorter simulation
     # use this to assess GNN robustness to simulation length
-    dir = '/home/erschultz/dataset_test'
+    dir = '/home/erschultz/dataset_09_30_22'
     files = make_dataset(dir)
 
     with multiprocessing.Pool(20) as p:
@@ -706,19 +682,23 @@ def downsample_simulation():
 
 def down_sample_simulation_inner(file):
     print(file)
-    xyz_file = osp.join(file, 'data_out', 'output.xyz')
-    xyz = xyz_load(xyz_file, multiple_timesteps = True, N_min = 1)
-    for ymax in [1000, 2500, 5000, 10000]:
-        y_diag_ofile = osp.join(file, f'y_diag_dist{ymax}.npy')
-        if not osp.exists(y_diag_ofile):
-            y = xyz_to_contact_distance(xyz[:ymax], 28.7, verbose = True)
-            np.save(osp.join(file, f'y_dist{ymax}.npy'), y)
-            plot_matrix(y, osp.join(file, f'y_dist{ymax}.png'), vmax='mean')
+    # xyz_file = osp.join(file, 'data_out', 'output.xyz')
+    # xyz = xyz_load(xyz_file, multiple_timesteps = True, N_min = 1)
+    for sweep in [100000, 2000000, 300000, 400000, 500000]:
+        # y_diag_ofile = osp.join(file, f'y_diag_dist{ymax}.npy')
+        y_ifile = osp.join(file, f'data_out/contacts{sweep}.txt')
+        y_ofile = osp.join(file, f'y_sweep{sweep}.npy')
+        if not osp.exists(y_ofile):
+            # y = xyz_to_contact_distance(xyz[:ymax], 28.7, verbose = True)
+            if osp.exists(y_ifile):
+                y = np.loadtxt(y_ifile)
+                np.save(y_ofile, y)
+                plot_matrix(y, osp.join(file, f'y_sweep{sweep}.png'), vmax='mean')
 
-            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
-            ydiag = DiagonalPreprocessing.process(y, meanDist)
-            np.save(y_diag_ofile, ydiag)
-            plot_matrix(ydiag, osp.join(file, f'y_diag_dist{ymax}.png'), vmax='max')
+                # meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
+                # ydiag = DiagonalPreprocessing.process(y, meanDist)
+                # np.save(y_diag_ofile, ydiag)
+                # plot_matrix(ydiag, osp.join(file, f'y_diag_dist{ymax}.png'), vmax='max')
 
 def save_log_diag():
     root = '/project2/depablo/erschultz/'
@@ -742,14 +722,11 @@ def save_log_diag_inner(path):
 
 
 if __name__ == '__main__':
-    # main3()
-    # test_merge_cool()
     # prep_data_for_cluster()
-    # tar_samples()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('MLP')
+    debugModel('ContactGNNEnergy')
     # save_log_diag()
     # compare_y_normalization_methods()
     # downsample_simulation()

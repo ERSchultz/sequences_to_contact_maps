@@ -25,13 +25,14 @@ hiddenSizesList='8-8-8'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 
-yLogTransform='ln'
-sparsifyThreshold=0.405
+yLogTransform='none'
+sparsifyThreshold='none'
 
-# signedconv reference with better preprocessing (ln and diag param edge attr)
+# signedconv reference with log preprocessing
+# curious if this will work - maybe attention is necessary for with log?
 
-id=184
-yPreprocessing='diag'
+id=188
+yPreprocessing='log'
 for lr in 1e-3
 do
   train
