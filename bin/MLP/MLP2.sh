@@ -36,10 +36,6 @@ batchSize=32
 numWorkers=8
 milestones='50'
 gamma=0.1
-splitSizes='900-200-0'
-
-# train on subset
-
 
 id=82
 for lr in 1e-3 1e-4

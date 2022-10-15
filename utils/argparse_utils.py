@@ -577,7 +577,7 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
             if not osp.exists(destination_file):
                 shutil.copyfile(source_file, destination_file)
 
-    if y_preprocessing.startswith('sweep'):
+    if y_preprocessing is not None and y_preprocessing.startswith('sweep'):
         sweep, *y_preprocessing = y_preprocessing.split('_')
         sweep = int(sweep[5:])
         if isinstance(y_preprocessing, list):
