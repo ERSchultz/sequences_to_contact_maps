@@ -31,8 +31,7 @@ sparsifyThreshold='none'
 yPreprocessing='log_diag'
 # no sparsification, using log_diag preprocessing + log
 
-id=185
-yPreprocessing='diag'
+id=189
 for lr in 1e-4
 do
   train

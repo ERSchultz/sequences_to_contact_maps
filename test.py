@@ -176,8 +176,8 @@ def debugModel(model_type):
         opt.log_preprocessing = None
         opt.head_architecture = 'bilinear'
         opt.head_hidden_sizes_list = None
-        opt.crop = [0,512]
-        opt.m = 512
+        opt.crop = [0,256]
+        opt.m = 256
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True
@@ -232,7 +232,7 @@ def debugModel(model_type):
     opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = False
-    opt.gpus = 1
+    opt.gpus = 0
     opt.delete_root = True
     opt.use_scratch = True
     opt.print_mod = 1

@@ -32,7 +32,6 @@ yPreprocessing='log_diag'
 # using log_diag preprocessing + log with sparsification
 
 id=186
-yPreprocessing='diag'
 for lr in 1e-4
 do
   train

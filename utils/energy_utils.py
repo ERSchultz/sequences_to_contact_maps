@@ -39,6 +39,9 @@ def calculate_diag_chi_step(config, diag_chi = None):
         diag_chi = config['diag_chis']
     diag_bins = len(diag_chi)
 
+    if diag_bins == m:
+        return diag_chi
+
     if 'diag_start' in config.keys():
         diag_start = config['diag_start']
     else:

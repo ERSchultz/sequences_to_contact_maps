@@ -50,8 +50,8 @@ batchSize=1
 numWorkers=4
 milestones='50'
 gamma=0.1
-splitSizes='-200-0'
-splitPercents='none'
+splitSizes='none'
+splitPercents='0.9-0.1-0.0'
 lr=1e-3
 
 useScratch='true'

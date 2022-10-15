@@ -553,8 +553,7 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
         if file == 'xx.npy' and toxx:
             # only need xx.npy if toxx is True
             move_file = True
-        elif file == 'y.npy':
-            # always need this?
+        elif file == 'y.npy' and (y_preprocessing is None or output_mode.startswith('diag')):
             move_file = True
         elif y_preprocessing is not None and fname.endswith(y_preprocessing) and ftype == 'npy':
             # need file corresponding to y_preprocessing
