@@ -190,3 +190,22 @@ Epoch 96, loss = 3.2866
 Mean test/val loss: 3.4881
 
 Epoch 98, loss = 3.2736
+Mean test/val loss: 3.4373
+
+Epoch 100, loss = 3.2667
+Mean test/val loss: 3.4681
+
+
+Total parameters: 116175
+Total training + validation time: 17.0 hours
+Final val loss: 3.4680805145204068
+
+#### Plotting Script ####
+Prediction Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/185/sample1: 1.3739579916000366
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/185/sample10: 0.5019083023071289
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/185/sample100: 1.2922656536102295
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/185/sample1000: 1.0791058540344238
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/185/sample1001: 2.596066951751709
+Loss: 1.3686609506607055 +- 0.6851995474281264
+
