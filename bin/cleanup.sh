@@ -12,7 +12,5 @@ for i in $( seq 1 2520)
 do
   sample="${dataset}/sample${i}"
   cd $sample
-  rm y.npy
-  rm y_diag.npy
-  wait
+  rm meanDist.npy
 done

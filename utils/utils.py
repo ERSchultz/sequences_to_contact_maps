@@ -134,7 +134,7 @@ class DiagonalPreprocessing():
 
         return np.array(stat_per_diagonal)
 
-    def process(y, mean_per_diagonal, triu = False):
+    def process(y, mean_per_diagonal, triu = False, verbose = True):
         """
         Inputs:
             y: contact map numpy array or path to .npy file
@@ -155,7 +155,7 @@ class DiagonalPreprocessing():
 
         for d in range(len(mean_per_diagonal)):
             expected = mean_per_diagonal[d]
-            if expected == 0:
+            if expected == 0 and verbose:
                 # this is unlikely to happen
                 print(f'WARNING: 0 contacts expected at distance {d}')
 
@@ -175,7 +175,7 @@ class DiagonalPreprocessing():
         return result
 
     def process_chunk(dir, mean_per_diagonal, odir = None, chunk_size = 100,
-                    jobs = 1, sparse_format = False):
+                    jobs = 1, sparse_format = False, verbose = True):
         '''
         Faster version of process when using many contact maps
         but RAM is limited.
@@ -185,7 +185,8 @@ class DiagonalPreprocessing():
         '''
         zeros = np.argwhere(mean_per_diagonal == 0)
         if len(zeros) > 0:
-            print(f'WARNING: 0 contacts expected at distance {zeros}')
+            if verbose:
+                print(f'WARNING: 0 contacts expected at distance {zeros}')
             # replace with minimum observed mean
             mean_per_diagonal[zeros] = np.min(mean_per_diagonal[mean_per_diagonal > 0])
 

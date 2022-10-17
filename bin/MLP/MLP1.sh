@@ -15,7 +15,7 @@ source activate python3.9_pytorch1.9
 source activate python3.9_pytorch1.9_cuda10.2
 
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
-scratch="${scratch}/MLP2"
+scratch="${scratch}/MLP1"
 
 # LOCAL
 # dirname="/home/erschultz/dataset_09_30_22"
@@ -47,3 +47,5 @@ do
   train
   id=$(( $id + 1 ))
 done
+
+python3 cleanDirectories.py --data_folder $dirname --use_scratch $useScratch --clean_scratch > clean.log

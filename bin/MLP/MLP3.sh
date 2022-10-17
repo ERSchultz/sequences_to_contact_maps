@@ -45,3 +45,5 @@ do
   train
   id=$(( $id + 1 ))
 done
+
+python3 cleanDirectories.py --data_folder $dirname --use_scratch $useScratch --clean_scratch > clean.log

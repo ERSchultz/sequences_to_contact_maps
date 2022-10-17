@@ -3,25 +3,6 @@ import os.path as osp
 from shutil import rmtree
 
 
-def str2bool(v):
-    """
-    Helper function for argparser, converts str to boolean for various string inputs.
-    https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
-
-    Inputs:
-        v: string
-    """
-    if isinstance(v, bool):
-       return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
-
-
-
 def clean_directories(data_folder = 'dataset_04_18_21', GNN_path = None, GNN_file_name = None):
     parser = argparse.ArgumentParser(description='Simple parser')
     parser.add_argument('--data_folder', type=str, default=data_folder,
@@ -30,7 +11,7 @@ def clean_directories(data_folder = 'dataset_04_18_21', GNN_path = None, GNN_fil
                         help='name of file graph data was saved to')
     parser.add_argument('--GNN_path', type=str, default=GNN_path,
                         help='path to graph data')
-    parser.add_argument('--clean_scratch', type=str2bool, default=False,
+    parser.add_argument('--clean_scratch', action='store_true',
                         help='True clean scratch')
     parser.add_argument('--scratch', type=str, default=None)
     opt = parser.parse_args()
