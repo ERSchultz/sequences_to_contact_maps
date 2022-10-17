@@ -499,6 +499,8 @@ def process_transforms(opt):
 def copy_data_to_scratch(opt):
     t0 = time.time()
     # initialize scratch path
+    if not osp.exists(opt.scratch):
+        os.mkdir(opt.scratch, mode = 0o700)
     scratch_path = osp.join(opt.scratch, osp.split(opt.data_folder)[-1])
     if not osp.exists(scratch_path):
         os.mkdir(scratch_path, mode = 0o700)

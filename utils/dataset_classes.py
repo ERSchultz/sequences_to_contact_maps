@@ -217,7 +217,11 @@ class DiagFunctions(Dataset):
         # get meanDist
         meanDist_file = osp.join(self.paths[index], 'meanDist.npy')
         if osp.exists(meanDist_file):
-            meanDist = np.load(meanDist_file)
+            try:
+                meanDist = np.load(meanDist_file)
+            except ValueError:
+                print(f'Issue with {meanDist_file}')
+                raise
         else:
             y = np.load(osp.join(self.paths[index], 'y.npy')).astype(np.float64)
             if self.crop is not None:

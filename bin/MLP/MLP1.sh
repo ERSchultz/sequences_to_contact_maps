@@ -1,5 +1,5 @@
 #! /bin/bash
-#SBATCH --job-name=MLP
+#SBATCH --job-name=MLP1
 #SBATCH --output=logFiles/MLP1.out
 #SBATCH --time=06:00:00
 #SBATCH --partition=depablo-gpu
@@ -15,8 +15,12 @@ source activate python3.9_pytorch1.9
 source activate python3.9_pytorch1.9_cuda10.2
 
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
-scratch='/scratch/midway2/erschultz'
-modelType='MLP'
+scratch="${scratch}/MLP2"
+
+# LOCAL
+# dirname="/home/erschultz/dataset_09_30_22"
+# scratch='/home/erschultz/scratch/MLP1'
+# splitPercents='0.5-0.5-0.0'
 
 # preprocessing
 preprocessingNorm='mean'

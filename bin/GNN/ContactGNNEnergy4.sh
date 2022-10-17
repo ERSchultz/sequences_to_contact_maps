@@ -19,7 +19,8 @@ rootName='ContactGNNEnergy4' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='GAT'
-preTransforms='degree-ContactDistance-GeneticDistance-DiagonalParameterDistance'
+preTransforms='degree-ContactDistance-GeneticDistance-DiagonalParameterDistance79'
+mlpModelID='79'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
 EncoderHiddenSizesList='100-100-64'
@@ -31,7 +32,7 @@ sparsifyThreshold='none'
 yPreprocessing='log'
 # no log/ln transform, no sparsification, using log preprocessing
 
-id=182
+id=190
 for lr in 1e-4
 do
   train

@@ -1,5 +1,7 @@
 #/bin/bash
 
+modelType='MLP'
+scratch='/scratch/midway2/erschultz'
 useScratch='true'
 splitSizes='none'
 splitPercents='0.9-0.1-0.0'
