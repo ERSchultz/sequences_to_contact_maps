@@ -79,6 +79,8 @@ none
 --split_sizes=none
 --split_percents
 0.9-0.1-0.0
+--random_split
+true
 --verbose
 false
 --scratch
