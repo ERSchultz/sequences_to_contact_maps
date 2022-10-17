@@ -52,7 +52,9 @@ milestones='50'
 gamma=0.1
 splitSizes='none'
 splitPercents='0.9-0.1-0.0'
+randomSplit='true'
 lr=1e-3
+
 
 useScratch='true'
 useScratchParallel='true'
@@ -63,5 +65,5 @@ printParams='true'
 
 train () {
   echo "id=${id}"
-  python3 core_test_train.py --data_folder $dirname --root_name $rootName --delete_root $deleteRoot --model_type $modelType --GNN_mode $GNNMode --output_mode $outputMode --m $m --y_preprocessing ${yPreprocessing} --preprocessing_norm $yNorm --log_preprocessing $yLogTransform --max_diagonal $maxDiagonal --message_passing $messagePassing --use_node_features $useNodeFeatures --use_edge_weights $useEdgeWeights --use_edge_attr $useEdgeAttr --hidden_sizes_list $hiddenSizesList  --encoder_hidden_sizes_list $EncoderHiddenSizesList --update_hidden_sizes_list $updateHiddenSizesList --transforms $transforms --pre_transforms $preTransforms --split_edges_for_feature_augmentation $split_edges_for_feature_augmentation --top_k $topK --sparsify_threshold $sparsifyThreshold --sparsify_threshold_upper $sparsifyThresholdUpper --loss $loss --act $act --inner_act $innerAct --head_act $headAct --out_act $outAct --training_norm $trainingNorm --head_architecture $headArchitecture --head_hidden_sizes_list $headHiddenSizesList --num_heads $numHeads --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --split_sizes=$splitSizes --split_percents $splitPercents --verbose $verbose --scratch $scratch --use_scratch $useScratch --use_scratch_parallel $useScratchParallel --plot_predictions $plotPredictions --crop $crop --print_params $printParams --id $id --resume_training $resumeTraining --mlp_model_id $mlpModelID
+  python3 core_test_train.py --data_folder $dirname --root_name $rootName --delete_root $deleteRoot --model_type $modelType --GNN_mode $GNNMode --output_mode $outputMode --m $m --y_preprocessing ${yPreprocessing} --preprocessing_norm $yNorm --log_preprocessing $yLogTransform --max_diagonal $maxDiagonal --message_passing $messagePassing --use_node_features $useNodeFeatures --use_edge_weights $useEdgeWeights --use_edge_attr $useEdgeAttr --hidden_sizes_list $hiddenSizesList  --encoder_hidden_sizes_list $EncoderHiddenSizesList --update_hidden_sizes_list $updateHiddenSizesList --transforms $transforms --pre_transforms $preTransforms --split_edges_for_feature_augmentation $split_edges_for_feature_augmentation --top_k $topK --sparsify_threshold $sparsifyThreshold --sparsify_threshold_upper $sparsifyThresholdUpper --loss $loss --act $act --inner_act $innerAct --head_act $headAct --out_act $outAct --training_norm $trainingNorm --head_architecture $headArchitecture --head_hidden_sizes_list $headHiddenSizesList --num_heads $numHeads --n_epochs $nEpochs --lr $lr --batch_size $batchSize --num_workers $numWorkers --milestones $milestones --gamma $gamma --split_sizes=$splitSizes --split_percents $splitPercents --random_split $randomSplit --verbose $verbose --scratch $scratch --use_scratch $useScratch --use_scratch_parallel $useScratchParallel --plot_predictions $plotPredictions --crop $crop --print_params $printParams --id $id --resume_training $resumeTraining --mlp_model_id $mlpModelID
 }
