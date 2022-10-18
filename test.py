@@ -99,7 +99,7 @@ def debugModel(model_type):
 
     # architecture
     opt.m = 1024
-    opt.split_percents=[0.4,0.2,0.0]
+    opt.split_percents=[0.5,0.2,0.0]
     # opt.split_percents = None
     # opt.split_sizes=[1, 2, 0]
     opt.split_sizes=None
@@ -207,7 +207,8 @@ def debugModel(model_type):
         opt.num_heads = 2
     elif model_type == 'MLP':
         opt.preprocessing_norm='mean'
-        opt.random_split=False
+        opt.y_preprocessing='log'
+        opt.random_split=True
         opt.hidden_sizes_list=AC.str2list('1000-'*6 + '4')
         opt.act='prelu'
         opt.out_act='prelu'

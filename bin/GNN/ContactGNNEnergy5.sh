@@ -20,6 +20,7 @@ dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='GAT'
 preTransforms='degree-ContactDistance-GeneticDistance-DiagonalParameterDistance'
+mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
 EncoderHiddenSizesList='100-100-64'
@@ -28,10 +29,12 @@ numHeads=8
 
 yLogTransform='none'
 sparsifyThreshold='none'
-yPreprocessing='log_diag'
-# no log/ln transform, no sparsification, using log_diag preprocessing
+yPreprocessing='log'
+# no log/ln transform, no sparsification, using log preprocessing
+yNorm='mean'
+# mean norm before log
 
-id=183
+id=192
 for lr in 1e-4
 do
   train

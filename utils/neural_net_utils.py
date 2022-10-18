@@ -52,6 +52,7 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
         dataset = Sequences(opt.data_folder, opt.crop, opt.x_reshape, names)
     elif opt.model_type.upper() == 'MLP':
         dataset = DiagFunctions(opt.data_folder, opt.crop, opt.preprocessing_norm,
+                                opt.y_preprocessing,
                                 opt.log_preprocessing, opt.y_zero_diag_count,
                                 opt.output_mode,
                                 names = names, samples = samples)
@@ -91,7 +92,7 @@ def split_dataset(dataset, opt):
     """Splits input dataset into proportions specified by split."""
     opt.N = len(dataset)
     if opt.split_percents is not None:
-        assert sum(opt.split_percents) - 1 < 1e-5, f"split doesn't sum to 1: {opt.split_percents}"
+        assert abs(sum(opt.split_percents) - 1) < 1e-5, f"split doesn't sum to 1: {opt.split_percents}"
         opt.testN = math.floor(opt.N * opt.split_percents[2])
         opt.valN = math.floor(opt.N * opt.split_percents[1])
         opt.trainN = opt.N - opt.testN - opt.valN
@@ -107,8 +108,8 @@ def split_dataset(dataset, opt):
         elif opt.testN == -1:
             opt.testN = opt.N - opt.trainN - opt.valN
 
-    if opt.verbose:
-        print('split sizes:', opt.trainN, opt.valN, opt.testN, opt.N)
+    print(f'split sizes: train={opt.trainN}, val={opt.valN}, test={opt.testN}, N={opt.N}',
+        file = opt.log_file)
 
     if opt.random_split:
         return torch.utils.data.random_split(dataset, [opt.trainN, opt.valN, opt.testN],

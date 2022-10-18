@@ -31,19 +31,19 @@ act='prelu'
 outAct='prelu'
 
 # hyperparameters
-nEpochs=70
+nEpochs=100
 batchSize=32
 numWorkers=8
 milestones='50'
 gamma=0.1
 
-# try ln preprocessing
+# retry ln preprocessing with smaller lr
 
 id=84
-for lr in 1e-3 1e-4
+for lr in 1e-4 1e-5
 do
   train
   id=$(( $id + 1 ))
 done
 
-python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --use_scratch $useScratch --clean_scratch
+python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --scratch $scratch --clean_scratch

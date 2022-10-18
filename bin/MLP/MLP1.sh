@@ -20,10 +20,11 @@ scratch="${scratch}/MLP1"
 # LOCAL
 # dirname="/home/erschultz/dataset_09_30_22"
 # scratch='/home/erschultz/scratch/MLP1'
-# splitPercents='0.5-0.5-0.0'
+# splitPercents='0.5-0.4-0.1'
 
 # preprocessing
 preprocessingNorm='mean'
+yPreprocessing='log'
 logPreprocessing='none'
 yZeroDiagCount=0
 outputMode='diag_chi_continuous'
@@ -35,17 +36,19 @@ act='prelu'
 outAct='prelu'
 
 # hyperparameters
-nEpochs=70
+nEpochs=100
 batchSize=32
 numWorkers=8
 milestones='50'
 gamma=0.1
 
-id=80
-for lr in 1e-3 1e-4
+# y_preprocessing = 'log'
+
+id=86
+for lr in 1e-3 1e-4 1e-5
 do
   train
   id=$(( $id + 1 ))
 done
 
-python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --use_scratch $useScratch --clean_scratch
+python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --scratch $scratch --clean_scratch

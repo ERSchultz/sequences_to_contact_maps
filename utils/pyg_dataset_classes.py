@@ -27,7 +27,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN:
     # https://github.com/rusty1s/pytorch_geometric/issues/1511
     def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag',
-                y_log_transform = None, y_norm = 'instance', min_subtraction = True,
+                y_log_transform = None, y_norm = 'mean', min_subtraction = True,
                 use_node_features = True, mlp_model_id = None,
                 sparsify_threshold = None, sparsify_threshold_upper = None,
                 split_neg_pos_edges = False, max_diagonal = None,
@@ -41,7 +41,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             m: number of particles/beads
             y_preprocessing: type of contact map preprocessing ('diag', None, etc)
             y_log_transform: type of log transform (int k for log_k, 'ln' for ln, None to skip)
-            y_norm: type of normalization ('instance', 'batch')
+            y_norm: type of normalization ('mean', 'max')
             min_subtraction: True to subtract min during normalization
             use_node_features: True to use bead labels as node features
             mlp_model_id: id for mlp diagonal parameters (can be used as edge attr)
@@ -78,16 +78,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.degree_list = [] # created in self.process()
         self.verbose = verbose
         self.file_paths = make_dataset(self.dirname, maxSample = max_sample, samples = samples)
-
-        if self.y_norm == 'batch':
-            assert y_preprocessing is not None, "use instance normalization instead"
-            min_max = np.load(osp.join(dirname, f"y_{y_preprocessing}_min_max.npy"))
-            print("min, max: ", min_max)
-            self.ymin = min_max[0]
-            self.ymax = min_max[1]
-        else:
-            self.ymin = 0
-            self.ymax = 1
 
         if root_name is None:
             # find any currently existing graph data folders
@@ -235,16 +225,23 @@ class ContactsGraph(torch_geometric.data.Dataset):
         necessary preprocessing.
         '''
         if self.y_preprocessing is None:
-            y_path = osp.join(raw_folder, 'y.npy')
-        else:
-            y_path = osp.join(raw_folder, f'y_{self.y_preprocessing}.npy')
-
-        if osp.exists(y_path):
-            y = np.load(y_path)
+            y = np.load(osp.join(raw_folder, 'y.npy'))
+            if self.y_norm == 'max':
+                y /= np.max(y)
+            elif self.y_norm == 'mean':
+                y /= np.mean(np.diagonal(y))
         elif self.y_preprocessing == 'log':
             y = np.load(osp.join(raw_folder, 'y.npy'))
+            if self.y_norm == 'max':
+                y /= np.max(y)
+            elif self.y_norm == 'mean':
+                y /= np.mean(np.diagonal(y))
             y = np.log(y+1)
         else:
+            assert self.y_norm is None
+            y_path = osp.join(raw_folder, f'y_{self.y_preprocessing}.npy')
+            if osp.exists(y_path):
+                y = np.load(y_path)
             raise Exception(f"Unknown preprocessing: {self.y_preprocessing} or y_path missing: {y_path}")
 
         if self.crop is not None:
@@ -253,17 +250,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if self.max_diagonal is not None:
             y = np.tril(y, self.max_diagonal)
             y = np.triu(y, -self.max_diagonal)
-
-        if self.y_norm == 'instance':
-            self.ymax = np.max(y)
-            self.ymin = np.min(y)
-
-        # if y_norm is batch this uses batch parameters from init,
-        # if y_norm is None, this does nothing
-        if self.min_subtraction:
-            y = (y - self.ymin) / (self.ymax - self.ymin)
-        else:
-            y = y / self.ymax
 
         if self.y_log_transform is not None:
             assert not self.y_preprocessing.endswith('log'), "don't use log twice in a row"

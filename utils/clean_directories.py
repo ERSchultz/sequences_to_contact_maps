@@ -19,7 +19,7 @@ def clean_directories(data_folder = 'dataset_04_18_21', GNN_path = None, GNN_fil
     if opt.scratch is not None:
         opt.data_folder = osp.join(opt.scratch, osp.split(opt.data_folder)[-1])
 
-    if opt.clean_scratch and opt.scratch:
+    if opt.clean_scratch:
         rmtree(opt.data_folder)
     else:
         if opt.GNN_path is None and opt.GNN_file_name is not None:

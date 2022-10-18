@@ -610,8 +610,8 @@ def save_args(opt):
             f.write(arg + '\n')
 
 def opt2list(opt):
-    opt_list = [opt.model_type, opt.id, osp.split(opt.data_folder)[1], opt.y_preprocessing,
-        opt.preprocessing_norm, opt.min_subtraction, opt.log_preprocessing, opt.crop]
+    opt_list = [opt.model_type, opt.id, osp.split(opt.data_folder)[1], opt.preprocessing_norm,
+        opt.y_preprocessing, opt.min_subtraction, opt.log_preprocessing, opt.crop]
     opt_list.append(opt.split_percents if opt.split_percents is not None else opt.split_sizes)
     opt_list.extend([opt.shuffle, opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr,
         opt.milestones, opt.gamma, opt.loss,
@@ -662,8 +662,8 @@ def save_opt(opt, ofile):
         wr.writerow(opt_list)
 
 def get_opt_header(model_type, GNN_mode):
-    opt_list = ['model_type', 'id',  'dataset', 'y_preprocessing',
-        'preprocessing_norm', 'min_subtraction', 'log_preprocessing', 'crop', 'split', 'shuffle',
+    opt_list = ['model_type', 'id',  'dataset', 'preprocessing_norm',
+        'y_preprocessing', 'min_subtraction', 'log_preprocessing', 'crop', 'split', 'shuffle',
         'batch_size', 'num_workers', 'n_epochs', 'lr', 'milestones',
         'gamma', 'loss', 'k', 'm',
         'seed', 'act', 'inner_act', 'head_act', 'out_act',

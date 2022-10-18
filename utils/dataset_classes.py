@@ -186,7 +186,8 @@ class DiagFunctions(Dataset):
     Dataset that contains mean contact probability along each diagonal (x)
     and corresponding diagonal chi functions (y).
     '''
-    def __init__(self, dirname, crop, norm, log, zero_diag_count,
+    def __init__(self, dirname, crop, norm, preprocessing,
+                    log, zero_diag_count,
                     output_mode,
                     min_sample = 0, max_sample = float('inf'), names = False,
                     samples = None):
@@ -194,7 +195,8 @@ class DiagFunctions(Dataset):
         Inputs:
             dirname: dataset directory
             crop (tuples): pair of values to crop meanDist to
-            norm (str): type of normalization (only instance currently accepted)
+            norm (str): type of normalization {'max', 'mean'}
+            preprocessing (str): type of preprocessing for contact map {'log'}
             log (str): typue of log preprocessing (None to skip)
             zero_diag_count (int): number of diagonals to zero
             output_mode (str): type of data to output
@@ -203,6 +205,7 @@ class DiagFunctions(Dataset):
         self.crop = crop
         assert norm is None or norm in {'max', 'mean'}, f'Unaccepted norm: {norm}'
         self.norm = norm
+        self.preprocessing = preprocessing
         self.log = log
         self.output_mode = output_mode
         self.zero_diag_count = zero_diag_count
@@ -232,6 +235,13 @@ class DiagFunctions(Dataset):
                 y /= np.max(y)
             elif self.norm == 'mean':
                 y /= np.mean(np.diagonal(y))
+
+            if self.preprocessing is None:
+                pass
+            elif self.preprocessing == 'log':
+                y = np.log(y+1)
+            else:
+                raise Exception(f'Unrecognized preprocessing {self.preprocessing}')
 
             meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
 
