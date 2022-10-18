@@ -48,4 +48,4 @@ do
   id=$(( $id + 1 ))
 done
 
-python3 cleanDirectories.py --data_folder $dirname --use_scratch $useScratch --clean_scratch > clean.log
+python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --use_scratch $useScratch --clean_scratch

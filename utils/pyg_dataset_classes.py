@@ -241,6 +241,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
         if osp.exists(y_path):
             y = np.load(y_path)
+        elif self.y_preprocessing == 'log':
+            y = np.load(osp.join(raw_folder, 'y.npy'))
+            y = np.log(y+1)
         else:
             raise Exception(f"Unknown preprocessing: {self.y_preprocessing} or y_path missing: {y_path}")
 
@@ -277,7 +280,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             else:
                 raise Exception(f'Unrecognized log transform: {self.y_log_transform}')
 
-            y[np.isinf(y)] = 0
+            y[np.isinf(y)] = 0 # since we didn't add a constant to y before the log
 
         if self.sparsify_threshold is not None:
             y[np.abs(y) < self.sparsify_threshold] = 0

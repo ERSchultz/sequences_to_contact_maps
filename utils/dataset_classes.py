@@ -237,13 +237,13 @@ class DiagFunctions(Dataset):
 
             if self.log is not None:
                 if self.log == 'ln':
-                    meanDist = np.log(meanDist+1e-8)
+                    meanDist = np.log(meanDist+1)
                 elif self.log.isdigit():
                     val = int(self.log)
                     if val == 2:
-                        meanDist = np.log2(meanDist+1e-8)
+                        meanDist = np.log2(meanDist+1)
                     elif val == 10:
-                        meanDist = np.log10(meanDist+1e-8)
+                        meanDist = np.log10(meanDist+1)
                     else:
                         raise Exception(f'Unaccepted log base: {val}')
                 else:

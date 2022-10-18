@@ -36,6 +36,9 @@ batchSize=32
 numWorkers=8
 milestones='50'
 gamma=0.1
+splitPercents='0.45-0.1-0.0'
+
+# subset of data
 
 id=82
 for lr in 1e-3 1e-4
@@ -44,4 +47,4 @@ do
   id=$(( $id + 1 ))
 done
 
-python3 cleanDirectories.py --data_folder $dirname --use_scratch $useScratch --clean_scratch > clean.log
+python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --use_scratch $useScratch --clean_scratch

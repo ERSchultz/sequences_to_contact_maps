@@ -99,7 +99,7 @@ def debugModel(model_type):
 
     # architecture
     opt.m = 1024
-    opt.split_percents=[0.8,0.2,0.0]
+    opt.split_percents=[0.4,0.2,0.0]
     # opt.split_percents = None
     # opt.split_sizes=[1, 2, 0]
     opt.split_sizes=None
@@ -700,25 +700,17 @@ def down_sample_simulation_inner(file):
                 # np.save(y_diag_ofile, ydiag)
                 # plot_matrix(ydiag, osp.join(file, f'y_diag_dist{ymax}.png'), vmax='max')
 
-def save_log_diag():
-    root = '/project2/depablo/erschultz/'
-    dataset = 'dataset_09_30_22'
-    dir = osp.join(root, dataset, 'samples')
-    paths = []
-    for sample in os.listdir(dir):
-        if sample.startswith('sample'):
-            paths.append(osp.join(dir, sample))
+def main3():
+    dir = '/home/erschultz/sequences_to_contact_maps'
+    # dir = '/home/erschultz'
+    data_dir = 'dataset_07_20_22/samples/sample10/PCA-normalize/k2/replicate1'
+    path = osp.join(dir, data_dir)
 
-    with multiprocessing.Pool(20) as p:
-        p.map(save_log_diag_inner, paths)
-
-def save_log_diag_inner(path):
-    y = np.load(osp.join(path, 'y.npy'))
-    y_log = np.log(y + 1)
-    np.save(osp.join(path, 'y_log'), y_log)
-    meanDistLog = DiagonalPreprocessing.genomic_distance_statistics(y_log)
-    y_log_diag = DiagonalPreprocessing.process(y_log, meanDistLog)
-    np.save(osp.join(path, 'y_log_diag'), y_log_diag)
+    chi = np.loadtxt(osp.join(path, 'chis.txt'))[-1]
+    chi = triu_to_full(chi)
+    print(chi)
+    plot_matrix(chi, osp.join(path, 'chi.png'), vmax = 'max', vmin = 'min',
+                cmap = 'blue-red')
 
 
 if __name__ == '__main__':
@@ -726,7 +718,7 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
-    # save_log_diag()
+    debugModel('MLP')
+    # main3()
     # compare_y_normalization_methods()
     # downsample_simulation()
