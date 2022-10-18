@@ -60,3 +60,151 @@ Epoch 10, loss = 8.6675
 Mean test/val loss: 9.0968
 
 Epoch 12, loss = 8.0611
+Mean test/val loss: 8.2030
+
+Epoch 14, loss = 7.3927
+Mean test/val loss: 7.3049
+
+Epoch 16, loss = 6.7162
+Mean test/val loss: 6.6055
+
+Epoch 18, loss = 6.0599
+Mean test/val loss: 5.9790
+
+Epoch 20, loss = 5.7410
+Mean test/val loss: 7.6225
+
+Epoch 22, loss = 5.4228
+Mean test/val loss: 5.1698
+
+Epoch 24, loss = 5.1764
+Mean test/val loss: 5.0258
+
+Epoch 26, loss = 5.1238
+Mean test/val loss: 4.6715
+
+Epoch 28, loss = 4.8395
+Mean test/val loss: 4.9602
+
+Epoch 30, loss = 4.7209
+Mean test/val loss: 4.3909
+
+Epoch 32, loss = 4.6481
+Mean test/val loss: 5.2052
+
+Epoch 34, loss = 4.5628
+Mean test/val loss: 4.7960
+
+Epoch 36, loss = 4.5632
+Mean test/val loss: 5.5812
+
+Epoch 38, loss = 4.2799
+Mean test/val loss: 4.1732
+
+Epoch 40, loss = 4.3395
+Mean test/val loss: 4.6507
+
+Epoch 42, loss = 4.1927
+Mean test/val loss: 4.2681
+
+Epoch 44, loss = 4.1172
+Mean test/val loss: 4.1427
+
+Epoch 46, loss = 4.1936
+Mean test/val loss: 4.1932
+
+Epoch 48, loss = 4.0175
+Mean test/val loss: 3.9378
+
+Epoch 50, loss = 4.0268
+Mean test/val loss: 3.9280
+
+Epoch 52, loss = 3.5926
+Mean test/val loss: 3.7896
+
+Epoch 54, loss = 3.5708
+Mean test/val loss: 3.7148
+
+Epoch 56, loss = 3.5554
+Mean test/val loss: 3.6878
+
+Epoch 58, loss = 3.5463
+Mean test/val loss: 3.6774
+
+Epoch 60, loss = 3.5343
+Mean test/val loss: 3.6958
+
+Epoch 62, loss = 3.5215
+Mean test/val loss: 3.6814
+
+Epoch 64, loss = 3.5167
+Mean test/val loss: 3.6407
+
+Epoch 66, loss = 3.5094
+Mean test/val loss: 3.6523
+
+Epoch 68, loss = 3.4972
+Mean test/val loss: 3.6330
+
+Epoch 70, loss = 3.4875
+Mean test/val loss: 3.6120
+
+Epoch 72, loss = 3.4773
+Mean test/val loss: 3.6001
+
+Epoch 74, loss = 3.4757
+Mean test/val loss: 3.6483
+
+Epoch 76, loss = 3.4638
+Mean test/val loss: 3.6240
+
+Epoch 78, loss = 3.4484
+Mean test/val loss: 3.6648
+
+Epoch 80, loss = 3.4527
+Mean test/val loss: 3.5765
+
+Epoch 82, loss = 3.4432
+Mean test/val loss: 3.6323
+
+Epoch 84, loss = 3.4444
+Mean test/val loss: 3.6609
+
+Epoch 86, loss = 3.4425
+Mean test/val loss: 3.6087
+
+Epoch 88, loss = 3.4260
+Mean test/val loss: 3.6187
+
+Epoch 90, loss = 3.4250
+Mean test/val loss: 3.5337
+
+Epoch 92, loss = 3.4158
+Mean test/val loss: 3.6685
+
+Epoch 94, loss = 3.4166
+Mean test/val loss: 3.5510
+
+Epoch 96, loss = 3.4140
+Mean test/val loss: 3.5338
+
+Epoch 98, loss = 3.4034
+Mean test/val loss: 3.7186
+
+Epoch 100, loss = 3.3998
+Mean test/val loss: 3.5899
+
+
+Total parameters: 115983
+Total training + validation time: 15.0 hours
+Final val loss: 3.5898952338667143
+
+#### Plotting Script ####
+Prediction Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/190/sample552: 10.56039810180664
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/190/sample1794: 5.317444324493408
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/190/sample1128: 2.857606887817383
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/190/sample1938: 4.5691375732421875
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/190/sample1131: 3.8596863746643066
+Loss: 5.432854652404785 +- 2.6891555567215155
+
