@@ -1,0 +1,170 @@
+Took 14.0 seconds to move data to scratch
+#### ARCHITECTURE ####
+Sequential(
+  (0): LinearBlock(
+    (model): Sequential(
+      (0): Linear(in_features=1024, out_features=2000, bias=True)
+      (1): PReLU(num_parameters=1)
+    )
+  )
+  (1): LinearBlock(
+    (model): Sequential(
+      (0): Linear(in_features=2000, out_features=2000, bias=True)
+      (1): PReLU(num_parameters=1)
+    )
+  )
+  (2): LinearBlock(
+    (model): Sequential(
+      (0): Linear(in_features=2000, out_features=2000, bias=True)
+      (1): PReLU(num_parameters=1)
+    )
+  )
+  (3): LinearBlock(
+    (model): Sequential(
+      (0): Linear(in_features=2000, out_features=2000, bias=True)
+      (1): PReLU(num_parameters=1)
+    )
+  )
+  (4): LinearBlock(
+    (model): Sequential(
+      (0): Linear(in_features=2000, out_features=2000, bias=True)
+      (1): PReLU(num_parameters=1)
+    )
+  )
+  (5): LinearBlock(
+    (model): Sequential(
+      (0): Linear(in_features=2000, out_features=2000, bias=True)
+      (1): PReLU(num_parameters=1)
+    )
+  )
+  (6): LinearBlock(
+    (model): Sequential(
+      (0): Linear(in_features=2000, out_features=1024, bias=True)
+      (1): PReLU(num_parameters=1)
+    )
+  )
+)
+Namespace(GNN_mode=False, transforms=[], pre_transforms=[], sparsify_threshold=None, sparsify_threshold_upper=None, top_k=None, use_node_features=False, use_edge_weights=True, use_edge_attr=False, relabel_11_to_00=False, split_edges_for_feature_augmentation=False, data_folder='/scratch/midway2/erschultz/MLP2/dataset_09_30_22', scratch='/scratch/midway2/erschultz/MLP2', root_name=None, delete_root=True, toxx=False, toxx_mode='mean', y_preprocessing=None, y_zero_diag_count=0, log_preprocessing=None, preprocessing_norm='mean', min_subtraction=True, x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, use_scratch=True, use_scratch_parallel=False, split_percents=[0.45, 0.1, 0.45], split_sizes=None, random_split=True, shuffle=True, batch_size=32, num_workers=8, start_epoch=1, n_epochs=70, save_mod=5, print_mod=2, lr=0.0001, gpus=1, milestones=[50], gamma=0.1, loss='mse', autoencoder_mode=False, verbose=False, print_params=True, output_mode='diag_chi_continuous', model_type='MLP', id=83, pretrained=False, resume_training=False, k=None, m=1024, seed=42, act='prelu', inner_act=None, out_act='prelu', training_norm=None, dropout=None, dropout_p=0.2, parameter_sharing=False, use_bias=True, message_passing='GCN', head_architecture=None, head_hidden_sizes_list=None, encoder_hidden_sizes_list=None, update_hidden_sizes_list=None, head_act='relu', num_heads=1, concat_heads=True, max_diagonal=None, mlp_model_id=None, kernel_w_list=None, hidden_sizes_list=[2000, 2000, 2000, 2000, 2000, 2000, 1024], nf=None, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, down_sampling=None, plot=True, plot_predictions=True, ofile_folder='/home/erschultz/sequences_to_contact_maps/results/MLP/83', log_file_path='/home/erschultz/sequences_to_contact_maps/results/MLP/83/out.log', log_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/MLP/83/out.log' mode='a' encoding='UTF-8'>, param_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/MLP/83/params.log' mode='a' encoding='UTF-8'>, split_neg_pos_edges=False, criterion=<function mse_loss at 0x7f1fdb203670>, channels=1, edge_transforms=[], node_transforms=[], edge_dim=0, transforms_processed=None, pre_transforms_processed=None, cuda=True, use_parallel=False, device=device(type='cuda'))
+
+split sizes: train=1134, val=252, test=1134, N=2520
+#### TRAINING/VALIDATION ####
+Epoch 2, loss = 12.7648
+Mean test/val loss: 11.9088
+
+Epoch 4, loss = 7.5488
+Mean test/val loss: 7.0542
+
+Epoch 6, loss = 4.3308
+Mean test/val loss: 4.1074
+
+Epoch 8, loss = 2.7476
+Mean test/val loss: 3.2742
+
+Epoch 10, loss = 2.4562
+Mean test/val loss: 3.0244
+
+Epoch 12, loss = 2.7074
+Mean test/val loss: 4.0261
+
+Epoch 14, loss = 2.2987
+Mean test/val loss: 2.4080
+
+Epoch 16, loss = 2.0988
+Mean test/val loss: 2.2301
+
+Epoch 18, loss = 2.1122
+Mean test/val loss: 2.7876
+
+Epoch 20, loss = 2.0411
+Mean test/val loss: 2.6000
+
+Epoch 22, loss = 1.8712
+Mean test/val loss: 2.1885
+
+Epoch 24, loss = 2.0139
+Mean test/val loss: 2.0484
+
+Epoch 26, loss = 1.6809
+Mean test/val loss: 2.3875
+
+Epoch 28, loss = 1.7595
+Mean test/val loss: 2.2415
+
+Epoch 30, loss = 1.7510
+Mean test/val loss: 2.7993
+
+Epoch 32, loss = 1.7836
+Mean test/val loss: 2.1061
+
+Epoch 34, loss = 1.5847
+Mean test/val loss: 2.0044
+
+Epoch 36, loss = 1.8286
+Mean test/val loss: 1.9394
+
+Epoch 38, loss = 1.6117
+Mean test/val loss: 1.8858
+
+Epoch 40, loss = 1.7705
+Mean test/val loss: 2.0533
+
+Epoch 42, loss = 2.1631
+Mean test/val loss: 1.9345
+
+Epoch 44, loss = 1.6165
+Mean test/val loss: 1.8174
+
+Epoch 46, loss = 1.7036
+Mean test/val loss: 2.1681
+
+Epoch 48, loss = 2.0587
+Mean test/val loss: 2.1624
+
+Epoch 50, loss = 1.4792
+Mean test/val loss: 2.1517
+
+Epoch 52, loss = 1.3641
+Mean test/val loss: 1.7501
+
+Epoch 54, loss = 1.3615
+Mean test/val loss: 1.7439
+
+Epoch 56, loss = 1.3535
+Mean test/val loss: 1.7692
+
+Epoch 58, loss = 1.3444
+Mean test/val loss: 1.7427
+
+Epoch 60, loss = 1.3744
+Mean test/val loss: 1.7385
+
+Epoch 62, loss = 1.4034
+Mean test/val loss: 1.7253
+
+Epoch 64, loss = 1.3394
+Mean test/val loss: 1.7355
+
+Epoch 66, loss = 1.3566
+Mean test/val loss: 1.7227
+
+Epoch 68, loss = 1.3638
+Mean test/val loss: 1.8522
+
+Epoch 70, loss = 1.3403
+Mean test/val loss: 1.7085
+
+
+Total parameters: 24,109,031
+Total training + validation time: 0.0 hours
+Final val loss: 1.7084674835205078
+
+split sizes: train=1134, val=252, test=1134, N=2520
+#### Plotting Script ####
+Prediction Results:
+/home/erschultz/sequences_to_contact_maps/results/MLP/83/sample1244: <function plot_diag_chi at 0x7f1fae2c54c0>
+/home/erschultz/sequences_to_contact_maps/results/MLP/83/sample854: <function plot_diag_chi at 0x7f1fae2c54c0>
+/home/erschultz/sequences_to_contact_maps/results/MLP/83/sample1472: <function plot_diag_chi at 0x7f1fae2c54c0>
+/home/erschultz/sequences_to_contact_maps/results/MLP/83/sample887: <function plot_diag_chi at 0x7f1fae2c54c0>
+/home/erschultz/sequences_to_contact_maps/results/MLP/83/sample2322: <function plot_diag_chi at 0x7f1fae2c54c0>
+Loss: 0.20971074300192072 +- 0.10813632062246947
+
