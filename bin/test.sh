@@ -8,7 +8,10 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=erschultz@uchicago.edu
 
-cd ~/sequences_to_contact_maps
-source activate python3.9_pytorch1.9_cuda10.2
+cd /project2/depablo/erschultz
+tar -cvzf dataset_09_30_22.tar.gz dataset_09_30_22_mini/
 
-python3 test.py
+# cd ~/sequences_to_contact_maps
+# source activate python3.9_pytorch1.9_cuda10.2
+#
+# python3 test.py

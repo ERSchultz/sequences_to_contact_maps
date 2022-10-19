@@ -4,6 +4,8 @@ import multiprocessing
 import os
 import os.path as osp
 import sys
+import tarfile
+from shutil import rmtree
 
 import imageio
 import matplotlib.cm
@@ -351,6 +353,12 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         dif = yhat - y
         plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
                         vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
+
+        # tar subpath
+        os.chdir(opt.ofile_folder)
+        with tarfile.open(f'{sample}.tar.gz', 'w:gz') as f:
+            f.add(sample)
+        rmtree(sample)
 
     print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)),
         file = opt.log_file)
