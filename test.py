@@ -630,10 +630,11 @@ def prep_data_for_cluster():
         opath = osp.join(odir, id)
         if not osp.exists(opath):
             os.mkdir(opath, mode = 0o755)
-        ifile = osp.join(idir, id, 'adj_500000.cool')
-        if osp.exists(ifile):
-            ofile = osp.join(odir, id, 'adj_500000.cool')
-            copyfile(ifile, ofile)
+        for file in ['y.npy', 's.npy', 'config.json', 'diag_chis_continuous.npy']
+            ifile = osp.join(idir, id, file)
+            if osp.exists(ifile):
+                ofile = osp.join(odir, id, file)
+                copyfile(ifile, ofile)
 
 def find_best_p_s():
     # is there a curve in training that matches experimental curve well?
@@ -717,11 +718,11 @@ def main3():
 
 
 if __name__ == '__main__':
-    # prep_data_for_cluster()
+    prep_data_for_cluster()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
     # main3()
     # compare_y_normalization_methods()
     # downsample_simulation()
