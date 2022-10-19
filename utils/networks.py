@@ -494,7 +494,8 @@ class ContactGNN(nn.Module):
                 act, inner_act, out_act,
                 encoder_hidden_sizes_list, update_hidden_sizes_list,
                 message_passing, use_edge_attr, edge_dim,
-                head_architecture, head_hidden_sizes_list, head_act, use_bias,
+                head_architecture, head_architecture2, head_hidden_sizes_list,
+                head_act, use_bias,
                 training_norm, num_heads, concat_heads,
                 ofile = sys.stdout, verbose = True):
         '''
@@ -509,8 +510,10 @@ class ContactGNN(nn.Module):
                                     {idendity, gcn, signedconv, z, gat, weighted_gat}
             use_edge_attr: True to use edge attributes/weights
             edge_dim: 0 for edge weights, 1+ for edge_attr
-            head_architecture: type of head architecture {None, fc, AverageTo2d.mode_options}
+            head_architecture: type of head architecture {None, fc, inner, bilinear, AverageTo2d.mode_options}
+            head_architecture2: type of head architecture {None, fc, inner, bilinear, AverageTo2d.mode_options}
             head_hidden_sizes_list: hidden sizes of head architecture
+            head_act: activation for head_architecture (and head_architecture2)
             use_bias: True to use bias term - applies for message passing and head
             training_norm: Normalization layer
         '''
@@ -523,6 +526,7 @@ class ContactGNN(nn.Module):
         if head_architecture is not None:
             head_architecture = head_architecture.lower()
         self.head_architecture = head_architecture
+        self.head_architecture2 = head_architecture2
         self.to2D = AverageTo2d(mode = None)
 
         # set up activations
@@ -645,59 +649,63 @@ class ContactGNN(nn.Module):
             raise Exception("Unkown message_passing {}".format(message_passing))
 
         ### Head Architecture ###
-        head = []
-        if self.head_architecture is None:
-            self.head = None
-        elif self.head_architecture == 'fc':
-            for i, output_size in enumerate(head_hidden_sizes_list):
-                if i == len(head_hidden_sizes_list) - 1:
-                    act = self.out_act
-                else:
-                    act = self.head_act
-                head.append(LinearBlock(input_size, output_size, activation = act,
-                                        bias = use_bias))
-                input_size = output_size
+        self.head = None
+        self.head2 = None
+        for head, architecture in zip([self.head, self.head2], [self.head_architecture, self.head_architecture2]):
+            if architecture is None:
+                pass
+            elif architecture == 'fc':
+                head_list = []
+                for i, output_size in enumerate(head_hidden_sizes_list):
+                    if i == len(head_hidden_sizes_list) - 1:
+                        act = self.out_act
+                    else:
+                        act = self.head_act
+                    head_list.append(LinearBlock(input_size, output_size, activation = act,
+                                            bias = use_bias))
+                    input_size = output_size
 
-            self.head = nn.Sequential(*head)
-        elif self.head_architecture.startswith('bilinear'):
-            self.head = None
-            init = torch.randn((input_size, input_size))
-            self.W = nn.Parameter(init)
-            self.sym = Symmetrize2D()
-        elif self.head_architecture == 'inner':
-            self.head = None
-        elif self.head_architecture in self.to2D.mode_options:
-            # Uses linear layers according to head_hidden_sizes_list after converting to 2D
-            self.to2D.mode = self.head_architecture # change mode
+                self.head = nn.Sequential(*head_list)
+            elif architecture.startswith('bilinear'):
+                init = torch.randn((input_size, input_size))
+                self.W = nn.Parameter(init)
+                self.sym = Symmetrize2D()
+            elif architecture == 'inner':
+                pass
+            elif architecture in self.to2D.mode_options:
+                # Uses linear layers according to head_hidden_sizes_list after converting to 2D
+                self.to2D.mode = architecture # change mode
 
-            # determine input_size
-            if self.head_architecture == 'concat':
-                input_size *= 2 # concat doubles size
-            elif self.head_architecture == 'outer':
-                input_size *= input_size # outer squares size
-            elif self.head_architecture == 'concat-outer':
-                input_size = input_size**2 + 2 * input_size
-            elif self.head_architecture == 'avg-outer':
-                input_size += input_size**2
+                # determine input_size
+                if architecture == 'concat':
+                    input_size *= 2 # concat doubles size
+                elif architecture == 'outer':
+                    input_size *= input_size # outer squares size
+                elif architecture == 'concat-outer':
+                    input_size = input_size**2 + 2 * input_size
+                elif architecture == 'avg-outer':
+                    input_size += input_size**2
 
-            for i, output_size in enumerate(head_hidden_sizes_list):
-                if i == len(head_hidden_sizes_list) - 1:
-                    act = self.out_act
-                else:
-                    act = self.head_act
-                head.append(LinearBlock(input_size, output_size, activation = act,
-                                        bias = use_bias))
-                input_size = output_size
+                head_list = []
+                for i, output_size in enumerate(head_hidden_sizes_list):
+                    if i == len(head_hidden_sizes_list) - 1:
+                        act = self.out_act
+                    else:
+                        act = self.head_act
+                    head_list.append(LinearBlock(input_size, output_size, activation = act,
+                                            bias = use_bias))
+                    input_size = output_size
 
-            self.head = nn.Sequential(*head)
-        else:
-            raise Exception("Unkown head_architecture {}".format(head_architecture))
+                head = nn.Sequential(*head_list)
+            else:
+                raise Exception("Unkown head_architecture {}".format(architecture))
 
         if verbose:
             print("#### ARCHITECTURE ####", file = ofile)
             print(self.encoder, file = ofile)
             print(self.model, file = ofile)
             print(self.head, '\n', file = ofile)
+            print(self.head2, '\n', file = ofile)
 
     def forward(self, graph):
         if self.encoder is not None:
