@@ -626,6 +626,8 @@ def prep_data_for_cluster():
     if not osp.exists(odir):
         os.mkdir(odir, mode = 0o755)
     idir = osp.join(dir, 'samples')
+    if not osp.exists(idir):
+        os.mkdir(odir, idir = 0o755)
     for id in os.listdir(idir):
         opath = osp.join(odir, id)
         if not osp.exists(opath):
