@@ -168,8 +168,8 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         opt.transforms=AC.str2list('empty')
-        opt.pre_transforms=AC.str2list('degree-contactdistance-GeneticDistance-diagonalparameterdistance')
-        opt.mlp_model_id=None
+        opt.pre_transforms=AC.str2list('degree-contactdistance-GeneticDistance-diagonalparameterdistance_79')
+        opt.mlp_model_id=79
         opt.split_edges_for_feature_augmentation = False
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
@@ -177,8 +177,8 @@ def debugModel(model_type):
         opt.head_architecture = 'bilinear'
         opt.head_architecture_2 = 'fc-fill'
         opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, 256]
-        opt.crop = [0,256]
-        opt.m = 256
+        # opt.crop = [0,256]
+        # opt.m = 256
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True

@@ -327,6 +327,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             # get dataset
             dataset = DiagFunctions(opt.data_folder, opt.crop, opt.preprocessing_norm,
+                                    opt.y_preprocessing,
                                     opt.log_preprocessing, opt.y_zero_diag_count,
                                     opt.output_mode,
                                     names = False, samples = [sample_id])
