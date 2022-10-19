@@ -9,7 +9,7 @@
 #SBATCH --mail-user=erschultz@uchicago.edu
 
 cd /project2/depablo/erschultz
-tar -cvzf dataset_09_30_22.tar.gz dataset_09_30_22_mini/
+scp
 
 # cd ~/sequences_to_contact_maps
 # source activate python3.9_pytorch1.9_cuda10.2

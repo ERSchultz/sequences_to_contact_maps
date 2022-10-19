@@ -18,22 +18,28 @@ source activate python3.9_pytorch1.9_cuda10.2
 rootName='ContactGNNEnergy2' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
-messagePassing='GAT'
-preTransforms='degree-ContactDistance-GeneticDistance-DiagonalParameterDistance_79'
-mlpModelID=79
+messagePassing='weighted_GAT'
+preTransforms='degree-ContactDistance-GeneticDistance'
+mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
-yLogTransform='ln'
-sparsifyThreshold=0.405
-splitSizes='900-200-0'
-# ln transform with MLP - on subset of data
+outputMode='energy_sym_diag'
+yPreprocessing='log'
+yLogTransform='none'
+sparsifyThreshold='none'
+yNorm='mean'
+headArchitecture2='fc-fill'
+headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+scratch='/scratch/midway3/erschultz'
 
-id=180
-yPreprocessing='diag'
+
+# Run on midway3
+
+id=197
 for lr in 1e-4
 do
   train

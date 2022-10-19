@@ -428,6 +428,35 @@ class AverageTo2d(nn.Module):
         out = torch.cat(out_list, dim = 1)
         return out
 
+class FillDiagonalsFromArray(nn.Module):
+    '''
+    Uses input rank 1 tensor to fill all diagonals of output rank 2 tensor.
+
+    Ouput[i,j] = input[i-j]
+    '''
+    def __init__(self):
+        super(FillDiagonalsFromArray, self).__init__()
+
+    def forward(self, input):
+        if len(input.shape) == 2:
+            # asume input is of shape N x m
+            N, m = input.shape
+        elif len(input.shape) == 1:
+            # assume input is of shape m
+            N = 1
+            m = input.shape
+            input = input.reshape(N, m)
+
+        output = torch.zeros((N, m, m))
+        for n in range(N):
+            for d in range(m):
+                rng = np.arange(m-d)
+                output[n, rng, rng+d] = input[n, d]
+                output[n, rng+d, rng] = input[n, d]
+
+        output.to(input.get_device())
+        return output
+
 def test_average_to_2d_outer():
     avg = AverageTo2d(mode = 'outer', concat_d = False, n = 10)
     verbose = True

@@ -8,7 +8,8 @@ import torch_geometric.nn as gnn
 
 # from .argparse_utils import finalize_opt, get_base_parser
 from .base_networks import (MLP, AverageTo2d, ConvBlock, DeconvBlock,
-                            LinearBlock, Symmetrize2D, UnetBlock, act2module)
+                            FillDiagonalsFromArray, LinearBlock, Symmetrize2D,
+                            UnetBlock, act2module)
 from .pyg_fns import WeightedGATv2Conv, WeightedSignedConv
 
 
@@ -669,6 +670,9 @@ class ContactGNN(nn.Module):
                                         bias = use_bias))
                 input_size = output_size
 
+            if 'fill' in self.head_architecture:
+                head_list.append(FillDiagonalsFromArray())
+
             head = nn.Sequential(*head_list)
         elif self.head_architecture.startswith('bilinear'):
             head = 'Bilinear'
@@ -708,9 +712,9 @@ class ContactGNN(nn.Module):
 
         if self.head_architecture_2 is None:
             head = None
-        elif self.head_architecture_2 == 'fc':
+        elif self.head_architecture_2.startswith('fc'):
             head_list = []
-            input_size = latent_size
+            input_size = latent_size * self.m
             for i, output_size in enumerate(head_hidden_sizes_list):
                 if i == len(head_hidden_sizes_list) - 1:
                     act = self.out_act
@@ -812,6 +816,8 @@ class ContactGNN(nn.Module):
             if architecture is None:
                 continue
             elif architecture == 'fc':
+                latent_copy = torch.clone(latent)
+                latent_copy = latent_copy.reshape(-1)
                 out_temp = self.head[i](latent)
             elif architecture.startswith('bilinear'):
                 latent_copy = torch.clone(latent).to(latent.get_device())
@@ -827,7 +833,7 @@ class ContactGNN(nn.Module):
                 out_temp = torch.einsum('nik, njk->nij', latent, latent)
             elif architecture in self.to2D.mode_options:
                 _, output_size = latent.shape
-                latent_copy = torch.clone(latent).to(latent.get_device())
+                latent_copy = torch.clone(latent)
                 latent_copy = latent_copy.reshape(-1, self.m, output_size)
                 latent_copy = latent_copy.permute(0, 2, 1) # permute to combine over m index
                 latent_copy = self.to2D(latent_copy)

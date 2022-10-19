@@ -156,7 +156,7 @@ def debugModel(model_type):
         opt.preprocessing_norm = None
         opt.message_passing = 'weighted_gat'
         opt.GNN_mode = True
-        opt.output_mode = 'energy_sym'
+        opt.output_mode = 'energy_sym_diag'
         opt.encoder_hidden_sizes_list=[100,100,64]
         opt.update_hidden_sizes_list=[100,100,64]
         opt.hidden_sizes_list=[8,8,8]
@@ -175,10 +175,10 @@ def debugModel(model_type):
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
         opt.head_architecture = 'bilinear'
-        opt.head_architecture_2 = 'concat'
-        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, 1]
-        # opt.crop = [0,10]
-        # opt.m = 10
+        opt.head_architecture_2 = 'fc-fill'
+        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, 256]
+        opt.crop = [0,256]
+        opt.m = 256
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True
@@ -720,11 +720,11 @@ def main3():
 
 
 if __name__ == '__main__':
-    prep_data_for_cluster()
+    # prep_data_for_cluster()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # main3()
     # compare_y_normalization_methods()
     # downsample_simulation()
