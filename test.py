@@ -30,7 +30,7 @@ from utils.dataset_classes import make_dataset
 from utils.energy_utils import s_to_E
 from utils.load_utils import load_sc_contacts, save_sc_contacts
 from utils.networks import get_model
-from utils.plotting_utils import plot_matrix, plot_top_PCs
+from utils.plotting_utils import plot_matrix
 from utils.similarity_measures import SCC
 from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
                          print_time, triu_to_full)
@@ -174,8 +174,8 @@ def debugModel(model_type):
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'bilinear'
-        opt.head_hidden_sizes_list = None
+        opt.head_architecture = 'concat'
+        opt.head_hidden_sizes_list = [100,100,1]
         opt.crop = [0,256]
         opt.m = 256
         opt.use_bias = True

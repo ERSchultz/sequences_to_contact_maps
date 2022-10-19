@@ -43,7 +43,8 @@ def get_model(opt, verbose = True):
         opt.act, opt.inner_act, opt.out_act,
         opt.encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
         opt.message_passing, opt.use_edge_weights or opt.use_edge_attr, opt.edge_dim,
-        opt.head_architecture, opt.head_hidden_sizes_list, opt.head_act, opt.use_bias,
+        opt.head_architecture, None, opt.head_hidden_sizes_list,
+        opt.head_act, opt.use_bias,
         opt.training_norm, opt.num_heads, opt.concat_heads,
         opt.log_file, verbose = verbose)
     elif opt.model_type == 'MLP':
@@ -649,9 +650,8 @@ class ContactGNN(nn.Module):
             raise Exception("Unkown message_passing {}".format(message_passing))
 
         ### Head Architecture ###
-        self.head = None
-        self.head2 = None
-        for head, architecture in zip([self.head, self.head2], [self.head_architecture, self.head_architecture2]):
+        self.head = [None, None]
+        for j, architecture in enumerate([self.head_architecture, self.head_architecture2]):
             if architecture is None:
                 pass
             elif architecture == 'fc':
@@ -699,13 +699,14 @@ class ContactGNN(nn.Module):
                 head = nn.Sequential(*head_list)
             else:
                 raise Exception("Unkown head_architecture {}".format(architecture))
+            self.head[j] = head
 
         if verbose:
             print("#### ARCHITECTURE ####", file = ofile)
             print(self.encoder, file = ofile)
             print(self.model, file = ofile)
-            print(self.head, '\n', file = ofile)
-            print(self.head2, '\n', file = ofile)
+            print(self.head[0], '\n', file = ofile)
+            print(self.head[1], '\n', file = ofile)
 
     def forward(self, graph):
         if self.encoder is not None:
@@ -745,31 +746,32 @@ class ContactGNN(nn.Module):
             else:
                 latent = self.model(graph.x, graph.pos_edge_index, graph.neg_edge_index)
 
-        if self.head_architecture is None:
-            out = latent
-        elif self.head_architecture == 'fc':
-            out = self.head(latent)
-        elif self.head_architecture.startswith('bilinear'):
-            _, output_size = latent.shape
-            latent = latent.reshape(-1, self.m, output_size)
-            if 'asym' in self.head_architecture:
-                out = torch.einsum('nik,njk->nij', latent @ self.W, latent)
-            else:
-                out = torch.einsum('nik,njk->nij', latent @ self.sym(self.W), latent)
-        elif self.head_architecture == 'inner':
-            _, output_size = latent.shape
-            latent = latent.reshape(-1, self.m, output_size)
-            out = torch.einsum('nik, njk->nij', latent, latent)
-        elif self.head_architecture in self.to2D.mode_options:
-            _, output_size = latent.shape
-            latent = latent.reshape(-1, self.m, output_size)
-            latent = latent.permute(0, 2, 1) # permute to average over m
-            latent = self.to2D(latent)
-            _, output_size, _, _ = latent.shape
-            latent = latent.permute(0, 2, 3, 1) # permute back
-            out = self.head(latent)
-            if len(out.shape) > 3:
-                out = torch.squeeze(out, 3)
+        for i in range(1):
+            if self.head_architecture is None:
+                out = latent
+            elif self.head_architecture == 'fc':
+                out = self.head[i](latent)
+            elif self.head_architecture.startswith('bilinear'):
+                _, output_size = latent.shape
+                latent = latent.reshape(-1, self.m, output_size)
+                if 'asym' in self.head_architecture:
+                    out = torch.einsum('nik,njk->nij', latent @ self.W, latent)
+                else:
+                    out = torch.einsum('nik,njk->nij', latent @ self.sym(self.W), latent)
+            elif self.head_architecture == 'inner':
+                _, output_size = latent.shape
+                latent = latent.reshape(-1, self.m, output_size)
+                out = torch.einsum('nik, njk->nij', latent, latent)
+            elif self.head_architecture in self.to2D.mode_options:
+                _, output_size = latent.shape
+                latent = latent.reshape(-1, self.m, output_size)
+                latent = latent.permute(0, 2, 1) # permute to average over m
+                latent = self.to2D(latent)
+                _, output_size, _, _ = latent.shape
+                latent = latent.permute(0, 2, 3, 1) # permute back
+                out = self.head[i](latent)
+                if len(out.shape) > 3:
+                    out = torch.squeeze(out, 3)
 
         return out
 
