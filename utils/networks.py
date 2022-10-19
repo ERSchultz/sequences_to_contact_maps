@@ -43,7 +43,7 @@ def get_model(opt, verbose = True):
         opt.act, opt.inner_act, opt.out_act,
         opt.encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
         opt.message_passing, opt.use_edge_weights or opt.use_edge_attr, opt.edge_dim,
-        opt.head_architecture, None, opt.head_hidden_sizes_list,
+        opt.head_architecture, opt.head_architecture_2, opt.head_hidden_sizes_list,
         opt.head_act, opt.use_bias,
         opt.training_norm, opt.num_heads, opt.concat_heads,
         opt.log_file, verbose = verbose)
@@ -495,7 +495,7 @@ class ContactGNN(nn.Module):
                 act, inner_act, out_act,
                 encoder_hidden_sizes_list, update_hidden_sizes_list,
                 message_passing, use_edge_attr, edge_dim,
-                head_architecture, head_architecture2, head_hidden_sizes_list,
+                head_architecture, head_architecture_2, head_hidden_sizes_list,
                 head_act, use_bias,
                 training_norm, num_heads, concat_heads,
                 ofile = sys.stdout, verbose = True):
@@ -512,9 +512,9 @@ class ContactGNN(nn.Module):
             use_edge_attr: True to use edge attributes/weights
             edge_dim: 0 for edge weights, 1+ for edge_attr
             head_architecture: type of head architecture {None, fc, inner, bilinear, AverageTo2d.mode_options}
-            head_architecture2: type of head architecture {None, fc, inner, bilinear, AverageTo2d.mode_options}
+            head_architecture_2: type of head architecture {None, fc, inner, bilinear, AverageTo2d.mode_options}
             head_hidden_sizes_list: hidden sizes of head architecture
-            head_act: activation for head_architecture (and head_architecture2)
+            head_act: activation for head_architecture (and head_architecture_2)
             use_bias: True to use bias term - applies for message passing and head
             training_norm: Normalization layer
         '''
@@ -527,7 +527,7 @@ class ContactGNN(nn.Module):
         if head_architecture is not None:
             head_architecture = head_architecture.lower()
         self.head_architecture = head_architecture
-        self.head_architecture2 = head_architecture2
+        self.head_architecture_2 = head_architecture_2
         self.to2D = AverageTo2d(mode = None)
 
         # set up activations
@@ -649,64 +649,122 @@ class ContactGNN(nn.Module):
         else:
             raise Exception("Unkown message_passing {}".format(message_passing))
 
+        latent_size = input_size
+        # save input_size to latent_size
+        # this is the output_size of latent space
+        # and the input size for head_architecture
+
         ### Head Architecture ###
-        self.head = [None, None]
-        for j, architecture in enumerate([self.head_architecture, self.head_architecture2]):
-            if architecture is None:
-                pass
-            elif architecture == 'fc':
-                head_list = []
-                for i, output_size in enumerate(head_hidden_sizes_list):
-                    if i == len(head_hidden_sizes_list) - 1:
-                        act = self.out_act
-                    else:
-                        act = self.head_act
-                    head_list.append(LinearBlock(input_size, output_size, activation = act,
-                                            bias = use_bias))
-                    input_size = output_size
+        if self.head_architecture is None:
+            head = None
+        elif self.head_architecture == 'fc':
+            head_list = []
+            input_size = latent_size
+            for i, output_size in enumerate(head_hidden_sizes_list):
+                if i == len(head_hidden_sizes_list) - 1:
+                    act = self.out_act
+                else:
+                    act = self.head_act
+                head_list.append(LinearBlock(input_size, output_size, activation = act,
+                                        bias = use_bias))
+                input_size = output_size
 
-                self.head = nn.Sequential(*head_list)
-            elif architecture.startswith('bilinear'):
-                init = torch.randn((input_size, input_size))
-                self.W = nn.Parameter(init)
-                self.sym = Symmetrize2D()
-            elif architecture == 'inner':
-                pass
-            elif architecture in self.to2D.mode_options:
-                # Uses linear layers according to head_hidden_sizes_list after converting to 2D
-                self.to2D.mode = architecture # change mode
+            head = nn.Sequential(*head_list)
+        elif self.head_architecture.startswith('bilinear'):
+            head = 'Bilinear'
+            init = torch.randn((latent_size, latent_size))
+            self.W = nn.Parameter(init)
+            self.sym = Symmetrize2D()
+        elif self.head_architecture == 'inner':
+            head = 'Inner'
+        elif self.head_architecture in self.to2D.mode_options:
+            # Uses linear layers according to head_hidden_sizes_list after converting to 2D
+            self.to2D.mode = self.head_architecture # change mode
+            input_size = latent_size
+            # determine input_size
+            if self.head_architecture == 'concat':
+                input_size *= 2 # concat doubles size
+            elif self.head_architecture == 'outer':
+                input_size *= input_size # outer squares size
+            elif self.head_architecture == 'concat-outer':
+                input_size = input_size**2 + 2 * input_size
+            elif self.head_architecture == 'avg-outer':
+                input_size += input_size**2
 
-                # determine input_size
-                if architecture == 'concat':
-                    input_size *= 2 # concat doubles size
-                elif architecture == 'outer':
-                    input_size *= input_size # outer squares size
-                elif architecture == 'concat-outer':
-                    input_size = input_size**2 + 2 * input_size
-                elif architecture == 'avg-outer':
-                    input_size += input_size**2
+            head_list = []
+            for i, output_size in enumerate(head_hidden_sizes_list):
+                if i == len(head_hidden_sizes_list) - 1:
+                    act = self.out_act
+                else:
+                    act = self.head_act
+                head_list.append(LinearBlock(input_size, output_size, activation = act,
+                                        bias = use_bias))
+                input_size = output_size
 
-                head_list = []
-                for i, output_size in enumerate(head_hidden_sizes_list):
-                    if i == len(head_hidden_sizes_list) - 1:
-                        act = self.out_act
-                    else:
-                        act = self.head_act
-                    head_list.append(LinearBlock(input_size, output_size, activation = act,
-                                            bias = use_bias))
-                    input_size = output_size
+            head = nn.Sequential(*head_list)
+        else:
+            raise Exception("Unkown head_architecture {}".format(self.head_architecture))
+        self.head_1 = head
 
-                head = nn.Sequential(*head_list)
-            else:
-                raise Exception("Unkown head_architecture {}".format(architecture))
-            self.head[j] = head
+        if self.head_architecture_2 is None:
+            head = None
+        elif self.head_architecture_2 == 'fc':
+            head_list = []
+            input_size = latent_size
+            for i, output_size in enumerate(head_hidden_sizes_list):
+                if i == len(head_hidden_sizes_list) - 1:
+                    act = self.out_act
+                else:
+                    act = self.head_act
+                head_list.append(LinearBlock(input_size, output_size, activation = act,
+                                        bias = use_bias))
+                input_size = output_size
+
+            head = nn.Sequential(*head_list)
+        elif self.head_architecture_2.startswith('bilinear'):
+            head = 'Bilinear'
+            init = torch.randn((latent_size, latent_size))
+            self.W = nn.Parameter(init)
+            self.sym = Symmetrize2D()
+        elif self.head_architecture_2 == 'inner':
+            head = 'Inner'
+        elif self.head_architecture_2 in self.to2D.mode_options:
+            # Uses linear layers according to head_hidden_sizes_list after converting to 2D
+            self.to2D.mode = self.head_architecture_2 # change mode
+            input_size = latent_size
+            # determine input_size
+            if self.head_architecture_2 == 'concat':
+                input_size *= 2 # concat doubles size
+            elif self.head_architecture_2 == 'outer':
+                input_size *= input_size # outer squares size
+            elif self.head_architecture_2 == 'concat-outer':
+                input_size = input_size**2 + 2 * input_size
+            elif self.head_architecture_2 == 'avg-outer':
+                input_size += input_size**2
+
+            head_list = []
+            for i, output_size in enumerate(head_hidden_sizes_list):
+                if i == len(head_hidden_sizes_list) - 1:
+                    act = self.out_act
+                else:
+                    act = self.head_act
+                head_list.append(LinearBlock(input_size, output_size, activation = act,
+                                        bias = use_bias))
+                input_size = output_size
+
+            head = nn.Sequential(*head_list)
+        else:
+            raise Exception(f"Unkown head_architecture {self.head_architecture_2}")
+        self.head_2 = head
+
+        self.head = [self.head_1, self.head_2]
 
         if verbose:
             print("#### ARCHITECTURE ####", file = ofile)
-            print(self.encoder, file = ofile)
-            print(self.model, file = ofile)
-            print(self.head[0], '\n', file = ofile)
-            print(self.head[1], '\n', file = ofile)
+            print(self.encoder, '\n', file = ofile)
+            print(self.model, '\n', file = ofile)
+            print(self.head_1, '\n', file = ofile)
+            print(self.head_2, '\n', file = ofile)
 
     def forward(self, graph):
         if self.encoder is not None:
@@ -746,32 +804,40 @@ class ContactGNN(nn.Module):
             else:
                 latent = self.model(graph.x, graph.pos_edge_index, graph.neg_edge_index)
 
-        for i in range(1):
-            if self.head_architecture is None:
-                out = latent
-            elif self.head_architecture == 'fc':
-                out = self.head[i](latent)
-            elif self.head_architecture.startswith('bilinear'):
-                _, output_size = latent.shape
-                latent = latent.reshape(-1, self.m, output_size)
-                if 'asym' in self.head_architecture:
-                    out = torch.einsum('nik,njk->nij', latent @ self.W, latent)
+        if self.head_architecture is None and self.head_architecture_2 is None:
+            return latent
+
+        out = torch.zeros(self.m, self.m).to(latent.get_device())
+        for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
+            if architecture is None:
+                continue
+            elif architecture == 'fc':
+                out_temp = self.head[i](latent)
+            elif architecture.startswith('bilinear'):
+                latent_copy = torch.clone(latent).to(latent.get_device())
+                _, output_size = latent_copy.shape
+                latent_copy = latent_copy.reshape(-1, self.m, output_size)
+                if 'asym' in architecture:
+                    out_temp = torch.einsum('nik,njk->nij', latent_copy @ self.W, latent_copy)
                 else:
-                    out = torch.einsum('nik,njk->nij', latent @ self.sym(self.W), latent)
-            elif self.head_architecture == 'inner':
+                    out_temp = torch.einsum('nik,njk->nij', latent_copy @ self.sym(self.W), latent_copy)
+            elif architecture == 'inner':
                 _, output_size = latent.shape
                 latent = latent.reshape(-1, self.m, output_size)
-                out = torch.einsum('nik, njk->nij', latent, latent)
-            elif self.head_architecture in self.to2D.mode_options:
+                out_temp = torch.einsum('nik, njk->nij', latent, latent)
+            elif architecture in self.to2D.mode_options:
                 _, output_size = latent.shape
-                latent = latent.reshape(-1, self.m, output_size)
-                latent = latent.permute(0, 2, 1) # permute to average over m
-                latent = self.to2D(latent)
-                _, output_size, _, _ = latent.shape
-                latent = latent.permute(0, 2, 3, 1) # permute back
-                out = self.head[i](latent)
-                if len(out.shape) > 3:
-                    out = torch.squeeze(out, 3)
+                latent_copy = torch.clone(latent).to(latent.get_device())
+                latent_copy = latent_copy.reshape(-1, self.m, output_size)
+                latent_copy = latent_copy.permute(0, 2, 1) # permute to combine over m index
+                latent_copy = self.to2D(latent_copy)
+                _, output_size, _, _ = latent_copy.shape
+                latent_copy = latent_copy.permute(0, 2, 3, 1) # permute back
+                out_temp = self.head[i](latent_copy)
+                if len(out_temp.shape) > 3:
+                    out_temp = torch.squeeze(out_temp, 3)
+
+            out = out + out_temp
 
         return out
 

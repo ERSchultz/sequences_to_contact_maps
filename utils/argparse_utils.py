@@ -166,6 +166,8 @@ def get_base_parser():
                         help='type of message passing algorithm')
     parser.add_argument('--head_architecture', type=AC.str2None,
                         help='type of head architecture')
+    parser.add_argument('--head_architecture_2', type=AC.str2None,
+                        help='2nd type of head architecture')
     parser.add_argument('--head_hidden_sizes_list', type=AC.str2list,
                         help='List of hidden sizes for convolutional layers')
     parser.add_argument('--encoder_hidden_sizes_list', type=AC.str2list,
@@ -275,9 +277,6 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
 
     # configure other model params
     assert (opt.split_percents is None) ^ (opt.split_sizes is None)
-
-    if opt.head_architecture == 'bilinear':
-        assert opt.head_hidden_sizes_list is None, f"not supported {opt.id}"
 
     opt.split_neg_pos_edges = False
     if opt.message_passing.lower() == 'signedconv':
@@ -623,7 +622,7 @@ def opt2list(opt):
                         opt.split_edges_for_feature_augmentation,
                         opt.sparsify_threshold, opt.sparsify_threshold_upper, opt.max_diagonal,
                         opt.hidden_sizes_list, opt.message_passing, opt.update_hidden_sizes_list,
-                         opt.head_architecture, opt.head_hidden_sizes_list])
+                        f'{opt.head_architecture}+{opt.head_architecture_2}', opt.head_hidden_sizes_list])
 
     if opt.model_type == 'simpleEpiNet':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list])

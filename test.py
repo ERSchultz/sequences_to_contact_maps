@@ -174,10 +174,11 @@ def debugModel(model_type):
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'concat'
-        opt.head_hidden_sizes_list = [100,100,1]
-        opt.crop = [0,256]
-        opt.m = 256
+        opt.head_architecture = 'bilinear'
+        opt.head_architecture_2 = 'concat'
+        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, 1]
+        # opt.crop = [0,10]
+        # opt.m = 10
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True
@@ -200,8 +201,9 @@ def debugModel(model_type):
         opt.sparsify_threshold = 0.176
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'bilinear_asym'
-        opt.head_hidden_sizes_list = None
+        opt.head_architecture = 'concat'
+        opt.head_architecture_2 = 'bilinear'
+        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1]
         opt.use_bias = True
         opt.use_bias = True
         opt.num_heads = 2
@@ -224,7 +226,7 @@ def debugModel(model_type):
     # hyperparameters
     opt.n_epochs = 1
     opt.lr = 1e-4
-    opt.batch_size = 2
+    opt.batch_size = 1
     opt.milestones = None
     opt.gamma = 0.1
 
@@ -233,7 +235,7 @@ def debugModel(model_type):
     opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = False
-    opt.gpus = 0
+    opt.gpus = 1
     opt.delete_root = True
     opt.use_scratch = True
     opt.print_mod = 1
@@ -619,8 +621,8 @@ def main2():
     print_time(t0, tf, 'scc')
 
 def prep_data_for_cluster():
-    dir = '/home/erschultz/sequences_to_contact_maps/single_cell_nagano_2017'
-    odir = osp.join(dir, 'samples_cluster')
+    dir = '/project2/depablo/erschultz/dataset_09_30_22/'
+    odir = osp.join(dir, 'dataset_09_30_22_mini')
     if not osp.exists(odir):
         os.mkdir(odir, mode = 0o755)
     idir = osp.join(dir, 'samples')
