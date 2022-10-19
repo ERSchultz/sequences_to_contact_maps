@@ -7,14 +7,11 @@
 
 
 
-dataset="/project2/depablo/erschultz/dataset_05_18_22/samples"
-cd $dataset
+dir="/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy"
+cd $dir
 
-for i in 1 2 3 4 5 6 7 8 9 10 11 12
+for i in $( seq 1 169 )
 do
-  cd "${dataset}/sample${i}"
-  rm -r GNN* &
-  rm -r PCA* &
-  rm -r ground* &
-  wait
+  cd "${dir}/${i}"
+  rm -r sample*
 done
