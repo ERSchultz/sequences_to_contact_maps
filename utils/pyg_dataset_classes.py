@@ -225,13 +225,13 @@ class ContactsGraph(torch_geometric.data.Dataset):
         necessary preprocessing.
         '''
         if self.y_preprocessing is None:
-            y = np.load(osp.join(raw_folder, 'y.npy'))
+            y = np.load(osp.join(raw_folder, 'y.npy')).astype(np.float64)
             if self.y_norm == 'max':
                 y /= np.max(y)
             elif self.y_norm == 'mean':
                 y /= np.mean(np.diagonal(y))
         elif self.y_preprocessing == 'log':
-            y = np.load(osp.join(raw_folder, 'y.npy'))
+            y = np.load(osp.join(raw_folder, 'y.npy')).astype(np.float64)
             if self.y_norm == 'max':
                 y /= np.max(y)
             elif self.y_norm == 'mean':
