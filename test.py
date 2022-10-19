@@ -99,7 +99,7 @@ def debugModel(model_type):
 
     # architecture
     opt.m = 1024
-    opt.split_percents=[0.5,0.2,0.0]
+    opt.split_percents=[0.5,0.2,0.3]
     # opt.split_percents = None
     # opt.split_sizes=[1, 2, 0]
     opt.split_sizes=None
@@ -151,7 +151,7 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing = 'sweep200000_log_diag'
+        opt.y_preprocessing = 'log'
         opt.loss = 'mse'
         opt.preprocessing_norm = None
         opt.message_passing = 'weighted_gat'
@@ -719,7 +719,7 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('MLP')
+    debugModel('ContactGNNEnergy')
     # main3()
     # compare_y_normalization_methods()
     # downsample_simulation()

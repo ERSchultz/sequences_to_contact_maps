@@ -9,7 +9,10 @@ MLP,78,dataset_test_logistic,mean,,True,,,"[0.8, 0.2, 0]",True,32,8,70,0.0001,[5
 MLP,79,dataset_09_30_22,mean,,True,,,"[0.8, 0.2, 0]",True,32,8,70,0.0001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.3623970076441765
 MLP,80,dataset_09_30_22,mean,,True,,,"[0.9, 0.1, 0.0]",True,32,8,70,0.001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.4729072526097298
 MLP,81,dataset_09_30_22,mean,,True,,,"[0.9, 0.1, 0.0]",True,32,8,70,0.0001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.5196454301476479
-MLP,82,dataset_09_30_22,mean,,True,,,"[0.45, 0.1, 0.0]",True,32,8,70,0.001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.4729072526097298
-MLP,83,dataset_09_30_22,mean,,True,,,"[0.45, 0.1, 0.0]",True,32,8,70,0.0001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.5196454301476479
-MLP,84,dataset_09_30_22,mean,,True,ln,,"[0.9, 0.1, 0.0]",True,32,8,70,0.001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,8.454770267009735
-MLP,85,dataset_09_30_22,mean,,True,ln,,"[0.9, 0.1, 0.0]",True,32,8,70,0.0001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,7.029036700725555
+MLP,82,dataset_09_30_22,mean,,True,,,"[0.45, 0.1, 0.45]",True,32,8,70,0.001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.4812410175800323
+MLP,83,dataset_09_30_22,mean,,True,,,"[0.45, 0.1, 0.45]",True,32,8,70,0.0001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.7084674835205078
+MLP,84,dataset_09_30_22,mean,,True,ln,,"[0.9, 0.1, 0.0]",True,32,8,100,0.0001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,6.98657351732254
+MLP,85,dataset_09_30_22,mean,,True,ln,,"[0.9, 0.1, 0.0]",True,32,8,100,1e-05,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,7.632771730422974
+MLP,86,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,32,8,100,0.001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.4924105554819107
+MLP,87,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,32,8,100,0.0001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.4863139912486076
+MLP,88,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,32,8,100,1e-05,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,2.018608883023262

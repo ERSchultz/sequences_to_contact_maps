@@ -132,7 +132,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
             else:
                 graph = torch_geometric.data.Data(x = None, edge_index = edge_index)
 
-            graph.minmax = torch.tensor([self.ymin, self.ymax])
             graph.path = raw_folder
             graph.num_nodes = self.m
             graph.pos_edge_index = pos_edge_index

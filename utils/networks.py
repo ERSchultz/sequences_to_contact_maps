@@ -506,7 +506,7 @@ class ContactGNN(nn.Module):
             update_hidden_sizes_list: list of hidden sizes for MLP for update during message passing
             out_act (str): output activation
             message_passing (str): type of message passing algorithm to use
-                                    {idendity, gcn, signedconv, z}
+                                    {idendity, gcn, signedconv, z, gat, weighted_gat}
             use_edge_attr: True to use edge attributes/weights
             edge_dim: 0 for edge weights, 1+ for edge_attr
             head_architecture: type of head architecture {None, fc, AverageTo2d.mode_options}
@@ -764,17 +764,6 @@ class ContactGNN(nn.Module):
                 out = torch.squeeze(out, 3)
 
         return out
-
-class seq2Energy(nn.Module):
-    def __init__(self, k, init=None):
-        super(seq2Energy, self).__init__()
-        if init is None:
-            init = torch.randn((k, k))
-            init = torch.triu(init)
-        self.chi = nn.Parameter(init)
-
-    def forward(self, seq):
-        return seq @ torch.triu(self.chi) @ seq.t()
 
 
 def testFullyConnectedAutoencoder():

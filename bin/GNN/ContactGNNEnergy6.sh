@@ -18,22 +18,27 @@ source activate python3.9_pytorch1.9_cuda10.2
 rootName='ContactGNNEnergy6' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
-messagePassing='SignedConv'
+messagePassing='weighted_GAT'
 preTransforms='degree-ContactDistance-GeneticDistance-DiagonalParameterDistance'
+mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
+numHeads=8
 
 yLogTransform='none'
 sparsifyThreshold='none'
-
-# signedconv reference with log preprocessing
-# curious if this will work - maybe attention is necessary for with log?
-
-id=188
 yPreprocessing='log'
-for lr in 1e-3
+# no log/ln transform, no sparsification, using log preprocessing
+yNorm='mean'
+# mean norm before log
+
+
+# weighted GAT
+
+id=193
+for lr in 1e-4
 do
   train
   id=$(( $id + 1 ))
