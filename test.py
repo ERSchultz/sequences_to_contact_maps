@@ -630,7 +630,7 @@ def prep_data_for_cluster():
         opath = osp.join(odir, id)
         if not osp.exists(opath):
             os.mkdir(opath, mode = 0o755)
-        for file in ['y.npy', 's.npy', 'config.json', 'diag_chis_continuous.npy']
+        for file in ['y.npy', 's.npy', 'config.json', 'diag_chis_continuous.npy']:
             ifile = osp.join(idir, id, file)
             if osp.exists(ifile):
                 ofile = osp.join(odir, id, file)
