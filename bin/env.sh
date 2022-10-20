@@ -46,7 +46,7 @@ ofile=logFiles/conda_env_midway3.log
 conda create --name $envName -y
 conda activate $envName
 conda install -y python=3.9 pytorch=1.9 pyg torchvision cudatoolkit=11.3 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy pybigwig pybind11 sympy isort -c pytorch -c conda-forge -c bioconda -c pyg  &>> $ofile
-python3 -m pip install pynvml importmagic &>> $ofile
+python3 -m pip install pynvml importmagic hic-straw hicrep &>> $ofile
 conda env export > logFiles/env_midway3.yml
 conda deactivate
 

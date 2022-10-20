@@ -1,11 +1,4 @@
 model_type,id,dataset,preprocessing_norm,y_preprocessing,min_subtraction,log_preprocessing,crop,split,shuffle,batch_size,num_workers,n_epochs,lr,milestones,gamma,loss,k,m,seed,act,inner_act,head_act,out_act,training_norm,y_zero_diag_count,Final Validation Loss
-MLP,11,dataset_09_26_22,mean,,True,,,"[0.8, 0.2, 0]",True,32,8,70,0.0001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.2065026685595512
-MLP,41,dataset_test_log,mean,,True,,,"[0.8, 0.2, 0]",True,32,8,80,0.001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,126.69849113796069
-MLP,66,dataset_test_logistic,mean,,True,,,"[0.8, 0.2, 0]",True,32,8,40,0.001,[30],0.1,mse,,1024,42,prelu,,relu,prelu,,0,24.11592490332467
-MLP,67,dataset_test_logistic,mean,,True,,,"[0.8, 0.2, 0]",True,32,8,40,0.001,[30],0.1,mse,,1024,42,prelu,,relu,prelu,,0,24.21406126022339
-MLP,73,dataset_test_logistic,mean,,True,ln,,"[0.8, 0.2, 0]",True,32,8,80,0.001,[30],0.1,mse,,1024,42,prelu,,relu,prelu,,0,125.06407873971122
-MLP,74,dataset_test_logistic,mean,,True,,,"[0.8, 0.2, 0]",True,32,8,50,0.001,[30],0.1,mse,,1024,42,prelu,,relu,prelu,,0,23.4582941872733
-MLP,78,dataset_test_logistic,mean,,True,,,"[0.8, 0.2, 0]",True,32,8,70,0.0001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,23.52895314352853
 MLP,79,dataset_09_30_22,mean,,True,,,"[0.8, 0.2, 0]",True,32,8,70,0.0001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.3623970076441765
 MLP,80,dataset_09_30_22,mean,,True,,,"[0.9, 0.1, 0.0]",True,32,8,70,0.001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.4729072526097298
 MLP,81,dataset_09_30_22,mean,,True,,,"[0.9, 0.1, 0.0]",True,32,8,70,0.0001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.5196454301476479
@@ -16,3 +9,7 @@ MLP,85,dataset_09_30_22,mean,,True,ln,,"[0.9, 0.1, 0.0]",True,32,8,100,1e-05,[50
 MLP,86,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,32,8,100,0.001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.4924105554819107
 MLP,87,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,32,8,100,0.0001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.4863139912486076
 MLP,88,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,32,8,100,1e-05,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,2.018608883023262
+MLP,89,dataset_09_30_22,,log,True,,,"[0.9, 0.1, 0.0]",True,32,8,100,0.001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,2366835.21875
+MLP,90,dataset_09_30_22,,log,True,,,"[0.9, 0.1, 0.0]",True,32,8,40,0.001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,7.774179548025131
+MLP,91,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,32,8,100,0.001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.480769321322441
+MLP,92,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,32,8,100,0.001,[50],0.1,mse,,1024,42,prelu,,relu,prelu,,0,1.6122271418571472

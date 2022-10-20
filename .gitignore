@@ -33,6 +33,7 @@ results/DeepC/**
 results/ContactGNN/**
 results/Akita/**
 results/MLP/*.pt
+results/*/*/sample*/**
 results/*/*combined
 
 # chip_seq

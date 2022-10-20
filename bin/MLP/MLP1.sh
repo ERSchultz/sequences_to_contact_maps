@@ -6,7 +6,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=10
-#SBATCH --mem-per-cpu=2000
+#SBATCH --mem-per-cpu=1000
 
 cd ~/sequences_to_contact_maps
 
@@ -18,8 +18,8 @@ dirname="/project2/depablo/erschultz/dataset_09_30_22"
 scratch="${scratch}/MLP1"
 
 # LOCAL
-# dirname="/home/erschultz/dataset_09_30_22"
-# scratch='/home/erschultz/scratch/MLP1'
+dirname="/home/erschultz/dataset_09_30_22"
+scratch='/home/erschultz/scratch/MLP1'
 # splitPercents='0.5-0.4-0.1'
 
 # preprocessing
@@ -31,7 +31,7 @@ outputMode='diag_chi_continuous'
 
 # architecture
 m=1024
-hiddenSizesList='2000-2000-2000-2000-2000-2000-1024'
+hiddenSizesList='100-100-100-100-100-100-1024'
 act='prelu'
 outAct='prelu'
 
@@ -44,8 +44,9 @@ gamma=0.1
 
 # y_preprocessing = 'log'
 
-id=86
-for lr in 1e-3 1e-4 1e-5
+id=92
+for lr in 1e-3
+ # 1e-4 1e-5
 do
   train
   id=$(( $id + 1 ))

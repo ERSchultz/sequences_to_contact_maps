@@ -524,8 +524,13 @@ def copy_data_to_scratch(opt):
         with multiprocessing.Pool(opt.num_workers) as p:
              p.starmap(copy_data_to_scratch_inner, mapping)
     else:
-        for sample in samples:
-            copy_data_to_scratch_inner(sample, opt.data_folder, scratch_path, opt.toxx, opt.y_preprocessing, opt.output_mode)
+        if opt.split_sizes is not None and -1 not in opt.split_sizes and not opt.random_split:
+            for sample in samples[:np.sum(opt.split_sizes)]:
+                copy_data_to_scratch_inner(sample, opt.data_folder, scratch_path, opt.toxx, opt.y_preprocessing, opt.output_mode)
+
+        else:
+            for sample in samples:
+                copy_data_to_scratch_inner(sample, opt.data_folder, scratch_path, opt.toxx, opt.y_preprocessing, opt.output_mode)
 
     opt.data_folder = scratch_path
 
@@ -554,7 +559,7 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
         if file == 'xx.npy' and toxx:
             # only need xx.npy if toxx is True
             move_file = True
-        elif file == 'y.npy' and (y_preprocessing is None or output_mode.startswith('diag')):
+        elif file == 'y.npy' and (y_preprocessing is None or y_preprocessing == 'log' or output_mode.startswith('diag')):
             move_file = True
         elif y_preprocessing is not None and fname.endswith(y_preprocessing) and ftype == 'npy':
             # need file corresponding to y_preprocessing

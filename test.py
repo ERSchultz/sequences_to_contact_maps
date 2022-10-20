@@ -99,10 +99,10 @@ def debugModel(model_type):
 
     # architecture
     opt.m = 1024
-    opt.split_percents=[0.5,0.2,0.3]
-    # opt.split_percents = None
-    # opt.split_sizes=[1, 2, 0]
+    # opt.split_percents=[0.9,0.1,0.0]
     opt.split_sizes=None
+    opt.split_sizes=[1000, 100, 0]
+    opt.split_percents = None
 
     if model_type == 'Akita':
         opt.kernel_w_list=AC.str2list('5-5-5')
@@ -174,11 +174,11 @@ def debugModel(model_type):
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'bilinear'
-        opt.head_architecture_2 = 'fc-fill'
-        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, 256]
-        # opt.crop = [0,256]
-        # opt.m = 256
+        # opt.head_architecture = 'bilinear'
+        # opt.head_architecture_2 = 'fc-fill'
+        # opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, 256]
+        opt.crop = [0,256]
+        opt.m = 256
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True
@@ -208,13 +208,14 @@ def debugModel(model_type):
         opt.use_bias = True
         opt.num_heads = 2
     elif model_type == 'MLP':
-        opt.preprocessing_norm='mean'
+        opt.scratch = '/home/erschultz/scratch/MLP1'
+        opt.preprocessing_norm=None
         opt.y_preprocessing='log'
-        opt.random_split=True
-        opt.hidden_sizes_list=AC.str2list('1000-'*6 + '4')
+        opt.random_split=False
+        opt.hidden_sizes_list=AC.str2list('100-'*6 + '1024')
         opt.act='prelu'
         opt.out_act='prelu'
-        opt.output_mode='diag_param'
+        opt.output_mode='diag_chi_continuous'
         opt.log_preprocessing=None
         opt.y_zero_diag_count=0
         # opt.training_norm='batch'
@@ -233,9 +234,9 @@ def debugModel(model_type):
     # other
     opt.plot = True
     opt.plot_predictions = True
-    opt.verbose = False
+    opt.verbose = True
     opt.print_params = False
-    opt.gpus = 1
+    opt.gpus = 0
     opt.delete_root = True
     opt.use_scratch = True
     opt.print_mod = 1
@@ -706,25 +707,28 @@ def down_sample_simulation_inner(file):
                 # np.save(y_diag_ofile, ydiag)
                 # plot_matrix(ydiag, osp.join(file, f'y_diag_dist{ymax}.png'), vmax='max')
 
-def main3():
-    dir = '/home/erschultz/sequences_to_contact_maps'
-    # dir = '/home/erschultz'
-    data_dir = 'dataset_07_20_22/samples/sample10/PCA-normalize/k2/replicate1'
-    path = osp.join(dir, data_dir)
 
-    chi = np.loadtxt(osp.join(path, 'chis.txt'))[-1]
-    chi = triu_to_full(chi)
-    print(chi)
-    plot_matrix(chi, osp.join(path, 'chi.png'), vmax = 'max', vmin = 'min',
-                cmap = 'blue-red')
+def plot_mean_dist_mlp():
+    scratch = '/home/erschultz/scratch'
+    dataset='dataset_09_30_22/samples'
+    sample=98
+    for i, label in zip([1, 2], ['none', 'mean']):
+        dir = osp.join(scratch, f'MLP{i}', dataset, f'sample{sample}')
+        file = osp.join(dir, 'meanDist.npy')
+        meanDist = np.load(file)
+        plt.plot(meanDist, label = label)
+
+    plt.yscale('log')
+    plt.legend()
+    plt.show()
 
 
 if __name__ == '__main__':
+    plot_mean_dist_mlp()
     # prep_data_for_cluster()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
-    # main3()
+    # debugModel('MLP')
     # compare_y_normalization_methods()
     # downsample_simulation()

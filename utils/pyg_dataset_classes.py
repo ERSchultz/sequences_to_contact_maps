@@ -180,6 +180,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     graph.energy = (graph.energy + graph.energy.t()) / 2
                 if self.output.startswith('energy_sym_diag'):
                     D = calculate_D(graph.diag_chis_continuous)
+                    if self.crop is not None:
+                        D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
                     graph.energy += torch.tensor(D, dtype = torch.float32)
 
             del graph.diag_chis_continuous
@@ -326,7 +328,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             model.eval()
 
             # get dataset
-            dataset = DiagFunctions(opt.data_folder, opt.crop, opt.preprocessing_norm,
+            dataset = DiagFunctions(opt.data_folder, None, opt.preprocessing_norm,
                                     opt.y_preprocessing,
                                     opt.log_preprocessing, opt.y_zero_diag_count,
                                     opt.output_mode,
