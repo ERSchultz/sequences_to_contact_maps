@@ -1,4 +1,16 @@
 #! /bin/bash
+#SBATCH --job-name=setup
+#SBATCH --output=logFiles/setup.out
+#SBATCH --time=1-24:00:00
+#SBATCH --account=pi-depablo
+#SBATCH --partition=depablo-gpu
+#SBATCH --gres=gpu:1
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=5
+#SBATCH --mem-per-cpu=2000
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-user=erschultz@uchicago.edu
+
 #
 # envName=python3.8_pytorch1.8.1_cuda11.1_nomkl
 # ofile=conda_env11.1.log
@@ -19,13 +31,23 @@
 # conda deactivate
 #
 
-envName=python3.9_pytorch1.9
-ofile=logFiles/conda_env2.log
-# conda create --name $envName -y
-# conda activate $envName
-conda install -y python=3.9 pytorch=1.9 pyg torchvision cudatoolkit=11.1 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy pybigwig pybind11 sympy isort -c pytorch -c conda-forge -c bioconda -c pyg  &>> $ofile
+# envName=python3.9_pytorch1.9
+# ofile=logFiles/conda_env2.log
+# # conda create --name $envName -y
+# # conda activate $envName
+# conda install -y python=3.9 pytorch=1.9 pyg torchvision cudatoolkit=11.1 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy pybigwig pybind11 sympy isort -c pytorch -c conda-forge -c bioconda -c pyg  &>> $ofile
+# python3 -m pip install pynvml importmagic &>> $ofile
+# conda env export > logFiles/env_local2.yml
+# conda deactivate
+
+# midway3 env
+envName=python3.9_pytorch1.9_cuda11.3
+ofile=logFiles/conda_env_midway3.log
+conda create --name $envName -y
+conda activate $envName
+conda install -y python=3.9 pytorch=1.9 pyg torchvision cudatoolkit=11.3 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy pybigwig pybind11 sympy isort -c pytorch -c conda-forge -c bioconda -c pyg  &>> $ofile
 python3 -m pip install pynvml importmagic &>> $ofile
-conda env export > logFiles/env_local2.yml
+conda env export > logFiles/env_midway3.yml
 conda deactivate
 
 
