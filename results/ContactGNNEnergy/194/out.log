@@ -184,3 +184,41 @@ Epoch 84, loss = 4.4529
 Mean test/val loss: 4.6887
 
 Epoch 86, loss = 4.4452
+Mean test/val loss: 4.7326
+
+Epoch 88, loss = 4.4395
+Mean test/val loss: 4.7085
+
+Epoch 90, loss = 4.4325
+Mean test/val loss: 4.5805
+
+Epoch 92, loss = 4.4311
+Mean test/val loss: 4.7545
+
+Epoch 94, loss = 4.4180
+Mean test/val loss: 4.5741
+
+Epoch 96, loss = 4.4186
+Mean test/val loss: 4.5232
+
+Epoch 98, loss = 4.4257
+Mean test/val loss: 4.5668
+
+Epoch 100, loss = 4.4041
+Mean test/val loss: 4.5056
+
+
+Total parameters: 147879
+Total training + validation time: 21.0 hours
+Final val loss: 4.505578501593499
+
+split sizes: train=2268, val=252, test=0, N=2520
+#### Plotting Script ####
+Prediction Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/194/sample552: 18.721452713012695
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/194/sample1794: 6.265202522277832
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/194/sample1128: 3.975186824798584
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/194/sample1938: 11.807156562805176
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/194/sample1131: 5.095930099487305
+Loss: 9.172985744476318 +- 5.480999488385388
+
