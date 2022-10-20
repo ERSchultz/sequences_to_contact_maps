@@ -35,10 +35,8 @@ sparsifyThreshold='none'
 yNorm='mean'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
-scratch='/scratch/midway3/erschultz'
 
-
-# Run on midway3
+# fc fill
 
 id=197
 for lr in 1e-4
