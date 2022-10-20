@@ -356,6 +356,7 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
 
         # tar subpath
         os.chdir(opt.ofile_folder)
+        print(os.getcwd())
         with tarfile.open(f'{sample}.tar.gz', 'w:gz') as f:
             f.add(sample)
         rmtree(sample)
