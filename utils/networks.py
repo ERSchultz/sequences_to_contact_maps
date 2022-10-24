@@ -535,11 +535,13 @@ class ContactGNN(nn.Module):
         self.act = act2module(act)
         self.inner_act = act2module(inner_act)
         self.out_act = act2module(out_act)
+        self.head_hidden_sizes_list = head_hidden_sizes_list
         if head_hidden_sizes_list is not None and len(head_hidden_sizes_list) > 1:
             self.head_act = act2module(head_act)
             # only want this to show up as a parameter if actually needed
         else:
             self.head_act = None
+        self.use_bias = use_bias
 
         ### Encoder Architecture ###
         encoder = []
@@ -650,117 +652,14 @@ class ContactGNN(nn.Module):
         else:
             raise Exception("Unkown message_passing {}".format(message_passing))
 
-        latent_size = input_size
+        self.latent_size = input_size
         # save input_size to latent_size
         # this is the output_size of latent space
         # and the input size for head_architecture
 
         ### Head Architecture ###
-        if self.head_architecture is None:
-            head = None
-        elif self.head_architecture == 'fc':
-            head_list = []
-            input_size = latent_size
-            for i, output_size in enumerate(head_hidden_sizes_list):
-                if i == len(head_hidden_sizes_list) - 1:
-                    act = self.out_act
-                else:
-                    act = self.head_act
-                head_list.append(LinearBlock(input_size, output_size, activation = act,
-                                        bias = use_bias))
-                input_size = output_size
-
-            if 'fill' in self.head_architecture:
-                head_list.append(FillDiagonalsFromArray())
-
-            head = nn.Sequential(*head_list)
-        elif self.head_architecture.startswith('bilinear'):
-            head = 'Bilinear'
-            init = torch.randn((latent_size, latent_size))
-            self.W = nn.Parameter(init)
-            self.sym = Symmetrize2D()
-        elif self.head_architecture == 'inner':
-            head = 'Inner'
-        elif self.head_architecture in self.to2D.mode_options:
-            # Uses linear layers according to head_hidden_sizes_list after converting to 2D
-            self.to2D.mode = self.head_architecture # change mode
-            input_size = latent_size
-            # determine input_size
-            if self.head_architecture == 'concat':
-                input_size *= 2 # concat doubles size
-            elif self.head_architecture == 'outer':
-                input_size *= input_size # outer squares size
-            elif self.head_architecture == 'concat-outer':
-                input_size = input_size**2 + 2 * input_size
-            elif self.head_architecture == 'avg-outer':
-                input_size += input_size**2
-
-            head_list = []
-            for i, output_size in enumerate(head_hidden_sizes_list):
-                if i == len(head_hidden_sizes_list) - 1:
-                    act = self.out_act
-                else:
-                    act = self.head_act
-                head_list.append(LinearBlock(input_size, output_size, activation = act,
-                                        bias = use_bias))
-                input_size = output_size
-
-            head = nn.Sequential(*head_list)
-        else:
-            raise Exception("Unkown head_architecture {}".format(self.head_architecture))
-        self.head_1 = head
-
-        if self.head_architecture_2 is None:
-            head = None
-        elif self.head_architecture_2.startswith('fc'):
-            head_list = []
-            input_size = latent_size * self.m
-            for i, output_size in enumerate(head_hidden_sizes_list):
-                if i == len(head_hidden_sizes_list) - 1:
-                    act = self.out_act
-                else:
-                    act = self.head_act
-                head_list.append(LinearBlock(input_size, output_size, activation = act,
-                                        bias = use_bias))
-                input_size = output_size
-
-            head = nn.Sequential(*head_list)
-        elif self.head_architecture_2.startswith('bilinear'):
-            head = 'Bilinear'
-            init = torch.randn((latent_size, latent_size))
-            self.W = nn.Parameter(init)
-            self.sym = Symmetrize2D()
-        elif self.head_architecture_2 == 'inner':
-            head = 'Inner'
-        elif self.head_architecture_2 in self.to2D.mode_options:
-            # Uses linear layers according to head_hidden_sizes_list after converting to 2D
-            self.to2D.mode = self.head_architecture_2 # change mode
-            input_size = latent_size
-            # determine input_size
-            if self.head_architecture_2 == 'concat':
-                input_size *= 2 # concat doubles size
-            elif self.head_architecture_2 == 'outer':
-                input_size *= input_size # outer squares size
-            elif self.head_architecture_2 == 'concat-outer':
-                input_size = input_size**2 + 2 * input_size
-            elif self.head_architecture_2 == 'avg-outer':
-                input_size += input_size**2
-
-            head_list = []
-            for i, output_size in enumerate(head_hidden_sizes_list):
-                if i == len(head_hidden_sizes_list) - 1:
-                    act = self.out_act
-                else:
-                    act = self.head_act
-                head_list.append(LinearBlock(input_size, output_size, activation = act,
-                                        bias = use_bias))
-                input_size = output_size
-
-            head = nn.Sequential(*head_list)
-        else:
-            raise Exception(f"Unkown head_architecture {self.head_architecture_2}")
-        self.head_2 = head
-
+        self.head_1 = self.process_head_architecture(self.head_architecture)
+        self.head_2 = self.process_head_architecture(self.head_architecture_2)
         self.head = [self.head_1, self.head_2]
 
         if verbose:
@@ -770,43 +669,67 @@ class ContactGNN(nn.Module):
             print(self.head_1, '\n', file = ofile)
             print(self.head_2, '\n', file = ofile)
 
+    def process_head_architecture(self, head_architecture):
+        if head_architecture is None:
+            head = None
+        elif head_architecture.startswith('fc'):
+            head_list = []
+            input_size = self.latent_size * self.m
+            for i, output_size in enumerate(self.head_hidden_sizes_list):
+                if i == len(self.head_hidden_sizes_list) - 1:
+                    act = self.out_act
+                else:
+                    act = self.head_act
+                head_list.append(LinearBlock(input_size, output_size, activation = act,
+                                        bias = self.use_bias))
+                input_size = output_size
+
+            if 'fill' in head_architecture:
+                head_list.append(FillDiagonalsFromArray())
+
+            head = nn.Sequential(*head_list)
+        elif head_architecture.startswith('bilinear'):
+            head = 'Bilinear'
+            init = torch.randn((self.latent_size, self.latent_size))
+            self.W = nn.Parameter(init)
+            self.sym = Symmetrize2D()
+        elif head_architecture == 'inner':
+            head = 'Inner'
+        elif head_architecture in to2D.mode_options:
+            # Uses linear layers according to head_hidden_sizes_list after converting to 2D
+            self.to2D.mode = head_architecture # change mode
+            input_size = self.latent_size
+            # determine input_size
+            if head_architecture == 'concat':
+                input_size *= 2 # concat doubles size
+            elif head_architecture == 'outer':
+                input_size *= input_size # outer squares size
+            elif head_architecture == 'concat-outer':
+                input_size = input_size**2 + 2 * input_size
+            elif head_architecture == 'avg-outer':
+                input_size += input_size**2
+
+            head_list = []
+            for i, output_size in enumerate(head_hidden_sizes_list):
+                if i == len(head_hidden_sizes_list) - 1:
+                    act = self.out_act
+                else:
+                    act = self.head_act
+                head_list.append(LinearBlock(input_size, output_size, activation = act,
+                                        bias = self.use_bias))
+                input_size = output_size
+
+            head = nn.Sequential(*head_list)
+        else:
+            raise Exception(f"Unkown head_architecture {head_architecture}")
+
+        return head
+
     def forward(self, graph):
         if self.encoder is not None:
-            graph.x = self.encoder(graph.x)
+            x = self.encoder(graph.x)
 
-
-        if self.message_passing == 'identity':
-            latent = graph.x
-        elif self.message_passing == 'z':
-            raise Exception('deprectated')
-            # parser = get_base_parser()
-            # opt = parser.parse_args()
-            # opt.id = 159
-            # opt.model_type = 'ContactGNN'
-            # opt = finalize_opt(opt, parser, local = True)
-            # print(opt)
-            # z_model = getModel(opt)
-            # if graph.x.is_cuda:
-            #     z_model.to(graph.x.get_device())
-            # model_name = osp.join(opt.ofile_folder, 'model.pt')
-            # if osp.exists(model_name):
-            #     save_dict = torch.load(model_name, map_location=torch.device('cpu'))
-            #     z_model.load_state_dict(save_dict['model_state_dict'])
-            #     print('Model is loaded: {}'.format(model_name))
-            # else:
-            #     raise Exception('Model does not exist: {}'.format(model_name))
-            # z_model.eval()
-            # latent = z_model(graph)
-            # if opt.loss == 'BCE':
-            #     latent = torch.sigmoid(latent)
-        elif self.message_passing in {'gcn', 'transformer', 'gat', 'weighted_gat'}:
-            latent = self.model(graph.x, graph.edge_index, graph.edge_attr)
-        elif self.message_passing == 'signedconv':
-            if self.use_edge_attr:
-                latent = self.model(graph.x, graph.pos_edge_index, graph.neg_edge_index,
-                                    graph.pos_edge_attr, graph.neg_edge_attr)
-            else:
-                latent = self.model(graph.x, graph.pos_edge_index, graph.neg_edge_index)
+        latent = self.latent(graph, x)
 
         if self.head_architecture is None and self.head_architecture_2 is None:
             return latent
@@ -815,10 +738,10 @@ class ContactGNN(nn.Module):
         for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
             if architecture is None:
                 continue
-            elif architecture == 'fc':
+            elif architecture.startswith('fc'):
                 latent_copy = torch.clone(latent)
                 latent_copy = latent_copy.reshape(-1)
-                out_temp = self.head[i](latent)
+                out_temp = self.head[i](latent_copy)
             elif architecture.startswith('bilinear'):
                 latent_copy = torch.clone(latent).to(latent.get_device())
                 _, output_size = latent_copy.shape
@@ -846,6 +769,95 @@ class ContactGNN(nn.Module):
             out = out + out_temp
 
         return out
+
+    def latent(self, graph, x):
+        if self.message_passing == 'identity':
+            latent = x
+        elif self.message_passing == 'z':
+            raise Exception('deprectated')
+            # parser = get_base_parser()
+            # opt = parser.parse_args()
+            # opt.id = 159
+            # opt.model_type = 'ContactGNN'
+            # opt = finalize_opt(opt, parser, local = True)
+            # print(opt)
+            # z_model = getModel(opt)
+            # if graph.x.is_cuda:
+            #     z_model.to(graph.x.get_device())
+            # model_name = osp.join(opt.ofile_folder, 'model.pt')
+            # if osp.exists(model_name):
+            #     save_dict = torch.load(model_name, map_location=torch.device('cpu'))
+            #     z_model.load_state_dict(save_dict['model_state_dict'])
+            #     print('Model is loaded: {}'.format(model_name))
+            # else:
+            #     raise Exception('Model does not exist: {}'.format(model_name))
+            # z_model.eval()
+            # latent = z_model(graph)
+            # if opt.loss == 'BCE':
+            #     latent = torch.sigmoid(latent)
+        elif self.message_passing in {'gcn', 'transformer', 'gat', 'weighted_gat'}:
+            latent = self.model(x, graph.edge_index, graph.edge_attr)
+        elif self.message_passing == 'signedconv':
+            if self.use_edge_attr:
+                latent = self.model(x, graph.pos_edge_index, graph.neg_edge_index,
+                                    graph.pos_edge_attr, graph.neg_edge_attr)
+            else:
+                latent = self.model(x, graph.pos_edge_index, graph.neg_edge_index)
+
+        return latent
+
+    def diagonal_component(self, graph):
+        if self.encoder is not None:
+            x = self.encoder(graph.x)
+
+        latent = self.latent(graph, x)
+
+        for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
+            if architecture is None:
+                continue
+            elif architecture.startswith('fc'):
+                latent_copy = torch.clone(latent)
+                latent_copy = latent_copy.reshape(-1)
+                return self.head[i](latent_copy)
+            elif architecture in self.to2D.mode_options:
+                _, output_size = latent.shape
+                latent_copy = torch.clone(latent)
+                latent_copy = latent_copy.reshape(-1, self.m, output_size)
+                latent_copy = latent_copy.permute(0, 2, 1) # permute to combine over m index
+                latent_copy = self.to2D(latent_copy)
+                _, output_size, _, _ = latent_copy.shape
+                latent_copy = latent_copy.permute(0, 2, 3, 1) # permute back
+                out_temp = self.head[i](latent_copy)
+                if len(out_temp.shape) > 3:
+                    out_temp = torch.squeeze(out_temp, 3)
+                return out_temp
+
+        return None
+
+    def plaid_component(self, graph):
+        if self.encoder is not None:
+            x = self.encoder(graph.x)
+
+        latent = self.latent(graph, x)
+
+        for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
+            if architecture is None:
+                continue
+            elif architecture.startswith('bilinear'):
+                latent_copy = torch.clone(latent).to(latent.get_device())
+                _, output_size = latent_copy.shape
+                latent_copy = latent_copy.reshape(-1, self.m, output_size)
+                if 'asym' in architecture:
+                    out_temp = torch.einsum('nik,njk->nij', latent_copy @ self.W, latent_copy)
+                else:
+                    out_temp = torch.einsum('nik,njk->nij', latent_copy @ self.sym(self.W), latent_copy)
+                return out_temp
+            elif architecture == 'inner':
+                _, output_size = latent.shape
+                latent = latent.reshape(-1, self.m, output_size)
+                return torch.einsum('nik, njk->nij', latent, latent)
+
+        return None
 
 
 def testFullyConnectedAutoencoder():

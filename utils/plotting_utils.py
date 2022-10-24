@@ -298,6 +298,8 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
             y = torch.reshape(y, (-1, opt.m, opt.m))
             yhat = model(data)
             path = data.path[0]
+            plaid_hat = model.plaid_component(data)
+            diagonal_hat = model.diagonal_component(data)
         else:
             x, y, path, minmax = data
             x = x.to(opt.device)
@@ -313,19 +315,9 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         if not osp.exists(subpath):
             os.mkdir(subpath, mode = 0o755)
 
-        if opt.loss == 'mse':
-            loss_title = 'MSE Loss'
-        elif opt.loss == 'cross_entropy':
-            loss_title = 'Cross Entropy Loss'
-        elif opt.loss == 'BCE':
-            loss_title = 'Binary Cross Entropy Loss'
-        else:
-            loss_title = 'Loss'
+        assert opt.loss == 'mse'
+        loss_title = 'MSE Loss'
 
-        if opt.loss == 'BCE':
-            # using BCE with logits loss, which combines sigmoid into loss
-            # so need to do sigmoid here
-            yhat = torch.sigmoid(yhat)
         yhat = yhat.cpu().detach().numpy()
         yhat = yhat.reshape((opt.m,opt.m))
 
@@ -353,6 +345,20 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         dif = yhat - y
         plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
                         vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
+
+
+        if diagonal_hat is not None:
+            # plot plaid contribution
+            plaid_hat = plaid_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
+            plot_matrix(plaid_hat, osp.join(subpath, 'plaid_hat.png'), vmin = -1 * v_max,
+                            vmax = v_max, title = 'plaid portion', cmap = 'blue-red')
+
+            # plot diag contribution
+            diagonal_hat = diagonal_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
+            plot_matrix(diagonal_hat, osp.join(subpath, 'diagonal_hat.png'), vmin = -1 * v_max,
+                            vmax = v_max, title = 'diagonal portion', cmap = 'blue-red')
+
+
 
         # tar subpath
         os.chdir(opt.ofile_folder)
