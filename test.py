@@ -101,7 +101,7 @@ def debugModel(model_type):
     opt.m = 1024
     # opt.split_percents=[0.9,0.1,0.0]
     opt.split_sizes=None
-    opt.split_sizes=[1000, 100, 0]
+    opt.split_sizes=[20, 10, 0]
     opt.split_percents = None
 
     if model_type == 'Akita':
@@ -174,7 +174,7 @@ def debugModel(model_type):
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        # opt.head_architecture = 'bilinear'
+        opt.head_architecture = 'bilinear'
         # opt.head_architecture_2 = 'fc-fill'
         # opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, 256]
         opt.crop = [0,256]
@@ -234,9 +234,9 @@ def debugModel(model_type):
     # other
     opt.plot = True
     opt.plot_predictions = True
-    opt.verbose = True
+    opt.verbose = False
     opt.print_params = False
-    opt.gpus = 0
+    opt.gpus = 1
     opt.delete_root = True
     opt.use_scratch = True
     opt.print_mod = 1
@@ -724,11 +724,11 @@ def plot_mean_dist_mlp():
 
 
 if __name__ == '__main__':
-    plot_mean_dist_mlp()
+    # plot_mean_dist_mlp()
     # prep_data_for_cluster()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    # debugModel('MLP')
+    debugModel('ContactGNNEnergy')
     # compare_y_normalization_methods()
     # downsample_simulation()
