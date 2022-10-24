@@ -14,7 +14,6 @@ import scipy.stats as ss
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from core_test_train import core_test_train
 from scipy import linalg
 from scipy.ndimage import uniform_filter
 from scipy.optimize import minimize
@@ -23,6 +22,8 @@ from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.utils.extmath import svd_flip
+
+from core_test_train import core_test_train
 from utils.argparse_utils import (ArgparserConverter, finalize_opt,
                                   get_base_parser)
 from utils.base_networks import AverageTo2d
@@ -168,17 +169,17 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         opt.transforms=AC.str2list('empty')
-        opt.pre_transforms=AC.str2list('degree-contactdistance-GeneticDistance-diagonalparameterdistance_79')
-        opt.mlp_model_id=79
+        opt.pre_transforms=AC.str2list('degree-contactdistance-GeneticDistance')
+        opt.mlp_model_id=None
         opt.split_edges_for_feature_augmentation = False
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
         opt.head_architecture = 'bilinear'
         opt.head_architecture_2 = 'fc-fill'
-        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, 256]
-        opt.crop = [0,256]
-        opt.m = 256
+        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, 1024]
+        # opt.crop = [0,256]
+        # opt.m = 256
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True

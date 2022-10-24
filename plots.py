@@ -9,6 +9,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage import uniform_filter
+
 from utils.argparse_utils import (argparse_setup, finalize_opt,
                                   get_base_parser, get_opt_header, opt2list)
 from utils.energy_utils import calculate_diag_chi_step

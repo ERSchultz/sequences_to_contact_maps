@@ -19,6 +19,7 @@ from scipy.stats import pearsonr
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error, silhouette_score
 from sympy import solve, symbols
+
 from utils.energy_utils import calculate_diag_chi_step
 
 from .argparse_utils import (ArgparserConverter, finalize_opt, get_base_parser,
@@ -288,6 +289,9 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
          preprocessing_norm = 'None'
     upper_title = 'Y Preprocessing: {}, Norm: {}'.format(preprocessing, preprocessing_norm)
 
+    assert opt.loss == 'mse'
+    loss_title = 'MSE Loss'
+
     loss_arr = np.zeros(min(count, opt.valN))
     for i, data in enumerate(val_dataloader):
         if i == count:
@@ -298,8 +302,6 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
             y = torch.reshape(y, (-1, opt.m, opt.m))
             yhat = model(data)
             path = data.path[0]
-            plaid_hat = model.plaid_component(data)
-            diagonal_hat = model.diagonal_component(data)
         else:
             x, y, path, minmax = data
             x = x.to(opt.device)
@@ -308,6 +310,7 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
             yhat = model(x)
         loss = opt.criterion(yhat, y).item()
         y = y.cpu().numpy().reshape((opt.m, opt.m))
+        yhat = yhat.cpu().detach().numpy().reshape((opt.m,opt.m))
 
         sample = osp.split(path)[-1]
         subpath = osp.join(opt.ofile_folder, sample)
@@ -315,15 +318,9 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         if not osp.exists(subpath):
             os.mkdir(subpath, mode = 0o755)
 
-        assert opt.loss == 'mse'
-        loss_title = 'MSE Loss'
-
-        yhat = yhat.cpu().detach().numpy()
-        yhat = yhat.reshape((opt.m,opt.m))
 
         yhat_title = '{}\n{} ({}: {})'.format(upper_title, r'$\hat{S}$',
                                                 loss_title, np.round(loss, 3))
-
         loss_arr[i] = loss
         if opt.verbose:
             print('y', y, np.max(y))
@@ -346,7 +343,9 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
                         vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
 
-
+        if opt.GNN_mode:
+            plaid_hat = model.plaid_component(data)
+            diagonal_hat = model.diagonal_component(data)
         if diagonal_hat is not None:
             # plot plaid contribution
             plaid_hat = plaid_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
