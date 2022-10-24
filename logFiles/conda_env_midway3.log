@@ -1,0 +1,54 @@
+Collecting package metadata (current_repodata.json): ...working... failed
+
+CondaHTTPError: HTTP 000 CONNECTION FAILED for url <https://conda.anaconda.org/pytorch/linux-64/current_repodata.json>
+Elapsed: -
+
+An HTTP error occurred when trying to retrieve this URL.
+HTTP errors are often intermittent, and a simple retry will get you on your way.
+'https://conda.anaconda.org/pytorch/linux-64'
+
+
+WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7f85fa597580>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/pynvml/
+WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7f85fa597790>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/pynvml/
+WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7f85fa597940>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/pynvml/
+WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7f85fa597af0>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/pynvml/
+WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7f85fa597ca0>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/pynvml/
+ERROR: Could not find a version that satisfies the requirement pynvml
+ERROR: No matching distribution found for pynvml
+Collecting package metadata (current_repodata.json): ...working... failed
+
+CondaHTTPError: HTTP 000 CONNECTION FAILED for url <https://conda.anaconda.org/pytorch/linux-64/current_repodata.json>
+Elapsed: -
+
+An HTTP error occurred when trying to retrieve this URL.
+HTTP errors are often intermittent, and a simple retry will get you on your way.
+'https://conda.anaconda.org/pytorch/linux-64'
+
+
+WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7fbd236edb50>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/pynvml/
+WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7fbd236edd60>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/pynvml/
+WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7fbd236edf10>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/pynvml/
+WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7fbd23697100>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/pynvml/
+WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7fbd236972b0>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/pynvml/
+ERROR: Could not find a version that satisfies the requirement pynvml
+ERROR: No matching distribution found for pynvml
+Collecting package metadata (current_repodata.json): ...working... failed
+
+CondaHTTPError: HTTP 000 CONNECTION FAILED for url <https://conda.anaconda.org/pytorch/linux-64/current_repodata.json>
+Elapsed: -
+
+An HTTP error occurred when trying to retrieve this URL.
+HTTP errors are often intermittent, and a simple retry will get you on your way.
+'https://conda.anaconda.org/pytorch/linux-64'
+
+
+Collecting package metadata (current_repodata.json): ...working... failed
+
+CondaHTTPError: HTTP 000 CONNECTION FAILED for url <https://conda.anaconda.org/pytorch/linux-64/current_repodata.json>
+Elapsed: -
+
+An HTTP error occurred when trying to retrieve this URL.
+HTTP errors are often intermittent, and a simple retry will get you on your way.
+'https://conda.anaconda.org/pytorch/linux-64'
+
+
