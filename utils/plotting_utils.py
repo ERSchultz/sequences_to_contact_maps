@@ -19,6 +19,7 @@ from scipy.stats import pearsonr
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error, silhouette_score
 from sympy import solve, symbols
+
 from utils.energy_utils import calculate_diag_chi_step
 
 from .argparse_utils import (ArgparserConverter, finalize_opt, get_base_parser,
@@ -288,6 +289,9 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
          preprocessing_norm = 'None'
     upper_title = 'Y Preprocessing: {}, Norm: {}'.format(preprocessing, preprocessing_norm)
 
+    assert opt.loss == 'mse'
+    loss_title = 'MSE Loss'
+
     loss_arr = np.zeros(min(count, opt.valN))
     for i, data in enumerate(val_dataloader):
         if i == count:
@@ -306,6 +310,7 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
             yhat = model(x)
         loss = opt.criterion(yhat, y).item()
         y = y.cpu().numpy().reshape((opt.m, opt.m))
+        yhat = yhat.cpu().detach().numpy().reshape((opt.m,opt.m))
 
         sample = osp.split(path)[-1]
         subpath = osp.join(opt.ofile_folder, sample)
@@ -313,25 +318,9 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         if not osp.exists(subpath):
             os.mkdir(subpath, mode = 0o755)
 
-        if opt.loss == 'mse':
-            loss_title = 'MSE Loss'
-        elif opt.loss == 'cross_entropy':
-            loss_title = 'Cross Entropy Loss'
-        elif opt.loss == 'BCE':
-            loss_title = 'Binary Cross Entropy Loss'
-        else:
-            loss_title = 'Loss'
-
-        if opt.loss == 'BCE':
-            # using BCE with logits loss, which combines sigmoid into loss
-            # so need to do sigmoid here
-            yhat = torch.sigmoid(yhat)
-        yhat = yhat.cpu().detach().numpy()
-        yhat = yhat.reshape((opt.m,opt.m))
 
         yhat_title = '{}\n{} ({}: {})'.format(upper_title, r'$\hat{S}$',
                                                 loss_title, np.round(loss, 3))
-
         loss_arr[i] = loss
         if opt.verbose:
             print('y', y, np.max(y))
@@ -354,8 +343,25 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
                         vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
 
+        if opt.GNN_mode:
+            plaid_hat = model.plaid_component(data)
+            diagonal_hat = model.diagonal_component(data)
+        if diagonal_hat is not None:
+            # plot plaid contribution
+            plaid_hat = plaid_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
+            plot_matrix(plaid_hat, osp.join(subpath, 'plaid_hat.png'), vmin = -1 * v_max,
+                            vmax = v_max, title = 'plaid portion', cmap = 'blue-red')
+
+            # plot diag contribution
+            diagonal_hat = diagonal_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
+            plot_matrix(diagonal_hat, osp.join(subpath, 'diagonal_hat.png'), vmin = -1 * v_max,
+                            vmax = v_max, title = 'diagonal portion', cmap = 'blue-red')
+
+
+
         # tar subpath
         os.chdir(opt.ofile_folder)
+        print(os.getcwd())
         with tarfile.open(f'{sample}.tar.gz', 'w:gz') as f:
             f.add(sample)
         rmtree(sample)

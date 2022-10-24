@@ -444,17 +444,17 @@ class FillDiagonalsFromArray(nn.Module):
         elif len(input.shape) == 1:
             # assume input is of shape m
             N = 1
-            m = input.shape
+            m, = input.shape
             input = input.reshape(N, m)
 
         output = torch.zeros((N, m, m))
+        output = output.to(input.get_device())
         for n in range(N):
             for d in range(m):
                 rng = np.arange(m-d)
                 output[n, rng, rng+d] = input[n, d]
                 output[n, rng+d, rng] = input[n, d]
 
-        output.to(input.get_device())
         return output
 
 def test_average_to_2d_outer():
