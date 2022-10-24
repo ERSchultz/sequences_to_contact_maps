@@ -156,3 +156,104 @@ Epoch 42, loss = 9.3958
 Mean test/val loss: 8.8067
 
 Epoch 44, loss = 9.4182
+Mean test/val loss: 8.7883
+
+Epoch 46, loss = 9.0580
+Mean test/val loss: 10.0648
+
+Epoch 48, loss = 9.1149
+Mean test/val loss: 9.2202
+
+Epoch 50, loss = 8.9003
+Mean test/val loss: 7.9282
+
+Epoch 52, loss = 7.2223
+Mean test/val loss: 7.4984
+
+Epoch 54, loss = 7.0582
+Mean test/val loss: 7.3877
+
+Epoch 56, loss = 7.0103
+Mean test/val loss: 7.3469
+
+Epoch 58, loss = 6.9434
+Mean test/val loss: 7.1351
+
+Epoch 60, loss = 6.9204
+Mean test/val loss: 7.7109
+
+Epoch 62, loss = 6.8647
+Mean test/val loss: 7.1185
+
+Epoch 64, loss = 6.8644
+Mean test/val loss: 7.0293
+
+Epoch 66, loss = 6.8221
+Mean test/val loss: 7.1427
+
+Epoch 68, loss = 6.8288
+Mean test/val loss: 7.0108
+
+Epoch 70, loss = 6.8049
+Mean test/val loss: 7.1954
+
+Epoch 72, loss = 6.7958
+Mean test/val loss: 6.9272
+
+Epoch 74, loss = 6.7680
+Mean test/val loss: 6.9581
+
+Epoch 76, loss = 6.7341
+Mean test/val loss: 6.9703
+
+Epoch 78, loss = 6.7440
+Mean test/val loss: 6.9530
+
+Epoch 80, loss = 6.7537
+Mean test/val loss: 8.2194
+
+Epoch 82, loss = 6.7078
+Mean test/val loss: 6.9260
+
+Epoch 84, loss = 6.7099
+Mean test/val loss: 7.1884
+
+Epoch 86, loss = 6.7018
+Mean test/val loss: 7.4712
+
+Epoch 88, loss = 6.6768
+Mean test/val loss: 6.8817
+
+Epoch 90, loss = 6.7126
+Mean test/val loss: 6.8379
+
+Epoch 92, loss = 6.6547
+Mean test/val loss: 6.8320
+
+Epoch 94, loss = 6.6630
+Mean test/val loss: 6.8289
+
+Epoch 96, loss = 6.6318
+Mean test/val loss: 6.9654
+
+Epoch 98, loss = 6.6174
+Mean test/val loss: 6.8071
+
+Epoch 100, loss = 6.6104
+Mean test/val loss: 6.8525
+
+
+Total parameters: 71683008
+Total training + validation time: 17.0 hours
+Final val loss: 6.852540978127056
+
+split sizes: train=2268, val=252, test=0, N=2520
+#### Plotting Script ####
+Prediction Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/197/sample552: 25.321762084960938
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/197/sample1794: 7.9635748863220215
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/197/sample1128: 5.052339553833008
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/197/sample1938: 9.636463165283203
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/197/sample1131: 5.196588516235352
+Loss: 10.634145641326905 +- 7.544229343847107
+
