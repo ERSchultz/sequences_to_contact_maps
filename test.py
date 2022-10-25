@@ -100,10 +100,10 @@ def debugModel(model_type):
 
     # architecture
     opt.m = 1024
-    # opt.split_percents=[0.9,0.1,0.0]
+    opt.split_percents=[0.9,0.1,0.0]
     opt.split_sizes=None
-    opt.split_sizes=[20, 10, 0]
-    opt.split_percents = None
+    # opt.split_sizes=[1, 1, 0]
+    # opt.split_percents = None
 
     if model_type == 'Akita':
         opt.kernel_w_list=AC.str2list('5-5-5')
@@ -154,18 +154,18 @@ def debugModel(model_type):
     elif model_type == 'ContactGNNEnergy':
         opt.y_preprocessing = 'log'
         opt.loss = 'mse'
-        opt.preprocessing_norm = None
+        opt.preprocessing_norm = 'mean'
         opt.message_passing = 'weighted_gat'
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym_diag'
         opt.encoder_hidden_sizes_list=[100,100,64]
         opt.update_hidden_sizes_list=[100,100,64]
         opt.hidden_sizes_list=[8,8,8]
-        opt.act = 'relu'
-        opt.inner_act = 'relu'
-        opt.out_act = 'relu'
-        opt.head_act = 'relu'
-        opt.training_norm = 'instance'
+        opt.act = 'prelu'
+        opt.inner_act = 'prelu'
+        opt.out_act = 'prelu'
+        opt.head_act = 'prelu'
+        opt.training_norm = None
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         opt.transforms=AC.str2list('empty')
@@ -226,7 +226,7 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 1
+    opt.n_epochs = 10
     opt.lr = 1e-4
     opt.batch_size = 1
     opt.milestones = None
@@ -238,10 +238,10 @@ def debugModel(model_type):
     opt.verbose = False
     opt.print_params = False
     opt.gpus = 1
-    opt.delete_root = True
+    opt.delete_root = False
     opt.use_scratch = True
     opt.print_mod = 1
-    opt.num_workers = 4
+    opt.num_workers = 2
     opt.use_scratch_parallel = False
     # opt.id = 12
     # opt.resume_training = True

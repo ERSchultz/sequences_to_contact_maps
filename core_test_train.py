@@ -108,9 +108,13 @@ def core_test_train(model, opt):
             print(k, file = opt.param_file)
             print(p, file = opt.param_file)
     print('\nTotal parameters: {}'.format(locale.format_string("%d", tot_pars, grouping = True)), file = opt.log_file)
-    tot_time = (time.time() - t0) / 60 / 60 # hours
-    print('Total training + validation time: {} hours'.format(np.round(tot_time), 2), file = opt.log_file)
-    print('Final val loss: {}\n'.format(val_loss_arr[-1]), file = opt.log_file)
+    tot_time = (time.time() - t0)
+    tot_hours = tot_time // 3600
+    tot_mins = tot_time // 60
+    remaining_mins = tot_mins - tot_hours*60
+    
+    print(f'Total training + validation time: {tot_hours} hours and {remaining_mins} mins', file = opt.log_file)
+    print(f'Final val loss: {val_loss_arr[-1]}\n', file = opt.log_file)
 
     if opt.GNN_mode:
         plotting_script(model, opt, train_loss_arr, val_loss_arr, dataset)

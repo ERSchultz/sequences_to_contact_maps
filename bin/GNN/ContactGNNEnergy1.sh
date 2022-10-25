@@ -8,7 +8,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=10
 #SBATCH --mem-per-cpu=2000
-#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=END
 #SBATCH --mail-user=erschultz@uchicago.edu
 
 cd ~/sequences_to_contact_maps
@@ -38,7 +38,9 @@ headArchitecture2='concat'
 headHiddenSizesList='100-100-100-100-100-100'
 scratch='/scratch/midway3/erschultz'
 
-
+nEpochs=10
+milestones='none'
+splitPercents='0.4-0.1-0.5'
 # Run on midway3
 
 id=195
@@ -47,4 +49,4 @@ do
   train
   id=$(( $id + 1 ))
 done
-python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --GNN_file_name $rootName --scratch $scratch > clean.log
+python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --GNN_file_name $rootName --scratch $scratch
