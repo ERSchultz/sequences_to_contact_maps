@@ -6,7 +6,7 @@
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=10
+#SBATCH --ntasks-per-node=16
 #SBATCH --mem-per-cpu=2000
 #SBATCH --mail-type=END
 #SBATCH --mail-user=erschultz@uchicago.edu

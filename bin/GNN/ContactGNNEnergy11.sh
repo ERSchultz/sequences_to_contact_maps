@@ -1,13 +1,14 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE9
 #SBATCH --output=logFiles/ContactGNNEnergy11.out
-#SBATCH --time=24:00:00
+#SBATCH --time=1-24:00:00
+#SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=10
-#SBATCH --mem-per-cpu=3000
-#SBATCH --mail-type=FAIL
+#SBATCH --ntasks-per-node=16
+#SBATCH --mem-per-cpu=2000
+#SBATCH --mail-type=END
 #SBATCH --mail-user=erschultz@uchicago.edu
 
 cd ~/sequences_to_contact_maps

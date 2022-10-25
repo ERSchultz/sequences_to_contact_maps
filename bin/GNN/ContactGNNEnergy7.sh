@@ -2,12 +2,13 @@
 #SBATCH --job-name=CGNNE7
 #SBATCH --output=logFiles/ContactGNNEnergy7.out
 #SBATCH --time=1-24:00:00
+#SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=10
-#SBATCH --mem-per-cpu=3000
-#SBATCH --mail-type=FAIL
+#SBATCH --ntasks-per-node=16
+#SBATCH --mem-per-cpu=2000
+#SBATCH --mail-type=END
 #SBATCH --mail-user=erschultz@uchicago.edu
 
 cd ~/sequences_to_contact_maps
@@ -30,8 +31,10 @@ numHeads=8
 outputMode='energy_sym_diag'
 yPreprocessing='log'
 yNorm='none'
+headArchitecture='fc-fill'
+headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 
-# 3rd attempt at predicting only diag with GNN
+# 3rd attempt at predicting only diag with GNN, norm = None
 
 
 id=202
