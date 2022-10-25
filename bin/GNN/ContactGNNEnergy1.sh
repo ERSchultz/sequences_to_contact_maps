@@ -34,8 +34,8 @@ yPreprocessing='log'
 yLogTransform='none'
 sparsifyThreshold='none'
 yNorm='mean'
-headArchitecture2='concat'
-headHiddenSizesList='100-100-100-100-100-100'
+headArchitecture='concat'
+headHiddenSizesList='100-100-100-100-100-100-1'
 scratch='/scratch/midway3/erschultz'
 
 # Run on midway3

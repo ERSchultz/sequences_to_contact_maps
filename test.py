@@ -100,10 +100,10 @@ def debugModel(model_type):
 
     # architecture
     opt.m = 1024
-    opt.split_percents=[0.9,0.1,0.0]
-    opt.split_sizes=None
-    # opt.split_sizes=[1, 1, 0]
-    # opt.split_percents = None
+    # opt.split_percents=[0.9,0.1,0.0]
+    # opt.split_sizes=None
+    opt.split_sizes=[10, 1, 0]
+    opt.split_percents = None
 
     if model_type == 'Akita':
         opt.kernel_w_list=AC.str2list('5-5-5')
@@ -168,18 +168,18 @@ def debugModel(model_type):
         opt.training_norm = None
         opt.use_edge_weights = False
         opt.use_edge_attr = True
-        opt.transforms=AC.str2list('empty')
+        opt.transforms=AC.str2list('sparse')
         opt.pre_transforms=AC.str2list('degree-contactdistance-GeneticDistance')
         opt.mlp_model_id=None
         opt.split_edges_for_feature_augmentation = False
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'bilinear'
-        opt.head_architecture_2 = 'fc-fill'
-        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, 1024]
-        # opt.crop = [0,256]
-        # opt.m = 256
+        opt.head_architecture = 'concat'
+        # opt.head_architecture_2 = 'fc-fill'
+        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000,1000, 1]
+        opt.crop = [0,512]
+        opt.m = 512
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True
@@ -226,7 +226,7 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 10
+    opt.n_epochs = 1
     opt.lr = 1e-4
     opt.batch_size = 1
     opt.milestones = None
@@ -234,11 +234,11 @@ def debugModel(model_type):
 
     # other
     opt.plot = True
-    opt.plot_predictions = True
+    opt.plot_predictions = False
     opt.verbose = False
     opt.print_params = False
     opt.gpus = 1
-    opt.delete_root = False
+    opt.delete_root = True
     opt.use_scratch = True
     opt.print_mod = 1
     opt.num_workers = 2

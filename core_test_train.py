@@ -112,7 +112,7 @@ def core_test_train(model, opt):
     tot_hours = tot_time // 3600
     tot_mins = tot_time // 60
     remaining_mins = tot_mins - tot_hours*60
-    
+
     print(f'Total training + validation time: {tot_hours} hours and {remaining_mins} mins', file = opt.log_file)
     print(f'Final val loss: {val_loss_arr[-1]}\n', file = opt.log_file)
 
@@ -135,8 +135,8 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
         model.train()
         avg_loss = 0
         for t, data in enumerate(train_loader):
-            if opt.verbose:
-                print('Iteration: ', t)
+            # if opt.verbose:
+            print('Iteration: ', t)
             opt.optimizer.zero_grad()
 
             if opt.GNN_mode:

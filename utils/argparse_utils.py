@@ -373,23 +373,25 @@ def process_transforms(opt):
     opt.edge_dim = 0
 
     # transforms
-    processed = []
+    transforms_processed = []
     for t_str in opt.transforms:
         t_str = t_str.lower().split('_')
         if t_str[0] == 'constant':
             opt.node_transforms.append('Constant')
             transforms_processed.append(torch_geometric.transforms.Constant())
             opt.node_feature_size += 1
+        elif t_str[0] == 'sparse':
+            opt.node_transforms.append('ToSparseTensor')
+            transforms_processed.append(torch_geometric.transforms.ToSparseTensor())
         else:
             raise Exception("Invalid transform {}".format(t_str))
-    if len(processed) > 0:
-        opt.transforms_processed = torch_geometric.transforms.Compose(processed)
+    if len(transforms_processed) > 0:
+        opt.transforms_processed = torch_geometric.transforms.Compose(transforms_processed)
     else:
         opt.transforms_processed = None
 
     # pre-transforms
-    node_processed = []
-    edge_processed = []
+    processed = []
     for t_str in opt.pre_transforms:
         t_str = t_str.lower().split('_')
         if t_str[0] == 'constant':

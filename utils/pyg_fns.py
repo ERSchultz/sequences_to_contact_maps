@@ -792,7 +792,7 @@ class WeightedGATv2Conv(MessagePassing):
         self._alpha = alpha
         alpha = F.dropout(alpha, p=self.dropout, training=self.training)
 
-        if self.edge_dim_MP:
+        if self.edge_dim_MP and edge_attr is not None:
             return (x_j + edge_attr) * alpha.unsqueeze(-1)
         else:
             return x_j * alpha.unsqueeze(-1)
