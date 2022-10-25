@@ -1,6 +1,6 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE9
-#SBATCH --output=logFiles/ContactGNNEnergy9.out
+#SBATCH --output=logFiles/ContactGNNEnergy13.out
 #SBATCH --time=24:00:00
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -16,11 +16,11 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
-rootName='ContactGNNEnergy9' # change to run multiple bash files at once
+rootName='ContactGNNEnergy13' # change to run multiple bash files at once
 dirname="/project/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='GAT'
-preTransforms='degree-ContactDistance-GeneticDistance-DiagonalParameterDistance'
+preTransforms='degree_diag-ContactDistance-GeneticDistance_norm-DiagonalParameterDistance'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
@@ -31,13 +31,13 @@ numHeads=8
 split_edges_for_feature_augmentation='false'
 outputMode='energy_sym'
 yPreprocessing='log'
-yNorm='none'
+yNorm='mean'
 scratch='/scratch/midway3/erschultz'
 
-# get rid of split_edges_for_feature_augmentation
+# try degree_diag with mean norm
 
 
-id=204
+id=208
 for lr in 1e-4
 do
   train

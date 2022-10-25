@@ -1,6 +1,6 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE9
-#SBATCH --output=logFiles/ContactGNNEnergy9.out
+#SBATCH --output=logFiles/ContactGNNEnergy10.out
 #SBATCH --time=24:00:00
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -16,7 +16,7 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
-rootName='ContactGNNEnergy9' # change to run multiple bash files at once
+rootName='ContactGNNEnergy10' # change to run multiple bash files at once
 dirname="/project/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='GAT'
@@ -31,13 +31,14 @@ numHeads=8
 split_edges_for_feature_augmentation='false'
 outputMode='energy_sym'
 yPreprocessing='log'
-yNorm='none'
+yNorm='mean'
 scratch='/scratch/midway3/erschultz'
 
 # get rid of split_edges_for_feature_augmentation
+# with mean norm
 
 
-id=204
+id=205
 for lr in 1e-4
 do
   train

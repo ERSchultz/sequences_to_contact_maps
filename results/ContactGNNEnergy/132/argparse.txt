@@ -35,7 +35,7 @@ true
 --transforms
 empty
 --pre_transforms
-degree-contactdistance-geneticdistance-AdjPCA_10
+degree-contactdistance-GeneticDistance_norm-AdjPCA_10
 --split_edges_for_feature_augmentation
 true
 --top_k

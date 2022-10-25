@@ -81,11 +81,15 @@ def edit_argparse():
                             lines = f.readlines()
                         weights = False
                         for i, line in enumerate(lines):
-
-                            if line.startswith('preprocessing_norm'):
-                                val = line[18:]
-                                lines[i] = '--preprocessing_norm\n'+val
-                                print(lines[i], id)
+                            if line.startswith('--pre_transforms'):
+                                line = lines[i+1]
+                                line_split = line.split('-')
+                                for j, val in enumerate(line_split):
+                                    if val.lower() == 'geneticdistance':
+                                        line_split[j] = 'GeneticDistance_norm'
+                                line = '-'.join(line_split)
+                                lines[i+1] = line
+                                print(line, id)
                         with open(arg_file, 'w') as f:
                             f.write("".join(lines))
 
@@ -102,7 +106,7 @@ def debugModel(model_type):
     opt.m = 1024
     # opt.split_percents=[0.9,0.1,0.0]
     # opt.split_sizes=None
-    opt.split_sizes=[10, 1, 0]
+    opt.split_sizes=[1, 1, 0]
     opt.split_percents = None
 
     if model_type == 'Akita':
@@ -155,9 +159,9 @@ def debugModel(model_type):
         opt.y_preprocessing = 'log'
         opt.loss = 'mse'
         opt.preprocessing_norm = 'mean'
-        opt.message_passing = 'weighted_gat'
+        opt.message_passing = 'signedconv'
         opt.GNN_mode = True
-        opt.output_mode = 'energy_diag'
+        opt.output_mode = 'energy_sym'
         opt.encoder_hidden_sizes_list=[100,100,64]
         opt.update_hidden_sizes_list=[100,100,64]
         opt.hidden_sizes_list=[8,8,8]
@@ -169,17 +173,17 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('sparse')
-        opt.pre_transforms=AC.str2list('degree-contactdistance-GeneticDistance')
+        opt.pre_transforms=AC.str2list('degree_diag-contactdistance-GeneticDistance')
         opt.mlp_model_id=None
-        opt.split_edges_for_feature_augmentation = False
+        opt.split_edges_for_feature_augmentation = True
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'fc-fill'
+        opt.head_architecture = 'bilinear'
         # opt.head_architecture_2 = 'fc-fill'
-        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000,1000, 1]
-        opt.crop = [0,512]
-        opt.m = 512
+        # opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000,1000, 1]
+        opt.crop = [0,100]
+        opt.m = 100
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True
@@ -234,7 +238,7 @@ def debugModel(model_type):
 
     # other
     opt.plot = True
-    opt.plot_predictions = True
+    opt.plot_predictions = False
     opt.verbose = False
     opt.print_params = False
     opt.gpus = 1

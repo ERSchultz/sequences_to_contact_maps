@@ -65,7 +65,7 @@ class Degree(BaseTransform):
         torch_geometric/transforms/target_indegree.html#TargetIndegree
     '''
     def __init__(self, norm = True, max_val = None, weighted = False,
-                split_edges = False, split_val = 0):
+                split_edges = False, split_val = 0, diag = False):
         '''
         Inputs:
             norm: True to normalize degree by dividing by max_val
@@ -73,12 +73,14 @@ class Degree(BaseTransform):
             weighted: True for weighted degree, False for count
             split_edges: True to divide edges based on split_val
             split_val: split value for split_edges
+            diag: TODO
         '''
         self.norm = norm # bool
         self.max = max_val # float
         self.weighted = weighted # bool
         self.split_edges = split_edges # bool
         self.split_val = split_val # float
+        self.diag = diag
         # values less than split_val are one type of edge
         # values greater than split_val are second type of edge
 
@@ -97,8 +99,12 @@ class Degree(BaseTransform):
         else:
             deg = degree(data.edge_index[0], data.num_nodes)
             if self.split_edges:
-                pos_deg = degree((data.contact_map > self.split_val).nonzero().t()[0], data.num_nodes)
-                neg_deg = degree((data.contact_map < self.split_val).nonzero().t()[0], data.num_nodes)
+                if self.diag:
+                    pos_deg = degree((data.contact_map_diag > self.split_val).nonzero().t()[0], data.num_nodes)
+                    neg_deg = degree((data.contact_map_diag < self.split_val).nonzero().t()[0], data.num_nodes)
+                else:
+                    pos_deg = degree((data.contact_map > self.split_val).nonzero().t()[0], data.num_nodes)
+                    neg_deg = degree((data.contact_map < self.split_val).nonzero().t()[0], data.num_nodes)
 
         if self.norm:
             deg /= (deg.max() if self.max is None else self.max)
@@ -314,7 +320,7 @@ class ContactDistance(BaseTransform):
     '''
     Appends contact map entries to edge attr vector.
     '''
-    def __init__(self, cat = True, split_edges = False,
+    def __init__(self, norm = False, max_val = None, cat = True, split_edges = False,
                     convert_to_attr = False):
         '''
         Inputs:
@@ -322,6 +328,8 @@ class ContactDistance(BaseTransform):
             split_edges: True if graph has 'positive' and 'negative' edges
             convert_to_attr: True for edge attr, False for edge weight
         '''
+        self.norm = norm
+        self.max = max_val
         self.cat = cat
         self.split_edges = split_edges # bool
         self.convert_to_attr = convert_to_attr # bool, converts to 2d array
@@ -339,6 +347,8 @@ class ContactDistance(BaseTransform):
             pos_edge_attr = data.contact_map[row, col]
             if self.convert_to_attr:
                 pos_edge_attr = pos_edge_attr.reshape(-1, 1)
+            if self.norm:
+                pos_edge_attr /= (pos_edge_attr.max() if self.max is None else self.max)
 
             if pseudo is not None and self.cat:
                 pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
@@ -355,6 +365,8 @@ class ContactDistance(BaseTransform):
             neg_edge_attr = data.contact_map[row, col]
             if self.convert_to_attr:
                 neg_edge_attr = neg_edge_attr.reshape(-1, 1)
+            if self.norm:
+                neg_edge_attr /= (neg_edge_attr.max() if self.max is None else self.max)
 
             if pseudo is not None and self.cat:
                 pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
@@ -368,6 +380,9 @@ class ContactDistance(BaseTransform):
             if self.convert_to_attr:
                 edge_attr = edge_attr.reshape(-1, 1)
 
+            if self.norm:
+                edge_attr /= (edge_attr.max() if self.max is None else self.max)
+
             if pseudo is not None and self.cat:
                 pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
                 data.edge_attr = torch.cat([pseudo, edge_attr.type_as(pseudo)], dim=-1)
@@ -378,8 +393,9 @@ class ContactDistance(BaseTransform):
 
 
     def __repr__(self) -> str:
-        return (f'{self.__class__.__name__}'
-                f'(convert_to_attr={self.convert_to_attr})')
+        return (f'{self.__class__.__name__}(norm={self.norm}, '
+                f'max={self.max}, split_edges={self.split_edges}'
+                f'convert_to_attr={self.convert_to_attr})')
 
 class DiagonalParameterDistance(BaseTransform):
     '''

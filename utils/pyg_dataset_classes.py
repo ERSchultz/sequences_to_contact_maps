@@ -21,6 +21,7 @@ from .argparse_utils import finalize_opt, get_base_parser
 from .dataset_classes import DiagFunctions, make_dataset
 from .energy_utils import calculate_D
 from .networks import get_model
+from .utils import DiagonalPreprocessing
 
 
 class ContactsGraph(torch_geometric.data.Dataset):
@@ -33,7 +34,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 split_neg_pos_edges = False, max_diagonal = None,
                 transform = None, pre_transform = None, output = 'contact',
                 crop = None, ofile = sys.stdout, verbose = True,
-                max_sample = float('inf'), samples = None):
+                max_sample = float('inf'), samples = None,
+                diag = False):
         '''
         Inputs:
             dirname: directory path to raw data
@@ -57,6 +59,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             verbose: True to print
             max_sample: max sample id to save
             samples: set of samples to include (None for all)
+            diag: TODO
         '''
         t0 = time.time()
         self.m = m
@@ -78,6 +81,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.degree_list = [] # created in self.process()
         self.verbose = verbose
         self.file_paths = make_dataset(self.dirname, maxSample = max_sample, samples = samples)
+        self.diag = diag
 
         if root_name is None:
             # find any currently existing graph data folders
@@ -123,7 +127,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         for i, raw_folder in enumerate(self.raw_file_names):
             sample = int(osp.split(raw_folder)[1][6:])
             x, psi = self.process_x_psi(raw_folder)
-            self.contact_map = self.process_y(raw_folder)
+            self.contact_map, contact_map_diag = self.process_y(raw_folder)
             self.diag_chis_continuous, self.diag_chis_continuous_mlp = self.process_diag_params(raw_folder)
             edge_index, pos_edge_index, neg_edge_index = self.generate_edge_index()
 
@@ -141,6 +145,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             # copy these temporarily
             graph.weighted_degree = self.weighted_degree
             graph.contact_map = self.contact_map
+            graph.contact_map_diag = contact_map_diag
             graph.diag_chis_continuous = self.diag_chis_continuous
             graph.diag_chis_continuous_mlp = self.diag_chis_continuous_mlp
 
@@ -150,6 +155,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             if self.output != 'contact':
                 del graph.contact_map
+            del graph.contact_map_diag
 
             if self.output is None:
                 pass
@@ -234,6 +240,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         Helper function to load the appropriate contact map and apply any
         necessary preprocessing.
         '''
+        y_diag = None
         if self.y_preprocessing is None:
             y = np.load(osp.join(raw_folder, 'y.npy')).astype(np.float64)
             if self.y_norm == 'max':
@@ -247,6 +254,10 @@ class ContactsGraph(torch_geometric.data.Dataset):
             elif self.y_norm == 'mean':
                 y /= np.mean(np.diagonal(y))
             y = np.log(y+1)
+
+            if self.diag:
+                meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
+                y_diag = DiagonalPreprocessing.process(y, meanDist)
         else:
             assert self.y_norm is None
             y_path = osp.join(raw_folder, f'y_{self.y_preprocessing}.npy')
@@ -256,6 +267,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
         if self.crop is not None:
             y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
+            if y_diag is not None:
+                y_diag = y_diag[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
 
         if self.max_diagonal is not None:
             y = np.tril(y, self.max_diagonal)
@@ -286,7 +299,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
         # self.plotDegreeProfile(y)
         y = torch.tensor(y, dtype = torch.float32)
-        return y
+        if y_diag is not None:
+            y_diag = torch.tensor(y_diag, dtype = torch.float32)
+        return y, y_diag
 
     def process_diag_params(self, raw_folder):
         path = osp.join(raw_folder, 'diag_chis_continuous.npy')

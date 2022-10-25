@@ -392,6 +392,7 @@ def process_transforms(opt):
 
     # pre-transforms
     processed = []
+    opt.diag = False # TODO come op with cleaner way to do this
     for t_str in opt.pre_transforms:
         t_str = t_str.lower().split('_')
         if t_str[0] == 'constant':
@@ -412,7 +413,10 @@ def process_transforms(opt):
             if opt.split_edges_for_feature_augmentation:
                 opt.node_feature_size += 2
                 # additional feature for neg and pos
-            processed.append(Degree(split_val = split,
+            for mode_str in t_str[1:]:
+                if mode_str == 'diag':
+                    opt.diag = True
+            processed.append(Degree(split_val = split, diag = opt.diag,
                         split_edges = opt.split_edges_for_feature_augmentation))
         elif t_str[0] == 'weighteddegree':
             opt.node_transforms.append('WeightedDegree')
@@ -442,7 +446,13 @@ def process_transforms(opt):
             assert opt.use_edge_attr or opt.use_edge_weights
             if opt.use_edge_attr:
                 opt.edge_dim += 1
-            processed.append(ContactDistance(split_edges = opt.split_neg_pos_edges,
+            norm = False
+            for mode_str in t_str[1:]:
+                if mode_str == 'norm':
+                    norm = True
+
+            processed.append(ContactDistance(norm = norm,
+                                            split_edges = opt.split_neg_pos_edges,
                                             convert_to_attr = opt.use_edge_attr))
         elif t_str[0] == 'geneticdistance':
             opt.edge_transforms.append(f'GeneticDistance')
@@ -451,14 +461,17 @@ def process_transforms(opt):
                 opt.edge_dim += 1
             log = False
             log10 = False
+            norm = False
             for mode_str in t_str[1:]:
                 if mode_str == 'log':
                     log = True
                 if mode_str == 'log10':
                     log10 = True
+                if mode_str == 'norm':
+                    norm = True
             processed.append(GeneticDistance(split_edges = opt.split_neg_pos_edges,
                                             convert_to_attr = opt.use_edge_attr,
-                                            log = log, log10 = log10))
+                                            log = log, log10 = log10, norm = norm))
         elif t_str[0] == 'geneticposition':
             center = False
             norm = False
