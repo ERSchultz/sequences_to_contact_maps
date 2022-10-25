@@ -28,10 +28,11 @@ yPreprocessing='log'
 logPreprocessing='none'
 yZeroDiagCount=0
 outputMode='diag_chi_continuous'
+crop='0-512'
 
 # architecture
-m=1024
-hiddenSizesList='100-100-100-100-100-100-1024'
+m=512
+hiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 act='prelu'
 outAct='prelu'
 
@@ -44,9 +45,9 @@ gamma=0.1
 
 # y_preprocessing = 'log'
 
-id=92
+id=93
 for lr in 1e-3
- # 1e-4 1e-5
+# 1e-4 1e-5
 do
   train
   id=$(( $id + 1 ))

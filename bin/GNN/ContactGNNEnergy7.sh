@@ -19,24 +19,22 @@ rootName='ContactGNNEnergy7' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='degree-ContactDistance-GeneticDistance-DiagonalParameterDistance'
+preTransforms='degree-ContactDistance-GeneticDistance'
 mlpModelID='none'
 useEdgeAttr='true'
-hiddenSizesList='8-8-8-8'
+hiddenSizesList='8-8-8'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
-yLogTransform='none'
-sparsifyThreshold='none'
+outputMode='energy_sym_diag'
 yPreprocessing='log'
-# no log/ln transform, no sparsification, using log preprocessing
-yNorm='mean'
-# mean norm before log
+yNorm='none'
 
-# weighted GAT with another layer
+# 3rd attempt at predicting only diag with GNN
 
-id=194
+
+id=202
 for lr in 1e-4
 do
   train

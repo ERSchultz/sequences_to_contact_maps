@@ -3,15 +3,17 @@ import json
 import math
 import os
 import os.path as osp
+import sys
 from shutil import rmtree
 
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import torch
 from scipy.ndimage import uniform_filter
 
-from utils.argparse_utils import (argparse_setup, finalize_opt,
-                                  get_base_parser, get_opt_header, opt2list)
+from utils.argparse_utils import (finalize_opt, get_base_parser,
+                                  get_opt_header, opt2list)
 from utils.energy_utils import calculate_diag_chi_step
 from utils.load_utils import load_contact_map
 from utils.plotting_utils import (plot_centroid_distance, plot_combined_models,
@@ -376,14 +378,21 @@ def plot_mean_vs_genomic_distance_comparison(dir, samples = None, percent = Fals
         print('\n')
 
 def main():
-    opt = argparse_setup()
-    print(opt, '\n')
+    model_type = 'ContactGNNEnergy'
+    id = 195
+    argparse_path = osp.join('/home/erschultz/sequences_to_contact_maps/results', model_type, f'{id}/argparse.txt')
+    parser = get_base_parser()
+    sys.argv = [sys.argv[0]] # delete args from get_params, otherwise gnn opt will try and use them
+    opt = parser.parse_args(['@{}'.format(argparse_path)])
+    opt.id = 195
+    print(opt)
+    opt = finalize_opt(opt, parser, local = True, debug = True)
+    data_folder_split = osp.normpath(opt.data_folder).split(os.sep)
+    opt.data_folder = osp.join('/home/erschultz',data_folder_split[-1]) # use local dataset
+    opt.device = torch.device('cpu')
+    print(opt)
     plotting_script(None, opt)
     # interogateParams(None, opt)
-
-    # cleanup
-    if opt.root is not None and opt.delete_root:
-        rmtree(opt.root)
 
 if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
@@ -405,5 +414,5 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_09_30_22')
-    plot_combined_models('ContactGNNEnergy', [194, 196])
+    # plot_combined_models('ContactGNNEnergy', [194, 196])
     # main()

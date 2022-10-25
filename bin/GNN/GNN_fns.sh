@@ -16,7 +16,7 @@ mlpModelID='none'
 # preprocessing
 yPreprocessing='diag'
 yNorm='none'
-yLogTransform='10'
+yLogTransform='none'
 maxDiagonal='none'
 
 # architecture
@@ -33,7 +33,7 @@ preTransforms='degree'
 split_edges_for_feature_augmentation='true'
 topK='none'
 sparsifyThresholdUpper='none'
-sparsifyThreshold=0.176
+sparsifyThreshold='none'
 loss='mse'
 act='prelu'
 innerAct='prelu'

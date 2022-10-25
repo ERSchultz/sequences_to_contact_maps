@@ -650,9 +650,11 @@ def opt2list(opt):
     elif opt.model_type == 'SequenceFCAutoencoder':
         opt_list.extend([opt.hidden_sizes_list, opt.parameter_sharing])
     elif opt.model_type == 'MLP':
-        opt_list.extend([opt.y_zero_diag_count])
+        opt_list.extend([opt.y_zero_diag_count, opt.hidden_sizes_list])
     else:
         raise Exception("Unknown model type: {}".format(opt.model_type))
+
+    opt_list.append(opt.output_mode)
 
     return opt_list
 
@@ -700,9 +702,11 @@ def get_opt_header(model_type, GNN_mode):
     elif model_type == 'SequenceFCAutoencoder':
         opt_list.extend(['hidden_sizes_list', 'parameter_sharing'])
     elif model_type == 'MLP':
-        opt_list.extend(['y_zero_diag_count'])
+        opt_list.extend(['y_zero_diag_count', 'hidden_sizes_list'])
     else:
         raise Exception("Unknown model type: {}".format(model_type))
+
+    opt_list.append('output_mode')
 
     return opt_list
 

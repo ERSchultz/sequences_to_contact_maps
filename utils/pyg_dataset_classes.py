@@ -151,7 +151,14 @@ class ContactsGraph(torch_geometric.data.Dataset):
             if self.output != 'contact':
                 del graph.contact_map
 
-            if self.output is not None and self.output.startswith('energy'):
+            if self.output is None:
+                pass
+            elif self.output.startswith('energy_diag'):
+                D = calculate_D(graph.diag_chis_continuous)
+                if self.crop is not None:
+                    D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
+                graph.energy = torch.tensor(D, dtype = torch.float32)
+            elif self.output.startswith('energy_sym'):
                 # first look for s
                 s_path1 = osp.join(raw_folder, 's.npy')
                 s_path2 = osp.join(raw_folder, 's_matrix.txt')
@@ -176,13 +183,15 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     chi = torch.tensor(chi, dtype = torch.float32)
                     graph.energy = x @ chi @ x.t()
 
-                if self.output.startswith('energy_sym'):
-                    graph.energy = (graph.energy + graph.energy.t()) / 2
+                graph.energy = (graph.energy + graph.energy.t()) / 2
                 if self.output.startswith('energy_sym_diag'):
                     D = calculate_D(graph.diag_chis_continuous)
                     if self.crop is not None:
                         D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
                     graph.energy += torch.tensor(D, dtype = torch.float32)
+            else:
+                raise Exceptin(f'Unrecognized output {self.output}')
+
 
             del graph.diag_chis_continuous
             del graph.diag_chis_continuous_mlp

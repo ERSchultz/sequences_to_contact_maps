@@ -157,7 +157,7 @@ def debugModel(model_type):
         opt.preprocessing_norm = 'mean'
         opt.message_passing = 'weighted_gat'
         opt.GNN_mode = True
-        opt.output_mode = 'energy_sym_diag'
+        opt.output_mode = 'energy_diag'
         opt.encoder_hidden_sizes_list=[100,100,64]
         opt.update_hidden_sizes_list=[100,100,64]
         opt.hidden_sizes_list=[8,8,8]
@@ -168,14 +168,14 @@ def debugModel(model_type):
         opt.training_norm = None
         opt.use_edge_weights = False
         opt.use_edge_attr = True
-        opt.transforms=AC.str2list('sparse')
+        # opt.transforms=AC.str2list('sparse')
         opt.pre_transforms=AC.str2list('degree-contactdistance-GeneticDistance')
         opt.mlp_model_id=None
         opt.split_edges_for_feature_augmentation = False
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'concat'
+        opt.head_architecture = 'fc-fill'
         # opt.head_architecture_2 = 'fc-fill'
         opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000,1000, 1]
         opt.crop = [0,512]
@@ -222,7 +222,7 @@ def debugModel(model_type):
         # opt.training_norm='batch'
         opt.dropout=False
         opt.dropout_p=0.1
-        # opt.crop=[20,1000]
+        opt.crop=[20,512]
         # opt.m = 980
 
     # hyperparameters
@@ -234,7 +234,7 @@ def debugModel(model_type):
 
     # other
     opt.plot = True
-    opt.plot_predictions = False
+    opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = False
     opt.gpus = 1

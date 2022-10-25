@@ -41,7 +41,7 @@ scratch='/scratch/midway3/erschultz'
 # fc fill
 # Run on midway3
 
-id=197
+id=199
 for lr in 1e-4
 do
   train

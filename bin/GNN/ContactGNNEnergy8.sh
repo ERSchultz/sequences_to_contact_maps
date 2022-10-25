@@ -18,26 +18,23 @@ source activate python3.9_pytorch1.9_cuda10.2
 rootName='ContactGNNEnergy8' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
-messagePassing='weighted_GAT'
+messagePassing='GAT'
 preTransforms='degree-ContactDistance-GeneticDistance-DiagonalParameterDistance'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
-EncoderHiddenSizesList='1000-1000-64'
-updateHiddenSizesList='1000-1000-64'
+EncoderHiddenSizesList='100-100-64'
+updateHiddenSizesList='100-100-64'
 numHeads=8
 
-yLogTransform='none'
-sparsifyThreshold='none'
+outputMode='energy_sym_diag'
 yPreprocessing='log'
-# no log/ln transform, no sparsification, using log preprocessing
-yNorm='mean'
-# mean norm before log
+yNorm='none'
+
+# 2nd attempt at predicting only diag with GNN
 
 
-# weighted GAT
-
-id=196
+id=203
 for lr in 1e-4
 do
   train
