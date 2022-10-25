@@ -17,7 +17,9 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 
 rootName='ContactGNNEnergy2' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_09_30_22"
+# dirname="/project2/depablo/erschultz/dataset_09_30_22"
+dirname="/home/erschultz/dataset_09_30_22"
+scratch='/home/erschultz/scratch'
 m=1024
 messagePassing='weighted_GAT'
 preTransforms='degree-ContactDistance-GeneticDistance'
@@ -38,7 +40,7 @@ headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 
 # fc fill
 
-id=197
+id=200 # 197 on midway2
 for lr in 1e-4
 do
   train

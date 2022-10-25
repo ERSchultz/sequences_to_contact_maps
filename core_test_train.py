@@ -135,8 +135,8 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
         model.train()
         avg_loss = 0
         for t, data in enumerate(train_loader):
-            # if opt.verbose:
-            print('Iteration: ', t)
+            if opt.verbose:
+                print('Iteration: ', t)
             opt.optimizer.zero_grad()
 
             if opt.GNN_mode:

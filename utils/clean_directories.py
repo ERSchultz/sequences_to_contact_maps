@@ -23,7 +23,6 @@ def clean_directories(data_folder = 'dataset_04_18_21', GNN_path = None, GNN_fil
         rmtree(opt.data_folder)
     else:
         if opt.GNN_path is None and opt.GNN_file_name is not None:
-            print('here')
             opt.GNN_path = osp.join(opt.data_folder, opt.GNN_file_name)
 
         if osp.exists(opt.GNN_path):

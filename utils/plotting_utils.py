@@ -346,7 +346,7 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         if opt.GNN_mode:
             plaid_hat = model.plaid_component(data)
             diagonal_hat = model.diagonal_component(data)
-        if diagonal_hat is not None:
+        if plaid_hat is not None and diagonal_hat is not None:
             # plot plaid contribution
             plaid_hat = plaid_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
             plot_matrix(plaid_hat, osp.join(subpath, 'plaid_hat.png'), vmin = -1 * v_max,

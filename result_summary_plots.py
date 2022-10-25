@@ -8,10 +8,11 @@ import numpy as np
 import statsmodels.api as sm
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
+
 from utils.argparse_utils import ArgparserConverter
 from utils.energy_utils import s_to_E
 from utils.load_utils import load_all, load_final_max_ent_S
-from utils.plotting_utils import plot_matrix, plot_top_PCs
+from utils.plotting_utils import plot_matrix
 from utils.R_pca import R_pca
 from utils.utils import LETTERS, DiagonalPreprocessing, pearson_round
 
@@ -81,6 +82,78 @@ def getArgs():
     args.log_file = open(log_file_path, 'w')
 
     return args
+
+def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2,
+                plot = False, verbose = False, scale = False, svd = False):
+    '''
+    Plots top PCs of inp.
+    Inputs:
+        inp: np array containing input data
+        inp_type: str representing type of input data
+        odir: output directory to save plots to
+        log_file: output file to write results to
+        count: number of PCs to plot
+        plot: True to plot
+        verbose: True to print
+        scale: True to scale data before PCA
+        svd: True to use right singular vectors instead of PCs
+    Outputs:
+        pca.components_: all PCs of inp
+    '''
+    pca = PCA()
+    if svd:
+        pca = None
+        assert not scale
+        U, S, Vt = np.linalg.svd(np.corrcoef(inp), full_matrices=0)
+    else:
+        if scale:
+            try:
+                pca = pca.fit(inp/np.std(inp, axis = 0))
+            except ValueError:
+                print(f'val error for {inp_type}')
+                pca = pca.fit(inp)
+        else:
+            pca = pca.fit(inp)
+
+        # combine notation between svd and pca
+        S = pca.singular_values_
+        Vt = pca.components_
+
+    if verbose:
+        if log_file is not None:
+            print(f'\n{inp_type.upper()}', file = log_file)
+            if pca is not None:
+                print(f'''% of total variance explained for first 6 PCs:
+                    {np.round(pca.explained_variance_ratio_[0:6], 3)}
+                    \n\tSum of first 6: {np.sum(pca.explained_variance_ratio_[0:6])}''',
+                    file = log_file)
+            print(f'''Singular values for first 6 PCs:
+                {np.round(S[0:6], 3)}
+                \n\tSum of all: {np.sum(S)}''',
+                file = log_file)
+
+    if plot:
+        i = 0
+        while i < count:
+
+            if np.mean(Vt[i][:100]) < 0:
+                PC = Vt[i] * -1
+                # PCs are sign invariant, so this doesn't matter mathematically
+                # goal is to help compare PCs visually by aligning them
+            else:
+                PC = Vt[i]
+            plt.plot(PC)
+            if pca is not None:
+                explained = pca.explained_variance_ratio_[i]
+                plt.title("Component {}: {}% of variance".format(i+1, np.round(explained * 100, 3)))
+            if odir is not None:
+                plt.savefig(osp.join(odir, '{}_PC_{}.png'.format(inp_type, i+1)))
+                plt.close()
+            else:
+                plt.show()
+            i += 1
+
+    return Vt
 
 def project_S_to_psi_basis(s, psi):
     '''
