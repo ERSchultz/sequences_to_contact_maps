@@ -21,7 +21,7 @@ rootName='ContactGNNEnergy3' # change to run multiple bash files at once
 dirname="/project/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='degree-ContactDistance-GeneticDistance'
+preTransforms='degree-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
@@ -29,19 +29,16 @@ EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
-outputMode='energy_sym_diag'
+outputMode='diag_chi_continuous'
 yPreprocessing='log'
-yLogTransform='none'
-sparsifyThreshold='none'
-yNorm='mean'
-headArchitecture='concat'
-headHiddenSizesList='1000-1000-1000-1000-1000-1000-1'
-scratch='/scratch/midway3/erschultz'
+yNorm='none'
+headArchitecture='fc'
+headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+
+# 3rd attempt at predicting only diag with GNN, norm = None
 
 
-# Run on midway3
-
-id=198
+id=212
 for lr in 1e-4
 do
   train

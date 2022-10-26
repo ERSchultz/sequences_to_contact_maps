@@ -17,12 +17,10 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 
 rootName='ContactGNNEnergy2' # change to run multiple bash files at once
-# dirname="/project2/depablo/erschultz/dataset_09_30_22"
-dirname="/home/erschultz/dataset_09_30_22"
-scratch='/home/erschultz/scratch'
+dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='degree-ContactDistance-GeneticDistance'
+preTransforms='degree-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
@@ -30,17 +28,16 @@ EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
-outputMode='energy_sym_diag'
+outputMode='diag_chi_continuous'
 yPreprocessing='log'
-yLogTransform='none'
-sparsifyThreshold='none'
 yNorm='mean'
-headArchitecture2='fc-fill'
+headArchitecture='fc'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 
-# fc fill
+# 2nd attempt at predicting only diag with GNN, weighted GAT arch
 
-id=200 # 197 on midway2
+
+id=211
 for lr in 1e-4
 do
   train

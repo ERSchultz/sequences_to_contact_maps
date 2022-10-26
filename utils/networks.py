@@ -44,8 +44,12 @@ def get_model(opt, verbose = True):
             GNNClass = SparseContactGNN
         else:
             GNNClass = ContactGNN
+        if opt.output_mode.startswith('diag'):
+            output_dim = 1
+        else:
+            output_dim = 2
 
-        model = GNNClass(opt.m, opt.node_feature_size, opt.hidden_sizes_list,
+        model = GNNClass(opt.m, opt.node_feature_size, output_dim, opt.hidden_sizes_list,
                 opt.act, opt.inner_act, opt.out_act,
                 opt.encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
                 opt.message_passing, opt.use_edge_weights or opt.use_edge_attr, opt.edge_dim,
@@ -497,7 +501,7 @@ class ContactGNN(nn.Module):
     '''
     Graph neural network that maps contact map data to node embeddings of arbitrary length.
     '''
-    def __init__(self, m, input_size, MP_hidden_sizes_list,
+    def __init__(self, m, input_size, output_dim, MP_hidden_sizes_list,
                 act, inner_act, out_act,
                 encoder_hidden_sizes_list, update_hidden_sizes_list,
                 message_passing, use_edge_attr, edge_dim,
@@ -509,6 +513,7 @@ class ContactGNN(nn.Module):
         Inputs:
             m: number of nodes
             input_size: size of input node feature vector
+            output_dim: number of dimensions in output (size of each dimension is m)
             MP_hidden_sizes_list: list of node feature vector hidden sizes during message passing
             encoder_hidden_sizes_list: list of hidden sizes for MLP encoder
             update_hidden_sizes_list: list of hidden sizes for MLP for update during message passing
@@ -527,6 +532,7 @@ class ContactGNN(nn.Module):
         super(ContactGNN, self).__init__()
 
         self.m = m
+        self.output_dim = output_dim
         self.message_passing = message_passing.lower()
         self.use_edge_attr = use_edge_attr
         self.edge_dim = edge_dim
@@ -735,43 +741,42 @@ class ContactGNN(nn.Module):
             x = self.encoder(graph.x)
 
         latent = self.latent(graph, x)
+        _, output_size = latent.shape
 
         if self.head_architecture is None and self.head_architecture_2 is None:
             return latent
 
-        out = torch.zeros(self.m, self.m).to(latent.get_device())
+        first = True
         for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
             if architecture is None:
                 continue
             elif architecture.startswith('fc'):
-                latent_copy = torch.clone(latent)
-                latent_copy = latent_copy.reshape(-1)
-                out_temp = self.head[i](latent_copy)
+                latent = latent.reshape(-1, self.m * output_size)
+                out_temp = self.head[i](latent)
             elif architecture.startswith('bilinear'):
-                latent_copy = torch.clone(latent).to(latent.get_device())
-                _, output_size = latent_copy.shape
-                latent_copy = latent_copy.reshape(-1, self.m, output_size)
+                latent = latent.reshape(-1, self.m, output_size)
                 if 'asym' in architecture:
-                    out_temp = torch.einsum('nik,njk->nij', latent_copy @ self.W, latent_copy)
+                    out_temp = torch.einsum('nik,njk->nij', latent @ self.W, latent)
                 else:
-                    out_temp = torch.einsum('nik,njk->nij', latent_copy @ self.sym(self.W), latent_copy)
+                    out_temp = torch.einsum('nik,njk->nij', latent @ self.sym(self.W), latent)
             elif architecture == 'inner':
-                _, output_size = latent.shape
                 latent = latent.reshape(-1, self.m, output_size)
                 out_temp = torch.einsum('nik, njk->nij', latent, latent)
             elif architecture in self.to2D.mode_options:
-                _, output_size = latent.shape
-                latent_copy = torch.clone(latent)
-                latent_copy = latent_copy.reshape(-1, self.m, output_size)
-                latent_copy = latent_copy.permute(0, 2, 1) # permute to combine over m index
-                latent_copy = self.to2D(latent_copy)
-                _, output_size, _, _ = latent_copy.shape
-                latent_copy = latent_copy.permute(0, 2, 3, 1) # permute back
-                out_temp = self.head[i](latent_copy)
+                latent = latent.reshape(-1, self.m, output_size)
+                latent = latent.permute(0, 2, 1) # permute to combine over m index
+                out_temp = self.to2D(latent)
+                out_temp = out_temp.permute(0, 2, 3, 1) # permute back
+                latent = latent.permute(0, 2, 1) # permute back
+                out_temp = self.head[i](out_temp)
                 if len(out_temp.shape) > 3:
                     out_temp = torch.squeeze(out_temp, 3)
 
-            out = out + out_temp
+            if first:
+                out = out_temp
+                first = False
+            else:
+                out = out + out_temp
 
         return out
 
@@ -865,6 +870,7 @@ class ContactGNN(nn.Module):
         return None
 
 class SparseContactGNN(nn.Module):
+    # DEPRECATED
     '''
     Graph neural network that maps contact map data to node embeddings of arbitrary length
 
@@ -872,7 +878,7 @@ class SparseContactGNN(nn.Module):
 
     Keeping this separate for now in case bugs arise - TODO merge with ContactGNN
     '''
-    def __init__(self, m, input_size, MP_hidden_sizes_list,
+    def __init__(self, m, input_size, output_dim, MP_hidden_sizes_list,
                 act, inner_act, out_act,
                 encoder_hidden_sizes_list, update_hidden_sizes_list,
                 message_passing, use_edge_attr, edge_dim,
@@ -884,6 +890,7 @@ class SparseContactGNN(nn.Module):
         Inputs:
             m: number of nodes
             input_size: size of input node feature vector
+            output_dim: number of dimensions in output (size of each dimension is m)
             MP_hidden_sizes_list: list of node feature vector hidden sizes during message passing
             encoder_hidden_sizes_list: list of hidden sizes for MLP encoder
             update_hidden_sizes_list: list of hidden sizes for MLP for update during message passing
@@ -902,6 +909,7 @@ class SparseContactGNN(nn.Module):
         super(SparseContactGNN, self).__init__()
 
         self.m = m
+        self.output_dim = output_dim
         self.message_passing = message_passing.lower()
         self.use_edge_attr = use_edge_attr
         self.edge_dim = edge_dim
@@ -1056,25 +1064,27 @@ class SparseContactGNN(nn.Module):
             x = self.encoder(graph.x)
 
         latent = self.latent(graph, x)
-        _, output_size = latent.shape
+        N, output_size = latent.shape
 
         if self.head_architecture is None and self.head_architecture_2 is None:
             return latent
 
-        out = torch.zeros(self.m, self.m).to(latent.get_device())
+        if self.output_dim == 1:
+            out = torch.zeros(N, self.m).to(latent.get_device())
+        elif self.output_dim == 2:
+            out = torch.zeros(N, self.m, self.m).to(latent.get_device())
         for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
             if architecture is None:
                 continue
             elif architecture.startswith('fc'):
-                latent = latent.reshape(-1)
+                latent = latent.reshape(N, -1)
                 out_temp = self.head[i](latent)
-                print(out_temp.shape)
             elif architecture.startswith('bilinear'):
                 latent = latent.reshape(-1, self.m, output_size)
                 if 'asym' in architecture:
-                    out_temp = torch.einsum('nik,njk->nij', latent_copy @ self.W, latent_copy)
+                    out_temp = torch.einsum('nik,njk->nij', latent @ self.W, latent)
                 else:
-                    out_temp = torch.einsum('nik,njk->nij', latent_copy @ self.sym(self.W), latent_copy)
+                    out_temp = torch.einsum('nik,njk->nij', latent @ self.sym(self.W), latent)
             elif architecture == 'inner':
                 latent = latent.reshape(-1, self.m, output_size)
                 out_temp = torch.einsum('nik, njk->nij', latent, latent)
@@ -1087,7 +1097,6 @@ class SparseContactGNN(nn.Module):
                 out_temp = self.head[i](out_temp)
                 if len(out_temp.shape) > 3:
                     out_temp = torch.squeeze(out_temp, 3)
-                print(out_temp.shape)
 
             out = out + out_temp
 

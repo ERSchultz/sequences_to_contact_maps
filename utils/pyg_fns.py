@@ -417,10 +417,10 @@ class DiagonalParameterDistance(BaseTransform):
     def __call__(self, data):
         # get D
         if self.mlp_id is None:
-            D = calculate_D(data.diag_chis_continuous)
+            D = calculate_D(data.diag_chi_continuous)
         else:
             assert data.mlp_model_id == self.mlp_id
-            D = calculate_D(data.diag_chis_continuous_mlp)
+            D = calculate_D(data.diag_chi_continuous_mlp)
         D = torch.tensor(D, dtype = torch.float32)
 
         if self.split_edges:

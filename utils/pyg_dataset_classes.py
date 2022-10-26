@@ -146,8 +146,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.weighted_degree = self.weighted_degree
             graph.contact_map = self.contact_map
             graph.contact_map_diag = contact_map_diag
-            graph.diag_chis_continuous = self.diag_chis_continuous
-            graph.diag_chis_continuous_mlp = self.diag_chis_continuous_mlp
+            graph.diag_chi_continuous = self.diag_chis_continuous
+            graph.diag_chi_continuous_mlp = self.diag_chis_continuous_mlp
 
             if self.pre_transform is not None:
                 graph = self.pre_transform(graph)
@@ -159,8 +159,12 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             if self.output is None:
                 pass
+            elif self.output == 'diag_chi_continuous':
+                graph.y = graph.diag_chi_continuous
+                if self.crop is not None:
+                    graph.y = graph.y[self.crop[0]:self.crop[1]]
             elif self.output.startswith('energy_diag'):
-                D = calculate_D(graph.diag_chis_continuous)
+                D = calculate_D(graph.diag_chi_continuous)
                 if self.crop is not None:
                     D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
                 graph.energy = torch.tensor(D, dtype = torch.float32)
@@ -191,7 +195,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
                 graph.energy = (graph.energy + graph.energy.t()) / 2
                 if self.output.startswith('energy_sym_diag'):
-                    D = calculate_D(graph.diag_chis_continuous)
+                    D = calculate_D(graph.diag_chi_continuous)
                     if self.crop is not None:
                         D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
                     graph.energy += torch.tensor(D, dtype = torch.float32)
@@ -199,8 +203,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 raise Exceptin(f'Unrecognized output {self.output}')
 
 
-            del graph.diag_chis_continuous
-            del graph.diag_chis_continuous_mlp
+            del graph.diag_chi_continuous
+            del graph.diag_chi_continuous_mlp
 
             torch.save(graph, self.processed_paths[i])
 

@@ -394,14 +394,20 @@ def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
     for i, data in enumerate(val_dataloader):
         if i == count:
             break
-
-        x, _, path = data
-        x = x.to(opt.device)
-        path = path[0]
-        yhat = model(x)
+        if opt.GNN_mode:
+            data = data.to(opt.device)
+            yhat = model(data)
+            path = data.path[0]
+        else:
+            x, _, path = data
+            x = x.to(opt.device)
+            path = path[0]
+            yhat = model(x)
         yhat = yhat.cpu().detach().numpy().reshape((-1))
 
         y = np.load(osp.join(path, 'diag_chis_continuous.npy'))
+        if opt.crop is not None:
+            y = y[opt.crop[0]:opt.crop[1]]
 
         # format yhat
         if 'bond_length' in opt.output_mode:

@@ -149,6 +149,7 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                     y = torch.reshape(y, (-1, opt.m, opt.m))
                 else:
                     y = data.y
+                    y = torch.reshape(y, (-1, opt.m))
                 if opt.verbose:
                     print(f'x={data.x}, shape={data.x.shape}, '
                             f'min={torch.min(data.x).item()}, '
@@ -242,6 +243,7 @@ def test(loader, model, opt, toprint):
                     y = torch.reshape(y, (-1, opt.m, opt.m))
                 else:
                     y = data.y
+                    y = torch.reshape(y, (-1, opt.m))
                 yhat = model(data)
             elif opt.autoencoder_mode and opt.output_mode == 'sequence':
                 x = data[0]
