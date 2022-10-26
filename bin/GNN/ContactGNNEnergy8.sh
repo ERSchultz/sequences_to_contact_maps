@@ -15,12 +15,13 @@ cd ~/sequences_to_contact_maps
 
 source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
+source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy8' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_09_30_22"
+dirname="/project/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='GAT'
-preTransforms='degree-ContactDistance-GeneticDistance-DiagonalParameterDistance'
+preTransforms='degree-ContactDistance-GeneticDistance_norm-DiagonalParameterDistance'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
@@ -33,6 +34,7 @@ yPreprocessing='log'
 yNorm='none'
 headArchitecture='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+scratch='/scratch/midway3/erschultz'
 
 # 4th attempt at predicting only diag with GNN - cheating and using diag param feature augmentation
 

@@ -1,124 +1,585 @@
 model_type,id,dataset,preprocessing_norm,y_preprocessing,min_subtraction,log_preprocessing,crop,split,shuffle,batch_size,num_workers,n_epochs,lr,milestones,gamma,loss,k,m,seed,act,inner_act,head_act,out_act,training_norm,use_node_features,use_edge_weights,use_edge_attr,node_transforms,edge_transforms,split_edges_for_feature_augmentation,sparsify_threshold,sparsify_threshold_upper,max_diagonal,hidden_sizes_list,message_passing,update_hidden_sizes_list,head_architecture,head_hidden_sizes_list,output_mode,Final Validation Loss
-ContactGNNEnergy,16,dataset_08_24_21,,diag,True,,,"[-1, 200, 0]",True,4,4,40,0.0001,,0.1,mse,2,1024,42,relu,sigmoid,,prelu,,False,True,False,['Degree'],['ContactDistance'],False,1.0,,,"[16, 2]",GCN,,outer+None,[1],energy,0.8802733659744263
-ContactGNNEnergy,18,dataset_08_24_21,,diag,True,True,,"[-1, 200, 0]",True,4,4,40,0.0001,,0.1,mse,2,1024,42,prelu,sigmoid,,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 2]",SignedConv,,concat-outer+None,"[10, 10, 1]",energy,0.5870458787679672
-ContactGNNEnergy,20,dataset_08_24_21,,diag,True,,,"[-1, 200, 0]",True,4,4,40,0.0001,,0.1,mse,2,1024,42,prelu,sigmoid,,prelu,,False,True,False,['Degree'],['ContactDistance'],False,1.0,,,"[16, 4]",GCN,,concat-outer+None,"[10, 10, 1]",energy,0.8592200636863708
-ContactGNNEnergy,21,dataset_08_24_21,,diag,True,True,,"[-1, 200, 0]",True,4,4,60,0.0001,,0.1,mse,2,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 2]",SignedConv,,concat-outer+None,"[10, 10, 1]",energy,0.4705816543102264
-ContactGNNEnergy,22,dataset_08_24_21,,diag,True,,,"[-1, 200, 0]",True,4,4,60,0.0001,,0.1,mse,2,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],['ContactDistance'],False,1.0,,,"[16, 16, 4]",GCN,,concat-outer+None,"[10, 10, 1]",energy,0.7803477287292481
-ContactGNNEnergy,34,dataset_10_27_21,,diag,True,True,,"[-1, 200, 0]",True,4,4,100,0.0001,,0.1,mse,2,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 2]",SignedConv,,concat-outer+None,"[10, 10, 1]",energy,0.06756523683667183
-ContactGNNEnergy,37,dataset_11_03_21,,diag,True,True,,"[-1, 200, 0]",True,4,4,100,0.0001,,0.1,mse,4,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 2]",SignedConv,,concat-outer+None,"[10, 10, 1]",energy,0.6292776107788086
-ContactGNNEnergy,40,dataset_11_03_21,,diag,True,True,,"[-1, 200, 0]",True,1,4,20,0.0001,,0.1,mse,4,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 2]",SignedConv,"[100, 100, 16]",concat-outer+None,"[100, 100, 1]",energy,0.3679193799942732
-ContactGNNEnergy,41,dataset_11_03_21,,diag,True,True,,"[-1, 200, 0]",True,1,4,60,0.0001,,0.1,mse,4,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 2]",SignedConv,"[100, 100, 16]",concat-outer+None,"[100, 100, 1]",energy,0.3201581782102585
-ContactGNNEnergy,42,dataset_11_03_21,,diag,True,True,,"[-1, 200, 0]",True,1,4,60,0.0001,,0.1,mse,4,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 2]",SignedConv,"[100, 100, 16]",concat+None,"[100, 100, 1]",energy,0.31099159695208073
-ContactGNNEnergy,65,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,1,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",concat+None,"[100, 100, 1]",energy,5.12543210029602
-ContactGNNEnergy,72,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,1,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",concat+None,"[100, 100, 1]",energy,1.2610915970802308
-ContactGNNEnergy,73,dataset_01_17_22,,diag,True,10,,"[2000, 200, 0]",True,1,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",concat+None,"[100, 100, 1]",energy,1.2165173050761222
-ContactGNNEnergy,74,dataset_01_17_22,,diag,True,10,,"[3000, 200, 0]",True,1,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",concat+None,"[100, 100, 1]",energy,1.1989408920705318
-ContactGNNEnergy,75,dataset_01_17_22,,diag,True,10,,"[4000, 200, 0]",True,1,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",concat+None,"[100, 100, 1]",energy,1.1634527270495891
-ContactGNNEnergy,83,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],['ContactDistance'],False,1.0,,,"[8, 8, 8]",GCN,,bilinear+None,,energy,1.830419766306877
-ContactGNNEnergy,84,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],['ContactDistance'],False,1.0,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.4141555958986283
-ContactGNNEnergy,85,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],['ContactDistance'],False,1.0,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.426586627960205
-ContactGNNEnergy,86,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],['ContactDistance'],False,1.0,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.4216481137275696
-ContactGNNEnergy,89,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['WeightedDegree'],['ContactDistance'],True,0.176,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,nan
-ContactGNNEnergy,90,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['WeightedDegree'],['ContactDistance'],True,1.0,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.4723657977581024
-ContactGNNEnergy,91,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['AdjPCA(10)'],['ContactDistance'],True,0.176,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,nan
-ContactGNNEnergy,92,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['AdjPCA(10)'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1441081380844116
-ContactGNNEnergy,94,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],['ContactDistance'],False,1.0,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.4338106101751327
-ContactGNNEnergy,95,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['AdjPCA(10)'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.217962257862091
-ContactGNNEnergy,96,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['AdjPCA(10)'],['ContactDistance'],True,0.176,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,nan
-ContactGNNEnergy,97,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,"['AdjPCA(10)', 'Degree']",['ContactDistance'],False,1.0,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.4028999090194703
-ContactGNNEnergy,98,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,"['AdjPCA(10)', 'Degree']",['ContactDistance'],False,1.0,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.456461187005043
-ContactGNNEnergy,99,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,1,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['WeightedDegree'],['ContactDistance'],True,0.5,1.5,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.7651893597841264
-ContactGNNEnergy,101,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.2058233112096786
-ContactGNNEnergy,102,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,1,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.2350417916476726
-ContactGNNEnergy,103,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],['ContactDistance'],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1330723917484284
-ContactGNNEnergy,104,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],['ContactDistance'],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.2037089747190475
-ContactGNNEnergy,105,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,"['AdjPCA(10)', 'Degree']",[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1369814133644105
-ContactGNNEnergy,106,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,"['AdjPCA(10)', 'Degree']",[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.194519549012184
-ContactGNNEnergy,107,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,"['AdjPCA(10)', 'WeightedLDP']",[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1360901010036468
-ContactGNNEnergy,108,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,"['AdjPCA(10)', 'WeightedLDP']",[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.184164546728134
-ContactGNNEnergy,109,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,"['AdjPCA(10)', 'Degree']",['ContactDistance'],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.115958834886551
-ContactGNNEnergy,110,dataset_01_17_22,,diag,True,10,,"[4000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,"['AdjPCA(10)', 'Degree']",['ContactDistance'],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.5169293123483658
-ContactGNNEnergy,111,dataset_01_17_22,,diag,True,10,,"[4000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1378155279159545
-ContactGNNEnergy,112,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,"['Degree', 'OneHotGeneticPosition']",[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1091771394014358
-ContactGNNEnergy,113,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,"['Degree', 'GeneticPosition(center=True, norm=False)']",[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.2056224781274796
-ContactGNNEnergy,114,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,"['Degree', 'GeneticPosition(center=True, norm=True)']",[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.0920151770114899
-ContactGNNEnergy,115,dataset_01_17_22,,diag,True,10,,"[4000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,"['AdjPCA(10)', 'Degree']",['ContactDistance'],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.114322879910469
-ContactGNNEnergy,117,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,"['AdjPCA(10)', 'Degree']",['ContactDistance'],True,0.176,,,"[16, 16, 16]",SignedConv,"[100, 100, 32]",bilinear+None,,energy,1.1162530893087388
-ContactGNNEnergy,118,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],['ContactDistance'],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1505190992355347
-ContactGNNEnergy,119,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],['GeneticDistance'],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.0860157763957978
-ContactGNNEnergy,120,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.0488201636075973
-ContactGNNEnergy,121,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[16, 16, 16]",SignedConv,"[100, 100, 32]",bilinear+None,,energy,1.0374079340696334
-ContactGNNEnergy,122,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1002677911520005
-ContactGNNEnergy,123,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.48023119866848
-ContactGNNEnergy,124,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],['ContactDistance'],True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.5516431909799575
-ContactGNNEnergy,125,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.3276710200309754
-ContactGNNEnergy,126,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,2.0478635561466216
-ContactGNNEnergy,127,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[32, 32, 32]",SignedConv,"[100, 100, 64]",bilinear+None,,energy,1.0339437395334243
-ContactGNNEnergy,128,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.0434581661224365
-ContactGNNEnergy,129,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,"['AdjPCA(10)', 'Degree']","['ContactDistance', 'GeneticDistance']",True,0.176,,,"[16, 16, 16]",SignedConv,"[100, 100, 32]",bilinear+None,,energy,1.1432822406291963
-ContactGNNEnergy,130,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.0912035655975343
-ContactGNNEnergy,131,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,"['AdjPCA(10)', 'Degree']","['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.6551731610298157
-ContactGNNEnergy,132,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,"['AdjPCA(10)', 'Degree']","['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.405661665201187
-ContactGNNEnergy,133,dataset_01_17_22,,diag_batch,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1706013172864913
-ContactGNNEnergy,134,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,"['AdjPCA(10)', 'Degree']","['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.2317698258161545
-ContactGNNEnergy,135,dataset_01_17_22,,diag,True,10,,"[4000, 200, 0]",True,2,4,80,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[32, 32, 32]",SignedConv,"[100, 100, 64]",bilinear+None,,energy,1.0121681714057922
-ContactGNNEnergy,136,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1296744179725646
-ContactGNNEnergy,137,dataset_01_17_22,,diag,True,10,,"[4000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,0.9868407815694809
-ContactGNNEnergy,138,dataset_01_17_22,,diag_batch,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[32, 32, 32]",SignedConv,"[100, 100, 64]",bilinear+None,,energy,1.0197781509160995
-ContactGNNEnergy,140,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,"['AdjPCA(10)', 'Degree']","['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.4408521789312363
-ContactGNNEnergy,142,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,4.4601020026206974
-ContactGNNEnergy,143,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[32, 32, 32]",SignedConv,"[100, 100, 64]",bilinear+None,,energy,3.942863485813141
-ContactGNNEnergy,144,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear_asym+None,,energy,4.523560428619385
-ContactGNNEnergy,145,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy_sym,2.034002192020416
-ContactGNNEnergy,146,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy,4.188797137737274
-ContactGNNEnergy,147,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",concat+None,"[100, 100, 1]",energy,4.500822992324829
-ContactGNNEnergy,148,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy,2.1165030574798585
-ContactGNNEnergy,149,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,0.6044940444827079
-ContactGNNEnergy,150,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,1.520980219244957
-ContactGNNEnergy,151,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[64, 64, 64]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,2.45362735748291
-ContactGNNEnergy,152,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[32, 32, 32]",SignedConv,"[100, 100, 64]",bilinear+None,,energy_sym,1.7227974146604539
-ContactGNNEnergy,153,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,instance,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy_sym,3.7694467329978942
-ContactGNNEnergy,154,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy_sym,2.2171123170852662
-ContactGNNEnergy,155,dataset_04_27_22,,diag,True,ln,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.405,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy_sym,2.213419839143753
-ContactGNNEnergy,156,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],[],True,0.405,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy_sym,2.5610755038261415
-ContactGNNEnergy,157,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,instance,False,False,False,['Degree'],[],True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy_sym,3.080030483007431
-ContactGNNEnergy,158,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,2.0752062821388244
-ContactGNNEnergy,159,dataset_05_12_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,1.7166172671318054
-ContactGNNEnergy,160,dataset_05_12_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[32, 32, 32]",SignedConv,"[100, 100, 64]",bilinear+None,,energy_sym,1.6948938059806824
-ContactGNNEnergy,161,dataset_05_12_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,1.710196527838707
-ContactGNNEnergy,162,dataset_05_12_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,1.7081880205869675
-ContactGNNEnergy,163,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,
-ContactGNNEnergy,164,dataset_04_27_22,,5000_diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,2.4736913478374483
-ContactGNNEnergy,165,dataset_04_27_22,,2500_diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,2.6040427803993227
-ContactGNNEnergy,166,dataset_04_27_22,,1000_diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,2.753469123840332
-ContactGNNEnergy,167,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,1.9667786419391633
-ContactGNNEnergy,168,dataset_09_26_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,9.551870417594909
-ContactGNNEnergy,169,dataset_09_26_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",inner+None,,energy_sym,11.657530878782273
-ContactGNNEnergy,170,dataset_09_30_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,512,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,5.701186136603355
-ContactGNNEnergy,171,dataset_09_30_22,,diag,True,ln,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.405,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.962317367494106
-ContactGNNEnergy,172,dataset_09_30_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.534687473773956
-ContactGNNEnergy,173,dataset_09_30_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 64]",bilinear+None,,energy_sym,4.943676669746638
-ContactGNNEnergy,174,dataset_09_30_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym_diag,5.233207664191723
-ContactGNNEnergy,175,dataset_09_30_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",inner+None,,energy_sym,10.16269062846899
-ContactGNNEnergy,176,dataset_09_30_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,5.1248506879806515
-ContactGNNEnergy,177,dataset_09_30_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance79', 'GeneticDistance']",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.792643150687217
-ContactGNNEnergy,178,dataset_09_30_22,,diag,True,ln,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance', 'GeneticDistance']",True,0.405,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,3.965801262408495
-ContactGNNEnergy,179,dataset_09_30_22,,diag,True,ln,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance79', 'GeneticDistance']",True,0.405,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,3.938191992789507
-ContactGNNEnergy,180,dataset_09_30_22,,diag,True,ln,,"[900, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance79', 'GeneticDistance']",True,0.405,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.939285164177417
-ContactGNNEnergy,181,dataset_09_30_22,,diag,True,ln,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance', 'GeneticDistance']",True,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,3.6683142448961736
-ContactGNNEnergy,182,dataset_09_30_22,,log,True,,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance', 'GeneticDistance']",True,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,2.815500107258558
-ContactGNNEnergy,183,dataset_09_30_22,,log_diag,True,,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance', 'GeneticDistance']",True,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.615352176278829
-ContactGNNEnergy,184,dataset_09_30_22,,diag,True,ln,,"[-1, 200, 0]",True,1,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance', 'GeneticDistance']",True,0.405,,,"[8, 8, 8]",SignedConv,"[100, 100, 64]",bilinear+None,,energy_sym,4.335152774900198
-ContactGNNEnergy,186,dataset_09_30_22,,log_diag,True,ln,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance', 'GeneticDistance']",True,0.405,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,6.397863120077148
-ContactGNNEnergy,187,dataset_09_30_22,,diag,True,ln,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance', 'GeneticDistance']",True,0.405,,,"[8, 8, 8]",weighted_GAT,"[100, 100, 64]",bilinear+None,,energy_sym,3.8325286576199153
-ContactGNNEnergy,188,dataset_09_30_22,,log,True,,,"[-1, 200, 0]",True,1,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance', 'GeneticDistance']",True,,,,"[8, 8, 8]",SignedConv,"[100, 100, 64]",bilinear+None,,energy_sym,4.459842599183321
-ContactGNNEnergy,189,dataset_09_30_22,,log_diag,True,ln,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance', 'GeneticDistance']",True,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.249459288896076
-ContactGNNEnergy,190,dataset_09_30_22,,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,3.5898952338667143
-ContactGNNEnergy,191,dataset_09_30_22,,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance80', 'GeneticDistance']",True,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,3.7608073778332227
-ContactGNNEnergy,192,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance', 'GeneticDistance']",True,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,6.432579402412687
-ContactGNNEnergy,193,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance', 'GeneticDistance']",True,,,,"[8, 8, 8]",weighted_GAT,"[100, 100, 64]",bilinear+None,,energy_sym,5.308227652595157
-ContactGNNEnergy,194,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance', 'GeneticDistance']",True,,,,"[8, 8, 8, 8]",weighted_GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.505578501593499
-ContactGNNEnergy,195,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,,,,"[8, 8, 8]",weighted_GAT,"[100, 100, 64]",concat+None,"[100, 100, 100, 100, 100, 100, 1]",energy_sym_diag,6.780817075854256
-ContactGNNEnergy,196,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'DiagonalParameterDistance', 'GeneticDistance']",True,,,,"[8, 8, 8]",weighted_GAT,"[1000, 1000, 64]",bilinear+None,,energy_sym,4.334582607542711
-ContactGNNEnergy,198,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,,,,"[8, 8, 8]",weighted_GAT,"[100, 100, 64]",concat+None,"[1000, 1000, 1000, 1000, 1000, 1000, 1]",energy_sym_diag,
-ContactGNNEnergy,199,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"['ContactDistance', 'GeneticDistance']",True,,,,"[8, 8, 8]",weighted_GAT,"[100, 100, 64]",bilinear+fc-fill,"[1000, 1000, 1000, 1000, 1000, 1000, 1024]",energy_sym_diag,
+ContactGNNEnergy,16,dataset_08_24_21,,diag,True,,,"[-1, 200, 0]",True,4,4,40,0.0001,,0.1,mse,2,1024,42,relu,sigmoid,,prelu,,False,True,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=False, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=False)
+])",False,1.0,,,"[16, 2]",GCN,,outer+None,[1],energy,0.8802733659744263
+ContactGNNEnergy,18,dataset_08_24_21,,diag,True,True,,"[-1, 200, 0]",True,4,4,40,0.0001,,0.1,mse,2,1024,42,prelu,sigmoid,,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 2]",SignedConv,,concat-outer+None,"[10, 10, 1]",energy,0.5870458787679672
+ContactGNNEnergy,20,dataset_08_24_21,,diag,True,,,"[-1, 200, 0]",True,4,4,40,0.0001,,0.1,mse,2,1024,42,prelu,sigmoid,,prelu,,False,True,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=False, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=False)
+])",False,1.0,,,"[16, 4]",GCN,,concat-outer+None,"[10, 10, 1]",energy,0.8592200636863708
+ContactGNNEnergy,21,dataset_08_24_21,,diag,True,True,,"[-1, 200, 0]",True,4,4,60,0.0001,,0.1,mse,2,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 2]",SignedConv,,concat-outer+None,"[10, 10, 1]",energy,0.4705816543102264
+ContactGNNEnergy,22,dataset_08_24_21,,diag,True,,,"[-1, 200, 0]",True,4,4,60,0.0001,,0.1,mse,2,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=False, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=False)
+])",False,1.0,,,"[16, 16, 4]",GCN,,concat-outer+None,"[10, 10, 1]",energy,0.7803477287292481
+ContactGNNEnergy,34,dataset_10_27_21,,diag,True,True,,"[-1, 200, 0]",True,4,4,100,0.0001,,0.1,mse,2,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 2]",SignedConv,,concat-outer+None,"[10, 10, 1]",energy,0.06756523683667183
+ContactGNNEnergy,37,dataset_11_03_21,,diag,True,True,,"[-1, 200, 0]",True,4,4,100,0.0001,,0.1,mse,4,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 2]",SignedConv,,concat-outer+None,"[10, 10, 1]",energy,0.6292776107788086
+ContactGNNEnergy,40,dataset_11_03_21,,diag,True,True,,"[-1, 200, 0]",True,1,4,20,0.0001,,0.1,mse,4,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 2]",SignedConv,"[100, 100, 16]",concat-outer+None,"[100, 100, 1]",energy,0.3679193799942732
+ContactGNNEnergy,41,dataset_11_03_21,,diag,True,True,,"[-1, 200, 0]",True,1,4,60,0.0001,,0.1,mse,4,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 2]",SignedConv,"[100, 100, 16]",concat-outer+None,"[100, 100, 1]",energy,0.3201581782102585
+ContactGNNEnergy,42,dataset_11_03_21,,diag,True,True,,"[-1, 200, 0]",True,1,4,60,0.0001,,0.1,mse,4,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 2]",SignedConv,"[100, 100, 16]",concat+None,"[100, 100, 1]",energy,0.31099159695208073
+ContactGNNEnergy,65,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,1,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",concat+None,"[100, 100, 1]",energy,5.12543210029602
+ContactGNNEnergy,72,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,1,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",concat+None,"[100, 100, 1]",energy,1.2610915970802308
+ContactGNNEnergy,73,dataset_01_17_22,,diag,True,10,,"[2000, 200, 0]",True,1,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",concat+None,"[100, 100, 1]",energy,1.2165173050761222
+ContactGNNEnergy,74,dataset_01_17_22,,diag,True,10,,"[3000, 200, 0]",True,1,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",concat+None,"[100, 100, 1]",energy,1.1989408920705318
+ContactGNNEnergy,75,dataset_01_17_22,,diag,True,10,,"[4000, 200, 0]",True,1,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",concat+None,"[100, 100, 1]",energy,1.1634527270495891
+ContactGNNEnergy,83,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=False, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=False)
+])",False,1.0,,,"[8, 8, 8]",GCN,,bilinear+None,,energy,1.830419766306877
+ContactGNNEnergy,84,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=False, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=False)
+])",False,1.0,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.4141555958986283
+ContactGNNEnergy,85,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=False, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=False)
+])",False,1.0,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.426586627960205
+ContactGNNEnergy,86,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=False, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=False)
+])",False,1.0,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.4216481137275696
+ContactGNNEnergy,89,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['WeightedDegree'],"Compose([
+  Degree(norm=True, max=None, weighted=True, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=False)
+])",True,0.176,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,nan
+ContactGNNEnergy,90,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['WeightedDegree'],"Compose([
+  Degree(norm=True, max=None, weighted=True, split_edges=True, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=False)
+])",True,1.0,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.4723657977581024
+ContactGNNEnergy,91,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['AdjPCA(10)'],"Compose([
+  AdjPCATransform,
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=False)
+])",True,0.176,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,nan
+ContactGNNEnergy,92,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['AdjPCA(10)'],"Compose([
+  AdjPCATransform
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1441081380844116
+ContactGNNEnergy,94,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=False, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=False)
+])",False,1.0,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.4338106101751327
+ContactGNNEnergy,95,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['AdjPCA(10)'],"Compose([
+  AdjPCATransform
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.217962257862091
+ContactGNNEnergy,96,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['AdjPCA(10)'],"Compose([
+  AdjPCATransform,
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=False)
+])",True,0.176,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,nan
+ContactGNNEnergy,97,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,"['AdjPCA(10)', 'Degree']","Compose([
+  AdjPCATransform,
+  Degree(norm=True, max=None, weighted=False, split_edges=False, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=False)
+])",False,1.0,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.4028999090194703
+ContactGNNEnergy,98,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,"['AdjPCA(10)', 'Degree']","Compose([
+  AdjPCATransform,
+  Degree(norm=True, max=None, weighted=False, split_edges=False, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=False)
+])",False,1.0,,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.456461187005043
+ContactGNNEnergy,99,dataset_01_17_22,,diag,True,,,"[1000, 200, 0]",True,1,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['WeightedDegree'],"Compose([
+  Degree(norm=True, max=None, weighted=True, split_edges=True, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=False)
+])",True,0.5,1.5,,"[8, 8, 8]",GCN,"[100, 100, 16]",bilinear+None,,energy,1.7651893597841264
+ContactGNNEnergy,101,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.2058233112096786
+ContactGNNEnergy,102,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,1,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.2350417916476726
+ContactGNNEnergy,103,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=False)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1330723917484284
+ContactGNNEnergy,104,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=False)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.2037089747190475
+ContactGNNEnergy,105,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,"['AdjPCA(10)', 'Degree']","Compose([
+  AdjPCATransform,
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1369814133644105
+ContactGNNEnergy,106,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,"['AdjPCA(10)', 'Degree']","Compose([
+  AdjPCATransform,
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.194519549012184
+ContactGNNEnergy,107,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,"['AdjPCA(10)', 'WeightedLDP']","Compose([
+  AdjPCATransform,
+  WeightedLocalDegreeProfile
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1360901010036468
+ContactGNNEnergy,108,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,"['AdjPCA(10)', 'WeightedLDP']","Compose([
+  AdjPCATransform,
+  WeightedLocalDegreeProfile
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.184164546728134
+ContactGNNEnergy,109,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,"['AdjPCA(10)', 'Degree']","Compose([
+  AdjPCATransform,
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=False)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.115958834886551
+ContactGNNEnergy,110,dataset_01_17_22,,diag,True,10,,"[4000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,"['AdjPCA(10)', 'Degree']","Compose([
+  AdjPCATransform,
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=False)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.5169293123483658
+ContactGNNEnergy,111,dataset_01_17_22,,diag,True,10,,"[4000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1378155279159545
+ContactGNNEnergy,112,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,"['Degree', 'OneHotGeneticPosition']","Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  OneHotGeneticPosition
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1091771394014358
+ContactGNNEnergy,113,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,"['Degree', 'GeneticPosition(center=True, norm=False)']","Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  GeneticPosition(center=True, norm=False)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.2056224781274796
+ContactGNNEnergy,114,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,"['Degree', 'GeneticPosition(center=True, norm=True)']","Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  GeneticPosition(center=True, norm=True)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.0920151770114899
+ContactGNNEnergy,115,dataset_01_17_22,,diag,True,10,,"[4000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,"['AdjPCA(10)', 'Degree']","Compose([
+  AdjPCATransform,
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=False)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.114322879910469
+ContactGNNEnergy,117,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,True,False,"['AdjPCA(10)', 'Degree']","Compose([
+  AdjPCATransform,
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=False)
+])",True,0.176,,,"[16, 16, 16]",SignedConv,"[100, 100, 32]",bilinear+None,,energy,1.1162530893087388
+ContactGNNEnergy,118,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=True)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1505190992355347
+ContactGNNEnergy,119,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.0860157763957978
+ContactGNNEnergy,120,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.0488201636075973
+ContactGNNEnergy,121,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[16, 16, 16]",SignedConv,"[100, 100, 32]",bilinear+None,,energy,1.0374079340696334
+ContactGNNEnergy,122,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1002677911520005
+ContactGNNEnergy,123,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.48023119866848
+ContactGNNEnergy,124,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.5516431909799575
+ContactGNNEnergy,125,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,,0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.3276710200309754
+ContactGNNEnergy,126,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,2.0478635561466216
+ContactGNNEnergy,127,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[32, 32, 32]",SignedConv,"[100, 100, 64]",bilinear+None,,energy,1.0339437395334243
+ContactGNNEnergy,128,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.0434581661224365
+ContactGNNEnergy,129,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,"['AdjPCA(10)', 'Degree']","Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  AdjPCATransform
+])",True,0.176,,,"[16, 16, 16]",SignedConv,"[100, 100, 32]",bilinear+None,,energy,1.1432822406291963
+ContactGNNEnergy,130,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.0912035655975343
+ContactGNNEnergy,131,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,"['AdjPCA(10)', 'Degree']","Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  AdjPCATransform
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.6551731610298157
+ContactGNNEnergy,132,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,"['AdjPCA(10)', 'Degree']","Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  AdjPCATransform
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.405661665201187
+ContactGNNEnergy,133,dataset_01_17_22,,diag_batch,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1706013172864913
+ContactGNNEnergy,134,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,"['AdjPCA(10)', 'Degree']","Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  AdjPCATransform
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.2317698258161545
+ContactGNNEnergy,135,dataset_01_17_22,,diag,True,10,,"[4000, 200, 0]",True,2,4,80,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[32, 32, 32]",SignedConv,"[100, 100, 64]",bilinear+None,,energy,1.0121681714057922
+ContactGNNEnergy,136,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,1.1296744179725646
+ContactGNNEnergy,137,dataset_01_17_22,,diag,True,10,,"[4000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,0.9868407815694809
+ContactGNNEnergy,138,dataset_01_17_22,,diag_batch,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[32, 32, 32]",SignedConv,"[100, 100, 64]",bilinear+None,,energy,1.0197781509160995
+ContactGNNEnergy,140,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,"['AdjPCA(10)', 'Degree']","Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  AdjPCATransform
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 16]",bilinear+None,,energy,1.4408521789312363
+ContactGNNEnergy,142,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy,4.4601020026206974
+ContactGNNEnergy,143,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[32, 32, 32]",SignedConv,"[100, 100, 64]",bilinear+None,,energy,3.942863485813141
+ContactGNNEnergy,144,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear_asym+None,,energy,4.523560428619385
+ContactGNNEnergy,145,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy_sym,2.034002192020416
+ContactGNNEnergy,146,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy,4.188797137737274
+ContactGNNEnergy,147,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",concat+None,"[100, 100, 1]",energy,4.500822992324829
+ContactGNNEnergy,148,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy,2.1165030574798585
+ContactGNNEnergy,149,dataset_01_17_22,,diag,True,10,,"[1000, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,0.6044940444827079
+ContactGNNEnergy,150,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,1.520980219244957
+ContactGNNEnergy,151,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[64, 64, 64]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,2.45362735748291
+ContactGNNEnergy,152,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[32, 32, 32]",SignedConv,"[100, 100, 64]",bilinear+None,,energy_sym,1.7227974146604539
+ContactGNNEnergy,153,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,instance,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy_sym,3.7694467329978942
+ContactGNNEnergy,154,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy_sym,2.2171123170852662
+ContactGNNEnergy,155,dataset_04_27_22,,diag,True,ln,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.405,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy_sym,2.213419839143753
+ContactGNNEnergy,156,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.405,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy_sym,2.5610755038261415
+ContactGNNEnergy,157,dataset_12_12_21,,diag,True,10,,"[0.8, 0.1, 0.1]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,instance,False,False,False,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 16]",bilinear+None,,energy_sym,3.080030483007431
+ContactGNNEnergy,158,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,2.0752062821388244
+ContactGNNEnergy,159,dataset_05_12_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,1.7166172671318054
+ContactGNNEnergy,160,dataset_05_12_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[32, 32, 32]",SignedConv,"[100, 100, 64]",bilinear+None,,energy_sym,1.6948938059806824
+ContactGNNEnergy,161,dataset_05_12_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,1.710196527838707
+ContactGNNEnergy,162,dataset_05_12_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,1.7081880205869675
+ContactGNNEnergy,163,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,
+ContactGNNEnergy,164,dataset_04_27_22,,5000_diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,2.4736913478374483
+ContactGNNEnergy,165,dataset_04_27_22,,2500_diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,2.6040427803993227
+ContactGNNEnergy,166,dataset_04_27_22,,1000_diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,2.753469123840332
+ContactGNNEnergy,167,dataset_04_27_22,,diag,True,10,,"[-1, 200, 0]",True,2,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,1.9667786419391633
+ContactGNNEnergy,168,dataset_09_26_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,9.551870417594909
+ContactGNNEnergy,169,dataset_09_26_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",inner+None,,energy_sym,11.657530878782273
+ContactGNNEnergy,170,dataset_09_30_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,512,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,5.701186136603355
+ContactGNNEnergy,171,dataset_09_30_22,,diag,True,ln,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.405,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.962317367494106
+ContactGNNEnergy,172,dataset_09_30_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.534687473773956
+ContactGNNEnergy,173,dataset_09_30_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",SignedConv,"[100, 100, 64]",bilinear+None,,energy_sym,4.943676669746638
+ContactGNNEnergy,174,dataset_09_30_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym_diag,5.233207664191723
+ContactGNNEnergy,175,dataset_09_30_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",inner+None,,energy_sym,10.16269062846899
+ContactGNNEnergy,176,dataset_09_30_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,5.1248506879806515
+ContactGNNEnergy,177,dataset_09_30_22,,diag,True,10,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=79)
+])",True,0.176,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.792643150687217
+ContactGNNEnergy,178,dataset_09_30_22,,diag,True,ln,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",True,0.405,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,3.965801262408495
+ContactGNNEnergy,179,dataset_09_30_22,,diag,True,ln,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=79)
+])",True,0.405,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,3.938191992789507
+ContactGNNEnergy,180,dataset_09_30_22,,diag,True,ln,,"[900, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=79)
+])",True,0.405,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.939285164177417
+ContactGNNEnergy,181,dataset_09_30_22,,diag,True,ln,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",True,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,3.6683142448961736
+ContactGNNEnergy,182,dataset_09_30_22,,log,True,,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",True,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,2.815500107258558
+ContactGNNEnergy,183,dataset_09_30_22,,log_diag,True,,,"[-1, 200, 0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",True,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.615352176278829
+ContactGNNEnergy,184,dataset_09_30_22,,diag,True,ln,,"[-1, 200, 0]",True,1,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",True,0.405,,,"[8, 8, 8]",SignedConv,"[100, 100, 64]",bilinear+None,,energy_sym,4.335152774900198
+ContactGNNEnergy,186,dataset_09_30_22,,log_diag,True,ln,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",True,0.405,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,6.397863120077148
+ContactGNNEnergy,187,dataset_09_30_22,,diag,True,ln,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",True,0.405,,,"[8, 8, 8]",weighted_GAT,"[100, 100, 64]",bilinear+None,,energy_sym,3.8325286576199153
+ContactGNNEnergy,188,dataset_09_30_22,,log,True,,,"[-1, 200, 0]",True,1,4,100,0.001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Trueconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",True,,,,"[8, 8, 8]",SignedConv,"[100, 100, 64]",bilinear+None,,energy_sym,4.459842599183321
+ContactGNNEnergy,189,dataset_09_30_22,,log_diag,True,ln,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=0),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",True,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.249459288896076
+ContactGNNEnergy,190,dataset_09_30_22,,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None)
+])",True,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,3.5898952338667143
+ContactGNNEnergy,191,dataset_09_30_22,,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=80)
+])",True,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,3.7608073778332227
+ContactGNNEnergy,192,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",True,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,6.432579402412687
+ContactGNNEnergy,193,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",True,,,,"[8, 8, 8]",weighted_GAT,"[100, 100, 64]",bilinear+None,,energy_sym,5.308227652595157
+ContactGNNEnergy,194,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",True,,,,"[8, 8, 8, 8]",weighted_GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.505578501593499
+ContactGNNEnergy,195,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,,,,"[8, 8, 8]",weighted_GAT,"[100, 100, 64]",concat+None,"[100, 100, 100, 100, 100, 100, 1]",energy_sym_diag,6.780817075854256
+ContactGNNEnergy,196,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",True,,,,"[8, 8, 8]",weighted_GAT,"[1000, 1000, 64]",bilinear+None,,energy_sym,4.334582607542711
+ContactGNNEnergy,198,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,,,,"[8, 8, 8]",weighted_GAT,"[100, 100, 64]",concat+None,"[1000, 1000, 1000, 1000, 1000, 1000, 1]",energy_sym_diag,
+ContactGNNEnergy,199,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=True, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None)
+])",True,,,,"[8, 8, 8]",weighted_GAT,"[100, 100, 64]",bilinear+fc-fill,"[1000, 1000, 1000, 1000, 1000, 1000, 1024]",energy_sym_diag,6.143063938806927
+ContactGNNEnergy,204,dataset_09_30_22,,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=False, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",False,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.02670000327958
+ContactGNNEnergy,205,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=False, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=False, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",False,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,4.8796399257012775
+ContactGNNEnergy,206,dataset_09_30_22,,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=False, split_val=1),
+  ContactDistance(norm=True, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",False,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,5.666759253967376
+ContactGNNEnergy,207,dataset_09_30_22,,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=False, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",False,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,3.686712861534149
+ContactGNNEnergy,208,dataset_09_30_22,mean,log,True,,,"[0.9, 0.1, 0.0]",True,1,4,100,0.0001,[50],0.1,mse,,1024,42,prelu,prelu,prelu,prelu,,False,False,True,['Degree'],"Compose([
+  Degree(norm=True, max=None, weighted=False, split_edges=False, split_val=1),
+  ContactDistance(norm=False, max=None, split_edges=Falseconvert_to_attr=True),
+  GeneticDistance(norm=True, max_value=None),
+  DiagonalParameterDistance(mlp_id=None)
+])",False,,,,"[8, 8, 8]",GAT,"[100, 100, 64]",bilinear+None,,energy_sym,5.962826287107808

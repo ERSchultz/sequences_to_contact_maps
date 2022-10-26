@@ -29,16 +29,16 @@ EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
-split_edges_for_feature_augmentation='false'
+split_edges_for_feature_augmentation='true'
 outputMode='energy_sym'
 yPreprocessing='log'
 yNorm='none'
 scratch='/scratch/midway3/erschultz'
 
-# get rid of split_edges_for_feature_augmentation
+# repeat of 182
 
 
-id=204
+id=205
 for lr in 1e-4
 do
   train

@@ -377,11 +377,11 @@ def process_transforms(opt):
     for t_str in opt.transforms:
         t_str = t_str.lower().split('_')
         if t_str[0] == 'constant':
-            opt.node_transforms.append('Constant')
+            opt.node_transforms.append(torch_geometric.transforms.Constant())
             transforms_processed.append(torch_geometric.transforms.Constant())
             opt.node_feature_size += 1
         elif t_str[0] == 'sparse':
-            opt.node_transforms.append('ToSparseTensor')
+            opt.node_transforms.append(torch_geometric.transforms.ToSparseTensor())
             transforms_processed.append(torch_geometric.transforms.ToSparseTensor())
         else:
             raise Exception("Invalid transform {}".format(t_str))
@@ -396,11 +396,11 @@ def process_transforms(opt):
     for t_str in opt.pre_transforms:
         t_str = t_str.lower().split('_')
         if t_str[0] == 'constant':
-            opt.node_transforms.append('Constant')
+            opt.node_transforms.append(torch_geometric.transforms.Constant())
             processed.append(torch_geometric.transforms.Constant())
             opt.node_feature_size += 1
         elif t_str[0] == 'weightedldp':
-            opt.node_transforms.append('WeightedLDP')
+            opt.node_transforms.append(WeightedLocalDegreeProfile())
             processed.append(WeightedLocalDegreeProfile())
             if (opt.top_k is None and
                 opt.sparsify_threshold is None and
@@ -408,7 +408,6 @@ def process_transforms(opt):
                 print('Warning: using LDP without any sparsification')
             opt.node_feature_size += 5
         elif t_str[0] == 'degree':
-            opt.node_transforms.append('Degree')
             opt.node_feature_size += 1
             if opt.split_edges_for_feature_augmentation:
                 opt.node_feature_size += 2
@@ -416,31 +415,35 @@ def process_transforms(opt):
             for mode_str in t_str[1:]:
                 if mode_str == 'diag':
                     opt.diag = True
-            processed.append(Degree(split_val = split, diag = opt.diag,
-                        split_edges = opt.split_edges_for_feature_augmentation))
+            transform = Degree(split_val = split, diag = opt.diag,
+                        split_edges = opt.split_edges_for_feature_augmentation)
+            processed.append(transform)
+            opt.node_transforms.append(transform)
         elif t_str[0] == 'weighteddegree':
-            opt.node_transforms.append('WeightedDegree')
+
             opt.node_feature_size += 1
             if opt.split_edges_for_feature_augmentation:
                 opt.node_feature_size += 2
-            processed.append(Degree(weighted = True, split_val = split,
-                        split_edges = opt.split_edges_for_feature_augmentation))
+            transform = Degree(weighted = True, split_val = split,
+                        split_edges = opt.split_edges_for_feature_augmentation)
+            processed.append(transform)
+            opt.node_transforms.append(transform)
         elif t_str[0] == 'onehotdegree':
-            opt.node_transforms.append('OneHotDegree')
             opt.node_feature_size += opt.m + 1
             processed.append(torch_geometric.transforms.OneHotDegree(opt.m))
+            opt.node_transforms.append(torch_geometric.transforms.OneHotDegree(opt.m))
         elif t_str[0] == 'adj':
-            opt.node_transforms.append('Adj')
             opt.node_feature_size += opt.m
             processed.append(AdjTransform())
+            opt.node_transforms.append(AdjTransform())
         elif t_str[0] == 'adjpca':
             if len(t_str) > 1 and t_str[1].isdigit():
                 transform_k = int(t_str[1])
             else:
                 transform_k = 10
-            opt.node_transforms.append(f'AdjPCA({transform_k})')
             opt.node_feature_size += transform_k
             processed.append(AdjPCATransform(k = transform_k))
+            opt.node_transforms.append(AdjPCATransform(k = transform_k))
         elif t_str[0] == 'contactdistance':
             opt.edge_transforms.append(f'ContactDistance')
             assert opt.use_edge_attr or opt.use_edge_weights
@@ -451,11 +454,12 @@ def process_transforms(opt):
                 if mode_str == 'norm':
                     norm = True
 
-            processed.append(ContactDistance(norm = norm,
-                                            split_edges = opt.split_neg_pos_edges,
-                                            convert_to_attr = opt.use_edge_attr))
+            transform = ContactDistance(norm = norm,
+                                        split_edges = opt.split_neg_pos_edges,
+                                        convert_to_attr = opt.use_edge_attr)
+            processed.append(transform)
+            opt.edge_transforms.append(transform)
         elif t_str[0] == 'geneticdistance':
-            opt.edge_transforms.append(f'GeneticDistance')
             assert opt.use_edge_attr or opt.use_edge_weights
             if opt.use_edge_attr:
                 opt.edge_dim += 1
@@ -469,9 +473,12 @@ def process_transforms(opt):
                     log10 = True
                 if mode_str == 'norm':
                     norm = True
-            processed.append(GeneticDistance(split_edges = opt.split_neg_pos_edges,
-                                            convert_to_attr = opt.use_edge_attr,
-                                            log = log, log10 = log10, norm = norm))
+
+            transform = GeneticDistance(split_edges = opt.split_neg_pos_edges,
+                                        convert_to_attr = opt.use_edge_attr,
+                                        log = log, log10 = log10, norm = norm)
+            processed.append(transform)
+            opt.edge_transforms.append(transform)
         elif t_str[0] == 'geneticposition':
             center = False
             norm = False
@@ -480,35 +487,33 @@ def process_transforms(opt):
                     center = True
                 elif mode_str == 'norm':
                     norm = True
-            opt.node_transforms.append(f'GeneticPosition(center={center}, norm={norm})')
+
             opt.node_feature_size += 1
-            processed.append(GeneticPosition(center = center, norm = norm))
+            transform = GeneticPosition(center = center, norm = norm)
+            processed.append(transform)
+            opt.node_transforms.append(transform)
         elif t_str[0] == 'onehotgeneticposition':
-            opt.node_transforms.append('OneHotGeneticPosition')
             opt.node_feature_size += opt.m
             processed.append(OneHotGeneticPosition())
+            opt.node_transforms.append(OneHotGeneticPosition())
         elif t_str[0] == 'diagonalparameterdistance':
             assert opt.use_edge_attr or opt.use_edge_weights
 
             if len(t_str) > 1 and t_str[1].isdigit():
                 mlp_id = int(t_str[1])
-                opt.edge_transforms.append(f'DiagonalParameterDistance{mlp_id}')
             else:
                 mlp_id = None
-                opt.edge_transforms.append('DiagonalParameterDistance')
             if opt.use_edge_attr:
                 opt.edge_dim += 1
-            processed.append(DiagonalParameterDistance(split_edges = opt.split_neg_pos_edges,
-                                            convert_to_attr = opt.use_edge_attr, id = mlp_id))
+
+            transform = DiagonalParameterDistance(split_edges = opt.split_neg_pos_edges,
+                                            convert_to_attr = opt.use_edge_attr, id = mlp_id)
+            processed.append(transform)
+            opt.edge_transforms.append(transform)
     if len(processed) > 0:
         opt.pre_transforms_processed = torch_geometric.transforms.Compose(processed)
     else:
         opt.pre_transforms_processed = None
-
-    # these are used in opt2list for making results table
-    opt.edge_transforms = sorted(opt.edge_transforms)
-    opt.node_transforms = sorted(opt.node_transforms)
-    # see pre_transforms_processed for more complete description of transforms
 
 def copy_data_to_scratch(opt):
     t0 = time.time()

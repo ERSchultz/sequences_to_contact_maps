@@ -1,5 +1,5 @@
 #! /bin/bash
-#SBATCH --job-name=CGNNE9
+#SBATCH --job-name=CGNNE13
 #SBATCH --output=logFiles/ContactGNNEnergy13.out
 #SBATCH --time=1-24:00:00
 #SBATCH --account=pi-depablo
