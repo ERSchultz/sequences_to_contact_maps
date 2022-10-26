@@ -18,7 +18,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy0' # change to run multiple bash files at once
-dirname="/project/depablo/erschultz/dataset_09_30_22"
+dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='weighted_GAT'
 preTransforms='degree-ContactDistance_norm-GeneticDistance_norm'
