@@ -515,6 +515,11 @@ def process_transforms(opt):
     else:
         opt.pre_transforms_processed = None
 
+    # these are used in opt2list for making results table
+    opt.edge_transforms = sorted([repr(i) for i in opt.edge_transforms])
+    opt.node_transforms = sorted([repr(i) for i in opt.node_transforms])
+    # see pre_transforms_processed for more complete description of transforms
+
 def copy_data_to_scratch(opt):
     t0 = time.time()
     # initialize scratch path

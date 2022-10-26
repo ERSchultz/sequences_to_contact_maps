@@ -21,24 +21,22 @@ rootName='ContactGNNEnergy11' # change to run multiple bash files at once
 dirname="/project/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='GAT'
-preTransforms='degree-ContactDistance_norm-GeneticDistance_norm-DiagonalParameterDistance'
+preTransforms='degree-ContactDistance-GeneticDistance_norm-DiagonalParameterDistance'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
-
 split_edges_for_feature_augmentation='false'
 outputMode='energy_sym'
 yPreprocessing='log'
 yNorm='none'
 scratch='/scratch/midway3/erschultz'
 
-# try contactDistance_norm with baseline arch
+# get rid of split_edges_for_feature_augmentation
 
-
-id=206
+id=204
 for lr in 1e-4
 do
   train

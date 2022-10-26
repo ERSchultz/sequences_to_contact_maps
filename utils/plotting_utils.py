@@ -61,7 +61,9 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
     for opt in opts:
         opt_lists.append(opt2list(opt))
 
-    differences = set()
+    differences_names = []
+    differences = []
+    ids = []
     for pos in range(len(opt_lists[0])):
         first = True
         for model in range(len(opt_lists)):
@@ -72,14 +74,31 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
                 if opt_lists[model][pos] != ref:
                     param = opt_header[pos]
                     if param not in {'id', 'resume_training'}:
-                        differences.add(param)
+                        differences_names.append(param)
+                        differences.append((ref, opt_lists[model][pos]))
+                    if param == 'id':
+                        ids = (ref, opt_lists[model][pos])
+
 
     if len(differences) == 1:
-        diff_name = differences.pop()
+        diff_name = differences_names.pop()
+        diff = differences.pop()
+        if diff_name == 'edge_transforms':
+            new_diff = ([], [])
+            for a, b in zip(diff[0], diff[1]):
+                if a != b:
+                    new_diff[0].append(a)
+                    new_diff[1].append(b)
+            diff = new_diff
+
+
     else:
-        print('dif: ', differences)
+        print('Differences:')
+        for name, (a, b) in zip(differences_names, differences):
+            print(f'{name}:\n\t{a}\n\t{b}')
         diff_name = 'id'
-    diff_pos = opt_header.index(diff_name)
+        diff = ids
+        print(diff)
 
     fig, ax = plt.subplots()
     colors = ['b', 'r', 'g', 'c']
@@ -97,9 +116,8 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
             ax.set_yscale('log')
         l2 = ax.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr,
                     ls = styles[1], color = c)
-        labels.append(opt2list(opt)[diff_pos])
 
-    for c, label_i in zip(colors, labels):
+    for c, label_i in zip(colors, diff):
         ax.plot(np.NaN, np.NaN, color = c, label = label_i)
 
     ax2 = ax.twinx()

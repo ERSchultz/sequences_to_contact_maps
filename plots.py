@@ -414,5 +414,5 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_09_30_22')
-    plot_combined_models('ContactGNNEnergy', [204, 206])
+    plot_combined_models('ContactGNNEnergy', [204, 207])
     # main()

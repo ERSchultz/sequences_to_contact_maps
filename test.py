@@ -159,7 +159,7 @@ def debugModel(model_type):
         opt.y_preprocessing = 'log'
         opt.loss = 'mse'
         opt.preprocessing_norm = 'mean'
-        opt.message_passing = 'signedconv'
+        opt.message_passing = 'gat'
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym'
         opt.encoder_hidden_sizes_list=[100,100,64]
@@ -173,9 +173,9 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('sparse')
-        opt.pre_transforms=AC.str2list('degree_diag-contactdistance-GeneticDistance')
+        opt.pre_transforms=AC.str2list('degree-contactdistance_norm-GeneticDistance-diagonalparameterdistance')
         opt.mlp_model_id=None
-        opt.split_edges_for_feature_augmentation = True
+        opt.split_edges_for_feature_augmentation = False
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
@@ -239,7 +239,7 @@ def debugModel(model_type):
     # other
     opt.plot = True
     opt.plot_predictions = False
-    opt.verbose = False
+    opt.verbose = True
     opt.print_params = False
     opt.gpus = 1
     opt.delete_root = True
