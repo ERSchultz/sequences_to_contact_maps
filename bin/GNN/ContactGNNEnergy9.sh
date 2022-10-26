@@ -38,7 +38,7 @@ scratch='/scratch/midway3/erschultz'
 # repeat of 182
 
 
-id=205
+id=209
 for lr in 1e-4
 do
   train
