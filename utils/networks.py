@@ -854,7 +854,7 @@ class ContactGNN(nn.Module):
             if architecture is None:
                 continue
             elif architecture.startswith('bilinear'):
-                latent_copy = torch.clone(latent).to(latent.get_device())
+                latent_copy = torch.clone(latent)
                 _, output_size = latent_copy.shape
                 latent_copy = latent_copy.reshape(-1, self.m, output_size)
                 if 'asym' in architecture:
@@ -1069,10 +1069,6 @@ class SparseContactGNN(nn.Module):
         if self.head_architecture is None and self.head_architecture_2 is None:
             return latent
 
-        if self.output_dim == 1:
-            out = torch.zeros(N, self.m).to(latent.get_device())
-        elif self.output_dim == 2:
-            out = torch.zeros(N, self.m, self.m).to(latent.get_device())
         for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
             if architecture is None:
                 continue

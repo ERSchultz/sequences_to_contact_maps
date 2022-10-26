@@ -447,14 +447,23 @@ class FillDiagonalsFromArray(nn.Module):
             m, = input.shape
             input = input.reshape(N, m)
 
-        output = torch.zeros((N, m, m))
-        output = output.to(input.get_device())
-        for n in range(N):
-            for d in range(m):
-                rng = np.arange(m-d)
-                output[n, rng, rng+d] = input[n, d]
-                output[n, rng+d, rng] = input[n, d]
+        if N == 1:
+            # this is faster, but I didn't get it to work for N > 1
+            # need to figure out the triu_indices for rank 3 tensors
+            input = input.reshape(-1)
+            output = torch.zeros((m, m), device = input.device)
+            lengths = torch.arange(m, 0, -1)
+            flattened = torch.cat([input[0:l] for l in lengths], dim = 0)
+            output[np.triu_indices(m)] = flattened
+            output = output.unsqueeze(0)
+        else:
+            output = torch.zeros((N, m, m), device = input.device)
+            for n in range(N):
+                for d in range(m):
+                    rng = np.arange(m-d)
+                    output[n, rng, rng+d] = input[n, d]
 
+        output += torch.transpose(torch.triu(output, 1), 1, 2)
         return output
 
 def test_average_to_2d_outer():
@@ -496,7 +505,50 @@ def test_MLP():
     out = mlp(x)
     print(out)
 
+def test_FillDiagonalsFromArray():
+    fill = FillDiagonalsFromArray()
+    # fill2 = FillDiagonalsFromArray2()
+    verbose = False
+    N = 2
+    m = 1024
+    times = 100
+    t0 = time.time()
+    for _ in range(times):
+        input = torch.tile(torch.range(0, m-1, 1), (N, 1))
+        if verbose:
+            print(input)
+        out1 = fill(input)
+        # if verbose:
+        #     print(out1, out1.shape)
+
+    tf = time.time()
+    deltaT = np.round(tf - t0, 3)
+    print("time: {}".format(deltaT))
+
+    # input = input.numpy().reshape(-1)
+    # out = out1.numpy().reshape(N, m,m)
+    # print(input, input.shape)
+    # print(out)
+    # print(out[:, np.triu_indices(m)])
+
+    # input = np.arange(5)
+    # input = input.reshape(-1)
+    # output = np.zeros((m, m))
+    # lengths = np.arange(m, 0, -1)
+    # print(lengths)
+    # flattened = np.concatenate([input[0:l] for l in lengths])
+    # print('f', flattened)
+    # output[np.triu_indices(m)] = flattened
+    #
+    # output +=np.triu(output, 1).T
+    # print(output)
+
+
+
+
+
 
 if __name__ == '__main__':
     # test_average_to_2d_outer()
-    test_MLP()
+    # test_MLP()
+    test_FillDiagonalsFromArray()

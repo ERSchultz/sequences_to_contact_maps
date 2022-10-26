@@ -161,7 +161,7 @@ def debugModel(model_type):
         opt.preprocessing_norm = 'mean'
         opt.message_passing = 'gat'
         opt.GNN_mode = True
-        opt.output_mode = 'diag_chi_continuous'
+        opt.output_mode = 'energy_diag'
         opt.encoder_hidden_sizes_list=[100,100,64]
         opt.update_hidden_sizes_list=[100,100,64]
         opt.hidden_sizes_list=[8,8,8]
@@ -180,7 +180,7 @@ def debugModel(model_type):
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
         # opt.head_architecture = 'bilinear'
-        opt.head_architecture_2 = 'fc'
+        opt.head_architecture_2 = 'fc-fill'
         opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, 1024]
         # opt.crop = [0,100]
         # opt.m = 100
@@ -232,7 +232,7 @@ def debugModel(model_type):
     # hyperparameters
     opt.n_epochs = 50
     opt.lr = 1e-4
-    opt.batch_size = 2
+    opt.batch_size = 1
     opt.milestones = None
     opt.gamma = 0.1
 
