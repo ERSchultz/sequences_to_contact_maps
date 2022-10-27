@@ -35,9 +35,7 @@ false
 --transforms
 empty
 --pre_transforms
-AdjPCA-degree-ContactDistance
---split_edges_for_feature_augmentation
-true
+AdjPCA-degree_split-ContactDistance
 --top_k
 none
 --sparsify_threshold

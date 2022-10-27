@@ -405,30 +405,27 @@ def process_transforms(opt):
                 opt.sparsify_threshold_upper is None):
                 print('Warning: using LDP without any sparsification')
             opt.node_feature_size += 5
-        elif t_str[0] == 'degree':
+        elif t_str[0] == 'degree' or t_str[0] == 'weighteddegree':
+            if t_str[0] == 'weighteddegree':
+                weighted = True
+            else:
+                weighted = False
             opt.node_feature_size += 1
             split = False
             norm = True
+            max_value = None
             for mode_str in t_str[1:]:
                 if mode_str == 'diag':
                     opt.diag = True
                 if mode_str == 'split':
                     split = True
                     opt.node_feature_size += 2
+                if mode_str.startswith('max'):
+                    assert mode_str[3:].isnumeric()
+                    max_value = float(mode_str[3:])
             transform = Degree(split_val = split_value, diag = opt.diag,
-                            split_edges = split)
-            processed.append(transform)
-            opt.node_transforms.append(transform)
-        elif t_str[0] == 'weighteddegree':
-            opt.node_feature_size += 1
-            split = False
-            norm = True
-            for mode_str in t_str[1:]:
-                if mode_str == 'split':
-                    split = True
-                    opt.node_feature_size += 2
-            transform = Degree(weighted = True, split_val = split_value,
-                            split_edges = split)
+                            split_edges = split, max_val = max_value,
+                            weighted = weighted)
             processed.append(transform)
             opt.node_transforms.append(transform)
         elif t_str[0] == 'onehotdegree':

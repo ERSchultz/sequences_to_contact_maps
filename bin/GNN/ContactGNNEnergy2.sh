@@ -34,10 +34,11 @@ yNorm='mean'
 headArchitecture='fc'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 
-# 2nd attempt at predicting only diag with GNN, weighted GAT arch
+# repeat of 211 but split = False
+# attempt at predicting only diag with GNN, weighted GAT arch, split = False
 
 
-id=211
+id=215
 for lr in 1e-4
 do
   train

@@ -109,10 +109,8 @@ class Degree(BaseTransform):
         if self.norm:
             deg /= (deg.max() if self.max is None else self.max)
             if self.split_edges:
-                # if statement is a safety check to avoid divide by 0
-                pos_deg /= (pos_deg.max() if pos_deg.max() > 0 else 1)
-
-                neg_deg /= (neg_deg.max() if neg_deg.max() > 0 else neg_deg.min())
+                pos_deg /= (pos_deg.max() if self.max is None else self.max)
+                neg_deg /= (neg_deg.max() if self.max is None else self.max)
 
         if self.split_edges:
             deg = torch.stack([deg, pos_deg, neg_deg], dim=1)

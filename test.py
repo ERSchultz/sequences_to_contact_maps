@@ -73,23 +73,40 @@ def edit_argparse():
         type_path = osp.join(dir, type)
         if osp.isdir(type_path):
             for id in os.listdir(type_path):
+                # if not (id == '160'):
+                #     continue
                 id_path = osp.join(type_path, id)
+                print('\n\n', id_path)
                 if osp.isdir(id_path):
                     arg_file = osp.join(id_path, 'argparse.txt')
                     if osp.exists(arg_file):
                         with open(arg_file, 'r') as f:
                             lines = f.readlines()
-                        weights = False
-                        for i, line in enumerate(lines):
-                            if line.startswith('--pre_transforms'):
-                                line = lines[i+1]
-                                line_split = line.split('-')
+                        new_lines = []
+                        i = 0
+                        split = False
+                        while i < len(lines):
+                            line = lines[i]
+                            if line.startswith('--split_edges_for_feature_augmentation'):
+                                if lines.pop(i+1).strip() == 'true':
+                                    split = True
+                                else:
+                                    split = False
+                                lines.pop(i)
+
+                                i -= 2
+                                assert lines[i].startswith('--pre_transforms')
+                                i += 1
+                                line = lines[i]
+
+                                line_split = line.strip().split('-')
                                 for j, val in enumerate(line_split):
-                                    if val.lower() == 'geneticdistance':
-                                        line_split[j] = 'GeneticDistance_norm'
-                                line = '-'.join(line_split)
-                                lines[i+1] = line
-                                print(line, id)
+                                    if val.lower().startswith('degree'):
+                                        if split and 'split' not in val:
+                                            line_split[j] = val + '_split'
+                                line = '-'.join(line_split)+'\n'
+                                lines[i] = line
+                            i += 1
                         with open(arg_file, 'w') as f:
                             f.write("".join(lines))
 
@@ -158,7 +175,7 @@ def debugModel(model_type):
     elif model_type == 'ContactGNNEnergy':
         opt.y_preprocessing = 'log'
         opt.loss = 'mse'
-        opt.preprocessing_norm = None
+        opt.preprocessing_norm = 'mean'
         opt.message_passing = 'gat'
         opt.GNN_mode = True
         opt.output_mode = 'energy_diag'
@@ -173,7 +190,7 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('sparse')
-        opt.pre_transforms=AC.str2list('degree_split-contactdistance-GeneticDistance_norm')
+        opt.pre_transforms=AC.str2list('degree-contactdistance-geneticdistance_norm')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
@@ -259,7 +276,6 @@ def debugModel(model_type):
 
     # if opt.use_scratch:
     #     rmtree(opt.data_folder)
-
 
 def binom():
     dir = '/home/erschultz/sequences_to_contact_maps/dataset_04_27_22/samples/sample1'
@@ -597,33 +613,6 @@ def sc_structure_vs_sc_sample():
         plt.legend()
         plt.savefig(osp.join(dir, 'sc vs sample.png'))
         plt.close()
-
-def main2():
-    # scc comparison
-    # using bulk hic data
-    times = 100
-    h = 1
-
-    dir1 = '/home/erschultz/sequences_to_contact_maps/dataset_05_18_22/samples/sample3'
-    y1 = np.load(osp.join(dir1, 'y.npy'))
-    y1 = uniform_filter(y1.astype(np.float64), 1+2*2, mode = 'constant')
-    np.savetxt(osp.join(dir1, f'y.txt'), y1)
-
-    dir2 = osp.join(dir1, 'PCA-normalize/k4/replicate1')
-    y2 = np.load(osp.join(dir2, 'y.npy'))
-    y2 = uniform_filter(y2.astype(np.float64), 1+2*2, mode = 'constant')
-
-    np.savetxt(osp.join(dir2, f'y.txt'), y2)
-
-    scc = SCC()
-    t0 = time.time()
-    for _ in range(times):
-        val, p, w  = scc.scc(y1, y2, h, K = 10, var_stabilized = True, verbose = True)
-    tf = time.time()
-    print(val)
-    print(p, p.shape)
-    print(w, w.shape)
-    print_time(t0, tf, 'scc')
 
 def prep_data_for_cluster():
     dir = '/project2/depablo/erschultz/dataset_09_30_22/'

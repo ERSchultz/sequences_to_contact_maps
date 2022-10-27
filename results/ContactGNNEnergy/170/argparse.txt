@@ -37,9 +37,7 @@ true
 --transforms
 empty
 --pre_transforms
-degree-ContactDistance-GeneticDistance
---split_edges_for_feature_augmentation
-true
+degree_split-ContactDistance-GeneticDistance
 --top_k
 none
 --sparsify_threshold

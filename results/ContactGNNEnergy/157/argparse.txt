@@ -35,9 +35,7 @@ false
 --transforms
 empty
 --pre_transforms
-degree
---split_edges_for_feature_augmentation
-true
+degree_split
 --top_k
 none
 --sparsify_threshold

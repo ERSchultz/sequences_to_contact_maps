@@ -35,9 +35,7 @@ true
 --transforms
 empty
 --pre_transforms
-degree-contactdistance-GeneticDistance_norm-AdjPCA_10
---split_edges_for_feature_augmentation
-true
+degree_split-contactdistance-GeneticDistance_norm-AdjPCA_10
 --top_k
 none
 --sparsify_threshold

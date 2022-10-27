@@ -35,9 +35,7 @@ false
 --transforms
 empty
 --pre_transforms
-degree-GeneticPosition_center
---split_edges_for_feature_augmentation
-true
+degree_split-GeneticPosition_center
 --top_k
 none
 --sparsify_threshold

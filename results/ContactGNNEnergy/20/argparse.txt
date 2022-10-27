@@ -32,8 +32,6 @@ true
 empty
 --pre_transforms
 degree-ContactDistance
---split_edges_for_feature_augmentation
-false
 --top_k
 none
 --sparsify_threshold
