@@ -394,7 +394,7 @@ class ContactDistance(BaseTransform):
 
     def __repr__(self) -> str:
         return (f'{self.__class__.__name__}(norm={self.norm}, '
-                f'max={self.max}, split_edges={self.split_edges}')
+                f'max={self.max}, split_edges={self.split_edges})')
 
 class DiagonalParameterDistance(BaseTransform):
     '''

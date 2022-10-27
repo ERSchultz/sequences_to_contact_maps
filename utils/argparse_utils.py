@@ -45,8 +45,6 @@ def get_base_parser():
                         help='True to use edge attr in GNN')
     parser.add_argument('--relabel_11_to_00',type=AC.str2bool, default=False,
                         help='True to relabel [1,1] particles as [0,0] particles')
-    parser.add_argument('--split_edges_for_feature_augmentation', type=AC.str2bool, default=False,
-                        help='True to split edges for feature augmentation')
 
     # pre-processing args
     parser.add_argument('--data_folder', type=str, default='dataset_04_18_21',
@@ -367,9 +365,9 @@ def process_transforms(opt):
     opt.node_transforms = []
 
     if opt.log_preprocessing is not None:
-        split = 0
+        split_value = 0
     else:
-        split = 1
+        split_value = 1
     opt.edge_dim = 0
 
     # transforms
@@ -409,23 +407,28 @@ def process_transforms(opt):
             opt.node_feature_size += 5
         elif t_str[0] == 'degree':
             opt.node_feature_size += 1
-            if opt.split_edges_for_feature_augmentation:
-                opt.node_feature_size += 2
-                # additional feature for neg and pos
+            split = False
+            norm = True
             for mode_str in t_str[1:]:
                 if mode_str == 'diag':
                     opt.diag = True
-            transform = Degree(split_val = split, diag = opt.diag,
-                        split_edges = opt.split_edges_for_feature_augmentation)
+                if mode_str == 'split':
+                    split = True
+                    opt.node_feature_size += 2
+            transform = Degree(split_val = split_value, diag = opt.diag,
+                            split_edges = split)
             processed.append(transform)
             opt.node_transforms.append(transform)
         elif t_str[0] == 'weighteddegree':
-
             opt.node_feature_size += 1
-            if opt.split_edges_for_feature_augmentation:
-                opt.node_feature_size += 2
-            transform = Degree(weighted = True, split_val = split,
-                        split_edges = opt.split_edges_for_feature_augmentation)
+            split = False
+            norm = True
+            for mode_str in t_str[1:]:
+                if mode_str == 'split':
+                    split = True
+                    opt.node_feature_size += 2
+            transform = Degree(weighted = True, split_val = split_value,
+                            split_edges = split)
             processed.append(transform)
             opt.node_transforms.append(transform)
         elif t_str[0] == 'onehotdegree':
@@ -649,7 +652,6 @@ def opt2list(opt):
     if opt.GNN_mode:
         opt_list.extend([opt.use_node_features, opt.use_edge_weights, opt.use_edge_attr,
                         opt.node_transforms, opt.edge_transforms,
-                        opt.split_edges_for_feature_augmentation,
                         opt.sparsify_threshold, opt.sparsify_threshold_upper, opt.max_diagonal,
                         opt.hidden_sizes_list, opt.message_passing, opt.update_hidden_sizes_list,
                         f'{opt.head_architecture}+{opt.head_architecture_2}', opt.head_hidden_sizes_list])
@@ -702,7 +704,6 @@ def get_opt_header(model_type, GNN_mode):
     if GNN_mode:
         opt_list.extend(['use_node_features','use_edge_weights', 'use_edge_attr',
                         'node_transforms', 'edge_transforms',
-                        'split_edges_for_feature_augmentation',
                         'sparsify_threshold', 'sparsify_threshold_upper', 'max_diagonal',
                         'hidden_sizes_list', 'message_passing', 'update_hidden_sizes_list',
                         'head_architecture', 'head_hidden_sizes_list'])
