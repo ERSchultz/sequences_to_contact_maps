@@ -43,8 +43,8 @@ def get_base_parser():
                         help='True to use edge weights in GNN')
     parser.add_argument('--use_edge_attr', type=AC.str2bool, default=False,
                         help='True to use edge attr in GNN')
-    parser.add_argument('--relabel_11_to_00',type=AC.str2bool, default=False,
-                        help='True to relabel [1,1] particles as [0,0] particles')
+    parser.add_argument('--keep_zero_edges', type=AC.str2bool, default=False,
+                        help='True to keep edges with zero weight')
 
     # pre-processing args
     parser.add_argument('--data_folder', type=str, default='dataset_04_18_21',
@@ -550,7 +550,7 @@ def copy_data_to_scratch(opt):
              p.starmap(copy_data_to_scratch_inner, mapping)
     else:
         if opt.split_sizes is not None and -1 not in opt.split_sizes and not opt.random_split:
-            for sample in samples[:np.sum(opt.split_sizes)]:
+            for sample in samples:
                 copy_data_to_scratch_inner(sample, opt.data_folder, scratch_path, opt.toxx, opt.y_preprocessing, opt.output_mode)
 
         else:
@@ -584,7 +584,7 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
         if file == 'xx.npy' and toxx:
             # only need xx.npy if toxx is True
             move_file = True
-        elif file == 'y.npy' and (y_preprocessing is None or y_preprocessing == 'log' or output_mode.startswith('diag')):
+        elif file == 'y.npy' and (y_preprocessing is None or y_preprocessing.startswith('log') or output_mode.startswith('diag')):
             move_file = True
         elif y_preprocessing is not None and fname.endswith(y_preprocessing) and ftype == 'npy':
             # need file corresponding to y_preprocessing

@@ -30,16 +30,16 @@ updateHiddenSizesList='100-100-64'
 numHeads=8
 
 outputMode='diag_chi_continuous'
-yPreprocessing='log'
+yPreprocessing='log_inf'
 yNorm='mean'
 headArchitecture='fc'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 
 # attempt at predicting only diag with GNN, norm = mean, contact_distance_norm
-# repeat of 214 with split = False
+# repeat of 214, 216 with split = False and log_inf
 
 
-id=216
+id=218
 for lr in 1e-4
 do
   train

@@ -1,10 +1,9 @@
 #! /bin/bash
 
 
-for i in 3 4
+for i in 1 2
 # 5 6  midway3
-# 0 3 4 running on midway2
-# 1 2 - done
+# 0 3 4 done on midway2
 # 10 11 12 13 running on midway3
 # 7 8 9 running on midway3
 do

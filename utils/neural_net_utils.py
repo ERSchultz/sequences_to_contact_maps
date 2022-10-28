@@ -45,7 +45,7 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
                                 opt.split_neg_pos_edges, opt.max_diagonal,
                                 opt.transforms_processed, opt.pre_transforms_processed,
                                 opt.output_mode, opt.crop, opt.log_file, verbose,
-                                max_sample, samples, opt.diag)
+                                max_sample, samples, opt.diag, opt.keep_zero_edges)
         opt.root = dataset.root
         print('\n'*3)
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':

@@ -35,7 +35,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 transform = None, pre_transform = None, output = 'contact',
                 crop = None, ofile = sys.stdout, verbose = True,
                 max_sample = float('inf'), samples = None,
-                diag = False):
+                diag = False, keep_zero_edges = False):
         '''
         Inputs:
             dirname: directory path to raw data
@@ -60,6 +60,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             max_sample: max sample id to save
             samples: set of samples to include (None for all)
             diag: TODO
+            keep_zero_edges: True to keep edges with 0 weight
         '''
         t0 = time.time()
         self.m = m
@@ -82,6 +83,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.verbose = verbose
         self.file_paths = make_dataset(self.dirname, maxSample = max_sample, samples = samples)
         self.diag = diag
+        self.keep_zero_edges = keep_zero_edges
 
         if root_name is None:
             # find any currently existing graph data folders
@@ -251,13 +253,18 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 y /= np.max(y)
             elif self.y_norm == 'mean':
                 y /= np.mean(np.diagonal(y))
-        elif self.y_preprocessing == 'log':
+        elif self.y_preprocessing == 'log' or self.y_preprocessing == 'log_inf':
             y = np.load(osp.join(raw_folder, 'y.npy')).astype(np.float64)
             if self.y_norm == 'max':
                 y /= np.max(y)
             elif self.y_norm == 'mean':
                 y /= np.mean(np.diagonal(y))
-            y = np.log(y+1)
+
+            if self.y_preprocessing == 'log_inf':
+                y = np.log(y)
+                y[np.isinf(y)] = np.nan
+            else:
+                y = np.log(y+1)
 
             if self.diag:
                 meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
@@ -296,9 +303,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y[np.isinf(y)] = 0 # since we didn't add a constant to y before the log
 
         if self.sparsify_threshold is not None:
-            y[np.abs(y) < self.sparsify_threshold] = 0
+            y[np.abs(y) < self.sparsify_threshold] = np.nan
         if self.sparsify_threshold_upper is not None:
-            y[np.abs(y) > self.sparsify_threshold_upper] = 0
+            y[np.abs(y) > self.sparsify_threshold_upper] = np.nan
 
 
         # self.plotDegreeProfile(y)
@@ -404,7 +411,14 @@ class ContactsGraph(torch_geometric.data.Dataset):
         return y
 
     def generate_edge_index(self):
-        edge_index = self.contact_map.nonzero().t()
+        adj = torch.clone(self.contact_map)
+        if self.keep_zero_edges:
+            adj[adj == 0] = 1 # first set zero's to some nonzero value
+            adj = torch.nan_to_num(adj) # then replace nans with zero
+            edge_index = adj.nonzero().t() # ignore remaining zeros
+        else:
+            adj = torch.nan_to_num(adj) # replace nans with zero
+            edge_index = adj.nonzero().t() # ignore all zeros
         self.num_edges_list.append(edge_index.shape[1])
         if self.split_neg_pos:
             if self.y_log_transform:

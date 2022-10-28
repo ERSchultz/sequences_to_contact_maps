@@ -31,6 +31,7 @@ from utils.dataset_classes import make_dataset
 from utils.energy_utils import s_to_E
 from utils.load_utils import load_sc_contacts, save_sc_contacts
 from utils.networks import get_model
+from utils.neural_net_utils import get_dataset
 from utils.plotting_utils import plot_matrix
 from utils.similarity_measures import SCC
 from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
@@ -123,8 +124,9 @@ def debugModel(model_type):
     opt.m = 1024
     # opt.split_percents=[0.9,0.1,0.0]
     # opt.split_sizes=None
-    opt.split_sizes=[2, 1, 0]
+    opt.split_sizes=[1, 1, 0]
     opt.split_percents = None
+    opt.random_split=False
 
     if model_type == 'Akita':
         opt.kernel_w_list=AC.str2list('5-5-5')
@@ -173,7 +175,8 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing = 'log'
+        opt.y_preprocessing = 'log_inf'
+        opt.keep_zero_edges = True
         opt.loss = 'mse'
         opt.preprocessing_norm = 'mean'
         opt.message_passing = 'gat'
@@ -190,16 +193,17 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('sparse')
-        opt.pre_transforms=AC.str2list('degree-contactdistance-geneticdistance_norm')
+        opt.pre_transforms=AC.str2list('degree-contactdistance')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
         opt.head_architecture = 'bilinear'
         # opt.head_architecture_2 = 'fc-fill'
-        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, 100]
-        opt.crop = [0,100]
-        opt.m = 100
+        opt.m = 1024
+        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, opt.m]
+        opt.crop = [0,opt.m]
+
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True
@@ -232,7 +236,6 @@ def debugModel(model_type):
         opt.scratch = '/home/erschultz/scratch/MLP1'
         opt.preprocessing_norm=None
         opt.y_preprocessing='log'
-        opt.random_split=False
         opt.hidden_sizes_list=AC.str2list('100-'*6 + '1024')
         opt.act='prelu'
         opt.out_act='prelu'
@@ -273,6 +276,23 @@ def debugModel(model_type):
     model = get_model(opt)
 
     core_test_train(model, opt)
+    # for val, label in zip([None, 'mean'], ['None', 'mean']):
+    #     opt.preprocessing_norm = val
+    #     dataset = get_dataset(opt)
+    #     for i, data in enumerate(dataset):
+    #         print(data.path)
+    #         print(f'edge_attr={data.edge_attr}, '
+    #                 f'shape={data.edge_attr.shape}, '
+    #                 f'min={torch.min(data.edge_attr).item()}, '
+    #                 f'max={torch.max(data.edge_attr).item()}')
+    #         plt.hist(data.edge_attr.reshape(-1), alpha = 0.5, label = f'{val}{i}',
+    #                 bins=50)
+    #                 # bins=np.logspace(np.log10(0.0001),np.log10(10.0), 50))
+    # # plt.xscale('log')
+    # plt.yscale('log')
+    # plt.title(opt.y_preprocessing)
+    # plt.legend()
+    # plt.show()
 
     # if opt.use_scratch:
     #     rmtree(opt.data_folder)
