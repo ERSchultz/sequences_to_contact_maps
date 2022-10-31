@@ -35,7 +35,7 @@ false
 --transforms
 empty
 --pre_transforms
-degree_split-GeneticPosition_center_norm
+Degree-degree_split-GeneticPosition_center_norm
 --top_k
 none
 --sparsify_threshold

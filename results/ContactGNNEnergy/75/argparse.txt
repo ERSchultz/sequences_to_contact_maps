@@ -33,7 +33,7 @@ false
 --transforms
 empty
 --pre_transforms
-degree_split
+Degree-degree_split
 --top_k
 none
 --sparsify_threshold

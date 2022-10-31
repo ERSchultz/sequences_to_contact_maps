@@ -33,7 +33,7 @@ true
 --transforms
 empty
 --pre_transforms
-AdjPCA-degree-ContactDistance
+Degree-AdjPCA-degree-ContactDistance
 --top_k
 none
 --sparsify_threshold
