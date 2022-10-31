@@ -33,6 +33,7 @@ yPreprocessing='log_inf'
 yNorm='mean'
 headArchitecture='bilinear'
 # headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+useScratch='false'
 
 # like 217, but for plaid chi
 

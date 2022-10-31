@@ -35,6 +35,7 @@ yNorm='mean'
 headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+useScratch='false'
 
 # like 217, but for net energy
 

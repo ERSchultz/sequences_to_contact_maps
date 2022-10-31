@@ -34,6 +34,7 @@ yPreprocessing='log_inf'
 yNorm='none'
 headArchitecture='fc'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+useScratch='false'
 
 # like 217, but no norm
 
