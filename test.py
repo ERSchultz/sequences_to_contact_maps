@@ -72,12 +72,12 @@ def edit_argparse():
     dir = "results"
     for type in os.listdir(dir):
         type_path = osp.join(dir, type)
+        if not 'Energy' in type_path:
+            continue
+        print(type_path)
         if osp.isdir(type_path):
             for id in os.listdir(type_path):
-                # if not (id == '160'):
-                #     continue
                 id_path = osp.join(type_path, id)
-                print('\n\n', id_path)
                 if osp.isdir(id_path):
                     arg_file = osp.join(id_path, 'argparse.txt')
                     if osp.exists(arg_file):
@@ -88,25 +88,28 @@ def edit_argparse():
                         split = False
                         while i < len(lines):
                             line = lines[i]
-                            if line.startswith('--split_edges_for_feature_augmentation'):
-                                if lines.pop(i+1).strip() == 'true':
-                                    split = True
-                                else:
-                                    split = False
+                            if line.startswith('--relabel'):
+                                assert lines.pop(i+1).strip() == 'false'
                                 lines.pop(i)
-
-                                i -= 2
-                                assert lines[i].startswith('--pre_transforms')
-                                i += 1
-                                line = lines[i]
-
-                                line_split = line.strip().split('-')
-                                for j, val in enumerate(line_split):
-                                    if val.lower().startswith('degree'):
-                                        if split and 'split' not in val:
-                                            line_split[j] = val + '_split'
-                                line = '-'.join(line_split)+'\n'
-                                lines[i] = line
+                            # if line.startswith('--split_edges_for_feature_augmentation'):
+                            #     if lines.pop(i+1).strip() == 'true':
+                            #         split = True
+                            #     else:
+                            #         split = False
+                            #     lines.pop(i)
+                            #
+                            #     i -= 2
+                            #     assert lines[i].startswith('--pre_transforms')
+                            #     i += 1
+                            #     line = lines[i]
+                            #
+                            #     line_split = line.strip().split('-')
+                            #     for j, val in enumerate(line_split):
+                            #         if val.lower().startswith('degree'):
+                            #             if split and 'split' not in val:
+                            #                 line_split[j] = val + '_split'
+                            #     line = '-'.join(line_split)+'\n'
+                            #     lines[i] = line
                             i += 1
                         with open(arg_file, 'w') as f:
                             f.write("".join(lines))
@@ -124,7 +127,7 @@ def debugModel(model_type):
     opt.m = 1024
     # opt.split_percents=[0.9,0.1,0.0]
     # opt.split_sizes=None
-    opt.split_sizes=[1, 1, 0]
+    opt.split_sizes=[1, 0, 0]
     opt.split_percents = None
     opt.random_split=False
 
@@ -176,9 +179,9 @@ def debugModel(model_type):
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
         opt.y_preprocessing = 'log_inf'
-        opt.keep_zero_edges = True
+        opt.keep_zero_edges = False
         opt.loss = 'mse'
-        opt.preprocessing_norm = 'mean'
+        opt.preprocessing_norm = None
         opt.message_passing = 'gat'
         opt.GNN_mode = True
         opt.output_mode = 'energy_diag'
@@ -273,26 +276,31 @@ def debugModel(model_type):
 
     opt.model_type = model_type
 
-    model = get_model(opt)
+    # model = get_model(opt)
 
-    core_test_train(model, opt)
-    # for val, label in zip([None, 'mean'], ['None', 'mean']):
-    #     opt.preprocessing_norm = val
-    #     dataset = get_dataset(opt)
-    #     for i, data in enumerate(dataset):
-    #         print(data.path)
-    #         print(f'edge_attr={data.edge_attr}, '
-    #                 f'shape={data.edge_attr.shape}, '
-    #                 f'min={torch.min(data.edge_attr).item()}, '
-    #                 f'max={torch.max(data.edge_attr).item()}')
-    #         plt.hist(data.edge_attr.reshape(-1), alpha = 0.5, label = f'{val}{i}',
-    #                 bins=50)
-    #                 # bins=np.logspace(np.log10(0.0001),np.log10(10.0), 50))
-    # # plt.xscale('log')
-    # plt.yscale('log')
-    # plt.title(opt.y_preprocessing)
-    # plt.legend()
-    # plt.show()
+    # core_test_train(model, opt)
+    for val, label in zip([None, 'mean'], ['No Normalize', 'Normalize']):
+        opt.preprocessing_norm = val
+        dataset = get_dataset(opt)
+        for i, data in enumerate(dataset):
+            print(data.path)
+            print(f'x={data.x}, shape={data.x.shape}, '
+                    f'min={torch.min(data.x).item()}, '
+                    f'max={torch.max(data.x).item()}')
+            print(f'edge_attr={data.edge_attr}, '
+                    f'shape={data.edge_attr.shape}, '
+                    f'min={torch.min(data.edge_attr).item()}, '
+                    f'max={torch.max(data.edge_attr).item()}')
+            plt.hist(data.edge_attr.reshape(-1), alpha = 0.5, label = f'{label}',
+                    bins=50)
+                    # bins=np.logspace(np.log10(0.0001),np.log10(10.0), 50))
+    # plt.xscale('log')
+    plt.yscale('log')
+    plt.ylabel('Count')
+    plt.xlabel('Contact Map Value')
+    plt.title(f'{opt.y_preprocessing} preprocessing')
+    plt.legend()
+    plt.show()
 
     # if opt.use_scratch:
     #     rmtree(opt.data_folder)

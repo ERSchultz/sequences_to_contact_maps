@@ -36,6 +36,7 @@ def update_result_tables(model_type = None, mode = None, output_mode = 'contact'
     for model_type, mode, output_mode in zip(model_types, modes, output_modes):
         # set up header row
         opt_list = get_opt_header(model_type, mode)
+        opt_list.pop(0) # pop model type
         if output_mode == 'contact':
             opt_list.extend(['Final Validation Loss', 'PCA Accuracy Mean',
                 'PCA Accuracy Std', 'PCA Spearman Mean', 'PCA Spearman Std',
@@ -61,6 +62,7 @@ def update_result_tables(model_type = None, mode = None, output_mode = 'contact'
                     opt.id = int(id)
                     opt = finalize_opt(opt, parser, local = True, debug = True)
                     opt_list = opt2list(opt)
+                    opt_list.pop(0) # pop model_type
                     if output_mode == 'contact':
                         with open(osp.join(id_path, 'PCA_results.txt'), 'r') as f:
                             f.readline()
@@ -398,7 +400,7 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     dir = '/home/erschultz/sequences_to_contact_maps/'
     data_dir = osp.join(dir, 'single_cell_nagano_imputed/samples/sample443')
@@ -414,5 +416,5 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_09_30_22')
-    plot_combined_models('ContactGNNEnergy', [210, 211])
+    plot_combined_models('ContactGNNEnergy', [213, 217])
     # main()

@@ -28,17 +28,16 @@ EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
-outputMode='diag_chi_continuous'
+outputMode='energy_sym'
 yPreprocessing='log_inf'
 yNorm='mean'
-headArchitecture='fc'
-headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+headArchitecture='bilinear'
+# headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 
-# repeat of 211, 215 but split = False and log_inf
-# attempt at predicting only diag with GNN, weighted GAT arch, split = False
+# like 217, but for plaid chi
 
 
-id=217
+id=222
 for lr in 1e-4
 do
   train

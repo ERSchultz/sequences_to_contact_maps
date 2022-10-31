@@ -70,8 +70,6 @@ false
 true
 --plot_predictions
 true
---relabel_11_to_00
-false
 --crop
 none
 --print_params

@@ -21,7 +21,7 @@ rootName='ContactGNNEnergy1' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='degree-ContactDistance_norm-GeneticDistance_norm'
+preTransforms='degree-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
@@ -29,17 +29,17 @@ EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
-outputMode='diag_chi_continuous'
+outputMode='energy_sym_diag'
 yPreprocessing='log_inf'
 yNorm='mean'
-headArchitecture='fc'
+headArchitecture='bilinear'
+headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 
-# attempt at predicting only diag with GNN, norm = mean, contact_distance_norm
-# repeat of 214, 216 with split = False and log_inf
+# like 217, but for net energy
 
 
-id=218
+id=223
 for lr in 1e-4
 do
   train
