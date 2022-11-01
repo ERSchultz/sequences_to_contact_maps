@@ -91,25 +91,39 @@ def edit_argparse():
                             if line.startswith('--relabel'):
                                 assert lines.pop(i+1).strip() == 'false'
                                 lines.pop(i)
-                            # if line.startswith('--split_edges_for_feature_augmentation'):
-                            #     if lines.pop(i+1).strip() == 'true':
-                            #         split = True
-                            #     else:
-                            #         split = False
-                            #     lines.pop(i)
-                            #
-                            #     i -= 2
-                            #     assert lines[i].startswith('--pre_transforms')
-                            #     i += 1
-                            #     line = lines[i]
-                            #
-                            #     line_split = line.strip().split('-')
-                            #     for j, val in enumerate(line_split):
-                            #         if val.lower().startswith('degree'):
-                            #             if split and 'split' not in val:
-                            #                 line_split[j] = val + '_split'
-                            #     line = '-'.join(line_split)+'\n'
-                            #     lines[i] = line
+                            if line.startswith('--split_edges_for_feature_augmentation'):
+                                if lines.pop(i+1).strip() == 'true':
+                                    split = True
+                                else:
+                                    split = False
+                                lines.pop(i)
+
+                                i -= 2
+                                assert lines[i].startswith('--pre_transforms')
+                                i += 1
+                                line = lines[i]
+
+                                line_split = line.strip().split('-')
+                                for j, val in enumerate(line_split):
+                                    if val.lower().startswith('degree'):
+                                        if split and 'split' not in val:
+                                            line_split[j] = val + '_split'
+                                line = '-'.join(line_split)+'\n'
+                                lines[i] = line
+                            if line.startswith('--pre_transforms'):
+                                i += 1
+                                line = lines[i]
+                                line_split = line.strip().split('-')
+                                degree_count = 0
+                                for j, val in enumerate(line_split):
+                                    if val.lower().startswith('degree'):
+                                        degree_count += 1
+                                if degree_count == 1:
+                                    line_split.insert(0, 'Degree')
+                                line = '-'.join(line_split)+'\n'
+
+                                lines[i] = line
+
                             i += 1
                         with open(arg_file, 'w') as f:
                             f.write("".join(lines))
@@ -178,10 +192,10 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing = 'log_inf'
+        opt.y_preprocessing = 'sweep200000_log_inf'
         opt.keep_zero_edges = False
         opt.loss = 'mse'
-        opt.preprocessing_norm = None
+        opt.preprocessing_norm = 'mean'
         opt.message_passing = 'gat'
         opt.GNN_mode = True
         opt.output_mode = 'energy_diag'
@@ -196,7 +210,7 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('sparse')
-        opt.pre_transforms=AC.str2list('degree-contactdistance')
+        opt.pre_transforms=AC.str2list('degree-degree_split0_diag-contactdistance')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
@@ -265,24 +279,23 @@ def debugModel(model_type):
     opt.print_params = False
     opt.gpus = 1
     opt.delete_root = True
-    opt.use_scratch = True
-    opt.print_mod = 1
+    opt.use_scratch = False
     opt.num_workers = 2
     opt.use_scratch_parallel = False
-    # opt.id = 12
-    # opt.resume_training = True
 
     opt = finalize_opt(opt, parser, False, debug = True)
-
     opt.model_type = model_type
-
     # model = get_model(opt)
-
     # core_test_train(model, opt)
-    for val, label in zip([None, 'mean'], ['No Normalize', 'Normalize']):
-        opt.preprocessing_norm = val
+
+
+    for val, label in zip(['log', 'sweep200000_log'], ['All', '40%']):
+        opt.y_preprocessing = val
+
+        print(opt, end = '\n\n', file = opt.log_file)
         dataset = get_dataset(opt)
         for i, data in enumerate(dataset):
+            plot_matrix(data.contact_map_diag, osp.join(data.path, 'diag.png'), title = None, vmin = 'min', vmax = 'max')
             print(data.path)
             print(f'x={data.x}, shape={data.x.shape}, '
                     f'min={torch.min(data.x).item()}, '
@@ -291,14 +304,17 @@ def debugModel(model_type):
                     f'shape={data.edge_attr.shape}, '
                     f'min={torch.min(data.edge_attr).item()}, '
                     f'max={torch.max(data.edge_attr).item()}')
-            plt.hist(data.edge_attr.reshape(-1), alpha = 0.5, label = f'{label}',
+            # plt.hist(data.edge_attr.reshape(-1), alpha = 0.5, label = f'{label}',
+                    # bins=50)
+                    # bins=np.logspace(np.log10(0.0001),np.log10(10.0), 50))
+            plt.hist(data.x[:,0], alpha = 0.5, label = f'{label}',
                     bins=50)
                     # bins=np.logspace(np.log10(0.0001),np.log10(10.0), 50))
     # plt.xscale('log')
     plt.yscale('log')
     plt.ylabel('Count')
-    plt.xlabel('Contact Map Value')
-    plt.title(f'{opt.y_preprocessing} preprocessing')
+    plt.xlabel('Degree')
+    # plt.title(f'{opt.y_preprocessing} preprocessing')
     plt.legend()
     plt.show()
 
@@ -336,85 +352,6 @@ def binom():
     p = triu_to_full(p)
     plot_matrix(p, osp.join(dir, 'p.png'), title = None, vmin = 'min', vmax = 'max')
 
-    # for i in [1,2,3,4,5,6,8,10,200]:
-    #     print(f'\nk={i}')
-    #     pca = PCA(n_components = i)
-    #     s_transform = pca.fit_transform(s_sym)
-    #     s_sym_i = pca.inverse_transform(s_transform)
-    #
-    #     pca = PCA(n_components = i)
-    #     p_transform = pca.fit_transform(p)
-    #     p_i = pca.inverse_transform(p_transform)
-    #     loss = binom_nll(p_i[np.triu_indices(m)], y, n, 0)
-    #     print(f'p_{i} loss', loss)
-    #     plot_matrix(p_i, osp.join(dir, f'p_rank_{i}.png'), vmin = 'min',
-    #                     vmax = 'max', title = f'p rank {i}')
-    #
-    #     # plotting
-    #     plot_binom_helper(p_i[np.triu_indices(m)],
-    #                         s_sym[np.triu_indices(m)],
-    #                         r'$p_{ij}$',
-    #                         r'$s_{ij}$',
-    #                         osp.join(dir, f'p_rank_{i} vs s_sym.png'),
-    #                         density = False)
-    #     plot_binom_helper2(p_i,
-    #                         s_sym,
-    #                         r'$\hat{s}_{ij}$',
-    #                         r'$s_{ij}$',
-    #                         osp.join(dir, f'p_rank_{i}_s vs s_sym.png'))
-    #     plot_binom_helper(p_i[np.triu_indices(m)],
-    #                         s_sym_i[np.triu_indices(m)],
-    #                         r'$p_{ij}$',
-    #                         r'$s_{ij}$',
-    #                         osp.join(dir, f'p_rank_{i} vs s_sym_{i}.png'),
-    #                         density = False)
-    #     plot_binom_helper2(p_i,
-    #                         s_sym_i,
-    #                         r'$\hat{s}_{ij}$',
-    #                         r'$s_{ij}$',
-    #                         osp.join(dir, f'p_rank_{i}_s vs s_sym_{i}.png'))
-    #
-    #     maxent_dir = osp.join(dir, f'PCA-normalize/k{i}/replicate1')
-    #     s_file = osp.join(maxent_dir, 's.npy')
-    #     if osp.exists(s_file):
-    #         s_pca = np.load(s_file)
-    #         s_sym_pca = (s_pca + s_pca.T)/2
-    #         plot_matrix(s_sym_pca, osp.join(maxent_dir, f's_sym.png'), vmin = 'min',
-    #                     vmax = 'max', title = r'$\hat{S}$', cmap='bluered')
-    #         np.save(osp.join(maxent_dir, 's_sym.npy'), s_sym_pca)
-    #
-    #         # is p is the same as pca?
-    #         plot_binom_helper(p_i[np.triu_indices(m)],
-    #                             s_sym_pca[np.triu_indices(m)],
-    #                             r'$p_{ij}$',
-    #                             r'$sPCA_{ij}$',
-    #                             osp.join(dir, f'p_rank_{i} vs s_sym_pca_{i}.png'))
-    #         plot_binom_helper2(p_i,
-    #                             s_sym_pca,
-    #                             r'$\hat{S}_{ij}$',
-    #                             r'$sPCA_{ij}$',
-    #                             osp.join(dir, f'p_rank_{i}_s vs s_sym_pca_{i}.png'))
-    #
-    #     # optimal s_pca
-    #     v = Vt[:i].T
-    #     model = minimize(s_sym_pca_mse, np.zeros((i,i))[np.triu_indices(i)], args = (v, s_sym))
-    #     print(model)
-    #     s = v @ triu_to_full(model.x) @ v.T
-    #     s_sym_pca_min = (s + s.T)/2
-    #     optimal_pca_dict[i] = s_sym_pca_min
-    #
-    #     # is p is the same as optimal pca?
-    #     plot_binom_helper(p_i[np.triu_indices(m)],
-    #                         s_sym_pca_min[np.triu_indices(m)],
-    #                         r'$p_{ij}$',
-    #                         r'$sPCA_{ij}-min$',
-    #                         osp.join(dir, f'p_rank_{i} vs s_sym_pca_{i}_min.png'))
-    #     plot_binom_helper2(p_i,
-    #                         s_sym_pca_min,
-    #                         r'$\hat{s}_{ij}$',
-    #                         r'$sPCA_{ij}-min$',
-    #                         osp.join(dir, f'p_rank_{i} vs s_sym_pca_{i}_min.png'))
-    #
     for i in [2,3,4,5,6,8,10]:
         print(f'\nk={i}')
         pca = PCA(n_components = i)
@@ -703,7 +640,8 @@ def downsample_simulation():
     # only ran a shorter simulation
     # use this to assess GNN robustness to simulation length
     dir = '/home/erschultz/dataset_09_30_22'
-    files = make_dataset(dir)
+    files = make_dataset(dir)[:3]
+    print(files)
 
     with multiprocessing.Pool(20) as p:
         p.map(down_sample_simulation_inner, files)
@@ -712,7 +650,7 @@ def down_sample_simulation_inner(file):
     print(file)
     # xyz_file = osp.join(file, 'data_out', 'output.xyz')
     # xyz = xyz_load(xyz_file, multiple_timesteps = True, N_min = 1)
-    for sweep in [100000, 2000000, 300000, 400000, 500000]:
+    for sweep in [100000, 200000, 300000, 400000, 500000]:
         # y_diag_ofile = osp.join(file, f'y_diag_dist{ymax}.npy')
         y_ifile = osp.join(file, f'data_out/contacts{sweep}.txt')
         y_ofile = osp.join(file, f'y_sweep{sweep}.npy')
@@ -748,8 +686,8 @@ if __name__ == '__main__':
     # plot_mean_dist_mlp()
     # prep_data_for_cluster()
     # binom()
-    # edit_argparse()
+    edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
     # compare_y_normalization_methods()
     # downsample_simulation()

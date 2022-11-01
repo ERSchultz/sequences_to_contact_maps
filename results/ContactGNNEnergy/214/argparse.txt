@@ -37,7 +37,7 @@ true
 --transforms
 empty
 --pre_transforms
-degree_split-ContactDistance_norm-GeneticDistance_norm
+Degree-degree_split-ContactDistance_norm-GeneticDistance_norm
 --top_k
 none
 --sparsify_threshold

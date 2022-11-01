@@ -157,7 +157,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             if self.output != 'contact':
                 del graph.contact_map
-            del graph.contact_map_diag
+            # del graph.contact_map_diag
 
             if self.output is None:
                 pass
@@ -241,40 +241,57 @@ class ContactsGraph(torch_geometric.data.Dataset):
             psi = None
         return x, psi
 
+    def load_y(self, raw_folder):
+        '''Helper function to load raw contact map and apply normalization.'''
+        if self.y_preprocessing.startswith('sweep'):
+            sweep, *self.y_preprocessing = self.y_preprocessing.split('_')
+            sweep = int(sweep[5:])
+            if isinstance(self.y_preprocessing, list):
+                self.y_preprocessing = '_'.join(self.y_preprocessing)
+
+            y_path = osp.join(raw_folder, f'data_out/contacts{sweep}.txt')
+            if osp.exists(y_path):
+                y = np.loadtxt(y_path)
+            else:
+                raise Exception(f"Unknown preprocessing: {self.y_preprocessing} or y_path missing: {y_path}")
+        else:
+            y = np.load(osp.join(raw_folder, 'y.npy')).astype(np.float64)
+
+        if self.y_norm == 'max':
+            y /= np.max(y)
+        elif self.y_norm == 'mean':
+            y /= np.mean(np.diagonal(y))
+
+        return y
+
     def process_y(self, raw_folder):
         '''
         Helper function to load the appropriate contact map and apply any
         necessary preprocessing.
         '''
+        y = self.load_y(raw_folder)
+
         y_diag = None
-        if self.y_preprocessing is None:
-            y = np.load(osp.join(raw_folder, 'y.npy')).astype(np.float64)
-            if self.y_norm == 'max':
-                y /= np.max(y)
-            elif self.y_norm == 'mean':
-                y /= np.mean(np.diagonal(y))
-        elif self.y_preprocessing == 'log' or self.y_preprocessing == 'log_inf':
-            y = np.load(osp.join(raw_folder, 'y.npy')).astype(np.float64)
-            if self.y_norm == 'max':
-                y /= np.max(y)
-            elif self.y_norm == 'mean':
-                y /= np.mean(np.diagonal(y))
-
-            if self.y_preprocessing == 'log_inf':
-                y = np.log(y)
-                y[np.isinf(y)] = np.nan
-            else:
-                y = np.log(y+1)
-
-            if self.diag:
-                meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
-                y_diag = DiagonalPreprocessing.process(y, meanDist)
-        else:
+        print(self.y_preprocessing)
+        if self.y_preprocessing == 'log':
+            y = np.log(y+1)
+        elif self.y_preprocessing == 'log_inf':
+            y = np.log(y)
+            y[np.isinf(y)] = np.nan
+        elif self.y_preprocessing is not None:
+            # override y
             assert self.y_norm is None
             y_path = osp.join(raw_folder, f'y_{self.y_preprocessing}.npy')
             if osp.exists(y_path):
                 y = np.load(y_path)
-            raise Exception(f"Unknown preprocessing: {self.y_preprocessing} or y_path missing: {y_path}")
+            else:
+                raise Exception(f"Unknown preprocessing: {self.y_preprocessing} or y_path missing: {y_path}")
+
+        if self.diag:
+            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
+            y_diag = DiagonalPreprocessing.process(y, meanDist)
+        else:
+            y_diag = None
 
         if self.crop is not None:
             y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]

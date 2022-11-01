@@ -86,9 +86,14 @@ class Degree(BaseTransform):
 
     def __call__(self, data):
         if self.weighted:
-            deg = data.weighted_degree
             if self.split_edges:
-                ypos = torch.clone(data.contact_map)
+                if self.diag:
+                    ypos =torch.clone(data.contact_map_diag)
+                    yneg = torch.clone(data.contact_map_diag)
+                else:
+                    ypos = torch.clone(data.contact_map)
+                    yneg = torch.clone(data.contact_map)
+
                 ypos[ypos < self.split_val] = 0
                 pos_deg = torch.sum(ypos, axis = 1)
                 del ypos
@@ -96,8 +101,9 @@ class Degree(BaseTransform):
                 yneg[yneg > self.split_val] = 0
                 neg_deg = torch.sum(yneg, axis = 1)
                 del yneg
+            else:
+                deg = data.weighted_degree
         else:
-            deg = degree(data.edge_index[0], data.num_nodes)
             if self.split_edges:
                 if self.diag:
                     pos_deg = degree((data.contact_map_diag > self.split_val).nonzero().t()[0], data.num_nodes)
@@ -105,15 +111,23 @@ class Degree(BaseTransform):
                 else:
                     pos_deg = degree((data.contact_map > self.split_val).nonzero().t()[0], data.num_nodes)
                     neg_deg = degree((data.contact_map < self.split_val).nonzero().t()[0], data.num_nodes)
+            else:
+                deg = degree(data.edge_index[0], data.num_nodes)
+                deg = degree((data.contact_map).nonzero().t()[0], data.num_nodes)
+
 
         if self.norm:
-            deg /= (deg.max() if self.max is None else self.max)
             if self.split_edges:
+                print(pos_deg.max())
+                print(neg_deg.max())
                 pos_deg /= (pos_deg.max() if self.max is None else self.max)
                 neg_deg /= (neg_deg.max() if self.max is None else self.max)
+            else:
+                deg /= (deg.max() if self.max is None else self.max)
+
 
         if self.split_edges:
-            deg = torch.stack([deg, pos_deg, neg_deg], dim=1)
+            deg = torch.stack([pos_deg, neg_deg], dim=1)
         else:
             deg = torch.stack([deg], dim=1)
 
@@ -126,10 +140,13 @@ class Degree(BaseTransform):
         return data
 
     def __repr__(self) -> str:
-        return (f'{self.__class__.__name__}'
+        base = (f'{self.__class__.__name__}'
                 f'(norm={self.norm}, max={self.max}, '
-                f'weighted={self.weighted}, split_edges={self.split_edges}, '
-                f'split_val={self.split_val})')
+                f'weighted={self.weighted}, split_edges={self.split_edges}')
+        if self.split_edges:
+            return base + f', split_val={self.split_val})'
+        else:
+            return base + ')'
 
 class AdjPCATransform(BaseTransform):
     '''Appends values from top k PCs of adjacency matrix to feature vector.'''

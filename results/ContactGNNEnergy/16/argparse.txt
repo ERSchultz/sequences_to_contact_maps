@@ -31,7 +31,7 @@ true
 --transforms
 empty
 --pre_transforms
-degree-ContactDistance
+Degree-degree-ContactDistance
 --top_k
 none
 --sparsify_threshold

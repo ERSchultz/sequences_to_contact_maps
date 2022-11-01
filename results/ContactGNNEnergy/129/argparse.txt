@@ -35,7 +35,7 @@ true
 --transforms
 empty
 --pre_transforms
-degree_split-ContactDistance-GeneticDistance_norm-AdjPCA_10
+Degree-degree_split-ContactDistance-GeneticDistance_norm-AdjPCA_10
 --top_k
 none
 --sparsify_threshold

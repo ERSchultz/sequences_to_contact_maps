@@ -33,7 +33,7 @@ false
 --transforms
 empty
 --pre_transforms
-AdjPCA-degree_split
+Degree-AdjPCA-degree_split
 --top_k
 none
 --sparsify_threshold

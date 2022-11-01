@@ -365,9 +365,9 @@ def process_transforms(opt):
     opt.node_transforms = []
 
     if opt.log_preprocessing is not None:
-        split_value = 0
+        default_split_value = 0
     else:
-        split_value = 1
+        default_split_value = 1
     opt.edge_dim = 0
 
     # transforms
@@ -414,12 +414,16 @@ def process_transforms(opt):
             split = False
             norm = True
             max_value = None
+            split_value = default_split_value
             for mode_str in t_str[1:]:
                 if mode_str == 'diag':
                     opt.diag = True
-                if mode_str == 'split':
+                if mode_str.startswith('split'):
+                    if len(mode_str) > 5:
+                        assert mode_str[5:].isnumeric()
+                        split_value = float(mode_str[5:])
                     split = True
-                    opt.node_feature_size += 2
+                    opt.node_feature_size += 1
                 if mode_str.startswith('max'):
                     assert mode_str[3:].isnumeric()
                     max_value = float(mode_str[3:])
@@ -608,24 +612,26 @@ def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_prepro
             if not osp.exists(destination_file):
                 shutil.copyfile(source_file, destination_file)
 
-    if y_preprocessing is not None and y_preprocessing.startswith('sweep'):
-        sweep, *y_preprocessing = y_preprocessing.split('_')
-        sweep = int(sweep[5:])
-        if isinstance(y_preprocessing, list):
-            y_preprocessing = '_'.join(y_preprocessing)
-
-        y = np.loadtxt(osp.join(sample_dir, f'data_out/contacts{sweep}.txt'))
-        if y_preprocessing == 'log':
-            y_to_move = np.log(y+1)
-        elif y_preprocessing == 'log_diag':
-            y_log = np.log(y+1)
-            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y_log)
-            y_to_move = DiagonalPreprocessing.process(y_log, meanDist)
-        elif y_preprocessing == 'diag':
-            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
-            y_to_move = DiagonalPreprocessing.process(y, meanDist)
-
-        np.save(osp.join(scratch_sample_dir, f'y_sweep{sweep}_{y_preprocessing}'), y_to_move)
+    # if y_preprocessing is not None and y_preprocessing.startswith('sweep'):
+    #     sweep, *y_preprocessing = y_preprocessing.split('_')
+    #     sweep = int(sweep[5:])
+    #     if isinstance(y_preprocessing, list):
+    #         y_preprocessing = '_'.join(y_preprocessing)
+    #
+    #     ifile = osp.join(sample_dir, f'data_out/contacts{sweep}.txt')
+    #     if osp.exists(ifile):
+    #         y = np.loadtxt(ifile)
+    #         if y_preprocessing == 'log':
+    #             y_to_move = np.log(y+1)
+    #         elif y_preprocessing == 'log_diag':
+    #             y_log = np.log(y+1)
+    #             meanDist = DiagonalPreprocessing.genomic_distance_statistics(y_log)
+    #             y_to_move = DiagonalPreprocessing.process(y_log, meanDist)
+    #         elif y_preprocessing == 'diag':
+    #             meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
+    #             y_to_move = DiagonalPreprocessing.process(y, meanDist)
+    #
+    #         np.save(osp.join(scratch_sample_dir, f'y_sweep{sweep}_{y_preprocessing}'), y_to_move)
 
 def argparse_setup(local = False):
     """Helper function set up parser."""
