@@ -12,20 +12,27 @@ from .pyg_dataset_classes import ContactsGraph
 
 
 ## model functions ##
-def load_saved_model(opt, verbose = True):
+def load_saved_model(opt, verbose = True, throw = True):
     model = get_model(opt, verbose)
     model.to(opt.device)
     model_name = osp.join(opt.ofile_folder, 'model.pt')
     if osp.exists(model_name):
         save_dict = torch.load(model_name, map_location=torch.device('cpu'))
-        model.load_state_dict(save_dict['model_state_dict'])
         train_loss_arr = save_dict['train_loss']
         val_loss_arr = save_dict['val_loss']
-        if verbose:
-            print('Model is loaded: {}'.format(model_name), file = opt.log_file)
+        try:
+            model.load_state_dict(save_dict['model_state_dict'])
+            model.eval()
+            if verbose:
+                print('Model is loaded: {}'.format(model_name), file = opt.log_file)
+        except RuntimeError as e:
+            print(e)
+            if throw:
+                raise
+            else:
+                return None, train_loss_arr, val_loss_arr
     else:
         raise Exception('Model does not exist: {}'.format(model_name))
-    model.eval()
 
     return model, train_loss_arr, val_loss_arr
 

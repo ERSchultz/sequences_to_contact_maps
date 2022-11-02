@@ -113,13 +113,13 @@ class Degree(BaseTransform):
                     neg_deg = degree((data.contact_map < self.split_val).nonzero().t()[0], data.num_nodes)
             else:
                 deg = degree(data.edge_index[0], data.num_nodes)
-                deg = degree((data.contact_map).nonzero().t()[0], data.num_nodes)
+                # deg = degree((data.contact_map).nonzero().t()[0], data.num_nodes)
 
 
         if self.norm:
             if self.split_edges:
-                print(pos_deg.max())
-                print(neg_deg.max())
+                # print(pos_deg.max())
+                # print(neg_deg.max())
                 pos_deg /= (pos_deg.max() if self.max is None else self.max)
                 neg_deg /= (neg_deg.max() if self.max is None else self.max)
             else:

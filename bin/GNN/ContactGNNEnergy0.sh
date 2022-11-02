@@ -21,7 +21,7 @@ rootName='ContactGNNEnergy0' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='degree-ContactDistance_norm-GeneticDistance_norm'
+preTransforms='degree_diag_split1-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
@@ -29,16 +29,17 @@ EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
-outputMode='diag_chi_continuous'
-yPreprocessing='log'
+outputMode='energy_sym'
+yPreprocessing='log_inf'
 yNorm='mean'
-headArchitecture='fc'
-headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+headArchitecture='bilinear'
+# headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+useScratch='false'
 
-# 5th attempt at predicting only diag with GNN, norm = mean, contact_distance_norm
+# like 222, but with degree_split only
 
 
-id=214
+id=224
 for lr in 1e-4
 do
   train

@@ -1,3 +1,4 @@
+import copy
 import json
 import math
 import multiprocessing
@@ -305,7 +306,7 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         preprocessing_norm = opt.preprocessing_norm.capitalize()
     else:
          preprocessing_norm = 'None'
-    upper_title = 'Y Preprocessing: {}, Norm: {}'.format(preprocessing, preprocessing_norm)
+    upper_title = f'Y Preprocessing: {preprocessing}, Norm: {preprocessing_norm}'
 
     assert opt.loss == 'mse'
     loss_title = 'MSE Loss'
@@ -347,7 +348,6 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         v_max = np.max(y)
         v_min = np.min(y)
 
-        # not a contat map but using this plot_matrix function anyways
         plot_matrix(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min,
                         vmax = v_max, cmap = 'blue-red', title = yhat_title)
         np.savetxt(osp.join(subpath, 'energy_hat.txt'), yhat, fmt = '%.3f')
@@ -357,9 +357,9 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         np.savetxt(osp.join(subpath, 'energy.txt'), y, fmt = '%.3f')
 
         # plot dif
-        dif = yhat - y
+        dif = y - yhat
         plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
-                        vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
+                        vmax = v_max, title = r'S - $\hat{S}$', cmap = 'blue-red')
 
         if opt.GNN_mode:
             plaid_hat = model.plaid_component(data)
@@ -463,6 +463,243 @@ def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
 
     print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)),
         file = opt.log_file)
+
+def downsamplingAnalysis(val_dataloader, model, opt, count = 5):
+    opt_copy = copy.copy(opt) # shallow copy only
+    if opt_copy.root_name is not None:
+        opt_copy.root_name += 'downsample'
+    opt_copy.y_preprocessing = 'sweep200000_' + opt_copy.y_preprocessing
+
+    # get samples
+    samples = set()
+    for i, data in enumerate(val_dataloader):
+        if i == count:
+            break
+        if opt.GNN_mode:
+            path = data.path[0]
+        else:
+            path = path[0]
+        sample = osp.split(path)[1]
+        sample_id = int(sample[6:])
+        samples.add(sample_id)
+
+
+    dataset = get_dataset(opt_copy, True, True, samples = samples)
+
+    if opt.y_preprocessing is not None:
+        preprocessing = opt_copy.y_preprocessing.capitalize()
+    else:
+        preprocessing = 'None'
+    if opt.preprocessing_norm is not None:
+        preprocessing_norm = opt_copy.preprocessing_norm.capitalize()
+    else:
+         preprocessing_norm = 'None'
+    upper_title = f'Y Preprocessing: {preprocessing}, Norm: {preprocessing_norm}'
+
+    assert opt_copy.loss == 'mse'
+    loss_title = 'MSE Loss'
+
+    loss_arr = np.zeros(opt_copy.valN)
+    for i, data in enumerate(dataset):
+        if opt_copy.GNN_mode:
+            data = data.to(opt_copy.device)
+            if opt_copy.output_mode.startswith('energy'):
+                y = data.energy
+                y = torch.reshape(y, (-1, opt_copy.m, opt_copy.m))
+            else:
+                y = data.y
+                y = torch.reshape(y, (-1, opt_copy.m))
+            yhat = model(data)
+            path = data.path
+        else:
+            x, y, path, minmax = data
+            x = x.to(opt_copy.device)
+            y = y.to(opt_copy.device)
+            path = path
+            yhat = model(x)
+        loss = opt.criterion(yhat, y).item()
+        y = y.cpu().numpy()
+        yhat = yhat.cpu().detach().numpy()
+        if opt_copy.output_mode.startswith('energy'):
+            y = y.reshape((opt_copy.m, opt_copy.m))
+            yhat = yhat.reshape((opt_copy.m, opt_copy.m))
+        else:
+            y = y.reshape((-1))
+            yhat = yhat.reshape((-1))
+
+        loss_arr[i] = loss
+        if opt_copy.verbose:
+            print('y', y, np.max(y))
+            print('yhat', yhat, np.max(yhat))
+
+        if i < count:
+            sample = osp.split(path)[1] + '_downsample'
+            subpath = osp.join(opt_copy.ofile_folder, sample )
+            print('{}: {}'.format(subpath, loss), file = opt_copy.log_file)
+            if not osp.exists(subpath):
+                os.mkdir(subpath, mode = 0o755)
+
+            yhat_title = '{}\n{} ({}: {})'.format(upper_title, r'$\hat{S}$',
+                                                    loss_title, np.round(loss, 3))
+
+
+            if opt_copy.output_mode.startswith('energy'):
+
+                v_max = np.max(y)
+                v_min = np.min(y)
+
+                plot_matrix(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min,
+                                vmax = v_max, cmap = 'blue-red', title = yhat_title)
+                np.savetxt(osp.join(subpath, 'energy_hat.txt'), yhat, fmt = '%.3f')
+
+                plot_matrix(y, osp.join(subpath, 'energy.png'), vmin = v_min,
+                                vmax = v_max, cmap = 'blue-red', title = r'$S$')
+                np.savetxt(osp.join(subpath, 'energy.txt'), y, fmt = '%.3f')
+
+                # plot dif
+                dif = y - yhat
+                plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
+                                vmax = v_max, title = r'S - $\hat{S}$', cmap = 'blue-red')
+            elif opt_copy.output_mode == 'diag_chi_continuous' or opt_copy.output_mode == 'diag_chi_step':
+                plot_diag_chi(None, subpath, y, 'ground_truth', False,
+                            'diag_chi_hat.png', yhat, title = f'MSE: {np.round(loss, 3)}',
+                            label = 'estimate')
+                plot_diag_chi(None, subpath, y, 'ground_truth', True,
+                            'diag_chi_hat_log.png', yhat, title = f'MSE: {np.round(loss, 3)}',
+                            label = 'estimate')
+
+                np.savetxt(osp.join(subpath, 'diag_chi.txt'), y, fmt = '%.3f')
+                np.savetxt(osp.join(subpath, 'diag_chi_hat.txt'), yhat, fmt = '%.3f')
+            else:
+                return
+
+            # tar subpath
+            os.chdir(opt_copy.ofile_folder)
+            with tarfile.open(f'{sample}.tar.gz', 'w:gz') as f:
+                f.add(sample)
+            rmtree(sample)
+
+    print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)),
+        file = opt_copy.log_file)
+
+def rescalingAnalysis(val_dataloader, model, opt, count = 5):
+    opt_copy = copy.copy(opt) # shallow copy only
+    if opt_copy.root_name is not None:
+        opt_copy.root_name += 'rescale'
+    opt_copy.y_preprocessing = 'rescale2_' + opt_copy.y_preprocessing
+
+    # get samples
+    samples = set()
+    for i, data in enumerate(val_dataloader):
+        if i == count:
+            break
+        if opt.GNN_mode:
+            path = data.path[0]
+        else:
+            path = path[0]
+        sample = osp.split(path)[1]
+        sample_id = int(sample[6:])
+        samples.add(sample_id)
+
+
+    dataset = get_dataset(opt_copy, True, True, samples = samples)
+
+    if opt.y_preprocessing is not None:
+        preprocessing = opt_copy.y_preprocessing.capitalize()
+    else:
+        preprocessing = 'None'
+    if opt.preprocessing_norm is not None:
+        preprocessing_norm = opt_copy.preprocessing_norm.capitalize()
+    else:
+         preprocessing_norm = 'None'
+    upper_title = f'Y Preprocessing: {preprocessing}, Norm: {preprocessing_norm}'
+
+    assert opt_copy.loss == 'mse'
+    loss_title = 'MSE Loss'
+
+    loss_arr = np.zeros(opt_copy.valN)
+    for i, data in enumerate(dataset):
+        if opt_copy.GNN_mode:
+            data = data.to(opt_copy.device)
+            if opt_copy.output_mode.startswith('energy'):
+                y = data.energy
+                y = torch.reshape(y, (-1, opt_copy.m, opt_copy.m))
+            else:
+                y = data.y
+                y = torch.reshape(y, (-1, opt_copy.m))
+            yhat = model(data)
+            path = data.path
+        else:
+            x, y, path, minmax = data
+            x = x.to(opt_copy.device)
+            y = y.to(opt_copy.device)
+            path = path
+            yhat = model(x)
+        loss = opt.criterion(yhat, y).item()
+        y = y.cpu().numpy()
+        yhat = yhat.cpu().detach().numpy()
+        if opt_copy.output_mode.startswith('energy'):
+            y = y.reshape((opt_copy.m, opt_copy.m))
+            yhat = yhat.reshape((opt_copy.m, opt_copy.m))
+        else:
+            y = y.reshape((-1))
+            yhat = yhat.reshape((-1))
+
+        loss_arr[i] = loss
+        if opt_copy.verbose:
+            print('y', y, np.max(y))
+            print('yhat', yhat, np.max(yhat))
+
+        if i < count:
+            sample = osp.split(path)[1] + '_rescale'
+            subpath = osp.join(opt_copy.ofile_folder, sample )
+            print('{}: {}'.format(subpath, loss), file = opt_copy.log_file)
+            if not osp.exists(subpath):
+                os.mkdir(subpath, mode = 0o755)
+
+            yhat_title = '{}\n{} ({}: {})'.format(upper_title, r'$\hat{S}$',
+                                                    loss_title, np.round(loss, 3))
+
+
+            if opt_copy.output_mode.startswith('energy'):
+
+                v_max = np.max(y)
+                v_min = np.min(y)
+
+                plot_matrix(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min,
+                                vmax = v_max, cmap = 'blue-red', title = yhat_title)
+                np.savetxt(osp.join(subpath, 'energy_hat.txt'), yhat, fmt = '%.3f')
+
+                plot_matrix(y, osp.join(subpath, 'energy.png'), vmin = v_min,
+                                vmax = v_max, cmap = 'blue-red', title = r'$S$')
+                np.savetxt(osp.join(subpath, 'energy.txt'), y, fmt = '%.3f')
+
+                # plot dif
+                dif = y - yhat
+                plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
+                                vmax = v_max, title = r'S - $\hat{S}$', cmap = 'blue-red')
+            elif opt_copy.output_mode == 'diag_chi_continuous' or opt_copy.output_mode == 'diag_chi_step':
+                plot_diag_chi(None, subpath, y, 'ground_truth', False,
+                            'diag_chi_hat.png', yhat, title = f'MSE: {np.round(loss, 3)}',
+                            label = 'estimate')
+                plot_diag_chi(None, subpath, y, 'ground_truth', True,
+                            'diag_chi_hat_log.png', yhat, title = f'MSE: {np.round(loss, 3)}',
+                            label = 'estimate')
+
+                np.savetxt(osp.join(subpath, 'diag_chi.txt'), y, fmt = '%.3f')
+                np.savetxt(osp.join(subpath, 'diag_chi_hat.txt'), yhat, fmt = '%.3f')
+            else:
+                return
+
+            # tar subpath
+            os.chdir(opt_copy.ofile_folder)
+            with tarfile.open(f'{sample}.tar.gz', 'w:gz') as f:
+                f.add(sample)
+            rmtree(sample)
+
+    print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)),
+        file = opt_copy.log_file)
+
 
 #### Functions for plotting xyz files ####
 def plot_xyz(xyz, L, x = None, ofile = None, show = True, title = None, legend = True):
@@ -819,7 +1056,8 @@ def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
                                                      [(0,    'white'),
                                                       (1,    'red')], N=126)
     elif cmap.replace('-', '').lower() == 'bluered':
-        vmin = vmax = 'center'
+        if vmin == 'min' and vmax == 'max':
+            vmin = vmax = 'center'
         cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                  [(0, 'blue'),
                                                  (0.5, 'white'),
@@ -850,13 +1088,22 @@ def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
 
     # set min and max
     if vmin == 'center':
-        vmin = np.percentile(arr, 1)
-        vmax = np.percentile(arr, 99)
+        vmin = np.nanpercentile(arr, 1)
+        vmax = np.nanpercentile(arr, 99)
         vmax = max(vmax, vmin * -1)
         vmin = vmax * -1
+    elif vmin == 'center1':
+        vmin = np.nanpercentile(arr, 1)
+        vmax = np.nanpercentile(arr, 99)
+        d_vmin = 1-vmin
+        d_vmax = vmax-1
+        d = max(d_vmax, d_vmin)
+        vmin = 1 - d
+        vmax = 1 + d
     else:
         if vmin == 'min':
-            vmin = np.percentile(arr, 1)
+            vmin = np.nanpercentile(arr, 1)
+            print(vmin)
             # uses 1st percentile instead of absolute min
         elif vmin == 'abs_min':
             vmin = np.min(arr)
@@ -864,7 +1111,7 @@ def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
         if vmax == 'mean':
             vmax = np.mean(arr)
         elif vmax == 'max':
-            vmax = np.percentile(arr, 99)
+            vmax = np.nanpercentile(arr, 99)
             # uses 99th percentile instead of absolute max
         elif vmax == 'abs_max':
             vmax = np.max(arr)
@@ -920,25 +1167,28 @@ def plot_matrix_gif(arr, dir, ofile = None, title = None, vmin = 0, vmax = 1,
 def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None,
                     dataset = None):
     if model is None:
-        model, train_loss_arr, val_loss_arr = load_saved_model(opt, verbose = True)
+        model, train_loss_arr, val_loss_arr = load_saved_model(opt, verbose = True, throw = False)
+    if model is not None and dataset is None:
+        dataset = get_dataset(opt, True, True)
 
     opt.batch_size = 1 # batch size must be 1
     opt.shuffle = False # for reproducibility
-    if dataset is None:
-        dataset = get_dataset(opt, True, True)
     _, val_dataloader, _ = get_data_loaders(dataset, opt)
+
+
 
     imagePath = opt.ofile_folder
     print('#### Plotting Script ####', file = opt.log_file)
     plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
     plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt, True)
 
-    if opt.plot:
-        pass
-        # TODO
-
     if opt.plot_predictions:
         if opt.output_mode.startswith('energy'):
             plotEnergyPredictions(val_dataloader, model, opt)
         elif opt.output_mode.startswith('diag'):
             plotDiagChiPredictions(val_dataloader, model, opt)
+
+    if opt.plot:
+        if not opt.y_preprocessing.startswith('sweep'):
+            downsamplingAnalysis(val_dataloader, model, opt)
+        rescalingAnalysis(val_dataloader, model, opt)

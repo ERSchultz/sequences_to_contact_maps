@@ -21,7 +21,7 @@ rootName='ContactGNNEnergy1' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='degree-ContactDistance-GeneticDistance_norm'
+preTransforms='constant-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
@@ -37,10 +37,10 @@ headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 useScratch='false'
 
-# like 217, but for net energy
+# like 223, but constant feature instead of degree
 
 
-id=223
+id=225
 for lr in 1e-4
 do
   train

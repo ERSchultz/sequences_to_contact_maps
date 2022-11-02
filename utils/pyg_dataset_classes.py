@@ -157,7 +157,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             if self.output != 'contact':
                 del graph.contact_map
-            # del graph.contact_map_diag
+            del graph.contact_map_diag
 
             if self.output is None:
                 pass
@@ -202,7 +202,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                         D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
                     graph.energy += torch.tensor(D, dtype = torch.float32)
             else:
-                raise Exceptin(f'Unrecognized output {self.output}')
+                raise Exception(f'Unrecognized output {self.output}')
 
 
             del graph.diag_chi_continuous
@@ -244,48 +244,56 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def load_y(self, raw_folder):
         '''Helper function to load raw contact map and apply normalization.'''
         if self.y_preprocessing.startswith('sweep'):
-            sweep, *self.y_preprocessing = self.y_preprocessing.split('_')
+            sweep, *y_preprocessing = self.y_preprocessing.split('_')
             sweep = int(sweep[5:])
-            if isinstance(self.y_preprocessing, list):
-                self.y_preprocessing = '_'.join(self.y_preprocessing)
+            if isinstance(y_preprocessing, list):
+                preprocessing = '_'.join(y_preprocessing)
 
             y_path = osp.join(raw_folder, f'data_out/contacts{sweep}.txt')
             if osp.exists(y_path):
-                y = np.loadtxt(y_path)
+                y = np.loadtxt(y_path).astype(np.float64)
             else:
                 raise Exception(f"Unknown preprocessing: {self.y_preprocessing} or y_path missing: {y_path}")
+        elif self.y_preprocessing.startswith('rescale'):
+            rescale, *y_preprocessing = self.y_preprocessing.split('_')
+            rescale = int(rescale[7:])
+            if isinstance(y_preprocessing, list):
+                preprocessing = '_'.join(y_preprocessing)
+
+            y = np.load(osp.join(raw_folder, 'y.npy')).astype(np.float64)
+            y = y * rescale
         else:
             y = np.load(osp.join(raw_folder, 'y.npy')).astype(np.float64)
+            preprocessing = self.y_preprocessing
 
         if self.y_norm == 'max':
             y /= np.max(y)
         elif self.y_norm == 'mean':
             y /= np.mean(np.diagonal(y))
 
-        return y
+        return y, preprocessing
 
     def process_y(self, raw_folder):
         '''
         Helper function to load the appropriate contact map and apply any
         necessary preprocessing.
         '''
-        y = self.load_y(raw_folder)
+        y, preprocessing = self.load_y(raw_folder)
 
         y_diag = None
-        print(self.y_preprocessing)
-        if self.y_preprocessing == 'log':
+        if preprocessing == 'log':
             y = np.log(y+1)
-        elif self.y_preprocessing == 'log_inf':
+        elif preprocessing == 'log_inf':
             y = np.log(y)
             y[np.isinf(y)] = np.nan
-        elif self.y_preprocessing is not None:
+        elif preprocessing is not None:
             # override y
             assert self.y_norm is None
-            y_path = osp.join(raw_folder, f'y_{self.y_preprocessing}.npy')
+            y_path = osp.join(raw_folder, f'y_{preprocessing}.npy')
             if osp.exists(y_path):
                 y = np.load(y_path)
             else:
-                raise Exception(f"Unknown preprocessing: {self.y_preprocessing} or y_path missing: {y_path}")
+                raise Exception(f"Unknown preprocessing: {preprocessing} or y_path missing: {y_path}")
 
         if self.diag:
             meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)

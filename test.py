@@ -141,7 +141,7 @@ def debugModel(model_type):
     opt.m = 1024
     # opt.split_percents=[0.9,0.1,0.0]
     # opt.split_sizes=None
-    opt.split_sizes=[1, 0, 0]
+    opt.split_sizes=[10, 5, 0]
     opt.split_percents = None
     opt.random_split=False
 
@@ -192,13 +192,13 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing = 'sweep200000_log_inf'
+        opt.y_preprocessing = 'log'
         opt.keep_zero_edges = False
         opt.loss = 'mse'
-        opt.preprocessing_norm = 'mean'
+        opt.preprocessing_norm = None
         opt.message_passing = 'gat'
         opt.GNN_mode = True
-        opt.output_mode = 'energy_diag'
+        opt.output_mode = 'diag_chi_continuous'
         opt.encoder_hidden_sizes_list=[100,100,64]
         opt.update_hidden_sizes_list=[100,100,64]
         opt.hidden_sizes_list=[8,8,8]
@@ -210,14 +210,14 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('sparse')
-        opt.pre_transforms=AC.str2list('degree-degree_split0_diag-contactdistance')
+        opt.pre_transforms=AC.str2list('constant-degree_split1_diag_max1024-contactdistance')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'bilinear'
-        # opt.head_architecture_2 = 'fc-fill'
-        opt.m = 1024
+        # opt.head_architecture = 'bilinear'
+        opt.head_architecture_2 = 'fc'
+        opt.m = 256
         opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, opt.m]
         opt.crop = [0,opt.m]
 
@@ -266,7 +266,7 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 1
+    opt.n_epochs = 5
     opt.lr = 1e-4
     opt.batch_size = 1
     opt.milestones = None
@@ -275,7 +275,7 @@ def debugModel(model_type):
     # other
     opt.plot = True
     opt.plot_predictions = True
-    opt.verbose = True
+    opt.verbose = False
     opt.print_params = False
     opt.gpus = 1
     opt.delete_root = True
@@ -285,38 +285,39 @@ def debugModel(model_type):
 
     opt = finalize_opt(opt, parser, False, debug = True)
     opt.model_type = model_type
-    # model = get_model(opt)
-    # core_test_train(model, opt)
+    model = get_model(opt)
+    core_test_train(model, opt)
 
-
-    for val, label in zip(['log', 'sweep200000_log'], ['All', '40%']):
-        opt.y_preprocessing = val
-
-        print(opt, end = '\n\n', file = opt.log_file)
-        dataset = get_dataset(opt)
-        for i, data in enumerate(dataset):
-            plot_matrix(data.contact_map_diag, osp.join(data.path, 'diag.png'), title = None, vmin = 'min', vmax = 'max')
-            print(data.path)
-            print(f'x={data.x}, shape={data.x.shape}, '
-                    f'min={torch.min(data.x).item()}, '
-                    f'max={torch.max(data.x).item()}')
-            print(f'edge_attr={data.edge_attr}, '
-                    f'shape={data.edge_attr.shape}, '
-                    f'min={torch.min(data.edge_attr).item()}, '
-                    f'max={torch.max(data.edge_attr).item()}')
-            # plt.hist(data.edge_attr.reshape(-1), alpha = 0.5, label = f'{label}',
-                    # bins=50)
-                    # bins=np.logspace(np.log10(0.0001),np.log10(10.0), 50))
-            plt.hist(data.x[:,0], alpha = 0.5, label = f'{label}',
-                    bins=50)
-                    # bins=np.logspace(np.log10(0.0001),np.log10(10.0), 50))
-    # plt.xscale('log')
-    plt.yscale('log')
-    plt.ylabel('Count')
-    plt.xlabel('Degree')
-    # plt.title(f'{opt.y_preprocessing} preprocessing')
-    plt.legend()
-    plt.show()
+    #
+    # for val, label in zip(['log', 'sweep200000_log'], ['All', '40%']):
+    #     opt.y_preprocessing = val
+    #
+    #     print(opt, end = '\n\n', file = opt.log_file)
+    #     dataset = get_dataset(opt)
+    #     for i, data in enumerate(dataset):
+    #         print(data.contact_map_diag, torch.min(data.contact_map_diag))
+    #         plot_matrix(data.contact_map_diag, osp.join(data.path, 'diag.png'), title = None, cmap='bluered', vmin = 'center1')
+    #         print(data.path)
+    #         print(f'x={data.x}, shape={data.x.shape}, '
+    #                 f'min={torch.min(data.x).item()}, '
+    #                 f'max={torch.max(data.x).item()}')
+    #         print(f'edge_attr={data.edge_attr}, '
+    #                 f'shape={data.edge_attr.shape}, '
+    #                 f'min={torch.min(data.edge_attr).item()}, '
+    #                 f'max={torch.max(data.edge_attr).item()}')
+    #         # plt.hist(data.edge_attr.reshape(-1), alpha = 0.5, label = f'{label}',
+    #                 # bins=50)
+    #                 # bins=np.logspace(np.log10(0.0001),np.log10(10.0), 50))
+    #         plt.hist(data.x[:,1], alpha = 0.5, label = f'{label}',
+    #                 bins=50)
+    #                 # bins=np.logspace(np.log10(0.0001),np.log10(10.0), 50))
+    # # plt.xscale('log')
+    # plt.yscale('log')
+    # plt.ylabel('Count')
+    # plt.xlabel('Degree')
+    # # plt.title(f'{opt.y_preprocessing} preprocessing')
+    # plt.legend()
+    # plt.show()
 
     # if opt.use_scratch:
     #     rmtree(opt.data_folder)
@@ -686,8 +687,8 @@ if __name__ == '__main__':
     # plot_mean_dist_mlp()
     # prep_data_for_cluster()
     # binom()
-    edit_argparse()
+    # edit_argparse()
     # sc_nagano_to_dense()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # compare_y_normalization_methods()
     # downsample_simulation()

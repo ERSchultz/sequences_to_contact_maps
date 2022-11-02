@@ -381,12 +381,12 @@ def plot_mean_vs_genomic_distance_comparison(dir, samples = None, percent = Fals
 
 def main():
     model_type = 'ContactGNNEnergy'
-    id = 195
+    id = 223
     argparse_path = osp.join('/home/erschultz/sequences_to_contact_maps/results', model_type, f'{id}/argparse.txt')
     parser = get_base_parser()
     sys.argv = [sys.argv[0]] # delete args from get_params, otherwise gnn opt will try and use them
     opt = parser.parse_args(['@{}'.format(argparse_path)])
-    opt.id = 195
+    opt.id = id
     print(opt)
     opt = finalize_opt(opt, parser, local = True, debug = True)
     data_folder_split = osp.normpath(opt.data_folder).split(os.sep)
@@ -416,5 +416,5 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_09_30_22')
-    plot_combined_models('ContactGNNEnergy', [213, 217])
-    # main()
+    # plot_combined_models('ContactGNNEnergy', [213, 217])
+    main()

@@ -111,9 +111,9 @@ class DiagonalPreprocessing():
             y = np.triu(y)
 
         if stat == 'mean':
-            np_stat = np.mean
+            np_stat = np.nanmean
         elif stat == 'var':
-            np_stat = np.var
+            np_stat = np.nanvar
         m = len(y)
         distances = range(0, m, 1)
         stat_per_diagonal = np.zeros_like(distances).astype(float)
@@ -165,7 +165,7 @@ class DiagonalPreprocessing():
             for j in range(i + 1):
                 distance = i - j
                 expected = mean_per_diagonal[distance]
-                if expected > 0:
+                if expected != 0:
                     result[i,j] = y[i,j] / expected
                     result[j,i] = result[i,j]
 
