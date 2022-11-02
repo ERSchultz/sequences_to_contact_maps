@@ -21,7 +21,7 @@ rootName='ContactGNNEnergy3' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='degree-ContactDistance-GeneticDistance_norm'
+preTransforms='constant-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
@@ -31,15 +31,15 @@ numHeads=8
 
 outputMode='diag_chi_continuous'
 yPreprocessing='log_inf'
-yNorm='none'
+yNorm='mean'
 headArchitecture='fc'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 useScratch='false'
 
-# like 217, but no norm
+# like 217, but constant feature
 
 
-id=221
+id=226
 for lr in 1e-4
 do
   train
