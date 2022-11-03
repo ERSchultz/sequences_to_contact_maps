@@ -683,7 +683,9 @@ def testGNNrank():
     dir = '/home/erschultz'
     dataset = 'dataset_09_30_22'
     sample = 1
-    plaid = np.loadtxt(osp.join(dir, dataset, f'samples/sample{sample}/GNN-223-E/k0/replicate1/resources/plaid_hat.txt'))
+    file = osp.join(dir, dataset, f'samples/sample{sample}/GNN-223-E/k0/replicate1/resources/plaid_hat.txt')
+    # file = '/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1128/energy_hat.txt'
+    plaid = np.loadtxt(file)
     plot_top_PCs(plaid, verbose = True, count = 5)
 
 

@@ -140,7 +140,7 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
     else:
         ylabel = 'Loss'
     if log_y:
-        ylabel = f'Semi-log {ylabel}'
+        ylabel = f'{ylabel} (log-scale)'
     ax.set_ylabel(ylabel, fontsize = 16)
 
     if opt.y_preprocessing is not None:
@@ -215,7 +215,10 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None,
 
 
     plt.xlabel('Epoch', fontsize = 16)
-    plt.ylabel(ylabel, fontsize = 16)
+    if log_y:
+        plt.ylabel(f'{ylabel} (log-scale)', fontsize = 16)
+    else:
+        plt.ylabel(ylabel, fontsize = 16)
 
     plt.legend()
     plt.tight_layout()
@@ -314,6 +317,8 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
     # get samples
     samples = set()
     for i, data in enumerate(val_dataloader):
+        if i >= 5:
+            continue
         if opt.GNN_mode:
             path = data.path[0]
         else:
@@ -479,7 +484,6 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
 
         # tar subpath
         os.chdir(opt.ofile_folder)
-        print(os.getcwd())
         with tarfile.open(f'{sample}.tar.gz', 'w:gz') as f:
             f.add(sample)
         rmtree(sample)
@@ -1048,7 +1052,7 @@ def plot_matrix_gif(arr, dir, ofile = None, title = None, vmin = 0, vmax = 1,
 def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None,
                     dataset = None):
     if model is None:
-        model, train_loss_arr, val_loss_arr = load_saved_model(opt, verbose = True, throw = False)
+        model, train_loss_arr, val_loss_arr = load_saved_model(opt, verbose = False, throw = False)
     if model is not None and dataset is None:
         dataset = get_dataset(opt, True, True)
 

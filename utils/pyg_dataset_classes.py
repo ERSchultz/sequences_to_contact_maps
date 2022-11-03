@@ -176,7 +176,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             if self.output != 'contact':
                 del graph.contact_map
-            # del graph.contact_map_diag
+            del graph.contact_map_diag
 
             if self.output is None:
                 pass
@@ -331,7 +331,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if self.diag:
             meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
             y_diag = DiagonalPreprocessing.process(y, meanDist)
-            y_diag = np.nan_to_num(y_diag, )
+            # y_diag = np.nan_to_num(y_diag)
         else:
             y_diag = None
 

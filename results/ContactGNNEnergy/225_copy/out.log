@@ -252,3 +252,29 @@ Prediction Results:
 /home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1794: 3.8926689624786377
 /home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1128: 3.532959461212158
 /home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1938: 3.771368980407715
+
+#### Plotting Script ####
+Prediction Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample552: 12.714364051818848
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1794: 4.790209770202637
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1128: 3.5819263458251953
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1938: 4.529390335083008
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1131: 3.844799518585205
+Loss: 5.8921380043029785 +- 3.4392664354057763
+
+Downsampling Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1128-downsampling: 8.621254920959473
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1131-downsampling: 20.497102737426758
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1794-downsampling: 38.56196594238281
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1938-downsampling: 41.235111236572266
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample552-downsampling: 27.97648811340332
+Loss: 0.5432219164712089 +- 4.173869045326823
+
+Rescaling Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1128-rescaling: 3.5819263458251953
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1131-rescaling: 3.844799518585205
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1794-rescaling: 4.790209770202637
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1938-rescaling: 4.529390335083008
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample552-rescaling: 12.714364051818848
+Loss: 0.11690750008537656 +- 0.9538664920975113
+
