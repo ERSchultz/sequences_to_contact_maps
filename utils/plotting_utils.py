@@ -812,13 +812,13 @@ def plot_diag_chi(config, path, ref = None, ref_label = '', logx = False,
     ax.set_xlabel('Polymer Distance', fontsize = 16)
     ax.set_ylabel('Diagonal Parameter', fontsize = 16)
     if ref is not None:
-        if isinstance(ref, np.ndarray):
-            pass
-        elif osp.exists(ref):
+        if isinstance(ref, str) and osp.exists(ref):
             ref = np.load(ref)
-        ax.plot(ref, color = 'k', ls = '--', label = ref_label)
-        if ref_label != '':
-            plt.legend()
+
+        if isinstance(ref, np.ndarray):
+            ax.plot(ref, color = 'k', ls = '--', label = ref_label)
+            if ref_label != '':
+                plt.legend()
 
     ax.set_ylim(ylim[0], ylim[1])
     if logx:

@@ -35,6 +35,8 @@ yNorm='mean'
 headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+useScratch='false'
+
 
 # like 224, but for energy_sym_diag
 

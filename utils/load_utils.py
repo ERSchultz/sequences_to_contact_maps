@@ -21,11 +21,19 @@ from .xyz_utils import xyz_load, xyz_to_contact_grid
 ## load data functions ##
 def load_X_psi(sample_folder, throw_exception = True, verbose = False):
     x_file = osp.join(sample_folder, 'x.npy')
+    x_file2 = osp.join(sample_folder, 'data_out/pcf1.txt')
     psi_file = osp.join(sample_folder, 'psi.npy')
     if osp.exists(x_file):
         x = np.load(x_file)
         if verbose:
             print(f'x loaded with shape {x.shape}')
+    elif osp.exists(x_file2):
+        x = []
+        for i in range(20):
+            f = osp.join(sample_folder, f'data_out/pcf{i}.txt')
+            if osp.exists(f):
+                x.append(np.loadtxt(f))
+        x = np.array(x).T
     elif throw_exception:
         raise Exception(f'x not found for {sample_folder}')
     else:
@@ -161,10 +169,13 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None,
     if data_folder is not None:
         chi_path1 = osp.join(data_folder, 'chis.npy')
     chi_path2 = osp.join(sample_folder, 'chis.npy')
+    chi_path3 = osp.join(sample_folder, 'chis.txt')
     if data_folder is not None and osp.exists(chi_path1):
         chi = np.load(chi_path1)
     elif osp.exists(chi_path2):
         chi = np.load(chi_path2)
+    elif osp.exists(chi_path3):
+        chi = triu_to_full(np.loadtxt(chi_path3))
     elif throw_exception:
         raise Exception('chi not found at {} or {}'.format(chi_path1, chi_path2))
     if chi is not None:
@@ -180,7 +191,7 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None,
             if "diag_chis" in config:
                 chi_diag = np.array(config["diag_chis"])
 
-    e, s = load_E_S(sample_folder, psi, save = save, throw_exception = throw_exception)
+    e, s = load_E_S(sample_folder, psi, chi, save = save, throw_exception = throw_exception)
 
     return x, psi, chi, chi_diag, e, s, y, ydiag
 

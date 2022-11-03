@@ -34,6 +34,8 @@ yNorm='mean'
 headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+useScratch='false'
+
 
 # like 225 but constant and split degree
 

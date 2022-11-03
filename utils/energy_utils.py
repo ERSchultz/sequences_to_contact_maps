@@ -58,9 +58,18 @@ def calculate_diag_chi_step(config, diag_chi = None):
         dense = False
 
     if dense:
-        n_small_bins = config['n_small_bins']
-        small_binsize = config['small_binsize']
-        big_binsize = config['big_binsize']
+        if 'n_small_bins' in config.keys():
+            n_small_bins = config['n_small_bins']
+            small_binsize = config['small_binsize']
+            big_binsize = config['big_binsize']
+        else:
+            # soren compatibility
+            n_small_bins = int(config['dense_diagonal_loading'] * diag_bins)
+            n_big_bins = diag_bins - n_small_bins
+            m_eff = diag_cutoff - diag_start # number of beads with nonzero interaction
+            dividing_line = m_eff * config['dense_diagonal_cutoff']
+            small_binsize = int(dividing_line / (n_small_bins))
+            big_binsize = int((m_eff - dividing_line) / n_big_bins)
 
     diag_chi_step = np.zeros(m)
     for d in range(diag_cutoff):
