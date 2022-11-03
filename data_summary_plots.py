@@ -5,8 +5,11 @@ import os.path as osp
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from scipy.optimize import minimize
+from sklearn.metrics import mean_squared_error
+
 from utils.dataset_classes import make_dataset
-from utils.energy_utils import calculate_D
+from utils.energy_utils import calculate_D, s_to_E
 from utils.InteractionConverter import InteractionConverter
 from utils.knightRuiz import knightRuiz
 from utils.load_utils import load_all, load_contact_map, load_X_psi, load_Y
@@ -502,16 +505,23 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
                 plot_matrix(s_sym, osp.join(path, 's_sym.png'), vmax = 'max', vmin = 'min',
                             cmap = 'blue-red')
 
-                SD = s_sym + D
+                SD = s_sym + D + np.diag(np.diagonal(D.copy()))
                 plot_matrix(SD, osp.join(path, 'SD.png'), vmax = 'max', vmin = 'min',
                             cmap = 'blue-red')
+
+                # ref = np.loadtxt(osp.join(path, 'GNN-223-S/k0/replicate1/resources/s_matrix.txt'))
+                # ref_plaid = np.loadtxt(osp.join(path, 'GNN-223-S/k0/replicate1/resources/plaid_hat.txt'))
+                # ref_diag = np.loadtxt(osp.join(path, 'GNN-223-S/k0/replicate1/resources/diagonal_hat.txt'))
+                # print(mean_squared_error(SD, ref))
+                # res = minimize(loss, (1, 1), args = (SD, ref_plaid, ref_diag))
+                # print(res)
 
             if e is not None:
                 plot_matrix(e, osp.join(path, 'e.png'), vmax = 'max', vmin = 'min',
                             cmap = 'blue-red')
-                # ED = e + D
-                # plot_matrix(ED, osp.join(path, 'ED.png'), vmax = 'max', vmin = 'min',
-                #             cmap = 'blue-red')
+                ED = s_to_E(SD)
+                plot_matrix(ED, osp.join(path, 'ED.png'), vmax = 'max', vmin = 'min',
+                            cmap = 'blue-red')
 
         if plot_x:
             x_path = osp.join(path, 'x.npy')
@@ -523,6 +533,10 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
             plot_seq_binary(x, ofile = osp.join(path, 'x.png'))
             # plot_seq_exclusive(x, ofile = osp.join(path, 'x.png'))
 
+# def loss(params, a, b, c):
+#     alpha, beta = params
+#     return mean_squared_error(a, alpha*b+beta*c)
+
 if __name__ == '__main__':
     dir = '/project2/depablo/erschultz'
     dir = '/home/erschultz/sequences_to_contact_maps'
@@ -530,7 +544,8 @@ if __name__ == '__main__':
 
     dataset = 'dataset_07_20_22'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = False, plot_energy = False, plot_x = False, plot_chi = True)
+    basic_plots(data_dir, plot_y = True, plot_energy = True, plot_x = False,
+                plot_chi = True, sampleID = 101)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

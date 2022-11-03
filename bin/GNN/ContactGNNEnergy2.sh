@@ -20,7 +20,7 @@ rootName='ContactGNNEnergy2' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='degree-ContactDistance-GeneticDistance_norm'
+preTransforms='constant-degree_diag_split1-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
@@ -28,17 +28,17 @@ EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
-outputMode='energy_sym'
+outputMode='energy_sym_diag'
 yPreprocessing='log_inf'
 yNorm='mean'
 headArchitecture='bilinear'
-# headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
-useScratch='false'
+headArchitecture2='fc-fill'
+headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 
-# like 217, but for plaid chi
+# like 225 but constant and split degree
 
 
-id=222
+id=228
 for lr in 1e-4
 do
   train

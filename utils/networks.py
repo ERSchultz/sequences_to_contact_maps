@@ -44,7 +44,9 @@ def get_model(opt, verbose = True):
             GNNClass = SparseContactGNN
         else:
             GNNClass = ContactGNN
-        if opt.output_mode.startswith('diag'):
+        if opt.output_mode is None:
+            output_dim = 2 # TODO this might not always be true
+        elif opt.output_mode.startswith('diag'):
             output_dim = 1
         else:
             output_dim = 2

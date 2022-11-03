@@ -29,17 +29,17 @@ EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
 
-outputMode='energy_sym'
+outputMode='energy_sym_diag'
 yPreprocessing='log_inf'
 yNorm='mean'
 headArchitecture='bilinear'
-# headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
-useScratch='false'
+headArchitecture2='fc-fill'
+headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 
-# like 222, but with degree_split only
+# like 224, but for energy_sym_diag
 
 
-id=224
+id=227
 for lr in 1e-4
 do
   train

@@ -295,6 +295,113 @@ def plot_seq_exclusive(seq, labels=None, X=None, show = False, save = True,
     plt.close()
 
 ### Functions for analyzing model performance ###
+def analysisIterator(val_dataloader, model, opt, count, mode):
+    # format preprocessing title
+    if opt.y_preprocessing is not None:
+        preprocessing = opt.y_preprocessing.capitalize()
+    else:
+        preprocessing = 'None'
+    if opt.preprocessing_norm is not None:
+        preprocessing_norm = opt.preprocessing_norm.capitalize()
+    else:
+         preprocessing_norm = 'None'
+    upper_title = f'Y Preprocessing: {preprocessing}, Norm: {preprocessing_norm}'
+
+    # format loss title
+    assert opt.loss == 'mse'
+    loss_title = 'MSE Loss'
+
+    # get samples
+    samples = set()
+    for i, data in enumerate(val_dataloader):
+        if opt.GNN_mode:
+            path = data.path[0]
+        else:
+            path = path[0]
+        sample = osp.split(path)[1]
+        sample_id = int(sample[6:])
+        samples.add(sample_id)
+
+    dataset = get_dataset(opt, True, True, False, samples = samples)
+
+    loss_arr = np.zeros(opt.valN)
+    for i, data in enumerate(dataset):
+        # get yhat
+        assert opt.GNN_mode
+        data = data.to(opt.device)
+        if opt.output_mode.startswith('energy'):
+            y = data.energy
+            y = torch.reshape(y, (-1, opt.m, opt.m))
+        else:
+            y = data.y
+            y = torch.reshape(y, (-1, opt.m))
+        yhat = model(data)
+        path = data.path
+
+        loss = opt.criterion(yhat, y).item()
+        y = y.cpu().numpy()
+        yhat = yhat.cpu().detach().numpy()
+        if opt.output_mode.startswith('energy'):
+            y = y.reshape((opt.m, opt.m))
+            yhat = yhat.reshape((opt.m, opt.m))
+        else:
+            y = y.reshape((-1))
+            yhat = yhat.reshape((-1))
+
+        loss_arr[i] = loss
+        if opt.verbose:
+            print('y', y, np.max(y))
+            print('yhat', yhat, np.max(yhat))
+
+        if i < count:
+            sample = osp.split(path)[1] + '-' + mode
+            subpath = osp.join(opt.ofile_folder, sample )
+            print(f'{subpath}: {loss}', file = opt.log_file)
+            if not osp.exists(subpath):
+                os.mkdir(subpath, mode = 0o755)
+
+            yhat_title = '{}\n{} ({}: {})'.format(upper_title, r'$\hat{S}$',
+                                                    loss_title, np.round(loss, 3))
+
+
+            if opt.output_mode.startswith('energy'):
+                v_max = np.max(y)
+                v_min = np.min(y)
+
+                plot_matrix(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min,
+                                vmax = v_max, cmap = 'blue-red', title = yhat_title)
+                np.savetxt(osp.join(subpath, 'energy_hat.txt'), yhat, fmt = '%.3f')
+
+                plot_matrix(y, osp.join(subpath, 'energy.png'), vmin = v_min,
+                                vmax = v_max, cmap = 'blue-red', title = r'$S$')
+                np.savetxt(osp.join(subpath, 'energy.txt'), y, fmt = '%.3f')
+
+                # plot dif
+                dif = y - yhat
+                plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
+                                vmax = v_max, title = r'S - $\hat{S}$', cmap = 'blue-red')
+            elif opt.output_mode == 'diag_chi_continuous' or opt.output_mode == 'diag_chi_step':
+                plot_diag_chi(None, subpath, y, 'ground_truth', False,
+                            'diag_chi_hat.png', yhat, title = f'MSE: {np.round(loss, 3)}',
+                            label = 'estimate')
+                plot_diag_chi(None, subpath, y, 'ground_truth', True,
+                            'diag_chi_hat_log.png', yhat, title = f'MSE: {np.round(loss, 3)}',
+                            label = 'estimate')
+
+                np.savetxt(osp.join(subpath, 'diag_chi.txt'), y, fmt = '%.3f')
+                np.savetxt(osp.join(subpath, 'diag_chi_hat.txt'), yhat, fmt = '%.3f')
+            else:
+                return
+
+            # tar subpath
+            os.chdir(opt.ofile_folder)
+            with tarfile.open(f'{sample}.tar.gz', 'w:gz') as f:
+                f.add(sample)
+            rmtree(sample)
+
+    print(f'Loss: {np.mean(loss_arr)} +- {np.std(loss_arr)}\n',
+        file = opt.log_file)
+
 def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
     print('Prediction Results:', file = opt.log_file)
     assert opt.output_mode.startswith('energy')
@@ -315,18 +422,13 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
     for i, data in enumerate(val_dataloader):
         if i == count:
             break
-        if opt.GNN_mode:
-            data = data.to(opt.device)
-            y = data.energy
-            y = torch.reshape(y, (-1, opt.m, opt.m))
-            yhat = model(data)
-            path = data.path[0]
-        else:
-            x, y, path, minmax = data
-            x = x.to(opt.device)
-            y = y.to(opt.device)
-            path = path[0]
-            yhat = model(x)
+        assert opt.GNN_mode
+        data = data.to(opt.device)
+        y = data.energy
+        y = torch.reshape(y, (-1, opt.m, opt.m))
+        yhat = model(data)
+        path = data.path[0]
+
         loss = opt.criterion(yhat, y).item()
         y = y.cpu().numpy().reshape((opt.m, opt.m))
         yhat = yhat.cpu().detach().numpy().reshape((opt.m,opt.m))
@@ -336,7 +438,6 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         print('{}: {}'.format(subpath, loss), file = opt.log_file)
         if not osp.exists(subpath):
             os.mkdir(subpath, mode = 0o755)
-
 
         yhat_title = '{}\n{} ({}: {})'.format(upper_title, r'$\hat{S}$',
                                                 loss_title, np.round(loss, 3))
@@ -361,20 +462,19 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
                         vmax = v_max, title = r'S - $\hat{S}$', cmap = 'blue-red')
 
-        if opt.GNN_mode:
-            plaid_hat = model.plaid_component(data)
-            diagonal_hat = model.diagonal_component(data)
-        if plaid_hat is not None and diagonal_hat is not None:
-            # plot plaid contribution
+        # plot plaid contribution
+        plaid_hat = model.plaid_component(data)
+        if plaid_hat is not None:
             plaid_hat = plaid_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
             plot_matrix(plaid_hat, osp.join(subpath, 'plaid_hat.png'), vmin = -1 * v_max,
                             vmax = v_max, title = 'plaid portion', cmap = 'blue-red')
 
-            # plot diag contribution
+        # plot diag contribution
+        diagonal_hat = model.diagonal_component(data)
+        if diagonal_hat is not None:
             diagonal_hat = diagonal_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
             plot_matrix(diagonal_hat, osp.join(subpath, 'diagonal_hat.png'), vmin = -1 * v_max,
                             vmax = v_max, title = 'diagonal portion', cmap = 'blue-red')
-
 
 
         # tar subpath
@@ -384,7 +484,7 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
             f.add(sample)
         rmtree(sample)
 
-    print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)),
+    print(f'Loss: {np.mean(loss_arr)} +- {np.std(loss_arr)}\n',
         file = opt.log_file)
 
 def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
@@ -447,7 +547,7 @@ def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
 
         sample = osp.split(path)[-1]
         subpath = osp.join(opt.ofile_folder, sample)
-        print('{}: {}'.format(subpath, plot_diag_chi), file = opt.log_file)
+        print(f'{subpath}: {loss}', file = opt.log_file)
         if not osp.exists(subpath):
             os.mkdir(subpath, mode = 0o755)
 
@@ -461,245 +561,26 @@ def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
         np.savetxt(osp.join(subpath, 'diag_chi.txt'), y, fmt = '%.3f')
         np.savetxt(osp.join(subpath, 'diag_chi_hat.txt'), yhat, fmt = '%.3f')
 
-    print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)),
+    print(f'Loss: {np.mean(loss_arr)} +- {np.std(loss_arr)}\n',
         file = opt.log_file)
 
 def downsamplingAnalysis(val_dataloader, model, opt, count = 5):
+    print('Downsampling Results:', file = opt.log_file)
     opt_copy = copy.copy(opt) # shallow copy only
     if opt_copy.root_name is not None:
         opt_copy.root_name += 'downsample'
     opt_copy.y_preprocessing = 'sweep200000_' + opt_copy.y_preprocessing
 
-    # get samples
-    samples = set()
-    for i, data in enumerate(val_dataloader):
-        if i == count:
-            break
-        if opt.GNN_mode:
-            path = data.path[0]
-        else:
-            path = path[0]
-        sample = osp.split(path)[1]
-        sample_id = int(sample[6:])
-        samples.add(sample_id)
-
-
-    dataset = get_dataset(opt_copy, True, True, samples = samples)
-
-    if opt.y_preprocessing is not None:
-        preprocessing = opt_copy.y_preprocessing.capitalize()
-    else:
-        preprocessing = 'None'
-    if opt.preprocessing_norm is not None:
-        preprocessing_norm = opt_copy.preprocessing_norm.capitalize()
-    else:
-         preprocessing_norm = 'None'
-    upper_title = f'Y Preprocessing: {preprocessing}, Norm: {preprocessing_norm}'
-
-    assert opt_copy.loss == 'mse'
-    loss_title = 'MSE Loss'
-
-    loss_arr = np.zeros(opt_copy.valN)
-    for i, data in enumerate(dataset):
-        if opt_copy.GNN_mode:
-            data = data.to(opt_copy.device)
-            if opt_copy.output_mode.startswith('energy'):
-                y = data.energy
-                y = torch.reshape(y, (-1, opt_copy.m, opt_copy.m))
-            else:
-                y = data.y
-                y = torch.reshape(y, (-1, opt_copy.m))
-            yhat = model(data)
-            path = data.path
-        else:
-            x, y, path, minmax = data
-            x = x.to(opt_copy.device)
-            y = y.to(opt_copy.device)
-            path = path
-            yhat = model(x)
-        loss = opt.criterion(yhat, y).item()
-        y = y.cpu().numpy()
-        yhat = yhat.cpu().detach().numpy()
-        if opt_copy.output_mode.startswith('energy'):
-            y = y.reshape((opt_copy.m, opt_copy.m))
-            yhat = yhat.reshape((opt_copy.m, opt_copy.m))
-        else:
-            y = y.reshape((-1))
-            yhat = yhat.reshape((-1))
-
-        loss_arr[i] = loss
-        if opt_copy.verbose:
-            print('y', y, np.max(y))
-            print('yhat', yhat, np.max(yhat))
-
-        if i < count:
-            sample = osp.split(path)[1] + '_downsample'
-            subpath = osp.join(opt_copy.ofile_folder, sample )
-            print('{}: {}'.format(subpath, loss), file = opt_copy.log_file)
-            if not osp.exists(subpath):
-                os.mkdir(subpath, mode = 0o755)
-
-            yhat_title = '{}\n{} ({}: {})'.format(upper_title, r'$\hat{S}$',
-                                                    loss_title, np.round(loss, 3))
-
-
-            if opt_copy.output_mode.startswith('energy'):
-
-                v_max = np.max(y)
-                v_min = np.min(y)
-
-                plot_matrix(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min,
-                                vmax = v_max, cmap = 'blue-red', title = yhat_title)
-                np.savetxt(osp.join(subpath, 'energy_hat.txt'), yhat, fmt = '%.3f')
-
-                plot_matrix(y, osp.join(subpath, 'energy.png'), vmin = v_min,
-                                vmax = v_max, cmap = 'blue-red', title = r'$S$')
-                np.savetxt(osp.join(subpath, 'energy.txt'), y, fmt = '%.3f')
-
-                # plot dif
-                dif = y - yhat
-                plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
-                                vmax = v_max, title = r'S - $\hat{S}$', cmap = 'blue-red')
-            elif opt_copy.output_mode == 'diag_chi_continuous' or opt_copy.output_mode == 'diag_chi_step':
-                plot_diag_chi(None, subpath, y, 'ground_truth', False,
-                            'diag_chi_hat.png', yhat, title = f'MSE: {np.round(loss, 3)}',
-                            label = 'estimate')
-                plot_diag_chi(None, subpath, y, 'ground_truth', True,
-                            'diag_chi_hat_log.png', yhat, title = f'MSE: {np.round(loss, 3)}',
-                            label = 'estimate')
-
-                np.savetxt(osp.join(subpath, 'diag_chi.txt'), y, fmt = '%.3f')
-                np.savetxt(osp.join(subpath, 'diag_chi_hat.txt'), yhat, fmt = '%.3f')
-            else:
-                return
-
-            # tar subpath
-            os.chdir(opt_copy.ofile_folder)
-            with tarfile.open(f'{sample}.tar.gz', 'w:gz') as f:
-                f.add(sample)
-            rmtree(sample)
-
-    print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)),
-        file = opt_copy.log_file)
+    analysisIterator(val_dataloader, model, opt_copy, count, 'downsampling')
 
 def rescalingAnalysis(val_dataloader, model, opt, count = 5):
+    print('Rescaling Results:', file = opt.log_file)
     opt_copy = copy.copy(opt) # shallow copy only
     if opt_copy.root_name is not None:
         opt_copy.root_name += 'rescale'
     opt_copy.y_preprocessing = 'rescale2_' + opt_copy.y_preprocessing
 
-    # get samples
-    samples = set()
-    for i, data in enumerate(val_dataloader):
-        if i == count:
-            break
-        if opt.GNN_mode:
-            path = data.path[0]
-        else:
-            path = path[0]
-        sample = osp.split(path)[1]
-        sample_id = int(sample[6:])
-        samples.add(sample_id)
-
-
-    dataset = get_dataset(opt_copy, True, True, samples = samples)
-
-    if opt.y_preprocessing is not None:
-        preprocessing = opt_copy.y_preprocessing.capitalize()
-    else:
-        preprocessing = 'None'
-    if opt.preprocessing_norm is not None:
-        preprocessing_norm = opt_copy.preprocessing_norm.capitalize()
-    else:
-         preprocessing_norm = 'None'
-    upper_title = f'Y Preprocessing: {preprocessing}, Norm: {preprocessing_norm}'
-
-    assert opt_copy.loss == 'mse'
-    loss_title = 'MSE Loss'
-
-    loss_arr = np.zeros(opt_copy.valN)
-    for i, data in enumerate(dataset):
-        if opt_copy.GNN_mode:
-            data = data.to(opt_copy.device)
-            if opt_copy.output_mode.startswith('energy'):
-                y = data.energy
-                y = torch.reshape(y, (-1, opt_copy.m, opt_copy.m))
-            else:
-                y = data.y
-                y = torch.reshape(y, (-1, opt_copy.m))
-            yhat = model(data)
-            path = data.path
-        else:
-            x, y, path, minmax = data
-            x = x.to(opt_copy.device)
-            y = y.to(opt_copy.device)
-            path = path
-            yhat = model(x)
-        loss = opt.criterion(yhat, y).item()
-        y = y.cpu().numpy()
-        yhat = yhat.cpu().detach().numpy()
-        if opt_copy.output_mode.startswith('energy'):
-            y = y.reshape((opt_copy.m, opt_copy.m))
-            yhat = yhat.reshape((opt_copy.m, opt_copy.m))
-        else:
-            y = y.reshape((-1))
-            yhat = yhat.reshape((-1))
-
-        loss_arr[i] = loss
-        if opt_copy.verbose:
-            print('y', y, np.max(y))
-            print('yhat', yhat, np.max(yhat))
-
-        if i < count:
-            sample = osp.split(path)[1] + '_rescale'
-            subpath = osp.join(opt_copy.ofile_folder, sample )
-            print('{}: {}'.format(subpath, loss), file = opt_copy.log_file)
-            if not osp.exists(subpath):
-                os.mkdir(subpath, mode = 0o755)
-
-            yhat_title = '{}\n{} ({}: {})'.format(upper_title, r'$\hat{S}$',
-                                                    loss_title, np.round(loss, 3))
-
-
-            if opt_copy.output_mode.startswith('energy'):
-
-                v_max = np.max(y)
-                v_min = np.min(y)
-
-                plot_matrix(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min,
-                                vmax = v_max, cmap = 'blue-red', title = yhat_title)
-                np.savetxt(osp.join(subpath, 'energy_hat.txt'), yhat, fmt = '%.3f')
-
-                plot_matrix(y, osp.join(subpath, 'energy.png'), vmin = v_min,
-                                vmax = v_max, cmap = 'blue-red', title = r'$S$')
-                np.savetxt(osp.join(subpath, 'energy.txt'), y, fmt = '%.3f')
-
-                # plot dif
-                dif = y - yhat
-                plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
-                                vmax = v_max, title = r'S - $\hat{S}$', cmap = 'blue-red')
-            elif opt_copy.output_mode == 'diag_chi_continuous' or opt_copy.output_mode == 'diag_chi_step':
-                plot_diag_chi(None, subpath, y, 'ground_truth', False,
-                            'diag_chi_hat.png', yhat, title = f'MSE: {np.round(loss, 3)}',
-                            label = 'estimate')
-                plot_diag_chi(None, subpath, y, 'ground_truth', True,
-                            'diag_chi_hat_log.png', yhat, title = f'MSE: {np.round(loss, 3)}',
-                            label = 'estimate')
-
-                np.savetxt(osp.join(subpath, 'diag_chi.txt'), y, fmt = '%.3f')
-                np.savetxt(osp.join(subpath, 'diag_chi_hat.txt'), yhat, fmt = '%.3f')
-            else:
-                return
-
-            # tar subpath
-            os.chdir(opt_copy.ofile_folder)
-            with tarfile.open(f'{sample}.tar.gz', 'w:gz') as f:
-                f.add(sample)
-            rmtree(sample)
-
-    print('Loss: {} +- {}\n'.format(np.mean(loss_arr), np.std(loss_arr)),
-        file = opt_copy.log_file)
-
+    analysisIterator(val_dataloader, model, opt_copy, count, 'rescaling')
 
 #### Functions for plotting xyz files ####
 def plot_xyz(xyz, L, x = None, ofile = None, show = True, title = None, legend = True):

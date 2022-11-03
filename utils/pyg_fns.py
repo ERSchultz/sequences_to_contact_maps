@@ -125,7 +125,6 @@ class Degree(BaseTransform):
             else:
                 deg /= (deg.max() if self.max is None else self.max)
 
-
         if self.split_edges:
             deg = torch.stack([pos_deg, neg_deg], dim=1)
         else:

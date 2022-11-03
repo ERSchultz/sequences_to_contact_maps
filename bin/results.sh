@@ -6,10 +6,10 @@
 #SBATCH --ntasks=20
 #SBATCH --mem-per-cpu=2000
 
-dirname="/home/erschultz"
+dirname="/home/erschultz/sequences_to_contact_maps"
 # dirname="/home/erschultz"
 # dirname='/project2/depablo/erschultz'
-dataset="dataset_09_30_22"
+dataset="dataset_07_20_22"
 sample='none'
 sampleFolder='none'
 method='none'
@@ -24,7 +24,7 @@ svd='false'
 
 source activate python3.9_pytorch1.9
 
-for i in 100
+for i in 102
 # 4 6 8
 # 1 2 3 4 6 7 8 9 11 12 13 14 15 17 18 19 20 21 23 24
 do

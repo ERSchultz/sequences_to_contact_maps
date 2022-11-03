@@ -24,6 +24,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.utils.extmath import svd_flip
 
 from core_test_train import core_test_train
+from result_summary_plots import plot_top_PCs
 from utils.argparse_utils import (ArgparserConverter, finalize_opt,
                                   get_base_parser)
 from utils.base_networks import AverageTo2d
@@ -134,14 +135,16 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    opt.data_folder = "/home/erschultz/dataset_09_30_22"
+    dir = "/home/erschultz/sequences_to_contact_maps"
+    dataset = 'dataset_07_20_22'
+    opt.data_folder = osp.join(dir, dataset)
     opt.scratch = '/home/erschultz/scratch'
 
     # architecture
     opt.m = 1024
     # opt.split_percents=[0.9,0.1,0.0]
     # opt.split_sizes=None
-    opt.split_sizes=[10, 5, 0]
+    opt.split_sizes=[1, 0, 0]
     opt.split_percents = None
     opt.random_split=False
 
@@ -192,10 +195,10 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing = 'log'
+        opt.y_preprocessing = 'log_inf'
         opt.keep_zero_edges = False
         opt.loss = 'mse'
-        opt.preprocessing_norm = None
+        opt.preprocessing_norm = 'mean'
         opt.message_passing = 'gat'
         opt.GNN_mode = True
         opt.output_mode = 'diag_chi_continuous'
@@ -210,14 +213,14 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('sparse')
-        opt.pre_transforms=AC.str2list('constant-degree_split1_diag_max1024-contactdistance')
+        opt.pre_transforms=AC.str2list('degree_max1-degree_split1_diag_max1-contactdistance')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        # opt.head_architecture = 'bilinear'
-        opt.head_architecture_2 = 'fc'
-        opt.m = 256
+        opt.head_architecture = 'bilinear'
+        # opt.head_architecture_2 = 'fc'
+        opt.m = 1024
         opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, opt.m]
         opt.crop = [0,opt.m]
 
@@ -286,38 +289,47 @@ def debugModel(model_type):
     opt = finalize_opt(opt, parser, False, debug = True)
     opt.model_type = model_type
     model = get_model(opt)
-    core_test_train(model, opt)
+    # core_test_train(model, opt)
 
-    #
-    # for val, label in zip(['log', 'sweep200000_log'], ['All', '40%']):
-    #     opt.y_preprocessing = val
-    #
-    #     print(opt, end = '\n\n', file = opt.log_file)
-    #     dataset = get_dataset(opt)
-    #     for i, data in enumerate(dataset):
-    #         print(data.contact_map_diag, torch.min(data.contact_map_diag))
-    #         plot_matrix(data.contact_map_diag, osp.join(data.path, 'diag.png'), title = None, cmap='bluered', vmin = 'center1')
-    #         print(data.path)
-    #         print(f'x={data.x}, shape={data.x.shape}, '
-    #                 f'min={torch.min(data.x).item()}, '
-    #                 f'max={torch.max(data.x).item()}')
-    #         print(f'edge_attr={data.edge_attr}, '
-    #                 f'shape={data.edge_attr.shape}, '
-    #                 f'min={torch.min(data.edge_attr).item()}, '
-    #                 f'max={torch.max(data.edge_attr).item()}')
-    #         # plt.hist(data.edge_attr.reshape(-1), alpha = 0.5, label = f'{label}',
-    #                 # bins=50)
-    #                 # bins=np.logspace(np.log10(0.0001),np.log10(10.0), 50))
-    #         plt.hist(data.x[:,1], alpha = 0.5, label = f'{label}',
-    #                 bins=50)
-    #                 # bins=np.logspace(np.log10(0.0001),np.log10(10.0), 50))
-    # # plt.xscale('log')
+
+    fig, (ax0, ax1, ax2, ax3) = plt.subplots(1, 4)
+    for val, label in zip(['log_inf', 'kr_log_inf'], ['All', 'kr']):
+        opt.y_preprocessing = val
+
+        print(opt, end = '\n\n', file = opt.log_file)
+        dataset = get_dataset(opt)
+        for i, data in enumerate(dataset):
+            print(data.path)
+            print(data.contact_map_diag, torch.min(data.contact_map_diag))
+            plot_matrix(data.contact_map_diag, osp.join(data.path, 'diag.png'), title = None, cmap='bluered', vmin = 'center1')
+            print(data.path)
+            print(f'x={data.x}, shape={data.x.shape}, '
+                    f'min={torch.min(data.x).item()}, '
+                    f'max={torch.max(data.x).item()}')
+            print(f'edge_attr={data.edge_attr}, '
+                    f'shape={data.edge_attr.shape}, '
+                    f'min={torch.min(data.edge_attr).item()}, '
+                    f'max={torch.max(data.edge_attr).item()}')
+            ax3.hist(data.edge_attr.reshape(-1), alpha = 0.5, label = f'{label}',
+                    bins=50)
+            ax0.hist(data.x[:,0], alpha = 0.5, label = f'{label}',
+                    bins=50)
+            ax1.hist(data.x[:,1], alpha = 0.5, label = f'{label}',
+                    bins=50)
+            ax2.hist(data.x[:,2], alpha = 0.5, label = f'{label}',
+                    bins=50)
     # plt.yscale('log')
-    # plt.ylabel('Count')
-    # plt.xlabel('Degree')
-    # # plt.title(f'{opt.y_preprocessing} preprocessing')
-    # plt.legend()
-    # plt.show()
+    for ax in [ax0, ax1, ax2, ax3]:
+        ax.set_yscale('log')
+        ax.set_xlabel('Degree')
+
+    ax0.set_ylabel('Count')
+    ax0.set_title('deg')
+    ax1.set_title('pos')
+    ax2.set_title('neg')
+    ax3.set_title('attr')
+    plt.legend()
+    plt.show()
 
     # if opt.use_scratch:
     #     rmtree(opt.data_folder)
@@ -632,10 +644,6 @@ def find_best_p_s():
 
     print(best_sample)
 
-def compare_y_normalization_methods():
-    dir = '/home/erschultz/sequences_to_contact_maps/dataset_05_12_22/samples/sample1'
-    y = np.load(osp.join(dir, 'y.npy'))
-
 def downsample_simulation():
     # uses data_out/output.xyz to generate contact map as if you had
     # only ran a shorter simulation
@@ -667,28 +675,23 @@ def down_sample_simulation_inner(file):
                 # np.save(y_diag_ofile, ydiag)
                 # plot_matrix(ydiag, osp.join(file, f'y_diag_dist{ymax}.png'), vmax='max')
 
-
-def plot_mean_dist_mlp():
-    scratch = '/home/erschultz/scratch'
-    dataset='dataset_09_30_22/samples'
-    sample=98
-    for i, label in zip([1, 2], ['none', 'mean']):
-        dir = osp.join(scratch, f'MLP{i}', dataset, f'sample{sample}')
-        file = osp.join(dir, 'meanDist.npy')
-        meanDist = np.load(file)
-        plt.plot(meanDist, label = label)
-
-    plt.yscale('log')
-    plt.legend()
-    plt.show()
+def testGNNrank():
+    '''
+    check rank of GNN predicted E.
+    tend to be (really) low rank unfortunately
+    '''
+    dir = '/home/erschultz'
+    dataset = 'dataset_09_30_22'
+    sample = 1
+    plaid = np.loadtxt(osp.join(dir, dataset, f'samples/sample{sample}/GNN-223-E/k0/replicate1/resources/plaid_hat.txt'))
+    plot_top_PCs(plaid, verbose = True, count = 5)
 
 
 if __name__ == '__main__':
-    # plot_mean_dist_mlp()
     # prep_data_for_cluster()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
-    # compare_y_normalization_methods()
+    # debugModel('ContactGNNEnergy')
+    testGNNrank()
     # downsample_simulation()
