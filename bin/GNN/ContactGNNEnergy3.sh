@@ -36,6 +36,7 @@ headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 useScratch='false'
+kr='true'
 
 
 # like 229 but KR

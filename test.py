@@ -80,6 +80,7 @@ def edit_argparse():
             for id in os.listdir(type_path):
                 id_path = osp.join(type_path, id)
                 if osp.isdir(id_path):
+                    print(id_path)
                     arg_file = osp.join(id_path, 'argparse.txt')
                     if osp.exists(arg_file):
                         with open(arg_file, 'r') as f:
@@ -116,10 +117,16 @@ def edit_argparse():
                                 line = lines[i]
                                 line_split = line.strip().split('-')
                                 degree_count = 0
+                                split = False
                                 for j, val in enumerate(line_split):
                                     if val.lower().startswith('degree'):
+                                        print(val)
                                         degree_count += 1
-                                if degree_count == 1:
+                                        if 'split' in val:
+                                            print('h', val)
+                                            split = True
+                                if degree_count == 1 and split:
+                                    print('j')
                                     line_split.insert(0, 'Degree')
                                 line = '-'.join(line_split)+'\n'
 
@@ -658,7 +665,7 @@ if __name__ == '__main__':
     # prep_data_for_cluster()
     # find_best_p_s()
     # binom()
-    # edit_argparse()
+    edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
     # testGNNrank()
