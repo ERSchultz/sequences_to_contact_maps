@@ -318,9 +318,9 @@ def triu_to_full(arr, m = None):
 
     return y
 
-def rescale_contact_map(inp, factor):
+def rescale_matrix(inp, factor):
     '''
-    Rescales contact map by factor.
+    Rescales input matrix by factor.
     if inp is 1024x1024 and factor=2, out is 512x512
     '''
     inp = np.triu(inp)

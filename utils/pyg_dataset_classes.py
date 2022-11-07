@@ -22,7 +22,7 @@ from .dataset_classes import DiagFunctions, make_dataset
 from .energy_utils import calculate_D
 from .knightRuiz import knightRuiz
 from .networks import get_model
-from .utils import DiagonalPreprocessing, rescale_contact_map
+from .utils import DiagonalPreprocessing, rescale_matrix
 
 
 # taken these from Soren
@@ -193,6 +193,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     graph.y = graph.y[self.crop[0]:self.crop[1]]
             elif self.output.startswith('energy_diag'):
                 D = calculate_D(graph.diag_chi_continuous)
+                if self.rescale is not None:
+                    D = rescale_matrix(D, self.rescale)
                 if self.crop is not None:
                     D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
                 graph.energy = torch.tensor(D, dtype = torch.float32)
@@ -207,7 +209,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                         s = np.loadtxt(s_path2)
                     if self.crop is not None:
                         s = s[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
-                    graph.energy = torch.tensor(s, dtype = torch.float32)
+                    energy = torch.tensor(s, dtype = torch.float32)
                 else:
                     # look for chi
                     chi_path1 = osp.join(raw_folder, 'chis.npy')
@@ -219,11 +221,16 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     else:
                         raise Exception(f'chi does not exist: {chi_path1}, {chi_path2}')
                     chi = torch.tensor(chi, dtype = torch.float32)
-                    graph.energy = x @ chi @ x.t()
+                    energy = x @ chi @ x.t()
 
-                graph.energy = (graph.energy + graph.energy.t()) / 2
+                graph.energy = (energy + energy.t()) / 2
+                if self.rescale is not None:
+                    energy = rescale_matrix(graph.energy, self.rescale)
+                    graph.energy = torch.tensor(energy, dtype = torch.float32)
                 if self.output.startswith('energy_sym_diag'):
                     D = calculate_D(graph.diag_chi_continuous)
+                    if self.rescale is not None:
+                        D = rescale_matrix(D, self.rescale)
                     if self.crop is not None:
                         D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
                     graph.energy += torch.tensor(D, dtype = torch.float32)
@@ -310,7 +317,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         y, preprocessing = self.load_y(raw_folder)
 
         if self.rescale is not None:
-            y = rescale_contact_map(y, self.rescale)
+            y = rescale_matrix(y, self.rescale)
 
         if self.y_norm == 'max':
             y /= np.max(y)
