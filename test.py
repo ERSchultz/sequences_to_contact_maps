@@ -228,9 +228,9 @@ def debugModel(model_type):
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
         opt.head_architecture = 'bilinear'
-        # opt.head_architecture_2 = 'fc'
+        opt.head_architecture_2 = 'fc-fill'
         crop = 1024
-        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, 256]
+        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, crop]
         opt.crop = None
 
         opt.use_bias = True

@@ -37,6 +37,7 @@ headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 KR='false'
 scratch='/scratch/midway3/erschultz'
+useScratch='false'
 
 
 # like 225, but all out on params and sweeprand
