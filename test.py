@@ -151,7 +151,7 @@ def debugModel(model_type):
     opt.m = 1024
     # opt.split_percents=[1,1,0.0]
     # opt.split_sizes=None
-    opt.split_sizes=[10, 10, 0]
+    opt.split_sizes=[2, 1, 0]
     opt.split_percents = None
     opt.random_split=False
 
@@ -202,7 +202,8 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing = 'log_inf'
+        opt.y_preprocessing = 'sweeprand_log_inf'
+        opt.rescale = 2
         opt.kr = True
         opt.keep_zero_edges = False
         opt.loss = 'mse'
@@ -220,17 +221,17 @@ def debugModel(model_type):
         opt.training_norm = None
         opt.use_edge_weights = False
         opt.use_edge_attr = True
-        # opt.transforms=AC.str2list('sparse')
+        # opt.transforms=AC.str2list('constant')
         opt.pre_transforms=AC.str2list('degree-degree_diag_split1_max1-contactdistance')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
         opt.head_architecture = 'bilinear'
-        # opt.head_architecture_2 = 'fc'
-        opt.m = 256
-        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, opt.m]
-        opt.crop = [0,opt.m]
+        opt.head_architecture_2 = 'fc-fill'
+        crop = 1024
+        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, crop]
+        opt.crop = None
 
         opt.use_bias = True
         opt.num_heads = 8
@@ -661,11 +662,12 @@ def testGNNrank():
     plot_top_PCs(plaid, verbose = True, count = 5)
 
 
+
 if __name__ == '__main__':
     # prep_data_for_cluster()
     # find_best_p_s()
     # binom()
-    edit_argparse()
+    # edit_argparse()
     # sc_nagano_to_dense()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # testGNNrank()

@@ -12,6 +12,7 @@ import torch
 from numba import jit, njit
 from scipy.ndimage import uniform_filter
 from scipy.stats import pearsonr, spearmanr
+from skimage.measure import block_reduce
 from sklearn.decomposition import PCA
 from sympy import solve, symbols
 
@@ -317,7 +318,16 @@ def triu_to_full(arr, m = None):
 
     return y
 
-
+def rescale_matrix(inp, factor):
+    '''
+    Rescales input matrix by factor.
+    if inp is 1024x1024 and factor=2, out is 512x512
+    '''
+    inp = np.triu(inp)
+    processed = block_reduce(inp, (factor, factor), np.sum)
+    processed = np.triu(processed)
+    out = processed + np.triu(processed, 1).T
+    return out
 
 ## plotting helper functions ##
 def un_normalize(y, minmax):
@@ -554,3 +564,16 @@ def print_size(arr, name = '', file = sys.stdout):
         if size > 1:
             print(f'{name} size: {np.round(size, 1)} {size_name}', file = file)
             return
+
+def test():
+    # test rescale_contact_map
+    y = np.array([[1,2,3,0],[5,4,7,8],[9,0,5,12],[13,14,15,8]]).astype(np.float)
+    y = y + y.T
+    y /= np.mean(np.diagonal(y))
+    print(y)
+    y = rescale_contact_map(y, 2)
+    y /= np.mean(np.diagonal(y))
+    print(y)
+
+if __name__ == '__main__':
+    test()

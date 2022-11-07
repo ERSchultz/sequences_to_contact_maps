@@ -20,26 +20,29 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy8' # change to run multiple bash files at once
 dirname="/project/depablo/erschultz/dataset_09_30_22"
 m=1024
-messagePassing='GAT'
-preTransforms='degree-ContactDistance-GeneticDistance_norm-DiagonalParameterDistance'
+messagePassing='weighted_GAT'
+preTransforms='constant-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
-hiddenSizesList='8-8-8'
-EncoderHiddenSizesList='100-100-64'
-updateHiddenSizesList='100-100-64'
+hiddenSizesList='8-8-8-8'
+EncoderHiddenSizesList='1000-1000-64'
+updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
 outputMode='energy_sym_diag'
-yPreprocessing='log'
-yNorm='none'
-headArchitecture='fc-fill'
+yPreprocessing='sweeprand_log_inf'
+yNorm='mean'
+headArchitecture='bilinear'
+headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+KR='false'
 scratch='/scratch/midway3/erschultz'
+useScratch='false'
 
-# 4th attempt at predicting only diag with GNN - cheating and using diag param feature augmentation
 
+# like 225, but all out on params and sweeprand
 
-id=203
+id=237
 for lr in 1e-4
 do
   train

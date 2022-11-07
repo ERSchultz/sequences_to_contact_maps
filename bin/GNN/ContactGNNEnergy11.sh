@@ -28,6 +28,7 @@ hiddenSizesList='8-8-8'
 EncoderHiddenSizesList='100-100-64'
 updateHiddenSizesList='100-100-64'
 numHeads=8
+
 split_edges_for_feature_augmentation='false'
 outputMode='energy_sym'
 yPreprocessing='log'

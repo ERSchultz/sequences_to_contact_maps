@@ -22,7 +22,7 @@ from .dataset_classes import DiagFunctions, make_dataset
 from .energy_utils import calculate_D
 from .knightRuiz import knightRuiz
 from .networks import get_model
-from .utils import DiagonalPreprocessing
+from .utils import DiagonalPreprocessing, rescale_matrix
 
 
 # taken these from Soren
@@ -48,7 +48,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN:
     # https://github.com/rusty1s/pytorch_geometric/issues/1511
     def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag',
-                y_log_transform = None, kr = False,
+                y_log_transform = None, kr = False, rescale = None,
                 y_norm = 'mean', min_subtraction = True,
                 use_node_features = True, mlp_model_id = None,
                 sparsify_threshold = None, sparsify_threshold_upper = None,
@@ -65,6 +65,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y_preprocessing: type of contact map preprocessing ('diag', None, etc)
             y_log_transform: type of log transform (int k for log_k, 'ln' for ln, None to skip)
             kr: True to balance with knightRuiz algorithm
+            resacle: rescale contact map by factor of <rescale> (None to skip)
+                    e.g. 2 will decrease size of contact mapy by 2
             y_norm: type of normalization ('mean', 'max')
             min_subtraction: True to subtract min during normalization
             use_node_features: True to use bead labels as node features
@@ -90,6 +92,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.y_preprocessing = y_preprocessing
         self.y_log_transform = y_log_transform
         self.kr = kr
+        self.rescale = rescale
         self.y_norm = y_norm
         self.min_subtraction = min_subtraction
         self.use_node_features = use_node_features
@@ -190,6 +193,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     graph.y = graph.y[self.crop[0]:self.crop[1]]
             elif self.output.startswith('energy_diag'):
                 D = calculate_D(graph.diag_chi_continuous)
+                if self.rescale is not None:
+                    D = rescale_matrix(D, self.rescale)
                 if self.crop is not None:
                     D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
                 graph.energy = torch.tensor(D, dtype = torch.float32)
@@ -204,7 +209,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                         s = np.loadtxt(s_path2)
                     if self.crop is not None:
                         s = s[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
-                    graph.energy = torch.tensor(s, dtype = torch.float32)
+                    energy = torch.tensor(s, dtype = torch.float32)
                 else:
                     # look for chi
                     chi_path1 = osp.join(raw_folder, 'chis.npy')
@@ -216,11 +221,16 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     else:
                         raise Exception(f'chi does not exist: {chi_path1}, {chi_path2}')
                     chi = torch.tensor(chi, dtype = torch.float32)
-                    graph.energy = x @ chi @ x.t()
+                    energy = x @ chi @ x.t()
 
-                graph.energy = (graph.energy + graph.energy.t()) / 2
+                graph.energy = (energy + energy.t()) / 2
+                if self.rescale is not None:
+                    energy = rescale_matrix(graph.energy, self.rescale)
+                    graph.energy = torch.tensor(energy, dtype = torch.float32)
                 if self.output.startswith('energy_sym_diag'):
                     D = calculate_D(graph.diag_chi_continuous)
+                    if self.rescale is not None:
+                        D = rescale_matrix(D, self.rescale)
                     if self.crop is not None:
                         D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
                     graph.energy += torch.tensor(D, dtype = torch.float32)
@@ -266,7 +276,21 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def load_y(self, raw_folder):
         '''Helper function to load raw contact map and apply normalization.'''
-        if self.y_preprocessing.startswith('sweep'):
+        if self.y_preprocessing.startswith('sweeprand'):
+            _, *y_preprocessing = self.y_preprocessing.split('_')
+            if isinstance(y_preprocessing, list):
+                preprocessing = '_'.join(y_preprocessing)
+
+            id = int(osp.split(raw_folder)[1][6:])
+            rng = np.random.default_rng(seed = id)
+            sweep = rng.choice([200000, 300000, 400000, 500000], 1)[0]
+            y_path = osp.join(raw_folder, f'data_out/contacts{sweep}.txt')
+            if osp.exists(y_path):
+                y = np.loadtxt(y_path).astype(np.float64)
+            else:
+                raise Exception(f"Unknown preprocessing: {self.y_preprocessing} or y_path missing: {y_path}")
+
+        elif self.y_preprocessing.startswith('sweep'):
             sweep, *y_preprocessing = self.y_preprocessing.split('_')
             sweep = int(sweep[5:])
             if isinstance(y_preprocessing, list):
@@ -297,11 +321,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y = np.load(osp.join(raw_folder, 'y.npy')).astype(np.float64)
             preprocessing = self.y_preprocessing
 
-        if self.y_norm == 'max':
-            y /= np.max(y)
-        elif self.y_norm == 'mean':
-            y /= np.mean(np.diagonal(y))
-
         return y, preprocessing
 
     def process_y(self, raw_folder):
@@ -310,6 +329,14 @@ class ContactsGraph(torch_geometric.data.Dataset):
         necessary preprocessing.
         '''
         y, preprocessing = self.load_y(raw_folder)
+
+        if self.rescale is not None:
+            y = rescale_matrix(y, self.rescale)
+
+        if self.y_norm == 'max':
+            y /= np.max(y)
+        elif self.y_norm == 'mean':
+            y /= np.mean(np.diagonal(y))
 
         if self.kr:
             y = knightRuiz(y)
@@ -459,16 +486,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
     @property
     def weighted_degree(self):
         return torch.sum(self.contact_map, axis = 1)
-
-    def filter_to_topk(self, y, top_k):
-        # any entry whose absolute value is not in the top_k will be set to 0, row-wise
-        yabs = np.abs(y)
-        k = self.m - top_k
-        z = np.argpartition(yabs, k, axis = -1)
-        z = z[:, :k]
-        y[np.arange(self.m)[:,None], z] = 0
-        y = y.T # convert to col_wise filtering
-        return y
 
     def generate_edge_index(self):
         adj = torch.clone(self.contact_map)

@@ -17,7 +17,7 @@ TORCH=1.9.0
 CUDA=111
 conda create --name $envName -y
 conda activate $envName
-conda install -y python=3.9 pytorch=1.9=py3.9_cuda11.1_cudnn8.0.5_0 pyg torchvision cudatoolkit=11.1 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy pybigwig pybind11 sympy isort -c pytorch -c conda-forge -c bioconda -c pyg &>> $ofile
+conda install -y python=3.9 pytorch=1.9=py3.9_cuda11.1_cudnn8.0.5_0 pyg torchvision cudatoolkit=11.1 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scikit-image scipy pybigwig pybind11 sympy isort -c pytorch -c conda-forge -c bioconda -c pyg &>> $ofile
 python3 -m pip install pynvml importmagic hic-straw hicrep &>> $ofile
 conda env export > logFiles/env_local2.yml
 conda deactivate
@@ -27,7 +27,7 @@ envName=python3.9_pytorch1.9_cuda11.3
 ofile=logFiles/conda_env_midway3.log
 conda create --name $envName -y
 conda activate $envName
-conda install -y python=3.9 pytorch=1.9 pyg torchvision cudatoolkit=11.3 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy pybigwig pybind11 sympy isort -c pytorch -c conda-forge -c bioconda -c pyg  &>> $ofile
+conda install -y python=3.9 pytorch=1.9 pyg torchvision cudatoolkit=11.3 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scikit-image scipy pybigwig pybind11 sympy isort -c pytorch -c conda-forge -c bioconda -c pyg  &>> $ofile
 python3 -m pip install pynvml importmagic hic-straw hicrep &>> $ofile
 conda env export > logFiles/env_midway3.yml
 conda deactivate
@@ -35,7 +35,7 @@ conda deactivate
 # envName=python3.9_pytorch1.9_cuda10.2
 # conda create --name $envName -y
 # conda activate $envName
-# conda install -y python=3.9 pytorch=1.9 pyg torchvision cudatoolkit=10.2 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scipy pybigwig pybind11 sympy isort -c pytorch -c conda-forge -c bioconda -c pyg
+# conda install -y python=3.9 pytorch=1.9 pyg torchvision cudatoolkit=10.2 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scikit-image scipy pybigwig pybind11 sympy isort -c pytorch -c conda-forge -c bioconda -c pyg
 # python3 -m pip install pynvml importmagic
 # conda env export > logFiles/env_midway_39_19.yml
 # conda deactivate
