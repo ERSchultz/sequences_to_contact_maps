@@ -18,28 +18,28 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy5' # change to run multiple bash files at once
-dirname="/project/depablo/erschultz/dataset_09_30_22"
+dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
-messagePassing='GAT'
-preTransforms='degree-ContactDistance-GeneticDistance_norm'
+messagePassing='weighted_GAT'
+preTransforms='constant-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
-hiddenSizesList='8-8-8'
-EncoderHiddenSizesList='100-100-64'
-updateHiddenSizesList='100-100-64'
+hiddenSizesList='8-8-8-8'
+EncoderHiddenSizesList='1000-1000-64'
+updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
 outputMode='energy_sym_diag'
-yPreprocessing='log'
+yPreprocessing='log_inf'
 yNorm='mean'
-headArchitecture='fc-fill'
+headArchitecture='bilinear'
+headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
-scratch='/scratch/midway3/erschultz'
+KR='true'
 
-# first attempt at predicting only diag with GNN, baseline arch
+# like 225, but KR (231) and all out on params
 
-
-id=200
+id=234
 for lr in 1e-4
 do
   train

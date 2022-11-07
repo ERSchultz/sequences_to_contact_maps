@@ -68,6 +68,8 @@ def get_base_parser():
                         help='type of log transform input data (None to skip)')
     parser.add_argument('--kr', type=AC.str2bool,
                         help='True to use KnightRuiz balancing algorithm')
+    parser.add_argument('--rescale', type=AC.str2int,
+                        help='rescale contact map by factor of <rescale> (None to skip)')
     parser.add_argument('--preprocessing_norm', type=AC.str2None, default='batch',
                         help='type of [0,1] normalization for input data')
     parser.add_argument('--min_subtraction', type=AC.str2bool, default=True,
@@ -317,6 +319,11 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
             opt.node_feature_size += opt.k
         else:
             assert (len(opt.transforms) + len(opt.pre_transforms)) > 0, f"need feature augmentation for id={opt.id}"
+
+    if opt.rescale is not None:
+        opt.m = int(opt.m / opt.rescale)
+    if opt.crop is not None:
+        opt.m = opt.crop[1] - opt.crop[0]
 
     # transforms
     process_transforms(opt)
