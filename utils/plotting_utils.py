@@ -573,7 +573,13 @@ def downsamplingAnalysis(val_dataloader, model, opt, count = 5):
     opt_copy = copy.copy(opt) # shallow copy only
     if opt_copy.root_name is not None:
         opt_copy.root_name += 'downsample'
-    opt_copy.y_preprocessing = 'sweep200000_' + opt_copy.y_preprocessing
+    if opt_copy.y_preprocessing.startswith('sweep'):
+        _, *y_preprocessing = opt_copy.y_preprocessing.split('_')
+        if isinstance(y_preprocessing, list):
+            y_preprocessing = '_'.join(y_preprocessing)
+    else:
+        y_preprocessing = self.y_preprocessing
+    opt_copy.y_preprocessing = 'sweep200000_' + y_preprocessing
 
     analysisIterator(val_dataloader, model, opt_copy, count, 'downsampling')
 
@@ -582,7 +588,14 @@ def rescalingAnalysis(val_dataloader, model, opt, count = 5):
     opt_copy = copy.copy(opt) # shallow copy only
     if opt_copy.root_name is not None:
         opt_copy.root_name += 'rescale'
-    opt_copy.y_preprocessing = 'rescale2_' + opt_copy.y_preprocessing
+    if opt_copy.y_preprocessing.startswith('sweep'):
+        _, *y_preprocessing = opt_copy.y_preprocessing.split('_')
+        if isinstance(y_preprocessing, list):
+            y_preprocessing = '_'.join(y_preprocessing)
+    else:
+        y_preprocessing = self.y_preprocessing
+
+    opt_copy.y_preprocessing = 'rescale2_' + y_preprocessing
 
     analysisIterator(val_dataloader, model, opt_copy, count, 'rescaling')
 
@@ -1074,6 +1087,5 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None,
             plotDiagChiPredictions(val_dataloader, model, opt)
 
     if opt.plot:
-        if not opt.y_preprocessing.startswith('sweep'):
-            downsamplingAnalysis(val_dataloader, model, opt)
+        downsamplingAnalysis(val_dataloader, model, opt)
         rescalingAnalysis(val_dataloader, model, opt)

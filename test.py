@@ -151,7 +151,7 @@ def debugModel(model_type):
     opt.m = 1024
     # opt.split_percents=[1,1,0.0]
     # opt.split_sizes=None
-    opt.split_sizes=[5, 5, 0]
+    opt.split_sizes=[2, 1, 0]
     opt.split_percents = None
     opt.random_split=False
 
@@ -202,7 +202,7 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing = 'log_inf'
+        opt.y_preprocessing = 'sweeprand_log_inf'
         opt.rescale = 2
         opt.kr = True
         opt.keep_zero_edges = False
@@ -285,7 +285,7 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = False
+    opt.plot = True
     opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = False
@@ -660,6 +660,7 @@ def testGNNrank():
     # file = '/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1128/energy_hat.txt'
     plaid = np.loadtxt(file)
     plot_top_PCs(plaid, verbose = True, count = 5)
+
 
 
 if __name__ == '__main__':

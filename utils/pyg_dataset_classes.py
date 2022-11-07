@@ -276,7 +276,21 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def load_y(self, raw_folder):
         '''Helper function to load raw contact map and apply normalization.'''
-        if self.y_preprocessing.startswith('sweep'):
+        if self.y_preprocessing.startswith('sweeprand'):
+            _, *y_preprocessing = self.y_preprocessing.split('_')
+            if isinstance(y_preprocessing, list):
+                preprocessing = '_'.join(y_preprocessing)
+
+            id = int(osp.split(raw_folder)[1][6:])
+            rng = np.random.default_rng(seed = id)
+            sweep = rng.choice([200000, 300000, 400000, 500000], 1)[0]
+            y_path = osp.join(raw_folder, f'data_out/contacts{sweep}.txt')
+            if osp.exists(y_path):
+                y = np.loadtxt(y_path).astype(np.float64)
+            else:
+                raise Exception(f"Unknown preprocessing: {self.y_preprocessing} or y_path missing: {y_path}")
+
+        elif self.y_preprocessing.startswith('sweep'):
             sweep, *y_preprocessing = self.y_preprocessing.split('_')
             sweep = int(sweep[5:])
             if isinstance(y_preprocessing, list):
