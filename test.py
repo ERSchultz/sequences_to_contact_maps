@@ -135,14 +135,14 @@ def debugModel(model_type):
     opt = parser.parse_args()
 
     # dataset
-    dir = "/home/erschultz/sequences_to_contact_maps"
-    dataset = 'dataset_07_20_22'
+    dir = "/home/erschultz"
+    dataset = 'dataset_09_30_22'
     opt.data_folder = osp.join(dir, dataset)
     opt.scratch = '/home/erschultz/scratch'
 
     # architecture
     opt.m = 1024
-    # opt.split_percents=[0.9,0.1,0.0]
+    # opt.split_percents=[1,1,0.0]
     # opt.split_sizes=None
     opt.split_sizes=[1, 0, 0]
     opt.split_percents = None
@@ -201,7 +201,7 @@ def debugModel(model_type):
         opt.preprocessing_norm = 'mean'
         opt.message_passing = 'gat'
         opt.GNN_mode = True
-        opt.output_mode = 'diag_chi_continuous'
+        opt.output_mode = None
         opt.encoder_hidden_sizes_list=[100,100,64]
         opt.update_hidden_sizes_list=[100,100,64]
         opt.hidden_sizes_list=[8,8,8]
@@ -213,7 +213,7 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('sparse')
-        opt.pre_transforms=AC.str2list('degree_max1-degree_split1_diag_max1-contactdistance')
+        opt.pre_transforms=AC.str2list('degree-degree_diag_split1_max1-contactdistance')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
@@ -300,9 +300,8 @@ def debugModel(model_type):
         dataset = get_dataset(opt)
         for i, data in enumerate(dataset):
             print(data.path)
-            print(data.contact_map_diag, torch.min(data.contact_map_diag))
-            plot_matrix(data.contact_map_diag, osp.join(data.path, 'diag.png'), title = None, cmap='bluered', vmin = 'center1')
-            print(data.path)
+            # print(data.contact_map_diag, torch.min(data.contact_map_diag))
+            # plot_matrix(data.contact_map_diag, osp.join(data.path, 'diag.png'), title = None, cmap='bluered', vmin = 'center1')
             print(f'x={data.x}, shape={data.x.shape}, '
                     f'min={torch.min(data.x).item()}, '
                     f'max={torch.max(data.x).item()}')
@@ -321,7 +320,6 @@ def debugModel(model_type):
     # plt.yscale('log')
     for ax in [ax0, ax1, ax2, ax3]:
         ax.set_yscale('log')
-        ax.set_xlabel('Degree')
 
     ax0.set_ylabel('Count')
     ax0.set_title('deg')
@@ -613,20 +611,17 @@ def prep_data_for_cluster():
 def find_best_p_s():
     # is there a curve in training that matches experimental curve well?
     dir = '/home/erschultz/sequences_to_contact_maps/'
-    data_dir = osp.join(dir, 'single_cell_nagano_imputed/samples/sample443') # experimental data sample
+    data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample104') # experimental data sample
     file = osp.join(data_dir, 'y.npy')
     y_exp = np.load(file)[:1024, :1024]
     meanDist_ref = DiagonalPreprocessing.genomic_distance_statistics(y_exp, 'prob')
-    meanDist_ref_filt = meanDist_ref.copy()
-    meanDist_ref_filt[50:] = uniform_filter(meanDist_ref_filt[50:], 3, mode = 'constant')
     plt.plot(meanDist_ref)
-    plt.plot(meanDist_ref_filt, label = 'filter')
     plt.xscale('log')
     plt.yscale('log')
     plt.legend()
     plt.show()
 
-    dir = '/home/erschultz/dataset_test_logistic' # simulated data dir
+    dir = '/home/erschultz/dataset_09_30_22' # simulated data dir
     # sort samples
     min_MSE = 1000
     best_sample = None
@@ -644,37 +639,6 @@ def find_best_p_s():
 
     print(best_sample)
 
-def downsample_simulation():
-    # uses data_out/output.xyz to generate contact map as if you had
-    # only ran a shorter simulation
-    # use this to assess GNN robustness to simulation length
-    dir = '/home/erschultz/dataset_09_30_22'
-    files = make_dataset(dir)[:3]
-    print(files)
-
-    with multiprocessing.Pool(20) as p:
-        p.map(down_sample_simulation_inner, files)
-
-def down_sample_simulation_inner(file):
-    print(file)
-    # xyz_file = osp.join(file, 'data_out', 'output.xyz')
-    # xyz = xyz_load(xyz_file, multiple_timesteps = True, N_min = 1)
-    for sweep in [100000, 200000, 300000, 400000, 500000]:
-        # y_diag_ofile = osp.join(file, f'y_diag_dist{ymax}.npy')
-        y_ifile = osp.join(file, f'data_out/contacts{sweep}.txt')
-        y_ofile = osp.join(file, f'y_sweep{sweep}.npy')
-        if not osp.exists(y_ofile):
-            # y = xyz_to_contact_distance(xyz[:ymax], 28.7, verbose = True)
-            if osp.exists(y_ifile):
-                y = np.loadtxt(y_ifile)
-                np.save(y_ofile, y)
-                plot_matrix(y, osp.join(file, f'y_sweep{sweep}.png'), vmax='mean')
-
-                # meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
-                # ydiag = DiagonalPreprocessing.process(y, meanDist)
-                # np.save(y_diag_ofile, ydiag)
-                # plot_matrix(ydiag, osp.join(file, f'y_diag_dist{ymax}.png'), vmax='max')
-
 def testGNNrank():
     '''
     check rank of GNN predicted E.
@@ -691,9 +655,9 @@ def testGNNrank():
 
 if __name__ == '__main__':
     # prep_data_for_cluster()
+    # find_best_p_s()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    # debugModel('ContactGNNEnergy')
-    testGNNrank()
-    # downsample_simulation()
+    debugModel('ContactGNNEnergy')
+    # testGNNrank()

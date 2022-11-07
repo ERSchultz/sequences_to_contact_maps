@@ -381,7 +381,7 @@ def plot_mean_vs_genomic_distance_comparison(dir, samples = None, percent = Fals
 
 def main():
     model_type = 'ContactGNNEnergy'
-    id = 225
+    id = 221
     argparse_path = osp.join('/home/erschultz/sequences_to_contact_maps/results', model_type, f'{id}/argparse.txt')
     parser = get_base_parser()
     sys.argv = [sys.argv[0]] # delete args from get_params, otherwise gnn opt will try and use them

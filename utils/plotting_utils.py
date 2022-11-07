@@ -329,7 +329,7 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
 
     dataset = get_dataset(opt, True, True, False, samples = samples)
 
-    loss_arr = np.zeros(opt.valN)
+    loss_arr = np.zeros(len(dataset))
     for i, data in enumerate(dataset):
         # get yhat
         assert opt.GNN_mode
@@ -404,7 +404,7 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
                 f.add(sample)
             rmtree(sample)
 
-    print(f'Loss: {np.mean(loss_arr)} +- {np.std(loss_arr)}\n',
+    print(f'Loss: {np.round(np.mean(loss_arr), 3)} +- {np.round(np.std(loss_arr), 3)}\n',
         file = opt.log_file)
 
 def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
@@ -488,7 +488,7 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
             f.add(sample)
         rmtree(sample)
 
-    print(f'Loss: {np.mean(loss_arr)} +- {np.std(loss_arr)}\n',
+    print(f'Loss: {np.round(np.mean(loss_arr), 3)} +- {np.round(np.std(loss_arr), 3)}\n',
         file = opt.log_file)
 
 def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
@@ -565,7 +565,7 @@ def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
         np.savetxt(osp.join(subpath, 'diag_chi.txt'), y, fmt = '%.3f')
         np.savetxt(osp.join(subpath, 'diag_chi_hat.txt'), yhat, fmt = '%.3f')
 
-    print(f'Loss: {np.mean(loss_arr)} +- {np.std(loss_arr)}\n',
+    print(f'Loss: {np.round(np.mean(loss_arr), 3)} +- {np.round(np.std(loss_arr), 3)}\n',
         file = opt.log_file)
 
 def downsamplingAnalysis(val_dataloader, model, opt, count = 5):
@@ -573,7 +573,7 @@ def downsamplingAnalysis(val_dataloader, model, opt, count = 5):
     opt_copy = copy.copy(opt) # shallow copy only
     if opt_copy.root_name is not None:
         opt_copy.root_name += 'downsample'
-    opt_copy.y_preprocessing = 'sweep200000_' + opt_copy.y_preprocessing
+    opt_copy.y_preprocessing = 'sweep1000000_' + opt_copy.y_preprocessing
 
     analysisIterator(val_dataloader, model, opt_copy, count, 'downsampling')
 
@@ -913,7 +913,7 @@ def plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, ref,
     plt.close()
 
 ### Primary scripts ###
-def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
+def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 'max',
                     size_in = 6, minVal = None, maxVal = None, prcnt = False,
                     cmap = None, x_ticks = None, y_ticks = None):
     """
@@ -941,7 +941,7 @@ def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 1,
                                                      [(0,    'white'),
                                                       (1,    'red')], N=126)
     elif cmap.replace('-', '').lower() == 'bluered':
-        if vmin == 'min' and vmax == 'max':
+        if vmax == 'max' and vmin != 'center1':
             vmin = vmax = 'center'
         cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                  [(0, 'blue'),

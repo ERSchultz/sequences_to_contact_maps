@@ -3,35 +3,51 @@ import math
 import numpy as np
 
 
+def calculate_all_energy(config, x, chi):
+    diag_chis_continuous = calculate_diag_chi_step(config)
+    D = calculate_D(diag_chis_continuous)
+    E, S = calculate_E_S(x, chi)
+    ED = calculate_net_energy(S, D)
+    return S, D, E, ED
+
+def calculate_net_energy(S, D):
+    S_sym = (S + S.T)/2 # double check that S is symmetric
+    SD = S_sym + D + np.diag(np.diagonal(D.copy()))
+    ED = s_to_E(SD)
+    return ED
+
 def calculate_E_S(x, chi):
     if x is None or chi is None:
         return None, None
-    s = calculate_S(x, chi)
-    e = s_to_E(s)
-    return e, s
+    S = calculate_S(x, chi)
+    E = s_to_E(S)
+    return E, S
 
 def calculate_E(x, chi):
-    s = calculate_S(x, chi)
-    e = s_to_E(s)
-    return e
+    S = calculate_S(x, chi)
+    E = s_to_E(S)
+    return E
 
-def s_to_E(s):
-    if s is None:
+def s_to_E(S):
+    if S is None:
         return None
 
-    return s + s.T - np.diag(np.diagonal(s).copy())
+    return S + S.T - np.diag(np.diagonal(S).copy())
 
 def calculate_S(x, chi):
+    assert len(chi.shape) == 2, f"chi has shape {chi.shape}"
+    m, k = x.shape
+    assert m > k, f'x has shape {x.shape}, try x.T'
     # zero lower triangle (double check)
     chi = np.triu(chi)
 
     try:
-        s = x @ chi @ x.T
+        S = x @ chi @ x.T
     except ValueError as e:
         print('x', x, x.shape)
         print('chi', chi, chi.shape)
         raise
-    return s
+    return S
 
 def calculate_diag_chi_step(config, diag_chi = None):
     m = config['nbeads']
