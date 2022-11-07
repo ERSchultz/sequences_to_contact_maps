@@ -37,10 +37,9 @@ headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 useScratch='false'
 
-# like 223, but constant feature instead of degree
+# like 225, but KR
 
-
-id=225
+id=231
 for lr in 1e-4
 do
   train

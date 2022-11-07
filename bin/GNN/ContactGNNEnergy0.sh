@@ -36,12 +36,13 @@ headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 useScratch='false'
+KR='true'
 
 
-# like 224, but for energy_sym_diag
+# like 227, but KR
 
 
-id=227
+id=232
 for lr in 1e-4
 do
   train

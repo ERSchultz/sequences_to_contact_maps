@@ -23,9 +23,9 @@ messagePassing='weighted_GAT'
 preTransforms='constant-degree_diag_split1-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
-hiddenSizesList='8-8-8'
-EncoderHiddenSizesList='100-100-64'
-updateHiddenSizesList='100-100-64'
+hiddenSizesList='8-8-8-8'
+EncoderHiddenSizesList='1000-1000-64'
+updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
 outputMode='energy_sym_diag'
@@ -37,10 +37,10 @@ headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 useScratch='false'
 
 
-# like 225 but constant and split degree
+# like 228 but all out on params
 
 
-id=228
+id=229
 for lr in 1e-4
 do
   train

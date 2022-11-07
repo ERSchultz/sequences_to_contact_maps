@@ -21,7 +21,7 @@ rootName='ContactGNNEnergy4' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='degree-ContactDistance-GeneticDistance_norm'
+preTransforms='constant-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8'
@@ -34,13 +34,13 @@ yPreprocessing='log_inf'
 yNorm='mean'
 headArchitecture='fc'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
-keepZeroEdges=True
+useScratch='false'
+KR='true'
 
-# repeat of 211, 215, 217 but split = False and log_inf and keep zero edges
-# attempt at predicting only diag with GNN, weighted GAT arch, split = False
+# like 226, but KR
 
 
-id=219
+id=233
 for lr in 1e-4
 do
   train

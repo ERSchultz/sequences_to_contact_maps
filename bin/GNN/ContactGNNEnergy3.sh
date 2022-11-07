@@ -21,25 +21,27 @@ rootName='ContactGNNEnergy3' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='constant-ContactDistance-GeneticDistance_norm'
+preTransforms='constant-degree_diag_split1-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
-hiddenSizesList='8-8-8'
-EncoderHiddenSizesList='100-100-64'
-updateHiddenSizesList='100-100-64'
+hiddenSizesList='8-8-8-8'
+EncoderHiddenSizesList='1000-1000-64'
+updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
-outputMode='diag_chi_continuous'
+outputMode='energy_sym_diag'
 yPreprocessing='log_inf'
 yNorm='mean'
-headArchitecture='fc'
+headArchitecture='bilinear'
+headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 useScratch='false'
 
-# like 217, but constant feature
+
+# like 229 but KR
 
 
-id=226
+id=230
 for lr in 1e-4
 do
   train

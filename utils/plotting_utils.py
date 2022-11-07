@@ -569,11 +569,11 @@ def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
         file = opt.log_file)
 
 def downsamplingAnalysis(val_dataloader, model, opt, count = 5):
-    print('Downsampling Results:', file = opt.log_file)
+    print('Downsampling (40%) Results:', file = opt.log_file)
     opt_copy = copy.copy(opt) # shallow copy only
     if opt_copy.root_name is not None:
         opt_copy.root_name += 'downsample'
-    opt_copy.y_preprocessing = 'sweep1000000_' + opt_copy.y_preprocessing
+    opt_copy.y_preprocessing = 'sweep200000_' + opt_copy.y_preprocessing
 
     analysisIterator(val_dataloader, model, opt_copy, count, 'downsampling')
 

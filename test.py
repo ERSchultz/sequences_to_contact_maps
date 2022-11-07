@@ -144,7 +144,7 @@ def debugModel(model_type):
     opt.m = 1024
     # opt.split_percents=[1,1,0.0]
     # opt.split_sizes=None
-    opt.split_sizes=[1, 0, 0]
+    opt.split_sizes=[10, 10, 0]
     opt.split_percents = None
     opt.random_split=False
 
@@ -196,12 +196,13 @@ def debugModel(model_type):
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
         opt.y_preprocessing = 'log_inf'
+        opt.kr = True
         opt.keep_zero_edges = False
         opt.loss = 'mse'
         opt.preprocessing_norm = 'mean'
         opt.message_passing = 'gat'
         opt.GNN_mode = True
-        opt.output_mode = None
+        opt.output_mode = 'energy_sym_diag'
         opt.encoder_hidden_sizes_list=[100,100,64]
         opt.update_hidden_sizes_list=[100,100,64]
         opt.hidden_sizes_list=[8,8,8]
@@ -220,7 +221,7 @@ def debugModel(model_type):
         opt.log_preprocessing = None
         opt.head_architecture = 'bilinear'
         # opt.head_architecture_2 = 'fc'
-        opt.m = 1024
+        opt.m = 256
         opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, opt.m]
         opt.crop = [0,opt.m]
 
@@ -289,45 +290,45 @@ def debugModel(model_type):
     opt = finalize_opt(opt, parser, False, debug = True)
     opt.model_type = model_type
     model = get_model(opt)
-    # core_test_train(model, opt)
+    core_test_train(model, opt)
 
 
-    fig, (ax0, ax1, ax2, ax3) = plt.subplots(1, 4)
-    for val, label in zip(['log_inf', 'kr_log_inf'], ['All', 'kr']):
-        opt.y_preprocessing = val
-
-        print(opt, end = '\n\n', file = opt.log_file)
-        dataset = get_dataset(opt)
-        for i, data in enumerate(dataset):
-            print(data.path)
-            # print(data.contact_map_diag, torch.min(data.contact_map_diag))
-            # plot_matrix(data.contact_map_diag, osp.join(data.path, 'diag.png'), title = None, cmap='bluered', vmin = 'center1')
-            print(f'x={data.x}, shape={data.x.shape}, '
-                    f'min={torch.min(data.x).item()}, '
-                    f'max={torch.max(data.x).item()}')
-            print(f'edge_attr={data.edge_attr}, '
-                    f'shape={data.edge_attr.shape}, '
-                    f'min={torch.min(data.edge_attr).item()}, '
-                    f'max={torch.max(data.edge_attr).item()}')
-            ax3.hist(data.edge_attr.reshape(-1), alpha = 0.5, label = f'{label}',
-                    bins=50)
-            ax0.hist(data.x[:,0], alpha = 0.5, label = f'{label}',
-                    bins=50)
-            ax1.hist(data.x[:,1], alpha = 0.5, label = f'{label}',
-                    bins=50)
-            ax2.hist(data.x[:,2], alpha = 0.5, label = f'{label}',
-                    bins=50)
-    # plt.yscale('log')
-    for ax in [ax0, ax1, ax2, ax3]:
-        ax.set_yscale('log')
-
-    ax0.set_ylabel('Count')
-    ax0.set_title('deg')
-    ax1.set_title('pos')
-    ax2.set_title('neg')
-    ax3.set_title('attr')
-    plt.legend()
-    plt.show()
+    # fig, (ax0, ax1, ax2, ax3) = plt.subplots(1, 4)
+    # for val, label in zip(['log_inf', 'kr_log_inf'], ['All', 'kr']):
+    #     opt.y_preprocessing = val
+    #
+    #     print(opt, end = '\n\n', file = opt.log_file)
+    #     dataset = get_dataset(opt)
+    #     for i, data in enumerate(dataset):
+    #         print(data.path)
+    #         # print(data.contact_map_diag, torch.min(data.contact_map_diag))
+    #         # plot_matrix(data.contact_map_diag, osp.join(data.path, 'diag.png'), title = None, cmap='bluered', vmin = 'center1')
+    #         print(f'x={data.x}, shape={data.x.shape}, '
+    #                 f'min={torch.min(data.x).item()}, '
+    #                 f'max={torch.max(data.x).item()}')
+    #         print(f'edge_attr={data.edge_attr}, '
+    #                 f'shape={data.edge_attr.shape}, '
+    #                 f'min={torch.min(data.edge_attr).item()}, '
+    #                 f'max={torch.max(data.edge_attr).item()}')
+    #         ax3.hist(data.edge_attr.reshape(-1), alpha = 0.5, label = f'{label}',
+    #                 bins=50)
+    #         ax0.hist(data.x[:,0], alpha = 0.5, label = f'{label}',
+    #                 bins=50)
+    #         ax1.hist(data.x[:,1], alpha = 0.5, label = f'{label}',
+    #                 bins=50)
+    #         ax2.hist(data.x[:,2], alpha = 0.5, label = f'{label}',
+    #                 bins=50)
+    # # plt.yscale('log')
+    # for ax in [ax0, ax1, ax2, ax3]:
+    #     ax.set_yscale('log')
+    #
+    # ax0.set_ylabel('Count')
+    # ax0.set_title('deg')
+    # ax1.set_title('pos')
+    # ax2.set_title('neg')
+    # ax3.set_title('attr')
+    # plt.legend()
+    # plt.show()
 
     # if opt.use_scratch:
     #     rmtree(opt.data_folder)

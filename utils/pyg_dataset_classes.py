@@ -20,6 +20,7 @@ from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 from .argparse_utils import finalize_opt, get_base_parser
 from .dataset_classes import DiagFunctions, make_dataset
 from .energy_utils import calculate_D
+from .knightRuiz import knightRuiz
 from .networks import get_model
 from .utils import DiagonalPreprocessing
 
@@ -47,7 +48,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN:
     # https://github.com/rusty1s/pytorch_geometric/issues/1511
     def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag',
-                y_log_transform = None, y_norm = 'mean', min_subtraction = True,
+                y_log_transform = None, kr = False,
+                y_norm = 'mean', min_subtraction = True,
                 use_node_features = True, mlp_model_id = None,
                 sparsify_threshold = None, sparsify_threshold_upper = None,
                 split_neg_pos_edges = False, max_diagonal = None,
@@ -62,6 +64,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             m: number of particles/beads
             y_preprocessing: type of contact map preprocessing ('diag', None, etc)
             y_log_transform: type of log transform (int k for log_k, 'ln' for ln, None to skip)
+            kr: True to balance with knightRuiz algorithm
             y_norm: type of normalization ('mean', 'max')
             min_subtraction: True to subtract min during normalization
             use_node_features: True to use bead labels as node features
@@ -86,6 +89,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.dirname = dirname
         self.y_preprocessing = y_preprocessing
         self.y_log_transform = y_log_transform
+        self.kr = kr
         self.y_norm = y_norm
         self.min_subtraction = min_subtraction
         self.use_node_features = use_node_features
@@ -281,12 +285,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             y = np.load(osp.join(raw_folder, 'y.npy')).astype(np.float64)
             y = y * rescale
-        elif self.y_preprocessing.startswith('kr'):
-            _, *y_preprocessing = self.y_preprocessing.split('_')
-            if isinstance(y_preprocessing, list):
-                preprocessing = '_'.join(y_preprocessing)
-
-            y = np.load(osp.join(raw_folder, 'y_kr.npy')).astype(np.float64)
         elif self.y_preprocessing.startswith('clean'):
             _, *y_preprocessing = self.y_preprocessing.split('_')
             if isinstance(y_preprocessing, list):
@@ -313,6 +311,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
         '''
         y, preprocessing = self.load_y(raw_folder)
 
+        if self.kr:
+            y = knightRuiz(y)
+
         y_diag = None
         if preprocessing == 'log':
             y = np.log(y+1)
@@ -330,7 +331,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
         if self.diag:
             meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
-            y_diag = DiagonalPreprocessing.process(y, meanDist)
+            y_diag = DiagonalPreprocessing.process(y, meanDist, verbose = False)
             # y_diag = np.nan_to_num(y_diag)
         else:
             y_diag = None
