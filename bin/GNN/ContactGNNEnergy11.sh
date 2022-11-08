@@ -20,24 +20,29 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy11' # change to run multiple bash files at once
 dirname="/project/depablo/erschultz/dataset_09_30_22"
 m=1024
-messagePassing='GAT'
-preTransforms='degree-ContactDistance-GeneticDistance_norm-DiagonalParameterDistance'
+messagePassing='weighted_GAT'
+preTransforms='constant-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
-hiddenSizesList='8-8-8'
-EncoderHiddenSizesList='100-100-64'
-updateHiddenSizesList='100-100-64'
+hiddenSizesList='8-8-8-8'
+EncoderHiddenSizesList='1000-1000-64'
+updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
-split_edges_for_feature_augmentation='false'
-outputMode='energy_sym'
-yPreprocessing='log'
-yNorm='none'
+outputMode='energy_sym_diag'
+yPreprocessing='log_inf'
+yNorm='mean'
+headArchitecture='bilinear'
+headArchitecture2='fc-fill'
+headHiddenSizesList='1000-1000-1000-1000-1000-1000-512'
+KR='true'
+meanFilt=3
 scratch='/scratch/midway3/erschultz'
 
-# get rid of split_edges_for_feature_augmentation
 
-id=204
+# like 225, but KR (231) and all out on params and mean filt
+
+id=242
 for lr in 1e-4
 do
   train

@@ -15,6 +15,7 @@ import torch
 import torch_geometric.data
 import torch_geometric.transforms
 import torch_geometric.utils
+from scipy.ndimage import uniform_filter
 from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 
 from .argparse_utils import finalize_opt, get_base_parser
@@ -34,7 +35,6 @@ def make_clean_mask(inds, N):
 
     return mask
 
-
 def clean_contactmap(contact):
     N, _  = np.shape(contact)
     d  = np.diagonal(contact)
@@ -48,7 +48,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN:
     # https://github.com/rusty1s/pytorch_geometric/issues/1511
     def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag',
-                y_log_transform = None, kr = False, rescale = None,
+                y_log_transform = None, kr = False, rescale = None, mean_filt = None,
                 y_norm = 'mean', min_subtraction = True,
                 use_node_features = True, mlp_model_id = None,
                 sparsify_threshold = None, sparsify_threshold_upper = None,
@@ -65,8 +65,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y_preprocessing: type of contact map preprocessing ('diag', None, etc)
             y_log_transform: type of log transform (int k for log_k, 'ln' for ln, None to skip)
             kr: True to balance with knightRuiz algorithm
-            resacle: rescale contact map by factor of <rescale> (None to skip)
+            rescale: rescale contact map by factor of <rescale> (None to skip)
                     e.g. 2 will decrease size of contact mapy by 2
+            mean_filt: apply mean filter of width <mean_filt> (None to skip)
             y_norm: type of normalization ('mean', 'max')
             min_subtraction: True to subtract min during normalization
             use_node_features: True to use bead labels as node features
@@ -93,6 +94,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.y_log_transform = y_log_transform
         self.kr = kr
         self.rescale = rescale
+        self.mean_filt = mean_filt
         self.y_norm = y_norm
         self.min_subtraction = min_subtraction
         self.use_node_features = use_node_features
@@ -193,8 +195,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     graph.y = graph.y[self.crop[0]:self.crop[1]]
             elif self.output.startswith('energy_diag'):
                 D = calculate_D(graph.diag_chi_continuous)
-                if self.rescale is not None:
-                    D = rescale_matrix(D, self.rescale)
                 if self.crop is not None:
                     D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
                 graph.energy = torch.tensor(D, dtype = torch.float32)
@@ -224,13 +224,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     energy = x @ chi @ x.t()
 
                 graph.energy = (energy + energy.t()) / 2
-                if self.rescale is not None:
-                    energy = rescale_matrix(graph.energy, self.rescale)
-                    graph.energy = torch.tensor(energy, dtype = torch.float32)
                 if self.output.startswith('energy_sym_diag'):
                     D = calculate_D(graph.diag_chi_continuous)
-                    if self.rescale is not None:
-                        D = rescale_matrix(D, self.rescale)
                     if self.crop is not None:
                         D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
                     graph.energy += torch.tensor(D, dtype = torch.float32)
@@ -329,6 +324,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
         necessary preprocessing.
         '''
         y, preprocessing = self.load_y(raw_folder)
+
+        if self.mean_filt is not None:
+            y = uniform_filter(y, self.mean_filt)
 
         if self.rescale is not None:
             y = rescale_matrix(y, self.rescale)

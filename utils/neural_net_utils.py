@@ -45,8 +45,8 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
         else:
             max_sample = float('inf')
 
-        dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.m, opt.y_preprocessing,
-                                opt.log_preprocessing, opt.kr, opt.rescale,
+        dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.input_m, opt.y_preprocessing,
+                                opt.log_preprocessing, opt.kr, opt.rescale, opt.mean_filt,
                                 opt.preprocessing_norm, opt.min_subtraction,
                                 opt.use_node_features, opt.mlp_model_id,
                                 opt.sparsify_threshold, opt.sparsify_threshold_upper,

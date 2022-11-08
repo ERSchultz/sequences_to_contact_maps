@@ -37,12 +37,12 @@ headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 KR='true'
 scratch='/scratch/midway3/erschultz'
+milestones='10-40'
 
+# like 234, different lr schedule
 
-# like 225, but KR (231) and all out on params
-
-id=234
-for lr in 1e-4
+id=239 # and 240
+for lr in 1e-3 1e-4
 do
   train
   id=$(( $id + 1 ))
