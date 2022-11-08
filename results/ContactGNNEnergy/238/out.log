@@ -192,3 +192,48 @@ Epoch 66, loss = 6.9547
 Mean test/val loss: 8.2021
 
 Epoch 68, loss = 6.7418
+Mean test/val loss: 8.2737
+
+Epoch 70, loss = 6.6111
+Mean test/val loss: 9.6320
+
+Epoch 72, loss = 6.4997
+Mean test/val loss: 8.0136
+
+Epoch 74, loss = 6.2505
+Mean test/val loss: 8.3257
+
+Epoch 76, loss = 6.1839
+Mean test/val loss: 7.5938
+
+Epoch 78, loss = 6.0463
+Mean test/val loss: 7.5404
+
+Epoch 80, loss = 5.8650
+Mean test/val loss: 8.9138
+
+Epoch 82, loss = 5.8103
+Mean test/val loss: 7.8663
+
+Epoch 84, loss = 5.7531
+Mean test/val loss: 7.4384
+
+Epoch 86, loss = 5.5855
+Mean test/val loss: 7.6030
+
+Epoch 88, loss = 5.5323
+Mean test/val loss: 8.1230
+
+Epoch 90, loss = 5.4185
+Mean test/val loss: 7.7003
+
+Epoch 92, loss = 5.3556
+Mean test/val loss: 7.4779
+
+Epoch 94, loss = 5.2146
+Mean test/val loss: 7.2980
+
+Epoch 96, loss = 5.1493
+Mean test/val loss: 7.5419
+
+Epoch 98, loss = 5.1525
