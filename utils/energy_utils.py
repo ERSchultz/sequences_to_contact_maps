@@ -1,6 +1,7 @@
 import math
 
 import numpy as np
+import scipy
 
 
 def calculate_all_energy(config, x, chi):
@@ -107,11 +108,11 @@ def calculate_diag_chi_step(config, diag_chi = None):
     return diag_chi_step
 
 def calculate_D(diag_chi_continuous):
-    m = len(diag_chi_continuous)
-    D = np.zeros((m, m))
-    for d in range(m):
-        rng = np.arange(m-d)
-        D[rng, rng+d] = diag_chi_continuous[d]
-        D[rng+d, rng] = diag_chi_continuous[d]
+    return scipy.linalg.toeplitz(diag_chi_continuous)
 
-    return D
+def main():
+    d = np.array([1,2,3])
+    print(calculate_D(d))
+
+if __name__ == '__main__':
+    main()

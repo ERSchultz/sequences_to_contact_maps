@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 from sklearn.metrics import mean_squared_error
-
 from utils.dataset_classes import make_dataset
 from utils.energy_utils import calculate_D, s_to_E
 from utils.InteractionConverter import InteractionConverter
@@ -532,8 +531,8 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
             # prcnt = np.round(nonzero / 1024**2 * 100, 1)
             # plot_matrix(y_log_diag_log_sparse, osp.join(path, 'y_log_diag_log_sparse.png'), title = f'log + diag + log + sparse\nEdges={nonzero} ({prcnt}%)', cmap = 'bluered')
 
-            compare_sweep(y, ydiag, path, figures_path)
-            compare_sweep(y_kr, y_kr_diag, path, figures_path, 'y_kr')
+            # compare_sweep(y, ydiag, path, figures_path)
+            # compare_sweep(y_kr, y_kr_diag, path, figures_path, 'y_kr')
 
         if chi is not None:
             chi_to_latex(chi, ofile = osp.join(path, 'chis.tek'))
@@ -550,6 +549,7 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
 
 
         if plot_energy:
+            SD = None
             if s is not None:
                 plot_matrix(s, osp.join(path, 's.png'), vmax = 'max', vmin = 'min',
                             cmap = 'blue-red')
@@ -572,7 +572,11 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
             if e is not None:
                 plot_matrix(e, osp.join(path, 'e.png'), vmax = 'max', vmin = 'min',
                             cmap = 'blue-red')
-                ED = s_to_E(SD)
+                if SD is None:
+                    ED = e + 2*D
+                else:
+                    ED = s_to_E(SD)
+                np.save(osp.join(path, 'ed.npy'), ED)
                 plot_matrix(ED, osp.join(path, 'ED.png'), vmax = 'max', vmin = 'min',
                             cmap = 'blue-red')
 
@@ -592,13 +596,13 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
 
 if __name__ == '__main__':
     dir = '/project2/depablo/erschultz'
-    dir = '/home/erschultz'
+    dir = '/home/erschultz/sequences_to_contact_maps'
     # dir = '/home/erschultz'
 
-    dataset = 'dataset_09_30_22'
+    dataset = 'dataset_07_20_22'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                plot_chi = True, sampleID = 1)
+    basic_plots(data_dir, plot_y = False, plot_energy = True, plot_x = False,
+                plot_chi = True, sampleID = 106)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

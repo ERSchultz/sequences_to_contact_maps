@@ -2,6 +2,7 @@ import sys
 import time
 
 import numpy as np
+import scipy
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -466,6 +467,35 @@ class FillDiagonalsFromArray(nn.Module):
         output += torch.transpose(torch.triu(output, 1), 1, 2)
         return output
 
+class FillDiagonalsFromArray2(nn.Module):
+    '''
+    Uses input rank 1 tensor to fill all diagonals of output rank 2 tensor.
+
+    Ouput[i,j] = input[i-j]
+    This version only works on cpu
+    '''
+    def __init__(self):
+        super(FillDiagonalsFromArray2, self).__init__()
+
+    def forward(self, input):
+        if len(input.shape) == 2:
+            # asume input is of shape N x m
+            N, m = input.shape
+        elif len(input.shape) == 1:
+            # assume input is of shape m
+            N = 1
+            m, = input.shape
+            input = input.reshape(N, m)
+
+        output = np.zeros((N, m, m))
+        for n in range(N):
+            output[n] = scipy.linalg.toeplitz(input[n, :])
+
+        output = torch.tensor(output, device = input.device, dtype = input.dtype)
+        return output
+
+
+
 def test_average_to_2d_outer():
     avg = AverageTo2d(mode = 'outer', concat_d = False, n = 10)
     verbose = True
@@ -507,16 +537,13 @@ def test_MLP():
 
 def test_FillDiagonalsFromArray():
     fill = FillDiagonalsFromArray()
-    # fill2 = FillDiagonalsFromArray2()
-    verbose = False
-    N = 2
+    verbose = True
+    N = 1
     m = 1024
     times = 100
+    input = torch.tile(torch.range(0, m-1, 1), (N, 1)).to('cpu')
     t0 = time.time()
     for _ in range(times):
-        input = torch.tile(torch.range(0, m-1, 1), (N, 1))
-        if verbose:
-            print(input)
         out1 = fill(input)
         # if verbose:
         #     print(out1, out1.shape)
@@ -524,6 +551,19 @@ def test_FillDiagonalsFromArray():
     tf = time.time()
     deltaT = np.round(tf - t0, 3)
     print("time: {}".format(deltaT))
+
+    fill2 = FillDiagonalsFromArray2()
+    t0 = time.time()
+    for _ in range(times):
+        out2 = fill2(input)
+    tf = time.time()
+    deltaT = np.round(tf - t0, 3)
+    print("time: {}".format(deltaT))
+    if verbose:
+        print(out2.dtype, out2.shape, out2.device)
+
+    assert torch.equal(out1, out2)
+
 
     # input = input.numpy().reshape(-1)
     # out = out1.numpy().reshape(N, m,m)
@@ -543,6 +583,29 @@ def test_FillDiagonalsFromArray():
     # output +=np.triu(output, 1).T
     # print(output)
 
+def test_strided():
+    from numpy.lib.stride_tricks import as_strided
+    d = np.array([1,2,3])
+    m = len(d)
+
+    vals = np.concatenate((d[::-1], d[1:]))
+    print(vals)
+    n = vals.strides[0]
+    print(n)
+    out = as_strided(vals[len(d)-1:], shape=(m,m), strides=(-n, n)).copy()
+    print(out)
+
+    print('-'*10)
+
+    d = torch.tensor(d)
+    inv_idx = torch.arange(d.size(0)-1, -1, -1).long()
+    d_rev = d[inv_idx]
+    vals = torch.cat((d_rev, d[1:]),)
+    print(vals)
+    n = vals.stride(0)
+    print(n)
+    out = torch.as_strided(vals[len(d)-1:], size=(m,m), stride=(-n, n))
+    print(out)
 
 
 
@@ -552,3 +615,4 @@ if __name__ == '__main__':
     # test_average_to_2d_outer()
     # test_MLP()
     test_FillDiagonalsFromArray()
+    # test_strided()

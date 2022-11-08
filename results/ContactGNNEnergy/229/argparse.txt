@@ -18,8 +18,6 @@ log_inf
 mean
 --log_preprocessing
 none
---kr
-false
 --max_diagonal
 none
 --keep_zero_edges

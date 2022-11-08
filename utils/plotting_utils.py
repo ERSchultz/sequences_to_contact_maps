@@ -20,7 +20,6 @@ from scipy.stats import pearsonr
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error, silhouette_score
 from sympy import solve, symbols
-
 from utils.energy_utils import calculate_diag_chi_step
 
 from .argparse_utils import (ArgparserConverter, finalize_opt, get_base_parser,
@@ -578,7 +577,7 @@ def downsamplingAnalysis(val_dataloader, model, opt, count = 5):
         if isinstance(y_preprocessing, list):
             y_preprocessing = '_'.join(y_preprocessing)
     else:
-        y_preprocessing = self.y_preprocessing
+        y_preprocessing = opt_copy.y_preprocessing
     opt_copy.y_preprocessing = 'sweep200000_' + y_preprocessing
 
     analysisIterator(val_dataloader, model, opt_copy, count, 'downsampling')
@@ -593,7 +592,7 @@ def rescalingAnalysis(val_dataloader, model, opt, count = 5):
         if isinstance(y_preprocessing, list):
             y_preprocessing = '_'.join(y_preprocessing)
     else:
-        y_preprocessing = self.y_preprocessing
+        y_preprocessing = opt_copy.y_preprocessing
 
     opt_copy.y_preprocessing = 'rescale2_' + y_preprocessing
 

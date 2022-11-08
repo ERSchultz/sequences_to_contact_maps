@@ -1,9 +1,10 @@
 #! /bin/bash
 
 
-for i in 8 9 # midway2
+for i in 1 3
+# 8 9 # midway2
 # 5 6 7 midway3
-# 0 1 2 3 4 # midway2
+# 0 2 4 # midway2
 do
   sbatch ~/sequences_to_contact_maps/bin/GNN/ContactGNNEnergy${i}.sh
 done
