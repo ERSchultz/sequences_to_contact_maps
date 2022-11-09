@@ -1,7 +1,8 @@
 #! /bin/bash
 
 
-for i in 5 6 7 10 11
+for i in 6 7 10 11 # midway3
+# 5
 # 1 3 running midway2
 
 # Monday
