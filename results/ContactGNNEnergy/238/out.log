@@ -237,3 +237,39 @@ Epoch 96, loss = 5.1493
 Mean test/val loss: 7.5419
 
 Epoch 98, loss = 5.1525
+Mean test/val loss: 8.5548
+
+Epoch 100, loss = 4.9981
+Mean test/val loss: 8.0895
+
+
+Total parameters: 76054108
+Total training + validation time: 19.0 hours, 22.0 mins, and 10.39999999999418 secs
+Final val loss: 8.08951679676298
+
+split sizes: train=2268, val=252, test=0, N=2520
+#### Plotting Script ####
+Prediction Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/238/sample552: 14.84471321105957
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/238/sample1794: 7.933567047119141
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/238/sample1128: 3.1688499450683594
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/238/sample1938: 22.414527893066406
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/238/sample1131: 4.89095401763916
+Loss: 10.651 +- 7.107
+
+Downsampling (40%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/238/sample1128-downsampling: 3.5518393516540527
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/238/sample1131-downsampling: 5.5926618576049805
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/238/sample1794-downsampling: 7.9335713386535645
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/238/sample1938-downsampling: 14.695869445800781
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/238/sample552-downsampling: 14.844712257385254
+Loss: 9.324 +- 4.659
+
+Rescaling Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/238/sample1128-rescaling: 3.141092300415039
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/238/sample1131-rescaling: 5.676302909851074
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/238/sample1794-rescaling: 5.4528045654296875
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/238/sample1938-rescaling: 22.41455078125
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/238/sample552-rescaling: 12.339128494262695
+Loss: 9.805 +- 7.012
+
