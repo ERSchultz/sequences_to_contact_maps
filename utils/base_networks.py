@@ -607,12 +607,18 @@ def test_strided():
     out = torch.as_strided(vals[len(d)-1:], size=(m,m), stride=(-n, n))
     print(out)
 
-
+def test_unpool():
+    input = np.array([[1,2], [2,4]])
+    input = torch.tensor(input, dtype=torch.float32).reshape(1, 1, 2, 2)
+    print(input, input.shape)
+    out = F.interpolate(input, size = (4, 4))
+    print(out)
 
 
 
 if __name__ == '__main__':
     # test_average_to_2d_outer()
     # test_MLP()
-    test_FillDiagonalsFromArray()
+    # test_FillDiagonalsFromArray()
     # test_strided()
+    test_unpool()

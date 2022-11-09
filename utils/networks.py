@@ -16,20 +16,20 @@ from .pyg_fns import WeightedGATv2Conv, WeightedSignedConv
 ## model functions ##
 def get_model(opt, verbose = True):
     if opt.model_type == 'SimpleEpiNet':
-        model = SimpleEpiNet(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
+        model = SimpleEpiNet(opt.input_m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
     if opt.model_type == 'UNet':
         model = UNet(opt.nf, opt.k, opt.channels, std_norm = opt.training_norm,
                             out_act = opt.out_act)
     elif opt.model_type == 'DeepC':
-        model = DeepC(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
+        model = DeepC(opt.input_m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list, opt.training_norm, opt.act, opt.out_act)
     elif opt.model_type == 'Akita':
-        model = Akita(opt.m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
+        model = Akita(opt.input_m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list,
                             opt.dilation_list_trunk, opt.bottleneck,
                             opt.dilation_list_head, opt.act, opt.out_act,
                             opt.channels, opt.training_norm, opt.down_sampling)
     elif opt.model_type.startswith('GNNAutoencoder'):
-        model = GNNAutoencoder(opt.m, opt.node_feature_size, opt.hidden_sizes_list,
+        model = GNNAutoencoder(opt.input_m, opt.node_feature_size, opt.hidden_sizes_list,
                             opt.act, opt.head_act, opt.out_act,
                             opt.message_passing, opt.head_architecture,
                             opt.head_hidden_sizes_list, opt.parameter_sharing)
@@ -37,7 +37,7 @@ def get_model(opt, verbose = True):
         model = FullyConnectedAutoencoder(opt.m * opt.k, opt.hidden_sizes_list,
                             opt.act, opt.out_act, opt.parameter_sharing)
     elif opt.model_type == 'SequenceConvAutoencoder':
-        model = ConvolutionalAutoencoder(opt.m, opt.k, opt.hidden_sizes_list,
+        model = ConvolutionalAutoencoder(opt.input_m, opt.k, opt.hidden_sizes_list,
                             opt.act, opt.out_act, conv1d = True)
     elif opt.model_type.startswith('ContactGNN'):
         if 'sparse' in opt.transforms:
@@ -51,16 +51,16 @@ def get_model(opt, verbose = True):
         else:
             output_dim = 2
 
-        model = GNNClass(opt.m, opt.node_feature_size, output_dim, opt.hidden_sizes_list,
+        model = GNNClass(opt.input_m, opt.node_feature_size, output_dim, opt.hidden_sizes_list,
                 opt.act, opt.inner_act, opt.out_act,
                 opt.encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
                 opt.message_passing, opt.use_edge_weights or opt.use_edge_attr, opt.edge_dim,
                 opt.head_architecture, opt.head_architecture_2, opt.head_hidden_sizes_list,
-                opt.head_act, opt.use_bias,
+                opt.head_act, opt.use_bias, opt.rescale,
                 opt.training_norm, opt.num_heads, opt.concat_heads,
                 opt.log_file, verbose = verbose)
     elif opt.model_type == 'MLP':
-        model = MLP(opt.m, opt.hidden_sizes_list, opt.use_bias, opt.act,
+        model = MLP(opt.input_m, opt.hidden_sizes_list, opt.use_bias, opt.act,
                             opt.out_act, opt.training_norm, opt.dropout, opt.dropout_p,
                             opt.log_file, verbose = verbose)
     else:
@@ -508,7 +508,7 @@ class ContactGNN(nn.Module):
                 encoder_hidden_sizes_list, update_hidden_sizes_list,
                 message_passing, use_edge_attr, edge_dim,
                 head_architecture, head_architecture_2, head_hidden_sizes_list,
-                head_act, use_bias,
+                head_act, use_bias, rescale,
                 training_norm, num_heads, concat_heads,
                 ofile = sys.stdout, verbose = True):
         '''
@@ -529,6 +529,7 @@ class ContactGNN(nn.Module):
             head_hidden_sizes_list: hidden sizes of head architecture
             head_act: activation for head_architecture (and head_architecture_2)
             use_bias: True to use bias term - applies for message passing and head
+            rescale: rescale by factor <rescale> (None to skip) uses F.interpolate
             training_norm: Normalization layer
         '''
         super(ContactGNN, self).__init__()
@@ -555,6 +556,7 @@ class ContactGNN(nn.Module):
         else:
             self.head_act = None
         self.use_bias = use_bias
+        self.rescale = rescale
 
         ### Encoder Architecture ###
         encoder = []
@@ -755,24 +757,31 @@ class ContactGNN(nn.Module):
             elif architecture.startswith('fc'):
                 latent = latent.reshape(-1, self.m * output_size)
                 out_temp = self.head[i](latent)
-            elif architecture.startswith('bilinear'):
-                latent = latent.reshape(-1, self.m, output_size)
-                if 'asym' in architecture:
-                    out_temp = torch.einsum('nik,njk->nij', latent @ self.W, latent)
-                else:
-                    out_temp = torch.einsum('nik,njk->nij', latent @ self.sym(self.W), latent)
-            elif architecture == 'inner':
-                latent = latent.reshape(-1, self.m, output_size)
-                out_temp = torch.einsum('nik, njk->nij', latent, latent)
-            elif architecture in self.to2D.mode_options:
-                latent = latent.reshape(-1, self.m, output_size)
-                latent = latent.permute(0, 2, 1) # permute to combine over m index
-                out_temp = self.to2D(latent)
-                out_temp = out_temp.permute(0, 2, 3, 1) # permute back
-                latent = latent.permute(0, 2, 1) # permute back
-                out_temp = self.head[i](out_temp)
-                if len(out_temp.shape) > 3:
-                    out_temp = torch.squeeze(out_temp, 3)
+            else:
+                if architecture.startswith('bilinear'):
+                    latent = latent.reshape(-1, self.m, output_size)
+                    if 'asym' in architecture:
+                        out_temp = torch.einsum('nik,njk->nij', latent @ self.W, latent)
+                    else:
+                        out_temp = torch.einsum('nik,njk->nij', latent @ self.sym(self.W), latent)
+                elif architecture == 'inner':
+                    latent = latent.reshape(-1, self.m, output_size)
+                    out_temp = torch.einsum('nik, njk->nij', latent, latent)
+                elif architecture in self.to2D.mode_options:
+                    latent = latent.reshape(-1, self.m, output_size)
+                    latent = latent.permute(0, 2, 1) # permute to combine over m index
+                    out_temp = self.to2D(latent)
+                    out_temp = out_temp.permute(0, 2, 3, 1) # permute back
+                    latent = latent.permute(0, 2, 1) # permute back
+                    out_temp = self.head[i](out_temp)
+                    if len(out_temp.shape) > 3:
+                        out_temp = torch.squeeze(out_temp, 3)
+
+                if self.rescale is not None:
+                    out_temp = torch.unsqueeze(out_temp, 1)
+                    m_new = int(self.m * self.rescale)
+                    out_temp = F.interpolate(out_temp, size = (m_new, m_new))
+                    out_temp = torch.squeeze(out_temp, 1)
 
             if first:
                 out = out_temp
@@ -852,6 +861,7 @@ class ContactGNN(nn.Module):
 
         latent = self.latent(graph, x)
 
+        out_temp = None
         for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
             if architecture is None:
                 continue
@@ -863,13 +873,18 @@ class ContactGNN(nn.Module):
                     out_temp = torch.einsum('nik,njk->nij', latent_copy @ self.W, latent_copy)
                 else:
                     out_temp = torch.einsum('nik,njk->nij', latent_copy @ self.sym(self.W), latent_copy)
-                return out_temp
             elif architecture == 'inner':
                 _, output_size = latent.shape
                 latent = latent.reshape(-1, self.m, output_size)
-                return torch.einsum('nik, njk->nij', latent, latent)
+                out_temp = torch.einsum('nik, njk->nij', latent, latent)
 
-        return None
+        if self.rescale is not None:
+            out_temp = torch.unsqueeze(out_temp, 1)
+            m_new = int(self.m * self.rescale)
+            out_temp = F.interpolate(out_temp, size = (m_new, m_new))
+            out_temp = torch.squeeze(out_temp, 1)
+
+        return out_temp
 
 class SparseContactGNN(nn.Module):
     # DEPRECATED

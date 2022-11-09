@@ -14,6 +14,8 @@ import scipy.stats as ss
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from core_test_train import core_test_train
+from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.ndimage import uniform_filter
 from scipy.optimize import minimize
@@ -22,9 +24,6 @@ from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.utils.extmath import svd_flip
-
-from core_test_train import core_test_train
-from result_summary_plots import plot_top_PCs
 from utils.argparse_utils import (ArgparserConverter, finalize_opt,
                                   get_base_parser)
 from utils.base_networks import AverageTo2d
@@ -203,7 +202,8 @@ def debugModel(model_type):
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
         opt.y_preprocessing = 'sweeprand_log_inf'
-        opt.rescale = 2
+        opt.rescale = None
+        opt.mean_filt = None
         opt.kr = True
         opt.keep_zero_edges = False
         opt.loss = 'mse'
@@ -285,7 +285,7 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = True
+    opt.plot = False
     opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = False
