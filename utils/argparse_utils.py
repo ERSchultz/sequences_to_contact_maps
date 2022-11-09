@@ -175,7 +175,9 @@ def get_base_parser():
     parser.add_argument('--head_hidden_sizes_list', type=AC.str2list,
                         help='List of hidden sizes for convolutional layers')
     parser.add_argument('--encoder_hidden_sizes_list', type=AC.str2list,
-                        help='hidden sizes for encoder')
+                        help='hidden sizes for node encoder')
+    parser.add_argument('--edge_encoder_hidden_sizes_list', type=AC.str2list,
+                        help='hidden sizes for edge encoder')
     parser.add_argument('--update_hidden_sizes_list', type=AC.str2list,
                         help='hidden sizes for update step of MPGNN')
     parser.add_argument('--head_act', type=AC.str2None, default='relu',
@@ -660,7 +662,7 @@ def save_args(opt):
 
 def opt2list(opt):
     opt_list = [opt.model_type, opt.id, osp.split(opt.data_folder)[1], opt.preprocessing_norm,
-        opt.y_preprocessing, opt.min_subtraction, opt.log_preprocessing, opt.crop]
+        opt.y_preprocessing, opt.mean_filt, opt.rescale, opt.kr, opt.min_subtraction, opt.log_preprocessing, opt.crop]
     opt_list.append(opt.split_percents if opt.split_percents is not None else opt.split_sizes)
     opt_list.extend([opt.shuffle, opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr,
         opt.milestones, opt.gamma, opt.loss,
@@ -713,7 +715,7 @@ def save_opt(opt, ofile):
 
 def get_opt_header(model_type, GNN_mode):
     opt_list = ['model_type', 'id',  'dataset', 'preprocessing_norm',
-        'y_preprocessing', 'min_subtraction', 'log_preprocessing', 'crop', 'split', 'shuffle',
+        'y_preprocessing',  'mean_filt', 'rescale', 'kr', 'min_subtraction', 'log_preprocessing', 'crop', 'split', 'shuffle',
         'batch_size', 'num_workers', 'n_epochs', 'lr', 'milestones',
         'gamma', 'loss', 'k', 'm',
         'seed', 'act', 'inner_act', 'head_act', 'out_act',

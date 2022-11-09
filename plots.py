@@ -44,7 +44,7 @@ def update_result_tables(model_type = None, mode = None, output_mode = 'contact'
         elif output_mode == 'sequence':
             opt_list.extend(['Final Validation Loss', 'AUC'])
         elif output_mode == 'energy':
-            opt_list.extend(['Final Validation Loss'])
+            opt_list.extend(['Final Validation Loss', 'Downsampling Loss', 'Upsampling Loss'])
         else:
             raise Exception('Unknown output_mode {}'.format(output_mode))
         results = [opt_list]
@@ -91,8 +91,16 @@ def update_result_tables(model_type = None, mode = None, output_mode = 'contact'
                         with open(osp.join(id_path, 'out.log'), 'r') as f:
                             for line in f:
                                 if line.startswith('Final val loss: '):
-                                    final_val_loss = line.split(':')[1].strip()
-                        opt_list.extend([final_val_loss])
+                                    final_val_loss = np.round(line.split(':')[1].strip(), 3)
+                        d_loss = None; u_loss = None
+                        if osp.exists(osp.join(id_path, 'loss_analysis.json')):
+                            with open(osp.join(id_path, 'loss_analysis.json')) as f:
+                                loss_dict = json.load(f)
+                            if 'downsample' in loss_dict.keys():
+                                d_loss = loss_dict['downsample']
+                            if 'upsample' in loss_dict.keys():
+                                u_loss = loss_dict['upsample']
+                        opt_list.extend([final_val_loss, d_loss, u_loss])
                     results.append(opt_list)
 
         ofile = osp.join(model_path, 'results_table.csv')
@@ -378,9 +386,8 @@ def plot_mean_vs_genomic_distance_comparison(dir, samples = None, percent = Fals
 
         print('\n')
 
-def main():
+def main(id):
     model_type = 'ContactGNNEnergy'
-    id = 225
     argparse_path = osp.join('/home/erschultz/sequences_to_contact_maps/results', model_type, f'{id}/argparse.txt')
     parser = get_base_parser()
     sys.argv = [sys.argv[0]] # delete args from get_params, otherwise gnn opt will try and use them
@@ -392,7 +399,7 @@ def main():
     opt.data_folder = osp.join('/home/erschultz',data_folder_split[-1]) # use local dataset
     opt.device = torch.device('cpu')
     print(opt)
-    plotting_script(None, opt)
+    plotting_script(None, opt, samples = [552, 1794, 1131, 1128, 1938])
     # interogateParams(None, opt)
 
 if __name__ == '__main__':
@@ -415,5 +422,5 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_09_30_22')
-    # plot_combined_models('ContactGNNEnergy', [226, 233])
-    # main()
+    # plot_combined_models('ContactGNNEnergy', [229, 234])
+    # main(236)

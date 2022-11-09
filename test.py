@@ -150,7 +150,7 @@ def debugModel(model_type):
     opt.m = 1024
     # opt.split_percents=[1,1,0.0]
     # opt.split_sizes=None
-    opt.split_sizes=[2, 1, 0]
+    opt.split_sizes=[1, 1, 0]
     opt.split_percents = None
     opt.random_split=False
 
@@ -201,18 +201,19 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing = 'sweeprand_log_inf'
+        opt.y_preprocessing = 'log_inf'
         opt.rescale = None
         opt.mean_filt = None
-        opt.kr = True
+        opt.kr = False
         opt.keep_zero_edges = False
         opt.loss = 'mse'
         opt.preprocessing_norm = 'mean'
         opt.message_passing = 'gat'
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym_diag'
-        opt.encoder_hidden_sizes_list=[100,100,64]
-        opt.update_hidden_sizes_list=[100,100,64]
+        opt.encoder_hidden_sizes_list=[100,100,32]
+        opt.edge_encoder_hidden_sizes_list=[100,100,2]
+        opt.update_hidden_sizes_list=[100,100,40]
         opt.hidden_sizes_list=[8,8,8]
         opt.act = 'prelu'
         opt.inner_act = 'prelu'
@@ -222,13 +223,13 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('degree-degree_diag_split1_max1-contactdistance')
+        opt.pre_transforms=AC.str2list('degree-degree_diag_split1_max1-contactdistance-geneticdistance')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
         opt.head_architecture = 'bilinear'
-        opt.head_architecture_2 = 'fc-fill'
+        opt.head_architecture_2 = None
         crop = 1024
         opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, crop]
         opt.crop = None
@@ -278,7 +279,7 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 5
+    opt.n_epochs = 1
     opt.lr = 1e-4
     opt.batch_size = 1
     opt.milestones = None
@@ -286,7 +287,7 @@ def debugModel(model_type):
 
     # other
     opt.plot = False
-    opt.plot_predictions = True
+    opt.plot_predictions = False
     opt.verbose = False
     opt.print_params = False
     opt.gpus = 1
@@ -302,8 +303,8 @@ def debugModel(model_type):
 
 
     # fig, (ax0, ax1, ax2, ax3) = plt.subplots(1, 4)
-    # for val, label in zip(['log_inf', 'kr_log_inf'], ['All', 'kr']):
-    #     opt.y_preprocessing = val
+    # for val, label in zip([False, True], ['False', 'True']):
+    #     opt.kr = val
     #
     #     print(opt, end = '\n\n', file = opt.log_file)
     #     dataset = get_dataset(opt)
@@ -620,20 +621,16 @@ def prep_data_for_cluster():
 def find_best_p_s():
     # is there a curve in training that matches experimental curve well?
     dir = '/home/erschultz/sequences_to_contact_maps/'
-    data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample104') # experimental data sample
+    data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample105') # experimental data sample
     file = osp.join(data_dir, 'y.npy')
     y_exp = np.load(file)[:1024, :1024]
     meanDist_ref = DiagonalPreprocessing.genomic_distance_statistics(y_exp, 'prob')
-    plt.plot(meanDist_ref)
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.legend()
-    plt.show()
 
     dir = '/home/erschultz/dataset_09_30_22' # simulated data dir
     # sort samples
     min_MSE = 1000
     best_sample = None
+    best_meanDist = None
     for sample in range(4000):
         file = osp.join(dir, f'samples/sample{sample}', 'y.npy')
         if osp.exists(file):
@@ -644,9 +641,17 @@ def find_best_p_s():
             if mse < min_MSE:
                 min_MSE = mse
                 best_sample = sample
+                best_meanDist = meanDist
                 print(sample, mse)
 
     print(best_sample)
+
+    plt.plot(meanDist_ref, label = 'ref')
+    plt.plot(best_meanDist, label = best_sample)
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.legend()
+    plt.show()
 
 def testGNNrank():
     '''

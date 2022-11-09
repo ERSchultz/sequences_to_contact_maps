@@ -30,18 +30,17 @@ updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
 outputMode='energy_sym_diag'
-yPreprocessing='sweeprand_log_inf'
+yPreprocessing='sweep200000_log_inf'
 yNorm='mean'
 headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
-KR='false'
 useScratch='false'
 
 
-# like 225, but all out on params and sweeprand
+# like 237, but sweep2000
 
-id=237
+id=244
 for lr in 1e-4
 do
   train

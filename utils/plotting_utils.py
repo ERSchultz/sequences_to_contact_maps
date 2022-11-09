@@ -16,6 +16,7 @@ import numpy as np
 import scipy.sparse as sp
 import seaborn as sns
 import torch
+import torch_geometric
 from scipy.stats import pearsonr
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error, silhouette_score
@@ -80,6 +81,7 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
                         ids = (ref, opt_lists[model][pos])
 
 
+    print('Differences:')
     if len(differences) == 1:
         diff_name = differences_names.pop()
         diff = differences.pop()
@@ -90,10 +92,8 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
                     new_diff[0].append(a)
                     new_diff[1].append(b)
             diff = new_diff
-
-
+        print(diff)
     else:
-        print('Differences:')
         for name, (a, b) in zip(differences_names, differences):
             print(f'{name}:\n\t{a}\n\t{b}')
         diff_name = 'id'
@@ -403,8 +403,11 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
                 f.add(sample)
             rmtree(sample)
 
-    print(f'Loss: {np.round(np.mean(loss_arr), 3)} +- {np.round(np.std(loss_arr), 3)}\n',
+    mean_loss = np.round(np.mean(loss_arr), 3)
+    print(f'Loss: {mean_loss} +- {np.round(np.std(loss_arr), 3)}\n',
         file = opt.log_file)
+
+    return mean_loss
 
 def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
     print('Prediction Results:', file = opt.log_file)
@@ -487,8 +490,11 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
             f.add(sample)
         rmtree(sample)
 
-    print(f'Loss: {np.round(np.mean(loss_arr), 3)} +- {np.round(np.std(loss_arr), 3)}\n',
+    mean_loss = np.round(np.mean(loss_arr), 3)
+    print(f'Loss: {mean_loss} +- {np.round(np.std(loss_arr), 3)}\n',
         file = opt.log_file)
+
+    return mean_loss
 
 def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
     print('Prediction Results:', file = opt.log_file)
@@ -564,8 +570,11 @@ def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
         np.savetxt(osp.join(subpath, 'diag_chi.txt'), y, fmt = '%.3f')
         np.savetxt(osp.join(subpath, 'diag_chi_hat.txt'), yhat, fmt = '%.3f')
 
-    print(f'Loss: {np.round(np.mean(loss_arr), 3)} +- {np.round(np.std(loss_arr), 3)}\n',
+    mean_loss = np.round(np.mean(loss_arr), 3)
+    print(f'Loss: {mean_loss} +- {np.round(np.std(loss_arr), 3)}\n',
         file = opt.log_file)
+
+    return mean_loss
 
 def downsamplingAnalysis(val_dataloader, model, opt, count = 5):
     print('Downsampling (40%) Results:', file = opt.log_file)
@@ -580,7 +589,23 @@ def downsamplingAnalysis(val_dataloader, model, opt, count = 5):
         y_preprocessing = opt_copy.y_preprocessing
     opt_copy.y_preprocessing = 'sweep200000_' + y_preprocessing
 
-    analysisIterator(val_dataloader, model, opt_copy, count, 'downsampling')
+    downsample_loss = analysisIterator(val_dataloader, model, opt_copy, count, 'downsampling')
+
+    print('Upsampling (200%) Results:', file = opt.log_file)
+    opt_copy = copy.copy(opt) # shallow copy only
+    if opt_copy.root_name is not None:
+        opt_copy.root_name += 'upsample'
+    if opt_copy.y_preprocessing.startswith('sweep'):
+        _, *y_preprocessing = opt_copy.y_preprocessing.split('_')
+        if isinstance(y_preprocessing, list):
+            y_preprocessing = '_'.join(y_preprocessing)
+    else:
+        y_preprocessing = opt_copy.y_preprocessing
+    opt_copy.y_preprocessing = 'sweep1000000_' + y_preprocessing
+
+    upsample_loss = analysisIterator(val_dataloader, model, opt_copy, count, 'upsampling')
+
+    return downsample_loss, upsample_loss
 
 def rescalingAnalysis(val_dataloader, model, opt, count = 5):
     print('Rescaling Results:', file = opt.log_file)
@@ -596,7 +621,7 @@ def rescalingAnalysis(val_dataloader, model, opt, count = 5):
 
     opt_copy.y_preprocessing = 'rescale2_' + y_preprocessing
 
-    analysisIterator(val_dataloader, model, opt_copy, count, 'rescaling')
+    return analysisIterator(val_dataloader, model, opt_copy, count, 'rescaling')
 
 #### Functions for plotting xyz files ####
 def plot_xyz(xyz, L, x = None, ofile = None, show = True, title = None, legend = True):
@@ -1062,15 +1087,24 @@ def plot_matrix_gif(arr, dir, ofile = None, title = None, vmin = 0, vmax = 1,
         os.remove(filename)
 
 def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None,
-                    dataset = None):
+                    dataset = None, samples = None):
     if model is None:
         model, train_loss_arr, val_loss_arr = load_saved_model(opt, verbose = False, throw = False)
     if model is not None and dataset is None:
-        dataset = get_dataset(opt, True, True)
+        dataset = get_dataset(opt, names = True, minmax = True, samples = samples)
+        opt.valN = len(dataset)
+        if opt.GNN_mode:
+            dataloader_fn = torch_geometric.loader.DataLoader
+        else:
+            dataloader_fn = DataLoader
+        val_dataloader = dataloader_fn(dataset, batch_size = 1, shuffle = False,
+                                        num_workers = opt.num_workers)
 
-    opt.batch_size = 1 # batch size must be 1
-    opt.shuffle = False # for reproducibility
-    _, val_dataloader, _ = get_data_loaders(dataset, opt)
+
+    else:
+        opt.batch_size = 1 # batch size must be 1
+        opt.shuffle = False # for reproducibility
+        _, val_dataloader, _ = get_data_loaders(dataset, opt)
 
 
 
@@ -1079,12 +1113,19 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None,
     plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt)
     plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt, True)
 
+    loss_dict = {}
     if opt.plot_predictions:
         if opt.output_mode.startswith('energy'):
-            plotEnergyPredictions(val_dataloader, model, opt)
+            loss = plotEnergyPredictions(val_dataloader, model, opt)
         elif opt.output_mode.startswith('diag'):
-            plotDiagChiPredictions(val_dataloader, model, opt)
+            loss = plotDiagChiPredictions(val_dataloader, model, opt)
+        loss_dict['val'] = loss
 
     if opt.plot:
-        downsamplingAnalysis(val_dataloader, model, opt)
-        rescalingAnalysis(val_dataloader, model, opt)
+        d_loss, u_loss = downsamplingAnalysis(val_dataloader, model, opt)
+        loss_dict['downsample'] = d_loss
+        loss_dict['upsample'] = u_loss
+        # rescalingAnalysis(val_dataloader, model, opt)
+
+    with open(osp.join(opt.ofile_folder, 'loss_analysis.json'), 'w') as f:
+        json.dump(loss_dict, f)

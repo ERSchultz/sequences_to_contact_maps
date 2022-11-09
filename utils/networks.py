@@ -52,8 +52,8 @@ def get_model(opt, verbose = True):
             output_dim = 2
 
         model = GNNClass(opt.input_m, opt.node_feature_size, output_dim, opt.hidden_sizes_list,
-                opt.act, opt.inner_act, opt.out_act,
-                opt.encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
+                opt.act, opt.inner_act, opt.out_act, opt.encoder_hidden_sizes_list,
+                opt.edge_encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
                 opt.message_passing, opt.use_edge_weights or opt.use_edge_attr, opt.edge_dim,
                 opt.head_architecture, opt.head_architecture_2, opt.head_hidden_sizes_list,
                 opt.head_act, opt.use_bias, opt.rescale,
@@ -504,8 +504,8 @@ class ContactGNN(nn.Module):
     Graph neural network that maps contact map data to node embeddings of arbitrary length.
     '''
     def __init__(self, m, input_size, output_dim, MP_hidden_sizes_list,
-                act, inner_act, out_act,
-                encoder_hidden_sizes_list, update_hidden_sizes_list,
+                act, inner_act, out_act, node_encoder_hidden_sizes_list,
+                edge_encoder_hidden_sizes_list, update_hidden_sizes_list,
                 message_passing, use_edge_attr, edge_dim,
                 head_architecture, head_architecture_2, head_hidden_sizes_list,
                 head_act, use_bias, rescale,
@@ -517,7 +517,8 @@ class ContactGNN(nn.Module):
             input_size: size of input node feature vector
             output_dim: number of dimensions in output (size of each dimension is m)
             MP_hidden_sizes_list: list of node feature vector hidden sizes during message passing
-            encoder_hidden_sizes_list: list of hidden sizes for MLP encoder
+            node_encoder_hidden_sizes_list: list of hidden sizes for MLP encoder
+            edge_encoder_hidden_sizes_listl: list of hidden sizes for MLP encoder
             update_hidden_sizes_list: list of hidden sizes for MLP for update during message passing
             out_act (str): output activation
             message_passing (str): type of message passing algorithm to use
@@ -559,14 +560,25 @@ class ContactGNN(nn.Module):
         self.rescale = rescale
 
         ### Encoder Architecture ###
-        encoder = []
-        self.encoder = None
-        if encoder_hidden_sizes_list is not None:
-            for output_size in encoder_hidden_sizes_list:
+        self.node_encoder = None
+        self.edge_encoder = None
+        if node_encoder_hidden_sizes_list is not None:
+            encoder = []
+            for output_size in node_encoder_hidden_sizes_list:
                 module = gnn.Linear(input_size, output_size, bias = use_bias)
                 encoder.extend([(module, 'x -> x'), self.act])
                 input_size = output_size
-            self.encoder = gnn.Sequential('x', encoder)
+            self.node_encoder = gnn.Sequential('x', encoder)
+
+        if edge_encoder_hidden_sizes_list is not None:
+            encoder = []
+            input_size += edge_dim
+            for output_size in edge_encoder_hidden_sizes_list:
+                encoder.append(LinearBlock(input_size, output_size, activation = self.act,
+                                        bias = use_bias))
+                input_size = output_size
+            self.edge_encoder = nn.Sequential(*encoder)
+
 
         ### Trunk Architecture ###
         model = []
@@ -679,7 +691,8 @@ class ContactGNN(nn.Module):
 
         if verbose:
             print("#### ARCHITECTURE ####", file = ofile)
-            print(self.encoder, '\n', file = ofile)
+            print(self.node_encoder, '\n', file = ofile)
+            print(self.edge_encoder, '\n', file = ofile)
             print(self.model, '\n', file = ofile)
             print(self.head_1, '\n', file = ofile)
             print(self.head_2, '\n', file = ofile)
@@ -741,10 +754,21 @@ class ContactGNN(nn.Module):
         return head
 
     def forward(self, graph):
-        if self.encoder is not None:
-            x = self.encoder(graph.x)
+        if self.node_encoder is not None:
+            x = self.node_encoder(graph.x)
+        print(graph)
+        print(graph.edge_attr)
+        print(x.shape)
+        if self.edge_encoder is not None:
+            row, col = graph.edge_index
+            concat = torch.cat((x[row], x[col], graph.edge_attr), dim = -1)
+            edge_attr = self.edge_encoder(concat)
+        else:
+            edge_attr = graph.edge_attr
+        print(x.shape)
+        print(edge_attr)
 
-        latent = self.latent(graph, x)
+        latent = self.latent(graph, x, edge_attr)
         _, output_size = latent.shape
 
         if self.head_architecture is None and self.head_architecture_2 is None:
@@ -791,7 +815,7 @@ class ContactGNN(nn.Module):
 
         return out
 
-    def latent(self, graph, x):
+    def latent(self, graph, x, edge_attr):
         if self.message_passing == 'identity':
             latent = x
         elif self.message_passing == 'z':
@@ -817,7 +841,7 @@ class ContactGNN(nn.Module):
             # if opt.loss == 'BCE':
             #     latent = torch.sigmoid(latent)
         elif self.message_passing in {'gcn', 'transformer', 'gat', 'weighted_gat'}:
-            latent = self.model(x, graph.edge_index, graph.edge_attr)
+            latent = self.model(x, graph.edge_index, edge_attr)
         elif self.message_passing == 'signedconv':
             if self.use_edge_attr:
                 latent = self.model(x, graph.pos_edge_index, graph.neg_edge_index,
@@ -828,8 +852,8 @@ class ContactGNN(nn.Module):
         return latent
 
     def diagonal_component(self, graph):
-        if self.encoder is not None:
-            x = self.encoder(graph.x)
+        if self.node_encoder is not None:
+            x = self.node_encoder(graph.x)
 
         latent = self.latent(graph, x)
 
@@ -856,8 +880,8 @@ class ContactGNN(nn.Module):
         return None
 
     def plaid_component(self, graph):
-        if self.encoder is not None:
-            x = self.encoder(graph.x)
+        if self.node_encoder is not None:
+            x = self.node_encoder(graph.x)
 
         latent = self.latent(graph, x)
 

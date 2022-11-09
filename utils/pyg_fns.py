@@ -139,13 +139,22 @@ class Degree(BaseTransform):
         return data
 
     def __repr__(self) -> str:
-        base = (f'{self.__class__.__name__}'
-                f'(norm={self.norm}, max={self.max}, '
-                f'weighted={self.weighted}, split_edges={self.split_edges}')
+        repr = (f'{self.__class__.__name__}'
+                f'(norm={self.norm}')
+
+        if self.max is not None:
+            repr += f', max={self.max}'
+
+        if self.weighted:
+            repr += f'weighted={self.weighted}'
+
+        repr += f', split_edges={self.split_edges}'
         if self.split_edges:
-            return base + f', split_val={self.split_val})'
+            repr += f', split_val={self.split_val})'
         else:
-            return base + ')'
+            repr += ')'
+
+        return repr
 
 class AdjPCATransform(BaseTransform):
     '''Appends values from top k PCs of adjacency matrix to feature vector.'''
@@ -327,8 +336,14 @@ class GeneticDistance(BaseTransform):
         return data
 
     def __repr__(self) -> str:
-        return (f'{self.__class__.__name__}(norm={self.norm}, '
-                f'max_value={self.max})')
+        repr = f'{self.__class__.__name__}(norm={self.norm}'
+
+        if self.max is not None:
+            repr += f', max={self.max})'
+        else:
+            repr += ')'
+
+        return repr
 
 class ContactDistance(BaseTransform):
     '''
@@ -407,8 +422,17 @@ class ContactDistance(BaseTransform):
 
 
     def __repr__(self) -> str:
-        return (f'{self.__class__.__name__}(norm={self.norm}, '
-                f'max={self.max}, split_edges={self.split_edges})')
+        repr = f'{self.__class__.__name__}(norm={self.norm}'
+
+        if self.max is not None:
+            repr += f', max={self.max})'
+
+        if self.split_edges:
+            repr += f', split_edges={self.split_edges})'
+        else:
+            repr += ')'
+
+        return repr
 
 class DiagonalParameterDistance(BaseTransform):
     '''

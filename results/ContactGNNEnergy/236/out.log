@@ -266,3 +266,32 @@ Prediction Results:
 Loss: 6.891 +- 5.209
 
 Downsampling (40%) Results:
+Dataset construction time: 0.003 minutes
+Average num edges per graph:  181482.8
+Mean degree: [299.58 277.77 174.31 511.98 508.65] +- [71.65 68.82 62.65  0.15  3.38]
+
+#### Plotting Script ####
+Prediction Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/236/sample1128: 3.402050495147705
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/236/sample1131: 8.043614387512207
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/236/sample1794: 10.244003295898438
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/236/sample1938: 4.7267069816589355
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/236/sample552: 2.883392810821533
+Loss: 5.86 +- 2.835
+
+Downsampling (40%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/236/sample1128-downsampling: 6.0916547775268555
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/236/sample1131-downsampling: 16.32264518737793
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/236/sample1794-downsampling: 16.29684829711914
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/236/sample1938-downsampling: 205.65234375
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/236/sample552-downsampling: 112.25286102294922
+Loss: 71.323 +- 77.495
+
+Upsampling (200%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/236/sample1128-upsampling: 8.633332252502441
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/236/sample1131-upsampling: 14.110255241394043
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/236/sample1794-upsampling: 14.924810409545898
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/236/sample1938-upsampling: 28.782642364501953
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/236/sample552-upsampling: 23.62333869934082
+Loss: 18.015 +- 7.214
+

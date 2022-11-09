@@ -20,25 +20,28 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy13' # change to run multiple bash files at once
 dirname="/project/depablo/erschultz/dataset_09_30_22"
 m=1024
-messagePassing='GAT'
-preTransforms='degree_diag-ContactDistance-GeneticDistance_norm-DiagonalParameterDistance'
+messagePassing='weighted_GAT'
+preTransforms='degree_diag_split1-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
-hiddenSizesList='8-8-8'
-EncoderHiddenSizesList='100-100-64'
-updateHiddenSizesList='100-100-64'
+hiddenSizesList='8-8-8-8'
+EncoderHiddenSizesList='1000-1000-64'
+updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
-split_edges_for_feature_augmentation='true'
-outputMode='energy_sym'
-yPreprocessing='log'
+outputMode='energy_sym_diag'
+yPreprocessing='log_inf'
 yNorm='mean'
+headArchitecture='bilinear'
+headArchitecture2='fc-fill'
+headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+rescale=2
 scratch='/scratch/midway3/erschultz'
 
-# try degree_diag with mean norm
 
+# like 235, but degree_diag_split and no constant
 
-id=208
+id=245
 for lr in 1e-4
 do
   train

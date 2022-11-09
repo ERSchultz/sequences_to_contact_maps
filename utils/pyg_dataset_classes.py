@@ -26,24 +26,6 @@ from .networks import get_model
 from .utils import DiagonalPreprocessing, rescale_matrix
 
 
-# taken these from Soren
-def make_clean_mask(inds, N):
-    mask = np.full((N,N), True)
-    for i in inds:
-        mask[i, :] = False
-        mask[:, i] = False
-
-    return mask
-
-def clean_contactmap(contact):
-    N, _  = np.shape(contact)
-    d  = np.diagonal(contact)
-    inds = np.where(d == 0)[0]
-    mask = make_clean_mask(inds, N)
-    deleted = len(inds)
-
-    return contact[mask].reshape(N-deleted, N-deleted), inds
-
 class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN:
     # https://github.com/rusty1s/pytorch_geometric/issues/1511
@@ -304,14 +286,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             y = np.load(osp.join(raw_folder, 'y.npy')).astype(np.float64)
             y = y * rescale
-        elif self.y_preprocessing.startswith('clean'):
-            _, *y_preprocessing = self.y_preprocessing.split('_')
-            if isinstance(y_preprocessing, list):
-                preprocessing = '_'.join(y_preprocessing)
-
-            y = np.load(osp.join(raw_folder, 'y.npy')).astype(np.float64)
-            y, inds = clean_contactmap(y)
-            print(f'deleted {len(inds)} rows')
         else:
             y = np.load(osp.join(raw_folder, 'y.npy')).astype(np.float64)
             preprocessing = self.y_preprocessing
