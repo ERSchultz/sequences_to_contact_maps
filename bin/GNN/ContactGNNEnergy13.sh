@@ -41,7 +41,7 @@ scratch='/scratch/midway3/erschultz'
 
 # like 235, but degree_diag_split and no constant
 
-id=245
+id=246
 for lr in 1e-4
 do
   train
