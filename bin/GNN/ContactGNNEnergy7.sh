@@ -41,7 +41,7 @@ useScratch='false'
 
 # like 235, but sweep200000
 
-id=243
+id=247
 for lr in 1e-4
 do
   train
