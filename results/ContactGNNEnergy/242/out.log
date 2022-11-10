@@ -194,3 +194,75 @@ Epoch 62, loss = 5.5095
 Mean test/val loss: 6.1499
 
 Epoch 64, loss = 5.3600
+Mean test/val loss: 6.4262
+
+Epoch 66, loss = 5.3303
+Mean test/val loss: 5.8228
+
+Epoch 68, loss = 5.1345
+Mean test/val loss: 6.3649
+
+Epoch 70, loss = 5.0391
+Mean test/val loss: 6.0826
+
+Epoch 72, loss = 4.9919
+Mean test/val loss: 5.7813
+
+Epoch 74, loss = 4.9000
+Mean test/val loss: 5.5333
+
+Epoch 76, loss = 4.8469
+Mean test/val loss: 5.7784
+
+Epoch 78, loss = 4.7511
+Mean test/val loss: 5.9852
+
+Epoch 80, loss = 4.6666
+Mean test/val loss: 5.6984
+
+Epoch 82, loss = 4.6063
+Mean test/val loss: 6.1765
+
+Epoch 84, loss = 4.5184
+Mean test/val loss: 5.3290
+
+Epoch 86, loss = 4.5325
+Mean test/val loss: 5.2667
+
+Epoch 88, loss = 4.4365
+Mean test/val loss: 5.4291
+
+Epoch 90, loss = 4.4311
+Mean test/val loss: 5.4530
+
+Epoch 92, loss = 4.3444
+Mean test/val loss: 5.4327
+
+Epoch 94, loss = 4.3348
+Mean test/val loss: 5.2257
+
+Epoch 96, loss = 4.2759
+Mean test/val loss: 5.3688
+
+Epoch 98, loss = 4.2030
+Mean test/val loss: 5.3894
+
+Epoch 100, loss = 4.1903
+Mean test/val loss: 5.2086
+
+
+Total parameters: 77192748
+Total training + validation time: 11.0 hours, 2.0 mins, and 13.099999999998545 secs
+Final val loss: 5.208644770677128
+
+split sizes: train=2268, val=252, test=0, N=2520
+#### Plotting Script ####
+Prediction Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/242/sample552: 15.11672592163086
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/242/sample1794: 6.121838569641113
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/242/sample1128: 3.465972423553467
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/242/sample1938: 9.231063842773438
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/242/sample1131: 4.604257583618164
+Loss: 7.708 +- 4.18
+
+Downsampling (40%) Results:
