@@ -18,10 +18,15 @@ def load_saved_model(opt, verbose = True, throw = True):
     model_name = osp.join(opt.ofile_folder, 'model.pt')
     if osp.exists(model_name):
         save_dict = torch.load(model_name, map_location=torch.device('cpu'))
+        print(save_dict['model_state_dict'].keys())
         train_loss_arr = save_dict['train_loss']
         val_loss_arr = save_dict['val_loss']
         try:
-            model.load_state_dict(save_dict['model_state_dict'])
+            state_dict = save_dict['model_state_dict']
+            # for key in list(state_dict.keys()):
+            #     if key.startswith('encoder'):
+            #         state_dict[key.replace('encoder', 'node_encoder')] = state_dict.pop(key)
+            model.load_state_dict(state_dict)
             model.eval()
             if verbose:
                 print('Model is loaded: {}'.format(model_name), file = opt.log_file)

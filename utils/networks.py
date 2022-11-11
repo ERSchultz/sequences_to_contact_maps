@@ -754,21 +754,7 @@ class ContactGNN(nn.Module):
         return head
 
     def forward(self, graph):
-        if self.node_encoder is not None:
-            x = self.node_encoder(graph.x)
-        print(graph)
-        print(graph.edge_attr)
-        print(x.shape)
-        if self.edge_encoder is not None:
-            row, col = graph.edge_index
-            concat = torch.cat((x[row], x[col], graph.edge_attr), dim = -1)
-            edge_attr = self.edge_encoder(concat)
-        else:
-            edge_attr = graph.edge_attr
-        print(x.shape)
-        print(edge_attr)
-
-        latent = self.latent(graph, x, edge_attr)
+        latent = self.latent(graph)
         _, output_size = latent.shape
 
         if self.head_architecture is None and self.head_architecture_2 is None:
@@ -815,7 +801,16 @@ class ContactGNN(nn.Module):
 
         return out
 
-    def latent(self, graph, x, edge_attr):
+    def latent(self, graph):
+        if self.node_encoder is not None:
+            x = self.node_encoder(graph.x)
+        if self.edge_encoder is not None:
+            row, col = graph.edge_index
+            concat = torch.cat((x[row], x[col], graph.edge_attr), dim = -1)
+            edge_attr = self.edge_encoder(concat)
+        else:
+            edge_attr = graph.edge_attr
+
         if self.message_passing == 'identity':
             latent = x
         elif self.message_passing == 'z':
@@ -852,10 +847,7 @@ class ContactGNN(nn.Module):
         return latent
 
     def diagonal_component(self, graph):
-        if self.node_encoder is not None:
-            x = self.node_encoder(graph.x)
-
-        latent = self.latent(graph, x)
+        latent = self.latent(graph)
 
         for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
             if architecture is None:
@@ -880,10 +872,7 @@ class ContactGNN(nn.Module):
         return None
 
     def plaid_component(self, graph):
-        if self.node_encoder is not None:
-            x = self.node_encoder(graph.x)
-
-        latent = self.latent(graph, x)
+        latent = self.latent(graph)
 
         out_temp = None
         for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):

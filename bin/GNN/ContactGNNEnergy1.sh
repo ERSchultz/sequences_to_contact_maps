@@ -24,23 +24,22 @@ messagePassing='weighted_GAT'
 preTransforms='constant-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
-hiddenSizesList='8-8-8'
-EncoderHiddenSizesList='100-100-64'
-updateHiddenSizesList='100-100-64'
+hiddenSizesList='8-8-8-8'
+EncoderHiddenSizesList='1000-1000-64'
+updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
 outputMode='energy_sym_diag'
-yPreprocessing='log_inf'
+yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
 headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
-useScratch='false'
-KR='true'
+meanFilt=3
 
-# like 225, but KR
+# meanfilt with sweeprand
 
-id=231
+id=248
 for lr in 1e-4
 do
   train

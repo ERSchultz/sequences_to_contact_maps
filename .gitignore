@@ -25,6 +25,7 @@ __pycache__
 neural_net_utils/__pycache_
 
 # results
+results/**/*.json
 results/test/**
 results/UNet/**
 results/SequenceFCAutoencoder/**

@@ -266,3 +266,32 @@ Prediction Results:
 Loss: 5.078 +- 2.977
 
 Downsampling (40%) Results:
+Dataset construction time: 0.008 minutes
+Average num edges per graph:  891301.6
+Mean degree: [ 840.01  802.42  661.93 1024.   1023.69] +- [170.9  177.09 258.08   0.     1.09]
+
+#### Plotting Script ####
+Prediction Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/241/sample1128: 2.224518299102783
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/241/sample1131: 6.096722602844238
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/241/sample1794: 7.173616409301758
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/241/sample1938: 5.277933120727539
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/241/sample552: 2.022911548614502
+Loss: 4.559 +- 2.078
+
+Downsampling (40%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/241/sample1128-downsampling: 2.7460074424743652
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/241/sample1131-downsampling: 6.716729164123535
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/241/sample1794-downsampling: 8.560877799987793
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/241/sample1938-downsampling: 19.274333953857422
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/241/sample552-downsampling: 3.028764009475708
+Loss: 8.065 +- 6.023
+
+Upsampling (200%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/241/sample1128-upsampling: 2.2700345516204834
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/241/sample1131-upsampling: 6.310710906982422
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/241/sample1794-upsampling: 10.170320510864258
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/241/sample1938-upsampling: 5.50007963180542
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/241/sample552-upsampling: 2.784978151321411
+Loss: 5.407 +- 2.837
+

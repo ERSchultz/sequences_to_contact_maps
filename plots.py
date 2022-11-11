@@ -91,7 +91,7 @@ def update_result_tables(model_type = None, mode = None, output_mode = 'contact'
                         with open(osp.join(id_path, 'out.log'), 'r') as f:
                             for line in f:
                                 if line.startswith('Final val loss: '):
-                                    final_val_loss = np.round(line.split(':')[1].strip(), 3)
+                                    final_val_loss = np.round(float(line.split(':')[1].strip()), 3)
                         d_loss = None; u_loss = None
                         if osp.exists(osp.join(id_path, 'loss_analysis.json')):
                             with open(osp.join(id_path, 'loss_analysis.json')) as f:
@@ -422,5 +422,7 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_09_30_22')
-    # plot_combined_models('ContactGNNEnergy', [229, 234])
-    # main(236)
+    plot_combined_models('ContactGNNEnergy', [235, 241])
+    # for i in [246]:
+    #     print(i)
+    #     main(i)
