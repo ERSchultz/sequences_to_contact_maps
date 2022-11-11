@@ -20,7 +20,7 @@ rootName='ContactGNNEnergy2' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_30_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='constant-degree_diag_split1-ContactDistance-GeneticDistance_norm'
+preTransforms='constant-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8-8'
@@ -29,19 +29,16 @@ updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
 outputMode='energy_sym_diag'
-yPreprocessing='log_inf'
+yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
 headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 useScratch='false'
-KR='false'
 
+# replace 237 in table ( has 4 MPGNN layers)
 
-# like 228 but all out on params
-
-
-id=229
+id=252
 for lr in 1e-4
 do
   train

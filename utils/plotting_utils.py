@@ -591,6 +591,20 @@ def downsamplingAnalysis(val_dataloader, model, opt, count = 5):
 
     downsample_loss = analysisIterator(val_dataloader, model, opt_copy, count, 'downsampling')
 
+    print('Original sampling (100%) Results:', file = opt.log_file)
+    opt_copy = copy.copy(opt) # shallow copy only
+    if opt_copy.root_name is not None:
+        opt_copy.root_name += 'regsample'
+    if opt_copy.y_preprocessing.startswith('sweep'):
+        _, *y_preprocessing = opt_copy.y_preprocessing.split('_')
+        if isinstance(y_preprocessing, list):
+            y_preprocessing = '_'.join(y_preprocessing)
+    else:
+        y_preprocessing = opt_copy.y_preprocessing
+    opt_copy.y_preprocessing = 'sweep500000_' + y_preprocessing
+
+    original_loss = analysisIterator(val_dataloader, model, opt_copy, count, 'downsampling')
+
     print('Upsampling (200%) Results:', file = opt.log_file)
     opt_copy = copy.copy(opt) # shallow copy only
     if opt_copy.root_name is not None:
@@ -605,7 +619,7 @@ def downsamplingAnalysis(val_dataloader, model, opt, count = 5):
 
     upsample_loss = analysisIterator(val_dataloader, model, opt_copy, count, 'upsampling')
 
-    return downsample_loss, upsample_loss
+    return downsample_loss, original_loss, upsample_loss
 
 def rescalingAnalysis(val_dataloader, model, opt, count = 5):
     print('Rescaling Results:', file = opt.log_file)
@@ -1122,8 +1136,9 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None,
         loss_dict['val'] = loss
 
     if opt.plot:
-        d_loss, u_loss = downsamplingAnalysis(val_dataloader, model, opt)
+        d_loss, r_loss, u_loss = downsamplingAnalysis(val_dataloader, model, opt)
         loss_dict['downsample'] = d_loss
+        loss_dict['regular'] = r_loss
         loss_dict['upsample'] = u_loss
         # rescalingAnalysis(val_dataloader, model, opt)
 

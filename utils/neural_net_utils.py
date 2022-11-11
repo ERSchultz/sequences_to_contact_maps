@@ -23,9 +23,9 @@ def load_saved_model(opt, verbose = True, throw = True):
         val_loss_arr = save_dict['val_loss']
         try:
             state_dict = save_dict['model_state_dict']
-            # for key in list(state_dict.keys()):
-            #     if key.startswith('encoder'):
-            #         state_dict[key.replace('encoder', 'node_encoder')] = state_dict.pop(key)
+            for key in list(state_dict.keys()):
+                if key.startswith('encoder'):
+                    state_dict[key.replace('encoder', 'node_encoder')] = state_dict.pop(key)
             model.load_state_dict(state_dict)
             model.eval()
             if verbose:
