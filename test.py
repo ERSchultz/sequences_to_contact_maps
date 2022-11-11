@@ -201,7 +201,7 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing = 'log_inf'
+        opt.y_preprocessing = 'sweeprand_log_inf'
         opt.rescale = None
         opt.mean_filt = None
         opt.kr = False
@@ -212,7 +212,7 @@ def debugModel(model_type):
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym_diag'
         opt.encoder_hidden_sizes_list=[100,100,32]
-        opt.edge_encoder_hidden_sizes_list=[100,100,2]
+        # opt.edge_encoder_hidden_sizes_list=[100,100,2]
         opt.update_hidden_sizes_list=[100,100,40]
         opt.hidden_sizes_list=[8,8,8]
         opt.act = 'prelu'
@@ -223,7 +223,7 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('degree-degree_diag_split1_max1-contactdistance-geneticdistance')
+        opt.pre_transforms=AC.str2list('constant-noiselevel-degree_diag_split1_max1-contactdistance-geneticdistance')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
@@ -288,7 +288,7 @@ def debugModel(model_type):
     # other
     opt.plot = False
     opt.plot_predictions = False
-    opt.verbose = False
+    opt.verbose = True
     opt.print_params = False
     opt.gpus = 1
     opt.delete_root = True

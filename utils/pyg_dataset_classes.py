@@ -153,6 +153,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.pos_edge_index = pos_edge_index
             graph.neg_edge_index = neg_edge_index
             graph.mlp_model_id = self.mlp_model_id
+            graph.sweep = self.sweep
 
             # copy these temporarily
             graph.weighted_degree = self.weighted_degree
@@ -253,6 +254,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def load_y(self, raw_folder):
         '''Helper function to load raw contact map and apply normalization.'''
+        self.sweep = None
         if self.y_preprocessing.startswith('sweeprand'):
             _, *y_preprocessing = self.y_preprocessing.split('_')
             if isinstance(y_preprocessing, list):
@@ -260,8 +262,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             id = int(osp.split(raw_folder)[1][6:])
             rng = np.random.default_rng(seed = id)
-            sweep = rng.choice([200000, 300000, 400000, 500000], 1)[0]
-            y_path = osp.join(raw_folder, f'data_out/contacts{sweep}.txt')
+            self.sweep = rng.choice([200000, 300000, 400000, 500000], 1)[0]
+            y_path = osp.join(raw_folder, f'data_out/contacts{self.sweep}.txt')
             if osp.exists(y_path):
                 y = np.loadtxt(y_path).astype(np.float64)
             else:
@@ -269,11 +271,11 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
         elif self.y_preprocessing.startswith('sweep'):
             sweep, *y_preprocessing = self.y_preprocessing.split('_')
-            sweep = int(sweep[5:])
+            self.sweep = int(sweep[5:])
             if isinstance(y_preprocessing, list):
                 preprocessing = '_'.join(y_preprocessing)
 
-            y_path = osp.join(raw_folder, f'data_out/contacts{sweep}.txt')
+            y_path = osp.join(raw_folder, f'data_out/contacts{self.sweep}.txt')
             if osp.exists(y_path):
                 y = np.loadtxt(y_path).astype(np.float64)
             else:
@@ -508,13 +510,3 @@ class ContactsGraph(torch_geometric.data.Dataset):
         plt.legend()
         plt.show()
         plt.close()
-
-
-def main():
-    g = ContactsGraph('dataset_04_18_21', root_name = 'graphs0', output = 'energy',
-                        crop = [0, 15], m = 15)
-    rmtree(g.root)
-
-
-if __name__ == '__main__':
-    main()

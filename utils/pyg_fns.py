@@ -10,7 +10,7 @@ from torch.nn import Parameter
 from torch_geometric.nn.conv import MessagePassing
 from torch_geometric.nn.dense.linear import Linear
 from torch_geometric.nn.inits import glorot, zeros
-from torch_geometric.transforms import BaseTransform
+from torch_geometric.transforms import BaseTransform, Constant
 from torch_geometric.typing import Adj, OptTensor, PairTensor
 from torch_geometric.utils import (add_self_loops, degree, remove_self_loops,
                                    softmax)
@@ -234,6 +234,26 @@ class GeneticPosition(BaseTransform):
     def __repr__(self):
         return (f'{self.__class__.__name__}'
                 f'(center={self.center}, norm={self.norm})')
+
+class NoiseLevel(BaseTransform):
+    '''Appends noise level as node feature.'''
+    def __call__(self, data):
+
+        val = data.sweep / 100000
+        c = torch.full((data.num_nodes, 1), val, dtype=torch.float32)
+
+        if data.x is not None:
+            data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
+            data.x = torch.cat([data.x, c], dim=-1)
+        else:
+            data.x = pos
+
+        return data
+
+    def __repr__(self):
+        return (f'{self.__class__.__name__}')
+
+
 
 # edge transforms
 class GeneticDistance(BaseTransform):

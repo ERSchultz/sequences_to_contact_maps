@@ -1,6 +1,6 @@
 #! /bin/bash
 
-for i in 1 6 7 # midway2
+for i in 1 6 7 8 # midway2
 
 #Thursday
 # 6 7 8 # midway2

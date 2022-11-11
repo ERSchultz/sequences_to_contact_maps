@@ -36,7 +36,7 @@ headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
-
+useScratch='false'
 
 # like 235, but sweeprand and degree_diag_split and no constant
 

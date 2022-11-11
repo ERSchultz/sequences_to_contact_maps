@@ -14,7 +14,7 @@ import torch_geometric.transforms
 
 from .pyg_fns import (AdjPCATransform, AdjTransform, ContactDistance, Degree,
                       DiagonalParameterDistance, GeneticDistance,
-                      GeneticPosition, OneHotGeneticPosition,
+                      GeneticPosition, NoiseLevel, OneHotGeneticPosition,
                       WeightedLocalDegreeProfile)
 from .utils import DiagonalPreprocessing
 
@@ -516,6 +516,11 @@ def process_transforms(opt):
             opt.node_feature_size += opt.m
             processed.append(OneHotGeneticPosition())
             opt.node_transforms.append(OneHotGeneticPosition())
+        elif t_str[0] == 'noiselevel':
+            transform = NoiseLevel()
+            opt.node_transforms.append(transform)
+            processed.append(transform)
+            opt.node_feature_size += 1
         elif t_str[0] == 'diagonalparameterdistance':
             assert opt.use_edge_attr or opt.use_edge_weights
 

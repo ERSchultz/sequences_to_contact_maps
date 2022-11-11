@@ -36,6 +36,7 @@ headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 meanFilt=3
+useScratch='false'
 
 # meanfilt with sweeprand
 
