@@ -1,0 +1,8 @@
+rm: cannot remove ‘ContactGNNEnergy1*’: No such file or directory
+rm: cannot remove ‘ContactGNNEnergy0*’: No such file or directory
+rm: cannot remove ‘ContactGNNEnergy4*’: No such file or directory
+rm: cannot remove ‘ContactGNNEnergy5*’: No such file or directory
+rm: cannot remove ‘ContactGNNEnergy9*’: No such file or directory
+rm: rm: cannot remove ‘ContactGNNEnergy6*’rm: cannot remove ‘ContactGNNEnergy7*’cannot remove ‘ContactGNNEnergy2*’: No such file or directory
+: No such file or directory
+: No such file or directory
