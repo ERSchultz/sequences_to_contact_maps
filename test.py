@@ -620,13 +620,13 @@ def prep_data_for_cluster():
 
 def find_best_p_s():
     # is there a curve in training that matches experimental curve well?
-    dir = '/home/erschultz/sequences_to_contact_maps/'
-    data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample105') # experimental data sample
+    dir = '/home/erschultz/'
+    data_dir = osp.join(dir, 'dataset_11_14_22/samples/sample1') # experimental data sample
     file = osp.join(data_dir, 'y.npy')
-    y_exp = np.load(file)[:1024, :1024]
+    y_exp = np.load(file)
     meanDist_ref = DiagonalPreprocessing.genomic_distance_statistics(y_exp, 'prob')
 
-    dir = '/home/erschultz/dataset_09_30_22' # simulated data dir
+    dir = '/home/erschultz/dataset_test_vbead' # simulated data dir
     # sort samples
     min_MSE = 1000
     best_sample = None
@@ -637,17 +637,17 @@ def find_best_p_s():
             y = np.load(file)
             meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
             # meanDist = np.log(meanDist)
-            mse = mean_squared_error(meanDist, meanDist_ref)
+            mse = mean_squared_error(meanDist[:10], meanDist_ref[:10])
             if mse < min_MSE:
                 min_MSE = mse
                 best_sample = sample
                 best_meanDist = meanDist
                 print(sample, mse)
 
-    print(best_sample)
+    print(best_sample, min_MSE)
 
-    plt.plot(meanDist_ref, label = 'ref')
-    plt.plot(best_meanDist, label = best_sample)
+    plt.plot(meanDist_ref[:10], label = 'ref')
+    plt.plot(best_meanDist[:10], label = best_sample)
     plt.xscale('log')
     plt.yscale('log')
     plt.legend()
@@ -666,13 +666,22 @@ def testGNNrank():
     plaid = np.loadtxt(file)
     plot_top_PCs(plaid, verbose = True, count = 5)
 
+def main():
+    dataset = 'dataset_11_14_22'
+    dir = f'/home/erschultz/{dataset}/samples/sample1'
+    max_ent_dir = osp.join(dir, f'PCA_split-binarizeMean-E/k8/replicate1')
+    chi = np.loadtxt(osp.join(max_ent_dir, 'chis.txt'))[-1]
 
+    chi = triu_to_full(chi)
+    plot_matrix(chi, osp.join(max_ent_dir, 'chi.png'), vmax = 'max', vmin = 'min',
+                cmap = 'blue-red')
 
 if __name__ == '__main__':
+    # main()
     # prep_data_for_cluster()
-    # find_best_p_s()
+    find_best_p_s()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
     # testGNNrank()

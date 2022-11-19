@@ -21,7 +21,8 @@ from .utils import DiagonalPreprocessing
 
 def get_base_parser():
     '''Helper function that returns base parser'''
-    parser = argparse.ArgumentParser(description='Base parser', fromfile_prefix_chars='@')
+    parser = argparse.ArgumentParser(description='Base parser', fromfile_prefix_chars='@',
+                                    allow_abbrev = False)
     AC = ArgparserConverter()
 
     # GNN pre-processing args
@@ -266,7 +267,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
             assert opt.resume_training or debug, f"issue with id={opt.id}"
             id_copy = opt.id
             args = sys.argv.copy() # need to copy if running finalize_opt multiple times
-            args.insert(1, '@{}'.format(txt_file))
+            args.insert(1, f'@{txt_file}')
             args.pop(0) # remove program name
             opt = parser.parse_args(args) # parse again
             # by inserting at position 1, the original arguments will override the txt file

@@ -230,23 +230,28 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None,
 
 ### Functions for plotting sequences ###
 def plot_seq_binary(seq, show = False, save = True, title = None, labels = None,
-                    x_axis = True, ofile = 'seq.png'):
+                    x_axis = True, ofile = 'seq.png', split = False):
     '''Plotting function for *non* mutually exclusive binary particle types'''
     m, k = seq.shape
     cmap = matplotlib.cm.get_cmap('tab10')
     ind = np.arange(k) % cmap.N
-    colors = plt.cycler('color', cmap(ind))
+    colors = cmap(ind)
 
     plt.figure(figsize=(6, 3))
-    for i, c in enumerate(colors):
+    j = 0
+    for i in range(k):
+        c = colors[j]
+        if split:
+            j += i % 2
+        else:
+            j += 1
         x = np.argwhere(seq[:, i] == 1)
         if labels is None:
             label_i = i
         else:
             label_i = labels[i]
-        plt.scatter(x, np.ones_like(x) * i * 0.2, label = label_i, color = c['color'], s=3)
+        plt.scatter(x, np.ones_like(x) * i * 0.2, label = label_i, color = c, s=3)
 
-    plt.legend()
     ax = plt.gca()
     # ax.axes.get_yaxis().set_visible(False)
     if not x_axis:
@@ -255,10 +260,11 @@ def plot_seq_binary(seq, show = False, save = True, title = None, labels = None,
     #     ax.set_xticks(range(0, 1040, 40))
     #     ax.axes.set_xticklabels(labels = range(0, 1040, 40), rotation=-90)
     ax.set_yticks([i*0.2 for i in range(k)])
-    ax.axes.set_yticklabels(labels = [f'mark {i}' for i in range(1,k+1)],
-                            rotation='horizontal', fontsize=16)
+    ax.axes.set_yticklabels(labels = [f'Label {i}' for i in range(1,k+1)],
+                            rotation='horizontal', fontsize=14)
     if title is not None:
         plt.title(title, fontsize=16)
+    plt.xlabel('Distance', fontsize=16)
     plt.tight_layout()
     if save:
         plt.savefig(ofile)
@@ -266,35 +272,30 @@ def plot_seq_binary(seq, show = False, save = True, title = None, labels = None,
         plt.show()
     plt.close()
 
-def plot_seq_exclusive(seq, labels=None, X=None, show = False, save = True,
-                        title = None, ofile = 'seq.png'):
-    '''Plotting function for mutually exclusive binary particle types'''
-    # TODO make figure wider and less tall
+def plot_seq_continuous(seq, show=False, save=True, title=None):
     m, k = seq.shape
     cmap = matplotlib.cm.get_cmap('tab10')
     ind = np.arange(k) % cmap.N
     colors = plt.cycler('color', cmap(ind))
 
+    plt.figure(figsize=(6, 3))
     for i, c in enumerate(colors):
-        x = np.argwhere(seq[:, i] == 1)
-        plt.scatter(x, np.ones_like(x), label = i, color = c['color'], s=1)
+        plt.plot(np.arange(0, m), seq[:, i], label = f'Label {i+1}', color = c['color'])
+        # i+1 to switch to 1-indexing
 
-    if X is not None and labels is not None:
-        score = silhouette_score(X, labels)
-        lower_title = f'\nsilhouette score: {np.round(score, 3)}'
-    else:
-        lower_title = ''
-
-    plt.legend()
     ax = plt.gca()
-    ax.axes.get_yaxis().set_visible(False)
     if title is not None:
-        plt.title(title + lower_title, fontsize=16)
-    if save:
-        plt.savefig(ofile)
+        plt.title(title, fontsize=16)
+    plt.legend()
+    plt.xlabel('Distance', fontsize=16)
+    plt.ylabel('Label Value', fontsize=16)
+    plt.tight_layout()
     if show:
         plt.show()
+    if save:
+        plt.savefig('seq.png')
     plt.close()
+
 
 ### Functions for analyzing model performance ###
 def analysisIterator(val_dataloader, model, opt, count, mode):
@@ -603,7 +604,7 @@ def downsamplingAnalysis(val_dataloader, model, opt, count = 5):
         y_preprocessing = opt_copy.y_preprocessing
     opt_copy.y_preprocessing = 'sweep500000_' + y_preprocessing
 
-    original_loss = analysisIterator(val_dataloader, model, opt_copy, count, 'downsampling')
+    original_loss = analysisIterator(val_dataloader, model, opt_copy, count, 'regular')
 
     print('Upsampling (200%) Results:', file = opt.log_file)
     opt_copy = copy.copy(opt) # shallow copy only

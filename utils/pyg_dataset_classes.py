@@ -323,7 +323,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y[np.isinf(y)] = np.nan
         elif preprocessing is not None:
             # override y
-            assert self.y_norm is None
+            assert self.y_norm is None, f'y_norm is {self.y_norm} not None'
             y_path = osp.join(raw_folder, f'y_{preprocessing}.npy')
             if osp.exists(y_path):
                 y = np.load(y_path)

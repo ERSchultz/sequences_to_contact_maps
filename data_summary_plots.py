@@ -15,7 +15,7 @@ from utils.knightRuiz import knightRuiz
 from utils.load_utils import load_all, load_contact_map, load_X_psi, load_Y
 from utils.plotting_utils import (plot_diag_chi, plot_matrix,
                                   plot_mean_vs_genomic_distance,
-                                  plot_seq_binary, plot_seq_exclusive)
+                                  plot_seq_binary, plot_seq_continuous)
 from utils.utils import DiagonalPreprocessing
 
 
@@ -350,6 +350,7 @@ def compare_kr(path, inp, ref, ref_diag, inp_name = 'y', ref_name = 'y'):
         inp_kr = np.load(inp_kr_file)
     else:
         inp_kr = knightRuiz(inp)
+        print(inp_kr)
         np.save(inp_kr_file, inp_kr)
     plot_matrix(inp_kr, osp.join(path, f'{inp_name}_kr.png'), title = 'kr normalization', vmax = 'mean')
 
@@ -599,10 +600,10 @@ if __name__ == '__main__':
     dir = '/home/erschultz/sequences_to_contact_maps'
     dir = '/home/erschultz'
 
-    dataset = 'dataset_9_30_22'
+    dataset = 'dataset_11_14_22'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = True, plot_energy = True, plot_x = False,
-                plot_chi = True, sampleID = 1128)
+    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
+                plot_chi = False, sampleID = 17)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

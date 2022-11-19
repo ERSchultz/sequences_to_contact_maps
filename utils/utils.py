@@ -323,10 +323,17 @@ def rescale_matrix(inp, factor):
     Rescales input matrix by factor.
     if inp is 1024x1024 and factor=2, out is 512x512
     '''
-    inp = np.triu(inp)
-    processed = block_reduce(inp, (factor, factor), np.sum)
+    assert len(inp.shape) == 2, f'must be 2d array not {inp.shape}'
+    m, _ = inp.shape
+    assert m % factor == 0, f'factor must evenly divide m {m}%{factor}={m%factor}'
+
+    inp = np.triu(inp) # need triu to not double count entries
+    processed = block_reduce(inp, (factor, factor), np.sum) # sum-pool operation
+
+    # need to make symmetric again
     processed = np.triu(processed)
     out = processed + np.triu(processed, 1).T
+
     return out
 
 ## plotting helper functions ##
