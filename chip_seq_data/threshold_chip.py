@@ -19,36 +19,26 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from subtool import *
-from utils import CHROMS
+from utils import CHROMS, save_chip_for_CHROMHMM
 
 
 def getArgs():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('-c','--chip', type=str, default=osp.join('chip_seq_data','fold_change_control'), help="Input Chip-Seq master directory")
-	parser.add_argument('--res', type=int, default=25000, help='resolution')
-	parser.add_argument('--cell_line', default='HTC116', help='cell line')
+	parser.add_argument('-d','--dir', type=str,
+						default=osp.join('chip_seq_data', 'HCT116', 'hg19', 'fold_change_control'),
+						help="Input Chip-Seq master directory")
+	parser.add_argument('--res', type=int, default=50000, help='resolution')
+	parser.add_argument('--cell_line', default='HCT116', help='cell line')
 
 	args = parser.parse_args()
 	return args
-
-def save_chip_for_CHROMHMM(chips, names, args):
-	for i, chrom in enumerate(chips):
-		ofile = osp.join(args.chip, 'processed', 'chr{}_binary.txt'.format(CHROMS[i]))
-		combined_marks = np.zeros((len(chrom[0]), len(chrom)))
-		for j, mark in enumerate(chrom):
-			combined_marks[:, j] = mark[:, 1]
-			with open(ofile, 'w', newline = '') as f:
-				wr = csv.writer(f, delimiter = '\t')
-				wr.writerow([args.cell_line, "chr{}".format(CHROMS[i])])
-				wr.writerow(names)
-				wr.writerows(combined_marks.astype(np.int8))
 
 @timeit
 def threshold_chip(chips, cfl_chips, names, args):
 	"""Convert fold-over-control chipseq into
 	binary yes/no vector of whether or not mark is present.
 	Determines thresholds for every mark which ensures the entire genome has the
-	total fraction as defined in args.chip/frac.json.
+	total fraction as defined in args.dir/frac.json.
 	Parameters:
 		chips: *list of lists of 2d np.array*
 				for all eles: first index is chromsome, second index is mark.
@@ -68,7 +58,7 @@ def threshold_chip(chips, cfl_chips, names, args):
 		ValueError, if thresh is not None.
 	"""
 	# get frac data
-	with open(osp.join(osp.split(args.chip)[0], "frac.json"), 'r') as f:
+	with open(osp.join(osp.split(args.dir)[0], "frac.json"), 'r') as f:
 		frac_dict = json.load(f)
 
 	#Target fractions
@@ -83,7 +73,7 @@ def threshold_chip(chips, cfl_chips, names, args):
 	for i, mark in enumerate(cfl_chips):
 		res = mark[1,0] - mark[0,0]
 		if res != args.res:
-			raise ValueError("Resolution of mark '{}', is {} not {}".format(names[i], res, args.res))
+			raise ValueError(f"Resolution of mark '{names[i]}', is {res} not {args.res}")
 
 	threshes = []
 	#frac-th percentile over the control.
@@ -91,10 +81,10 @@ def threshold_chip(chips, cfl_chips, names, args):
 		frac = fracs[i]
 		thresh = np.quantile(cfl_chips[i][:,1].ravel(), 1-frac)
 		threshes.append(thresh)
-		print("Frac,thresh for mark {}: {}, {}".format(names[i], repr(frac), repr(thresh)))
+		print(f"Frac,thresh for mark {names[i]}: {frac}, {thresh}")
 	threshes = np.array(threshes)
 
-	print("Fraction-based thresholds: \n{}\n for marks:\n {}\n".format(repr(threshes), repr(names[:-1])))
+	print(f"Fraction-based thresholds: \n{threshes}\n for marks:\n {names[:-1]}\n")
 
 	final_chips = copy.deepcopy(chips)
 	#Lengths of each chromosome in bp indices
@@ -118,7 +108,7 @@ def threshold_chip(chips, cfl_chips, names, args):
 					np.zeros(mark[:,1].shape))
 
 	#Save binarization for each mark at filename "<chrom>_<name>_<coverage>_seq.npy"
-	odir = osp.join(args.chip, 'processed')
+	odir = osp.join(args.dir, 'processed')
 	if not osp.exists(odir):
 		os.mkdir(odir, mode = 0o755)
 
@@ -126,9 +116,8 @@ def threshold_chip(chips, cfl_chips, names, args):
 		for j, mark in enumerate(chrom):
 			# What proportion of each chromosome is covered by each mark?
 			coverage = np.round(np.average(mark[:,1]), 5)
-			print("{} coverage on chrom {}: {}".format(names[j],
-				CHROMS[i], coverage))
-			ofile = "{}_{}_{}_seq.npy".format(CHROMS[i], names[j], coverage)
+			print(f"{names[j]} coverage on chrom {CHROMS[i]}: {coverage}")
+			ofile = f"chr{CHROMS[i]}_{names[j]}_{coverage}.npy"
 			np.save(osp.join(odir, ofile), mark.astype(np.uint32)) # 32 bit int should be fine
 		print('')
 
@@ -136,7 +125,7 @@ def threshold_chip(chips, cfl_chips, names, args):
 
 @timeit
 def load_chipseq(args):
-	"""Load all the chipseq tracks in args.chip into numpy arrays.
+	"""Load all the chipseq tracks in args.dir into numpy arrays.
 	returns:
 		chrom_chips: *3d list*
 				first dimension is chromosome, second dimension is mark.
@@ -145,10 +134,10 @@ def load_chipseq(args):
 		names: list containing name of epigenetic mark
 	"""
 	# load metadata
-	meta_data = pd.read_csv(osp.join(args.chip, 'metadata.tsv'), sep = '\t')
+	meta_data = pd.read_csv(osp.join(args.dir, 'metadata.tsv'), sep = '\t')
 
 	# get marks
-	marks = [osp.join(args.chip,ele) for ele in os.listdir(args.chip)]
+	marks = [osp.join(args.dir, ele) for ele in os.listdir(args.dir)]
 	marks = [ele for ele in marks if osp.isdir(ele) and osp.split(ele)[1] in set(meta_data['File accession'])]
 
 	#Find names
@@ -160,16 +149,16 @@ def load_chipseq(args):
 			df = meta_data[meta_data['File accession'] == mark]
 			name = df['Experiment target'].item().split('-')[0]
 			if name.startswith("H2"):
-				print("H2 modifications not accepted: {}".format(mark))
+				print(f"H2 modifications not accepted: {mark}")
 				del_list.append(i)
 			elif name.startswith("H4K20"):
-				print("H4K20 modifications not accepted: {}".format(mark))
+				print(f"H4K20 modifications not accepted: {mark}")
 				del_list.append(i)
 			else:
 				names.append(name)
 		except Exception as e:
 			print(e)
-			print("Had issues processing dirname %s" % mark)
+			print(f"Had issues processing dirname {mark}")
 			del_list.append(i)
 	for ind in reversed(del_list):
 		print("Popping item: ", marks[ind])
@@ -180,7 +169,7 @@ def load_chipseq(args):
 	names = [names[i] for i in inds]
 	marks = [marks[i] for i in inds]
 
-	print("Names: %s\n" % repr(names))
+	print(f"Names: {names}\n")
 	#print("marks: %s" % repr(marks))
 
 
@@ -194,14 +183,14 @@ def load_chipseq(args):
 		print("Loading chrom ", base)
 		for mark in marks:
 			print("Loading mark ",mark)
-			track = np.load(osp.join(mark, "{}.npy".format(base)), allow_pickle = True)
+			track = np.load(osp.join(mark, f"{base}.npy"), allow_pickle = True)
 			base_list.append(track)
 		chrom_chips.append(base_list)
 
 	return chrom_chips, names
 
 def main():
-	'''Perform hic_r_calc.'''
+	'''Perform hic_r_calc. Need to run bw_to_np before hand.'''
 	args = getArgs()
 
 	#Load Chip vectors
@@ -217,7 +206,7 @@ def main():
 		chrom_flat_chips.append(l)
 	chrom_flat_chips = np.array(chrom_flat_chips).astype(np.float64)
 	#chrom_flat_chips = np.concatenate(chrom_flat_chips)
-	print("Chromosome flattened chip has shape: %s" % repr(chrom_flat_chips.shape))
+	print(f"Chromosome flattened chip has shape: {chrom_flat_chips.shape}")
 
 
 	#Calculate maxEnt thresholding

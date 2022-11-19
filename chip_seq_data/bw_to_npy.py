@@ -7,15 +7,17 @@ import os.path as osp
 
 import numpy as np
 import pyBigWig as pbw
-from subtool import *
 from utils import *
 
 
 def getArgs():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--dir', default=osp.join('chip_seq_data','fold_change_control'), help='directory of chip-seq data')
-	parser.add_argument('-n','--nucl',action="store_true", help = "If True, store nucleosome-resolution data.")
-	parser.add_argument('-r','--res', type=int, default=25000, help='Resolution of map, in bp')
+	parser.add_argument('--dir', default=osp.join('chip_seq_data','HCT116', 'hg19', 'fold_change_control'),
+						help='directory of chip-seq data')
+	parser.add_argument('-n','--nucl',action="store_true",
+						help="If True, store nucleosome-resolution data.")
+	parser.add_argument('-r','--res', type=int, default=50000,
+						help='Resolution of map, in bp')
 	args = parser.parse_args()
 	return args
 
@@ -26,10 +28,10 @@ def bw_to_npy(fname, args):
 	else:
 		raise ValueError("No dot found in fname: {}".format(fname))
 
-	psub("mkdir %s" % base)
+	if not osp.exists(base):
+		os.mkdir(base, mode = 0o755)
 
 	#For every chromosome, get stats.
-
 	bw = pbw.open(fname)
 
 	#Set resolution
@@ -41,8 +43,8 @@ def bw_to_npy(fname, args):
 		mode = "max"
 
 	print("Loading chromosome data for {}.".format(fname))
-	for i_c in CHROMS:
-		bw_name = "chr" + i_c
+	for chr in CHROMS:
+		bw_name = "chr" + chr
 		length = bw.chroms()[bw_name]
 
 		#Calculate nBins
@@ -58,8 +60,8 @@ def bw_to_npy(fname, args):
 			raise ValueError("Shapes not equivalent: %s vs. %s" % (repr(chip_vals.shape), repr(pos.shape)))
 		zipped = np.column_stack((pos, chip_vals))
 
-		np.save(os.path.join(base, i_c + ".npy"), zipped)
-		print("Saved data for chromosome %s." % i_c)
+		np.save(os.path.join(base, f"{chr}.npy"), zipped)
+		print("Saved data for chromosome %s." % chr)
 
 def main():
 	args = getArgs()
