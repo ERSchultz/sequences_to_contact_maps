@@ -283,3 +283,57 @@ Original sampling (100%) Results:
 Loss: 5.055 +- 3.357
 
 Upsampling (200%) Results:
+Dataset construction time: 0.007 minutes
+Average num edges per graph:  639326.0
+Mean degree: [ 475.86  435.08  268.78 1011.71  930.29] +- [129.14 112.24  94.01   6.42  29.53]
+
+#### Plotting Script ####
+Downsampling (40%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1128-downsampling: 6.555230140686035
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1131-downsampling: 13.363199234008789
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1794-downsampling: 12.464113235473633
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1938-downsampling: 18.51951026916504
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample552-downsampling: 18.104902267456055
+Loss: 13.801 +- 4.365
+
+Original sampling (100%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1128-downsampling: 2.312864303588867
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1131-downsampling: 6.134311199188232
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1794-downsampling: 8.376925468444824
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1938-downsampling: 3.6645424365997314
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample552-downsampling: 2.3072144985198975
+Loss: 4.559 +- 2.365
+
+Upsampling (200%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1128-upsampling: 3.261698007583618
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1131-upsampling: 8.604024887084961
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1794-upsampling: 16.018884658813477
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1938-upsampling: 3.9575114250183105
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample552-upsampling: 9.298802375793457
+Dataset construction time: 0.0 minutes
+Average num edges per graph:  nan
+#### Plotting Script ####
+Downsampling (40%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1128-downsampling: 6.555230140686035
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1131-downsampling: 13.363199234008789
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1794-downsampling: 12.464113235473633
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1938-downsampling: 18.51951026916504
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample552-downsampling: 18.104902267456055
+Loss: 13.801 +- 4.365
+
+Original sampling (100%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1128-regular: 2.312864303588867
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1131-regular: 6.134311199188232
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1794-regular: 8.376925468444824
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1938-regular: 3.6645424365997314
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample552-regular: 2.3072144985198975
+Loss: 4.559 +- 2.365
+
+Upsampling (200%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1128-upsampling: 3.261698007583618
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1131-upsampling: 8.604024887084961
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1794-upsampling: 16.018884658813477
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample1938-upsampling: 3.9575114250183105
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/253/sample552-upsampling: 9.298802375793457
+Loss: 8.228 +- 4.58
+

@@ -284,3 +284,32 @@ Original sampling (100%) Results:
 Loss: 4.964 +- 2.31
 
 Upsampling (200%) Results:
+Dataset construction time: 0.013 minutes
+Average num edges per graph:  170972.8
+Mean degree: [287.78 248.41 146.61 511.98 474.89] +- [70.83 63.52 51.8   0.15 16.94]
+
+#### Plotting Script ####
+Downsampling (40%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/249/sample1128-downsampling: 4.35194206237793
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/249/sample1131-downsampling: 6.718536853790283
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/249/sample1794-downsampling: 9.5643892288208
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/249/sample1938-downsampling: 4.1580657958984375
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/249/sample552-downsampling: 2.5167453289031982
+Loss: 5.462 +- 2.45
+
+Original sampling (100%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/249/sample1128-downsampling: 3.3261170387268066
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/249/sample1131-downsampling: 6.243113040924072
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/249/sample1794-downsampling: 10.17844295501709
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/249/sample1938-downsampling: 3.9668798446655273
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/249/sample552-downsampling: 2.006300210952759
+Loss: 5.144 +- 2.867
+
+Upsampling (200%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/249/sample1128-upsampling: 2.7482540607452393
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/249/sample1131-upsampling: 6.280604839324951
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/249/sample1794-upsampling: 11.299972534179688
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/249/sample1938-upsampling: 4.077984809875488
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/249/sample552-upsampling: 2.0144197940826416
+Loss: 5.284 +- 3.339
+
