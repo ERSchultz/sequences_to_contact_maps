@@ -18,10 +18,10 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy1' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_09_30_22"
+dirname="/project2/depablo/erschultz/dataset_11_18_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='constant-ContactDistance-GeneticDistance_norm'
+preTransforms='degree_diag_split1-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8-8'
@@ -35,12 +35,12 @@ yNorm='mean'
 headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
-meanFilt=3
+rescale=2
 useScratch='false'
 
-# meanfilt with sweeprand
+# like 254 but degree isntead of constant
 
-id=248
+id=256
 for lr in 1e-4
 do
   train

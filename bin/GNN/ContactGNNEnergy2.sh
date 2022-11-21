@@ -17,10 +17,10 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 
 rootName='ContactGNNEnergy2' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_09_30_22"
+dirname="/project2/depablo/erschultz/dataset_11_18_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='constant-ContactDistance-GeneticDistance_norm'
+preTransforms='constant-degree_diag_split1-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8-8'
@@ -34,11 +34,12 @@ yNorm='mean'
 headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+rescale=2
 useScratch='false'
 
-# replace 237 in table ( has 4 MPGNN layers)
+# like 254 but degree in addition to constant
 
-id=252
+id=257
 for lr in 1e-4
 do
   train
