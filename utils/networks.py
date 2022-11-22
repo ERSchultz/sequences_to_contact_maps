@@ -51,9 +51,11 @@ def get_model(opt, verbose = True):
         else:
             output_dim = 2
 
-        model = GNNClass(opt.input_m, opt.node_feature_size, output_dim, opt.hidden_sizes_list,
-                opt.act, opt.inner_act, opt.out_act, opt.encoder_hidden_sizes_list,
-                opt.edge_encoder_hidden_sizes_list, opt.update_hidden_sizes_list,
+        model = GNNClass(opt.input_m, opt.node_feature_size, output_dim,
+                opt.hidden_sizes_list,
+                opt.encoder_hidden_sizes_list, opt.edge_encoder_hidden_sizes_list,
+                opt.update_hidden_sizes_list,
+                opt.act, opt.inner_act, opt.out_act,
                 opt.message_passing, opt.use_edge_weights or opt.use_edge_attr, opt.edge_dim,
                 opt.head_architecture, opt.head_architecture_2, opt.head_hidden_sizes_list,
                 opt.head_act, opt.use_bias, opt.rescale,
@@ -504,8 +506,9 @@ class ContactGNN(nn.Module):
     Graph neural network that maps contact map data to node embeddings of arbitrary length.
     '''
     def __init__(self, m, input_size, output_dim, MP_hidden_sizes_list,
-                act, inner_act, out_act, node_encoder_hidden_sizes_list,
-                edge_encoder_hidden_sizes_list, update_hidden_sizes_list,
+                node_encoder_hidden_sizes_list, edge_encoder_hidden_sizes_list,
+                update_hidden_sizes_list,
+                act, inner_act, out_act,
                 message_passing, use_edge_attr, edge_dim,
                 head_architecture, head_architecture_2, head_hidden_sizes_list,
                 head_act, use_bias, rescale,
@@ -520,6 +523,9 @@ class ContactGNN(nn.Module):
             node_encoder_hidden_sizes_list: list of hidden sizes for MLP encoder
             edge_encoder_hidden_sizes_listl: list of hidden sizes for MLP encoder
             update_hidden_sizes_list: list of hidden sizes for MLP for update during message passing
+            inner_hidden_sizes_list: list of hidden sizes for MLP for final update during message passing
+            act (str): activation function
+            inner_act (str): inner activation function
             out_act (str): output activation
             message_passing (str): type of message passing algorithm to use
                                     {idendity, gcn, signedconv, z, gat, weighted_gat}
@@ -717,8 +723,15 @@ class ContactGNN(nn.Module):
 
             head = nn.Sequential(*head_list)
         elif head_architecture.startswith('bilinear'):
-            head = 'Bilinear'
-            init = torch.randn((self.latent_size, self.latent_size))
+            if '_' in head_architecture:
+                rank = int(head_architecture.split('_')[1])
+                head = LinearBlock(self.latent_size, rank, activation = self.head_act,
+                                        bias = self.use_bias)
+
+            else:
+                rank = self.latent_size
+                head = 'Bilinear'
+            init = torch.randn((rank, rank))
             self.W = nn.Parameter(init)
             self.sym = Symmetrize2D()
         elif head_architecture == 'inner':
@@ -770,10 +783,14 @@ class ContactGNN(nn.Module):
             else:
                 if architecture.startswith('bilinear'):
                     latent = latent.reshape(-1, self.m, output_size)
-                    if 'asym' in architecture:
-                        out_temp = torch.einsum('nik,njk->nij', latent @ self.W, latent)
+                    if self.head[i] == 'Bilinear':
+                        out_temp = latent
                     else:
-                        out_temp = torch.einsum('nik,njk->nij', latent @ self.sym(self.W), latent)
+                        out_temp = self.head[i](latent)
+                    if 'asym' in architecture:
+                        out_temp = torch.einsum('nik,njk->nij', out_temp @ self.W, out_temp)
+                    else:
+                        out_temp = torch.einsum('nik,njk->nij', out_temp @ self.sym(self.W), out_temp)
                 elif architecture == 'inner':
                     latent = latent.reshape(-1, self.m, output_size)
                     out_temp = torch.einsum('nik, njk->nij', latent, latent)
@@ -900,238 +917,6 @@ class ContactGNN(nn.Module):
             out_temp = torch.squeeze(out_temp, 1)
 
         return out_temp
-
-class SparseContactGNN(nn.Module):
-    # DEPRECATED
-    '''
-    Graph neural network that maps contact map data to node embeddings of arbitrary length
-
-    Uses Sparse Tensors.
-
-    Keeping this separate for now in case bugs arise - TODO merge with ContactGNN
-    '''
-    def __init__(self, m, input_size, output_dim, MP_hidden_sizes_list,
-                act, inner_act, out_act,
-                encoder_hidden_sizes_list, update_hidden_sizes_list,
-                message_passing, use_edge_attr, edge_dim,
-                head_architecture, head_architecture_2, head_hidden_sizes_list,
-                head_act, use_bias,
-                training_norm, num_heads, concat_heads,
-                ofile = sys.stdout, verbose = True):
-        '''
-        Inputs:
-            m: number of nodes
-            input_size: size of input node feature vector
-            output_dim: number of dimensions in output (size of each dimension is m)
-            MP_hidden_sizes_list: list of node feature vector hidden sizes during message passing
-            encoder_hidden_sizes_list: list of hidden sizes for MLP encoder
-            update_hidden_sizes_list: list of hidden sizes for MLP for update during message passing
-            out_act (str): output activation
-            message_passing (str): type of message passing algorithm to use
-                                    {idendity, gcn, signedconv, z, gat, weighted_gat}
-            use_edge_attr: True to use edge attributes/weights
-            edge_dim: 0 for edge weights, 1+ for edge_attr
-            head_architecture: type of head architecture {None, fc, inner, bilinear, AverageTo2d.mode_options}
-            head_architecture_2: type of head architecture {None, fc, inner, bilinear, AverageTo2d.mode_options}
-            head_hidden_sizes_list: hidden sizes of head architecture
-            head_act: activation for head_architecture (and head_architecture_2)
-            use_bias: True to use bias term - applies for message passing and head
-            training_norm: Normalization layer
-        '''
-        super(SparseContactGNN, self).__init__()
-
-        self.m = m
-        self.output_dim = output_dim
-        self.message_passing = message_passing.lower()
-        self.use_edge_attr = use_edge_attr
-        self.edge_dim = edge_dim
-        if head_architecture is not None:
-            head_architecture = head_architecture.lower()
-        self.head_architecture = head_architecture
-        self.head_architecture_2 = head_architecture_2
-        self.to2D = AverageTo2d(mode = None)
-
-        # set up activations
-        self.act = act2module(act)
-        self.inner_act = act2module(inner_act)
-        self.out_act = act2module(out_act)
-        self.head_hidden_sizes_list = head_hidden_sizes_list
-        if head_hidden_sizes_list is not None and len(head_hidden_sizes_list) > 1:
-            self.head_act = act2module(head_act)
-            # only want this to show up as a parameter if actually needed
-        else:
-            self.head_act = None
-        self.use_bias = use_bias
-
-        ### Encoder Architecture ###
-        encoder = []
-        self.encoder = None
-        if encoder_hidden_sizes_list is not None:
-            for output_size in encoder_hidden_sizes_list:
-                module = gnn.Linear(input_size, output_size, bias = use_bias)
-                encoder.extend([(module, 'x -> x'), self.act])
-                input_size = output_size
-            self.encoder = gnn.Sequential('x', encoder)
-
-        ### Trunk Architecture ###
-        model = []
-        assert self.message_passing in {'gcn', 'transformer', 'gat', 'weighted_gat'}
-        fn_header = 'x, adj_t -> x'
-        for i, output_size in enumerate(MP_hidden_sizes_list):
-            if self.message_passing == 'gcn':
-                module = gnn.GCNConv(input_size, output_size, bias = use_bias)
-            elif self.message_passing == 'transformer':
-                module = gnn.TransformerConv(input_size, output_size,
-                                        heads = num_heads,
-                                        edge_dim = self.edge_dim)
-            elif self.message_passing == 'gat':
-                module = gnn.GATv2Conv(input_size, output_size,
-                                        heads = num_heads, concat = concat_heads,
-                                        edge_dim = self.edge_dim,
-                                        bias = use_bias, add_self_loops = False)
-            elif self.message_passing == 'weighted_gat':
-                module = WeightedGATv2Conv(input_size, output_size,
-                                        heads = num_heads, concat = concat_heads,
-                                        edge_dim = self.edge_dim, edge_dim_MP = True,
-                                        bias = use_bias, add_self_loops = False)
-            model.append((module, fn_header))
-            if concat_heads:
-                input_size = output_size * num_heads
-            else:
-                input_size = output_size
-
-            if update_hidden_sizes_list is not None:
-                for update_output_size in update_hidden_sizes_list:
-                    model.extend([gnn.Linear(input_size, update_output_size, bias = use_bias), self.act])
-                    input_size = update_output_size
-            else:
-                model.append(self.act)
-
-        # replace final act with inner_act
-        model.pop()
-        model.append(self.inner_act)
-
-        if training_norm == 'instance':
-            model.append(gnn.InstanceNorm(input_size))
-        elif training_norm is not None:
-            raise Exception(f'Invalid training_norm: {training_norm}')
-
-        self.model = gnn.Sequential('x, adj_t', model)
-
-        self.latent_size = input_size
-        # save input_size to latent_size
-        # this is the output_size of latent space
-        # and the input size for head_architecture
-
-        ### Head Architecture ###
-        self.head_1 = self.process_head_architecture(self.head_architecture)
-        self.head_2 = self.process_head_architecture(self.head_architecture_2)
-        self.head = [self.head_1, self.head_2]
-
-        if verbose:
-            print("#### ARCHITECTURE ####", file = ofile)
-            print(self.encoder, '\n', file = ofile)
-            print(self.model, '\n', file = ofile)
-            print(self.head_1, '\n', file = ofile)
-            print(self.head_2, '\n', file = ofile)
-
-    def process_head_architecture(self, head_architecture):
-        if head_architecture is None:
-            head = None
-        elif head_architecture.startswith('fc'):
-            head_list = []
-            input_size = self.latent_size * self.m
-            for i, output_size in enumerate(self.head_hidden_sizes_list):
-                if i == len(self.head_hidden_sizes_list) - 1:
-                    act = self.out_act
-                else:
-                    act = self.head_act
-                head_list.append(LinearBlock(input_size, output_size, activation = act,
-                                        bias = self.use_bias))
-                input_size = output_size
-
-            if 'fill' in head_architecture:
-                head_list.append(FillDiagonalsFromArray())
-
-            head = nn.Sequential(*head_list)
-        elif head_architecture.startswith('bilinear'):
-            head = 'Bilinear'
-            init = torch.randn((self.latent_size, self.latent_size))
-            self.W = nn.Parameter(init)
-            self.sym = Symmetrize2D()
-        elif head_architecture == 'inner':
-            head = 'Inner'
-        elif head_architecture in self.to2D.mode_options:
-            # Uses linear layers according to head_hidden_sizes_list after converting to 2D
-            self.to2D.mode = head_architecture # change mode
-            input_size = self.latent_size
-            # determine input_size
-            if head_architecture == 'concat':
-                input_size *= 2 # concat doubles size
-            elif head_architecture == 'outer':
-                input_size *= input_size # outer squares size
-            elif head_architecture == 'concat-outer':
-                input_size = input_size**2 + 2 * input_size
-            elif head_architecture == 'avg-outer':
-                input_size += input_size**2
-
-            head_list = []
-            for i, output_size in enumerate(self.head_hidden_sizes_list):
-                if i == len(self.head_hidden_sizes_list) - 1:
-                    act = self.out_act
-                else:
-                    act = self.head_act
-                head_list.append(LinearBlock(input_size, output_size, activation = act,
-                                        bias = self.use_bias))
-                input_size = output_size
-
-            head = nn.Sequential(*head_list)
-        else:
-            raise Exception(f"Unkown head_architecture {head_architecture}")
-
-        return head
-
-    def forward(self, graph):
-        if self.encoder is not None:
-            x = self.encoder(graph.x)
-
-        latent = self.latent(graph, x)
-        N, output_size = latent.shape
-
-        if self.head_architecture is None and self.head_architecture_2 is None:
-            return latent
-
-        for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
-            if architecture is None:
-                continue
-            elif architecture.startswith('fc'):
-                latent = latent.reshape(N, -1)
-                out_temp = self.head[i](latent)
-            elif architecture.startswith('bilinear'):
-                latent = latent.reshape(-1, self.m, output_size)
-                if 'asym' in architecture:
-                    out_temp = torch.einsum('nik,njk->nij', latent @ self.W, latent)
-                else:
-                    out_temp = torch.einsum('nik,njk->nij', latent @ self.sym(self.W), latent)
-            elif architecture == 'inner':
-                latent = latent.reshape(-1, self.m, output_size)
-                out_temp = torch.einsum('nik, njk->nij', latent, latent)
-            elif architecture in self.to2D.mode_options:
-                latent = latent.reshape(-1, self.m, output_size)
-                latent = latent.permute(0, 2, 1) # permute to combine over m index
-                out_temp = self.to2D(latent)
-                out_temp = out_temp.permute(0, 2, 3, 1) # permute back
-                latent = latent.permute(0, 2, 1) # permute back
-                out_temp = self.head[i](out_temp)
-                if len(out_temp.shape) > 3:
-                    out_temp = torch.squeeze(out_temp, 3)
-
-            out = out + out_temp
-
-        return out
-
-    def latent(self, graph, x):
-        return self.model(x, graph.adj_t)
 
 
 def testFullyConnectedAutoencoder():

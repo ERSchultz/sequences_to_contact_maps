@@ -137,7 +137,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def process(self):
         for i, raw_folder in enumerate(self.raw_file_names):
-            sample = int(osp.split(raw_folder)[1][6:])
             x, psi = self.process_x_psi(raw_folder)
             self.contact_map, contact_map_diag = self.process_y(raw_folder)
             self.diag_chis_continuous, self.diag_chis_continuous_mlp = self.process_diag_params(raw_folder)
@@ -323,7 +322,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y[np.isinf(y)] = np.nan
         elif preprocessing is not None:
             # override y
-            assert self.y_norm is None, f'y_norm is {self.y_norm} not None'
+            assert self.y_norm is None, f'y_norm={self.y_norm} not None, preprocessing={preprocessing}'
             y_path = osp.join(raw_folder, f'y_{preprocessing}.npy')
             if osp.exists(y_path):
                 y = np.load(y_path)

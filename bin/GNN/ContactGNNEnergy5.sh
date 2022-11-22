@@ -41,7 +41,7 @@ useScratch='false'
 # like 254 but deeper and genetic distance log
 
 id=260
-for lr in 1e-3 1e-4
+for lr in 1e-4
 do
   train
   id=$(( $id + 1 ))

@@ -205,7 +205,7 @@ def debugModel(model_type):
         opt.output_mode = 'energy_sym'
         opt.encoder_hidden_sizes_list=[100,100,32]
         # opt.edge_encoder_hidden_sizes_list=[100,100,3]
-        opt.update_hidden_sizes_list=[100,40]
+        opt.update_hidden_sizes_list=[100,32]
         opt.hidden_sizes_list=[1]
         opt.act = 'relu'
         opt.inner_act = 'relu'
@@ -220,10 +220,10 @@ def debugModel(model_type):
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'bilinear'
-        opt.head_architecture_2 = None
+        opt.head_architecture = 'bilinear_6'
+        opt.head_architecture_2 = 'fc-fill'
         crop = 256
-        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, crop]
+        opt.head_hidden_sizes_list = [1000, 1000, 1000, crop]
         opt.crop = [0, crop]
 
         opt.use_bias = True

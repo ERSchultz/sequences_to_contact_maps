@@ -177,6 +177,8 @@ def get_base_parser():
                         help='List of hidden sizes for convolutional layers')
     parser.add_argument('--encoder_hidden_sizes_list', type=AC.str2list,
                         help='hidden sizes for node encoder')
+    parser.add_argument('--inner_hidden_sizes_list', type=AC.str2list,
+                        help='hidden sizes for inner architecture')
     parser.add_argument('--edge_encoder_hidden_sizes_list', type=AC.str2list,
                         help='hidden sizes for edge encoder')
     parser.add_argument('--update_hidden_sizes_list', type=AC.str2list,

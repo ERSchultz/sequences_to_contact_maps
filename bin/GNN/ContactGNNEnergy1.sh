@@ -18,10 +18,10 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy1' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_11_18_22"
+dirname="/project2/depablo/erschultz/dataset_11_21_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='degree_diag_split1-ContactDistance-GeneticDistance_norm'
+preTransforms='constant-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8-8'
@@ -32,15 +32,15 @@ numHeads=8
 outputMode='energy_sym_diag'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
-headArchitecture='bilinear'
+headArchitecture='bilinear_8'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
 
-# like 254 but degree isntead of constant
+# like 262, but only rank 8
 
-id=256
+id=265
 for lr in 1e-4
 do
   train

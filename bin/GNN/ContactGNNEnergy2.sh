@@ -15,9 +15,10 @@ cd ~/sequences_to_contact_maps
 
 source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
+source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy2' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_11_18_22"
+dirname="/project2/depablo/erschultz/dataset_11_21_22"
 m=1024
 messagePassing='weighted_GAT'
 preTransforms='constant-degree_diag_split1-ContactDistance-GeneticDistance_norm'
@@ -37,9 +38,9 @@ headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
 
-# like 254 but degree in addition to constant
+# like 262 but degree in addition to constant
 
-id=257
+id=263
 for lr in 1e-4
 do
   train

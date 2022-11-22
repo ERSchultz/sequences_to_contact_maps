@@ -1,6 +1,7 @@
 #! /bin/bash
 
-for i in 4 5 # midway2 todo
+for i in 0 1 2 3
+# 4 5 # midway2 todo
 # 0 1 2 3 6 # midway2
 
 do
