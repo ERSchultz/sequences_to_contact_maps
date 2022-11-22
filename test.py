@@ -198,7 +198,7 @@ def debugModel(model_type):
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
-        opt.loss = 'mse'
+        opt.loss = 'huber'
         opt.preprocessing_norm = 'mean'
         opt.message_passing = 'gat'
         opt.GNN_mode = True
@@ -278,7 +278,7 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = False
+    opt.plot = True
     opt.plot_predictions = False
     opt.verbose = True
     opt.print_params = False

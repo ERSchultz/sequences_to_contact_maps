@@ -16,6 +16,7 @@ import numpy as np
 import scipy.sparse as sp
 import seaborn as sns
 import torch
+import torch.nn.functional as F
 import torch_geometric
 from scipy.stats import pearsonr
 from sklearn.decomposition import PCA
@@ -312,7 +313,6 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
     upper_title = f'Y Preprocessing: {preprocessing}, Norm: {preprocessing_norm}'
 
     # format loss title
-    assert opt.loss == 'mse'
     loss_title = 'MSE Loss'
 
     # get samples
@@ -344,7 +344,7 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
         yhat = model(data)
         path = data.path
 
-        loss = opt.criterion(yhat, y).item()
+        loss =  F.mse_loss(yhat, y).item() # force mse loss
         y = y.cpu().numpy()
         yhat = yhat.cpu().detach().numpy()
         if opt.output_mode.startswith('energy'):

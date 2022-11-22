@@ -9,7 +9,7 @@
 dirname="/home/erschultz"
 # dirname="/home/erschultz"
 # dirname='/project2/depablo/erschultz'
-dataset="dataset_9_30_22"
+dataset="dataset_11_14_22"
 sample='none'
 sampleFolder='none'
 method='none'
@@ -24,7 +24,7 @@ svd='false'
 
 source activate python3.9_pytorch1.9
 
-for i in 552
+for i in 2
 # 4 6 8
 # 1 2 3 4 6 7 8 9 11 12 13 14 15 17 18 19 20 21 23 24
 do

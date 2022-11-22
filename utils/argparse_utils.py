@@ -297,6 +297,9 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     if opt.loss == 'mse':
         opt.criterion = F.mse_loss
         opt.channels = 1
+    elif opt.loss == 'huber':
+        opt.criterion = F.huber_loss
+        opt.channels = 1
     elif opt.loss == 'cross_entropy':
         assert opt.out_act is None, "Cannot use output activation with cross entropy"
         assert not opt.GNN_mode, 'cross_entropy not tested for GNN'
@@ -312,7 +315,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
             assert opt.preprocessing_norm is not None, 'must use some sort of preprocessing_norm'
         opt.criterion = F.binary_cross_entropy_with_logits
     else:
-        raise Exception('Invalid loss: {}'.format(repr(opt.loss)))
+        raise Exception(f'Invalid loss: {repr(opt.loss)}')
 
     # check mode
     if opt.model_type.startswith('GNNAutoencoder') or opt.model_type.startswith('ContactGNN'):

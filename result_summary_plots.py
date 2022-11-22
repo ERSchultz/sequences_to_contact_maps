@@ -363,7 +363,8 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
     PC_y_log_diag = plot_top_PCs(y_log_diag, 'y_log_diag', args.odir, args.log_file, count = 2,
                         plot = args.plot_baseline, verbose = args.verbose,
                         scale = args.scale, svd = args.svd)
-    p = ydiag/np.max(ydiag)
+    p = ydiag/np.mean(np.diagonal(ydiag))
+    plot_matrix(p, osp.join(args.odir, f'p.png'), vmin = 'min', vmax = 'max', title = "P")
     PC_p = plot_top_PCs(p, 'p', args.odir, args.log_file, count = 2,
                         plot = args.plot_baseline, verbose = args.verbose,
                         scale = args.scale, svd = args.svd)
@@ -373,6 +374,19 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
     print("Correlation between PC 1 of y_diag and y_log: ", stat, file = args.log_file)
     stat = pearson_round(PC_y_diag[1], PC_y_log[1])
     print("Correlation between PC 2 of y_diag and y_log: ", stat, file = args.log_file)
+    for i in range(1, 7):
+        # get e top i PCs
+        pca = PCA(n_components = i)
+        p_transform = pca.fit_transform(p)
+        p_i = pca.inverse_transform(p_transform)
+        p_i = (p_i + p_i.T)/2
+        val = np.nanpercentile(p, 99)
+        plot_matrix(p_i, osp.join(args.odir, f'p_{i}.png'), vmin = 0, vmax = val, title = f"P rank {i}")
+
+        # compare p to projection of p onto top PCs
+        mse = np.round(mean_squared_error(p_i, p), 3)
+        print(f'P top {i} PCs - MSE: {mse}', file = args.log_file)
+
 
 
     # robust PCA
@@ -556,9 +570,6 @@ def main():
         s_hat = load_method_S(args.root, args.sample_folder, args.sample, args.method, args.k, args.model_id)
         e_hat = s_to_E(s_hat)
     else:
-        p = y / ydiag
-        # p = p / np.max(p)
-        plot_matrix(p, osp.join(args.odir,'p.png'), vmax = 'mean')
         s_hat = None
         e_hat = None
 
