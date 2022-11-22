@@ -1,8 +1,5 @@
-import multiprocessing
 import os
 import os.path as osp
-import sys
-import tarfile
 import time
 from shutil import copyfile, rmtree
 
@@ -10,23 +7,20 @@ import cooler
 import hicrep.utils
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.stats as ss
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from core_test_train import core_test_train
-from result_summary_plots import plot_top_PCs
 from scipy import linalg
-from scipy.ndimage import uniform_filter
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
-from sklearn.utils.extmath import svd_flip
+
+from core_test_train import core_test_train
+from result_summary_plots import plot_top_PCs
 from utils.argparse_utils import (ArgparserConverter, finalize_opt,
                                   get_base_parser)
-from utils.base_networks import AverageTo2d
 from utils.dataset_classes import make_dataset
 from utils.energy_utils import s_to_E
 from utils.load_utils import load_sc_contacts, save_sc_contacts
@@ -36,8 +30,6 @@ from utils.plotting_utils import plot_matrix
 from utils.similarity_measures import SCC
 from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
                          print_time, triu_to_full)
-from utils.xyz_utils import (lammps_load, xyz_load, xyz_to_contact_distance,
-                             xyz_to_contact_grid)
 
 
 def test_num_workers():
@@ -210,29 +202,29 @@ def debugModel(model_type):
         opt.preprocessing_norm = 'mean'
         opt.message_passing = 'gat'
         opt.GNN_mode = True
-        opt.output_mode = 'energy_sym_diag'
+        opt.output_mode = 'energy_sym'
         opt.encoder_hidden_sizes_list=[100,100,32]
-        # opt.edge_encoder_hidden_sizes_list=[100,100,2]
-        opt.update_hidden_sizes_list=[100,100,40]
-        opt.hidden_sizes_list=[8,8,8]
-        opt.act = 'prelu'
-        opt.inner_act = 'prelu'
-        opt.out_act = 'prelu'
-        opt.head_act = 'prelu'
+        # opt.edge_encoder_hidden_sizes_list=[100,100,3]
+        opt.update_hidden_sizes_list=[100,40]
+        opt.hidden_sizes_list=[1]
+        opt.act = 'relu'
+        opt.inner_act = 'relu'
+        opt.out_act = 'relu'
+        opt.head_act = 'relu'
         opt.training_norm = None
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('constant-noiselevel-degree_diag_split1_max1-contactdistance-geneticdistance')
+        opt.pre_transforms=AC.str2list('constant-degree_diag_split1_max1-contactdistance-geneticdistance_norm_log')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
         opt.head_architecture = 'bilinear'
         opt.head_architecture_2 = None
-        crop = 1024
+        crop = 256
         opt.head_hidden_sizes_list = [1000, 1000, 1000, 1000, 1000, crop]
-        opt.crop = None
+        opt.crop = [0, crop]
 
         opt.use_bias = True
         opt.num_heads = 8
@@ -679,9 +671,9 @@ def main():
 if __name__ == '__main__':
     # main()
     # prep_data_for_cluster()
-    find_best_p_s()
+    # find_best_p_s()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # testGNNrank()

@@ -264,7 +264,7 @@ class GeneticDistance(BaseTransform):
     _modules/torch_geometric/transforms/distance.html
     Note that GeneticDistance doesn't assume data.pos exists while Distance does
     '''
-    def __init__(self, norm = True, max_val = None, cat = True,
+    def __init__(self, norm = False, max_val = None, cat = True,
                 split_edges = False, convert_to_attr = False,
                 log = False, log10 = False):
         '''
@@ -359,7 +359,10 @@ class GeneticDistance(BaseTransform):
         repr = f'{self.__class__.__name__}(norm={self.norm}'
 
         if self.max is not None:
-            repr += f', max={self.max})'
+            repr += f', max={self.max}'
+
+        if self.log is not None:
+            repr += ', log=True)'
         else:
             repr += ')'
 

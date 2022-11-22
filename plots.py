@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from scipy.ndimage import uniform_filter
+
 from utils.argparse_utils import (finalize_opt, get_base_parser,
                                   get_opt_header, opt2list)
 from utils.energy_utils import calculate_diag_chi_step

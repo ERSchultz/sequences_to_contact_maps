@@ -691,11 +691,11 @@ class ContactGNN(nn.Module):
 
         if verbose:
             print("#### ARCHITECTURE ####", file = ofile)
-            print(self.node_encoder, '\n', file = ofile)
-            print(self.edge_encoder, '\n', file = ofile)
-            print(self.model, '\n', file = ofile)
-            print(self.head_1, '\n', file = ofile)
-            print(self.head_2, '\n', file = ofile)
+            print('Node Encoder:\n', self.node_encoder, '\n', file = ofile)
+            print('Edge Encoder:\n', self.edge_encoder, '\n', file = ofile)
+            print('Model:\n', self.model, '\n', file = ofile)
+            print('Head 1:\n', self.head_1, '\n', file = ofile)
+            print('Head 2:\n', self.head_2, '\n', file = ofile)
 
     def process_head_architecture(self, head_architecture):
         if head_architecture is None:
@@ -808,6 +808,8 @@ class ContactGNN(nn.Module):
             row, col = graph.edge_index
             concat = torch.cat((x[row], x[col], graph.edge_attr), dim = -1)
             edge_attr = self.edge_encoder(concat)
+            print('e811', edge_attr)
+            print('e812', graph.edge_attr)
         else:
             edge_attr = graph.edge_attr
 

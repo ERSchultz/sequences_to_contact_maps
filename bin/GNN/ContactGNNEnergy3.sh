@@ -38,7 +38,7 @@ headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
 
-# like 254 but deeper
+# like 257 but deeper
 
 id=258
 for lr in 1e-4
