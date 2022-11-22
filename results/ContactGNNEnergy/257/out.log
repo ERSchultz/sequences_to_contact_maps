@@ -178,3 +178,116 @@ Epoch 50, loss = 7.6208
 Mean test/val loss: 7.5064
 
 Epoch 52, loss = 7.1062
+Mean test/val loss: 6.9721
+
+Epoch 54, loss = 7.0299
+Mean test/val loss: 6.9408
+
+Epoch 56, loss = 6.9877
+Mean test/val loss: 6.9181
+
+Epoch 58, loss = 6.9481
+Mean test/val loss: 6.8554
+
+Epoch 60, loss = 6.9148
+Mean test/val loss: 6.9009
+
+Epoch 62, loss = 6.8783
+Mean test/val loss: 6.8660
+
+Epoch 64, loss = 6.8463
+Mean test/val loss: 6.8121
+
+Epoch 66, loss = 6.8275
+Mean test/val loss: 6.8039
+
+Epoch 68, loss = 6.7960
+Mean test/val loss: 6.7955
+
+Epoch 70, loss = 6.7774
+Mean test/val loss: 6.7410
+
+Epoch 72, loss = 6.7526
+Mean test/val loss: 6.7506
+
+Epoch 74, loss = 6.7303
+Mean test/val loss: 6.7106
+
+Epoch 76, loss = 6.7048
+Mean test/val loss: 6.7682
+
+Epoch 78, loss = 6.6902
+Mean test/val loss: 6.7694
+
+Epoch 80, loss = 6.6635
+Mean test/val loss: 6.7425
+
+Epoch 82, loss = 6.6526
+Mean test/val loss: 6.6754
+
+Epoch 84, loss = 6.6257
+Mean test/val loss: 6.7145
+
+Epoch 86, loss = 6.6070
+Mean test/val loss: 6.6553
+
+Epoch 88, loss = 6.5908
+Mean test/val loss: 6.6622
+
+Epoch 90, loss = 6.5805
+Mean test/val loss: 6.6376
+
+Epoch 92, loss = 6.5543
+Mean test/val loss: 6.6459
+
+Epoch 94, loss = 6.5440
+Mean test/val loss: 6.6632
+
+Epoch 96, loss = 6.5166
+Mean test/val loss: 6.6038
+
+Epoch 98, loss = 6.5048
+Mean test/val loss: 6.5996
+
+Epoch 100, loss = 6.4902
+Mean test/val loss: 6.7137
+
+
+Total parameters: 44426748
+Total training + validation time: 9.0 hours, 49.0 mins, and 7.099999999998545 secs
+Final val loss: 6.713695079398652
+
+split sizes: train=2160, val=240, test=0, N=2400
+#### Plotting Script ####
+Prediction Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample1801: 7.518039226531982
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample653: 11.939606666564941
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample410: 6.233900547027588
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample2290: 4.739526748657227
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample1462: 10.551623344421387
+Loss: 8.197 +- 2.677
+
+Downsampling (40%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample1462-downsampling: 11.075569152832031
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample1801-downsampling: 7.744194984436035
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample2290-downsampling: 4.739527225494385
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample410-downsampling: 6.318096160888672
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample653-downsampling: 11.939607620239258
+Loss: 8.363 +- 2.751
+
+Original sampling (100%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample1462-regular: 9.959640502929688
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample1801-regular: 7.518039703369141
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample2290-regular: 4.432647705078125
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample410-regular: 5.867481231689453
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample653-regular: 11.805177688598633
+Loss: 7.917 +- 2.675
+
+Upsampling (200%) Results:
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample1462-upsampling: 9.889442443847656
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample1801-upsampling: 7.431945323944092
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample2290-upsampling: 4.287465572357178
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample410-upsampling: 6.208998680114746
+/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/257/sample653-upsampling: 11.974822998046875
+Loss: 7.959 +- 2.708
+
