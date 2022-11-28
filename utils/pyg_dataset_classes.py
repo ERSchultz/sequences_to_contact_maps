@@ -72,6 +72,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
         t0 = time.time()
         self.m = m
         self.dirname = dirname
+        if isinstance(dirname, list):
+            dirname = dirname[0]
         self.y_preprocessing = y_preprocessing
         self.y_log_transform = y_log_transform
         self.kr = kr
@@ -99,8 +101,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
             # find any currently existing graph data folders
             # make new folder for this dataset
             max_val = -1
-            if isinstance(dirname, list):
-                dirname = dirname[0]
             for file in os.listdir(dirname):
                 file_path = osp.join(dirname, file)
                 if file.startswith('graphs') and osp.isdir(file_path):
