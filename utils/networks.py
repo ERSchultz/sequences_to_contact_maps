@@ -892,19 +892,22 @@ class ContactGNN(nn.Module):
 
     def plaid_component(self, graph):
         latent = self.latent(graph)
+        _, output_size = latent.shape
 
         out_temp = None
         for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
             if architecture is None:
                 continue
             elif architecture.startswith('bilinear'):
-                latent_copy = torch.clone(latent)
-                _, output_size = latent_copy.shape
-                latent_copy = latent_copy.reshape(-1, self.m, output_size)
-                if 'asym' in architecture:
-                    out_temp = torch.einsum('nik,njk->nij', latent_copy @ self.W, latent_copy)
+                latent = latent.reshape(-1, self.m, output_size)
+                if self.head[i] == 'Bilinear':
+                    out_temp = latent
                 else:
-                    out_temp = torch.einsum('nik,njk->nij', latent_copy @ self.sym(self.W), latent_copy)
+                    out_temp = self.head[i](latent)
+                if 'asym' in architecture:
+                    out_temp = torch.einsum('nik,njk->nij', out_temp @ self.W, out_temp)
+                else:
+                    out_temp = torch.einsum('nik,njk->nij', out_temp @ self.sym(self.W), out_temp)
             elif architecture == 'inner':
                 _, output_size = latent.shape
                 latent = latent.reshape(-1, self.m, output_size)

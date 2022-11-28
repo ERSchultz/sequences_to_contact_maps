@@ -361,8 +361,8 @@ class GeneticDistance(BaseTransform):
         if self.max is not None:
             repr += f', max={self.max}'
 
-        if self.log is not None:
-            repr += ', log=True)'
+        if self.log:
+            repr += f', log={self.log})'
         else:
             repr += ')'
 

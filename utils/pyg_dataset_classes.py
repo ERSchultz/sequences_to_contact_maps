@@ -41,7 +41,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 diag = False, keep_zero_edges = False):
         '''
         Inputs:
-            dirname: directory path to raw data
+            dirname: directory path to raw data (or list of paths)
             root_name: directory for loaded data
             m: number of particles/beads
             y_preprocessing: type of contact map preprocessing ('diag', None, etc)
@@ -99,6 +99,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
             # find any currently existing graph data folders
             # make new folder for this dataset
             max_val = -1
+            if isinstance(dirname, list):
+                dirname = dirname[0]
             for file in os.listdir(dirname):
                 file_path = osp.join(dirname, file)
                 if file.startswith('graphs') and osp.isdir(file_path):
@@ -106,7 +108,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     val = int(file[6:])
                     if val > max_val:
                         max_val = val
-            self.root = osp.join(dirname, 'graphs{}'.format(max_val+1))
+            self.root = osp.join(dirname, f'graphs{max_val+1}')
         else:
             # use exsting graph data folder
             self.root = osp.join(dirname, root_name)
@@ -125,7 +127,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 self.degree_list = np.array(self.degree_list)
                 mean_deg = np.round(np.mean(self.degree_list, axis = 1), 2)
                 std_deg = np.round(np.std(self.degree_list, axis = 1), 2)
-                print('Mean degree: {} +- {}\n'.format(mean_deg, std_deg), file = ofile)
+                print(f'Mean degree: {mean_deg} +- {std_deg}\n', file = ofile)
 
     @property
     def raw_file_names(self):
@@ -133,10 +135,11 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     @property
     def processed_file_names(self):
-        return ['graph_{}.pt'.format(i) for i in range(self.len())]
+        return [f'graph_{i}.pt' for i in range(self.len())]
 
     def process(self):
         for i, raw_folder in enumerate(self.raw_file_names):
+            print(raw_folder)
             x, psi = self.process_x_psi(raw_folder)
             self.contact_map, contact_map_diag = self.process_y(raw_folder)
             self.diag_chis_continuous, self.diag_chis_continuous_mlp = self.process_diag_params(raw_folder)
@@ -403,7 +406,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             # set up argparse options
             parser = get_base_parser()
             sys.argv = [sys.argv[0]] # delete args from get_params, otherwise gnn opt will try and use them
-            opt = parser.parse_args(['@{}'.format(argparse_path)])
+            opt = parser.parse_args([f'@{argparse_path}'])
             opt.id = int(self.mlp_model_id)
             output_mode = opt.output_mode
             opt = finalize_opt(opt, parser, local = True, debug = True)
@@ -419,7 +422,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 save_dict = torch.load(model_name, map_location=torch.device('cpu'))
                 model.load_state_dict(save_dict['model_state_dict'])
             else:
-                raise Exception('Model does not exist: {}'.format(model_name))
+                raise Exception(f'Model does not exist: {model_name}')
             model.eval()
 
             # get dataset

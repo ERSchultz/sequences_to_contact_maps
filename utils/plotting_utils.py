@@ -360,9 +360,11 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
             print('yhat', yhat, np.max(yhat))
 
         if i < count:
-            sample = osp.split(path)[1] + '-' + mode
-            subpath = osp.join(opt.ofile_folder, sample )
-            print(f'{subpath}: {loss}', file = opt.log_file)
+            left_path, sample = osp.split(path)
+            sample += '-' + mode
+            dataset = left_path.split(osp.sep)[-2]
+            subpath = osp.join(opt.ofile_folder, sample)
+            print(f'{dataset} {sample}: {loss}', file = opt.log_file)
             if not osp.exists(subpath):
                 os.mkdir(subpath, mode = 0o755)
 
@@ -401,7 +403,7 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
 
             # tar subpath
             os.chdir(opt.ofile_folder)
-            with tarfile.open(f'{sample}.tar.gz', 'w:gz') as f:
+            with tarfile.open(f'{dataset}_{sample}.tar.gz', 'w:gz') as f:
                 f.add(sample)
             rmtree(sample)
 
@@ -424,8 +426,12 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
          preprocessing_norm = 'None'
     upper_title = f'Y Preprocessing: {preprocessing}, Norm: {preprocessing_norm}'
 
-    assert opt.loss == 'mse'
-    loss_title = 'MSE Loss'
+    if opt.loss == 'mse':
+        loss_title = 'MSE Loss'
+    elif opt.loss == 'huber':
+        loss_title = 'Huber Loss'
+    else:
+        loss_title = f'{opt.loss} loss'
 
     loss_arr = np.zeros(min(count, opt.valN))
     for i, data in enumerate(val_dataloader):
@@ -442,9 +448,10 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
         y = y.cpu().numpy().reshape((opt.m, opt.m))
         yhat = yhat.cpu().detach().numpy().reshape((opt.m,opt.m))
 
-        sample = osp.split(path)[-1]
+        left_path, sample = osp.split(path)
+        dataset = left_path.split(osp.sep)[-2]
         subpath = osp.join(opt.ofile_folder, sample)
-        print('{}: {}'.format(subpath, loss), file = opt.log_file)
+        print(f'{dataset} {sample}: {loss}', file = opt.log_file)
         if not osp.exists(subpath):
             os.mkdir(subpath, mode = 0o755)
 
@@ -488,7 +495,7 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
 
         # tar subpath
         os.chdir(opt.ofile_folder)
-        with tarfile.open(f'{sample}.tar.gz', 'w:gz') as f:
+        with tarfile.open(f'{dataset}_{sample}.tar.gz', 'w:gz') as f:
             f.add(sample)
         rmtree(sample)
 

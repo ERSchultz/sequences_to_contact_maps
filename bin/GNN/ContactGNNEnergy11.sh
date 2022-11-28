@@ -18,7 +18,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy11' # change to run multiple bash files at once
-dirname="/project/depablo/erschultz/dataset_09_30_22"
+dirname="/project2/depablo/erschultz/dataset_11_18_22"
 m=1024
 messagePassing='weighted_GAT'
 preTransforms='constant-ContactDistance-GeneticDistance_norm'
@@ -30,19 +30,17 @@ updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
 outputMode='energy_sym_diag'
-yPreprocessing='log_inf'
+yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
-headArchitecture='bilinear'
+headArchitecture='bilinear_8'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
-KR='true'
-meanFilt=3
-scratch='/scratch/midway3/erschultz'
+rescale=2
+useScratch='false'
 
+# rank 8 on 11_18
 
-# like 225, but KR (231) and all out on params and mean filt
-
-id=242
+id=270
 for lr in 1e-4
 do
   train

@@ -13,13 +13,13 @@ from .energy_utils import calculate_diag_chi_step
 from .utils import DiagonalPreprocessing
 
 
-def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False,
+def make_dataset(dir_list, minSample = 0, maxSample = float('inf'), verbose = False,
                 samples = None, prefix = 'sample', use_ids = True):
     """
     Make list data file paths.
 
     Inputs:
-        dir: data source directory
+        dir_list: data source directory (or list of directories)
         minSample: ignore samples < minSample
         maxSample: ignore samples > maxSample
         verbose: True for verbose mode
@@ -31,25 +31,30 @@ def make_dataset(dir, minSample = 0, maxSample = float('inf'), verbose = False,
         data_file_arr: list of data file paths
     """
     data_file_arr = []
-    samples_dir = osp.join(dir, 'samples')
-    l = len(prefix)
-    sample_files = [f for f in os.listdir(samples_dir) if prefix in f]
 
-    if use_ids:
-        sample_ids = [file[l:] for file in sample_files]
-        for sample_id in sorted(sample_ids):
-            if sample_id.isnumeric():
-                sample_id_int = int(sample_id)
-                if sample_id_int < minSample:
-                    continue
-                if sample_id_int > maxSample:
-                    continue
-            if (samples is None) or (sample_id in samples) or (sample_id.isnumeric() and int(sample_id) in samples):
-                data_file = osp.join(samples_dir, f'{prefix}{sample_id}')
-                data_file_arr.append(data_file)
-    else:
-        for file in sample_files:
-            data_file_arr.append(osp.join(samples_dir, file))
+    if not isinstance(dir_list, list):
+        dir_list = [dir_list]
+
+    for dir in dir_list:
+        samples_dir = osp.join(dir, 'samples')
+        l = len(prefix)
+        sample_files = [f for f in os.listdir(samples_dir) if prefix in f]
+
+        if use_ids:
+            sample_ids = [file[l:] for file in sample_files]
+            for sample_id in sorted(sample_ids):
+                if sample_id.isnumeric():
+                    sample_id_int = int(sample_id)
+                    if sample_id_int < minSample:
+                        continue
+                    if sample_id_int > maxSample:
+                        continue
+                if (samples is None) or (sample_id in samples) or (sample_id.isnumeric() and int(sample_id) in samples):
+                    data_file = osp.join(samples_dir, f'{prefix}{sample_id}')
+                    data_file_arr.append(data_file)
+        else:
+            for file in sample_files:
+                data_file_arr.append(osp.join(samples_dir, file))
 
     return data_file_arr
 

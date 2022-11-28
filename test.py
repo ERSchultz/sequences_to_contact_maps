@@ -134,17 +134,17 @@ def debugModel(model_type):
 
     # dataset
     dir = "/home/erschultz"
-    dataset = 'dataset_09_30_22'
-    opt.data_folder = osp.join(dir, dataset)
+    datasets = ['dataset_11_18_22','dataset_9_30_22']
+    opt.data_folder = [osp.join(dir, d) for d in datasets]
     opt.scratch = '/home/erschultz/scratch'
 
     # architecture
     opt.m = 1024
-    # opt.split_percents=[1,1,0.0]
-    # opt.split_sizes=None
-    opt.split_sizes=[1, 1, 0]
-    opt.split_percents = None
-    opt.random_split=False
+    opt.split_percents=[0.8,0.2,0.0]
+    opt.split_sizes=None
+    # opt.split_sizes=[1, 0, 0]
+    # opt.split_percents = None
+    opt.random_split=True
 
     if model_type == 'Akita':
         opt.kernel_w_list=AC.str2list('5-5-5')
@@ -215,7 +215,7 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('constant-degree_diag_split1_max1-contactdistance-geneticdistance_norm_log')
+        opt.pre_transforms=AC.str2list('constant-degree_diag_split1_max1-contactdistance-geneticdistance_norm')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
@@ -279,11 +279,11 @@ def debugModel(model_type):
 
     # other
     opt.plot = True
-    opt.plot_predictions = False
-    opt.verbose = True
+    opt.plot_predictions = True
+    opt.verbose = False
     opt.print_params = False
     opt.gpus = 1
-    opt.delete_root = True
+    # opt.delete_root = True
     opt.use_scratch = False
     opt.num_workers = 2
     opt.use_scratch_parallel = False
@@ -660,13 +660,17 @@ def testGNNrank():
 
 def main():
     dataset = 'dataset_11_14_22'
-    dir = f'/home/erschultz/{dataset}/samples/sample1'
-    max_ent_dir = osp.join(dir, f'PCA_split-binarizeMean-E/k8/replicate1')
-    chi = np.loadtxt(osp.join(max_ent_dir, 'chis.txt'))[-1]
+    dir = f'/home/erschultz/{dataset}/samples/sample2'
+    y = np.load(osp.join(dir, 'y.npy'))
+    max_ent_dir = osp.join(dir, 'PCA_split-binarizeMean-E/k8/replicate1')
+    gnn_dir = osp.join(max_ent_dir, 'samples/sample2_linear/GNN-254-E/k0/replicate1')
+    y_gnn = np.load(osp.join(gnn_dir, 'y.npy'))
 
-    chi = triu_to_full(chi)
-    plot_matrix(chi, osp.join(max_ent_dir, 'chi.png'), vmax = 'max', vmin = 'min',
-                cmap = 'blue-red')
+    scc = SCC()
+    corr_scc = scc.scc(y, y_gnn, var_stabilized = False)
+    print(corr_scc)
+
+
 
 if __name__ == '__main__':
     # main()

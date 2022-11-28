@@ -48,7 +48,7 @@ def get_base_parser():
                         help='True to keep edges with zero weight')
 
     # pre-processing args
-    parser.add_argument('--data_folder', type=str, default='dataset_04_18_21',
+    parser.add_argument('--data_folder', type=AC.str2list, default='dataset_04_18_21',
                         help='Location of data')
     parser.add_argument('--scratch', type=str, default='/scratch/midway2/erschultz',
                         help='Location of scratch dir')
@@ -556,39 +556,39 @@ def copy_data_to_scratch(opt):
     # initialize scratch path
     if not osp.exists(opt.scratch):
         os.mkdir(opt.scratch, mode = 0o700)
-    scratch_path = osp.join(opt.scratch, osp.split(opt.data_folder)[-1])
+
+
+    datasets = [osp.split(d)[-1] for d in opt.data_folder]
+    data_folder_str ='-'.join(datasets)
+    scratch_path = osp.join(opt.scratch, data_folder_str)
     if not osp.exists(scratch_path):
         os.mkdir(scratch_path, mode = 0o700)
-
-    # transfer summary files
-    for file in os.listdir(opt.data_folder):
-        file_dir = osp.join(opt.data_folder, file)
-        scratch_file_dir = osp.join(scratch_path, file)
-        if file.endswith('npy') and not osp.exists(scratch_file_dir):
-            shutil.copyfile(file_dir, scratch_file_dir)
 
     # initialize samples folder
     if not osp.exists(osp.join(scratch_path, 'samples')):
         os.mkdir(osp.join(scratch_path, 'samples'), mode = 0o700)
 
-    # transfer sample data
-    samples = os.listdir(osp.join(opt.data_folder, 'samples'))
-    if opt.use_scratch_parallel:
-        mapping = []
-        for sample in samples:
-            mapping.append([sample, opt.data_folder, scratch_path, opt.toxx, opt.y_preprocessing, opt.output_mode])
-        with multiprocessing.Pool(opt.num_workers) as p:
-             p.starmap(copy_data_to_scratch_inner, mapping)
-    else:
-        if opt.split_sizes is not None and -1 not in opt.split_sizes and not opt.random_split:
-            for sample in samples:
-                copy_data_to_scratch_inner(sample, opt.data_folder, scratch_path, opt.toxx, opt.y_preprocessing, opt.output_mode)
+    for data_folder in opt.data_folder:
+        # transfer summary files
+        for file in os.listdir(data_folder):
+            file_dir = osp.join(data_folder, file)
+            scratch_file_dir = osp.join(scratch_path, file)
+            if file.endswith('npy') and not osp.exists(scratch_file_dir):
+                shutil.copyfile(file_dir, scratch_file_dir)
 
+        # transfer sample data
+        samples = os.listdir(osp.join(data_folder, 'samples'))
+        if opt.use_scratch_parallel:
+            mapping = []
+            for sample in samples:
+                mapping.append([sample, data_folder, scratch_path, opt.toxx, opt.y_preprocessing, opt.output_mode])
+            with multiprocessing.Pool(opt.num_workers) as p:
+                 p.starmap(copy_data_to_scratch_inner, mapping)
         else:
             for sample in samples:
-                copy_data_to_scratch_inner(sample, opt.data_folder, scratch_path, opt.toxx, opt.y_preprocessing, opt.output_mode)
+                copy_data_to_scratch_inner(sample, data_folder, scratch_path, opt.toxx, opt.y_preprocessing, opt.output_mode)
 
-    opt.data_folder = scratch_path
+    opt.data_folder = [scratch_path]
 
     tf = time.time()
     delta_t = np.round(tf - t0, 0)
