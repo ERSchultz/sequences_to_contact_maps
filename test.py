@@ -134,7 +134,7 @@ def debugModel(model_type):
 
     # dataset
     dir = "/home/erschultz"
-    datasets = ['dataset_11_18_22','dataset_9_30_22']
+    datasets = ['dataset_11_18_22']
     opt.data_folder = [osp.join(dir, d) for d in datasets]
     opt.scratch = '/home/erschultz/scratch'
 
