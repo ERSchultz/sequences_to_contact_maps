@@ -138,6 +138,8 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
         ylabel = 'Cross Entropy Loss'
     elif opt.loss == 'BCE':
         ylabel = 'Binary Cross Entropy Loss'
+    elif opt.loss == 'huber':
+        ylabel = 'Huber Loss'
     else:
         ylabel = 'Loss'
     if log_y:
@@ -183,6 +185,10 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None,
             ylabel = 'Cross Entropy Loss'
         elif opt.loss == 'BCE':
             ylabel = 'Binary Cross Entropy Loss'
+        elif opt.loss == 'huber':
+            ylabel = 'Huber Loss'
+        else:
+            ylabel = "Loss"
 
         if opt.y_preprocessing is not None:
             preprocessing = opt.y_preprocessing.capitalize()
@@ -192,9 +198,9 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None,
             preprocessing_norm = opt.preprocessing_norm.capitalize()
         else:
              preprocessing_norm = 'None'
-        upper_title = 'Y Preprocessing: {}, Norm: {}'.format(preprocessing, preprocessing_norm)
-        train_title = 'Final Training Loss: {}'.format(np.round(train_loss_arr[-1], 3))
-        val_title = 'Final Validation Loss: {}'.format(np.round(val_loss_arr[-1], 3))
+        upper_title = f'Y Preprocessing: {preprocessing}, Norm: {preprocessing_norm}'
+        train_title = f'Final Training Loss: {np.round(train_loss_arr[-1], 3)}'
+        val_title = f'Final Validation Loss: {np.round(val_loss_arr[-1], 3)}'
         plt.title(f'{upper_title}\n{train_title}\n{val_title}', fontsize = 16)
 
 
@@ -208,7 +214,7 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None,
             if not log_y:
                 plt.ylim(top = new_max_y)
             plt.axvline(1, linestyle = 'dashed', color = 'green')
-            plt.annotate('lr: {}'.format(lr), (1 + x_offset, annotate_y))
+            plt.annotate(f'lr: {lr}', (1 + x_offset, annotate_y))
             for m in opt.milestones:
                 lr = lr * opt.gamma
                 plt.axvline(m, linestyle = 'dashed', color = 'green')
@@ -975,7 +981,7 @@ def plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, ref,
 ### Primary scripts ###
 def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 'max',
                     size_in = 6, minVal = None, maxVal = None, prcnt = False,
-                    cmap = None, x_ticks = None, y_ticks = None):
+                    cmap = None, x_ticks = None, y_ticks = None, triu = False):
     """
     Plotting function for 2D arrays.
 
@@ -987,6 +993,7 @@ def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 'max',
         size_in: size of figure x,y in inches
         minVal: values in y less than minVal are set to 0
         maxVal: values in y greater than maxVal are set to 0
+        triu: True to plot line y = -x splitting upper and lower triangle
     """
     if cmap is None:
         if prcnt:
@@ -1008,7 +1015,7 @@ def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 'max',
                                                  (0.5, 'white'),
                                                   (1, 'red')], N=126)
     else:
-        raise Exception('Invalid cmap: {}'.format(cmap))
+        raise Exception(f'Invalid cmap: {cmap}')
 
     if len(arr.shape) == 4:
         N, C, H, W = arr.shape
@@ -1077,6 +1084,10 @@ def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 'max',
     else:
         ax.set_yticks([i+0.5 for i in range(H)])
         ax.axes.set_yticklabels(y_ticks, rotation='horizontal')
+
+    if triu:
+        print('here')
+        ax.axline((0,0), slope=1, color = 'k', lw=1)
 
     if title is not None:
         plt.title(title, fontsize = 16)

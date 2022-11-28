@@ -398,19 +398,23 @@ def main(id):
     opt.id = id
     print(opt)
     opt = finalize_opt(opt, parser, local = True, debug = True)
+    if isinstance(opt.data_folder, list):
+        assert len(opt.data_folder) == 1
+        opt.data_folder = opt.data_folder[0]
     data_folder_split = osp.normpath(opt.data_folder).split(os.sep)
     opt.data_folder = osp.join('/home/erschultz',data_folder_split[-1]) # use local dataset
+    print(opt.data_folder)
     opt.device = torch.device('cpu')
     opt.plot_predictions = False
     print(opt)
-    plotting_script(None, opt, samples = [552, 1794, 1131, 1128, 1938])
+    plotting_script(None, opt, samples = [410, 653, 1462, 1801, 2290])
     # interogateParams(None, opt)
 
 if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     dir = '/home/erschultz/sequences_to_contact_maps/'
     data_dir = osp.join(dir, 'single_cell_nagano_imputed/samples/sample443')
@@ -426,5 +430,5 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_09_30_22')
-    plot_combined_models('ContactGNNEnergy', [254, 259])
-    # main(223)
+    # plot_combined_models('ContactGNNEnergy', [254, 259])
+    # main(268)

@@ -139,7 +139,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def process(self):
         for i, raw_folder in enumerate(self.raw_file_names):
-            print(raw_folder)
             x, psi = self.process_x_psi(raw_folder)
             self.contact_map, contact_map_diag = self.process_y(raw_folder)
             self.diag_chis_continuous, self.diag_chis_continuous_mlp = self.process_diag_params(raw_folder)

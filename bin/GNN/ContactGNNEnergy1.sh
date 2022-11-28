@@ -36,11 +36,12 @@ headArchitecture='bilinear_8'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
+KR='true'
 useScratch='false'
 
-# like 262, but only rank 8
+# like 265 (rank 8), but KR
 
-id=265
+id=274
 for lr in 1e-4
 do
   train

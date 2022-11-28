@@ -36,11 +36,12 @@ headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
+KR='true'
 useScratch='false'
 
-# like 243, 254, but dataset 11_21
+# like 262 but KR
 
-id=262
+id=273
 for lr in 1e-4
 do
   train

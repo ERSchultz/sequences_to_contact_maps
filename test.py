@@ -196,7 +196,7 @@ def debugModel(model_type):
         opt.y_preprocessing = 'sweeprand_log_inf'
         opt.rescale = None
         opt.mean_filt = None
-        opt.kr = False
+        opt.kr = True
         opt.keep_zero_edges = False
         opt.loss = 'huber'
         opt.preprocessing_norm = 'mean'

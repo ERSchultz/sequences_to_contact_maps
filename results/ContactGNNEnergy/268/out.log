@@ -264,3 +264,32 @@ Final val loss: 1.4348370894324034
 split sizes: train=2160, val=240, test=0, N=2400
 #### Plotting Script ####
 Prediction Results:
+Dataset construction time: 0.008 minutes
+Average num edges per graph:  226873.6
+Mean degree: [464.49 511.87 507.03 416.01 316.16] +- [27.44  0.37  6.42 57.3  72.19]
+
+#### Plotting Script ####
+Downsampling (40%) Results:
+dataset_11_21_22 sample1462-downsampling: 9.951750755310059
+dataset_11_21_22 sample1801-downsampling: 3.2940549850463867
+dataset_11_21_22 sample2290-downsampling: 6.266107559204102
+dataset_11_21_22 sample410-downsampling: 7.052387714385986
+dataset_11_21_22 sample653-downsampling: 10.602755546569824
+Loss: 7.433 +- 2.647
+
+Original sampling (100%) Results:
+dataset_11_21_22 sample1462-regular: 8.500838279724121
+dataset_11_21_22 sample1801-regular: 4.545722484588623
+dataset_11_21_22 sample2290-regular: 6.289750099182129
+dataset_11_21_22 sample410-regular: 6.793118476867676
+dataset_11_21_22 sample653-regular: 9.935991287231445
+Loss: 7.213 +- 1.856
+
+Upsampling (200%) Results:
+dataset_11_21_22 sample1462-upsampling: 8.685667991638184
+dataset_11_21_22 sample1801-upsampling: 5.476360321044922
+dataset_11_21_22 sample2290-upsampling: 6.186751842498779
+dataset_11_21_22 sample410-upsampling: 7.11093807220459
+dataset_11_21_22 sample653-upsampling: 9.76390266418457
+Loss: 7.445 +- 1.58
+

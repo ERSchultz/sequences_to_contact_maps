@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 from sklearn.metrics import mean_squared_error
+
 from utils.dataset_classes import make_dataset
 from utils.energy_utils import calculate_D, s_to_E
 from utils.InteractionConverter import InteractionConverter
@@ -603,7 +604,7 @@ if __name__ == '__main__':
     dataset = 'dataset_11_14_22'
     data_dir = osp.join(dir, dataset)
     basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                plot_chi = False, sampleID = 22)
+                plot_chi = False, sampleID = 101)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)
