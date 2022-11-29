@@ -1,0 +1,5 @@
+rm: rm: cannot remove ‘dataset_09_30_22_mini’cannot remove ‘dataset_09_30_22.tar.gz’: No such file or directory: No such file or directory
+
+rm: cannot remove ‘ContactGNNEnergy6*’: No such file or directory
+rm: rm: cannot remove ‘ContactGNNEnergy4*’cannot remove ‘ContactGNNEnergy5*’: No such file or directory: No such file or directory
+
