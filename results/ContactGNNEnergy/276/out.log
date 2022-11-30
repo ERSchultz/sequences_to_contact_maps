@@ -128,3 +128,170 @@ Epoch 14, loss = 10.9991
 Mean test/val loss: 10.1701
 
 Epoch 16, loss = 10.8283
+Mean test/val loss: 9.8684
+
+Epoch 18, loss = 10.5785
+Mean test/val loss: 9.9936
+
+Epoch 20, loss = 10.4334
+Mean test/val loss: 10.1021
+
+Epoch 22, loss = 10.1822
+Mean test/val loss: 10.0258
+
+Epoch 24, loss = 9.9911
+Mean test/val loss: 9.9949
+
+Epoch 26, loss = 9.8199
+Mean test/val loss: 9.3331
+
+Epoch 28, loss = 9.9667
+Mean test/val loss: 9.8095
+
+Epoch 30, loss = 9.7233
+Mean test/val loss: 9.5317
+
+Epoch 32, loss = 9.9223
+Mean test/val loss: 9.5257
+
+Epoch 34, loss = 9.6063
+Mean test/val loss: 9.1149
+
+Epoch 36, loss = 6029.8183
+Mean test/val loss: 12.1650
+
+Epoch 38, loss = 10.3809
+Mean test/val loss: 9.9781
+
+Epoch 40, loss = 9.4304
+Mean test/val loss: 9.4603
+
+Epoch 42, loss = 9.1640
+Mean test/val loss: 8.8606
+
+Epoch 44, loss = 9.8999
+Mean test/val loss: 10.3944
+
+Epoch 46, loss = 9.1900
+Mean test/val loss: 9.1657
+
+Epoch 48, loss = 10.2289
+Mean test/val loss: 9.7728
+
+Epoch 50, loss = 9.0979
+Mean test/val loss: 9.1734
+
+Epoch 52, loss = 8.2585
+Mean test/val loss: 8.7469
+
+Epoch 54, loss = 8.0919
+Mean test/val loss: 8.7412
+
+Epoch 56, loss = 7.9598
+Mean test/val loss: 8.6109
+
+Epoch 58, loss = 7.8636
+Mean test/val loss: 8.6012
+
+Epoch 60, loss = 7.7819
+Mean test/val loss: 8.4160
+
+Epoch 62, loss = 7.6837
+Mean test/val loss: 8.4966
+
+Epoch 64, loss = 7.6086
+Mean test/val loss: 8.4477
+
+Epoch 66, loss = 7.5376
+Mean test/val loss: 8.2572
+
+Epoch 68, loss = 7.4547
+Mean test/val loss: 8.2024
+
+Epoch 70, loss = 7.3943
+Mean test/val loss: 8.7465
+
+Epoch 72, loss = 7.3498
+Mean test/val loss: 8.1395
+
+Epoch 74, loss = 7.2987
+Mean test/val loss: 8.0957
+
+Epoch 76, loss = 7.2518
+Mean test/val loss: 8.2969
+
+Epoch 78, loss = 7.2186
+Mean test/val loss: 8.2960
+
+Epoch 80, loss = 7.1682
+Mean test/val loss: 8.9932
+
+Epoch 82, loss = 7.1360
+Mean test/val loss: 7.9835
+
+Epoch 84, loss = 7.0537
+Mean test/val loss: 8.2559
+
+Epoch 86, loss = 7.0663
+Mean test/val loss: 8.0805
+
+Epoch 88, loss = 7.0022
+Mean test/val loss: 8.3355
+
+Epoch 90, loss = 6.9984
+Mean test/val loss: 8.1312
+
+Epoch 92, loss = 6.9354
+Mean test/val loss: 8.0828
+
+Epoch 94, loss = 6.9390
+Mean test/val loss: 8.0239
+
+Epoch 96, loss = 6.9314
+Mean test/val loss: 8.1812
+
+Epoch 98, loss = 6.8671
+Mean test/val loss: 7.9645
+
+Epoch 100, loss = 6.8501
+Mean test/val loss: 8.3175
+
+
+Total parameters: 44424748
+Total training + validation time: 19.0 hours, 58.0 mins, and 23.10000000000582 secs
+Final val loss: 8.317527834326029
+
+split sizes: train=4320, val=480, test=0, N=4800
+#### Plotting Script ####
+Prediction Results:
+dataset_11_21_22 sample1695: 7.789926052093506
+dataset_11_18_22 sample2098: 6.5438947677612305
+dataset_11_18_22 sample760: 2.6643080711364746
+dataset_11_21_22 sample1036: 8.773746490478516
+dataset_11_18_22 sample383: 8.920491218566895
+Loss: 6.938 +- 2.3
+
+Downsampling (40%) Results:
+dataset_11_18_22 sample1036-downsampling: 0.6695413589477539
+dataset_11_18_22 sample1695-downsampling: 10.08087158203125
+dataset_11_18_22 sample2098-downsampling: 6.1226911544799805
+dataset_11_18_22 sample383-downsampling: 9.097503662109375
+dataset_11_18_22 sample760-downsampling: 2.6643075942993164
+Loss: 6.948 +- 3.85
+
+Original sampling (100%) Results:
+dataset_11_18_22 sample1036-regular: 0.7240490913391113
+dataset_11_18_22 sample1695-regular: 10.081210136413574
+dataset_11_18_22 sample2098-regular: 6.722038269042969
+dataset_11_18_22 sample383-regular: 9.154340744018555
+dataset_11_18_22 sample760-regular: 2.805251121520996
+Loss: 6.857 +- 3.737
+
+Upsampling (200%) Results:
+dataset_11_18_22 sample1036-upsampling: 1.637028694152832
+dataset_11_18_22 sample1695-upsampling: 10.102191925048828
+dataset_11_18_22 sample2098-upsampling: 6.842489719390869
+dataset_11_18_22 sample383-upsampling: 9.048772811889648
+dataset_11_18_22 sample760-upsampling: 2.762187957763672
+Loss: 6.841 +- 3.746
+
