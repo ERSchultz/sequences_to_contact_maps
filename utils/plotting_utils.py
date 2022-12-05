@@ -25,6 +25,7 @@ from sympy import solve, symbols
 
 from .argparse_utils import (ArgparserConverter, finalize_opt, get_base_parser,
                              get_opt_header, opt2list)
+from .clean_directories import clean_directories
 from .energy_utils import calculate_diag_chi_step
 from .InteractionConverter import InteractionConverter
 from .load_utils import load_sc_contacts, load_X_psi
@@ -418,6 +419,9 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
     mean_loss = np.round(np.mean(loss_arr), 3)
     print(f'Loss: {mean_loss} +- {np.round(np.std(loss_arr), 3)}\n',
         file = opt.log_file)
+
+    # cleanup
+    clean_directories(GNN_path = opt.root, ofile = opt.log_file)
 
     return mean_loss
 

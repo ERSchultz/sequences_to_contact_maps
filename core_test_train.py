@@ -123,13 +123,13 @@ def core_test_train(model, opt):
         plotting_script(model, opt, train_loss_arr, val_loss_arr, dataset)
     else:
         plotting_script(model, opt, train_loss_arr, val_loss_arr)
-        # don't pass dataset
+        # don't pass dataset, need to recreate it
 
     # cleanup
-    opt.log_file.close()
     if opt.root is not None and opt.delete_root:
         # opt.root is set in utils.get_dataset
-        clean_directories(GNN_path = opt.root)
+        clean_directories(GNN_path = opt.root, ofile = opt.log_file)
+    opt.log_file.close()
 
 def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = []):
     for e in range(opt.start_epoch, opt.n_epochs+1):
