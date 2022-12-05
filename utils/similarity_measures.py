@@ -45,7 +45,7 @@ class SCC():
         else:
             return math.sqrt(np.var(x_k) * np.var(y_k))
 
-    def scc_file(self, xfile, yfile, h = 1, K = None, var_stabilized = False, verbose = False,
+    def scc_file(self, xfile, yfile, h = 1, K = None, var_stabilized = True, verbose = False,
                 distance = False, chr = None, resolution = None):
         '''
         Wrapper for scc that takes file path as input. Must be .npy file.

@@ -1,3 +1,4 @@
+import json
 import os
 import os.path as osp
 import time
@@ -22,7 +23,7 @@ from result_summary_plots import plot_top_PCs
 from utils.argparse_utils import (ArgparserConverter, finalize_opt,
                                   get_base_parser)
 from utils.dataset_classes import make_dataset
-from utils.energy_utils import s_to_E
+from utils.energy_utils import *
 from utils.load_utils import load_sc_contacts, save_sc_contacts
 from utils.networks import get_model
 from utils.neural_net_utils import get_dataset
@@ -203,11 +204,13 @@ def debugModel(model_type):
         opt.message_passing = 'gat'
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym'
-        opt.encoder_hidden_sizes_list=[100,100,32]
+        opt.encoder_hidden_sizes_list=[100,100,100]
         # opt.edge_encoder_hidden_sizes_list=[100,100,3]
-        opt.update_hidden_sizes_list=[100,32]
-        opt.hidden_sizes_list=[1]
-        opt.act = 'relu'
+        opt.update_hidden_sizes_list=[100,100,64]
+        opt.hidden_sizes_list=[8]
+        opt.gated = True
+        opt.dropout = 0.3
+        opt.act = 'prelu'
         opt.inner_act = 'relu'
         opt.out_act = 'relu'
         opt.head_act = 'relu'
@@ -273,13 +276,14 @@ def debugModel(model_type):
     # hyperparameters
     opt.n_epochs = 1
     opt.lr = 1e-4
+    opt.weight_decay = 1e-4
     opt.batch_size = 1
     opt.milestones = None
     opt.gamma = 0.1
 
     # other
-    opt.plot = True
-    opt.plot_predictions = True
+    opt.plot = False
+    opt.plot_predictions = False
     opt.verbose = False
     opt.print_params = False
     opt.gpus = 1
@@ -651,24 +655,47 @@ def testGNNrank():
     tend to be (really) low rank unfortunately
     '''
     dir = '/home/erschultz'
-    dataset = 'dataset_09_30_22'
-    sample = 1
-    file = osp.join(dir, dataset, f'samples/sample{sample}/GNN-223-E/k0/replicate1/resources/plaid_hat.txt')
-    # file = '/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/225/sample1128/energy_hat.txt'
-    plaid = np.loadtxt(file)
-    plot_top_PCs(plaid, verbose = True, count = 5)
+    dataset = 'dataset_11_14_22'
+    for sample in [1001]:
+        for GNN in [271]:
+            # print(GNN)
+            file = osp.join(dir, dataset, f'samples/sample{sample}/GNN-{GNN}-S/k0/replicate1/resources/plaid_hat.txt')
+            s = np.loadtxt(file)
+            # file = osp.join(dir, dataset, f'samples/sample{sample}/GNN-{GNN}-E/k0/replicate1/resources/e.npy')
+            # plaid = np.load(file)
+            print('rank', np.linalg.matrix_rank(s))
+            w, v = np.linalg.eig(s)
+            prcnt = np.abs(w) / np.sum(np.abs(w))
+            print(prcnt[0:4])
+            print(np.sum(prcnt[0:4]))
+            # plot_top_PCs(s, verbose = True, count = 4)
+            print()
 
 def main():
     dataset = 'dataset_11_14_22'
-    dir = f'/home/erschultz/{dataset}/samples/sample2'
+    dir = f'/home/erschultz/{dataset}/samples/sample1001'
     y = np.load(osp.join(dir, 'y.npy'))
     max_ent_dir = osp.join(dir, 'PCA_split-binarizeMean-E/k8/replicate1')
-    gnn_dir = osp.join(max_ent_dir, 'samples/sample2_linear/GNN-254-E/k0/replicate1')
-    y_gnn = np.load(osp.join(gnn_dir, 'y.npy'))
+    S = np.load(osp.join(max_ent_dir, 's.npy'))
+    with open(osp.join(max_ent_dir, 'iteration21/config.json')) as f:
+        config = json.load(f)
+    diag_chi_continuous = calculate_diag_chi_step(config)
+    D = calculate_D(diag_chi_continuous)
+    ED = calculate_net_energy(S, D)
+    plot_matrix(ED, osp.join(max_ent_dir, 'ED.png'), title = 'S + D', cmap = 'blue-red')
+    vmin = np.nanpercentile(ED, 1)
+    vmax = np.nanpercentile(ED, 99)
+    vmax = max(vmax, vmin * -1)
+    vmin = vmax * -1
 
-    scc = SCC()
-    corr_scc = scc.scc(y, y_gnn, var_stabilized = False)
-    print(corr_scc)
+    gnn_dir = osp.join(dir, 'GNN-271-E/k0/replicate1')
+    SD = np.load(osp.join(gnn_dir, 's.npy'))
+    ED2 = s_to_E(SD)
+    plot_matrix(ED2, osp.join(gnn_dir, 'ED.png'), title = 'S + D', cmap = 'blue-red', vmin=vmin, vmax=vmax)
+
+    print(mean_squared_error(ED, ED2))
+
+
 
 
 

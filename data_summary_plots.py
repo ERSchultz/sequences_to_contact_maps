@@ -350,6 +350,7 @@ def compare_kr(path, inp, ref, ref_diag, inp_name = 'y', ref_name = 'y'):
     if osp.exists(inp_kr_file):
         inp_kr = np.load(inp_kr_file)
     else:
+        print(np.count_nonzero(np.isnan(inp)))
         inp_kr = knightRuiz(inp)
         print(inp_kr)
         np.save(inp_kr_file, inp_kr)
@@ -604,7 +605,7 @@ if __name__ == '__main__':
     dataset = 'dataset_11_14_22'
     data_dir = osp.join(dir, dataset)
     basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                plot_chi = False, sampleID = 101)
+                plot_chi = False, sampleID = 2002)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

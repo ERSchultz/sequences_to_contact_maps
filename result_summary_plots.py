@@ -83,8 +83,8 @@ def getArgs():
 
     return args
 
-def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2,
-                plot = False, verbose = False, scale = False, svd = False):
+def plot_top_PCs(inp, inp_type='', odir=None, log_file=sys.stdout, count=2,
+                plot=False, verbose=False, scale=False, svd=False):
     '''
     Plots top PCs of inp.
     Inputs:
@@ -123,12 +123,12 @@ def plot_top_PCs(inp, inp_type='', odir = None, log_file = sys.stdout, count = 2
         if log_file is not None:
             print(f'\n{inp_type.upper()}', file = log_file)
             if pca is not None:
-                print(f'''% of total variance explained for first 6 PCs:
-                    {np.round(pca.explained_variance_ratio_[0:6], 3)}
-                    \n\tSum of first 6: {np.sum(pca.explained_variance_ratio_[0:6])}''',
+                print(f'''% of total variance explained for first {count} PCs:
+                    {np.round(pca.explained_variance_ratio_[0:count], 3)}
+                    \n\tSum of first {count}: {np.sum(pca.explained_variance_ratio_[0:count])}''',
                     file = log_file)
-            print(f'''Singular values for first 6 PCs:
-                {np.round(S[0:6], 3)}
+            print(f'''Singular values for first {count} PCs:
+                {np.round(S[0:count], 3)}
                 \n\tSum of all: {np.sum(S)}''',
                 file = log_file)
 
