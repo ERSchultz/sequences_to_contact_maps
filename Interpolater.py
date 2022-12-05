@@ -95,9 +95,14 @@ class Interpolater():
     def find_zeros_along_diagonal(self):
         '''Find rows/cols of y where y_ii = 0.'''
         diag = self.y.diagonal().copy()
+        print(f'Zeros', file = self.ofile)
         for i, val in enumerate(diag):
+            left = self.start + i * self.res
+            right = self.start + (i+1) * self.res
             if val == 0:
                 self.interp_locations.add(i)
+                print(i, f'chr{self.chrom}:{left}-{right}', file = self.ofile)
+
 
     def find_sum_outliers(self, cutoff, modified = False):
         '''Find row_sums of y defined as outliers by modified zscore test.'''
@@ -274,10 +279,11 @@ def main():
         # Interpolater('dataset_11_14_22', sample, ['sparsity_mzscore'])
         # Interpolater('dataset_11_14_22', sample, ['sparsity_zscore-5'])
         # Interpolater('dataset_11_14_22', sample, ['mappability-0.6'])
-        Interpolater('dataset_11_14_22', sample, ['mappability-0.5'])
+        # Interpolater('dataset_11_14_22', sample, ['mappability-0.5'])
         # Interpolater('dataset_11_14_22', sample, ['mappability-0.3'])
         # Interpolater('dataset_11_14_22', sample, ['sum_mzscore', 'mappability'])
-        # Interpolater('dataset_11_14_22', sample, ['sparsity_zscore-5', 'mappability'])
+        # Interpolater('dataset_11_14_22', sample, ['sparsity_zscore-5', 'mappability-0.5'])
+        Interpolater('dataset_11_14_22', sample, ['zeros', 'mappability-0.5'])
 
 if __name__ == '__main__':
     main()
