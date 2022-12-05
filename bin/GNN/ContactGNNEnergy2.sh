@@ -37,12 +37,11 @@ headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
-loss='huber'
-KR='true'
+weightDecay=1e-4
 
-# like 267 (huber) but KR
+# like 262 but weight decay
 
-id=275
+id=280
 for lr in 1e-4
 do
   train

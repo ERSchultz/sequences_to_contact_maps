@@ -18,7 +18,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy3' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_11_18_22-/project2/depablo/erschultz/dataset_11_21_22"
+dirname="/project2/depablo/erschultz/dataset_11_21_22"
 m=1024
 messagePassing='weighted_GAT'
 preTransforms='constant-ContactDistance-GeneticDistance_norm'
@@ -36,12 +36,12 @@ headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
-KR='true'
 useScratch='false'
+weightDecay=1e-5
 
-# like 273 but both datasets
+# like 262 but weight decay
 
-id=276
+id=281
 for lr in 1e-4
 do
   train

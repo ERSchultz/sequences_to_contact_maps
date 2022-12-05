@@ -276,7 +276,7 @@ class DeconvBlock(nn.Module):
 
 class LinearBlock(nn.Module):
     def __init__(self, input_size, output_size, bias = True, activation = 'prelu',
-                 norm = None, dropout = False, dropout_p = 0.5):
+                 norm = None, dropout = 0.0):
         super(LinearBlock, self).__init__()
 
         model =  [nn.Linear(input_size, output_size, bias = bias)]
@@ -284,8 +284,8 @@ class LinearBlock(nn.Module):
         if norm == 'batch':
             model.append(nn.BatchNorm1d(output_size))
 
-        if dropout:
-            model.append(nn.Dropout(dropout_p))
+        if dropout != 0.0:
+            model.append(nn.Dropout(dropout))
 
         if activation is not None:
             model.append(act2module(activation))
@@ -297,30 +297,45 @@ class LinearBlock(nn.Module):
 
 class MLP(nn.Module):
     def __init__(self, in_channels, hidden_channels, bias = True, act = 'relu',
-                out_act = None, norm = None, dropout = False, dropout_p = 0.5,
+                out_act = None, norm = None, dropout = 0.0,
+                dropout_last_layer = False, gated = False,
                 ofile = sys.stdout, verbose = True):
         super(MLP, self).__init__()
+        self.gated = gated
         model = []
 
         input_size = in_channels
         for i, output_size in enumerate(hidden_channels):
             if i == len(hidden_channels) - 1:
                 act = out_act
-                dropout = False # no dropout in last layer
+                if not dropout_last_layer:
+                    dropout = False # no dropout in last layer
             model.append(LinearBlock(input_size, output_size, activation = act,
-                            norm = norm, dropout = dropout, dropout_p = dropout_p))
+                            norm = norm, dropout = dropout))
             input_size = output_size
 
         self.model = nn.Sequential(*model)
 
-        self.out_act = out_act
+        if self.gated:
+            assert in_channels == hidden_channels[-1], f'{in_channels} != {hidden_channels[-1]}'
+            self.D = nn.Parameter(torch.randn(2*in_channels))
+            self.b = nn.Parameter(torch.zeros((1)))
 
         if verbose:
             print("#### ARCHITECTURE ####", file = ofile)
             print(self.model, file = ofile)
 
     def forward(self, input):
-        return self.model(input)
+        if self.gated:
+            x_in = torch.clone(input)
+            x_out = self.model(input)
+
+            x_all = torch.cat((x_in, x_out), dim = 1)
+            c = torch.sigmoid(torch.einsum('i, mi->m', self.D, x_all) + self.b)
+
+            return torch.einsum('m, mi->mi', c, x_in) + torch.einsum('m, mi->mi',1 - c, x_out)
+        else:
+            return self.model(input)
 
 class Symmetrize2D(nn.Module):
     '''

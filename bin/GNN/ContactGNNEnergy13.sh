@@ -32,15 +32,17 @@ numHeads=8
 outputMode='energy_sym_diag'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
-headArchitecture='bilinear_8'
+headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
 
-# rank 8 on both datasets
+# both datasets mse loss
 
-id=272
+# surprisingly 272 (rank 8) does much worse than 271 (huber), does this (neither) do better??
+
+id=277
 for lr in 1e-4
 do
   train

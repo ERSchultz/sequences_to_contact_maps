@@ -46,7 +46,8 @@ def core_test_train(model, opt):
             model.load_state_dict(save_dict['model_state_dict'])
 
             opt.start_epoch = save_dict['epoch'] + 1
-            print(f'Partially-trained model is loaded.\nStarting at epoch {opt.start_epoch}', file = opt.log_file)
+            print('Partially-trained model is loaded.\n'
+                    f'Starting at epoch {opt.start_epoch}', file = opt.log_file)
 
             train_loss_arr = save_dict['train_loss']
             val_loss_arr = save_dict['val_loss']
@@ -57,7 +58,8 @@ def core_test_train(model, opt):
         val_loss_arr = []
 
     # Set up model and scheduler
-    opt.optimizer = optim.Adam(model.parameters(), lr = opt.lr)
+    opt.optimizer = optim.Adam(model.parameters(), lr = opt.lr, weight_decay = opt.weight_decay)
+    print(f'Optimizer: {opt.optimizer}', file = opt.log_file)
     if opt.resume_training:
         opt.optimizer.load_state_dict(save_dict['optimizer_state_dict'])
         optimizer_to(opt.optimizer, opt.device)
@@ -107,7 +109,7 @@ def core_test_train(model, opt):
         except ValueError:
             print(k, file = opt.param_file)
             print(p, file = opt.param_file)
-    print('\nTotal parameters: {}'.format(locale.format_string("%d", tot_pars, grouping = True)), file = opt.log_file)
+    print(f'\nTotal parameters: {locale.format_string("%d", tot_pars, grouping = True)}', file = opt.log_file)
     tot_time = np.round(time.time() - t0, 1)
     tot_hours = tot_time // 3600
     tot_mins = tot_time // 60
@@ -191,8 +193,10 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                 yhat = model(x)
                 if opt.verbose:
                     print(f'x={x}, shape={x.shape}')
-                    print(f'y={y}, shape={y.shape}, min={torch.min(y).item()}, max={torch.max(y).item()}')
-                    print(f'yhat={yhat}, shape={yhat.shape}, min={torch.min(yhat).item()}, max={torch.max(yhat).item()}')
+                    print(f'y={y}, shape={y.shape}, min={torch.min(y).item()}, '
+                            f'max={torch.max(y).item()}')
+                    print(f'yhat={yhat}, shape={yhat.shape}, '
+                            f'min={torch.min(yhat).item()}, max={torch.max(yhat).item()}')
             loss = opt.criterion(yhat, y)
             avg_loss += loss.item()
             loss.backward()

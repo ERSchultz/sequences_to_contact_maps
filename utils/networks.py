@@ -58,12 +58,12 @@ def get_model(opt, verbose = True):
                 opt.act, opt.inner_act, opt.out_act,
                 opt.message_passing, opt.use_edge_weights or opt.use_edge_attr, opt.edge_dim,
                 opt.head_architecture, opt.head_architecture_2, opt.head_hidden_sizes_list,
-                opt.head_act, opt.use_bias, opt.rescale,
+                opt.head_act, opt.use_bias, opt.rescale, opt.gated, opt.dropout,
                 opt.training_norm, opt.num_heads, opt.concat_heads,
                 opt.log_file, verbose = verbose)
     elif opt.model_type == 'MLP':
         model = MLP(opt.input_m, opt.hidden_sizes_list, opt.use_bias, opt.act,
-                            opt.out_act, opt.training_norm, opt.dropout, opt.dropout_p,
+                            opt.out_act, opt.training_norm, opt.dropout,
                             opt.log_file, verbose = verbose)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
@@ -511,7 +511,7 @@ class ContactGNN(nn.Module):
                 act, inner_act, out_act,
                 message_passing, use_edge_attr, edge_dim,
                 head_architecture, head_architecture_2, head_hidden_sizes_list,
-                head_act, use_bias, rescale,
+                head_act, use_bias, rescale, gated, dropout,
                 training_norm, num_heads, concat_heads,
                 ofile = sys.stdout, verbose = True):
         '''
@@ -521,7 +521,7 @@ class ContactGNN(nn.Module):
             output_dim: number of dimensions in output (size of each dimension is m)
             MP_hidden_sizes_list: list of node feature vector hidden sizes during message passing
             node_encoder_hidden_sizes_list: list of hidden sizes for MLP encoder
-            edge_encoder_hidden_sizes_listl: list of hidden sizes for MLP encoder
+            edge_encoder_hidden_sizes_list: list of hidden sizes for MLP encoder
             update_hidden_sizes_list: list of hidden sizes for MLP for update during message passing
             inner_hidden_sizes_list: list of hidden sizes for MLP for final update during message passing
             act (str): activation function
@@ -537,6 +537,8 @@ class ContactGNN(nn.Module):
             head_act: activation for head_architecture (and head_architecture_2)
             use_bias: True to use bias term - applies for message passing and head
             rescale: rescale by factor <rescale> (None to skip) uses F.interpolate
+            gated: True to use gated residual connection (https://doi.org/10.3389/fmolb.2021.647915)
+            dropout: Value for dropout (0.0 for no dropout)
             training_norm: Normalization layer
         '''
         super(ContactGNN, self).__init__()
@@ -564,6 +566,8 @@ class ContactGNN(nn.Module):
             self.head_act = None
         self.use_bias = use_bias
         self.rescale = rescale
+        self.gated = gated
+        self.dropout = dropout
 
         ### Encoder Architecture ###
         self.node_encoder = None
@@ -613,6 +617,7 @@ class ContactGNN(nn.Module):
                 elif self.message_passing == 'weighted_gat':
                     module = WeightedGATv2Conv(input_size, output_size,
                                             heads = num_heads, concat = concat_heads,
+                                            dropout = self.dropout,
                                             edge_dim = self.edge_dim, edge_dim_MP = True,
                                             bias = use_bias)
                 model.append((module, fn_header))
@@ -621,16 +626,17 @@ class ContactGNN(nn.Module):
                 else:
                     input_size = output_size
 
-                if update_hidden_sizes_list is not None:
-                    for update_output_size in update_hidden_sizes_list:
-                        model.extend([gnn.Linear(input_size, update_output_size, bias = use_bias), self.act])
-                        input_size = update_output_size
+                if i == len(MP_hidden_sizes_list) - 1:
+                    act = self.inner_act
                 else:
-                    model.append(self.act)
-
-            # replace final act with inner_act
-            model.pop()
-            model.append(self.inner_act)
+                    act = self.act
+                if update_hidden_sizes_list is not None:
+                    model.append(MLP(input_size, update_hidden_sizes_list, use_bias,
+                                    self.act, act, dropout = self.dropout,
+                                    dropout_last_layer = True, gated = self.gated))
+                    input_size = update_hidden_sizes_list[-1]
+                else:
+                    model.append(act)
 
             if training_norm == 'instance':
                 model.append(gnn.InstanceNorm(input_size))
@@ -709,15 +715,8 @@ class ContactGNN(nn.Module):
         elif head_architecture.startswith('fc'):
             head_list = []
             input_size = self.latent_size * self.m
-            for i, output_size in enumerate(self.head_hidden_sizes_list):
-                if i == len(self.head_hidden_sizes_list) - 1:
-                    act = self.out_act
-                else:
-                    act = self.head_act
-                head_list.append(LinearBlock(input_size, output_size, activation = act,
-                                        bias = self.use_bias))
-                input_size = output_size
-
+            head_list.append(MLP(input_size, self.head_hidden_sizes_list, self.use_bias,
+                                self.head_act, self.out_act, dropout = self.dropout))
             if 'fill' in head_architecture:
                 head_list.append(FillDiagonalsFromArray())
 
@@ -726,12 +725,13 @@ class ContactGNN(nn.Module):
             if '_' in head_architecture:
                 rank = int(head_architecture.split('_')[1])
                 head = LinearBlock(self.latent_size, rank, activation = self.head_act,
-                                        bias = self.use_bias)
+                                        bias = self.use_bias, dropout = self.dropout)
 
             else:
                 rank = self.latent_size
                 head = 'Bilinear'
-            init = torch.randn((rank, rank))
+            init = torch.zeros((rank, rank))
+            torch.nn.init.xavier_normal_(init)
             self.W = nn.Parameter(init)
             self.sym = Symmetrize2D()
         elif head_architecture == 'inner':
@@ -757,7 +757,7 @@ class ContactGNN(nn.Module):
                 else:
                     act = self.head_act
                 head_list.append(LinearBlock(input_size, output_size, activation = act,
-                                        bias = self.use_bias))
+                                        bias = self.use_bias, dropout = self.dropout))
                 input_size = output_size
 
             head = nn.Sequential(*head_list)

@@ -32,16 +32,16 @@ numHeads=8
 outputMode='energy_sym_diag'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
-headArchitecture='bilinear_8'
+headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
-KR='true'
 useScratch='false'
+weightDecay=1e-3
 
-# like 265 (rank 8), but KR
+# like 262 but weight decay
 
-id=274
+id=279
 for lr in 1e-4
 do
   train

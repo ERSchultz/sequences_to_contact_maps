@@ -23,10 +23,9 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error, silhouette_score
 from sympy import solve, symbols
 
-from utils.energy_utils import calculate_diag_chi_step
-
 from .argparse_utils import (ArgparserConverter, finalize_opt, get_base_parser,
                              get_opt_header, opt2list)
+from .energy_utils import calculate_diag_chi_step
 from .InteractionConverter import InteractionConverter
 from .load_utils import load_sc_contacts, load_X_psi
 from .neural_net_utils import get_data_loaders, get_dataset, load_saved_model
@@ -131,17 +130,20 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
     ax2.legend(loc = 3)
 
     ax.set_xlabel('Epoch', fontsize = 16)
-    opt = opts[0]
-    if opt.loss == 'mse':
-        ylabel = 'MSE Loss'
-    elif opt.loss == 'cross_entropy':
-        ylabel = 'Cross Entropy Loss'
-    elif opt.loss == 'BCE':
-        ylabel = 'Binary Cross Entropy Loss'
-    elif opt.loss == 'huber':
-        ylabel = 'Huber Loss'
-    else:
+    if opts[0].loss != opts[1].loss:
         ylabel = 'Loss'
+    else:
+        opt = opts[0]
+        if opt.loss == 'mse':
+            ylabel = 'MSE Loss'
+        elif opt.loss == 'cross_entropy':
+            ylabel = 'Cross Entropy Loss'
+        elif opt.loss == 'BCE':
+            ylabel = 'Binary Cross Entropy Loss'
+        elif opt.loss == 'huber':
+            ylabel = 'Huber Loss'
+        else:
+            ylabel = 'Loss'
     if log_y:
         ylabel = f'{ylabel} (log-scale)'
     ax.set_ylabel(ylabel, fontsize = 16)
@@ -981,7 +983,7 @@ def plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, ref,
 ### Primary scripts ###
 def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 'max',
                     size_in = 6, minVal = None, maxVal = None, prcnt = False,
-                    cmap = None, x_ticks = None, y_ticks = None, triu = False):
+                    cmap = None, x_ticks = None, y_ticks = None, triu = False, lines = []):
     """
     Plotting function for 2D arrays.
 
@@ -994,6 +996,7 @@ def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 'max',
         minVal: values in y less than minVal are set to 0
         maxVal: values in y greater than maxVal are set to 0
         triu: True to plot line y = -x splitting upper and lower triangle
+        lines: draw black line across rows/cols in lines
     """
     if cmap is None:
         if prcnt:
@@ -1086,8 +1089,10 @@ def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 'max',
         ax.axes.set_yticklabels(y_ticks, rotation='horizontal')
 
     if triu:
-        print('here')
         ax.axline((0,0), slope=1, color = 'k', lw=1)
+
+    for line in lines:
+        ax.axhline(line, color = 'k', lw=0.5)
 
     if title is not None:
         plt.title(title, fontsize = 16)

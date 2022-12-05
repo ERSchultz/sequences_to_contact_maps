@@ -71,8 +71,10 @@ def get_base_parser():
                         help='True to use KnightRuiz balancing algorithm')
     parser.add_argument('--mean_filt', type=AC.str2int,
                         help='mean_filt: apply mean filter of width <mean_filt> (None to skip)')
-    parser.add_argument('--rescale', type=AC.str2int,
+    parser.add_argument('--rescale', type=AC.str2int, default=False,
                         help='rescale contact map by factor of <rescale> (None to skip)')
+    parser.add_argument('--gated', type=AC.str2bool,
+                        help='True to use gated connection')
     parser.add_argument('--preprocessing_norm', type=AC.str2None, default='batch',
                         help='type of [0,1] normalization for input data')
     parser.add_argument('--min_subtraction', type=AC.str2bool, default=True,
@@ -117,6 +119,8 @@ def get_base_parser():
                         help='How often to print')
     parser.add_argument('--lr', type=float, default=1e-3,
                         help='Learning eate. Default=0.001')
+    parser.add_argument('--weight_decay', type=float, default=0.0,
+                        help='Weight Decay. Default=0.0')
     parser.add_argument('--gpus', type=int, default=1,
                         help='Number of gpus')
     parser.add_argument('--milestones', type=AC.str2list, default=[2],
@@ -157,9 +161,7 @@ def get_base_parser():
                         help='activation of final layer')
     parser.add_argument('--training_norm', type=AC.str2None,
                         help='norm during training (batch, instance, or None)')
-    parser.add_argument('--dropout', type=AC.str2bool,
-                        help='True to use dropout')
-    parser.add_argument('--dropout_p', type=float, default=0.2,
+    parser.add_argument('--dropout', type=float, default=0.0,
                         help='dropout probability')
     parser.add_argument('--parameter_sharing', type=AC.str2bool, default=False,
                         help='true to use parameter sharing in autoencoder blocks')
