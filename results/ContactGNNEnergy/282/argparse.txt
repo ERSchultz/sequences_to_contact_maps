@@ -1,7 +1,7 @@
 --data_folder
 /project2/depablo/erschultz/dataset_11_18_22
 --root_name
-ContactGNNEnergy0
+ContactGNNEnergy4
 --delete_root
 false
 --model_type
@@ -73,15 +73,15 @@ fc-fill
 --num_heads
 8
 --gated
-false
+true
 --n_epochs
 100
 --lr
 1e-4
 --weight_decay
-1e-2
---dropout
 0.
+--dropout
+0.3
 --batch_size
 1
 --num_workers
@@ -110,7 +110,7 @@ none
 --print_params
 true
 --id
-278
+282
 --resume_training
 false
 --mlp_model_id

@@ -162,9 +162,215 @@ Head 2:
   (1): FillDiagonalsFromArray()
 ) 
 
-Namespace(GNN_mode=True, transforms=[], pre_transforms=['constant', 'ContactDistance', 'GeneticDistance_norm'], sparsify_threshold=None, sparsify_threshold_upper=None, top_k=None, use_node_features=False, use_edge_weights=False, use_edge_attr=True, keep_zero_edges=False, data_folder=['/home/erschultz/dataset_test_logistic'], scratch='/scratch/midway2/erschultz', root_name='ContactGNNEnergy0', delete_root=False, toxx=False, toxx_mode='mean', y_preprocessing='diag', y_zero_diag_count=0, log_preprocessing=None, kr=False, mean_filt=None, rescale=2, gated=False, preprocessing_norm='mean', min_subtraction=True, x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, use_scratch=False, use_scratch_parallel=True, split_percents=[0.9, 0.1, 0.0], split_sizes=None, random_split=True, shuffle=True, batch_size=1, num_workers=4, start_epoch=1, n_epochs=10, save_mod=5, print_mod=2, lr=0.0001, weight_decay=0.01, gpus=1, milestones=[50], gamma=0.1, loss='mse', autoencoder_mode=False, verbose=False, print_params=True, output_mode='energy_sym_diag', model_type='ContactGNNEnergy', id=278, pretrained=False, resume_training=False, k=None, m=1024, seed=42, act='prelu', inner_act='prelu', out_act='prelu', training_norm=None, dropout=0.0, parameter_sharing=False, use_bias=True, message_passing='weighted_GAT', head_architecture='bilinear', head_architecture_2='fc-fill', head_hidden_sizes_list=[1000, 1000, 1000, 1000, 1000, 1000, 1024], encoder_hidden_sizes_list=[1000, 1000, 64], inner_hidden_sizes_list=None, edge_encoder_hidden_sizes_list=None, update_hidden_sizes_list=[1000, 1000, 64], head_act='prelu', num_heads=8, concat_heads=True, max_diagonal=None, mlp_model_id=None, kernel_w_list=None, hidden_sizes_list=[8, 8, 8, 8], nf=None, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, down_sampling=None, plot=True, plot_predictions=True, ofile_folder='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/278', log_file_path='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/278/out.log', log_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/278/out.log' mode='a' encoding='UTF-8'>, param_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/278/params.log' mode='a' encoding='UTF-8'>, split_neg_pos_edges=False, criterion=<function mse_loss at 0x7ffa79480040>, channels=1, node_feature_size=1, input_m=512, edge_transforms=["'ContactDistance'", 'ContactDistance(norm=False)', 'GeneticDistance(norm=True)'], node_transforms=['Constant(value=1.0)'], edge_dim=2, transforms_processed=None, diag=False, pre_transforms_processed=Compose([
+Namespace(GNN_mode=True, transforms=[], pre_transforms=['constant', 'ContactDistance', 'GeneticDistance_norm'], sparsify_threshold=None, sparsify_threshold_upper=None, top_k=None, use_node_features=False, use_edge_weights=False, use_edge_attr=True, keep_zero_edges=False, data_folder=['/project2/depablo/erschultz/dataset_11_18_22'], scratch='/scratch/midway2/erschultz', root_name='ContactGNNEnergy0', delete_root=False, toxx=False, toxx_mode='mean', y_preprocessing='sweeprand_log_inf', y_zero_diag_count=0, log_preprocessing=None, kr=False, mean_filt=None, rescale=2, gated=False, preprocessing_norm='mean', min_subtraction=True, x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, use_scratch=False, use_scratch_parallel=True, split_percents=[0.9, 0.1, 0.0], split_sizes=None, random_split=True, shuffle=True, batch_size=1, num_workers=4, start_epoch=1, n_epochs=100, save_mod=5, print_mod=2, lr=0.0001, weight_decay=0.01, gpus=1, milestones=[50], gamma=0.1, loss='mse', autoencoder_mode=False, verbose=False, print_params=True, output_mode='energy_sym_diag', model_type='ContactGNNEnergy', id=278, pretrained=False, resume_training=False, k=None, m=1024, seed=42, act='prelu', inner_act='prelu', out_act='prelu', training_norm=None, dropout=0.0, parameter_sharing=False, use_bias=True, message_passing='weighted_GAT', head_architecture='bilinear', head_architecture_2='fc-fill', head_hidden_sizes_list=[1000, 1000, 1000, 1000, 1000, 1000, 1024], encoder_hidden_sizes_list=[1000, 1000, 64], inner_hidden_sizes_list=None, edge_encoder_hidden_sizes_list=None, update_hidden_sizes_list=[1000, 1000, 64], head_act='prelu', num_heads=8, concat_heads=True, max_diagonal=None, mlp_model_id=None, kernel_w_list=None, hidden_sizes_list=[8, 8, 8, 8], nf=None, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, down_sampling=None, plot=True, plot_predictions=True, ofile_folder='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/278', log_file_path='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/278/out.log', log_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/278/out.log' mode='a' encoding='UTF-8'>, param_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/278/params.log' mode='a' encoding='UTF-8'>, split_neg_pos_edges=False, criterion=<function mse_loss at 0x7ff2d52de790>, channels=1, node_feature_size=1, input_m=512, edge_transforms=["'ContactDistance'", 'ContactDistance(norm=False)', 'GeneticDistance(norm=True)'], node_transforms=['Constant(value=1.0)'], edge_dim=2, transforms_processed=None, diag=False, pre_transforms_processed=Compose([
   Constant(value=1.0),
   ContactDistance(norm=False),
   GeneticDistance(norm=True)
 ]), cuda=True, use_parallel=False, device=device(type='cuda'))
 
+Dataset construction time: 33.948 minutes
+Average num edges per graph:  219629.77916666667
+Mean degree: [362.66 512.   449.47 ... 399.29 390.16 429.63] +- [70.54  0.   53.89 ... 85.38 67.92 62.93]
+
+split sizes: train=2160, val=240, test=0, N=2400
+Optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 0.0001
+    weight_decay: 0.01
+)
+#### TRAINING/VALIDATION ####
+Epoch 2, loss = 13.1271
+Mean test/val loss: 11.2292
+
+Epoch 4, loss = 12.1292
+Mean test/val loss: 10.4959
+
+Epoch 6, loss = 11.1830
+Mean test/val loss: 10.6842
+
+Epoch 8, loss = 10.9524
+Mean test/val loss: 9.6161
+
+Epoch 10, loss = 10.4789
+Mean test/val loss: 10.0186
+
+Epoch 12, loss = 10.1532
+Mean test/val loss: 9.0144
+
+Epoch 14, loss = 9.9888
+Mean test/val loss: 8.9353
+
+Epoch 16, loss = 9.9313
+Mean test/val loss: 9.3009
+
+Epoch 18, loss = 9.6261
+Mean test/val loss: 9.3054
+
+Epoch 20, loss = 9.5440
+Mean test/val loss: 8.8545
+
+Epoch 22, loss = 9.3639
+Mean test/val loss: 8.8715
+
+Epoch 24, loss = 9.2202
+Mean test/val loss: 8.6269
+
+Epoch 26, loss = 9.2659
+Mean test/val loss: 8.5003
+
+Epoch 28, loss = 9.0514
+Mean test/val loss: 8.3665
+
+Epoch 30, loss = 8.9721
+Mean test/val loss: 8.4884
+
+Epoch 32, loss = 8.8518
+Mean test/val loss: 8.2312
+
+Epoch 34, loss = 8.8566
+Mean test/val loss: 8.0516
+
+Epoch 36, loss = 8.7793
+Mean test/val loss: 8.3893
+
+Epoch 38, loss = 8.7749
+Mean test/val loss: 7.9973
+
+Epoch 40, loss = 8.7068
+Mean test/val loss: 7.9866
+
+Epoch 42, loss = 8.6696
+Mean test/val loss: 7.8519
+
+Epoch 44, loss = 8.6402
+Mean test/val loss: 8.7401
+
+Epoch 46, loss = 8.5489
+Mean test/val loss: 7.9602
+
+Epoch 48, loss = 8.4925
+Mean test/val loss: 7.9584
+
+Epoch 50, loss = 8.4882
+Mean test/val loss: 8.2246
+
+Epoch 52, loss = 8.0663
+Mean test/val loss: 7.6775
+
+Epoch 54, loss = 8.0382
+Mean test/val loss: 7.6452
+
+Epoch 56, loss = 8.0124
+Mean test/val loss: 7.6544
+
+Epoch 58, loss = 7.9962
+Mean test/val loss: 7.5946
+
+Epoch 60, loss = 7.9837
+Mean test/val loss: 7.6005
+
+Epoch 62, loss = 7.9699
+Mean test/val loss: 7.5938
+
+Epoch 64, loss = 7.9610
+Mean test/val loss: 7.5887
+
+Epoch 66, loss = 7.9513
+Mean test/val loss: 7.5662
+
+Epoch 68, loss = 7.9513
+Mean test/val loss: 7.6663
+
+Epoch 70, loss = 7.9318
+Mean test/val loss: 7.5588
+
+Epoch 72, loss = 7.9322
+Mean test/val loss: 7.6139
+
+Epoch 74, loss = 7.9193
+Mean test/val loss: 7.5577
+
+Epoch 76, loss = 7.9153
+Mean test/val loss: 7.5223
+
+Epoch 78, loss = 7.9119
+Mean test/val loss: 7.5892
+
+Epoch 80, loss = 7.9122
+Mean test/val loss: 7.5472
+
+Epoch 82, loss = 7.8940
+Mean test/val loss: 7.5112
+
+Epoch 84, loss = 7.8851
+Mean test/val loss: 7.4950
+
+Epoch 86, loss = 7.8810
+Mean test/val loss: 7.5190
+
+Epoch 88, loss = 7.8679
+Mean test/val loss: 7.5131
+
+Epoch 90, loss = 7.8763
+Mean test/val loss: 7.4942
+
+Epoch 92, loss = 7.8677
+Mean test/val loss: 7.5042
+
+Epoch 94, loss = 7.8686
+Mean test/val loss: 7.4758
+
+Epoch 96, loss = 7.8505
+Mean test/val loss: 7.4706
+
+Epoch 98, loss = 7.8569
+Mean test/val loss: 7.5285
+
+Epoch 100, loss = 7.8517
+Mean test/val loss: 7.4873
+
+
+Total parameters: 44424748
+Total training + validation time: 9.0 hours, 51.0 mins, and 49.19999999999709 secs
+Final val loss: 7.487339764212568
+
+split sizes: train=2160, val=240, test=0, N=2400
+#### Plotting Script ####
+Prediction Results:
+dataset_11_18_22 sample1801: 8.59345531463623
+dataset_11_18_22 sample653: 13.362648963928223
+dataset_11_18_22 sample410: 7.39790153503418
+dataset_11_18_22 sample2290: 5.296807289123535
+dataset_11_18_22 sample1462: 11.87396240234375
+Loss: 9.305 +- 2.942
+
+Downsampling (40%) Results:
+dataset_11_18_22 sample1462-downsampling: 11.96865463256836
+dataset_11_18_22 sample1801-downsampling: 8.67588996887207
+dataset_11_18_22 sample2290-downsampling: 5.296806335449219
+dataset_11_18_22 sample410-downsampling: 7.561104774475098
+dataset_11_18_22 sample653-downsampling: 13.36264705657959
+Loss: 9.373 +- 2.934
+
+Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy0downsample
+Original sampling (100%) Results:
+dataset_11_18_22 sample1462-regular: 11.871431350708008
+dataset_11_18_22 sample1801-regular: 8.593456268310547
+dataset_11_18_22 sample2290-regular: 5.076484680175781
+dataset_11_18_22 sample410-regular: 6.935143947601318
+dataset_11_18_22 sample653-regular: 13.006787300109863
+Loss: 9.097 +- 2.969
+
+Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy0regsample
+Upsampling (200%) Results:
+dataset_11_18_22 sample1462-upsampling: 11.919734001159668
+dataset_11_18_22 sample1801-upsampling: 8.571767807006836
+dataset_11_18_22 sample2290-upsampling: 5.103817939758301
+dataset_11_18_22 sample410-upsampling: 6.794690132141113
+dataset_11_18_22 sample653-upsampling: 13.750343322753906
+Loss: 9.228 +- 3.196
+
+Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy0upsample

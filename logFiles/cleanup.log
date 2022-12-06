@@ -1,5 +1,28 @@
-rm: rm: cannot remove ‘dataset_09_30_22_mini’cannot remove ‘dataset_09_30_22.tar.gz’: No such file or directory: No such file or directory
+rm: rm: cannot remove ‘ContactGNNEnergy2*’cannot remove ‘ContactGNNEnergy6*’: No such file or directory: No such file or directory
 
+rm: cannot remove ‘ContactGNNEnergy5*’: No such file or directory
+rm: rm: cannot remove ‘ContactGNNEnergy13*’cannot remove ‘ContactGNNEnergy7*’rm: : No such file or directorycannot remove ‘ContactGNNEnergy1*’rm: : No such file or directory
+cannot remove ‘ContactGNNEnergy10*’rm: 
+: No such file or directorycannot remove ‘ContactGNNEnergy12*’rm: : No such file or directory
+cannot remove ‘ContactGNNEnergy0*’: No such file or directory
+rm: 
+: No such file or directorycannot remove ‘ContactGNNEnergy11*’
+: No such file or directory
+rm: rm: cannot remove ‘ContactGNNEnergy3*’cannot remove ‘ContactGNNEnergy9*’: No such file or directory: No such file or directory
+
+rm: cannot remove ‘ContactGNNEnergy8*’rm: cannot remove ‘ContactGNNEnergy4*’: No such file or directory
+: No such file or directory
+rm: cannot remove ‘ContactGNNEnergy0*’: No such file or directory
+rm: cannot remove ‘ContactGNNEnergy1*’: No such file or directory
+rm: cannot remove ‘ContactGNNEnergy2*’: No such file or directory
+rm: cannot remove ‘ContactGNNEnergy3*’: No such file or directory
+rm: cannot remove ‘ContactGNNEnergy4*’: No such file or directory
+rm: cannot remove ‘ContactGNNEnergy5*’: No such file or directory
+rm: cannot remove ‘ContactGNNEnergy8*’: No such file or directory
+rm: rm: cannot remove ‘ContactGNNEnergy7*’cannot remove ‘ContactGNNEnergy9*’: No such file or directory: No such file or directory
+
+rm: cannot remove ‘ContactGNNEnergy10*’: No such file or directory
+rm: cannot remove ‘ContactGNNEnergy11*’: No such file or directory
 rm: cannot remove ‘ContactGNNEnergy6*’: No such file or directory
-rm: rm: cannot remove ‘ContactGNNEnergy4*’cannot remove ‘ContactGNNEnergy5*’: No such file or directory: No such file or directory
-
+rm: cannot remove ‘ContactGNNEnergy12*’: No such file or directory
+rm: cannot remove ‘ContactGNNEnergy13*’: No such file or directory
