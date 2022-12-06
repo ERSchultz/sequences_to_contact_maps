@@ -30,6 +30,7 @@ updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
 outputMode='energy_sym_diag'
+outputPreprocesing='log'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
 headArchitecture='bilinear'
@@ -37,11 +38,10 @@ headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
-weightDecay=1e-4
 
-# like 262 but weight decay
+# like 262 but log output
 
-id=280
+id=287
 for lr in 1e-4
 do
   train

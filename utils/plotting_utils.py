@@ -359,6 +359,9 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
         if opt.output_mode.startswith('energy'):
             y = y.reshape((opt.m, opt.m))
             yhat = yhat.reshape((opt.m, opt.m))
+            if opt.output_preprocesing == 'log':
+                yhat = np.multiply(np.sign(yhat), np.exp(np.abs(yhat)) - 1)
+                y = np.multiply(np.sign(y), np.exp(np.abs(y)) - 1)
         else:
             y = y.reshape((-1))
             yhat = yhat.reshape((-1))

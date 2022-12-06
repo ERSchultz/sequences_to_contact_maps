@@ -21,7 +21,7 @@ rootName='ContactGNNEnergy0' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_11_18_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='constant-ContactDistance-GeneticDistance_norm'
+preTransforms='constant-ContactDistance-GeneticDistance_norm-NoiseLevel'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8-8'
@@ -37,12 +37,11 @@ headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
-weightDecay=1e-2
 
-# like 262 but weight decay
+# like 262 but noiselevel
 
 
-id=278
+id=285
 for lr in 1e-4
 do
   train

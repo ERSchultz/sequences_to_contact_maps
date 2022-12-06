@@ -6,6 +6,9 @@
 #SBATCH --time=4:00:00
 
 
+cd ~
+rm -r dataset_12_05_22
+
 dir='/project2/depablo/erschultz'
 
 # rm -r dataset_09_30_22_mini &

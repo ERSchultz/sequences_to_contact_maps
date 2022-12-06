@@ -38,7 +38,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 transform = None, pre_transform = None, output = 'contact',
                 crop = None, ofile = sys.stdout, verbose = True,
                 max_sample = float('inf'), samples = None,
-                diag = False, keep_zero_edges = False):
+                diag = False, keep_zero_edges = False, output_preprocesing = None):
         '''
         Inputs:
             dirname: directory path to raw data (or list of paths)
@@ -68,6 +68,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             samples: set of samples to include (None for all)
             diag: TODO
             keep_zero_edges: True to keep edges with 0 weight
+            output_preprocesing: Type of preprocessing for prediction target
         '''
         t0 = time.time()
         self.m = m
@@ -96,6 +97,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.file_paths = make_dataset(self.dirname, maxSample = max_sample, samples = samples)
         self.diag = diag
         self.keep_zero_edges = keep_zero_edges
+        self.output_preprocesing = output_preprocesing
 
         if root_name is None:
             # find any currently existing graph data folders
@@ -215,6 +217,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     graph.energy += torch.tensor(D, dtype = torch.float32)
             else:
                 raise Exception(f'Unrecognized output {self.output}')
+
+            if self.output is not None and self.output_preprocesing == 'log':
+                graph.energy = torch.sign(graph.energy) * torch.log(torch.abs(graph.energy)+1)
 
 
             del graph.diag_chi_continuous

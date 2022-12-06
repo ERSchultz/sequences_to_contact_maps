@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE6
 #SBATCH --output=logFiles/ContactGNNEnergy6.out
-#SBATCH --time=1-24:00:00
+#SBATCH --time=2-24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -18,7 +18,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy6' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_11_18_22"
+dirname="/project2/depablo/erschultz/dataset_11_18_22-/project2/depablo/erschultz/dataset_11_21_22-/project2/depablo/erschultz/dataset_12_05_22"
 m=1024
 messagePassing='weighted_GAT'
 preTransforms='constant-ContactDistance-GeneticDistance_norm'
@@ -38,9 +38,9 @@ headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
 
-# like 235, but sweeprand and degree_diag_split
+# all datasets
 
-id=254
+id=284
 for lr in 1e-4
 do
   train

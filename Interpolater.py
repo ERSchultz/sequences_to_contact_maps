@@ -36,7 +36,7 @@ class Interpolater():
                 elif line[0] == 'resolution':
                     self.res = int(line[1])
 
-        crop_left = 1130
+        crop_left = 500
         crop_right = 1200
         plot_matrix(self.y[crop_left:crop_right, crop_left:crop_right],
                     osp.join(self.odir, 'y_crop.png'), vmax = 'mean')
@@ -70,18 +70,20 @@ class Interpolater():
 
             y_interp = self.linear_interpolate(fill_mean = False)
 
+        print(f'Interpolating {len(self.interp_locations)} rows')
+
         # plot_matrix(self.y, osp.join(self.odir, f'y_lines_{"_".join(methods)}.png'),
                     # vmax = 'mean', lines = self.interp_locations)
         # plot_matrix(y_interp, osp.join(self.odir, f'y_{"_".join(methods)}.png'), vmax = 'mean')
-        plot_matrix(y_interp[crop_left:crop_right, crop_left:crop_right],
-                    osp.join(self.odir, f'y_crop_{"_".join(methods)}.png'), vmax = 'mean')
-        y_interp_pool = rescale_matrix(y_interp, 5)
-        plot_matrix(y_interp_pool, osp.join(self.odir, f'y_pool_{"_".join(methods)}.png'), vmax = 'mean')
+        # plot_matrix(y_interp[crop_left:crop_right, crop_left:crop_right],
+                    # osp.join(self.odir, f'y_crop_{"_".join(methods)}.png'), vmax = 'mean')
+        # y_interp_pool = rescale_matrix(y_interp, 5)
+        # plot_matrix(y_interp_pool, osp.join(self.odir, f'y_pool_{"_".join(methods)}.png'), vmax = 'mean')
         # plot_matrix(y_interp_pool[crop_left:crop_right, crop_left:crop_right],
                     # osp.join(self.odir, f'y_pool_crop_{"_".join(methods)}.png'), vmax = 'mean')
 
-        np.save(osp.join(self.odir, f'y_interpolate_{"_".join(methods)}.npy'), y_interp)
-        np.save(osp.join(self.odir, f'y_pool_interpolate_{"_".join(methods)}.npy'), y_interp_pool)
+        # np.save(osp.join(self.odir, f'y_interpolate_{"_".join(methods)}.npy'), y_interp)
+        # np.save(osp.join(self.odir, f'y_pool_interpolate_{"_".join(methods)}.npy'), y_interp_pool)
 
         self.ofile.close()
 
@@ -271,19 +273,19 @@ class Interpolater():
 
 def main():
     range(101, 106)
-    for sample in [2002]:
+    for sample in [2001]:
         # Interpolater('dataset_11_14_22', sample, ['zeros'])
         # Interpolater('dataset_11_14_22', sample, ['sum_mzscore'])
         # Interpolater('dataset_11_14_22', sample, ['sum_zscore-5'])
         # Interpolater('dataset_11_14_22', sample, ['sparsity'])
         # Interpolater('dataset_11_14_22', sample, ['sparsity_mzscore'])
         # Interpolater('dataset_11_14_22', sample, ['sparsity_zscore-5'])
-        # Interpolater('dataset_11_14_22', sample, ['mappability-0.6'])
-        # Interpolater('dataset_11_14_22', sample, ['mappability-0.5'])
+        # Interpolater('dataset_11_14_22', sample, ['mappability-0.7'])
+        Interpolater('dataset_11_14_22', sample, ['mappability-0.5'])
         # Interpolater('dataset_11_14_22', sample, ['mappability-0.3'])
         # Interpolater('dataset_11_14_22', sample, ['sum_mzscore', 'mappability'])
         # Interpolater('dataset_11_14_22', sample, ['sparsity_zscore-5', 'mappability-0.5'])
-        Interpolater('dataset_11_14_22', sample, ['zeros', 'mappability-0.5'])
+        # Interpolater('dataset_11_14_22', sample, ['zeros', 'mappability-0.5'])
 
 if __name__ == '__main__':
     main()

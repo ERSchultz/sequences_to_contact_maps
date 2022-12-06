@@ -237,9 +237,13 @@ class GeneticPosition(BaseTransform):
 
 class NoiseLevel(BaseTransform):
     '''Appends noise level as node feature.'''
-    def __call__(self, data):
+    def __init__(self, inverse = False):
+        self.inverse = inverse # bool
 
+    def __call__(self, data):
         val = data.sweep / 100000
+        if self.inverse:
+            val = 1/val
         c = torch.full((data.num_nodes, 1), val, dtype=torch.float32)
 
         if data.x is not None:
@@ -251,7 +255,7 @@ class NoiseLevel(BaseTransform):
         return data
 
     def __repr__(self):
-        return (f'{self.__class__.__name__}')
+        return (f'{self.__class__.__name__}(inverse={self.inverse})')
 
 
 

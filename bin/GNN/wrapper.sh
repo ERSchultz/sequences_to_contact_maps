@@ -1,7 +1,6 @@
 #! /bin/bash
 
-for i in 0 1 2 3 4 5
-# 13 TODO
+for i in 6 13 0 1 2
 
 do
   sbatch ~/sequences_to_contact_maps/bin/GNN/ContactGNNEnergy${i}.sh

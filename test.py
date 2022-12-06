@@ -35,7 +35,7 @@ from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
 
 def test_num_workers():
     opt = argparseSetup() # get default args
-    opt.data_folder = "/../../../project2/depablo/erschultz/dataset_04_18_21"
+    opt.data_folder = "/project2/depablo/erschultz/dataset_04_18_21"
     opt.cuda = True
     opt.device = torch.device('cuda')
     opt.y_preprocessing = 'diag'
@@ -203,7 +203,8 @@ def debugModel(model_type):
         opt.preprocessing_norm = 'mean'
         opt.message_passing = 'gat'
         opt.GNN_mode = True
-        opt.output_mode = 'energy_sym'
+        opt.output_mode = 'energy_sym_diag'
+        opt.output_preprocesing = 'none'
         opt.encoder_hidden_sizes_list=[100,100,100]
         # opt.edge_encoder_hidden_sizes_list=[100,100,3]
         opt.update_hidden_sizes_list=[100,100,64]
@@ -218,7 +219,7 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('constant-degree_diag_split1_max1-contactdistance-geneticdistance_norm')
+        opt.pre_transforms=AC.str2list('constant-degree_diag_split1_max1-contactdistance-geneticdistance_norm-NoiseLevel-NoiseLevel_inverse')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
@@ -274,7 +275,7 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 1
+    opt.n_epochs = 5
     opt.lr = 1e-4
     opt.weight_decay = 1e-4
     opt.batch_size = 1
@@ -282,8 +283,8 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = False
-    opt.plot_predictions = False
+    opt.plot = True
+    opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = False
     opt.gpus = 1
@@ -675,6 +676,8 @@ def main():
     dataset = 'dataset_11_14_22'
     dir = f'/home/erschultz/{dataset}/samples/sample1001'
     y = np.load(osp.join(dir, 'y.npy'))
+    print(np.round(np.min(y[np.nonzero(y)]), 5))
+    print(1/10000)
     max_ent_dir = osp.join(dir, 'PCA_split-binarizeMean-E/k8/replicate1')
     S = np.load(osp.join(max_ent_dir, 's.npy'))
     with open(osp.join(max_ent_dir, 'iteration21/config.json')) as f:
@@ -688,15 +691,19 @@ def main():
     vmax = max(vmax, vmin * -1)
     vmin = vmax * -1
 
-    gnn_dir = osp.join(dir, 'GNN-271-E/k0/replicate1')
-    SD = np.load(osp.join(gnn_dir, 's.npy'))
-    ED2 = s_to_E(SD)
-    plot_matrix(ED2, osp.join(gnn_dir, 'ED.png'), title = 'S + D', cmap = 'blue-red', vmin=vmin, vmax=vmax)
+    EDlog = np.multiply(np.sign(ED), np.log(np.abs(ED)+1))
+    plot_matrix(EDlog, osp.join(max_ent_dir, 'ED_log.png'), title = 'S + D', cmap = 'blue-red')
 
-    print(mean_squared_error(ED, ED2))
-
+    EDunlog = np.multiply(np.sign(EDlog), np.exp(np.abs(EDlog)) - 1)
+    print(np.allclose(ED, EDunlog))
 
 
+    # gnn_dir = osp.join(dir, 'GNN-271-E/k0/replicate1')
+    # SD = np.load(osp.join(gnn_dir, 's.npy'))
+    # ED2 = s_to_E(SD)
+    # plot_matrix(ED2, osp.join(gnn_dir, 'ED.png'), title = 'S + D', cmap = 'blue-red', vmin=vmin, vmax=vmax)
+    #
+    # print(mean_squared_error(ED, ED2))
 
 
 if __name__ == '__main__':

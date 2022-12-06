@@ -67,13 +67,15 @@ def get_base_parser():
                         help='number of diagonals of y set to 0')
     parser.add_argument('--log_preprocessing', type=AC.str2None,
                         help='type of log transform input data (None to skip)')
+    parser.add_argument('--output_preprocesing', 
+                        help='type of preprocessing for output')
     parser.add_argument('--kr', type=AC.str2bool,
                         help='True to use KnightRuiz balancing algorithm')
     parser.add_argument('--mean_filt', type=AC.str2int,
                         help='mean_filt: apply mean filter of width <mean_filt> (None to skip)')
-    parser.add_argument('--rescale', type=AC.str2int, default=False,
+    parser.add_argument('--rescale', type=AC.str2int,
                         help='rescale contact map by factor of <rescale> (None to skip)')
-    parser.add_argument('--gated', type=AC.str2bool,
+    parser.add_argument('--gated', type=AC.str2bool, default=False,
                         help='True to use gated connection')
     parser.add_argument('--preprocessing_norm', type=AC.str2None, default='batch',
                         help='type of [0,1] normalization for input data')
@@ -333,6 +335,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
             assert (len(opt.transforms) + len(opt.pre_transforms)) > 0, f"need feature augmentation for id={opt.id}"
 
     if opt.rescale is not None:
+        assert opt.rescale != 0, f'{opt.id}'
         opt.input_m = int(opt.m / opt.rescale)
     else:
         opt.input_m = opt.m
@@ -418,12 +421,12 @@ def process_transforms(opt):
     for t_str in opt.pre_transforms:
         t_str = t_str.lower().split('_')
         if t_str[0] == 'constant':
-            opt.node_transforms.append(torch_geometric.transforms.Constant())
-            processed.append(torch_geometric.transforms.Constant())
+            transform = torch_geometric.transforms.Constant()
+            opt.node_transforms.append(transform)
             opt.node_feature_size += 1
         elif t_str[0] == 'weightedldp':
-            opt.node_transforms.append(WeightedLocalDegreeProfile())
-            processed.append(WeightedLocalDegreeProfile())
+            transform = WeightedLocalDegreeProfile()
+            opt.node_transforms.append(transform)
             if (opt.top_k is None and
                 opt.sparsify_threshold is None and
                 opt.sparsify_threshold_upper is None):
@@ -454,12 +457,11 @@ def process_transforms(opt):
             transform = Degree(split_val = split_value, diag = opt.diag,
                             split_edges = split, max_val = max_value,
                             weighted = weighted)
-            processed.append(transform)
             opt.node_transforms.append(transform)
         elif t_str[0] == 'onehotdegree':
             opt.node_feature_size += opt.m + 1
-            processed.append(torch_geometric.transforms.OneHotDegree(opt.m))
-            opt.node_transforms.append(torch_geometric.transforms.OneHotDegree(opt.m))
+            transform = torch_geometric.transforms.OneHotDegree(opt.m)
+            opt.node_transforms.append(transform)
         elif t_str[0] == 'adj':
             opt.node_feature_size += opt.m
             processed.append(AdjTransform())
@@ -470,8 +472,8 @@ def process_transforms(opt):
             else:
                 transform_k = 10
             opt.node_feature_size += transform_k
-            processed.append(AdjPCATransform(k = transform_k))
-            opt.node_transforms.append(AdjPCATransform(k = transform_k))
+            transform = AdjPCATransform(k = transform_k)
+            opt.node_transforms.append(transform)
         elif t_str[0] == 'contactdistance':
             opt.edge_transforms.append(f'ContactDistance')
             assert opt.use_edge_attr or opt.use_edge_weights
@@ -485,7 +487,6 @@ def process_transforms(opt):
             transform = ContactDistance(norm = norm,
                                         split_edges = opt.split_neg_pos_edges,
                                         convert_to_attr = opt.use_edge_attr)
-            processed.append(transform)
             opt.edge_transforms.append(transform)
         elif t_str[0] == 'geneticdistance':
             assert opt.use_edge_attr or opt.use_edge_weights
@@ -505,7 +506,6 @@ def process_transforms(opt):
             transform = GeneticDistance(split_edges = opt.split_neg_pos_edges,
                                         convert_to_attr = opt.use_edge_attr,
                                         log = log, log10 = log10, norm = norm)
-            processed.append(transform)
             opt.edge_transforms.append(transform)
         elif t_str[0] == 'geneticposition':
             center = False
@@ -518,16 +518,18 @@ def process_transforms(opt):
 
             opt.node_feature_size += 1
             transform = GeneticPosition(center = center, norm = norm)
-            processed.append(transform)
             opt.node_transforms.append(transform)
         elif t_str[0] == 'onehotgeneticposition':
+            transform = OneHotGeneticPosition()
             opt.node_feature_size += opt.m
-            processed.append(OneHotGeneticPosition())
-            opt.node_transforms.append(OneHotGeneticPosition())
-        elif t_str[0] == 'noiselevel':
-            transform = NoiseLevel()
             opt.node_transforms.append(transform)
-            processed.append(transform)
+        elif t_str[0] == 'noiselevel':
+            inverse = False
+            for mode_str in t_str[1:]:
+                if mode_str == 'inverse':
+                    inverse = True
+            transform = NoiseLevel(inverse)
+            opt.node_transforms.append(transform)
             opt.node_feature_size += 1
         elif t_str[0] == 'diagonalparameterdistance':
             assert opt.use_edge_attr or opt.use_edge_weights
@@ -541,8 +543,11 @@ def process_transforms(opt):
 
             transform = DiagonalParameterDistance(split_edges = opt.split_neg_pos_edges,
                                             convert_to_attr = opt.use_edge_attr, id = mlp_id)
-            processed.append(transform)
             opt.edge_transforms.append(transform)
+        else:
+            raise Exception(f'Unrecognized transform: {t_str}')
+        processed.append(transform)
+
     if len(processed) > 0:
         opt.pre_transforms_processed = torch_geometric.transforms.Compose(processed)
     else:
