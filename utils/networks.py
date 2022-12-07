@@ -821,6 +821,8 @@ class ContactGNN(nn.Module):
     def latent(self, graph):
         if self.node_encoder is not None:
             x = self.node_encoder(graph.x)
+        else:
+            x = graph.x
         if self.edge_encoder is not None:
             row, col = graph.edge_index
             concat = torch.cat((x[row], x[col], graph.edge_attr), dim = -1)

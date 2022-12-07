@@ -205,7 +205,7 @@ def debugModel(model_type):
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym_diag'
         opt.output_preprocesing = 'none'
-        opt.encoder_hidden_sizes_list=[100,100,100]
+        opt.encoder_hidden_sizes_list=AC.str2list('none')
         # opt.edge_encoder_hidden_sizes_list=[100,100,3]
         opt.update_hidden_sizes_list=[100,100,64]
         opt.hidden_sizes_list=[8]
@@ -219,7 +219,7 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('constant-degree_diag_split1_max1-contactdistance-geneticdistance_norm-NoiseLevel-NoiseLevel_inverse')
+        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
@@ -275,7 +275,7 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 5
+    opt.n_epochs = 1
     opt.lr = 1e-4
     opt.weight_decay = 1e-4
     opt.batch_size = 1
@@ -283,8 +283,8 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = True
-    opt.plot_predictions = True
+    opt.plot = False
+    opt.plot_predictions = False
     opt.verbose = False
     opt.print_params = False
     opt.gpus = 1
@@ -722,11 +722,11 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
     # prep_data_for_cluster()
     # find_best_p_s()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # testGNNrank()

@@ -41,7 +41,7 @@ useScratch='false'
 
 # all datasets log output
 
-id=284
+id=289
 for lr in 1e-4
 do
   train
