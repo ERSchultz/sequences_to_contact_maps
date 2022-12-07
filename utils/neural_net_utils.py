@@ -22,29 +22,29 @@ def load_saved_model(opt, verbose = True, throw = True):
         val_loss_arr = save_dict['val_loss']
         try:
             state_dict = save_dict['model_state_dict']
-            for key in list(state_dict.keys()):
+            # for key in list(state_dict.keys()):
                 # if key.startswith('encoder'):
                     # state_dict[key.replace('encoder', 'node_encoder')] = state_dict.pop(key)
 
-                starts = [1, 8, 15, 22]
-                for module, start in zip([1, 3, 5, 7], starts):
-                    for i in [0, 1, 2]:
-                        j = start + 2*i
-                        if key == f'model.module_{j}.weight':
-                            state_dict[f'model.module_{module}.model.{i}.model.0.weight'] = state_dict.pop(key)
-                        elif key == f'model.module_{j}.bias':
-                            state_dict[f'model.module_{module}.model.{i}.model.0.bias'] = state_dict.pop(key)
-                        elif key == f'model.module_{j+1}.weight':
-                            state_dict[f'model.module_{module}.model.{i}.model.1.weight'] = state_dict.pop(key)
-                if key.startswith('head_2.'):
-                    state_dict[key.replace('head_2.', 'head_2.0.model.')]= state_dict.pop(key)
-
-                if key.startswith('model.module_7'):
-                    state_dict[key.replace('model.module_7', 'model.module_2')] = state_dict.pop(key)
-                if key.startswith('model.module_14'):
-                    state_dict[key.replace('model.module_14', 'model.module_4')] = state_dict.pop(key)
-                if key.startswith('model.module_21'):
-                    state_dict[key.replace('model.module_21', 'model.module_6')] = state_dict.pop(key)
+                # starts = [1, 8, 15, 22]
+                # for module, start in zip([1, 3, 5, 7], starts):
+                #     for i in [0, 1, 2]:
+                #         j = start + 2*i
+                #         if key == f'model.module_{j}.weight':
+                #             state_dict[f'model.module_{module}.model.{i}.model.0.weight'] = state_dict.pop(key)
+                #         elif key == f'model.module_{j}.bias':
+                #             state_dict[f'model.module_{module}.model.{i}.model.0.bias'] = state_dict.pop(key)
+                #         elif key == f'model.module_{j+1}.weight':
+                #             state_dict[f'model.module_{module}.model.{i}.model.1.weight'] = state_dict.pop(key)
+                # if key.startswith('head_2.'):
+                #     state_dict[key.replace('head_2.', 'head_2.0.model.')]= state_dict.pop(key)
+                #
+                # if key.startswith('model.module_7'):
+                #     state_dict[key.replace('model.module_7', 'model.module_2')] = state_dict.pop(key)
+                # if key.startswith('model.module_14'):
+                #     state_dict[key.replace('model.module_14', 'model.module_4')] = state_dict.pop(key)
+                # if key.startswith('model.module_21'):
+                #     state_dict[key.replace('model.module_21', 'model.module_6')] = state_dict.pop(key)
             model.load_state_dict(state_dict)
             model.eval()
             if verbose:

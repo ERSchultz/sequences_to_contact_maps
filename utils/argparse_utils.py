@@ -67,7 +67,7 @@ def get_base_parser():
                         help='number of diagonals of y set to 0')
     parser.add_argument('--log_preprocessing', type=AC.str2None,
                         help='type of log transform input data (None to skip)')
-    parser.add_argument('--output_preprocesing', 
+    parser.add_argument('--output_preprocesing',
                         help='type of preprocessing for output')
     parser.add_argument('--kr', type=AC.str2bool,
                         help='True to use KnightRuiz balancing algorithm')
@@ -545,7 +545,7 @@ def process_transforms(opt):
                                             convert_to_attr = opt.use_edge_attr, id = mlp_id)
             opt.edge_transforms.append(transform)
         else:
-            raise Exception(f'Unrecognized transform: {t_str}')
+            raise Exception(f'Unrecognized transform: {t_str} for id={opt.id}')
         processed.append(transform)
 
     if len(processed) > 0:
