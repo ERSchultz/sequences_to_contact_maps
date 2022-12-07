@@ -827,8 +827,6 @@ class ContactGNN(nn.Module):
             row, col = graph.edge_index
             concat = torch.cat((x[row], x[col], graph.edge_attr), dim = -1)
             edge_attr = self.edge_encoder(concat)
-            print('e811', edge_attr)
-            print('e812', graph.edge_attr)
         else:
             edge_attr = graph.edge_attr
 

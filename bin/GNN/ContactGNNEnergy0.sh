@@ -41,7 +41,7 @@ useScratch='false'
 
 # log output more params
 
-id=284
+id=290
 for lr in 1e-4
 do
   train

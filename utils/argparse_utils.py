@@ -120,7 +120,7 @@ def get_base_parser():
     parser.add_argument('--print_mod', type=int, default=2,
                         help='How often to print')
     parser.add_argument('--lr', type=float, default=1e-3,
-                        help='Learning eate. Default=0.001')
+                        help='Learning rate. Default=0.001')
     parser.add_argument('--weight_decay', type=float, default=0.0,
                         help='Weight Decay. Default=0.0')
     parser.add_argument('--gpus', type=int, default=1,
@@ -128,7 +128,7 @@ def get_base_parser():
     parser.add_argument('--milestones', type=AC.str2list, default=[2],
                         help='Milestones for lr decay - format: <milestone1-milestone2>')
     parser.add_argument('--gamma', type=float, default=0.1,
-                        help='Gamma for lr decay')
+                        help='Gamma for lr scheduler')
     parser.add_argument('--loss', type=str, default='mse',
                         help='Type of loss to use: options: {"mse", "cross_entropy"}')
     parser.add_argument('--autoencoder_mode', type=AC.str2bool, default=False,
@@ -684,6 +684,7 @@ def opt2list(opt):
         opt.y_preprocessing, opt.mean_filt, opt.rescale, opt.kr, opt.min_subtraction, opt.log_preprocessing, opt.crop]
     opt_list.append(opt.split_percents if opt.split_percents is not None else opt.split_sizes)
     opt_list.extend([opt.shuffle, opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr,
+        opt.weight_decay,
         opt.milestones, opt.gamma, opt.loss,
         opt.k, opt.m, opt.seed, opt.act, opt.inner_act,
         opt.head_act, opt.out_act, opt.training_norm])
@@ -735,7 +736,7 @@ def save_opt(opt, ofile):
 def get_opt_header(model_type, GNN_mode):
     opt_list = ['model_type', 'id',  'dataset', 'preprocessing_norm',
         'y_preprocessing',  'mean_filt', 'rescale', 'kr', 'min_subtraction', 'log_preprocessing', 'crop', 'split', 'shuffle',
-        'batch_size', 'num_workers', 'n_epochs', 'lr', 'milestones',
+        'batch_size', 'num_workers', 'n_epochs', 'lr', 'weight_decay', 'milestones',
         'gamma', 'loss', 'k', 'm',
         'seed', 'act', 'inner_act', 'head_act', 'out_act',
         'training_norm']

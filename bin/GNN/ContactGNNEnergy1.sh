@@ -42,7 +42,7 @@ KR='true'
 
 # log output KR
 
-id=286
+id=291
 for lr in 1e-4
 do
   train
