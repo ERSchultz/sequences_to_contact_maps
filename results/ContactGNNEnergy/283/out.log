@@ -237,3 +237,140 @@ Epoch 36, loss = 9.0567
 Mean test/val loss: 8.7769
 
 Epoch 38, loss = 8.8579
+Mean test/val loss: 8.7609
+
+Epoch 40, loss = 8.6993
+Mean test/val loss: 8.2545
+
+Epoch 42, loss = 8.6029
+Mean test/val loss: 7.8603
+
+Epoch 44, loss = 8.3740
+Mean test/val loss: 7.8841
+
+Epoch 46, loss = 8.3123
+Mean test/val loss: 7.9523
+
+Epoch 48, loss = 8.2359
+Mean test/val loss: 8.0779
+
+Epoch 50, loss = 8.1286
+Mean test/val loss: 7.8748
+
+Epoch 52, loss = 7.5103
+Mean test/val loss: 7.3753
+
+Epoch 54, loss = 7.4459
+Mean test/val loss: 7.3322
+
+Epoch 56, loss = 7.4099
+Mean test/val loss: 7.3494
+
+Epoch 58, loss = 7.3800
+Mean test/val loss: 7.2442
+
+Epoch 60, loss = 7.3540
+Mean test/val loss: 7.2379
+
+Epoch 62, loss = 7.3219
+Mean test/val loss: 7.2079
+
+Epoch 64, loss = 7.3087
+Mean test/val loss: 7.2296
+
+Epoch 66, loss = 7.2903
+Mean test/val loss: 7.1772
+
+Epoch 68, loss = 7.2695
+Mean test/val loss: 7.1724
+
+Epoch 70, loss = 7.2508
+Mean test/val loss: 7.1814
+
+Epoch 72, loss = 7.2298
+Mean test/val loss: 7.1756
+
+Epoch 74, loss = 7.2141
+Mean test/val loss: 7.1564
+
+Epoch 76, loss = 7.2004
+Mean test/val loss: 7.1423
+
+Epoch 78, loss = 7.1898
+Mean test/val loss: 7.1256
+
+Epoch 80, loss = 7.1683
+Mean test/val loss: 7.1236
+
+Epoch 82, loss = 7.1591
+Mean test/val loss: 7.1381
+
+Epoch 84, loss = 7.1500
+Mean test/val loss: 7.1211
+
+Epoch 86, loss = 7.1403
+Mean test/val loss: 7.0992
+
+Epoch 88, loss = 7.1259
+Mean test/val loss: 7.1060
+
+Epoch 90, loss = 7.1098
+Mean test/val loss: 7.1339
+
+Epoch 92, loss = 7.1007
+Mean test/val loss: 7.0932
+
+Epoch 94, loss = 7.0900
+Mean test/val loss: 7.1293
+
+Epoch 96, loss = 7.0786
+Mean test/val loss: 7.0859
+
+Epoch 98, loss = 7.0675
+Mean test/val loss: 7.0760
+
+Epoch 100, loss = 7.0584
+Mean test/val loss: 7.0653
+
+
+Total parameters: 44425264
+Total training + validation time: 9.0 hours, 40.0 mins, and 3.599999999998545 secs
+Final val loss: 7.065331954384844
+
+split sizes: train=2160, val=240, test=0, N=2400
+#### Plotting Script ####
+Prediction Results:
+dataset_11_18_22 sample1801: 7.912493705749512
+dataset_11_18_22 sample653: 12.4769287109375
+dataset_11_18_22 sample410: 6.749529838562012
+dataset_11_18_22 sample2290: 4.777578830718994
+dataset_11_18_22 sample1462: 11.019675254821777
+Loss: 8.587 +- 2.807
+
+Downsampling (40%) Results:
+dataset_11_18_22 sample1462-downsampling: 11.422536849975586
+dataset_11_18_22 sample1801-downsampling: 8.094922065734863
+dataset_11_18_22 sample2290-downsampling: 4.777578830718994
+dataset_11_18_22 sample410-downsampling: 7.090563774108887
+dataset_11_18_22 sample653-downsampling: 12.4769287109375
+Loss: 8.773 +- 2.828
+
+Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy5downsample
+Original sampling (100%) Results:
+dataset_11_18_22 sample1462-regular: 10.932380676269531
+dataset_11_18_22 sample1801-regular: 7.912494659423828
+dataset_11_18_22 sample2290-regular: 4.595819473266602
+dataset_11_18_22 sample410-regular: 6.282702445983887
+dataset_11_18_22 sample653-regular: 12.489073753356934
+Loss: 8.442 +- 2.909
+
+Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy5regsample
+Upsampling (200%) Results:
+dataset_11_18_22 sample1462-upsampling: 10.901450157165527
+dataset_11_18_22 sample1801-upsampling: 7.863332271575928
+dataset_11_18_22 sample2290-upsampling: 4.654788017272949
+dataset_11_18_22 sample410-upsampling: 6.609118938446045
+dataset_11_18_22 sample653-upsampling: 12.527334213256836
+Loss: 8.511 +- 2.855
+
+Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy5upsample
