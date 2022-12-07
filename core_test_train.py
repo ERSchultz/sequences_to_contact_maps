@@ -228,7 +228,7 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                         'val_loss': val_loss}
             if opt.scheduler is not None:
                 save_dict['scheduler_state_dict'] = opt.scheduler.state_dict()
-            torch.save(save_dict, os.path.join(opt.ofile_folder, 'model.pt'))
+            torch.save(save_dict, osp.join(opt.ofile_folder, 'model.pt'))
 
     return train_loss, val_loss
 
