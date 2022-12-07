@@ -673,45 +673,60 @@ def testGNNrank():
             print()
 
 def main():
-    dataset = 'dataset_11_14_22'
-    dir = f'/home/erschultz/{dataset}/samples/sample1001'
+    dataset = 'dataset_11_21_22'
+    dir = f'/home/erschultz/{dataset}/samples/sample410'
     y = np.load(osp.join(dir, 'y.npy'))
-    print(np.round(np.min(y[np.nonzero(y)]), 5))
-    print(1/10000)
-    max_ent_dir = osp.join(dir, 'PCA_split-binarizeMean-E/k8/replicate1')
-    S = np.load(osp.join(max_ent_dir, 's.npy'))
-    with open(osp.join(max_ent_dir, 'iteration21/config.json')) as f:
+
+    S = np.load(osp.join(dir, 's.npy'))
+    S = (S + S.T)/2
+    print(np.linalg.matrix_rank(S))
+    E = s_to_E(S)
+    with open(osp.join(dir, 'config.json')) as f:
         config = json.load(f)
     diag_chi_continuous = calculate_diag_chi_step(config)
     D = calculate_D(diag_chi_continuous)
     ED = calculate_net_energy(S, D)
-    plot_matrix(ED, osp.join(max_ent_dir, 'ED.png'), title = 'S + D', cmap = 'blue-red')
-    vmin = np.nanpercentile(ED, 1)
-    vmax = np.nanpercentile(ED, 99)
-    vmax = max(vmax, vmin * -1)
-    vmin = vmax * -1
 
-    EDlog = np.multiply(np.sign(ED), np.log(np.abs(ED)+1))
-    plot_matrix(EDlog, osp.join(max_ent_dir, 'ED_log.png'), title = 'S + D', cmap = 'blue-red')
+    val = np.mean(S)
+    S2 = S - val
+    D2 = S + val
+    ED2 = calculate_net_energy(S2, D2)
+    print(np.allclose(ED, ED2))
+    print(ED - ED2)
+    plot_matrix(S, osp.join(dir, 'S.png'), title = 'S', cmap='blue-red')
+    plot_matrix(E, osp.join(dir, 'E.png'), title = 'E', cmap='blue-red')
+    plot_matrix(ED2, osp.join(dir, 'ED2.png'), title = 'ED2', cmap='blue-red')
+    plot_matrix(ED - ED2, osp.join(dir, 'diff.png'), title = 'ED - ED2', cmap='blue-red')
 
-    EDunlog = np.multiply(np.sign(EDlog), np.exp(np.abs(EDlog)) - 1)
-    print(np.allclose(ED, EDunlog))
 
 
-    # gnn_dir = osp.join(dir, 'GNN-271-E/k0/replicate1')
-    # SD = np.load(osp.join(gnn_dir, 's.npy'))
-    # ED2 = s_to_E(SD)
-    # plot_matrix(ED2, osp.join(gnn_dir, 'ED.png'), title = 'S + D', cmap = 'blue-red', vmin=vmin, vmax=vmax)
+    # plot_matrix(ED, osp.join(max_ent_dir, 'ED.png'), title = 'S + D', cmap = 'blue-red')
+    # vmin = np.nanpercentile(ED, 1)
+    # vmax = np.nanpercentile(ED, 99)
+    # vmax = max(vmax, vmin * -1)
+    # vmin = vmax * -1
     #
-    # print(mean_squared_error(ED, ED2))
+    # EDlog = np.multiply(np.sign(ED), np.log(np.abs(ED)+1))
+    # plot_matrix(EDlog, osp.join(max_ent_dir, 'ED_log.png'), title = 'S + D', cmap = 'blue-red')
+    #
+    # EDunlog = np.multiply(np.sign(EDlog), np.exp(np.abs(EDlog)) - 1)
+    # print(np.allclose(ED, EDunlog))
+    #
+    #
+    # # gnn_dir = osp.join(dir, 'GNN-271-E/k0/replicate1')
+    # # SD = np.load(osp.join(gnn_dir, 's.npy'))
+    # # ED2 = s_to_E(SD)
+    # # plot_matrix(ED2, osp.join(gnn_dir, 'ED.png'), title = 'S + D', cmap = 'blue-red', vmin=vmin, vmax=vmax)
+    # #
+    # # print(mean_squared_error(ED, ED2))
 
 
 if __name__ == '__main__':
-    # main()
+    main()
     # prep_data_for_cluster()
     # find_best_p_s()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
     # testGNNrank()

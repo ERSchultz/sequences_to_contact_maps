@@ -11,6 +11,13 @@ rm -r dataset_12_05_22
 
 dir='/project2/depablo/erschultz'
 
+
+cd "${dir}/dataset_11_21_22/samples"
+for i in {2401..10000}
+do
+  rm -r "sample${i}"
+done
+
 # rm -r dataset_09_30_22_mini &
 # rm -r dataset_09_30_22.tar.gz &
 # wait
