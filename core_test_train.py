@@ -235,7 +235,7 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
 def test(loader, model, opt, toprint):
     assert loader is not None, 'loader is None - check train/val/test split'
     model.eval()
-    avg_loss = 0
+    loss_list = []
     with torch.no_grad():
         for t, data in enumerate(loader):
             if opt.GNN_mode:
@@ -261,11 +261,15 @@ def test(loader, model, opt, toprint):
                 y = y.to(opt.device)
                 yhat = model(x)
             loss = opt.criterion(yhat, y)
-            avg_loss += loss.item()
-    avg_loss /= (t+1)
+            loss_list.append(loss.item())
+
+    avg_loss = np.mean(loss_list)
     if toprint:
-        print('Mean test/val loss: {:.4f}\n'.format(avg_loss), file = opt.log_file)
-    # TODO quartiles and median loss
+        print('Mean test/val loss: {:.4f}'.format(avg_loss), file = opt.log_file)
+        quantiles = np.percentile(loss_list, [25, 50, 75])
+        quantiles = np.round(quantiles, 4)
+        print(f'[25, 50, 75] quantiles test/val loss: {quantiles}\n', file = opt.log_file)
+
     return avg_loss
 
 

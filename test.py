@@ -11,15 +11,14 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from core_test_train import core_test_train
+from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
-
-from core_test_train import core_test_train
-from result_summary_plots import plot_top_PCs
 from utils.argparse_utils import (ArgparserConverter, finalize_opt,
                                   get_base_parser)
 from utils.dataset_classes import make_dataset
@@ -741,12 +740,12 @@ def main2():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
     # main2()
     # prep_data_for_cluster()
     # find_best_p_s()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # testGNNrank()
