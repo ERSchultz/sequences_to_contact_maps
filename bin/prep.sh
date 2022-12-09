@@ -8,7 +8,9 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=erschultz@uchicago.edu
 
-# cd /project2/depablo/erschultz
+cd /project2/depablo/erschultz
+rm -r dataset_11_18_22_small.tar.gz
+
 # mkdir dataset_11_18_22_small
 # cd dataset_11_18_22_small
 # mkdir samples
@@ -21,7 +23,7 @@
 #   cd "sample${i}"
 #   mkdir data_out
 # done
-
+#
 # dir="/project2/depablo/erschultz/dataset_11_18_22/samples"
 # for i in {1..2400}
 # do
@@ -37,5 +39,16 @@
 #   done
 # done
 
+mkdir dataset_11_18_22_small2
+cd dataset_11_18_22_small2
+mkdir samples
+
 cd /project2/depablo/erschultz
-tar -czf dataset_11_18_22_small.tar.gz dataset_11_18_22_small
+for i in {1200..2400}
+do
+  mv "/project2/depablo/erschultz/dataset_11_18_22_small/samples/sample${i}" "/project2/depablo/erschultz/dataset_11_18_22_small2/samples/sample${i}"
+done
+
+tar -czf dataset_11_18_22_small.tar.gz dataset_11_18_22_small &
+tar -czf dataset_11_18_22_small2.tar.gz dataset_11_18_22_small2 &
+wait

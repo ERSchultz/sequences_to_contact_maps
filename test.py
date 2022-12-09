@@ -202,8 +202,8 @@ def debugModel(model_type):
         opt.preprocessing_norm = 'mean'
         opt.message_passing = 'gat'
         opt.GNN_mode = True
-        opt.output_mode = 'energy_sym_diag'
-        opt.output_preprocesing = 'none'
+        opt.output_mode = 'energy_SD'
+        opt.output_preprocesing = 'log'
         opt.encoder_hidden_sizes_list=AC.str2list('none')
         # opt.edge_encoder_hidden_sizes_list=[100,100,3]
         opt.update_hidden_sizes_list=[100,100,64]
@@ -282,8 +282,8 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = False
-    opt.plot_predictions = False
+    opt.plot = True
+    opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = False
     opt.gpus = 1
@@ -671,8 +671,6 @@ def testGNNrank():
             # plot_top_PCs(s, verbose = True, count = 4)
             print()
 
-
-
 def main():
     dataset = 'dataset_11_21_22'
     dir = f'/home/erschultz/{dataset}/samples/sample410'
@@ -702,42 +700,38 @@ def main():
 
 
 def main2():
-    dataset = 'dataset_11_14_22'
-    dir = f'/home/erschultz/{dataset}/samples/sample1001/PCA_split-binarizeMean-E/k8/replicate1'
-    y = np.load(osp.join(dir, 'y.npy'))
+    dataset = 'dataset_11_18_22'
+    dir = f'/home/erschultz/{dataset}/samples/sample1462'
+    SD = np.load(osp.join(dir, 'sd.npy'))
+    np.fill_diagonal(SD, 0)
 
-    S = np.load(osp.join(dir, 's.npy'))
-    S = (S + S.T)/2
-    print(np.linalg.matrix_rank(S))
-    E = s_to_E(S)
-    with open(osp.join(dir, 'iteration21/config.json')) as f:
-        config = json.load(f)
-    diag_chi_continuous = calculate_diag_chi_step(config)
-    D = calculate_D(diag_chi_continuous)
-    ED = calculate_net_energy(S, D)
+    dir = osp.join(dir, 'GNN-287-E/k0/replicate1')
+    SD2 = np.load(osp.join(dir, 'resources/s.npy'))
+    np.fill_diagonal(SD2, 0)
 
-    plot_matrix(ED, osp.join(dir, 'ED.png'), title = 'S + D', cmap = 'blue-red')
-    vmin = np.nanpercentile(ED, 1)
-    vmax = np.nanpercentile(ED, 99)
-    vmax = max(vmax, vmin * -1)
-    vmin = vmax * -1
+    vmin = np.min(SD)
+    vmax = np.max(SD)
 
-    EDlog = np.multiply(np.sign(ED), np.log(np.abs(ED)+1))
-    plot_matrix(EDlog, osp.join(dir, 'ED_log.png'), title = 'S + D', cmap = 'blue-red')
-    #
-    # EDunlog = np.multiply(np.sign(EDlog), np.exp(np.abs(EDlog)) - 1)
-    # print(np.allclose(ED, EDunlog))
-    #
-    #
-    gnn_dir = osp.join(dir, 'samples/sample1001/GNN-287-E/k0/replicate1')
-    ED2 = np.loadtxt(osp.join(gnn_dir, 'resources/e_matrix.txt'))
-    plot_matrix(ED2, osp.join(gnn_dir, 'ED.png'), title = 'S + D', cmap = 'blue-red', vmin=vmin, vmax=vmax)
+    # plot_matrix(SD, osp.join(dir, 'SD.png'), title = 'SD', cmap = 'blue-red', vmin=vmin, vmax=vmax)
+    # plot_matrix(SD2, osp.join(dir, 'SD2.png'), title = 'SD2', cmap = 'blue-red', vmin=vmin, vmax=vmax)
 
-    diff = ED - ED2
-    plot_matrix(diff, osp.join(gnn_dir, 'diff.png'), title = 'ED - ED_GNN', cmap = 'blue-red', vmin=vmin, vmax=vmax)
 
-    print(mean_squared_error(ED, ED2))
+    diff = SD - SD2
+    # plot_matrix(diff, osp.join(dir, 'diff.png'), title = 'SD - SD_GNN', cmap = 'blue-red', vmin='min', vmax='max')
 
+    print(mean_squared_error(SD, SD2))
+
+    dir = '/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/287/dataset_11_18_22_sample1462-regular/sample1462-regular'
+    SDgnn = np.loadtxt(osp.join(dir, 'energy.txt'))
+    SD2gnn = np.loadtxt(osp.join(dir, 'energy_hat.txt'))
+    diff = SD - SDgnn
+    print(diff)
+    plot_matrix(diff, osp.join(dir, 'diff.png'), title = 'SD - SDgnn', cmap = 'blue-red', vmin='min', vmax='max')
+
+    diff2 = SD2 - SD2gnn
+    print(diff2)
+    plot_matrix(diff2, osp.join(dir, 'diff2.png'), title = 'SD - SDgnn', cmap = 'blue-red', vmin='min', vmax='max')
+    print('mse', mean_squared_error(SDgnn, SD2gnn))
 
 if __name__ == '__main__':
     # main()

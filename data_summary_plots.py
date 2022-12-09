@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 from sklearn.metrics import mean_squared_error
-
 from utils.dataset_classes import make_dataset
 from utils.energy_utils import calculate_D, s_to_E
 from utils.InteractionConverter import InteractionConverter
@@ -562,6 +561,7 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
                             cmap = 'blue-red')
 
                 SD = s_sym + D + np.diag(np.diagonal(D.copy()))
+                np.save(osp.join(path, 'sd.npy'), SD)
                 plot_matrix(SD, osp.join(path, 'SD.png'), vmax = 'max', vmin = 'min',
                             cmap = 'blue-red')
 
@@ -602,10 +602,10 @@ if __name__ == '__main__':
     dir = '/home/erschultz/sequences_to_contact_maps'
     dir = '/home/erschultz'
 
-    dataset = 'dataset_11_14_22'
+    dataset = 'dataset_11_18_22'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                plot_chi = False, sampleID = 2002)
+    basic_plots(data_dir, plot_y = False, plot_energy = True, plot_x = False,
+                plot_chi = False, sampleID = 1462)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

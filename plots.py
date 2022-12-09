@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from scipy.ndimage import uniform_filter
-
 from utils.argparse_utils import (finalize_opt, get_base_parser,
                                   get_opt_header, opt2list)
 from utils.energy_utils import calculate_diag_chi_step
@@ -414,7 +413,7 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     dir = '/home/erschultz/sequences_to_contact_maps/'
     data_dir = osp.join(dir, 'single_cell_nagano_imputed/samples/sample443')
@@ -431,4 +430,4 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_09_30_22')
     # plot_combined_models('ContactGNNEnergy', [262, 267])
-    # main(268)
+    main(287)

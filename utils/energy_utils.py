@@ -11,9 +11,18 @@ def calculate_all_energy(config, x, chi):
     ED = calculate_net_energy(S, D)
     return S, D, E, ED
 
-def calculate_net_energy(S, D):
+def calculate_SD(S, D):
     S_sym = (S + S.T)/2 # double check that S is symmetric
     SD = S_sym + D + np.diag(np.diagonal(D.copy()))
+    return SD
+
+def calculate_SD_ED(S, D):
+    SD = calculate_SD(S, D)
+    ED = s_to_E(SD)
+    return SD, ED
+
+def calculate_net_energy(S, D):
+    SD = calculate_SD(S, D)
     ED = s_to_E(SD)
     return ED
 

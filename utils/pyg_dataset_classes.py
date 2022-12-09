@@ -20,7 +20,7 @@ from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 
 from .argparse_utils import finalize_opt, get_base_parser
 from .dataset_classes import DiagFunctions, make_dataset
-from .energy_utils import calculate_D
+from .energy_utils import calculate_D, calculate_SD
 from .knightRuiz import knightRuiz
 from .networks import get_model
 from .utils import DiagonalPreprocessing, rescale_matrix
@@ -215,6 +215,27 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     if self.crop is not None:
                         D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
                     graph.energy += torch.tensor(D, dtype = torch.float32)
+            elif self.output == 'energy_SD' or self.output == 'energy_ED':
+                s_path1 = osp.join(raw_folder, 's.npy')
+                s_path2 = osp.join(raw_folder, 's_matrix.txt')
+                if osp.exists(s_path1):
+                    S = np.load(s_path1)
+                else:
+                    S = np.loadtxt(s_path2)
+                if self.crop is not None:
+                    S = S[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
+
+                D = calculate_D(graph.diag_chi_continuous)
+                if self.crop is not None:
+                    D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
+
+                SD = calculate_SD(S, D)
+
+                if self.output == 'energy_SD':
+                    graph.energy = torch.tensor(SD, dtype = torch.float32)
+                else:
+                    ED = s_to_E(SD)
+                    graph.energy = torch.tensor(ED, dtype = torch.float32)
             else:
                 raise Exception(f'Unrecognized output {self.output}')
 

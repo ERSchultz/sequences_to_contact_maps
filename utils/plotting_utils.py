@@ -353,7 +353,7 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
         yhat = model(data)
         path = data.path
 
-        loss =  F.mse_loss(yhat, y).item() # force mse loss
+
         y = y.cpu().numpy()
         yhat = yhat.cpu().detach().numpy()
         if opt.output_mode.startswith('energy'):
@@ -365,6 +365,7 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
         else:
             y = y.reshape((-1))
             yhat = yhat.reshape((-1))
+        loss =  mean_squared_error(yhat, y) # force mse loss
 
         loss_arr[i] = loss
         if opt.verbose:
@@ -385,8 +386,8 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
 
 
             if opt.output_mode.startswith('energy'):
-                v_max = np.max(y)
-                v_min = np.min(y)
+                v_max = np.nanpercentile(y, 99)
+                v_min = np.nanpercentile(y, 1)
 
                 plot_matrix(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min,
                                 vmax = v_max, cmap = 'blue-red', title = yhat_title)
