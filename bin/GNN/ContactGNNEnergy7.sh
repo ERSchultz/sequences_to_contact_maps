@@ -29,7 +29,6 @@ EncoderHiddenSizesList='1000-1000-64'
 updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
-outputMode='energy_sym_diag'
 outputPreprocesing='log'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
