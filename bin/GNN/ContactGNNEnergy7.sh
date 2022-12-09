@@ -42,7 +42,7 @@ useScratch='false'
 # both datasets log
 
 id=288
-for lr in 1e-3
+for lr in 1e-4
 do
   train
   id=$(( $id + 1 ))

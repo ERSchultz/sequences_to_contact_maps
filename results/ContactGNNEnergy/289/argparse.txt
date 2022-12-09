@@ -1,7 +1,7 @@
 --data_folder
-/project2/depablo/erschultz/dataset_11_18_22
+/project2/depablo/erschultz/dataset_11_18_22-/project2/depablo/erschultz/dataset_11_21_22-/project2/depablo/erschultz/dataset_12_05_22
 --root_name
-ContactGNNEnergy0
+ContactGNNEnergy8
 --delete_root
 false
 --model_type
@@ -39,11 +39,11 @@ false
 --use_edge_attr
 true
 --hidden_sizes_list
-16-16-16-16
+8-8-8-8
 --encoder_hidden_sizes_list
-none
+1000-1000-64
 --update_hidden_sizes_list
-1000-1000-1000-128
+1000-1000-64
 --transforms
 empty
 --pre_transforms
@@ -112,7 +112,7 @@ none
 --print_params
 true
 --id
-284
+289
 --resume_training
 false
 --mlp_model_id
