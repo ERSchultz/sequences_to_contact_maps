@@ -22,20 +22,20 @@
 #   mkdir data_out
 # done
 
-dir="/project2/depablo/erschultz/dataset_11_18_22/samples"
-for i in {1..2400}
-do
-  cd "$dir/sample${i}"
-  # cp y.npy "/project2/depablo/erschultz/dataset_11_18_22_small/samples/sample${i}"
-  # cp s.npy "/project2/depablo/erschultz/dataset_11_18_22_small/samples/sample${i}"
-  # cp config.json "/project2/depablo/erschultz/dataset_11_18_22_small/samples/sample${i}"
-  # cp diag_chis_continuous.npy "/project2/depablo/erschultz/dataset_11_18_22_small/samples/sample${i}"
-  cd data_out
-  for j in 1000000 200000 300000 400000 500000
-  do
-    cp "contacts${j}.txt" "/project2/depablo/erschultz/dataset_11_18_22_small/samples/sample${i}/data_out"
-  done
-done
+# dir="/project2/depablo/erschultz/dataset_11_18_22/samples"
+# for i in {1..2400}
+# do
+#   cd "$dir/sample${i}"
+#   # cp y.npy "/project2/depablo/erschultz/dataset_11_18_22_small/samples/sample${i}"
+#   # cp s.npy "/project2/depablo/erschultz/dataset_11_18_22_small/samples/sample${i}"
+#   # cp config.json "/project2/depablo/erschultz/dataset_11_18_22_small/samples/sample${i}"
+#   # cp diag_chis_continuous.npy "/project2/depablo/erschultz/dataset_11_18_22_small/samples/sample${i}"
+#   cd data_out
+#   for j in 1000000 200000 300000 400000 500000
+#   do
+#     cp "contacts${j}.txt" "/project2/depablo/erschultz/dataset_11_18_22_small/samples/sample${i}/data_out"
+#   done
+# done
 
 cd /project2/depablo/erschultz
 tar -czf dataset_11_18_22_small.tar.gz dataset_11_18_22_small

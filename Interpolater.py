@@ -1,11 +1,11 @@
 import os
 import os.path as osp
+import shutil
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pyBigWig
 import scipy.stats as ss
-
 from utils.plotting_utils import plot_matrix
 from utils.utils import rescale_matrix
 
@@ -114,7 +114,7 @@ class Interpolater():
         # plot_matrix(y_interp[crop_left:crop_right, crop_left:crop_right],
                     # osp.join(self.odir, f'y_crop_{"_".join(self.methods)}.png'), vmax = 'mean')
         y_interp_pool = rescale_matrix(y_interp, 5)
-        # plot_matrix(y_interp_pool, osp.join(self.odir, f'y_pool_{"_".join(self.methods)}.png'), vmax = 'mean')
+        plot_matrix(y_interp_pool, osp.join(self.odir, f'y_pool_{"_".join(self.methods)}.png'), vmax = 'mean')
         # plot_matrix(y_interp_pool[crop_left:crop_right, crop_left:crop_right],
                     # osp.join(self.odir, f'y_pool_crop_{"_".join(self.methods)}.png'), vmax = 'mean')
 
@@ -291,10 +291,27 @@ class Interpolater():
 
 
 def main():
-    for sample in [2001]:
+    for sample in range(2001, 2015):
         # this is the recommended option
         interpolater = Interpolater(['zeros', 'mappability-0.7'], 'dataset_11_14_22', sample)
-        interpolater.run()
+        # interpolater.run()
+
+        dir = f'/home/erschultz/dataset_11_14_22/samples/sample{sample+200}'
+        if not osp.exists(dir):
+            os.mkdir(dir, mode=0o755)
+        # shutil.copyfile(osp.join(interpolater.odir, 'y_pool_zeros_mappability-0.7.png'),
+        #                 osp.join(dir, 'y.png'))
+        # shutil.copyfile(osp.join(interpolater.odir, 'y_pool_interpolate_zeros_mappability-0.7.npy'),
+        #                 osp.join(dir, 'y.npy'))
+
+        with open(osp.join(dir, 'import.log'), 'w') as f:
+            f.write(f'Interpolation of sample {sample} with mappability-0.7 and zeros\n')
+            f.write(f'chrom={interpolater.chrom}\n')
+            f.write(f'start={interpolater.start}\n')
+            f.write(f'end={interpolater.end}\n')
+            f.write(f'resolution={interpolater.res * 5}\n')
+            f.write('norm=NONE')
+
 
 if __name__ == '__main__':
     main()
