@@ -32,7 +32,7 @@ numHeads=8
 outputPreprocesing='log'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
-headArchitecture='bilinear_8'
+headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
@@ -41,7 +41,7 @@ loss='huber'
 
 # log output huber loss
 
-id=293
+id=297
 for lr in 1e-4
 do
   train

@@ -391,3 +391,35 @@ dataset_11_18_22 sample653-upsampling: 0.9628585577011108
 Loss: 0.477 +- 0.252
 
 Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy0upsample
+Dataset construction time: 0.007 minutes
+Average num edges per graph:  228640.0
+Mean degree: [511.31 511.11 473.23 411.88 325.27] +- [ 1.67  2.18 39.96 64.33 76.19]
+
+#### Plotting Script ####
+Downsampling (40%) Results:
+dataset_11_18_22 sample1462-downsampling: 9.043055534362793
+dataset_11_18_22 sample1801-downsampling: 7.021177291870117
+dataset_11_18_22 sample2290-downsampling: 3.961780548095703
+dataset_11_18_22 sample410-downsampling: 6.372623920440674
+dataset_11_18_22 sample653-downsampling: 12.593626976013184
+Loss: 7.798 +- 2.895
+
+Removing /home/erschultz/dataset_11_18_22/ContactGNNEnergy0downsample
+Original sampling (100%) Results:
+dataset_11_18_22 sample1462-regular: 7.77500057220459
+dataset_11_18_22 sample1801-regular: 6.294457912445068
+dataset_11_18_22 sample2290-regular: 3.935004234313965
+dataset_11_18_22 sample410-regular: 6.020877838134766
+dataset_11_18_22 sample653-regular: 11.598836898803711
+Loss: 7.125 +- 2.55
+
+Removing /home/erschultz/dataset_11_18_22/ContactGNNEnergy0regsample
+Upsampling (200%) Results:
+dataset_11_18_22 sample1462-upsampling: 7.370605945587158
+dataset_11_18_22 sample1801-upsampling: 6.124001502990723
+dataset_11_18_22 sample2290-upsampling: 4.0167999267578125
+dataset_11_18_22 sample410-upsampling: 6.285539627075195
+dataset_11_18_22 sample653-upsampling: 11.872970581054688
+Loss: 7.134 +- 2.607
+
+Removing /home/erschultz/dataset_11_18_22/ContactGNNEnergy0upsample
