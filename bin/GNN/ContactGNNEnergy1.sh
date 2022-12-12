@@ -40,7 +40,7 @@ useScratch='false'
 
 # log output both datasets
 
-id=299
+id=298
 for lr in 1e-4
 do
   train
