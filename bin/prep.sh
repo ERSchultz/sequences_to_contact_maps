@@ -55,7 +55,16 @@
 # wait
 
 
-cd /project2/depablo/erschultz
-tar -xzf dataset_11_18_22_small.tar.gz &
-tar -xzf dataset_11_18_22_small2.tar.gz &
-wait
+# cd /project2/depablo/erschultz
+# tar -xzf dataset_11_18_22_small.tar.gz &
+# tar -xzf dataset_11_18_22_small2.tar.gz &
+# wait
+
+dir=/project/depablo/erschultz
+cd $dir
+for i in {1200..2400}
+do
+  mv "${dir}/dataset_11_18_22_small2/samples/sample${i}" "${dir}/dataset_11_18_22_small/samples/sample${i}"
+done
+
+mv "${dir}/dataset_11_18_22_small" "${dir}/dataset_11_18_22"
