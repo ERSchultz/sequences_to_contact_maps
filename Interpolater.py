@@ -291,18 +291,19 @@ class Interpolater():
 
 
 def main():
-    for sample in range(2001, 2015):
+    dataset = 'dataset_07_20_22'
+    for sample in range(2010, 2011):
         # this is the recommended option
-        interpolater = Interpolater(['zeros', 'mappability-0.7'], 'dataset_11_14_22', sample)
-        # interpolater.run()
+        interpolater = Interpolater(['zeros', 'mappability-0.7'], dataset, sample)
+        interpolater.run()
 
-        dir = f'/home/erschultz/dataset_11_14_22/samples/sample{sample+200}'
+        dir = f'/home/erschultz/{dataset}/samples/sample{sample+200}'
         if not osp.exists(dir):
             os.mkdir(dir, mode=0o755)
-        # shutil.copyfile(osp.join(interpolater.odir, 'y_pool_zeros_mappability-0.7.png'),
-        #                 osp.join(dir, 'y.png'))
-        # shutil.copyfile(osp.join(interpolater.odir, 'y_pool_interpolate_zeros_mappability-0.7.npy'),
-        #                 osp.join(dir, 'y.npy'))
+        shutil.copyfile(osp.join(interpolater.odir, 'y_pool_zeros_mappability-0.7.png'),
+                        osp.join(dir, 'y.png'))
+        shutil.copyfile(osp.join(interpolater.odir, 'y_pool_interpolate_zeros_mappability-0.7.npy'),
+                        osp.join(dir, 'y.npy'))
 
         with open(osp.join(dir, 'import.log'), 'w') as f:
             f.write(f'Interpolation of sample {sample} with mappability-0.7 and zeros\n')

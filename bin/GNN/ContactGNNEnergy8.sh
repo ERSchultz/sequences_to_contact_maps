@@ -38,7 +38,6 @@ headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
-resumeTraining='true'
 
 # all datasets log output
 

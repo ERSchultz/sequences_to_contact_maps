@@ -220,25 +220,31 @@ def load_max_ent_chi(k, path, throw_exception = True):
 
     return chi
 
+def get_final_max_ent_folder(replicate_folder, throw_exception = True):
+    '''Find final max ent iteration within replicate folder.'''
+    max_it = -1
+    for file in os.listdir(replicate_folder):
+        if osp.isdir(osp.join(replicate_folder, file)) and file.startswith('iteration'):
+            it = int(file[9:])
+            if it > max_it:
+                max_it = it
+
+    if max_it < 0:
+        if throw_exception:
+            raise Exception(f'max it not found for {replicate_folder}')
+        else:
+            return None
+
+    return osp.join(replicate_folder, f'iteration{max_it}')
+
+
 def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None,
                 throw_exception = True):
     # wrapper for load_max_ent_chi to use final iteration
     if max_it_folder is None:
         # find final it
-        max_it = -1
-        for file in os.listdir(replicate_folder):
-            if osp.isdir(osp.join(replicate_folder, file)) and file.startswith('iteration'):
-                it = int(file[9:])
-                if it > max_it:
-                    max_it = it
+        max_it_folder = get_final_max_ent_folder(replicate_folder, throw_exception)
 
-        if max_it < 0:
-            if throw_exception:
-                raise Exception(f'max it not found for {replicate_folder}')
-            else:
-                return None
-
-        max_it_folder = osp.join(replicate_folder, f'iteration{max_it}')
     return load_max_ent_chi(k, max_it_folder, throw_exception = True)
 
 

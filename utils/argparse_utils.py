@@ -681,7 +681,8 @@ def save_args(opt):
 def opt2list(opt):
     data_folder = '-'.join([osp.split(d)[1] for d in opt.data_folder])
     opt_list = [opt.model_type, opt.id, data_folder, opt.preprocessing_norm,
-        opt.y_preprocessing, opt.mean_filt, opt.rescale, opt.kr, opt.min_subtraction, opt.log_preprocessing, opt.crop]
+        opt.y_preprocessing, opt.output_preprocesing, opt.mean_filt, opt.rescale,
+        opt.kr, opt.min_subtraction, opt.log_preprocessing, opt.crop]
     opt_list.append(opt.split_percents if opt.split_percents is not None else opt.split_sizes)
     opt_list.extend([opt.shuffle, opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr,
         opt.weight_decay,
@@ -735,7 +736,8 @@ def save_opt(opt, ofile):
 
 def get_opt_header(model_type, GNN_mode):
     opt_list = ['model_type', 'id',  'dataset', 'preprocessing_norm',
-        'y_preprocessing',  'mean_filt', 'rescale', 'kr', 'min_subtraction', 'log_preprocessing', 'crop', 'split', 'shuffle',
+        'y_preprocessing', 'output_preprocesing', 'mean_filt', 'rescale',
+        'kr', 'min_subtraction', 'log_preprocessing', 'crop', 'split', 'shuffle',
         'batch_size', 'num_workers', 'n_epochs', 'lr', 'weight_decay', 'milestones',
         'gamma', 'loss', 'k', 'm',
         'seed', 'act', 'inner_act', 'head_act', 'out_act',
