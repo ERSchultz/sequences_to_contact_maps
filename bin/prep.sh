@@ -2,14 +2,15 @@
 #SBATCH --job-name=prep
 #SBATCH --output=logFiles/prep.out
 #SBATCH --time=6:00:00
-#SBATCH --partition=depablo-ivyb
+#SBATCH --account=pi-depablo
+#SBATCH --partition=depablo-gpu
 #SBATCH --ntasks=20
 #SBATCH --mem-per-cpu=2000
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=erschultz@uchicago.edu
 
-cd /project2/depablo/erschultz
-rm -r dataset_11_18_22_small.tar.gz
+# cd /project2/depablo/erschultz
+# rm -r dataset_11_18_22_small.tar.gz
 
 # mkdir dataset_11_18_22_small
 # cd dataset_11_18_22_small
@@ -39,16 +40,22 @@ rm -r dataset_11_18_22_small.tar.gz
 #   done
 # done
 
-mkdir dataset_11_18_22_small2
-cd dataset_11_18_22_small2
-mkdir samples
+# mkdir dataset_11_18_22_small2
+# cd dataset_11_18_22_small2
+# mkdir samples
+#
+# cd /project2/depablo/erschultz
+# for i in {1200..2400}
+# do
+#   mv "/project2/depablo/erschultz/dataset_11_18_22_small/samples/sample${i}" "/project2/depablo/erschultz/dataset_11_18_22_small2/samples/sample${i}"
+# done
+#
+# tar -czf dataset_11_18_22_small.tar.gz dataset_11_18_22_small &
+# tar -czf dataset_11_18_22_small2.tar.gz dataset_11_18_22_small2 &
+# wait
+
 
 cd /project2/depablo/erschultz
-for i in {1200..2400}
-do
-  mv "/project2/depablo/erschultz/dataset_11_18_22_small/samples/sample${i}" "/project2/depablo/erschultz/dataset_11_18_22_small2/samples/sample${i}"
-done
-
-tar -czf dataset_11_18_22_small.tar.gz dataset_11_18_22_small &
-tar -czf dataset_11_18_22_small2.tar.gz dataset_11_18_22_small2 &
+tar -xzf dataset_11_18_22_small.tar.gz &
+tar -xzf dataset_11_18_22_small2.tar.gz &
 wait
