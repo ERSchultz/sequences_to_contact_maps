@@ -8,7 +8,7 @@ deleteRoot='false'
 
 modelType='ContactGNNEnergy'
 GNNMode='true'
-outputMode='energy_SD'
+outputMode='energy_sym_diag'
 resumeTraining='false'
 id='none'
 mlpModelID='none'

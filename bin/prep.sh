@@ -68,6 +68,3 @@
 # done
 #
 # mv "${dir}/dataset_11_18_22_small" "${dir}/dataset_11_18_22"
-
-dir=/project/depablo/erschultz
-rm -r dataset_11_18_22_small*

@@ -67,7 +67,7 @@ def get_base_parser():
                         help='number of diagonals of y set to 0')
     parser.add_argument('--log_preprocessing', type=AC.str2None,
                         help='type of log transform input data (None to skip)')
-    parser.add_argument('--output_preprocesing',
+    parser.add_argument('--output_preprocesing', type=AC.str2None,
                         help='type of preprocessing for output')
     parser.add_argument('--kr', type=AC.str2bool,
                         help='True to use KnightRuiz balancing algorithm')

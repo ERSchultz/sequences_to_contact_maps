@@ -14,7 +14,7 @@ from .pyg_fns import WeightedGATv2Conv, WeightedSignedConv
 
 
 ## model functions ##
-def get_model(opt, verbose = True):
+def get_model(opt):
     if opt.model_type == 'SimpleEpiNet':
         model = SimpleEpiNet(opt.input_m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
     if opt.model_type == 'UNet':
@@ -60,11 +60,11 @@ def get_model(opt, verbose = True):
                 opt.head_architecture, opt.head_architecture_2, opt.head_hidden_sizes_list,
                 opt.head_act, opt.use_bias, opt.rescale, opt.gated, opt.dropout,
                 opt.training_norm, opt.num_heads, opt.concat_heads,
-                opt.log_file, verbose = verbose)
+                opt.log_file, opt.verbose)
     elif opt.model_type == 'MLP':
         model = MLP(opt.input_m, opt.hidden_sizes_list, opt.use_bias, opt.act,
                             opt.out_act, opt.training_norm, opt.dropout,
-                            opt.log_file, verbose = verbose)
+                            opt.log_file, opt.verbose)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 

@@ -562,6 +562,8 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
 
                 SD = s_sym + D + np.diag(np.diagonal(D.copy()))
                 np.save(osp.join(path, 'sd.npy'), SD)
+                SD_gnn = s_sym + D
+                np.save(osp.join(path, 'sd_gnn.npy'), SD_gnn)
                 plot_matrix(SD, osp.join(path, 'SD.png'), vmax = 'max', vmin = 'min',
                             cmap = 'blue-red')
 

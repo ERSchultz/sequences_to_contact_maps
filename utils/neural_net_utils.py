@@ -13,7 +13,7 @@ from .pyg_dataset_classes import ContactsGraph
 
 ## model functions ##
 def load_saved_model(opt, verbose = True, throw = True):
-    model = get_model(opt, verbose)
+    model = get_model(opt)
     model.to(opt.device)
     model_name = osp.join(opt.ofile_folder, 'model.pt')
     if osp.exists(model_name):
