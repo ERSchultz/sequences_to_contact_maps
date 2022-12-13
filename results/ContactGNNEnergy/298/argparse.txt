@@ -1,7 +1,7 @@
 --data_folder
-/project2/depablo/erschultz/dataset_11_18_22-/project2/depablo/erschultz/dataset_11_21_22-/project2/depablo/erschultz/dataset_12_05_22
+/project2/depablo/erschultz/dataset_11_18_22-/project2/depablo/erschultz/dataset_11_21_22
 --root_name
-ContactGNNEnergy6
+ContactGNNEnergy1
 --delete_root
 false
 --model_type
@@ -9,7 +9,7 @@ ContactGNNEnergy
 --GNN_mode
 true
 --output_mode
-energy_SD
+energy_sym_diag
 --m
 1024
 --y_preprocessing
@@ -25,7 +25,7 @@ false
 --mean_filt
 none
 --output_preprocesing
-none
+log
 --max_diagonal
 none
 --keep_zero_edges
@@ -41,7 +41,7 @@ true
 --hidden_sizes_list
 8-8-8-8
 --encoder_hidden_sizes_list
-1000-1000-64
+none
 --update_hidden_sizes_list
 1000-1000-64
 --transforms
@@ -112,8 +112,8 @@ none
 --print_params
 true
 --id
-284
+298
 --resume_training
-true
+false
 --mlp_model_id
 none
