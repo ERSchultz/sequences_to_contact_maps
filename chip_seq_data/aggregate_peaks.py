@@ -1,12 +1,10 @@
 import argparse
 import csv
-import decimal
 import os
 import os.path as osp
 
 import bioframe
 import numpy as np
-import pandas as pd
 from utils import CHROMS, get_names, make_chromHMM_table
 
 

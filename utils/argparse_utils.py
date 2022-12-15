@@ -12,8 +12,8 @@ import torch
 import torch.nn.functional as F
 import torch_geometric.transforms
 
-from .pyg_fns import (AdjPCATransform, AdjTransform, ContactDistance, Degree,
-                      DiagonalParameterDistance, GeneticDistance,
+from .pyg_fns import (AdjPCATransform, AdjPCs, AdjTransform, ContactDistance,
+                      Degree, DiagonalParameterDistance, GeneticDistance,
                       GeneticPosition, NoiseLevel, OneHotGeneticPosition,
                       WeightedLocalDegreeProfile)
 from .utils import DiagonalPreprocessing
@@ -131,6 +131,10 @@ def get_base_parser():
                         help='Gamma for lr scheduler')
     parser.add_argument('--loss', type=str, default='mse',
                         help='Type of loss to use: options: {"mse", "cross_entropy"}')
+    parser.add_argument('--w_reg', type=AC.str2None,
+                        help='Type of regularization to use for W, options: {"l1", "l2"}')
+    parser.add_argument('--reg_lambda', type=float, default=1e-4,
+                        help='regularization strength for w_reg')
     parser.add_argument('--autoencoder_mode', type=AC.str2bool, default=False,
                         help='True to use input as target output (i.e. autoencoder)')
     parser.add_argument('--verbose', type=AC.str2bool, default=False,
@@ -417,7 +421,7 @@ def process_transforms(opt):
 
     # pre-transforms
     processed = []
-    opt.diag = False # TODO come op with cleaner way to do this
+    opt.diag = False # True if y_diag is needed for transform
     for t_str in opt.pre_transforms:
         t_str = t_str.lower().split('_')
         if t_str[0] == 'constant':
@@ -473,6 +477,19 @@ def process_transforms(opt):
                 transform_k = 10
             opt.node_feature_size += transform_k
             transform = AdjPCATransform(k = transform_k)
+            opt.node_transforms.append(transform)
+        elif t_str[0] == 'adjpcs':
+            opt.diag = True
+            norm = False
+            transform_k = 8
+            split_value = default_split_value
+            for mode_str in t_str[1:]:
+                if mode_str == 'norm':
+                    norm = True
+                elif mode_str.isdigit():
+                    transform_k = int(mode_str)
+            opt.node_feature_size += transform_k
+            transform = AdjPCs(k = transform_k, normalize = norm)
             opt.node_transforms.append(transform)
         elif t_str[0] == 'contactdistance':
             opt.edge_transforms.append(f'ContactDistance')

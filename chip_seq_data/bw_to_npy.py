@@ -18,6 +18,8 @@ def getArgs():
 						help="If True, store nucleosome-resolution data.")
 	parser.add_argument('-r','--res', type=int, default=50000,
 						help='Resolution of map, in bp')
+	parser.add_argument('--mode', type=str, default='mean',
+						help='Mode for bw.stats')
 	args = parser.parse_args()
 	return args
 
@@ -36,7 +38,7 @@ def bw_to_npy(fname, args):
 
 	#Set resolution
 	if not args.nucl:
-		mode = "mean"
+		mode = args.mode
 		res = args.res
 	else:
 		res = 200

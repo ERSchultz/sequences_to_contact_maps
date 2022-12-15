@@ -2,6 +2,7 @@ import os
 import os.path as osp
 from typing import Optional, Tuple, Union
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 from sklearn.decomposition import PCA
@@ -88,7 +89,7 @@ class Degree(BaseTransform):
         if self.weighted:
             if self.split_edges:
                 if self.diag:
-                    ypos =torch.clone(data.contact_map_diag)
+                    ypos = torch.clone(data.contact_map_diag)
                     yneg = torch.clone(data.contact_map_diag)
                 else:
                     ypos = torch.clone(data.contact_map)
@@ -157,7 +158,7 @@ class Degree(BaseTransform):
         return repr
 
 class AdjPCATransform(BaseTransform):
-    '''Appends values from top k PCs of adjacency matrix to feature vector.'''
+    '''Appends rank k PCA transformation of adjacency matrix to feature vector.'''
     def __init__(self, k = 5):
         self.k = k
 
@@ -176,7 +177,50 @@ class AdjPCATransform(BaseTransform):
         return data
 
     def __repr__(self) -> str:
-        return (f'{self.__class__.__name__}')
+        return (f'{self.__class__.__name__}(k={self.k})')
+
+class AdjPCs(BaseTransform):
+    '''Appends values from top k PCs of adjacency matrix to feature vector.'''
+    def __init__(self, k = 5, normalize = False):
+        self.k = k
+        self.normalize = normalize
+
+    def __call__(self, data):
+        input = torch.nan_to_num(data.contact_map_diag, nan = 1.0)
+        pca = PCA(n_components = self.k)
+        pca.fit(input)
+
+        m = len(input)
+        topk_pcs = np.zeros((m, self.k))
+        for j in range(self.k):
+            pc = pca.components_[j]
+
+            if self.normalize:
+                min = np.min(pc)
+                max = np.max(pc)
+                if max > abs(min):
+                    val = max
+                else:
+                    val = abs(min)
+
+                # multiply by scale such that val x scale = 1
+                scale = 1/val
+                pc *= scale
+
+            topk_pcs[:,j] = pc
+
+        topk_pcs = torch.tensor(topk_pcs, dtype = torch.float32)
+
+        if data.x is not None:
+            data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
+            data.x = torch.cat([data.x, topk_pcs], dim=-1)
+        else:
+            data.x = topk_pcs
+
+        return data
+
+    def __repr__(self) -> str:
+        return (f'{self.__class__.__name__}(k={self.k}, normalize={self.normalize})')
 
 class AdjTransform(BaseTransform):
     '''Appends rows of adjacency matrix to feature vector.'''

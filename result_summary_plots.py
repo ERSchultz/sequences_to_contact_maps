@@ -8,7 +8,6 @@ import numpy as np
 import statsmodels.api as sm
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
-
 from utils.argparse_utils import ArgparserConverter
 from utils.energy_utils import s_to_E
 from utils.load_utils import load_all, load_final_max_ent_S
@@ -21,21 +20,31 @@ def getArgs():
     parser = argparse.ArgumentParser(description='Base parser')
     AC = ArgparserConverter()
 
-    # parser.add_argument('--root', type=str, default='C:\\Users\\Eric\\OneDrive\\Documents\\Research\\Coding\\sequences_to_contact_maps')
-    parser.add_argument('--root', type=str, default='/home/eric/sequences_to_contact_maps')
-    parser.add_argument('--dataset', type=str, help='Location of input data')
+    parser.add_argument('--root', type=str, default='/home/erschultz')
+    parser.add_argument('--dataset', type=str,
+                    help='Location of input data')
     parser.add_argument('--sample', type=AC.str2int, default=40)
-    parser.add_argument('--sample_folder', type=AC.str2None, default=None, help='None to infer from --dataset and --sample')
-    parser.add_argument('--method', type=AC.str2None, default='GNN', help = 'parametrization method')
-    parser.add_argument('--model_id', type=AC.str2int, help='model ID if method == GNN')
-    parser.add_argument('--alpha', type=float, default=1.0, help='alpha for linear model')
+    parser.add_argument('--sample_folder', type=AC.str2None, default=None,
+                    help='None to infer from --dataset and --sample')
+    parser.add_argument('--method', type=AC.str2None, default='GNN',
+                    help = 'parametrization method')
+    parser.add_argument('--model_id', type=AC.str2int,
+                    help='model ID if method == GNN')
+    parser.add_argument('--alpha', type=float, default=1.0,
+                    help='alpha for linear model')
     parser.add_argument('--k', type=AC.str2int, help='k for method')
-    parser.add_argument('--plot', type=AC.str2bool, default=False, help='True to plot s_hat and s_dif')
-    parser.add_argument('--experimental', type=AC.str2bool, default=False, help='True if using experimental data (ground truth data missing)')
-    parser.add_argument('--overwrite', type=AC.str2bool, default=False, help='True to overwrite existing results')
-    parser.add_argument('--robust', type=AC.str2bool, default=False, help='True for robust PCA analysis')
-    parser.add_argument('--scale', type=AC.str2bool, default=False, help='True to scale data for PCA')
-    parser.add_argument('--svd', type=AC.str2bool, default=False, help='True to use svd instead of PCA')
+    parser.add_argument('--plot', type=AC.str2bool, default=False,
+                    help='True to plot s_hat and s_dif')
+    parser.add_argument('--experimental', type=AC.str2bool, default=False,
+                        help='True if using experimental data (ground truth data missing)')
+    parser.add_argument('--overwrite', type=AC.str2bool, default=False,
+                    help='True to overwrite existing results')
+    parser.add_argument('--robust', type=AC.str2bool, default=False,
+                    help='True for robust PCA analysis')
+    parser.add_argument('--scale', type=AC.str2bool, default=False,
+                    help='True to scale data for PCA')
+    parser.add_argument('--svd', type=AC.str2bool, default=False,
+                    help='True to use svd instead of PCA')
 
     args = parser.parse_args()
     args.data_folder = osp.join(args.root, args.dataset)
@@ -228,7 +237,8 @@ def x_to_psi(x, mode = 'all_pairs'):
     assert np.count_nonzero((x != 0) & (x != 1)) == 0, "x must be binary"
     assert mode == 'all_pairs'
     m, k = x.shape
-    ell = int(k*(k+1)/2) # number of pairs of marks (including self-self) (i.e. number of labels in psi)
+    ell = int(k*(k+1)/2) # number of pairs of marks (including self-self)
+                         # (i.e. number of labels in psi)
     psi = np.zeros((m, ell)) # contains all pairs of marks for each bead
     ind = np.triu_indices(k)
     for i in range(m):
@@ -353,41 +363,48 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
     PC_y_diag = plot_top_PCs(ydiag, 'y_diag', args.odir, args.log_file, count = 6,
                         plot = args.plot_baseline, verbose = args.verbose,
                         scale = args.scale, svd = args.svd)
+
     y_log = np.log(y + 1)
+    plot_matrix(y_log, osp.join(args.odir, 'y_log.png'), vmax = 'mean')
     PC_y_log = plot_top_PCs(y_log, 'y_log', args.odir, args.log_file, count = 2,
                         plot = args.plot_baseline, verbose = args.verbose,
                         scale = args.scale, svd = args.svd)
+
     meanDistLog = DiagonalPreprocessing.genomic_distance_statistics(y_log)
     y_log_diag = DiagonalPreprocessing.process(y_log, meanDistLog)
-    plot_matrix(y_log_diag, osp.join(args.odir, 'y_log_diag.png'), vmax = 'max')
-    PC_y_log_diag = plot_top_PCs(y_log_diag, 'y_log_diag', args.odir, args.log_file, count = 2,
+    plot_matrix(y_log_diag, osp.join(args.odir, 'y_log_diag.png'), vmin = 'center1',
+                cmap='blue-red')
+    PC_y_log_diag = plot_top_PCs(y_log_diag, 'y_log_diag', args.odir, args.log_file, count = 3,
+                                plot = args.plot_baseline, verbose = args.verbose,
+                                scale = args.scale, svd = args.svd)
+
+    p = y/np.mean(np.diagonal(y))
+    PC_p = plot_top_PCs(p, 'p', args.odir, args.log_file, count = 3,
                         plot = args.plot_baseline, verbose = args.verbose,
                         scale = args.scale, svd = args.svd)
-    p = ydiag/np.mean(np.diagonal(ydiag))
-    plot_matrix(p, osp.join(args.odir, f'p.png'), vmin = 'min', vmax = 'max', title = "P")
-    PC_p = plot_top_PCs(p, 'p', args.odir, args.log_file, count = 2,
-                        plot = args.plot_baseline, verbose = args.verbose,
-                        scale = args.scale, svd = args.svd)
+
+    y_loginf = np.log(y)
+    y_loginf[np.isinf(y_loginf)] = np.nan
+    plot_matrix(y_loginf, osp.join(args.odir, 'y_loginf.png'), vmin = 'min', vmax = 'max')
+    meanDist = DiagonalPreprocessing.genomic_distance_statistics(y_loginf)
+    y_loginf_diag = DiagonalPreprocessing.process(y_loginf, meanDist, verbose = False)
+    np.nan_to_num(y_loginf_diag, copy = False, nan = 1.0)
+    plot_matrix(y_loginf_diag, osp.join(args.odir, 'y_loginf_diag.png'),
+                vmin = 'center1', cmap='blue-red')
+
+    PC_y_loginf_diag = plot_top_PCs(y_loginf_diag, 'y_loginf_diag', args.odir,
+                                args.log_file, count = 3,
+                                plot = args.plot_baseline, verbose = args.verbose,
+                                scale = args.scale, svd = args.svd)
+
+
+
     stat = pearson_round(PC_y[0], PC_y_log[0])
     print("Correlation between PC 1 of y and y_log: ", stat, file = args.log_file)
     stat = pearson_round(PC_y_diag[0], PC_y_log[0])
     print("Correlation between PC 1 of y_diag and y_log: ", stat, file = args.log_file)
     stat = pearson_round(PC_y_diag[1], PC_y_log[1])
     print("Correlation between PC 2 of y_diag and y_log: ", stat, file = args.log_file)
-    for i in range(1, 7):
-        # get e top i PCs
-        pca = PCA(n_components = i)
-        p_transform = pca.fit_transform(p)
-        p_i = pca.inverse_transform(p_transform)
-        p_i = (p_i + p_i.T)/2
-        val = np.nanpercentile(p, 99)
-        plot_matrix(p_i, osp.join(args.odir, f'p_{i}.png'), vmin = 0, vmax = val, title = f"P rank {i}")
-
-        # compare p to projection of p onto top PCs
-        mse = np.round(mean_squared_error(p_i, p), 3)
-        print(f'P top {i} PCs - MSE: {mse}', file = args.log_file)
-
-
 
     # robust PCA
     if args.robust:
@@ -564,7 +581,10 @@ def main():
     print(args)
 
     ## load data ##
-    x, _, chi, chi_diag, e, s, y, ydiag = load_all(args.sample_folder, True, args.data_folder, args.log_file, experimental = args.experimental, throw_exception = False)
+    x, _, chi, chi_diag, e, s, y, ydiag = load_all(args.sample_folder, True,
+                                                args.data_folder, args.log_file,
+                                                experimental = args.experimental,
+                                                throw_exception = False)
 
     if args.method is not None:
         s_hat = load_method_S(args.root, args.sample_folder, args.sample, args.method, args.k, args.model_id)
@@ -657,7 +677,8 @@ def post_analysis_chi(args, letters):
     sign_matches = np.sum(chi_hat_sign == chi_sign) # count number of times sign matches
     sign_matches -=  k * (k - 1) / 2 # subtract off lower diagonal
     possible_matches = k * (k + 1) / 2 # size of upper triangle
-    print(f'% of time sign matches: {np.round(sign_matches / possible_matches, 3)}', file = args.log_file)
+    print(f'% of time sign matches: {np.round(sign_matches / possible_matches, 3)}',
+        file = args.log_file)
 
     dif = chi_hat - chi
     mse = mean_squared_error(chi, chi_hat)
@@ -666,9 +687,15 @@ def post_analysis_chi(args, letters):
 
     max = np.max(np.abs(chi))
     min = -1 * max
-    plot_matrix(chi_hat, vmin=min, vmax=max, cmap='blue-red', ofile = osp.join(args.odir, 'chi_hat.png'), x_ticks = letters, y_ticks = letters)
-    plot_matrix(chi, vmin=min, vmax=max, cmap='blue-red', ofile = osp.join(args.odir, 'chi.png'), x_ticks = letters, y_ticks = letters)
-    plot_matrix(dif, vmin=min, vmax=max, cmap='blue-red', ofile = osp.join(args.odir, 'dif.png'), x_ticks = letters, y_ticks = letters)
+    plot_matrix(chi_hat, vmin=min, vmax=max, cmap='blue-red',
+                ofile = osp.join(args.odir, 'chi_hat.png'), x_ticks = letters,
+                y_ticks = letters)
+    plot_matrix(chi, vmin=min, vmax=max, cmap='blue-red',
+                ofile = osp.join(args.odir, 'chi.png'), x_ticks = letters,
+                y_ticks = letters)
+    plot_matrix(dif, vmin=min, vmax=max, cmap='blue-red',
+                ofile = osp.join(args.odir, 'dif.png'), x_ticks = letters,
+                y_ticks = letters)
 
 def test_project():
     dir = '/home/eric/sequences_to_contact_maps/dataset_01_15_22/samples/sample40'
@@ -680,8 +707,10 @@ def test_project():
 
     # visualize pca s projection
     # s_pca_proj, e_pca_proj = project_S_to_psi_basis(s_pca, psi)
-    # plot_matrix(s_pca_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(replicate_dir, 's_pca_proj.png'))
-    # plot_matrix(e_pca_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(replicate_dir, 'e_pca_proj.png'))
+    # plot_matrix(s_pca_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red',
+    #             ofile = osp.join(replicate_dir, 's_pca_proj.png'))
+    # plot_matrix(e_pca_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red',
+    #             ofile = osp.join(replicate_dir, 'e_pca_proj.png'))
 
     # confirm that projecting s returns s
     # s_proj, e_proj = project_S_to_psi_basis(s, psi)
@@ -691,8 +720,10 @@ def test_project():
     # what if you project s into noise basis
     m, k = psi.shape
     s_noise_proj, e_noise_proj = project_S_to_psi_basis(s, np.random.rand(m,k))
-    # plot_matrix(s_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(dir, 's_pca_proj.png'))
-    plot_matrix(e_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red', ofile = osp.join(dir, 'e_noise_proj.png'))
+    # plot_matrix(s_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red',
+    #             ofile = osp.join(dir, 's_pca_proj.png'))
+    plot_matrix(e_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red',
+                ofile = osp.join(dir, 'e_noise_proj.png'))
     np.save(osp.join(dir, 'e_noise_proj.npy'), e_noise_proj)
 
 

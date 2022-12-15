@@ -29,7 +29,6 @@ EncoderHiddenSizesList='none'
 updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
-outputPreprocesing='log'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
 headArchitecture='bilinear'
@@ -37,10 +36,12 @@ headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
+wReg='l1'
+regLambda=1e-1
 
-# log output both datasets
+# w reg
 
-id=298
+id=300
 for lr in 1e-4
 do
   train

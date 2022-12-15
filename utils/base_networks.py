@@ -299,7 +299,7 @@ class MLP(nn.Module):
     def __init__(self, in_channels, hidden_channels, bias = True, act = 'relu',
                 out_act = None, norm = None, dropout = 0.0,
                 dropout_last_layer = False, gated = False,
-                ofile = sys.stdout, verbose = True):
+                ofile = sys.stdout, verbose = False):
         super(MLP, self).__init__()
         self.gated = gated
         model = []

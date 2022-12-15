@@ -131,6 +131,7 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
     ax2.legend(loc = 3)
 
     ax.set_xlabel('Epoch', fontsize = 16)
+    ax.set_ylim(None, 10)
     if opts[0].loss != opts[1].loss:
         ylabel = 'Loss'
     else:
@@ -991,7 +992,8 @@ def plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, ref,
 ### Primary scripts ###
 def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 'max',
                     size_in = 6, minVal = None, maxVal = None, prcnt = False,
-                    cmap = None, x_ticks = None, y_ticks = None, triu = False, lines = []):
+                    cmap = None, x_ticks = None, y_ticks = None, triu = False,
+                    lines = []):
     """
     Plotting function for 2D arrays.
 

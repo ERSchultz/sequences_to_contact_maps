@@ -218,7 +218,7 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm')
+        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-AdjPCs_12_norm')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
@@ -276,7 +276,9 @@ def debugModel(model_type):
     # hyperparameters
     opt.n_epochs = 1
     opt.lr = 1e-4
-    opt.weight_decay = 1e-4
+    opt.weight_decay = 0
+    opt.reg = 'l1'
+    opt.reg_lambda = 1e-2
     opt.batch_size = 1
     opt.milestones = None
     opt.gamma = 0.1
@@ -284,8 +286,8 @@ def debugModel(model_type):
     # other
     opt.plot = True
     opt.plot_predictions = True
-    opt.verbose = False
-    opt.print_params = False
+    opt.verbose = True
+    opt.print_params = True
     opt.gpus = 1
     # opt.delete_root = True
     opt.use_scratch = False
@@ -733,9 +735,34 @@ def main2():
     plot_matrix(diff2, osp.join(dir, 'diff2.png'), title = 'SD - SDgnn', cmap = 'blue-red', vmin='min', vmax='max')
     print('mse', mean_squared_error(SDgnn, SD2gnn))
 
+def temp():
+    dataset = 'dataset_11_14_22'
+    dir = f'/home/erschultz/{dataset}/samples/sample2201'
+    dir = osp.join(dir, 'PCA_split-binarizeMean-E/k8/replicate1/samples/sample2201_shuffle_chis')
+
+    S = np.load(osp.join(dir, 's.npy'))
+
+    with open(osp.join(dir, 'config.json')) as f:
+        config = json.load(f)
+    diag_chi_continuous = calculate_diag_chi_step(config)
+    D = calculate_D(diag_chi_continuous)
+
+    SD = S + D
+    vmin = np.min(SD)
+    vmax = np.max(SD)
+
+    print(SD)
+    np.save(osp.join(dir, 'sd.npy'), SD)
+    plot_matrix(SD, osp.join(dir, 'SD.png'), title = 'S+D', cmap = 'blue-red', vmin=vmin, vmax=vmax)
+
+    SD2 = np.load(osp.join(dir, 'GNN-289-E/k0/replicate1/s.npy'))
+    print(mean_squared_error(SD, SD2))
+
+
 if __name__ == '__main__':
     # main()
     # main2()
+    # temp()
     # prep_data_for_cluster()
     # find_best_p_s()
     # binom()

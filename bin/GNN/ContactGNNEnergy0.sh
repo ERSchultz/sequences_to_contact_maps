@@ -36,10 +36,12 @@ headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
+wReg='l1'
+regLambda=1e-2
 
-# both datasets baseline (compare to 271, 277) (288 seems worse than 277 - only difference is energy_SD)
+# w reg
 
-id=298
+id=299
 for lr in 1e-4
 do
   train

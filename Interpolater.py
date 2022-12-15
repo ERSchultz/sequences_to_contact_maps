@@ -57,9 +57,9 @@ class Interpolater():
                     if line[0] == 'chrom':
                         self.chrom = line[1]
                     elif line[0] == 'start':
-                        self.start = int(line[1])
+                        self.start = int(float(line[1]))
                     elif line[0] == 'end':
-                        self.end = int(line[1])
+                        self.end = int(float(line[1]))
                     elif line[0] == 'resolution':
                         self.res = int(line[1])
 
@@ -291,8 +291,8 @@ class Interpolater():
 
 
 def main():
-    dataset = 'dataset_07_20_22'
-    for sample in range(2010, 2011):
+    dataset = 'dataset_11_14_22'
+    for sample in range(2016, 2017):
         # this is the recommended option
         interpolater = Interpolater(['zeros', 'mappability-0.7'], dataset, sample)
         interpolater.run()

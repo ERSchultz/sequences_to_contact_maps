@@ -66,7 +66,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             verbose: True to print
             max_sample: max sample id to save
             samples: set of samples to include (None for all)
-            diag: TODO
+            diag: True if y_diag should be calculated
             keep_zero_edges: True to keep edges with 0 weight
             output_preprocesing: Type of preprocessing for prediction target
         '''
