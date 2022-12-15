@@ -25,11 +25,10 @@ preTransforms='constant-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8-8'
-EncoderHiddenSizesList='1000-1000-64'
+EncoderHiddenSizesList='none'
 updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
-outputPreprocesing='log'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
 headArchitecture='bilinear'
@@ -37,10 +36,12 @@ headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
+wReg='l1'
+regLambda=100
 
-# both datasets log
+# w reg
 
-id=288
+id=303
 for lr in 1e-4
 do
   train
