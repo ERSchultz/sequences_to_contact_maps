@@ -277,8 +277,8 @@ def debugModel(model_type):
     opt.n_epochs = 1
     opt.lr = 1e-4
     opt.weight_decay = 0
-    opt.reg = 'l1'
-    opt.reg_lambda = 1e-2
+    # opt.w_reg = 'l1'
+    # opt.reg_lambda = 1e-2
     opt.batch_size = 1
     opt.milestones = None
     opt.gamma = 0.1

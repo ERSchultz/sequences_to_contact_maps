@@ -198,10 +198,10 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                     print(f'yhat={yhat}, shape={yhat.shape}, '
                             f'min={torch.min(yhat).item()}, max={torch.max(yhat).item()}')
             loss = opt.criterion(yhat, y)
-            if opt.reg is not None:
-                if opt.reg == 'l1':
+            if opt.w_reg is not None:
+                if opt.w_reg == 'l1':
                     loss += opt.reg_lambda * torch.norm(model.sym(model.W), 1)
-                elif opt.reg == 'l2':
+                elif opt.w_reg == 'l2':
                     loss += opt.reg_lambda * torch.norm(model.sym(model.W), 2) ** 2
             avg_loss += loss.item()
             loss.backward()
