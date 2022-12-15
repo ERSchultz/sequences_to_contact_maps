@@ -159,12 +159,17 @@ class Degree(BaseTransform):
 
 class AdjPCATransform(BaseTransform):
     '''Appends rank k PCA transformation of adjacency matrix to feature vector.'''
-    def __init__(self, k = 5):
+    def __init__(self, k = 5, diag = False):
         self.k = k
+        self.diag = True
 
-    def __call__(self, data):
+    def __call__(self, data,):
+        if self.diag:
+            input = torch.clone(data.contact_map_diag)
+        else:
+            input = torch.clone(data.contact_map)
         pca = PCA(n_components = self.k)
-        y_trans = pca.fit_transform(torch.clone(data.contact_map))
+        y_trans = pca.fit_transform(input)
 
         y_trans = torch.tensor(y_trans, dtype = torch.float32)
 
@@ -177,7 +182,7 @@ class AdjPCATransform(BaseTransform):
         return data
 
     def __repr__(self) -> str:
-        return (f'{self.__class__.__name__}(k={self.k})')
+        return (f'{self.__class__.__name__}(k={self.k}, diag={self.diag})')
 
 class AdjPCs(BaseTransform):
     '''Appends values from top k PCs of adjacency matrix to feature vector.'''
@@ -186,7 +191,8 @@ class AdjPCs(BaseTransform):
         self.normalize = normalize
 
     def __call__(self, data):
-        input = torch.nan_to_num(data.contact_map_diag, nan = 1.0)
+        input = data.contact_map_diag
+        # input = torch.nan_to_num(data.contact_map_diag, nan = 1.0)
         pca = PCA(n_components = self.k)
         pca.fit(input)
 

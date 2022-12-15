@@ -471,25 +471,28 @@ def process_transforms(opt):
             processed.append(AdjTransform())
             opt.node_transforms.append(AdjTransform())
         elif t_str[0] == 'adjpca':
-            if len(t_str) > 1 and t_str[1].isdigit():
-                transform_k = int(t_str[1])
-            else:
-                transform_k = 10
-            opt.node_feature_size += transform_k
-            transform = AdjPCATransform(k = transform_k)
+            k = 8
+            diag = False
+            for mode_str in t_str[1:]:
+                if mode_str == 'diag':
+                    diag = True
+                    opt.diag = True
+                elif mode_str.isdigit():
+                    k = int(mode_str)
+            opt.node_feature_size += k
+            transform = AdjPCATransform(k, diag)
             opt.node_transforms.append(transform)
         elif t_str[0] == 'adjpcs':
             opt.diag = True
             norm = False
-            transform_k = 8
-            split_value = default_split_value
+            k = 8
             for mode_str in t_str[1:]:
                 if mode_str == 'norm':
                     norm = True
                 elif mode_str.isdigit():
-                    transform_k = int(mode_str)
-            opt.node_feature_size += transform_k
-            transform = AdjPCs(k = transform_k, normalize = norm)
+                    k = int(mode_str)
+            opt.node_feature_size += k
+            transform = AdjPCs(k, norm)
             opt.node_transforms.append(transform)
         elif t_str[0] == 'contactdistance':
             opt.edge_transforms.append(f'ContactDistance')

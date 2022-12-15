@@ -342,7 +342,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if self.kr:
             y = knightRuiz(y)
 
-        y_diag = None
+        y_copy = np.copy(y)
         if preprocessing == 'log':
             y = np.log(y+1)
         elif preprocessing == 'log_inf':
@@ -358,8 +358,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 raise Exception(f"Unknown preprocessing: {preprocessing} or y_path missing: {y_path}")
 
         if self.diag:
-            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
-            y_diag = DiagonalPreprocessing.process(y, meanDist, verbose = False)
+            # use y_copy since diag of log works worse in max ent framework
+            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y_copy)
+            y_diag = DiagonalPreprocessing.process(y_copy, meanDist, verbose = False)
             # y_diag = np.nan_to_num(y_diag)
         else:
             y_diag = None

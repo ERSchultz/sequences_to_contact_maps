@@ -218,7 +218,7 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-AdjPCs_12_norm')
+        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-AdjPCA_12_diag')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
@@ -284,8 +284,8 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = True
-    opt.plot_predictions = True
+    opt.plot = False
+    opt.plot_predictions = False
     opt.verbose = True
     opt.print_params = True
     opt.gpus = 1

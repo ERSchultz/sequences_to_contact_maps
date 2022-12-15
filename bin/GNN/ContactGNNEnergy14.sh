@@ -1,6 +1,6 @@
 #! /bin/bash
-#SBATCH --job-name=CGNNE11
-#SBATCH --output=logFiles/ContactGNNEnergy11.out
+#SBATCH --job-name=CGNNE14
+#SBATCH --output=logFiles/ContactGNNEnergy14.out
 #SBATCH --time=1-24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
@@ -17,11 +17,11 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
-rootName='ContactGNNEnergy11' # change to run multiple bash files at once
+rootName='ContactGNNEnergy14' # change to run multiple bash files at once
 dirname="/project/depablo/erschultz/dataset_11_18_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='constant-ContactDistance-GeneticDistance_norm-AdjPCs_4_norm'
+preTransforms='constant-ContactDistance-GeneticDistance_norm-AdjPCA_4_diag'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8-8'
@@ -38,10 +38,10 @@ rescale=2
 useScratch='false'
 
 
-id=305
+id=308
 for lr in 1e-4
 do
   train
   id=$(( $id + 1 ))
 done
-python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --GNN_file_name $rootName --scratch $scratch
+python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --GNN_file_name $rootName
