@@ -5,8 +5,6 @@
 #SBATCH --output=logFiles/cleanup.log
 #SBATCH --time=4:00:00
 
-cd
-
 dir='/project2/depablo/erschultz'
 # cd $dir
 # rm dataset_09_30_22.tar.gz
@@ -33,7 +31,7 @@ rm -r ContactGNNEnergy8* &
 # rm -r ContactGNNEnergy11* &
 # rm -r ContactGNNEnergy12* &
 # rm -r ContactGNNEnergy13* &
-# wait
+wait
 
 # cd "${dir}/dataset_11_21_22"
 # rm -r ContactGNNEnergy0* &
