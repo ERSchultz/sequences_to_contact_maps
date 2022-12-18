@@ -735,30 +735,6 @@ def main2():
     plot_matrix(diff2, osp.join(dir, 'diff2.png'), title = 'SD - SDgnn', cmap = 'blue-red', vmin='min', vmax='max')
     print('mse', mean_squared_error(SDgnn, SD2gnn))
 
-def temp():
-    dataset = 'dataset_11_14_22'
-    dir = f'/home/erschultz/{dataset}/samples/sample2201'
-    dir = osp.join(dir, 'PCA_split-binarizeMean-E/k8/replicate1/samples/sample2201_shuffle_chis')
-
-    S = np.load(osp.join(dir, 's.npy'))
-
-    with open(osp.join(dir, 'config.json')) as f:
-        config = json.load(f)
-    diag_chi_continuous = calculate_diag_chi_step(config)
-    D = calculate_D(diag_chi_continuous)
-
-    SD = S + D
-    vmin = np.min(SD)
-    vmax = np.max(SD)
-
-    print(SD)
-    np.save(osp.join(dir, 'sd.npy'), SD)
-    plot_matrix(SD, osp.join(dir, 'SD.png'), title = 'S+D', cmap = 'blue-red', vmin=vmin, vmax=vmax)
-
-    SD2 = np.load(osp.join(dir, 'GNN-289-E/k0/replicate1/s.npy'))
-    print(mean_squared_error(SD, SD2))
-
-
 if __name__ == '__main__':
     # main()
     # main2()

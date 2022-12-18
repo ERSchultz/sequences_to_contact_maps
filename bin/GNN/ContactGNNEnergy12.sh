@@ -29,6 +29,7 @@ EncoderHiddenSizesList='1000-1000-64'
 updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
+outputPreprocesing='log'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
 headArchitecture='bilinear'
@@ -38,7 +39,7 @@ rescale=2
 useScratch='false'
 
 
-id=306
+id=311
 for lr in 1e-4
 do
   train

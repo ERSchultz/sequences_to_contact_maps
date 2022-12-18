@@ -1,6 +1,6 @@
 #! /bin/bash
 
-for i in 10 11 12 13 14 #midway3
+for i in 10 11 12
 # 0 1 2 6 7
 # 3 4 5 midway3
 do
