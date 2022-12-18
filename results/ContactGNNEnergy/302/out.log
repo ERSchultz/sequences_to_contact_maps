@@ -1,0 +1,262 @@
+Namespace(GNN_mode=True, transforms=[], pre_transforms=['constant', 'ContactDistance', 'GeneticDistance_norm'], sparsify_threshold=None, sparsify_threshold_upper=None, top_k=None, use_node_features=False, use_edge_weights=False, use_edge_attr=True, keep_zero_edges=False, data_folder=['/project2/depablo/erschultz/dataset_11_18_22', '/project2/depablo/erschultz/dataset_11_21_22'], scratch='/scratch/midway2/erschultz', root_name='ContactGNNEnergy6', delete_root=False, toxx=False, toxx_mode='mean', y_preprocessing='sweeprand_log_inf', y_zero_diag_count=0, log_preprocessing=None, output_preprocesing=None, kr=False, mean_filt=None, rescale=2, gated=False, preprocessing_norm='mean', min_subtraction=True, x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, use_scratch=False, use_scratch_parallel=True, split_percents=[0.9, 0.1, 0.0], split_sizes=None, random_split=True, shuffle=True, batch_size=1, num_workers=4, start_epoch=1, n_epochs=100, save_mod=5, print_mod=2, lr=0.0001, weight_decay=0.0, gpus=1, milestones=[50], gamma=0.1, loss='mse', w_reg='l1', reg_lambda=10.0, autoencoder_mode=False, verbose=False, print_params=True, output_mode='energy_sym_diag', model_type='ContactGNNEnergy', id=302, pretrained=False, resume_training=False, k=None, m=1024, seed=42, act='prelu', inner_act='prelu', out_act='prelu', training_norm=None, dropout=0.0, parameter_sharing=False, use_bias=True, message_passing='weighted_GAT', head_architecture='bilinear', head_architecture_2='fc-fill', head_hidden_sizes_list=[1000, 1000, 1000, 1000, 1000, 1000, 1024], encoder_hidden_sizes_list=None, inner_hidden_sizes_list=None, edge_encoder_hidden_sizes_list=None, update_hidden_sizes_list=[1000, 1000, 64], head_act='prelu', num_heads=8, concat_heads=True, max_diagonal=None, mlp_model_id=None, kernel_w_list=None, hidden_sizes_list=[8, 8, 8, 8], nf=None, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, down_sampling=None, plot=True, plot_predictions=True, ofile_folder='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/302', log_file_path='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/302/out.log', log_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/302/out.log' mode='a' encoding='UTF-8'>, param_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/302/params.log' mode='a' encoding='UTF-8'>, split_neg_pos_edges=False, criterion=<function mse_loss at 0x7fd9d3b92a60>, channels=1, node_feature_size=1, input_m=512, edge_transforms=["'ContactDistance'", 'ContactDistance(norm=False)', 'GeneticDistance(norm=True)'], node_transforms=['Constant(value=1.0)'], edge_dim=2, transforms_processed=None, diag=False, pre_transforms_processed=Compose([
+  Constant(value=1.0),
+  ContactDistance(norm=False),
+  GeneticDistance(norm=True)
+]), cuda=True, use_parallel=False, device=device(type='cuda'))
+
+Dataset construction time: 70.549 minutes
+Average num edges per graph:  222294.36527196653
+Mean degree: [362.66 512.   449.47 ... 329.12 511.93 511.26] +- [70.54  0.   53.89 ... 80.99  0.29  1.69]
+
+split sizes: train=4302, val=478, test=0, N=4780
+Optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 0.0001
+    weight_decay: 0.0
+)
+#### TRAINING/VALIDATION ####
+Epoch 2, loss = 13.6574
+Mean test/val loss: 12.4055
+[25, 50, 75] quantiles test/val loss: [ 6.9125 10.5398 14.856 ]
+
+Epoch 4, loss = 11.0852
+Mean test/val loss: 10.9148
+[25, 50, 75] quantiles test/val loss: [ 7.6051  9.6779 12.2312]
+
+Epoch 6, loss = 9.9549
+Mean test/val loss: 9.2560
+[25, 50, 75] quantiles test/val loss: [ 5.4398  8.0026 10.9409]
+
+Epoch 8, loss = 9.7071
+Mean test/val loss: 10.0985
+[25, 50, 75] quantiles test/val loss: [ 6.6279  9.2607 12.2243]
+
+Epoch 10, loss = 9.2283
+Mean test/val loss: 8.3188
+[25, 50, 75] quantiles test/val loss: [5.3023 7.1494 9.9396]
+
+Epoch 12, loss = 8.9586
+Mean test/val loss: 9.2921
+[25, 50, 75] quantiles test/val loss: [ 4.9637  7.4598 10.814 ]
+
+Epoch 14, loss = 8.7309
+Mean test/val loss: 8.1421
+[25, 50, 75] quantiles test/val loss: [ 4.8412  7.152  10.0047]
+
+Epoch 16, loss = 8.7088
+Mean test/val loss: 10.1480
+[25, 50, 75] quantiles test/val loss: [ 6.0689  8.8994 12.2799]
+
+Epoch 18, loss = 24.7794
+Mean test/val loss: 8.4688
+[25, 50, 75] quantiles test/val loss: [ 5.0196  7.4928 10.4382]
+
+Epoch 20, loss = 11.9432
+Mean test/val loss: 8.3049
+[25, 50, 75] quantiles test/val loss: [ 4.7661  7.058  10.0495]
+
+Epoch 22, loss = 8.5211
+Mean test/val loss: 8.1375
+[25, 50, 75] quantiles test/val loss: [4.939  7.2552 9.8037]
+
+Epoch 24, loss = 8.4307
+Mean test/val loss: 8.1433
+[25, 50, 75] quantiles test/val loss: [5.2611 7.1192 9.56  ]
+
+Epoch 26, loss = 8.1029
+Mean test/val loss: 9.2783
+[25, 50, 75] quantiles test/val loss: [ 5.8819  8.4279 10.9994]
+
+Epoch 28, loss = 7.9423
+Mean test/val loss: 7.9741
+[25, 50, 75] quantiles test/val loss: [4.6124 6.9556 9.7539]
+
+Epoch 30, loss = 7.8515
+Mean test/val loss: 7.5097
+[25, 50, 75] quantiles test/val loss: [4.4759 6.5366 9.2575]
+
+Epoch 32, loss = 16.0117
+Mean test/val loss: 7.5203
+[25, 50, 75] quantiles test/val loss: [4.4926 6.4209 9.1077]
+
+Epoch 34, loss = 7.7485
+Mean test/val loss: 7.5419
+[25, 50, 75] quantiles test/val loss: [4.4085 6.6007 9.2447]
+
+Epoch 36, loss = 7.8684
+Mean test/val loss: 7.3302
+[25, 50, 75] quantiles test/val loss: [4.3173 6.2436 8.9511]
+
+Epoch 38, loss = 7.6525
+Mean test/val loss: 7.3742
+[25, 50, 75] quantiles test/val loss: [4.4201 6.2006 8.7796]
+
+Epoch 40, loss = 7.7631
+Mean test/val loss: 7.2561
+[25, 50, 75] quantiles test/val loss: [4.1585 6.1701 8.7352]
+
+Epoch 42, loss = 7.4865
+Mean test/val loss: 7.1668
+[25, 50, 75] quantiles test/val loss: [4.1755 6.1812 8.718 ]
+
+Epoch 44, loss = 21.4052
+Mean test/val loss: 7.8084
+[25, 50, 75] quantiles test/val loss: [4.6734 6.8103 9.4618]
+
+Epoch 46, loss = 7.5191
+Mean test/val loss: 7.5052
+[25, 50, 75] quantiles test/val loss: [4.6315 6.5111 8.9835]
+
+Epoch 48, loss = 7.6329
+Mean test/val loss: 7.6876
+[25, 50, 75] quantiles test/val loss: [4.6469 6.6482 9.3846]
+
+Epoch 50, loss = 7.4019
+Mean test/val loss: 7.4917
+[25, 50, 75] quantiles test/val loss: [4.5788 6.4328 9.0119]
+
+Epoch 52, loss = 6.3935
+Mean test/val loss: 6.8299
+[25, 50, 75] quantiles test/val loss: [3.9267 5.8759 8.3601]
+
+Epoch 54, loss = 6.3377
+Mean test/val loss: 6.7750
+[25, 50, 75] quantiles test/val loss: [3.85   5.7828 8.2955]
+
+Epoch 56, loss = 6.2972
+Mean test/val loss: 6.7608
+[25, 50, 75] quantiles test/val loss: [3.8498 5.7891 8.4154]
+
+Epoch 58, loss = 6.2656
+Mean test/val loss: 6.7431
+[25, 50, 75] quantiles test/val loss: [3.8356 5.7505 8.354 ]
+
+Epoch 60, loss = 6.2353
+Mean test/val loss: 6.7065
+[25, 50, 75] quantiles test/val loss: [3.7899 5.7381 8.2811]
+
+Epoch 62, loss = 6.2104
+Mean test/val loss: 6.7058
+[25, 50, 75] quantiles test/val loss: [3.8049 5.7077 8.2762]
+
+Epoch 64, loss = 6.1878
+Mean test/val loss: 6.6923
+[25, 50, 75] quantiles test/val loss: [3.7973 5.6562 8.2682]
+
+Epoch 66, loss = 6.1698
+Mean test/val loss: 6.7002
+[25, 50, 75] quantiles test/val loss: [3.8037 5.685  8.2494]
+
+Epoch 68, loss = 6.1470
+Mean test/val loss: 6.6843
+[25, 50, 75] quantiles test/val loss: [3.7785 5.7037 8.2138]
+
+Epoch 70, loss = 6.1312
+Mean test/val loss: 6.6533
+[25, 50, 75] quantiles test/val loss: [3.7637 5.6153 8.2068]
+
+Epoch 72, loss = 6.1121
+Mean test/val loss: 6.6475
+[25, 50, 75] quantiles test/val loss: [3.7411 5.5769 8.1959]
+
+Epoch 74, loss = 6.0970
+Mean test/val loss: 6.6569
+[25, 50, 75] quantiles test/val loss: [3.7671 5.5812 8.1751]
+
+Epoch 76, loss = 6.0814
+Mean test/val loss: 6.6242
+[25, 50, 75] quantiles test/val loss: [3.7438 5.583  8.1875]
+
+Epoch 78, loss = 6.0675
+Mean test/val loss: 6.6591
+[25, 50, 75] quantiles test/val loss: [3.7578 5.6135 8.2591]
+
+Epoch 80, loss = 6.0582
+Mean test/val loss: 6.6502
+[25, 50, 75] quantiles test/val loss: [3.7163 5.6076 8.2054]
+
+Epoch 82, loss = 6.0457
+Mean test/val loss: 6.5948
+[25, 50, 75] quantiles test/val loss: [3.7234 5.5596 8.0855]
+
+Epoch 84, loss = 6.0323
+Mean test/val loss: 6.6113
+[25, 50, 75] quantiles test/val loss: [3.6845 5.5951 8.2116]
+
+Epoch 86, loss = 6.0401
+Mean test/val loss: 6.6455
+[25, 50, 75] quantiles test/val loss: [3.7269 5.5685 8.0549]
+
+Epoch 88, loss = 6.0283
+Mean test/val loss: 6.6060
+[25, 50, 75] quantiles test/val loss: [3.7062 5.5555 8.0942]
+
+Epoch 90, loss = 6.0017
+Mean test/val loss: 6.6012
+[25, 50, 75] quantiles test/val loss: [3.6962 5.5642 8.2205]
+
+Epoch 92, loss = 5.9943
+Mean test/val loss: 6.6002
+[25, 50, 75] quantiles test/val loss: [3.6923 5.5558 8.1346]
+
+Epoch 94, loss = 5.9858
+Mean test/val loss: 6.5949
+[25, 50, 75] quantiles test/val loss: [3.6678 5.5551 8.098 ]
+
+Epoch 96, loss = 5.9787
+Mean test/val loss: 6.6508
+[25, 50, 75] quantiles test/val loss: [3.7418 5.6101 8.1395]
+
+Epoch 98, loss = 5.9656
+Mean test/val loss: 6.6048
+[25, 50, 75] quantiles test/val loss: [3.698  5.5309 8.0469]
+
+Epoch 100, loss = 5.9583
+Mean test/val loss: 6.6164
+[25, 50, 75] quantiles test/val loss: [3.677  5.5563 8.1018]
+
+
+Total parameters: 43349620
+Total training + validation time: 19.0 hours, 2.0 mins, and 41.69999999999709 secs
+Final val loss: 6.61635209609088
+
+split sizes: train=4302, val=478, test=0, N=4780
+#### Plotting Script ####
+Prediction Results:
+dataset_11_21_22 sample939: 8.871580123901367
+dataset_11_18_22 sample203: 7.482601642608643
+dataset_11_21_22 sample743: 8.694656372070312
+dataset_11_21_22 sample45: 2.8812878131866455
+dataset_11_18_22 sample559: 4.220713138580322
+Loss: 6.43 +- 2.436
+
+Downsampling (40%) Results:
+dataset_11_18_22 sample203-downsampling: 7.707995891571045
+dataset_11_18_22 sample45-downsampling: 19.3352108001709
+dataset_11_18_22 sample559-downsampling: 4.2207136154174805
+dataset_11_18_22 sample743-downsampling: 11.44119644165039
+dataset_11_18_22 sample939-downsampling: 3.9111077785491943
+Loss: 7.107 +- 5.25
+
+Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy6downsample
+Original sampling (100%) Results:
+dataset_11_18_22 sample203-regular: 7.568460464477539
+dataset_11_18_22 sample45-regular: 16.650264739990234
+dataset_11_18_22 sample559-regular: 4.178014755249023
+dataset_11_18_22 sample743-regular: 10.961603164672852
+dataset_11_18_22 sample939-regular: 3.6770973205566406
+Loss: 6.583 +- 4.657
+
+Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy6regsample
+Upsampling (200%) Results:
+dataset_11_18_22 sample203-upsampling: 7.382696151733398
+dataset_11_18_22 sample45-upsampling: 18.37710952758789
+dataset_11_18_22 sample559-upsampling: 4.231534481048584
+dataset_11_18_22 sample743-upsampling: 11.167469024658203
+dataset_11_18_22 sample939-upsampling: 3.6330974102020264
+Loss: 6.732 +- 5.06
+
+Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy6upsample
