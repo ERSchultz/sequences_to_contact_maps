@@ -37,11 +37,11 @@ headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
 wReg='l1'
-regLambda=1
+regLambda=100000
 
 # w reg
 
-id=301
+id=314
 for lr in 1e-4
 do
   train
