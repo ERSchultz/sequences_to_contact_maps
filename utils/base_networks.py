@@ -6,6 +6,7 @@ import scipy
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from sympy import solve, symbols
 
 
 def act2module(act, none_mode = False, in_place = True):
@@ -45,6 +46,24 @@ def act2module(act, none_mode = False, in_place = True):
         raise Exception("Unsupported activation {}".format(act))
 
     return act
+
+def torch_triu_to_full(arr):
+    '''Convert array of upper triangle to symmetric matrix.'''
+    # infer m given length of upper triangle
+    l, = arr.shape
+    x, y = symbols('x y')
+    y=x*(x+1)/2-l
+    result=solve(y)
+    m = int(np.max(result))
+
+    # need to reconstruct from upper traingle
+    out = torch.zeros((m, m), dtype = torch.float32)
+    if arr.is_cuda:
+        out = out.to(arr.get_device())
+    out[np.triu_indices(m)] = arr
+    out = out + torch.triu(out, 1).t()
+
+    return out
 
 class UnetBlock(nn.Module):
     '''U Net Block adapted from https://github.com/phillipi/pix2pix.'''
@@ -629,6 +648,11 @@ def test_unpool():
     out = F.interpolate(input, size = (4, 4))
     print(out)
 
+def test_triu_to_full():
+    inp = torch.tensor(np.array([1,2,3,4,5,6]), dtype = torch.float32)
+    out = torch_triu_to_full(inp)
+    print(out)
+
 
 
 if __name__ == '__main__':
@@ -636,4 +660,5 @@ if __name__ == '__main__':
     # test_MLP()
     # test_FillDiagonalsFromArray()
     # test_strided()
-    test_unpool()
+    # test_unpool()
+    test_triu_to_full()

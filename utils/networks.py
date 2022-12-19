@@ -1,6 +1,7 @@
 import os.path as osp
 import sys
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -9,12 +10,12 @@ import torch_geometric.nn as gnn
 # from .argparse_utils import finalize_opt, get_base_parser
 from .base_networks import (MLP, AverageTo2d, ConvBlock, DeconvBlock,
                             FillDiagonalsFromArray, LinearBlock, Symmetrize2D,
-                            UnetBlock, act2module)
+                            UnetBlock, act2module, torch_triu_to_full)
 from .pyg_fns import WeightedGATv2Conv, WeightedSignedConv
 
 
 ## model functions ##
-def get_model(opt):
+def get_model(opt, verbose = True):
     if opt.model_type == 'SimpleEpiNet':
         model = SimpleEpiNet(opt.input_m, opt.k, opt.kernel_w_list, opt.hidden_sizes_list)
     if opt.model_type == 'UNet':
@@ -60,11 +61,11 @@ def get_model(opt):
                 opt.head_architecture, opt.head_architecture_2, opt.head_hidden_sizes_list,
                 opt.head_act, opt.use_bias, opt.rescale, opt.gated, opt.dropout,
                 opt.training_norm, opt.num_heads, opt.concat_heads,
-                opt.log_file, opt.verbose)
+                opt.log_file, opt.verbose or verbose)
     elif opt.model_type == 'MLP':
         model = MLP(opt.input_m, opt.hidden_sizes_list, opt.use_bias, opt.act,
                             opt.out_act, opt.training_norm, opt.dropout,
-                            opt.log_file, opt.verbose)
+                            opt.log_file, opt.verbose or verbose)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -722,18 +723,30 @@ class ContactGNN(nn.Module):
 
             head = nn.Sequential(*head_list)
         elif head_architecture.startswith('bilinear'):
-            if '_' in head_architecture:
-                rank = int(head_architecture.split('_')[1])
-                head = LinearBlock(self.latent_size, rank, activation = self.head_act,
-                                        bias = self.use_bias, dropout = self.dropout)
+            rank = self.latent_size
+            head = 'Bilinear'
+            for mode in head_architecture.split('_')[1:]:
+                if mode.isnumeric():
+                    rank = int(mode)
+                    if 'chi' in head_architecture:
+                        assert 'triu' in head_architecture, f"{head_architecture}"
+                        size = int(rank*(rank+1)/2)
+                        input_size = self.latent_size * self.m
+                    else:
+                        size = rank
+                        input_size = self.latent_size
+                    head = LinearBlock(input_size, size, activation = self.head_act,
+                                            bias = self.use_bias, dropout = self.dropout)
 
-            else:
-                rank = self.latent_size
-                head = 'Bilinear'
-            init = torch.zeros((rank, rank))
-            torch.nn.init.xavier_normal_(init)
-            self.W = nn.Parameter(init)
-            self.sym = Symmetrize2D()
+            if 'chi' not in head_architecture:
+                if 'triu' in head_architecture:
+                    size = int(rank*(rank+1)/2)
+                    init = torch.zeros(size)
+                else:
+                    init = torch.zeros((rank, rank))
+                    torch.nn.init.xavier_normal_(init)
+                    self.sym = Symmetrize2D()
+                self.W = nn.Parameter(init)
         elif head_architecture == 'inner':
             head = 'Inner'
         elif head_architecture in self.to2D.mode_options:
@@ -785,10 +798,20 @@ class ContactGNN(nn.Module):
                     latent = latent.reshape(-1, self.m, output_size)
                     if self.head[i] == 'Bilinear':
                         out_temp = latent
+                    elif 'chi' in architecture:
+                        latent = latent.reshape(-1, self.m * output_size)
+                        W = self.head[i](latent)
+                        self.W = W.reshape(-1)
+                        out_temp = latent.reshape(-1, self.m, output_size)
                     else:
                         out_temp = self.head[i](latent)
+
                     if 'asym' in architecture:
                         out_temp = torch.einsum('nik,njk->nij', out_temp @ self.W, out_temp)
+                    elif 'triu' in architecture:
+                        W = torch_triu_to_full(self.W)
+                        left = torch.einsum('nij,jk->nik', out_temp, W)
+                        out_temp = torch.einsum('nik,njk->nij', left, out_temp)
                     else:
                         out_temp = torch.einsum('nik,njk->nij', out_temp @ self.sym(self.W), out_temp)
                 elif architecture == 'inner':

@@ -223,7 +223,7 @@ def debugModel(model_type):
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'bilinear_6'
+        opt.head_architecture = 'bilinear_chi_triu_64'
         opt.head_architecture_2 = 'fc-fill'
         crop = 256
         opt.head_hidden_sizes_list = [1000, 1000, 1000, crop]
@@ -286,7 +286,7 @@ def debugModel(model_type):
     # other
     opt.plot = False
     opt.plot_predictions = False
-    opt.verbose = True
+    opt.verbose = False
     opt.print_params = True
     opt.gpus = 1
     # opt.delete_root = True
@@ -337,8 +337,8 @@ def debugModel(model_type):
     # plt.legend()
     # plt.show()
 
-    # if opt.use_scratch:
-    #     rmtree(opt.data_folder)
+    if opt.use_scratch:
+        rmtree(opt.data_folder)
 
 def binom():
     dir = '/home/erschultz/sequences_to_contact_maps/dataset_04_27_22/samples/sample1'
@@ -735,6 +735,30 @@ def main2():
     plot_matrix(diff2, osp.join(dir, 'diff2.png'), title = 'SD - SDgnn', cmap = 'blue-red', vmin='min', vmax='max')
     print('mse', mean_squared_error(SDgnn, SD2gnn))
 
+def plot_SCC_weights():
+    dir = '/home/erschultz/dataset_11_14_22/samples/sample2203'
+    y = np.load(osp.join(dir, 'y.npy'))
+    pca_dir = osp.join(dir, 'PCA-normalize-E/k8/replicate1')
+    y_pca = np.load(osp.join(pca_dir, 'y.npy'))
+
+    K = 100
+    scc, p_arr, w_arr = SCC().scc(y, y_pca, K = K, verbose = True)
+    w_arr /= np.sum(w_arr)
+    print('True', scc)
+    plt.plot(w_arr, label = f'var_stabilized scc = {scc}')
+    #
+    # scc, p_arr, w_arr = SCC().scc(y, y_pca, K = K, var_stabilized = False, verbose = True)
+    # w_arr /= np.sum(w_arr)
+    # print('False', scc)
+    # plt.plot(w_arr, label = f'scc = {scc}')
+
+    w_arr = np.ones(len(w_arr))
+    w_arr /= np.sum(w_arr)
+    scc = np.sum(w_arr * p_arr)
+    plt.plot(w_arr, label = f'mean = {scc}')
+    plt.legend()
+    plt.show()
+
 if __name__ == '__main__':
     # main()
     # main2()
@@ -746,3 +770,4 @@ if __name__ == '__main__':
     # sc_nagano_to_dense()
     debugModel('ContactGNNEnergy')
     # testGNNrank()
+    # plot_SCC_weights()

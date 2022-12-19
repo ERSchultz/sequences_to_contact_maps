@@ -69,7 +69,7 @@ class SCC():
         y = load_contact_map(yfile, chr, resolution)
         return self.scc(x, y, h, K, var_stabilized, verbose, distance)
 
-    def scc(self, x, y, h = 1, K = 10, var_stabilized = True, verbose = False,
+    def scc(self, x, y, h = 1, K = 100, var_stabilized = True, verbose = False,
             distance = False):
         '''
         Compute scc between contact map x and y.

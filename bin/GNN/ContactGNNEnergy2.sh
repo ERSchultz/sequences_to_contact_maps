@@ -31,15 +31,13 @@ numHeads=8
 
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
-headArchitecture='bilinear'
+headArchitecture='inner'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
-wReg='l1'
-regLambda=100000
 
-# w reg
+# inner head arch
 
 id=314
 for lr in 1e-4
