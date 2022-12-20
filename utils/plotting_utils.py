@@ -1145,7 +1145,7 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None,
         if opt.GNN_mode:
             dataloader_fn = torch_geometric.loader.DataLoader
         else:
-            dataloader_fn = DataLoader
+            dataloader_fn = torch.utils.data.DataLoader
         val_dataloader = dataloader_fn(dataset, batch_size = 1, shuffle = False,
                                         num_workers = opt.num_workers)
 

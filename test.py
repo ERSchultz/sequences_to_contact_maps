@@ -215,15 +215,17 @@ def debugModel(model_type):
         opt.out_act = 'relu'
         opt.head_act = 'relu'
         opt.training_norm = None
+        opt.use_node_features = True
+        opt.k = AC.str2int('none')
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-AdjPCA_12_diag')
+        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'bilinear_chi_triu_64'
+        opt.head_architecture = 'bilinear_asym'
         opt.head_architecture_2 = 'fc-fill'
         crop = 256
         opt.head_hidden_sizes_list = [1000, 1000, 1000, crop]
@@ -270,23 +272,23 @@ def debugModel(model_type):
         # opt.training_norm='batch'
         opt.dropout=False
         opt.dropout_p=0.1
-        opt.crop=[20,512]
+        # opt.crop=[20,512]
         # opt.m = 980
 
     # hyperparameters
     opt.n_epochs = 1
     opt.lr = 1e-4
     opt.weight_decay = 0
-    # opt.w_reg = 'l1'
-    # opt.reg_lambda = 1e-2
+    opt.w_reg = 'l1'
+    opt.reg_lambda = 10
     opt.batch_size = 1
     opt.milestones = None
     opt.gamma = 0.1
 
     # other
     opt.plot = False
-    opt.plot_predictions = False
-    opt.verbose = False
+    opt.plot_predictions = True
+    opt.verbose = True
     opt.print_params = True
     opt.gpus = 1
     # opt.delete_root = True

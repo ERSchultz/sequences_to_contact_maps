@@ -66,6 +66,15 @@ def get_model(opt, verbose = True):
         model = MLP(opt.input_m, opt.hidden_sizes_list, opt.use_bias, opt.act,
                             opt.out_act, opt.training_norm, opt.dropout,
                             opt.log_file, opt.verbose or verbose)
+        # init = torch.zeros((5, 5))
+        # torch.nn.init.xavier_normal_(init)
+        # model.sym = Symmetrize2D()
+        # model.W = nn.Parameter(init)
+
+        size = int(5*(5+1)/2)
+        init = torch.ones(size)
+        model.sym = torch_triu_to_full
+        model.W = nn.Parameter(init)
     else:
         raise Exception('Invalid model type: {}'.format(opt.model_type))
 
@@ -738,14 +747,16 @@ class ContactGNN(nn.Module):
                     head = LinearBlock(input_size, size, activation = self.head_act,
                                             bias = self.use_bias, dropout = self.dropout)
 
+
+            if 'triu' in head_architecture:
+                size = int(rank*(rank+1)/2)
+                init = torch.zeros(size)
+                self.sym = torch_triu_to_full
+            else:
+                init = torch.zeros((rank, rank))
+                torch.nn.init.xavier_normal_(init)
+                self.sym = Symmetrize2D()
             if 'chi' not in head_architecture:
-                if 'triu' in head_architecture:
-                    size = int(rank*(rank+1)/2)
-                    init = torch.zeros(size)
-                else:
-                    init = torch.zeros((rank, rank))
-                    torch.nn.init.xavier_normal_(init)
-                    self.sym = Symmetrize2D()
                 self.W = nn.Parameter(init)
         elif head_architecture == 'inner':
             head = 'Inner'
@@ -808,12 +819,9 @@ class ContactGNN(nn.Module):
 
                     if 'asym' in architecture:
                         out_temp = torch.einsum('nik,njk->nij', out_temp @ self.W, out_temp)
-                    elif 'triu' in architecture:
-                        W = torch_triu_to_full(self.W)
-                        left = torch.einsum('nij,jk->nik', out_temp, W)
-                        out_temp = torch.einsum('nik,njk->nij', left, out_temp)
                     else:
-                        out_temp = torch.einsum('nik,njk->nij', out_temp @ self.sym(self.W), out_temp)
+                        left = torch.einsum('nij,jk->nik', out_temp, self.sym(self.W))
+                        out_temp = torch.einsum('nik,njk->nij', left, out_temp)
                 elif architecture == 'inner':
                     latent = latent.reshape(-1, self.m, output_size)
                     out_temp = torch.einsum('nik, njk->nij', latent, latent)
