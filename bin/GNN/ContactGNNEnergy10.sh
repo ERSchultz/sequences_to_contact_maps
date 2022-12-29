@@ -18,10 +18,10 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy10' # change to run multiple bash files at once
-dirname="/project/depablo/erschultz/dataset_11_18_22"
+dirname="/project2/depablo/erschultz/dataset_12_20_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='constant-ContactDistance-GeneticDistance_norm-AdjPCs_12_norm'
+preTransforms='constant-ContactDistance-GeneticDistance_norm'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8-8'
@@ -32,14 +32,14 @@ numHeads=8
 outputPreprocesing='log'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
-headArchitecture='bilinear'
+headArchitecture='bilinear_triu'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
 
 
-id=309
+id=322
 for lr in 1e-4
 do
   train

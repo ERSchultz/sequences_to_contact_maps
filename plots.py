@@ -13,13 +13,13 @@ import torch
 from scipy.ndimage import uniform_filter
 from utils.argparse_utils import (finalize_opt, get_base_parser,
                                   get_opt_header, opt2list)
-from utils.energy_utils import calculate_diag_chi_step
-from utils.load_utils import load_contact_map
-from utils.plotting_utils import (plot_centroid_distance, plot_combined_models,
-                                  plot_diag_chi, plot_sc_contact_maps,
-                                  plot_xyz_gif, plotting_script)
-from utils.utils import DiagonalPreprocessing
-from utils.xyz_utils import xyz_load, xyz_write
+# from utils.energy_utils import calculate_diag_chi_step
+# from utils.load_utils import load_contact_map
+# from utils.plotting_utils import (plot_centroid_distance, plot_combined_models,
+#                                   plot_diag_chi, plot_sc_contact_maps,
+#                                   plot_xyz_gif, plotting_script)
+# from utils.utils import DiagonalPreprocessing
+# from utils.xyz_utils import xyz_load, xyz_write
 
 
 def update_result_tables(model_type = None, mode = None, output_mode = 'contact'):

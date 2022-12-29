@@ -12,7 +12,7 @@
 #SBATCH --mail-user=erschultz@uchicago.edu
 
 envName=python3.9_pytorch1.9
-ofile=logFiles/conda_env2.log
+ofile=logFiles/conda_env_spectre.log
 TORCH=1.9.0
 CUDA=111
 conda create --name $envName -y
@@ -23,14 +23,14 @@ conda env export > logFiles/env_local2.yml
 conda deactivate
 
 # midway3 env
-envName=python3.9_pytorch1.9_cuda11.3
-ofile=logFiles/conda_env_midway3.log
-conda create --name $envName -y
-conda activate $envName
-conda install -y python=3.9 pytorch=1.9 pyg torchvision cudatoolkit=11.3 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scikit-image scipy pybigwig pybind11 sympy isort -c pytorch -c conda-forge -c bioconda -c pyg  &>> $ofile
-python3 -m pip install pynvml importmagic hic-straw hicrep &>> $ofile
-conda env export > logFiles/env_midway3.yml
-conda deactivate
+# envName=python3.9_pytorch1.9_cuda11.3
+# ofile=logFiles/conda_env_midway3.log
+# conda create --name $envName -y
+# conda activate $envName
+# conda install -y python=3.9 pytorch=1.9 pyg torchvision cudatoolkit=11.3 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scikit-image scipy pybigwig pybind11 sympy isort -c pytorch -c conda-forge -c bioconda -c pyg  &>> $ofile
+# python3 -m pip install pynvml importmagic hic-straw hicrep &>> $ofile
+# conda env export > logFiles/env_midway3.yml
+# conda deactivate
 
 # envName=python3.9_pytorch1.9_cuda10.2
 # conda create --name $envName -y
