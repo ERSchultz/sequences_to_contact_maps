@@ -7,6 +7,8 @@ import time
 from shutil import rmtree
 
 import matplotlib.cm
+from skimage.measure import block_reduce
+
 import matplotlib.colors
 import matplotlib.pyplot as plt
 import numpy as np
@@ -272,11 +274,17 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     psi = psi[self.crop[0]:self.crop[1], :]
             else:
                 psi = x.copy()
+
+            if self.rescale is not None:
+                x = block_reduce(x, (1, self.rescale), np.mean) # mean-pool operation
+                psi = block_reduce(psi, (1, self.rescale), np.mean)
+
             x = torch.tensor(x, dtype = torch.float32)
             psi = torch.tensor(psi, dtype = torch.float32)
         else:
             x = None
             psi = None
+
         return x, psi
 
     def load_y(self, raw_folder):
