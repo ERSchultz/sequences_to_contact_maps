@@ -31,15 +31,15 @@ numHeads=8
 
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
-headArchitecture='bilinear_chi_triu_64'
-headArchitecture2='fc-fill'
-headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+headArchitecture='bilinear_chi_triu'
+headArchitecture2='fc-fill_1024'
+headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 useScratch='false'
 
-# chi triu head arch
+# chi triu head arch - new version
 
-id=319
+id=328
 for lr in 1e-4
 do
   train

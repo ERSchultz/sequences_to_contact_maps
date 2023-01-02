@@ -225,9 +225,9 @@ def debugModel(model_type):
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'bilinear_triu'
-        opt.head_architecture_2 = 'fc-fill'
-        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1024]
+        opt.head_architecture = 'bilinear_chi_triu'
+        opt.head_architecture_2 = 'fc-fill_1024'
+        opt.head_hidden_sizes_list = [1000, 1000, 1000]
         opt.crop = None
 
         opt.use_bias = True
@@ -287,7 +287,7 @@ def debugModel(model_type):
     # other
     opt.plot = False
     opt.plot_predictions = True
-    opt.verbose = True
+    opt.verbose = False
     opt.print_params = True
     opt.gpus = 1
     # opt.delete_root = True

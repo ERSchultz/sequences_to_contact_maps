@@ -720,43 +720,43 @@ class ContactGNN(nn.Module):
             print('Head 2:\n', self.head_2, '\n', file = ofile)
 
     def process_head_architecture(self, head_architecture):
+        split = head_architecture.split('_')
         if head_architecture is None:
             head = None
         elif head_architecture.startswith('fc'):
+            if len(split) > 1:
+                output_size = int(split[1])
+                head_hidden_sizes_list = self.head_hidden_sizes_list + [output_size]
+            else:
+                head_hidden_sizes_list = self.head_hidden_sizes_list
             head_list = []
             input_size = self.latent_size * self.m
-            head_list.append(MLP(input_size, self.head_hidden_sizes_list, self.use_bias,
+            head_list.append(MLP(input_size, head_hidden_sizes_list, self.use_bias,
                                 self.head_act, self.out_act, dropout = self.dropout))
             if 'fill' in head_architecture:
                 head_list.append(FillDiagonalsFromArray())
 
             head = nn.Sequential(*head_list)
         elif head_architecture.startswith('bilinear'):
-            rank = self.latent_size
             head = 'Bilinear'
-            for mode in head_architecture.split('_')[1:]:
-                if mode.isnumeric():
-                    rank = int(mode)
-                    if 'chi' in head_architecture:
-                        assert 'triu' in head_architecture, f"{head_architecture}"
-                        size = int(rank*(rank+1)/2)
-                        input_size = self.latent_size * self.m
-                    else:
-                        size = rank
-                        input_size = self.latent_size
-                    head = LinearBlock(input_size, size, activation = self.head_act,
-                                            bias = self.use_bias, dropout = self.dropout)
+            if 'chi' in split:
+                assert 'triu' in split, f"{head_architecture}"
+                size = int(self.latent_size*(self.latent_size+1)/2)
+                input_size = self.latent_size * self.m
+                head_hidden_sizes_list = self.head_hidden_sizes_list + [size]
+                head = MLP(input_size, head_hidden_sizes_list, self.use_bias,
+                            self.head_act, self.out_act, dropout = self.dropout)
 
 
-            if 'triu' in head_architecture:
-                size = int(rank*(rank+1)/2)
+            if 'triu' in split:
+                size = int(self.latent_size*(self.latent_size+1)/2)
                 init = torch.zeros(size)
                 self.sym = torch_triu_to_full
             else:
-                init = torch.zeros((rank, rank))
+                init = torch.zeros((self.latent_size, self.latent_size))
                 torch.nn.init.xavier_normal_(init)
                 self.sym = Symmetrize2D()
-            if 'chi' not in head_architecture:
+            if 'chi' not in split:
                 self.W = nn.Parameter(init)
         elif head_architecture == 'inner':
             head = 'Inner'
@@ -933,16 +933,23 @@ class ContactGNN(nn.Module):
                 latent = latent.reshape(-1, self.m, output_size)
                 if self.head[i] == 'Bilinear':
                     out_temp = latent
+                elif 'chi' in architecture:
+                    latent = latent.reshape(-1, self.m * output_size)
+                    W = self.head[i](latent)
+                    self.W = W.reshape(-1)
+                    out_temp = latent.reshape(-1, self.m, output_size)
                 else:
                     out_temp = self.head[i](latent)
+
                 if 'asym' in architecture:
                     out_temp = torch.einsum('nik,njk->nij', out_temp @ self.W, out_temp)
                 else:
-                    out_temp = torch.einsum('nik,njk->nij', out_temp @ self.sym(self.W), out_temp)
+                    left = torch.einsum('nij,jk->nik', out_temp, self.sym(self.W))
+                    out_temp = torch.einsum('nik,njk->nij', left, out_temp)
             elif architecture == 'inner':
-                _, output_size = latent.shape
                 latent = latent.reshape(-1, self.m, output_size)
                 out_temp = torch.einsum('nik, njk->nij', latent, latent)
+
 
         if self.rescale is not None:
             out_temp = torch.unsqueeze(out_temp, 1)
