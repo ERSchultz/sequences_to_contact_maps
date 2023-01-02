@@ -29,17 +29,16 @@ EncoderHiddenSizesList='1000-1000-64'
 updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
-outputPreprocesing='log'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
-headArchitecture='bilinear_triu'
+headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
 
 
-id=322
+id=327
 for lr in 1e-4
 do
   train

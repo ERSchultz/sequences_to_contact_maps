@@ -643,7 +643,11 @@ def downsamplingAnalysis(val_dataloader, model, opt, count = 5):
         y_preprocessing = opt_copy.y_preprocessing
     opt_copy.y_preprocessing = 'sweep1000000_' + y_preprocessing
 
-    upsample_loss = analysisIterator(val_dataloader, model, opt_copy, count, 'upsampling')
+    try:
+        upsample_loss = analysisIterator(val_dataloader, model, opt_copy, count, 'upsampling')
+    except Exception as e:
+        print(e)
+        upsample_loss = None
 
     return downsample_loss, original_loss, upsample_loss
 

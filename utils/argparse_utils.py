@@ -705,7 +705,7 @@ def opt2list(opt):
         opt.kr, opt.min_subtraction, opt.log_preprocessing, opt.crop]
     opt_list.append(opt.split_percents if opt.split_percents is not None else opt.split_sizes)
     opt_list.extend([opt.shuffle, opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr,
-        opt.weight_decay,
+        opt.weight_decay, opt.w_reg,
         opt.milestones, opt.gamma, opt.loss,
         opt.k, opt.m, opt.seed, opt.act, opt.inner_act,
         opt.head_act, opt.out_act, opt.training_norm])
@@ -758,7 +758,7 @@ def get_opt_header(model_type, GNN_mode):
     opt_list = ['model_type', 'id',  'dataset', 'preprocessing_norm',
         'y_preprocessing', 'output_preprocesing', 'mean_filt', 'rescale',
         'kr', 'min_subtraction', 'log_preprocessing', 'crop', 'split', 'shuffle',
-        'batch_size', 'num_workers', 'n_epochs', 'lr', 'weight_decay', 'milestones',
+        'batch_size', 'num_workers', 'n_epochs', 'lr', 'weight_decay', 'w reg', 'milestones',
         'gamma', 'loss', 'k', 'm',
         'seed', 'act', 'inner_act', 'head_act', 'out_act',
         'training_norm']

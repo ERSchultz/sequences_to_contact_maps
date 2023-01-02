@@ -22,7 +22,6 @@ dirname="/project2/depablo/erschultz/dataset_11_18_22-/project2/depablo/erschult
 m=1024
 messagePassing='weighted_GAT'
 preTransforms='constant-ContactDistance-GeneticDistance_norm'
-mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8-8'
 EncoderHiddenSizesList='none'

@@ -31,15 +31,17 @@ numHeads=8
 
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
-headArchitecture='inner'
+headArchitecture='bilinear_triu'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
+wReg='l1'
+regLambda=1
 
-# inner head arch
+# w reg
 
-id=314
+id=326
 for lr in 1e-4
 do
   train

@@ -194,21 +194,21 @@ def debugModel(model_type):
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
         opt.y_preprocessing = 'sweeprand_log_inf'
-        opt.rescale = None
+        opt.rescale = 2
         opt.mean_filt = None
-        opt.kr = True
+        opt.kr = False
         opt.keep_zero_edges = False
-        opt.loss = 'huber'
+        opt.loss = 'mse'
         opt.preprocessing_norm = 'mean'
-        opt.message_passing = 'gat'
+        opt.message_passing = 'weighted_GAT'
         opt.GNN_mode = True
-        opt.output_mode = 'energy_SD'
+        opt.output_mode = 'energy_sym_diag'
         opt.output_preprocesing = 'log'
         opt.encoder_hidden_sizes_list=AC.str2list('none')
         # opt.edge_encoder_hidden_sizes_list=[100,100,3]
         opt.update_hidden_sizes_list=[100,100,64]
         opt.hidden_sizes_list=[8]
-        opt.gated = True
+        opt.gated = False
         opt.dropout = 0.3
         opt.act = 'prelu'
         opt.inner_act = 'relu'
@@ -216,7 +216,7 @@ def debugModel(model_type):
         opt.head_act = 'relu'
         opt.training_norm = None
         opt.use_node_features = True
-        opt.k = AC.str2int('none')
+        opt.k = 8
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
@@ -225,11 +225,10 @@ def debugModel(model_type):
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'bilinear_asym'
+        opt.head_architecture = 'bilinear_triu'
         opt.head_architecture_2 = 'fc-fill'
-        crop = 256
-        opt.head_hidden_sizes_list = [1000, 1000, 1000, crop]
-        opt.crop = [0, crop]
+        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1024]
+        opt.crop = None
 
         opt.use_bias = True
         opt.num_heads = 8

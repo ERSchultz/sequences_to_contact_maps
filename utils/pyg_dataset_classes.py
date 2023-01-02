@@ -7,8 +7,6 @@ import time
 from shutil import rmtree
 
 import matplotlib.cm
-from skimage.measure import block_reduce
-
 import matplotlib.colors
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,6 +16,7 @@ import torch_geometric.data
 import torch_geometric.transforms
 import torch_geometric.utils
 from scipy.ndimage import uniform_filter
+from skimage.measure import block_reduce
 from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 
 from .argparse_utils import finalize_opt, get_base_parser
@@ -276,8 +275,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 psi = x.copy()
 
             if self.rescale is not None:
-                x = block_reduce(x, (1, self.rescale), np.mean) # mean-pool operation
-                psi = block_reduce(psi, (1, self.rescale), np.mean)
+                x = block_reduce(x, (self.rescale, 1), np.mean) # mean-pool operation
+                psi = block_reduce(psi, (self.rescale, 1), np.mean)
 
             x = torch.tensor(x, dtype = torch.float32)
             psi = torch.tensor(psi, dtype = torch.float32)
