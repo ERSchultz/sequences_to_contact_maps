@@ -1,7 +1,7 @@
 --data_folder
 /project2/depablo/erschultz/dataset_11_18_22-/project2/depablo/erschultz/dataset_11_21_22
 --root_name
-ContactGNNEnergy1
+ContactGNNEnergy2
 --delete_root
 false
 --model_type
@@ -89,7 +89,7 @@ false
 --w_reg
 l1
 --reg_lambda
-100
+1
 --batch_size
 1
 --num_workers
@@ -118,7 +118,7 @@ none
 --print_params
 true
 --id
-325
+326
 --resume_training
 false
 --mlp_model_id
