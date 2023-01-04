@@ -7,11 +7,49 @@
 
 
 
-dir="/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy"
+dir='/project2/depablo/erschultz'
 cd $dir
+tar -czvf dataset_01_17_22.tar.gz dataset_01_17_22
+rm -r dataset_01_17_22
 
-for i in $( seq 1 169 )
+
+for i in {1..2000}
 do
-  cd "${dir}/${i}"
-  rm -r sample*
+  cd "${dir}/dataset_04_27_22/samples/sample${i}"
+  rm -r GNN* &
+  rm -r ground* &
+  rm -r k_means* &
+  rm -r PCA* &
+  rm e.npy &
+  rm y1000* &
+  rm y2500* &
+  rm y5000* &
+  rm -r data_out &
+  rm y_diag.npy &
+  rm s.npy &
+  wait
 done
+cd $dir
+tar -czvf dataset_04_27_22.tar.gz dataset_04_27_22
+rm -r dataset_04_27_22
+
+for i in {1..2000}
+do
+  cd "${dir}/dataset_05_12_22/samples/sample${i}"
+  rm -r GNN* &
+  rm -r ground* &
+  rm -r k_means* &
+  rm -r PCA* &
+  rm e.npy &
+  rm -r data_out &
+  rm chis.tek &
+  rm y_diag.npy &
+  rm s.npy &
+  wait
+done
+cd $dir
+tar -czvf dataset_05_12_22.tar.gz dataset_05_12_22
+rm -r dataset_05_12_22
+
+tar -czvf dataset_05_12_22.tar.gz dataset_05_12_22
+rm -r dataset_05_12_22
