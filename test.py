@@ -255,11 +255,11 @@ def debugModel(model_type):
         opt.head_act = 'relu'
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-EVD')
+        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-EVD_12')
         opt.head_architecture = 'bilinear_triu'
         opt.head_architecture_2 = 'fc-fill_1024'
         opt.head_hidden_sizes_list = [1000, 1000, 1000]
-        opt.crop = [0,128]
+        # opt.crop = [0,256]
 
         opt.use_bias = True
         opt.num_heads = 8
@@ -316,9 +316,9 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = True
+    opt.plot = False
     opt.plot_predictions = True
-    opt.verbose = False
+    opt.verbose = True
     opt.print_params = True
     opt.gpus = 1
     # opt.delete_root = True
@@ -800,6 +800,6 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
+    debugModel('signnet')
     # testGNNrank()
     # plot_SCC_weights()

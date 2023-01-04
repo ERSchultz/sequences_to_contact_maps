@@ -860,7 +860,11 @@ class ContactGNN(nn.Module):
                 out = out_temp
                 first = False
             else:
-                out = out + out_temp
+                try:
+                    out = out + out_temp
+                except RuntimeError:
+                    print(out.shape, out_temp.shape)
+                    raise
 
         return out
 

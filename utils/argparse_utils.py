@@ -570,7 +570,11 @@ def process_transforms(opt):
                                             convert_to_attr = opt.use_edge_attr, id = mlp_id)
             opt.edge_transforms.append(transform)
         elif t_str[0] == 'evd':
-            transform = EVDTransform('sym')
+            k = 8
+            for mode_str in t_str[1:]:
+                if mode_str.isdigit():
+                    k = int(mode_str)
+            transform = EVDTransform('sym', k)
             opt.node_transforms.append(transform)
         else:
             raise Exception(f'Unrecognized transform: {t_str} for id={opt.id}')
