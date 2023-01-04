@@ -895,7 +895,7 @@ class ContactGNN(nn.Module):
         return latent
 
     def diagonal_component(self, graph):
-        latent = self.latent(graph)
+        latent = self.latent(graph, None)
 
         for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
             if architecture is None:
@@ -920,7 +920,7 @@ class ContactGNN(nn.Module):
         return None
 
     def plaid_component(self, graph):
-        latent = self.latent(graph)
+        latent = self.latent(graph, None)
         _, output_size = latent.shape
 
         out_temp = None

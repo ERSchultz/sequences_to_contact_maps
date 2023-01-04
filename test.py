@@ -316,9 +316,9 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = False
+    opt.plot = True
     opt.plot_predictions = True
-    opt.verbose = True
+    opt.verbose = False
     opt.print_params = True
     opt.gpus = 1
     # opt.delete_root = True
@@ -800,6 +800,6 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('signnet')
+    debugModel('ContactGNNEnergy')
     # testGNNrank()
     # plot_SCC_weights()

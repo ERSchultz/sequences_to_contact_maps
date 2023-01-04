@@ -178,6 +178,8 @@ def get_base_parser():
                         help='true to use bias (only implemented in ContactGNN and MLP)')
 
     # GNN model args
+    parser.add_argument('--use_sign_net', type=AC.str2bool, default=False,
+                        help='True to use sign net architecture')
     parser.add_argument('--message_passing', type=str, default='GCN',
                         help='type of message passing algorithm')
     parser.add_argument('--head_architecture', type=AC.str2None,
