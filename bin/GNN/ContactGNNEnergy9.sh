@@ -41,8 +41,8 @@ k=8
 
 # triu head arch - use node features
 
-id=321
-for lr in 1e-5
+id=330
+for lr in 1e-4
 do
   train
   id=$(( $id + 1 ))
