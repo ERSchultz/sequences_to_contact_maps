@@ -234,6 +234,37 @@ def debugModel(model_type):
         opt.num_heads = 8
         opt.concat_heads = True
         # opt.max_diagonal=500
+    elif model_type == 'signnet':
+        model_type = 'ContactGNNEnergy'
+        opt.use_sign_net = True
+        opt.y_preprocessing = 'sweeprand_log_inf'
+        opt.rescale = 2
+        opt.loss = 'mse'
+        opt.preprocessing_norm = 'mean'
+        opt.message_passing = 'weighted_GAT'
+        opt.GNN_mode = True
+        opt.output_mode = 'energy_sym_diag'
+        opt.output_preprocesing = 'log'
+        opt.encoder_hidden_sizes_list=AC.str2list('none')
+        # opt.edge_encoder_hidden_sizes_list=[100,100,3]
+        opt.update_hidden_sizes_list=[100,100,64]
+        opt.hidden_sizes_list=[8]
+        opt.act = 'prelu'
+        opt.inner_act = 'relu'
+        opt.out_act = 'relu'
+        opt.head_act = 'relu'
+        opt.use_edge_attr = True
+        # opt.transforms=AC.str2list('constant')
+        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-EVD')
+        opt.head_architecture = 'bilinear_triu'
+        opt.head_architecture_2 = 'fc-fill_1024'
+        opt.head_hidden_sizes_list = [1000, 1000, 1000]
+        opt.crop = [0,128]
+
+        opt.use_bias = True
+        opt.num_heads = 8
+        opt.concat_heads = True
+
     elif model_type == 'ContactGNNDiag':
         opt.loss = 'mse'
         opt.preprocessing_norm = 'instance'
@@ -287,7 +318,7 @@ def debugModel(model_type):
     # other
     opt.plot = False
     opt.plot_predictions = True
-    opt.verbose = False
+    opt.verbose = True
     opt.print_params = True
     opt.gpus = 1
     # opt.delete_root = True
@@ -769,6 +800,6 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
+    debugModel('signnet')
     # testGNNrank()
     # plot_SCC_weights()

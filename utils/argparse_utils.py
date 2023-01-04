@@ -18,6 +18,9 @@ from .pyg_fns import (AdjPCATransform, AdjPCs, AdjTransform, ContactDistance,
                       WeightedLocalDegreeProfile)
 from .utils import DiagonalPreprocessing
 
+sys.path.insert(0, '/home/erschultz/SignNet-BasisNet/Alchemy')
+from sign_net.transform import EVDTransform
+
 
 def get_base_parser():
     '''Helper function that returns base parser'''
@@ -564,6 +567,9 @@ def process_transforms(opt):
             transform = DiagonalParameterDistance(split_edges = opt.split_neg_pos_edges,
                                             convert_to_attr = opt.use_edge_attr, id = mlp_id)
             opt.edge_transforms.append(transform)
+        elif t_str[0] == 'evd':
+            transform = EVDTransform('sym')
+            opt.node_transforms.append(transform)
         else:
             raise Exception(f'Unrecognized transform: {t_str} for id={opt.id}')
         processed.append(transform)

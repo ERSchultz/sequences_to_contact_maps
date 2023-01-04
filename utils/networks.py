@@ -13,6 +13,9 @@ from .base_networks import (MLP, AverageTo2d, ConvBlock, DeconvBlock,
                             UnetBlock, act2module, torch_triu_to_full)
 from .pyg_fns import WeightedGATv2Conv, WeightedSignedConv
 
+sys.path.insert(0, '/home/erschultz/SignNet-BasisNet/Alchemy')
+from sign_net.sign_net import SignNet
+
 
 ## model functions ##
 def get_model(opt, verbose = True):
@@ -52,16 +55,25 @@ def get_model(opt, verbose = True):
         else:
             output_dim = 2
 
-        model = GNNClass(opt.input_m, opt.node_feature_size, output_dim,
-                opt.hidden_sizes_list,
-                opt.encoder_hidden_sizes_list, opt.edge_encoder_hidden_sizes_list,
-                opt.update_hidden_sizes_list,
-                opt.act, opt.inner_act, opt.out_act,
-                opt.message_passing, opt.use_edge_weights or opt.use_edge_attr, opt.edge_dim,
-                opt.head_architecture, opt.head_architecture_2, opt.head_hidden_sizes_list,
-                opt.head_act, opt.use_bias, opt.rescale, opt.gated, opt.dropout,
-                opt.training_norm, opt.num_heads, opt.concat_heads,
-                opt.log_file, opt.verbose or verbose)
+
+        GNN_model = GNNClass(opt.input_m, opt.node_feature_size, output_dim,
+                    opt.hidden_sizes_list,
+                    opt.encoder_hidden_sizes_list, opt.edge_encoder_hidden_sizes_list,
+                    opt.update_hidden_sizes_list,
+                    opt.act, opt.inner_act, opt.out_act,
+                    opt.message_passing, opt.use_edge_weights or opt.use_edge_attr, opt.edge_dim,
+                    opt.head_architecture, opt.head_architecture_2, opt.head_hidden_sizes_list,
+                    opt.head_act, opt.use_bias, opt.rescale, opt.gated, opt.dropout,
+                    opt.training_norm, opt.num_heads, opt.concat_heads,
+                    opt.log_file, opt.verbose or verbose)
+
+        if opt.use_sign_net:
+            model = SignNetGNN(opt.node_feature_size, opt.edge_dim, opt.update_hidden_sizes_list[-1],
+                            8, 8, False, GNN_model,
+                            opt.log_file, opt.verbose or verbose)
+        else:
+            model = GNN_model
+
     elif opt.model_type == 'MLP':
         model = MLP(opt.input_m, opt.hidden_sizes_list, opt.use_bias, opt.act,
                             opt.out_act, opt.training_norm, opt.dropout,
@@ -599,6 +611,9 @@ class ContactGNN(nn.Module):
                 input_size = output_size
             self.edge_encoder = nn.Sequential(*encoder)
 
+        self.linear = nn.Linear(input_size+update_hidden_sizes_list[-1], update_hidden_sizes_list[-1])
+
+
 
         ### Trunk Architecture ###
         model = []
@@ -790,8 +805,8 @@ class ContactGNN(nn.Module):
 
         return head
 
-    def forward(self, graph):
-        latent = self.latent(graph)
+    def forward(self, graph, additional_x=None):
+        latent = self.latent(graph, additional_x)
         _, output_size = latent.shape
 
         if self.head_architecture is None and self.head_architecture_2 is None:
@@ -849,11 +864,16 @@ class ContactGNN(nn.Module):
 
         return out
 
-    def latent(self, graph):
+    def latent(self, graph, additional_x):
         if self.node_encoder is not None:
             x = self.node_encoder(graph.x)
         else:
             x = graph.x
+
+        if additional_x is not None:
+            x = self.linear(torch.cat([x, additional_x], dim=-1))
+
+
         if self.edge_encoder is not None:
             row, col = graph.edge_index
             concat = torch.cat((x[row], x[col], graph.edge_attr), dim = -1)
@@ -863,28 +883,6 @@ class ContactGNN(nn.Module):
 
         if self.message_passing == 'identity':
             latent = x
-        elif self.message_passing == 'z':
-            raise Exception('deprectated')
-            # parser = get_base_parser()
-            # opt = parser.parse_args()
-            # opt.id = 159
-            # opt.model_type = 'ContactGNN'
-            # opt = finalize_opt(opt, parser, local = True)
-            # print(opt)
-            # z_model = getModel(opt)
-            # if graph.x.is_cuda:
-            #     z_model.to(graph.x.get_device())
-            # model_name = osp.join(opt.ofile_folder, 'model.pt')
-            # if osp.exists(model_name):
-            #     save_dict = torch.load(model_name, map_location=torch.device('cpu'))
-            #     z_model.load_state_dict(save_dict['model_state_dict'])
-            #     print('Model is loaded: {}'.format(model_name))
-            # else:
-            #     raise Exception('Model does not exist: {}'.format(model_name))
-            # z_model.eval()
-            # latent = z_model(graph)
-            # if opt.loss == 'BCE':
-            #     latent = torch.sigmoid(latent)
         elif self.message_passing in {'gcn', 'transformer', 'gat', 'weighted_gat'}:
             latent = self.model(x, graph.edge_index, edge_attr)
         elif self.message_passing == 'signedconv':
@@ -958,6 +956,26 @@ class ContactGNN(nn.Module):
             out_temp = torch.squeeze(out_temp, 1)
 
         return out_temp
+
+class SignNetGNN(nn.Module):
+    def __init__(self, node_feat, edge_feat, n_hid, nl_signnet,
+                    nl_rho, ignore_eigval, gnn_model, ofile, verbose):
+        super().__init__()
+        self.sign_net = SignNet(n_hid, nl_signnet, nl_rho, ignore_eigval, False)
+        self.gnn = gnn_model
+
+        if verbose:
+            print("#### ARCHITECTURE ####", file = ofile)
+            print('Sign Net:\n', self.sign_net, '\n', file = ofile)
+
+
+    def reset_parameters(self):
+        self.sign_net.reset_parameters()
+        self.gnn.reset_parameters()
+
+    def forward(self, data):
+        pos = self.sign_net(data)
+        return self.gnn(data, pos)
 
 
 def testFullyConnectedAutoencoder():
