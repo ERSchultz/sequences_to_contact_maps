@@ -6,6 +6,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import statsmodels.api as sm
+from scipy.sparse.csgraph import laplacian
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
 from utils.argparse_utils import ArgparserConverter
@@ -156,7 +157,7 @@ def plot_top_PCs(inp, inp_type='', odir=None, log_file=sys.stdout, count=2,
                 explained = pca.explained_variance_ratio_[i]
                 plt.title("Component {}: {}% of variance".format(i+1, np.round(explained * 100, 3)))
             if odir is not None:
-                plt.savefig(osp.join(odir, '{}_PC_{}.png'.format(inp_type, i+1)))
+                plt.savefig(osp.join(odir, f'{inp_type}_PC_{i+1}.png'))
                 plt.close()
             else:
                 plt.show()
@@ -363,6 +364,26 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
     PC_y_diag = plot_top_PCs(ydiag, 'y_diag', args.odir, args.log_file, count = 6,
                         plot = args.plot_baseline, verbose = args.verbose,
                         scale = args.scale, svd = args.svd)
+
+
+    L_sym = laplacian(y, normed = True)
+    D, V  = np.linalg.eigh(L_sym)
+    order = np.argsort(D)
+    D = D[order]
+    V = V[:, order]
+    Vt = V.T
+    for i in range(3):
+        if np.mean(Vt[i][:100]) < 0:
+            PC = Vt[i] * -1
+            # PCs are sign invariant, so this doesn't matter mathematically
+            # goal is to help compare PCs visually by aligning them
+        else:
+            PC = Vt[i]
+        plt.plot(PC)
+        plt.savefig(osp.join(args.odir, f'L_sym_PC_{i+1}.png'))
+        plt.close()
+
+
 
     y_log = np.log(y + 1)
     plot_matrix(y_log, osp.join(args.odir, 'y_log.png'), vmax = 'mean')

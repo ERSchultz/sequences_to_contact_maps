@@ -16,14 +16,16 @@ cd dataset_11_21_22_small
 cd samples
 for i in {1..2400}
 do
-  cd "sample${i}"
+  cd "${dir}/dataset_11_21_22_small/samples/sample${i}"
   mkdir data_out
 done
 
+cd "${dir}/dataset_11_21_22_small/samples"
 for i in {1001..1020}
 do
-  rm -r "sample${i}"
+  rm -r "sample${i}" &
 done
+wait
 
 for i in {1..2400}
 do
@@ -41,6 +43,6 @@ do
 done
 
 
-# cd $dir
+cd $dir
 
-# tar -czvf dataset_11_21_22.tar.gz dataset_11_21_22_small
+tar -czvf dataset_11_21_22.tar.gz dataset_11_21_22_small
