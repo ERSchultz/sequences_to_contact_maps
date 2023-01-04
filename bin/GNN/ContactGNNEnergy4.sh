@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE4
 #SBATCH --output=logFiles/ContactGNNEnergy4.out
-#SBATCH --time=1-24:00:00
+#SBATCH --time=24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
