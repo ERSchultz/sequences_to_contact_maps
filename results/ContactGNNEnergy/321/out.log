@@ -204,3 +204,216 @@ Mean test/val loss: 8.8109
 [25, 50, 75] quantiles test/val loss: [ 5.4152  7.6356 10.6849]
 
 Epoch 16, loss = 8.5673
+Mean test/val loss: 8.6868
+[25, 50, 75] quantiles test/val loss: [ 5.2529  7.5415 10.4166]
+
+Epoch 18, loss = 8.4272
+Mean test/val loss: 8.8763
+[25, 50, 75] quantiles test/val loss: [ 5.6191  7.8117 10.6701]
+
+Epoch 20, loss = 8.2733
+Mean test/val loss: 9.5788
+[25, 50, 75] quantiles test/val loss: [ 5.9994  8.5274 11.7126]
+
+Epoch 22, loss = 8.0713
+Mean test/val loss: 8.4771
+[25, 50, 75] quantiles test/val loss: [ 5.0676  7.3612 10.3542]
+
+Epoch 24, loss = 8.0348
+Mean test/val loss: 8.2266
+[25, 50, 75] quantiles test/val loss: [5.0766 7.1137 9.9688]
+
+Epoch 26, loss = 7.9252
+Mean test/val loss: 8.2515
+[25, 50, 75] quantiles test/val loss: [ 4.8803  7.0649 10.0102]
+
+Epoch 28, loss = 7.8303
+Mean test/val loss: 8.2727
+[25, 50, 75] quantiles test/val loss: [5.0356 7.2039 9.991 ]
+
+Epoch 30, loss = 7.8130
+Mean test/val loss: 8.4383
+[25, 50, 75] quantiles test/val loss: [ 4.7954  7.0058 10.0175]
+
+Epoch 32, loss = 7.7120
+Mean test/val loss: 8.2877
+[25, 50, 75] quantiles test/val loss: [4.9959 7.2863 9.9068]
+
+Epoch 34, loss = 7.6805
+Mean test/val loss: 8.4778
+[25, 50, 75] quantiles test/val loss: [ 4.9996  7.3587 10.4083]
+
+Epoch 36, loss = 7.5974
+Mean test/val loss: 7.8950
+[25, 50, 75] quantiles test/val loss: [4.7075 6.723  9.5449]
+
+Epoch 38, loss = 7.5258
+Mean test/val loss: 7.9408
+[25, 50, 75] quantiles test/val loss: [4.7673 6.8138 9.6078]
+
+Epoch 40, loss = 7.5353
+Mean test/val loss: 7.8479
+[25, 50, 75] quantiles test/val loss: [4.612  6.7466 9.6686]
+
+Epoch 42, loss = 7.4871
+Mean test/val loss: 8.0718
+[25, 50, 75] quantiles test/val loss: [5.0372 7.1221 9.6282]
+
+Epoch 44, loss = 7.4488
+Mean test/val loss: 7.7564
+[25, 50, 75] quantiles test/val loss: [4.6374 6.7656 9.4954]
+
+Epoch 46, loss = 7.4193
+Mean test/val loss: 8.2210
+[25, 50, 75] quantiles test/val loss: [5.2069 7.1311 9.681 ]
+
+Epoch 48, loss = 7.3350
+Mean test/val loss: 7.6457
+[25, 50, 75] quantiles test/val loss: [4.4679 6.5393 9.2914]
+
+Epoch 50, loss = 7.2544
+Mean test/val loss: 7.6418
+[25, 50, 75] quantiles test/val loss: [4.5885 6.6914 9.4156]
+
+Epoch 52, loss = 6.9577
+Mean test/val loss: 7.4425
+[25, 50, 75] quantiles test/val loss: [4.3918 6.4685 9.1753]
+
+Epoch 54, loss = 6.9352
+Mean test/val loss: 7.5026
+[25, 50, 75] quantiles test/val loss: [4.3868 6.5375 9.1604]
+
+Epoch 56, loss = 6.9271
+Mean test/val loss: 7.4695
+[25, 50, 75] quantiles test/val loss: [4.3722 6.4802 9.2065]
+
+Epoch 58, loss = 6.9143
+Mean test/val loss: 7.4260
+[25, 50, 75] quantiles test/val loss: [4.3637 6.4628 9.1907]
+
+Epoch 60, loss = 6.9089
+Mean test/val loss: 7.4005
+[25, 50, 75] quantiles test/val loss: [4.3411 6.4389 9.1755]
+
+Epoch 62, loss = 6.8965
+Mean test/val loss: 7.3994
+[25, 50, 75] quantiles test/val loss: [4.3703 6.4431 9.1943]
+
+Epoch 64, loss = 6.8898
+Mean test/val loss: 7.4151
+[25, 50, 75] quantiles test/val loss: [4.3788 6.5011 9.1973]
+
+Epoch 66, loss = 6.8829
+Mean test/val loss: 7.3824
+[25, 50, 75] quantiles test/val loss: [4.3226 6.4329 9.1836]
+
+Epoch 68, loss = 6.8747
+Mean test/val loss: 7.3948
+[25, 50, 75] quantiles test/val loss: [4.3383 6.4608 9.1718]
+
+Epoch 70, loss = 6.8704
+Mean test/val loss: 7.3827
+[25, 50, 75] quantiles test/val loss: [4.3372 6.4168 9.1631]
+
+Epoch 72, loss = 6.8670
+Mean test/val loss: 7.3786
+[25, 50, 75] quantiles test/val loss: [4.3202 6.4351 9.1584]
+
+Epoch 74, loss = 6.8582
+Mean test/val loss: 7.3654
+[25, 50, 75] quantiles test/val loss: [4.3517 6.4171 9.1482]
+
+Epoch 76, loss = 6.8513
+Mean test/val loss: 7.3562
+[25, 50, 75] quantiles test/val loss: [4.3099 6.4137 9.1459]
+
+Epoch 78, loss = 6.8486
+Mean test/val loss: 7.3732
+[25, 50, 75] quantiles test/val loss: [4.2917 6.4377 9.1204]
+
+Epoch 80, loss = 6.8388
+Mean test/val loss: 7.3624
+[25, 50, 75] quantiles test/val loss: [4.377  6.4308 9.166 ]
+
+Epoch 82, loss = 6.8352
+Mean test/val loss: 7.3566
+[25, 50, 75] quantiles test/val loss: [4.3159 6.3985 9.1181]
+
+Epoch 84, loss = 6.8297
+Mean test/val loss: 7.3623
+[25, 50, 75] quantiles test/val loss: [4.3396 6.464  9.1121]
+
+Epoch 86, loss = 6.8229
+Mean test/val loss: 7.3449
+[25, 50, 75] quantiles test/val loss: [4.3184 6.4165 9.1008]
+
+Epoch 88, loss = 6.8171
+Mean test/val loss: 7.3248
+[25, 50, 75] quantiles test/val loss: [4.3186 6.3974 9.0878]
+
+Epoch 90, loss = 6.8124
+Mean test/val loss: 7.3272
+[25, 50, 75] quantiles test/val loss: [4.3293 6.396  9.1118]
+
+Epoch 92, loss = 6.8075
+Mean test/val loss: 7.3306
+[25, 50, 75] quantiles test/val loss: [4.3195 6.4346 9.1521]
+
+Epoch 94, loss = 6.8045
+Mean test/val loss: 7.3281
+[25, 50, 75] quantiles test/val loss: [4.3076 6.3811 9.0565]
+
+Epoch 96, loss = 6.7978
+Mean test/val loss: 7.3597
+[25, 50, 75] quantiles test/val loss: [4.3233 6.4258 9.0479]
+
+Epoch 98, loss = 6.7930
+Mean test/val loss: 7.3149
+[25, 50, 75] quantiles test/val loss: [4.3013 6.3834 9.0709]
+
+Epoch 100, loss = 6.7838
+Mean test/val loss: 7.3053
+[25, 50, 75] quantiles test/val loss: [4.2971 6.3955 9.0692]
+
+
+Total parameters: 43348628
+Total training + validation time: 19.0 hours, 27.0 mins, and 12.19999999999709 secs
+Final val loss: 7.30527682755158
+
+split sizes: train=4302, val=478, test=0, N=4780
+#### Plotting Script ####
+Prediction Results:
+dataset_11_21_22 sample939: 9.480558395385742
+dataset_11_18_22 sample203: 7.972401142120361
+dataset_11_21_22 sample743: 9.586441993713379
+dataset_11_21_22 sample45: 3.2638020515441895
+dataset_11_18_22 sample559: 4.2784881591796875
+Loss: 6.916 +- 2.65
+
+Downsampling (40%) Results:
+dataset_11_18_22 sample203-downsampling: 8.225357055664062
+dataset_11_18_22 sample45-downsampling: 18.893125534057617
+dataset_11_18_22 sample559-downsampling: 4.278487205505371
+dataset_11_18_22 sample743-downsampling: 12.401416778564453
+dataset_11_18_22 sample939-downsampling: 4.862496376037598
+Loss: 7.479 +- 5.165
+
+Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy9downsample
+Original sampling (100%) Results:
+dataset_11_18_22 sample203-regular: 7.728955268859863
+dataset_11_18_22 sample45-regular: 17.614948272705078
+dataset_11_18_22 sample559-regular: 4.245867729187012
+dataset_11_18_22 sample743-regular: 11.840692520141602
+dataset_11_18_22 sample939-regular: 4.508334159851074
+Loss: 7.167 +- 4.9
+
+Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy9regsample
+Upsampling (200%) Results:
+dataset_11_18_22 sample203-upsampling: 7.4145965576171875
+dataset_11_18_22 sample45-upsampling: 18.517738342285156
+dataset_11_18_22 sample559-upsampling: 4.269352912902832
+dataset_11_18_22 sample743-upsampling: 11.479058265686035
+dataset_11_18_22 sample939-upsampling: 4.387939453125
+Loss: 7.193 +- 5.088
+
+Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy9upsample
