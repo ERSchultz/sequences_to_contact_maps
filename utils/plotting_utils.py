@@ -339,11 +339,14 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
         samples.add(sample_id)
 
     dataset = get_dataset(opt, True, True, False, samples = samples)
+    assert opt.GNN_mode
+    dataloader = torch_geometric.loader.DataLoader(dataset, batch_size = 1,
+                                shuffle = False, num_workers = opt.num_workers)
+
 
     loss_arr = np.zeros(len(dataset))
-    for i, data in enumerate(dataset):
+    for i, data in enumerate(dataloader):
         # get yhat
-        assert opt.GNN_mode
         data = data.to(opt.device)
         if opt.output_mode.startswith('energy'):
             y = data.energy
@@ -352,7 +355,7 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
             y = data.y
             y = torch.reshape(y, (-1, opt.m))
         yhat = model(data)
-        path = data.path
+        path = data.path[0]
 
 
         y = y.cpu().numpy()
