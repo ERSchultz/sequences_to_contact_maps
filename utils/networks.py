@@ -12,9 +12,7 @@ from .base_networks import (MLP, AverageTo2d, ConvBlock, DeconvBlock,
                             FillDiagonalsFromArray, LinearBlock, Symmetrize2D,
                             UnetBlock, act2module, torch_triu_to_full)
 from .pyg_fns import WeightedGATv2Conv, WeightedSignedConv
-
-sys.path.insert(0, '/home/erschultz/SignNet-BasisNet/Alchemy')
-from sign_net.sign_net import SignNet
+from .sign_net.sign_net import SignNet
 
 
 ## model functions ##
@@ -65,11 +63,11 @@ def get_model(opt, verbose = True):
                     opt.head_architecture, opt.head_architecture_2, opt.head_hidden_sizes_list,
                     opt.head_act, opt.use_bias, opt.rescale, opt.gated, opt.dropout,
                     opt.training_norm, opt.num_heads, opt.concat_heads,
-                    opt.log_file, opt.verbose or verbose)
+                    opt.log_file, opt.verbose or verbose, opt.use_sign_net)
 
         if opt.use_sign_net:
             model = SignNetGNN(opt.node_feature_size, opt.edge_dim, opt.update_hidden_sizes_list[-1],
-                            8, 8, False, GNN_model,
+                            8, 8, opt.k, False, GNN_model,
                             opt.log_file, opt.verbose or verbose)
         else:
             model = GNN_model
@@ -969,9 +967,9 @@ class ContactGNN(nn.Module):
 
 class SignNetGNN(nn.Module):
     def __init__(self, node_feat, edge_feat, n_hid, nl_signnet,
-                    nl_rho, ignore_eigval, gnn_model, ofile, verbose):
+                    nl_rho, k, ignore_eigval, gnn_model, ofile, verbose):
         super().__init__()
-        self.sign_net = SignNet(n_hid, nl_signnet, nl_rho, ignore_eigval, 8)
+        self.sign_net = SignNet(n_hid, nl_signnet, nl_rho, ignore_eigval, k)
         self.gnn = gnn_model
 
         if verbose:

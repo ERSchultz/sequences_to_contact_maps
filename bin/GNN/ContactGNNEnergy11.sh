@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE11
 #SBATCH --output=logFiles/ContactGNNEnergy11.out
-#SBATCH --time=1-24:00:00
+#SBATCH --time=24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -18,10 +18,10 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy11' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_12_20_22"
+dirname="/project/depablo/erschultz/dataset_11_18_22-/project2/depablo/erschultz/dataset_11_21_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='constant-ContactDistance-GeneticDistance_norm'
+preTransforms='constant-ContactDistance-GeneticDistance_norm-AdjPCs_8'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8-8'
@@ -37,8 +37,11 @@ headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
 
+k=8
+useSignNet='true'
+# first attempt at signNet
 
-id=323
+id=331
 for lr in 1e-4
 do
   train

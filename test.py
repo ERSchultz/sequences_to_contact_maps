@@ -256,6 +256,7 @@ def debugModel(model_type):
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
         opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-AdjPCs_8')
+        opt.k=8
         opt.head_architecture = 'bilinear_triu'
         opt.head_architecture_2 = 'fc-fill_1024'
         opt.head_hidden_sizes_list = [1000, 1000, 1000]
@@ -306,18 +307,18 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 3
+    opt.n_epochs = 2
     opt.lr = 1e-4
     opt.weight_decay = 0
     opt.w_reg = None
     opt.reg_lambda = 10
-    opt.batch_size = 1
+    opt.batch_size = 2
     opt.milestones = None
     opt.gamma = 0.1
 
     # other
     opt.plot = False
-    opt.plot_predictions = True
+    opt.plot_predictions = False
     opt.verbose = False
     opt.print_params = True
     opt.gpus = 1
