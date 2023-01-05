@@ -1,5 +1,5 @@
 --data_folder
-/home/erschultz/dataset_11_18_22-/home/erschultz/dataset_11_21_22
+/project2/depablo/erschultz/dataset_11_18_22-/project2/depablo/erschultz/dataset_11_21_22
 --root_name
 ContactGNNEnergy9
 --delete_root
@@ -79,7 +79,7 @@ fc-fill_1024
 --gated
 false
 --n_epochs
-1
+100
 --lr
 1e-4
 --weight_decay
@@ -112,7 +112,7 @@ false
 --use_scratch_parallel
 true
 --plot_predictions
-false
+true
 --crop
 none
 --print_params

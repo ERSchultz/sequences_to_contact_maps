@@ -1,0 +1,120 @@
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1001/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1001/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1001/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1001/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1001/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1001/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1002/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1002/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1002/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1002/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1002/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1002/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1003/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1003/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1003/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1003/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1003/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1003/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1004/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1004/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1004/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1004/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1004/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1004/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1005/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1005/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1005/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1005/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1005/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1005/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1006/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1006/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1006/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1006/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1006/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1006/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1007/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1007/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1007/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1007/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1007/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1007/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1008/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1008/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1008/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1008/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1008/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1008/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1009/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1009/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1009/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1009/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1009/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1009/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1010/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1010/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1010/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1010/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1010/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1010/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1011/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1011/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1011/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1011/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1011/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1011/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1012/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1012/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1012/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1012/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1012/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1012/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1013/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1013/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1013/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1013/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1013/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1013/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1014/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1014/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1014/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1014/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1014/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1014/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1015/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1015/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1015/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1015/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1015/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1015/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1016/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1016/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1016/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1016/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1016/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1016/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1017/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1017/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1017/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1017/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1017/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1017/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1018/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1018/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1018/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1018/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1018/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1018/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1019/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1019/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1019/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1019/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1019/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1019/data_out/’: No such file or directory
+/tmp/slurmd/job25734108/slurm_script: line 31: cd: /project2/depablo/erschultz/dataset_11_21_22/samples/sample1020/data_out: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1020/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1020/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1020/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1020/data_out/’: No such file or directory
+cp: cannot create regular file ‘/project2/depablo/erschultz/dataset_11_21_22_small/samples/sample1020/data_out/’: No such file or directory
