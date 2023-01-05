@@ -611,7 +611,9 @@ class ContactGNN(nn.Module):
                 input_size = output_size
             self.edge_encoder = nn.Sequential(*encoder)
 
+        print(input_size, update_hidden_sizes_list[-1])
         self.linear = nn.Linear(input_size+update_hidden_sizes_list[-1], update_hidden_sizes_list[-1])
+        input_size = update_hidden_sizes_list[-1]
 
 
 
@@ -730,6 +732,7 @@ class ContactGNN(nn.Module):
             print("#### ARCHITECTURE ####", file = ofile)
             print('Node Encoder:\n', self.node_encoder, '\n', file = ofile)
             print('Edge Encoder:\n', self.edge_encoder, '\n', file = ofile)
+            print('Linear:\n', self.linear, '\n', file = ofile)
             print('Model:\n', self.model, '\n', file = ofile)
             print('Head 1:\n', self.head_1, '\n', file = ofile)
             print('Head 2:\n', self.head_2, '\n', file = ofile)
@@ -874,12 +877,8 @@ class ContactGNN(nn.Module):
         else:
             x = graph.x
 
-        # if additional_x is not None:
-        #     print('h', x.shape)
-        #     print('i', additional_x.shape)
-        #     x = self.linear(torch.cat([x, additional_x], dim=-1))
-        #     print(x.shape)
-
+        if additional_x is not None:
+            x = self.linear(torch.cat([x, additional_x], dim=-1))
 
         if self.edge_encoder is not None:
             row, col = graph.edge_index
@@ -901,8 +900,8 @@ class ContactGNN(nn.Module):
 
         return latent
 
-    def diagonal_component(self, graph):
-        latent = self.latent(graph, None)
+    def diagonal_component(self, graph, additional_x=None):
+        latent = self.latent(graph, additional_x)
 
         for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
             if architecture is None:
@@ -926,8 +925,8 @@ class ContactGNN(nn.Module):
 
         return None
 
-    def plaid_component(self, graph):
-        latent = self.latent(graph, None)
+    def plaid_component(self, graph, additional_x=None):
+        latent = self.latent(graph, additional_x)
         _, output_size = latent.shape
 
         out_temp = None
@@ -968,7 +967,7 @@ class SignNetGNN(nn.Module):
     def __init__(self, node_feat, edge_feat, n_hid, nl_signnet,
                     nl_rho, ignore_eigval, gnn_model, ofile, verbose):
         super().__init__()
-        self.sign_net = SignNet(n_hid, nl_signnet, nl_rho, ignore_eigval, 12)
+        self.sign_net = SignNet(n_hid, nl_signnet, nl_rho, ignore_eigval, 8)
         self.gnn = gnn_model
 
         if verbose:
@@ -983,6 +982,14 @@ class SignNetGNN(nn.Module):
     def forward(self, data):
         pos = self.sign_net(data)
         return self.gnn(data, pos)
+
+    def plaid_component(self, data):
+        pos = self.sign_net(data)
+        return self.gnn.plaid_component(data, pos)
+
+    def diagonal_component(self, data):
+        pos = self.sign_net(data)
+        return self.gnn.diagonal_component(data, pos)
 
 
 def testFullyConnectedAutoencoder():

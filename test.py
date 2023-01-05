@@ -255,11 +255,11 @@ def debugModel(model_type):
         opt.head_act = 'relu'
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-AdjPCs_12')
+        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-AdjPCs_8')
         opt.head_architecture = 'bilinear_triu'
-        opt.head_architecture_2 = 'fc-fill_21'
+        opt.head_architecture_2 = 'fc-fill_1024'
         opt.head_hidden_sizes_list = [1000, 1000, 1000]
-        opt.crop = [0,21]
+        # opt.crop = [0,21]
 
         opt.use_bias = True
         opt.num_heads = 8
@@ -311,7 +311,7 @@ def debugModel(model_type):
     opt.weight_decay = 0
     opt.w_reg = None
     opt.reg_lambda = 10
-    opt.batch_size = 5
+    opt.batch_size = 1
     opt.milestones = None
     opt.gamma = 0.1
 

@@ -496,7 +496,8 @@ def process_transforms(opt):
                     norm = True
                 elif mode_str.isdigit():
                     k = int(mode_str)
-            opt.node_feature_size += k
+            if not opt.use_sign_net:
+                opt.node_feature_size += k
             transform = AdjPCs(k, norm, opt.use_sign_net)
             opt.node_transforms.append(transform)
         elif t_str[0] == 'contactdistance':

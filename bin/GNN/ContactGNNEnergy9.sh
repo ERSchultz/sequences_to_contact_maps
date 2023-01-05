@@ -37,6 +37,7 @@ rescale=2
 useScratch='false'
 
 useNodeFeatures='true'
+resumeTraining='true'
 k=8
 
 # triu head arch - use node features
