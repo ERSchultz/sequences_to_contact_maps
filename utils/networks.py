@@ -874,8 +874,11 @@ class ContactGNN(nn.Module):
         else:
             x = graph.x
 
-        if additional_x is not None:
-            x = self.linear(torch.cat([x, additional_x], dim=-1))
+        # if additional_x is not None:
+        #     print('h', x.shape)
+        #     print('i', additional_x.shape)
+        #     x = self.linear(torch.cat([x, additional_x], dim=-1))
+        #     print(x.shape)
 
 
         if self.edge_encoder is not None:
@@ -965,7 +968,7 @@ class SignNetGNN(nn.Module):
     def __init__(self, node_feat, edge_feat, n_hid, nl_signnet,
                     nl_rho, ignore_eigval, gnn_model, ofile, verbose):
         super().__init__()
-        self.sign_net = SignNet(n_hid, nl_signnet, nl_rho, ignore_eigval, False)
+        self.sign_net = SignNet(n_hid, nl_signnet, nl_rho, ignore_eigval, 12)
         self.gnn = gnn_model
 
         if verbose:

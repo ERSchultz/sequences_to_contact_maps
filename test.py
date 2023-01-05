@@ -238,7 +238,7 @@ def debugModel(model_type):
         model_type = 'ContactGNNEnergy'
         opt.use_sign_net = True
         opt.y_preprocessing = 'sweeprand_log_inf'
-        opt.rescale = 2
+        opt.rescale = None
         opt.loss = 'mse'
         opt.preprocessing_norm = 'mean'
         opt.message_passing = 'weighted_GAT'
@@ -255,11 +255,11 @@ def debugModel(model_type):
         opt.head_act = 'relu'
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-EVD_12')
+        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-AdjPCs_12')
         opt.head_architecture = 'bilinear_triu'
-        opt.head_architecture_2 = 'fc-fill_1024'
+        opt.head_architecture_2 = 'fc-fill_21'
         opt.head_hidden_sizes_list = [1000, 1000, 1000]
-        # opt.crop = [0,256]
+        opt.crop = [0,21]
 
         opt.use_bias = True
         opt.num_heads = 8
@@ -306,19 +306,19 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 1
+    opt.n_epochs = 3
     opt.lr = 1e-4
     opt.weight_decay = 0
-    opt.w_reg = 'l1'
+    opt.w_reg = None
     opt.reg_lambda = 10
-    opt.batch_size = 1
+    opt.batch_size = 5
     opt.milestones = None
     opt.gamma = 0.1
 
     # other
     opt.plot = False
     opt.plot_predictions = True
-    opt.verbose = True
+    opt.verbose = False
     opt.print_params = True
     opt.gpus = 1
     # opt.delete_root = True

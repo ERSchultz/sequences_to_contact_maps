@@ -16,22 +16,22 @@ dir='/project2/depablo/erschultz'
 # rm -r dataset_09_30_22.tar.gz &
 # wait
 #
-cd "${dir}/dataset_11_18_22"
-rm -r ContactGNNEnergy0* &
-rm -r ContactGNNEnergy1* &
-rm -r ContactGNNEnergy2* &
-rm -r ContactGNNEnergy3* &
-rm -r ContactGNNEnergy4* &
+# cd "${dir}/dataset_11_18_22"
+# rm -r ContactGNNEnergy0* &
+# rm -r ContactGNNEnergy1* &
+# rm -r ContactGNNEnergy2* &
+# rm -r ContactGNNEnergy3* &
+# rm -r ContactGNNEnergy4* &
 # rm -r ContactGNNEnergy5* &
-rm -r ContactGNNEnergy6* &
-rm -r ContactGNNEnergy7* &
-rm -r ContactGNNEnergy8* &
-rm -r ContactGNNEnergy9* &
+# rm -r ContactGNNEnergy6* &
+# rm -r ContactGNNEnergy7* &
+# rm -r ContactGNNEnergy8* &
+# rm -r ContactGNNEnergy9* &
 # rm -r ContactGNNEnergy10* &
 # rm -r ContactGNNEnergy11* &
 # rm -r ContactGNNEnergy12* &
 # rm -r ContactGNNEnergy13* &
-wait
+# wait
 
 cd "${dir}/dataset_12_20_22"
 # rm -r ContactGNNEnergy0* &
@@ -45,24 +45,32 @@ cd "${dir}/dataset_12_20_22"
 # rm -r ContactGNNEnergy8* &
 # rm -r ContactGNNEnergy9* &
 rm -r ContactGNNEnergy10* &
-rm -r ContactGNNEnergy11* &
+# rm -r ContactGNNEnergy11* &
 # rm -r ContactGNNEnergy12* &
 # rm -r ContactGNNEnergy13* &
 wait
 
-cd "${dir}/dataset_12_18_22"
+# cd "${dir}/dataset_12_18_22"
 # rm -r ContactGNNEnergy0* &
 # rm -r ContactGNNEnergy1* &
 # rm -r ContactGNNEnergy2* &
 # rm -r ContactGNNEnergy3* &
 # rm -r ContactGNNEnergy4* &
 # rm -r ContactGNNEnergy5* &
-rm -r ContactGNNEnergy6* &
-rm -r ContactGNNEnergy7* &
+# rm -r ContactGNNEnergy6* &
+# rm -r ContactGNNEnergy7* &
 # rm -r ContactGNNEnergy8* &
 # rm -r ContactGNNEnergy9* &
 # rm -r ContactGNNEnergy10* &
 # rm -r ContactGNNEnergy11* &
 # rm -r ContactGNNEnergy12* &
 # rm -r ContactGNNEnergy13* &
-wait
+# wait
+
+dir=/home/erschultz/sequences_to_contact_maps/results/MLP
+
+for i in {79..93}
+do
+  cd "${dir}/${i}"
+  rm *.pt
+done

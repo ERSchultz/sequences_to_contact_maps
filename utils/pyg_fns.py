@@ -186,9 +186,10 @@ class AdjPCATransform(BaseTransform):
 
 class AdjPCs(BaseTransform):
     '''Appends values from top k PCs of adjacency matrix to feature vector.'''
-    def __init__(self, k = 5, normalize = False):
+    def __init__(self, k = 5, normalize = False, sign_net = False):
         self.k = k
         self.normalize = normalize
+        self.sign_net = sign_net
 
     def __call__(self, data):
         input = data.contact_map_diag
@@ -217,16 +218,29 @@ class AdjPCs(BaseTransform):
 
         topk_pcs = torch.tensor(topk_pcs, dtype = torch.float32)
 
-        if data.x is not None:
-            data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
-            data.x = torch.cat([data.x, topk_pcs], dim=-1)
+        if self.sign_net:
+            print('pc222', topk_pcs)
+            data.eigen_vectors = topk_pcs.reshape(-1)
+            data.eigen_values = torch.tensor(pca.singular_values_[:self.k], dtype = torch.float32)
         else:
-            data.x = topk_pcs
+            if data.x is not None:
+                data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
+                data.x = torch.cat([data.x, topk_pcs], dim=-1)
+            else:
+                data.x = topk_pcs
 
         return data
 
     def __repr__(self) -> str:
-        return (f'{self.__class__.__name__}(k={self.k}, normalize={self.normalize})')
+        repr = f'{self.__class__.__name__}(k={self.k}, normalize={self.normalize}'
+
+        if self.sign_net:
+            repr += f', sign_net={self.sign_net})'
+        else:
+            repr += ')'
+
+        return repr
+
 
 class AdjTransform(BaseTransform):
     '''Appends rows of adjacency matrix to feature vector.'''

@@ -497,7 +497,7 @@ def process_transforms(opt):
                 elif mode_str.isdigit():
                     k = int(mode_str)
             opt.node_feature_size += k
-            transform = AdjPCs(k, norm)
+            transform = AdjPCs(k, norm, opt.use_sign_net)
             opt.node_transforms.append(transform)
         elif t_str[0] == 'contactdistance':
             opt.edge_transforms.append(f'ContactDistance')
@@ -570,7 +570,7 @@ def process_transforms(opt):
                                             convert_to_attr = opt.use_edge_attr, id = mlp_id)
             opt.edge_transforms.append(transform)
         elif t_str[0] == 'evd':
-            k = 8
+            k = None
             for mode_str in t_str[1:]:
                 if mode_str.isdigit():
                     k = int(mode_str)
