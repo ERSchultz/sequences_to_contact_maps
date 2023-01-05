@@ -33,7 +33,7 @@ dir='/project2/depablo/erschultz'
 # rm -r ContactGNNEnergy13* &
 # wait
 
-cd "${dir}/dataset_12_20_22"
+# cd "${dir}/dataset_12_20_22"
 # rm -r ContactGNNEnergy0* &
 # rm -r ContactGNNEnergy1* &
 # rm -r ContactGNNEnergy2* &
@@ -44,11 +44,11 @@ cd "${dir}/dataset_12_20_22"
 # rm -r ContactGNNEnergy7* &
 # rm -r ContactGNNEnergy8* &
 # rm -r ContactGNNEnergy9* &
-rm -r ContactGNNEnergy10* &
+# rm -r ContactGNNEnergy10* &
 # rm -r ContactGNNEnergy11* &
 # rm -r ContactGNNEnergy12* &
 # rm -r ContactGNNEnergy13* &
-wait
+# wait
 
 # cd "${dir}/dataset_12_18_22"
 # rm -r ContactGNNEnergy0* &
@@ -67,10 +67,10 @@ wait
 # rm -r ContactGNNEnergy13* &
 # wait
 
-dir=/home/erschultz/sequences_to_contact_maps/results/MLP
+dir=/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy
 
-for i in {79..93}
+for i in {170..253}
 do
   cd "${dir}/${i}"
-  rm *.pt
+  rm *.tar.gz
 done
