@@ -1,5 +1,5 @@
 --data_folder
-/project2/depablo/erschultz/dataset_11_18_22-/project2/depablo/erschultz/dataset_11_21_22
+/home/erschultz/dataset_11_18_22-/home/erschultz/dataset_11_21_22
 --root_name
 ContactGNNEnergy9
 --delete_root
@@ -71,15 +71,15 @@ none
 --head_architecture
 bilinear_triu
 --head_architecture_2
-fc-fill
+fc-fill_1024
 --head_hidden_sizes_list
-1000-1000-1000-1000-1000-1000-1024
+1000-1000-1000-1000-1000-1000
 --num_heads
 8
 --gated
 false
 --n_epochs
-100
+1
 --lr
 1e-4
 --weight_decay
@@ -112,7 +112,7 @@ false
 --use_scratch_parallel
 true
 --plot_predictions
-true
+false
 --crop
 none
 --print_params

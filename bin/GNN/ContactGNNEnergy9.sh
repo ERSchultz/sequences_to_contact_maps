@@ -31,8 +31,8 @@ numHeads=8
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
 headArchitecture='bilinear_triu'
-headArchitecture2='fc-fill'
-headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+headArchitecture2='fc-fill_1024'
+headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 useScratch='false'
 
@@ -47,4 +47,4 @@ do
   train
   id=$(( $id + 1 ))
 done
-python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --GNN_file_name $rootName --scratch $scratch
+python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --GNN_file_name $rootName --scratch $scratch --use_scratch $useScratch

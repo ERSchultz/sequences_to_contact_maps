@@ -535,7 +535,7 @@ class ContactGNN(nn.Module):
                 head_architecture, head_architecture_2, head_hidden_sizes_list,
                 head_act, use_bias, rescale, gated, dropout,
                 training_norm, num_heads, concat_heads,
-                ofile = sys.stdout, verbose = True):
+                ofile = sys.stdout, verbose = True, sign_net = False):
         '''
         Inputs:
             m: number of nodes
@@ -562,6 +562,7 @@ class ContactGNN(nn.Module):
             gated: True to use gated residual connection (https://doi.org/10.3389/fmolb.2021.647915)
             dropout: Value for dropout (0.0 for no dropout)
             training_norm: Normalization layer
+            sign_net: True if using additional_x from sign_net
         '''
         super(ContactGNN, self).__init__()
 
@@ -611,9 +612,12 @@ class ContactGNN(nn.Module):
                 input_size = output_size
             self.edge_encoder = nn.Sequential(*encoder)
 
-        print(input_size, update_hidden_sizes_list[-1])
-        self.linear = nn.Linear(input_size+update_hidden_sizes_list[-1], update_hidden_sizes_list[-1])
-        input_size = update_hidden_sizes_list[-1]
+        if sign_net:
+            # print(input_size, update_hidden_sizes_list[-1])
+            self.linear = nn.Linear(input_size+update_hidden_sizes_list[-1], update_hidden_sizes_list[-1])
+            input_size = update_hidden_sizes_list[-1]
+        else:
+            self.linear = None
 
 
 
