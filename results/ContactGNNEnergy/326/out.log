@@ -348,3 +348,72 @@ Mean test/val loss: 6.4965
 [25, 50, 75] quantiles test/val loss: [3.6017 5.4604 7.9504]
 
 Epoch 88, loss = 5.8672
+Mean test/val loss: 6.4933
+[25, 50, 75] quantiles test/val loss: [3.6262 5.4055 7.9897]
+
+Epoch 90, loss = 5.8560
+Mean test/val loss: 6.5156
+[25, 50, 75] quantiles test/val loss: [3.6017 5.4568 7.9897]
+
+Epoch 92, loss = 5.8449
+Mean test/val loss: 6.5025
+[25, 50, 75] quantiles test/val loss: [3.6084 5.3946 8.1031]
+
+Epoch 94, loss = 5.8347
+Mean test/val loss: 6.4849
+[25, 50, 75] quantiles test/val loss: [3.6098 5.3774 8.0093]
+
+Epoch 96, loss = 5.8242
+Mean test/val loss: 6.5031
+[25, 50, 75] quantiles test/val loss: [3.5869 5.4304 8.0391]
+
+Epoch 98, loss = 5.8136
+Mean test/val loss: 6.4668
+[25, 50, 75] quantiles test/val loss: [3.5845 5.3617 7.9845]
+
+Epoch 100, loss = 5.8050
+Mean test/val loss: 6.4591
+[25, 50, 75] quantiles test/val loss: [3.5565 5.4134 7.8807]
+
+
+Total parameters: 43351828
+Total training + validation time: 20.0 hours, 2.0 mins, and 13.60000000000582 secs
+Final val loss: 6.459052985292473
+
+split sizes: train=4302, val=478, test=0, N=4780
+#### Plotting Script ####
+Prediction Results:
+dataset_11_21_22 sample939: 8.709850311279297
+dataset_11_18_22 sample203: 7.2223734855651855
+dataset_11_21_22 sample743: 8.812246322631836
+dataset_11_21_22 sample45: 2.938912868499756
+dataset_11_18_22 sample559: 4.090977668762207
+Loss: 6.355 +- 2.414
+
+Downsampling (40%) Results:
+dataset_11_18_22 sample203-downsampling: 7.387091159820557
+dataset_11_18_22 sample45-downsampling: 18.598262786865234
+dataset_11_18_22 sample559-downsampling: 4.090978145599365
+dataset_11_18_22 sample743-downsampling: 11.388198852539062
+dataset_11_18_22 sample939-downsampling: 3.7872860431671143
+Loss: 7.008 +- 5.079
+
+Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy2downsample
+Original sampling (100%) Results:
+dataset_11_18_22 sample203-regular: 7.298548698425293
+dataset_11_18_22 sample45-regular: 16.079721450805664
+dataset_11_18_22 sample559-regular: 4.068401336669922
+dataset_11_18_22 sample743-regular: 10.958513259887695
+dataset_11_18_22 sample939-regular: 3.613394021987915
+Loss: 6.493 +- 4.527
+
+Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy2regsample
+Upsampling (200%) Results:
+dataset_11_18_22 sample203-upsampling: 7.247029781341553
+dataset_11_18_22 sample45-upsampling: 17.47720718383789
+dataset_11_18_22 sample559-upsampling: 3.9894344806671143
+dataset_11_18_22 sample743-upsampling: 10.847930908203125
+dataset_11_18_22 sample939-upsampling: 3.5880818367004395
+Loss: 6.6 +- 4.837
+
+Removing /project2/depablo/erschultz/dataset_11_18_22/ContactGNNEnergy2upsample
