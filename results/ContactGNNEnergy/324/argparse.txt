@@ -1,7 +1,7 @@
 --data_folder
 /project2/depablo/erschultz/dataset_11_18_22-/project2/depablo/erschultz/dataset_11_21_22
 --root_name
-ContactGNNEnergy8
+ContactGNNEnergy0
 --delete_root
 false
 --model_type
@@ -33,9 +33,9 @@ false
 --message_passing
 weighted_GAT
 --use_node_features
-true
+false
 --k
-8
+none
 --use_edge_weights
 false
 --use_edge_attr
@@ -69,11 +69,11 @@ prelu
 --training_norm
 none
 --head_architecture
-bilinear_chi_triu
+bilinear_triu
 --head_architecture_2
-fc-fill_1024
+fc-fill
 --head_hidden_sizes_list
-1000-1000-1000-1000-1000-1000
+1000-1000-1000-1000-1000-1000-1024
 --num_heads
 8
 --gated
@@ -87,9 +87,9 @@ false
 --dropout
 0.
 --w_reg
-none
+l1
 --reg_lambda
-1e-1
+10
 --batch_size
 1
 --num_workers
@@ -118,7 +118,7 @@ none
 --print_params
 true
 --id
-320
+324
 --resume_training
 false
 --mlp_model_id
