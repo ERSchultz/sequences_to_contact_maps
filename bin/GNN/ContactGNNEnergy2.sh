@@ -44,7 +44,7 @@ batchSize=2
 
 # 2nd attempt signplus, batchsize=2
 
-id=337
+id=339
 for lr in 1e-4
 do
   train
