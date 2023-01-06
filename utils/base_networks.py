@@ -50,18 +50,35 @@ def act2module(act, none_mode = False, in_place = True):
 def torch_triu_to_full(arr):
     '''Convert array of upper triangle to symmetric matrix.'''
     # infer m given length of upper triangle
-    l, = arr.shape
-    x, y = symbols('x y')
-    y=x*(x+1)/2-l
-    result=solve(y)
-    m = int(np.max(result))
+    if len(arr.shape) == 1:
+        l, = arr.shape
+        x, y = symbols('x y')
+        y=x*(x+1)/2-l
+        result=solve(y)
+        m = int(np.max(result))
+        print(arr.shape, m)
 
-    # need to reconstruct from upper traingle
-    out = torch.zeros((m, m), dtype = torch.float32)
-    if arr.is_cuda:
-        out = out.to(arr.get_device())
-    out[np.triu_indices(m)] = arr
-    out = out + torch.triu(out, 1).t()
+        # need to reconstruct from upper traingle
+        out = torch.zeros((m, m), dtype = torch.float32)
+        if arr.is_cuda:
+            out = out.to(arr.get_device())
+        print(out.shape)
+        out[np.triu_indices(m)] = arr
+        out = out + torch.triu(out, 1).t()
+    elif len(arr.shape) == 2:
+        b, l = arr.shape
+        x, y = symbols('x y')
+        y=x*(x+1)/2-l
+        result=solve(y)
+        m = int(np.max(result))
+
+        # need to reconstruct from upper traingle
+        out = torch.zeros((b, m, m), dtype = torch.float32)
+        if arr.is_cuda:
+            out = out.to(arr.get_device())
+        for i in range(b):
+            out[i, :, :][np.triu_indices(m)] = arr[i, :]
+        out = out + torch.transpose(torch.triu(out, 1), 1, 2)
 
     return out
 

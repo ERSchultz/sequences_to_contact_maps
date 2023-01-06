@@ -1,11 +1,7 @@
 --data_folder
-<<<<<<< HEAD
-/project2/depablo/erschultz/dataset_11_18_22-/project2/depablo/erschultz/dataset_11_21_22
-=======
 /project/depablo/erschultz/dataset_11_18_22-/project/depablo/erschultz/dataset_11_21_22
->>>>>>> 6746381f3986adbb13e405468da95e63f61ff4ae
 --root_name
-ContactGNNEnergy8
+ContactGNNEnergy4
 --delete_root
 false
 --model_type
@@ -37,9 +33,9 @@ false
 --message_passing
 weighted_GAT
 --use_node_features
-true
+false
 --k
-8
+none
 --use_edge_weights
 false
 --use_edge_attr
@@ -124,7 +120,7 @@ none
 --print_params
 true
 --id
-320
+328
 --resume_training
 false
 --mlp_model_id

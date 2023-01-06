@@ -1,0 +1,710 @@
+#### ARCHITECTURE ####
+Node Encoder:
+ Sequential(
+  (0): Linear(1, 1000, bias=True)
+  (1): PReLU(num_parameters=1)
+  (2): Linear(1000, 1000, bias=True)
+  (3): PReLU(num_parameters=1)
+  (4): Linear(1000, 64, bias=True)
+  (5): PReLU(num_parameters=1)
+) 
+
+Edge Encoder:
+ None 
+
+Linear:
+ Linear(in_features=128, out_features=64, bias=True) 
+
+Model:
+ Sequential(
+  (0): WeightedGATv2Conv(64, 8, heads=8)
+  (1): MLP(
+  (model): Sequential(
+    (0): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=64, out_features=1000, bias=True)
+        (1): PReLU(num_parameters=1)
+      )
+    )
+    (1): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): PReLU(num_parameters=1)
+      )
+    )
+    (2): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=64, bias=True)
+        (1): PReLU(num_parameters=1)
+      )
+    )
+  )
+)
+  (2): WeightedGATv2Conv(64, 8, heads=8)
+  (3): MLP(
+  (model): Sequential(
+    (0): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=64, out_features=1000, bias=True)
+        (1): PReLU(num_parameters=1)
+      )
+    )
+    (1): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): PReLU(num_parameters=1)
+      )
+    )
+    (2): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=64, bias=True)
+        (1): PReLU(num_parameters=1)
+      )
+    )
+  )
+)
+  (4): WeightedGATv2Conv(64, 8, heads=8)
+  (5): MLP(
+  (model): Sequential(
+    (0): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=64, out_features=1000, bias=True)
+        (1): PReLU(num_parameters=1)
+      )
+    )
+    (1): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): PReLU(num_parameters=1)
+      )
+    )
+    (2): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=64, bias=True)
+        (1): PReLU(num_parameters=1)
+      )
+    )
+  )
+)
+  (6): WeightedGATv2Conv(64, 8, heads=8)
+  (7): MLP(
+  (model): Sequential(
+    (0): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=64, out_features=1000, bias=True)
+        (1): PReLU(num_parameters=1)
+      )
+    )
+    (1): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): PReLU(num_parameters=1)
+      )
+    )
+    (2): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=64, bias=True)
+        (1): PReLU(num_parameters=1)
+      )
+    )
+  )
+)
+) 
+
+Head 1:
+ Bilinear 
+
+Head 2:
+ Sequential(
+  (0): MLP(
+    (model): Sequential(
+      (0): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=32768, out_features=1000, bias=True)
+          (1): PReLU(num_parameters=1)
+        )
+      )
+      (1): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1000, bias=True)
+          (1): PReLU(num_parameters=1)
+        )
+      )
+      (2): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1000, bias=True)
+          (1): PReLU(num_parameters=1)
+        )
+      )
+      (3): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1000, bias=True)
+          (1): PReLU(num_parameters=1)
+        )
+      )
+      (4): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1000, bias=True)
+          (1): PReLU(num_parameters=1)
+        )
+      )
+      (5): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1000, bias=True)
+          (1): PReLU(num_parameters=1)
+        )
+      )
+      (6): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1024, bias=True)
+          (1): PReLU(num_parameters=1)
+        )
+      )
+    )
+  )
+  (1): FillDiagonalsFromArray()
+) 
+
+#### ARCHITECTURE ####
+Sign Net:
+ SignNet(
+  (phi): GNN3d(
+    (convs): ModuleList(
+      (0): MaskedGINConv(
+        (nn): MaskedMLP(
+          (layers): ModuleList(
+            (0): Linear(in_features=1, out_features=64, bias=False)
+            (1): Linear(in_features=64, out_features=64, bias=True)
+          )
+          (norms): ModuleList(
+            (0): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+            (1): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+        )
+        (layer): GINConv(nn=Identity())
+      )
+      (1): MaskedGINConv(
+        (nn): MaskedMLP(
+          (layers): ModuleList(
+            (0): Linear(in_features=64, out_features=64, bias=False)
+            (1): Linear(in_features=64, out_features=64, bias=True)
+          )
+          (norms): ModuleList(
+            (0): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+            (1): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+        )
+        (layer): GINConv(nn=Identity())
+      )
+      (2): MaskedGINConv(
+        (nn): MaskedMLP(
+          (layers): ModuleList(
+            (0): Linear(in_features=64, out_features=64, bias=False)
+            (1): Linear(in_features=64, out_features=64, bias=True)
+          )
+          (norms): ModuleList(
+            (0): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+            (1): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+        )
+        (layer): GINConv(nn=Identity())
+      )
+      (3): MaskedGINConv(
+        (nn): MaskedMLP(
+          (layers): ModuleList(
+            (0): Linear(in_features=64, out_features=64, bias=False)
+            (1): Linear(in_features=64, out_features=64, bias=True)
+          )
+          (norms): ModuleList(
+            (0): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+            (1): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+        )
+        (layer): GINConv(nn=Identity())
+      )
+      (4): MaskedGINConv(
+        (nn): MaskedMLP(
+          (layers): ModuleList(
+            (0): Linear(in_features=64, out_features=64, bias=False)
+            (1): Linear(in_features=64, out_features=64, bias=True)
+          )
+          (norms): ModuleList(
+            (0): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+            (1): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+        )
+        (layer): GINConv(nn=Identity())
+      )
+      (5): MaskedGINConv(
+        (nn): MaskedMLP(
+          (layers): ModuleList(
+            (0): Linear(in_features=64, out_features=64, bias=False)
+            (1): Linear(in_features=64, out_features=64, bias=True)
+          )
+          (norms): ModuleList(
+            (0): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+            (1): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+        )
+        (layer): GINConv(nn=Identity())
+      )
+      (6): MaskedGINConv(
+        (nn): MaskedMLP(
+          (layers): ModuleList(
+            (0): Linear(in_features=64, out_features=64, bias=False)
+            (1): Linear(in_features=64, out_features=64, bias=True)
+          )
+          (norms): ModuleList(
+            (0): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+            (1): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+        )
+        (layer): GINConv(nn=Identity())
+      )
+      (7): MaskedGINConv(
+        (nn): MaskedMLP(
+          (layers): ModuleList(
+            (0): Linear(in_features=64, out_features=64, bias=False)
+            (1): Linear(in_features=64, out_features=64, bias=True)
+          )
+          (norms): ModuleList(
+            (0): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+            (1): MaskedBN(
+              (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+        )
+        (layer): GINConv(nn=Identity())
+      )
+    )
+    (norms): ModuleList(
+      (0): MaskedBN(
+        (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (1): MaskedBN(
+        (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (2): MaskedBN(
+        (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (3): MaskedBN(
+        (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (4): MaskedBN(
+        (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (5): MaskedBN(
+        (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (6): MaskedBN(
+        (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (7): MaskedBN(
+        (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+    )
+  )
+  (rho): SetTransformer(
+    (transformer_layers): ModuleList(
+      (0): TransformerEncoderLayer(
+        (slf_attn): MultiHeadAttention(
+          (w_qs): Linear(in_features=64, out_features=64, bias=False)
+          (w_ks): Linear(in_features=64, out_features=64, bias=False)
+          (w_vs): Linear(in_features=64, out_features=64, bias=False)
+          (fc): Linear(in_features=64, out_features=64, bias=False)
+          (attention): ScaledDotProductAttention(
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+        )
+        (pos_ffn): PositionwiseFeedForward(
+          (w_1): Linear(in_features=64, out_features=64, bias=True)
+          (w_2): Linear(in_features=64, out_features=64, bias=True)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+        )
+      )
+      (1): TransformerEncoderLayer(
+        (slf_attn): MultiHeadAttention(
+          (w_qs): Linear(in_features=64, out_features=64, bias=False)
+          (w_ks): Linear(in_features=64, out_features=64, bias=False)
+          (w_vs): Linear(in_features=64, out_features=64, bias=False)
+          (fc): Linear(in_features=64, out_features=64, bias=False)
+          (attention): ScaledDotProductAttention(
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+        )
+        (pos_ffn): PositionwiseFeedForward(
+          (w_1): Linear(in_features=64, out_features=64, bias=True)
+          (w_2): Linear(in_features=64, out_features=64, bias=True)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+        )
+      )
+      (2): TransformerEncoderLayer(
+        (slf_attn): MultiHeadAttention(
+          (w_qs): Linear(in_features=64, out_features=64, bias=False)
+          (w_ks): Linear(in_features=64, out_features=64, bias=False)
+          (w_vs): Linear(in_features=64, out_features=64, bias=False)
+          (fc): Linear(in_features=64, out_features=64, bias=False)
+          (attention): ScaledDotProductAttention(
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+        )
+        (pos_ffn): PositionwiseFeedForward(
+          (w_1): Linear(in_features=64, out_features=64, bias=True)
+          (w_2): Linear(in_features=64, out_features=64, bias=True)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+        )
+      )
+      (3): TransformerEncoderLayer(
+        (slf_attn): MultiHeadAttention(
+          (w_qs): Linear(in_features=64, out_features=64, bias=False)
+          (w_ks): Linear(in_features=64, out_features=64, bias=False)
+          (w_vs): Linear(in_features=64, out_features=64, bias=False)
+          (fc): Linear(in_features=64, out_features=64, bias=False)
+          (attention): ScaledDotProductAttention(
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+        )
+        (pos_ffn): PositionwiseFeedForward(
+          (w_1): Linear(in_features=64, out_features=64, bias=True)
+          (w_2): Linear(in_features=64, out_features=64, bias=True)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+        )
+      )
+      (4): TransformerEncoderLayer(
+        (slf_attn): MultiHeadAttention(
+          (w_qs): Linear(in_features=64, out_features=64, bias=False)
+          (w_ks): Linear(in_features=64, out_features=64, bias=False)
+          (w_vs): Linear(in_features=64, out_features=64, bias=False)
+          (fc): Linear(in_features=64, out_features=64, bias=False)
+          (attention): ScaledDotProductAttention(
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+        )
+        (pos_ffn): PositionwiseFeedForward(
+          (w_1): Linear(in_features=64, out_features=64, bias=True)
+          (w_2): Linear(in_features=64, out_features=64, bias=True)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+        )
+      )
+      (5): TransformerEncoderLayer(
+        (slf_attn): MultiHeadAttention(
+          (w_qs): Linear(in_features=64, out_features=64, bias=False)
+          (w_ks): Linear(in_features=64, out_features=64, bias=False)
+          (w_vs): Linear(in_features=64, out_features=64, bias=False)
+          (fc): Linear(in_features=64, out_features=64, bias=False)
+          (attention): ScaledDotProductAttention(
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+        )
+        (pos_ffn): PositionwiseFeedForward(
+          (w_1): Linear(in_features=64, out_features=64, bias=True)
+          (w_2): Linear(in_features=64, out_features=64, bias=True)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+        )
+      )
+      (6): TransformerEncoderLayer(
+        (slf_attn): MultiHeadAttention(
+          (w_qs): Linear(in_features=64, out_features=64, bias=False)
+          (w_ks): Linear(in_features=64, out_features=64, bias=False)
+          (w_vs): Linear(in_features=64, out_features=64, bias=False)
+          (fc): Linear(in_features=64, out_features=64, bias=False)
+          (attention): ScaledDotProductAttention(
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+        )
+        (pos_ffn): PositionwiseFeedForward(
+          (w_1): Linear(in_features=64, out_features=64, bias=True)
+          (w_2): Linear(in_features=64, out_features=64, bias=True)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+        )
+      )
+      (7): TransformerEncoderLayer(
+        (slf_attn): MultiHeadAttention(
+          (w_qs): Linear(in_features=64, out_features=64, bias=False)
+          (w_ks): Linear(in_features=64, out_features=64, bias=False)
+          (w_vs): Linear(in_features=64, out_features=64, bias=False)
+          (fc): Linear(in_features=64, out_features=64, bias=False)
+          (attention): ScaledDotProductAttention(
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+        )
+        (pos_ffn): PositionwiseFeedForward(
+          (w_1): Linear(in_features=64, out_features=64, bias=True)
+          (w_2): Linear(in_features=64, out_features=64, bias=True)
+          (norm): MaskedLN(
+            (ln): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+          )
+          (dropout): Dropout(p=0, inplace=False)
+        )
+      )
+    )
+    (out): Sequential(
+      (0): Linear(in_features=64, out_features=64, bias=False)
+      (1): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+  )
+  (eigen_encoder): MaskedMLP(
+    (layers): ModuleList(
+      (0): Linear(in_features=1, out_features=1, bias=False)
+      (1): Linear(in_features=1, out_features=64, bias=False)
+    )
+    (norms): ModuleList(
+      (0): MaskedBN(
+        (bn): BatchNorm1d(1, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (1): MaskedBN(
+        (bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+    )
+  )
+) 
+
+Namespace(GNN_mode=True, transforms=[], pre_transforms=['constant', 'ContactDistance', 'GeneticDistance_norm', 'AdjPCs_8'], sparsify_threshold=None, sparsify_threshold_upper=None, top_k=None, use_node_features=False, use_edge_weights=False, use_edge_attr=True, keep_zero_edges=False, data_folder=['/project/depablo/erschultz/dataset_11_18_22', '/project/depablo/erschultz/dataset_11_21_22'], scratch='/scratch/midway2/erschultz', root_name='ContactGNNEnergy11', delete_root=False, toxx=False, toxx_mode='mean', y_preprocessing='sweeprand_log_inf', y_zero_diag_count=0, log_preprocessing=None, output_preprocesing=None, kr=False, mean_filt=None, rescale=2, gated=False, preprocessing_norm='mean', min_subtraction=True, x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, use_scratch=False, use_scratch_parallel=True, split_percents=[0.9, 0.1, 0.0], split_sizes=None, random_split=True, shuffle=True, batch_size=1, num_workers=4, start_epoch=1, n_epochs=100, save_mod=5, print_mod=2, lr=0.0001, weight_decay=0.0, gpus=1, milestones=[50], gamma=0.1, loss='mse', w_reg=None, reg_lambda=0.1, autoencoder_mode=False, verbose=False, print_params=True, output_mode='energy_sym_diag', model_type='ContactGNNEnergy', id=331, pretrained=False, resume_training=False, k=8, m=1024, seed=42, act='prelu', inner_act='prelu', out_act='prelu', training_norm=None, dropout=0.0, parameter_sharing=False, use_bias=True, use_sign_net=True, message_passing='weighted_GAT', head_architecture='bilinear_triu', head_architecture_2='fc-fill', head_hidden_sizes_list=[1000, 1000, 1000, 1000, 1000, 1000, 1024], encoder_hidden_sizes_list=[1000, 1000, 64], inner_hidden_sizes_list=None, edge_encoder_hidden_sizes_list=None, update_hidden_sizes_list=[1000, 1000, 64], head_act='prelu', num_heads=8, concat_heads=True, max_diagonal=None, mlp_model_id=None, kernel_w_list=None, hidden_sizes_list=[8, 8, 8, 8], nf=None, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, down_sampling=None, plot=True, plot_predictions=True, ofile_folder='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/331', log_file_path='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/331/out.log', log_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/331/out.log' mode='a' encoding='UTF-8'>, param_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/331/params.log' mode='a' encoding='UTF-8'>, split_neg_pos_edges=False, criterion=<function mse_loss at 0x7f847a735280>, channels=1, node_feature_size=1, input_m=512, edge_transforms=["'ContactDistance'", 'ContactDistance(norm=False)', 'GeneticDistance(norm=True)'], node_transforms=['AdjPCs(k=8, normalize=False, sign_net=True)', 'Constant(value=1.0)'], edge_dim=2, transforms_processed=None, diag=True, pre_transforms_processed=Compose([
+  Constant(value=1.0),
+  ContactDistance(norm=False),
+  GeneticDistance(norm=True),
+  AdjPCs(k=8, normalize=False, sign_net=True)
+]), cuda=True, use_parallel=False, device=device(type='cuda'))
+
+Dataset construction time: 20.101 minutes
+Average num edges per graph:  222294.36527196653
+Mean degree: [362.66 512.   449.47 ... 329.12 511.93 511.26] +- [70.54  0.   53.89 ... 80.99  0.29  1.69]
+
+split sizes: train=4302, val=478, test=0, N=4780
+Optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 0.0001
+    weight_decay: 0.0
+)
+#### TRAINING/VALIDATION ####
+Epoch 2, loss = 11.0963
+Mean test/val loss: 14.2342
+[25, 50, 75] quantiles test/val loss: [ 6.3508  9.1278 14.6926]
+
+Epoch 4, loss = 9.7765
+Mean test/val loss: 28.4929
+[25, 50, 75] quantiles test/val loss: [ 6.6786 10.4221 29.56  ]
+
+Epoch 6, loss = 9.1258
+Mean test/val loss: 9.8883
+[25, 50, 75] quantiles test/val loss: [ 5.5187  7.8998 11.7456]
+
+Epoch 8, loss = 8.5397
+Mean test/val loss: 8.8080
+[25, 50, 75] quantiles test/val loss: [ 5.237  7.523 10.601]
+
+Epoch 10, loss = 8.2462
+Mean test/val loss: 10.2447
+[25, 50, 75] quantiles test/val loss: [ 5.912   8.9096 12.0942]
+
+Epoch 12, loss = 8.0129
+Mean test/val loss: 8.9653
+[25, 50, 75] quantiles test/val loss: [ 5.3759  7.9139 11.1227]
+
+Epoch 14, loss = 7.7994
+Mean test/val loss: 8.6111
+[25, 50, 75] quantiles test/val loss: [ 5.1728  7.412  10.4025]
+
+Epoch 16, loss = 7.6309
+Mean test/val loss: 210.1022
+[25, 50, 75] quantiles test/val loss: [ 6.4711  8.6384 11.0381]
+
+Epoch 18, loss = 7.5474
+Mean test/val loss: 9.3897
+[25, 50, 75] quantiles test/val loss: [ 6.05    8.1723 10.4049]
+
+Epoch 20, loss = 7.6359
+Mean test/val loss: 1169.1727
+[25, 50, 75] quantiles test/val loss: [ 7.3669 10.9688 16.8532]
+
+Epoch 22, loss = 7.3573
+Mean test/val loss: 14.7319
+[25, 50, 75] quantiles test/val loss: [ 6.6353  8.987  11.8379]
+
+Epoch 24, loss = 7.3172
+Mean test/val loss: 4511085.8447
+[25, 50, 75] quantiles test/val loss: [ 5.9274  8.0389 10.4417]
+
+Epoch 26, loss = 8.7744
+Mean test/val loss: 150.6527
+[25, 50, 75] quantiles test/val loss: [ 10.4053  23.5321 116.6863]
+
+Epoch 28, loss = 7.3982
+Mean test/val loss: 142.2784
+[25, 50, 75] quantiles test/val loss: [ 4.9866  7.1049 10.2311]
+
+Epoch 30, loss = 7.2877
+Mean test/val loss: 30.6243
+[25, 50, 75] quantiles test/val loss: [ 8.4207 11.924  31.7935]
+
+Epoch 32, loss = 7.1453
+Mean test/val loss: 18.5037
+[25, 50, 75] quantiles test/val loss: [ 7.5765 10.2516 15.1752]
+
+Epoch 34, loss = 6.9538
+Mean test/val loss: 12.0932
+[25, 50, 75] quantiles test/val loss: [ 5.119   7.534  10.9318]
+
+Epoch 36, loss = 7.0876
+Mean test/val loss: 12.1817
+[25, 50, 75] quantiles test/val loss: [ 4.7032  6.9855 10.372 ]
+
+Epoch 38, loss = 6.8784
+Mean test/val loss: 7.6311
+[25, 50, 75] quantiles test/val loss: [4.4727 6.6199 9.1599]
+
+Epoch 40, loss = 6.6941
+Mean test/val loss: 27.5610
+[25, 50, 75] quantiles test/val loss: [ 7.0437 10.7674 23.66  ]
+
+Epoch 42, loss = 6.7240
+Mean test/val loss: 1407.8142
+[25, 50, 75] quantiles test/val loss: [4.0502 6.094  9.0134]
+
+Epoch 44, loss = 6.5376
+Mean test/val loss: 115.9381
+[25, 50, 75] quantiles test/val loss: [ 7.2008 14.2743 84.7191]
+
+Epoch 46, loss = 6.3826
+Mean test/val loss: 47.0005
+[25, 50, 75] quantiles test/val loss: [ 5.718   8.4776 12.6939]
+
+Epoch 48, loss = 6.3395
+Mean test/val loss: 598.5787
+[25, 50, 75] quantiles test/val loss: [  7.2392  11.5061 178.476 ]
+
+Epoch 50, loss = 13510773.0196
+Mean test/val loss: 127.0613
+[25, 50, 75] quantiles test/val loss: [ 9.6618 13.6591 22.3672]
+
+Epoch 52, loss = 9.3735
+Mean test/val loss: 68.8058
+[25, 50, 75] quantiles test/val loss: [ 8.1498 11.4437 16.153 ]
+
+Epoch 54, loss = 7.9852
+Mean test/val loss: 16.4632
+[25, 50, 75] quantiles test/val loss: [ 5.8869  8.0281 11.0922]
+
+Epoch 56, loss = 7.0963
+Mean test/val loss: 127.3207
+[25, 50, 75] quantiles test/val loss: [ 5.8035  8.772  14.4974]
+
+Epoch 58, loss = 6.2488
+Mean test/val loss: 313.5725
+[25, 50, 75] quantiles test/val loss: [ 6.4023  8.8295 13.9575]
+
+Epoch 60, loss = 5.9035
+Mean test/val loss: 174144.4764
+[25, 50, 75] quantiles test/val loss: [  6.369   11.5999 350.3952]
+
+Epoch 62, loss = 5.8317
+Mean test/val loss: 169813.4058
+[25, 50, 75] quantiles test/val loss: [  6.2167  11.1178 246.5271]
+
+Epoch 64, loss = 5.7169
+Mean test/val loss: 151338.6887
+[25, 50, 75] quantiles test/val loss: [8.51070000e+00 2.46034000e+01 3.59362646e+04]
+
+Epoch 66, loss = 5.6786
+Mean test/val loss: 120638.5350
+[25, 50, 75] quantiles test/val loss: [   7.8063   14.5706 6077.7513]
+
+Epoch 68, loss = 5.6336
+Mean test/val loss: 358086.4630
+[25, 50, 75] quantiles test/val loss: [8.37790000e+00 5.72802000e+01 1.06393701e+05]
+
+Epoch 70, loss = 5.5970
+Mean test/val loss: 187114.7748
+[25, 50, 75] quantiles test/val loss: [8.99110000e+00 4.14682500e+02 1.33996492e+05]
+
+Epoch 72, loss = 5.5594
+Mean test/val loss: 165235.2653
+[25, 50, 75] quantiles test/val loss: [9.05540000e+00 1.33083780e+03 1.16773941e+05]
+
+Epoch 74, loss = 5.5305
