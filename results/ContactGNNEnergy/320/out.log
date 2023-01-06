@@ -223,3 +223,27 @@ Parameter Group 0
     weight_decay: 0.0
 )
 #### TRAINING/VALIDATION ####
+Mean test/val loss: 10.1527
+[25, 50, 75] quantiles test/val loss: [ 6.1389  8.7329 11.9635]
+
+Epoch 4, loss = 11.1022
+Mean test/val loss: 10.1444
+[25, 50, 75] quantiles test/val loss: [ 6.3758  8.8268 11.6772]
+
+Epoch 6, loss = 10.8831
+Mean test/val loss: 9.7588
+[25, 50, 75] quantiles test/val loss: [ 5.7755  8.4025 11.947 ]
+
+Epoch 8, loss = 9.1458
+Mean test/val loss: 8.8768
+[25, 50, 75] quantiles test/val loss: [ 5.2756  7.6954 10.4986]
+
+Epoch 10, loss = 8.6134
+Mean test/val loss: 9.6332
+[25, 50, 75] quantiles test/val loss: [ 5.9492  8.5717 11.7481]
+
+Epoch 12, loss = 9.5273
+Mean test/val loss: 10.6765
+[25, 50, 75] quantiles test/val loss: [ 6.3893  9.261  12.6526]
+
+Epoch 14, loss = 8.5411
