@@ -831,8 +831,7 @@ class ContactGNN(nn.Module):
                         out_temp = latent
                     elif 'chi' in architecture:
                         latent = latent.reshape(-1, self.m * output_size)
-                        W = self.head[i](latent)
-                        self.W = W.reshape(-1)
+                        self.W = self.head[i](latent)
                         out_temp = latent.reshape(-1, self.m, output_size)
                     else:
                         out_temp = self.head[i](latent)
@@ -840,7 +839,11 @@ class ContactGNN(nn.Module):
                     if 'asym' in architecture:
                         out_temp = torch.einsum('nik,njk->nij', out_temp @ self.W, out_temp)
                     else:
-                        left = torch.einsum('nij,jk->nik', out_temp, self.sym(self.W))
+                        W = self.sym(self.W)
+                        if len(W.shape) == 2:
+                            left = torch.einsum('nij,jk->nik', out_temp, W)
+                        elif len(W.shape) == 3:
+                            left = torch.einsum('nij,njk->nik', out_temp, W)
                         out_temp = torch.einsum('nik,njk->nij', left, out_temp)
                 elif architecture == 'inner':
                     latent = latent.reshape(-1, self.m, output_size)
