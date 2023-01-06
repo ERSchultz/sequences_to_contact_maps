@@ -219,7 +219,6 @@ class AdjPCs(BaseTransform):
         topk_pcs = torch.tensor(topk_pcs, dtype = torch.float32)
 
         if self.sign_net:
-            print('pc222', topk_pcs)
             data.eigen_vectors = topk_pcs.reshape(-1)
             data.eigen_values = torch.tensor(pca.singular_values_[:self.k], dtype = torch.float32)
         else:

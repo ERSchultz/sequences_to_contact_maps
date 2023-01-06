@@ -56,13 +56,11 @@ def torch_triu_to_full(arr):
         y=x*(x+1)/2-l
         result=solve(y)
         m = int(np.max(result))
-        print(arr.shape, m)
 
         # need to reconstruct from upper traingle
         out = torch.zeros((m, m), dtype = torch.float32)
         if arr.is_cuda:
             out = out.to(arr.get_device())
-        print(out.shape)
         out[np.triu_indices(m)] = arr
         out = out + torch.triu(out, 1).t()
     elif len(arr.shape) == 2:

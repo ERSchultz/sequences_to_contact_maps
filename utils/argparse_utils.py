@@ -177,6 +177,8 @@ def get_base_parser():
     # GNN model args
     parser.add_argument('--use_sign_net', type=AC.str2bool, default=False,
                         help='True to use sign net architecture')
+    parser.add_argument('--use_sign_plus', type=AC.str2bool, default=False,
+                        help='True to use sign plus architecture')
     parser.add_argument('--message_passing', type=str, default='GCN',
                         help='type of message passing algorithm')
     parser.add_argument('--head_architecture', type=AC.str2None,
@@ -493,9 +495,9 @@ def process_transforms(opt):
                     norm = True
                 elif mode_str.isdigit():
                     k = int(mode_str)
-            if not opt.use_sign_net:
+            if not opt.use_sign_net and not opt.use_sign_plus:
                 opt.node_feature_size += k
-            transform = AdjPCs(k, norm, opt.use_sign_net)
+            transform = AdjPCs(k, norm, opt.use_sign_net or opt.use_sign_plus)
             opt.node_transforms.append(transform)
         elif t_str[0] == 'contactdistance':
             opt.edge_transforms.append(f'ContactDistance')
