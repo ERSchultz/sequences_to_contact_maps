@@ -1,9 +1,5 @@
 --data_folder
-<<<<<<< HEAD
 /project2/depablo/erschultz/dataset_11_18_22-/project2/depablo/erschultz/dataset_11_21_22
-=======
-/project/depablo/erschultz/dataset_11_18_22-/project/depablo/erschultz/dataset_11_21_22
->>>>>>> 6746381f3986adbb13e405468da95e63f61ff4ae
 --root_name
 ContactGNNEnergy8
 --delete_root
