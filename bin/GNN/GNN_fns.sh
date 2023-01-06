@@ -73,7 +73,7 @@ useScratch='true'
 useScratchParallel='true'
 verbose='false'
 plotPredictions='true'
-plt='true'
+plot='true'
 crop='none'
 printParams='true'
 
