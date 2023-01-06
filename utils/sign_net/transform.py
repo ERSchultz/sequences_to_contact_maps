@@ -64,9 +64,6 @@ def to_dense_EVD(eigS, eigV, batch, k):
 
 def to_dense_list_EVD(eigS, eigV, batch, k = None):
     eigS_dense, eigV_dense, mask = to_dense_EVD(eigS, eigV, batch, k)
-    print('to_list')
-    # print('s', eigS_dense.shape)
-    print('v', eigV_dense.shape)
 
     nmax = eigV_dense.size(1)
     eigS_dense = eigS_dense.unsqueeze(1).repeat(1, nmax, 1)
@@ -77,10 +74,5 @@ def to_dense_list_EVD(eigS, eigV, batch, k = None):
         # must be the case that all graphs have same num_nodes
         eigS_dense = eigS_dense.reshape(-1, k)
         eigV_dense = eigV_dense.reshape(-1, k)
-    # eigS_dense: (N1+N2+...+Nb) x k
-    # eigV_dense: (N1+N2+...+Nb) x k
-    #
-    # print('s', eigS_dense.shape)
-    print('v', eigV_dense, eigV_dense.shape)
 
     return eigS_dense, eigV_dense

@@ -236,7 +236,7 @@ def debugModel(model_type):
         # opt.max_diagonal=500
     elif model_type == 'signnet':
         model_type = 'ContactGNNEnergy'
-        opt.use_sign_net = True
+        opt.use_sign_plus = True
         opt.y_preprocessing = 'sweeprand_log_inf'
         opt.rescale = None
         opt.loss = 'mse'
@@ -255,7 +255,7 @@ def debugModel(model_type):
         opt.head_act = 'relu'
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-AdjPCs_8')
+        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-AdjPCs_8-AdjPCA_3')
         opt.k=8
         opt.head_architecture = 'bilinear_triu'
         opt.head_architecture_2 = 'fc-fill_1024'

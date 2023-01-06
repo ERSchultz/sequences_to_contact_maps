@@ -13,6 +13,7 @@ from .base_networks import (MLP, AverageTo2d, ConvBlock, DeconvBlock,
                             UnetBlock, act2module, torch_triu_to_full)
 from .pyg_fns import WeightedGATv2Conv, WeightedSignedConv
 from .sign_net.sign_net import SignNet
+from .sign_net.transform import to_dense_list_EVD
 
 
 ## model functions ##
@@ -63,12 +64,15 @@ def get_model(opt, verbose = True):
                     opt.head_architecture, opt.head_architecture_2, opt.head_hidden_sizes_list,
                     opt.head_act, opt.use_bias, opt.rescale, opt.gated, opt.dropout,
                     opt.training_norm, opt.num_heads, opt.concat_heads,
-                    opt.log_file, opt.verbose or verbose, opt.use_sign_net)
+                    opt.log_file, opt.verbose or verbose,
+                    opt.use_sign_net, opt.use_sign_plus, opt.k)
 
         if opt.use_sign_net:
             model = SignNetGNN(opt.node_feature_size, opt.edge_dim, opt.update_hidden_sizes_list[-1],
                             8, 8, opt.k, False, GNN_model,
                             opt.log_file, opt.verbose or verbose)
+        elif opt.use_sign_plus:
+            model = SignPlus(GNN_model, opt.k)
         else:
             model = GNN_model
 
@@ -533,7 +537,8 @@ class ContactGNN(nn.Module):
                 head_architecture, head_architecture_2, head_hidden_sizes_list,
                 head_act, use_bias, rescale, gated, dropout,
                 training_norm, num_heads, concat_heads,
-                ofile = sys.stdout, verbose = True, sign_net = False):
+                ofile = sys.stdout, verbose = True,
+                sign_net = False, sign_plus = False, k = None):
         '''
         Inputs:
             m: number of nodes
@@ -561,6 +566,8 @@ class ContactGNN(nn.Module):
             dropout: Value for dropout (0.0 for no dropout)
             training_norm: Normalization layer
             sign_net: True if using additional_x from sign_net
+            sign_plus: True if using additional_x from sign_plus
+            k: size for sign_plus
         '''
         super(ContactGNN, self).__init__()
 
@@ -611,9 +618,13 @@ class ContactGNN(nn.Module):
             self.edge_encoder = nn.Sequential(*encoder)
 
         if sign_net:
-            # print(input_size, update_hidden_sizes_list[-1])
-            self.linear = nn.Linear(input_size+update_hidden_sizes_list[-1], update_hidden_sizes_list[-1])
-            input_size = update_hidden_sizes_list[-1]
+            output_size = update_hidden_sizes_list[-1]
+            self.linear = nn.Linear(input_size+update_hidden_sizes_list[-1], output_size)
+            input_size = output_size
+        elif sign_plus:
+            output_size = update_hidden_sizes_list[-1]
+            self.linear = nn.Linear(input_size+k, output_size)
+            input_size = output_size
         else:
             self.linear = None
 
@@ -969,6 +980,7 @@ class ContactGNN(nn.Module):
         return out_temp
 
 class SignNetGNN(nn.Module):
+    # Modified from https://github.com/cptq/SignNet-BasisNet/blob/main/Alchemy/sign_net/sign_net.py
     def __init__(self, node_feat, edge_feat, n_hid, nl_signnet,
                     nl_rho, k, ignore_eigval, gnn_model, ofile, verbose):
         super().__init__()
@@ -995,6 +1007,20 @@ class SignNetGNN(nn.Module):
     def diagonal_component(self, data):
         pos = self.sign_net(data)
         return self.gnn.diagonal_component(data, pos)
+
+class SignPlus(nn.Module):
+    # Modified from https://github.com/cptq/SignNet-BasisNet/blob/main/LearningFilters/signbasisnet.py
+    # negate v, do not negate x
+    def __init__(self, model, k):
+        super(SignPlus, self).__init__()
+        self.model = model
+        self.k = k
+
+    def forward(self, data):
+        eigS_dense, eigV_dense = to_dense_list_EVD(data.eigen_values, data.eigen_vectors, data.batch, self.k)
+        x = eigV_dense
+
+        return self.model(data, x) + self.model(data, -x)
 
 
 def testFullyConnectedAutoencoder():
