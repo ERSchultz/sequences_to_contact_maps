@@ -1022,6 +1022,18 @@ class SignPlus(nn.Module):
 
         return self.model(data, x) + self.model(data, -x)
 
+    def plaid_component(self, data):
+        eigS_dense, eigV_dense = to_dense_list_EVD(data.eigen_values, data.eigen_vectors, data.batch, self.k)
+        x = eigV_dense
+
+        return self.model.plaid_component(data, x) + self.model.plaid_component(data, -x)
+
+    def diagonal_component(self, data):
+        eigS_dense, eigV_dense = to_dense_list_EVD(data.eigen_values, data.eigen_vectors, data.batch, self.k)
+        x = eigV_dense
+
+        return self.model.diagonal_component(data, x) + self.model.diagonal_component(data, -x)
+
 
 def testFullyConnectedAutoencoder():
     model = FullyConnectedAutoencoder(12, [2], 'relu', False)

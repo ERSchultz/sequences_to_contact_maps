@@ -21,25 +21,31 @@ rootName='ContactGNNEnergy4' # change to run multiple bash files at once
 dirname="/project/depablo/erschultz/dataset_11_18_22-/project/depablo/erschultz/dataset_11_21_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='constant-ContactDistance-GeneticDistance_norm'
+preTransforms='constant-ContactDistance-GeneticDistance_norm-AdjPCs_8'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8-8'
-EncoderHiddenSizesList='none'
+EncoderHiddenSizesList='64'
 updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
+outputPreprocesing='log'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
-headArchitecture='bilinear_chi_triu'
-headArchitecture2='fc-fill_1024'
-headHiddenSizesList='1000-1000-1000-1000-1000-1000'
+headArchitecture='bilinear_triu'
+headArchitecture2='fc-fill'
+headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
 
-# chi triu head arch - new version
+k=8
+useSignPlus='true'
+batchSize=2
+loss='huber'
 
-id=328
+# 4th attempt signplus, log output and huber
+
+id=342
 for lr in 1e-4
 do
   train

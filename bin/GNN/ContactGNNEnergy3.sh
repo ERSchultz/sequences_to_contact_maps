@@ -29,6 +29,7 @@ EncoderHiddenSizesList='64'
 updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
+outputPreprocesing='log'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
 headArchitecture='bilinear_triu'
@@ -40,9 +41,9 @@ useScratch='false'
 k=8
 useSignPlus='true'
 
-# first attempt signplus
+# 3rd attempt signplus, log output
 
-id=338
+id=341
 for lr in 1e-4
 do
   train

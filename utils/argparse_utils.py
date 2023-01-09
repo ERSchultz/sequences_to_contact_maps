@@ -727,6 +727,12 @@ def opt2list(opt):
                         opt.sparsify_threshold, opt.sparsify_threshold_upper, opt.max_diagonal,
                         opt.hidden_sizes_list, opt.message_passing, opt.update_hidden_sizes_list,
                         f'{opt.head_architecture}+{opt.head_architecture_2}', opt.head_hidden_sizes_list])
+        if opt.use_sign_net:
+            opt_list.append('sign_net')
+        elif opt.use_sign_plus:
+            opt_list.append('sign_plus')
+        else:
+            opt_list.append(None)
 
     if opt.model_type == 'simpleEpiNet':
         opt_list.extend([opt.kernel_w_list, opt.hidden_sizes_list])
@@ -779,7 +785,7 @@ def get_opt_header(model_type, GNN_mode):
                         'node_transforms', 'edge_transforms',
                         'sparsify_threshold', 'sparsify_threshold_upper', 'max_diagonal',
                         'hidden_sizes_list', 'message_passing', 'update_hidden_sizes_list',
-                        'head_architecture', 'head_hidden_sizes_list'])
+                        'head_architecture', 'head_hidden_sizes_list', 'sign_net'])
     if model_type == 'simpleEpiNet':
         opt_list.extend(['kernel_w_list', 'hidden_sizes_list'])
     elif model_type == 'UNet':
