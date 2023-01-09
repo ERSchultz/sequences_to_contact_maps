@@ -10,6 +10,10 @@
 dir='/project2/depablo/erschultz'
 cd $dir
 
+
+rm -r dataset_11_21_22_small
+rm -r dataset_11_21_22.tar.gz
+
 # cd dataset_11_21_22_small
 # cd samples
 # for i in {1..2400}
@@ -26,22 +30,22 @@ cd $dir
 # done
 # wait
 
-for i in {1..2400}
-do
-  cd "${dir}/dataset_11_21_22/samples/sample${i}/data_out"
-  # rm -r *.png
-  # cp s.npy "${dir}/dataset_11_21_22_small/samples/sample${i}"
-  # cp config.json "${dir}/dataset_11_21_22_small/samples/sample${i}"
-  # cp y.npy "${dir}/dataset_11_21_22_small/samples/sample${i}"
-  # cp diag_chis_continuous.npy "${dir}/dataset_11_21_22_small/samples/sample${i}"
-  cp contacts200000.txt "${dir}/dataset_11_21_22_small/samples/sample${i}/data_out/"
-  cp contacts300000.txt "${dir}/dataset_11_21_22_small/samples/sample${i}/data_out/"
-  cp contacts400000.txt "${dir}/dataset_11_21_22_small/samples/sample${i}/data_out/"
-  cp contacts500000.txt "${dir}/dataset_11_21_22_small/samples/sample${i}/data_out/"
-  cp contacts1000000.txt "${dir}/dataset_11_21_22_small/samples/sample${i}/data_out/"
-done
+# for i in {1..2400}
+# do
+#   cd "${dir}/dataset_11_21_22/samples/sample${i}/data_out"
+#   # rm -r *.png
+#   # cp s.npy "${dir}/dataset_11_21_22_small/samples/sample${i}"
+#   # cp config.json "${dir}/dataset_11_21_22_small/samples/sample${i}"
+#   # cp y.npy "${dir}/dataset_11_21_22_small/samples/sample${i}"
+#   # cp diag_chis_continuous.npy "${dir}/dataset_11_21_22_small/samples/sample${i}"
+#   cp contacts200000.txt "${dir}/dataset_11_21_22_small/samples/sample${i}/data_out/"
+#   cp contacts300000.txt "${dir}/dataset_11_21_22_small/samples/sample${i}/data_out/"
+#   cp contacts400000.txt "${dir}/dataset_11_21_22_small/samples/sample${i}/data_out/"
+#   cp contacts500000.txt "${dir}/dataset_11_21_22_small/samples/sample${i}/data_out/"
+#   cp contacts1000000.txt "${dir}/dataset_11_21_22_small/samples/sample${i}/data_out/"
+# done
 
 
-cd $dir
+# cd $dir
 # rm dataset_11_21_22.tar.gz
-tar -czf dataset_11_21_22.tar.gz dataset_11_21_22_small
+# tar -czf dataset_11_21_22.tar.gz dataset_11_21_22_small

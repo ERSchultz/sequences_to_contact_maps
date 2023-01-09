@@ -40,6 +40,7 @@ useScratch='false'
 useNodeFeatures='true'
 k=8
 batchSize=2
+resumeTraining='true'
 # triu head arch - use node features
 
 id=340
