@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE5
 #SBATCH --output=logFiles/ContactGNNEnergy5.out
-#SBATCH --time=24:00:00
+#SBATCH --time=1-24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -38,6 +38,7 @@ headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 useScratch='false'
 batchSize=2
+resumeTraining='true'
 
 # chi triu head arch - new version, with log, batchSize = 2
 

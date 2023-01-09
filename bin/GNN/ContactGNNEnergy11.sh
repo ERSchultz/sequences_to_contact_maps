@@ -40,6 +40,7 @@ useScratch='false'
 k=8
 useSignNet='true'
 # first attempt at signNet
+resumeTraining='true'
 
 id=331
 for lr in 1e-4

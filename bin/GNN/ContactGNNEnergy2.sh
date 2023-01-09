@@ -40,6 +40,7 @@ useScratch='false'
 k=8
 useSignPlus='true'
 batchSize=2
+resumeTraining='true'
 
 
 # 2nd attempt signplus, batchsize=2
