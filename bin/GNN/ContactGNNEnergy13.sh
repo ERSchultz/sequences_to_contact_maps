@@ -18,7 +18,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy13' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_01_02_23"
+dirname="/project2/depablo/erschultz/dataset_01_06_23"
 m=1024
 messagePassing='weighted_GAT'
 preTransforms='constant-ContactDistance-GeneticDistance_norm'
@@ -38,7 +38,7 @@ rescale=2
 useScratch='false'
 
 
-id=333
+id=345
 for lr in 1e-4
 do
   train
