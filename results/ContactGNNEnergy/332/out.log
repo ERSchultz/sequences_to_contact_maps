@@ -354,3 +354,68 @@ Mean test/val loss: 4.2433
 [25, 50, 75] quantiles test/val loss: [2.6067 3.7886 5.5278]
 
 Epoch 86, loss = 4.3624
+Mean test/val loss: 4.2502
+[25, 50, 75] quantiles test/val loss: [2.6072 3.7657 5.5384]
+
+Epoch 88, loss = 4.3610
+Mean test/val loss: 4.2410
+[25, 50, 75] quantiles test/val loss: [2.6018 3.7656 5.5595]
+
+Epoch 90, loss = 4.3579
+Mean test/val loss: 4.2342
+[25, 50, 75] quantiles test/val loss: [2.6079 3.7821 5.5208]
+
+Epoch 92, loss = 4.3559
+Mean test/val loss: 4.2298
+[25, 50, 75] quantiles test/val loss: [2.5933 3.7559 5.5666]
+
+Epoch 94, loss = 4.3512
+Mean test/val loss: 4.2552
+[25, 50, 75] quantiles test/val loss: [2.64   3.8176 5.5048]
+
+Epoch 96, loss = 4.3493
+Mean test/val loss: 4.2448
+[25, 50, 75] quantiles test/val loss: [2.63   3.7961 5.5112]
+
+Epoch 98, loss = 4.3486
+Mean test/val loss: 4.2302
+[25, 50, 75] quantiles test/val loss: [2.6055 3.7508 5.5764]
+
+Epoch 100, loss = 4.3454
+Mean test/val loss: 4.2199
+[25, 50, 75] quantiles test/val loss: [2.6051 3.7497 5.5506]
+
+
+Total parameters: 44424748
+Total training + validation time: 21.0 hours, 36.0 mins, and 31.60000000000582 secs
+Final val loss: 4.219888353228569
+
+split sizes: train=4500, val=500, test=0, N=5000
+#### Plotting Script ####
+Prediction Results:
+dataset_01_02_23 sample981: 3.6278889179229736
+dataset_01_02_23 sample324: 5.052140712738037
+dataset_01_02_23 sample3464: 3.222006320953369
+dataset_01_02_23 sample2834: 2.7057714462280273
+dataset_01_02_23 sample1936: 1.613992691040039
+Loss: 3.244 +- 1.128
+
+Downsampling (40%) Results:
+dataset_01_02_23 sample1936-downsampling: 1.6139925718307495
+dataset_01_02_23 sample2834-downsampling: 2.768369197845459
+dataset_01_02_23 sample324-downsampling: 5.187847137451172
+dataset_01_02_23 sample3464-downsampling: 3.274245262145996
+dataset_01_02_23 sample981-downsampling: 3.697842836380005
+Loss: 3.308 +- 1.17
+
+Removing /project2/depablo/erschultz/dataset_01_02_23/ContactGNNEnergy12downsample
+Original sampling (100%) Results:
+dataset_01_02_23 sample1936-regular: 1.5528364181518555
+dataset_01_02_23 sample2834-regular: 2.6920313835144043
+dataset_01_02_23 sample324-regular: 4.911195755004883
+dataset_01_02_23 sample3464-regular: 3.2220053672790527
+dataset_01_02_23 sample981-regular: 3.6168620586395264
+Loss: 3.199 +- 1.102
+
+Removing /project2/depablo/erschultz/dataset_01_02_23/ContactGNNEnergy12regsample
+Upsampling (200%) Results:

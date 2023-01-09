@@ -28,6 +28,7 @@ EncoderHiddenSizesList='none'
 updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
+outputPreprocesing='log'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
 headArchitecture='bilinear_triu'
@@ -38,10 +39,10 @@ useScratch='false'
 
 useNodeFeatures='true'
 k=8
-
+batchSize=2
 # triu head arch - use node features
 
-id=330
+id=340
 for lr in 1e-4
 do
   train
