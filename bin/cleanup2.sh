@@ -35,18 +35,22 @@ cd $dir
 
 for i in {1..2000}
 do
-  cd "${dir}/dataset_05_12_22/samples/sample${i}"
+  cd "${dir}/dataset_11_03_21/samples/sample${i}"
   rm -r GNN* &
   rm -r ground* &
   rm -r k_means* &
   rm -r PCA* &
+  rm -r random* &
   rm e.npy &
   rm -r data_out &
   rm chis.tek &
+  rm chis.npy &
   rm y_diag.npy &
+  rm *.png &
   rm s.npy &
   wait
 done
 cd $dir
-tar -czvf dataset_05_12_22.tar.gz dataset_05_12_22
-rm -r dataset_05_12_22
+rm -r dataset_11_03_21.tar.gz
+tar -czvf dataset_11_03_21.tar.gz dataset_11_03_21
+rm -r dataset_11_03_21

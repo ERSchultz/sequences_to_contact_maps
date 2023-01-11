@@ -11,8 +11,8 @@ dir='/project2/depablo/erschultz'
 cd $dir
 
 
-rm -r dataset_11_21_22_small
-rm -r dataset_11_21_22.tar.gz
+# rm -r dataset_11_21_22_small
+# rm -r dataset_11_21_22.tar.gz
 
 # cd dataset_11_21_22_small
 # cd samples
@@ -44,8 +44,8 @@ rm -r dataset_11_21_22.tar.gz
 #   cp contacts500000.txt "${dir}/dataset_11_21_22_small/samples/sample${i}/data_out/"
 #   cp contacts1000000.txt "${dir}/dataset_11_21_22_small/samples/sample${i}/data_out/"
 # done
-
-
+#
+#
 # cd $dir
 # rm dataset_11_21_22.tar.gz
 # tar -czf dataset_11_21_22.tar.gz dataset_11_21_22_small
