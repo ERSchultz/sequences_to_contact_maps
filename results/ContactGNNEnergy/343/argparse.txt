@@ -1,7 +1,7 @@
 --data_folder
 /project/depablo/erschultz/dataset_11_18_22-/project/depablo/erschultz/dataset_11_21_22
 --root_name
-ContactGNNEnergy5
+ContactGNNEnergy6
 --delete_root
 false
 --model_type
@@ -25,7 +25,7 @@ false
 --mean_filt
 none
 --output_preprocesing
-log
+none
 --max_diagonal
 none
 --keep_zero_edges
@@ -35,7 +35,7 @@ weighted_GAT
 --use_node_features
 false
 --k
-none
+12
 --use_edge_weights
 false
 --use_edge_attr
@@ -43,13 +43,13 @@ true
 --hidden_sizes_list
 8-8-8-8
 --encoder_hidden_sizes_list
-none
+64
 --update_hidden_sizes_list
 1000-1000-64
 --transforms
 empty
 --pre_transforms
-constant-ContactDistance-GeneticDistance_norm
+constant-ContactDistance-GeneticDistance_norm-AdjPCs_12
 --top_k
 none
 --sparsify_threshold
@@ -69,11 +69,11 @@ prelu
 --training_norm
 none
 --head_architecture
-bilinear_chi_triu
+bilinear_triu
 --head_architecture_2
-fc-fill_1024
+fc-fill
 --head_hidden_sizes_list
-1000-1000-1000-1000-1000-1000
+1000-1000-1000-1000-1000-1000-1024
 --num_heads
 8
 --gated
@@ -81,7 +81,7 @@ false
 --use_sign_net
 false
 --use_sign_plus
-false
+true
 --n_epochs
 100
 --lr
@@ -124,8 +124,8 @@ none
 --print_params
 true
 --id
-335
+343
 --resume_training
-true
+false
 --mlp_model_id
 none

@@ -80,6 +80,8 @@ fc-fill
 false
 --use_sign_net
 true
+--use_sign_plus
+false
 --n_epochs
 100
 --lr
@@ -115,6 +117,8 @@ false
 true
 --plot_predictions
 true
+--plot
+true
 --crop
 none
 --print_params
@@ -122,6 +126,6 @@ true
 --id
 331
 --resume_training
-false
+true
 --mlp_model_id
 none
