@@ -40,6 +40,7 @@ do
   rm -r ground* &
   rm -r k_means* &
   rm -r PCA* &
+  rm -r random* &
   rm e.npy &
   rm -r data_out &
   rm chis.tek &
@@ -50,5 +51,6 @@ do
   wait
 done
 cd $dir
+rm -r dataset_11_03_21.tar.gz
 tar -czvf dataset_11_03_21.tar.gz dataset_11_03_21
 rm -r dataset_11_03_21
