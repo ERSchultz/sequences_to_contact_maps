@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE4
 #SBATCH --output=logFiles/ContactGNNEnergy4.out
-#SBATCH --time=24:00:00
+#SBATCH --time=1-24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -42,6 +42,7 @@ k=8
 useSignPlus='true'
 batchSize=2
 loss='huber'
+resumeTraining='true'
 
 # 4th attempt signplus, log output and huber
 
