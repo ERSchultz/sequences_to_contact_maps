@@ -10,6 +10,7 @@
 dir='/project2/depablo/erschultz'
 cd $dir
 
+rm -r dataset_09_21_21
 
 # rm -r dataset_11_21_22_small
 # rm -r dataset_11_21_22.tar.gz
