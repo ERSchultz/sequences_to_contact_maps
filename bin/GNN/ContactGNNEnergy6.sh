@@ -40,6 +40,7 @@ useScratch='false'
 k=12
 useSignPlus='true'
 batchSize=2
+resumeTraining='true'
 
 # 5th attempt signplus, more PCs
 
