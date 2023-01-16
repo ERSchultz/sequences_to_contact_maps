@@ -191,3 +191,7 @@ Mean test/val loss: 7.2793
 [25, 50, 75] quantiles test/val loss: [5.4415 6.9755 8.6414]
 
 Epoch 6, loss = 7.2557
+Mean test/val loss: 6.7423
+[25, 50, 75] quantiles test/val loss: [5.0138 6.3007 8.2142]
+
+Epoch 8, loss = 6.7831
