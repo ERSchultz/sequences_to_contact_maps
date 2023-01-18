@@ -499,14 +499,15 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
                         vmax = v_max, title = r'S - $\hat{S}$', cmap = 'blue-red')
 
         # plot plaid contribution
-        plaid_hat = model.plaid_component(data)
+        latent = model.latent(data, None)
+        plaid_hat = model.plaid_component(latent)
         if plaid_hat is not None:
             plaid_hat = plaid_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
             plot_matrix(plaid_hat, osp.join(subpath, 'plaid_hat.png'), vmin = -1 * v_max,
                             vmax = v_max, title = 'plaid portion', cmap = 'blue-red')
 
         # plot diag contribution
-        diagonal_hat = model.diagonal_component(data)
+        diagonal_hat = model.diagonal_component(latent)
         if diagonal_hat is not None:
             diagonal_hat = diagonal_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
             plot_matrix(diagonal_hat, osp.join(subpath, 'diagonal_hat.png'), vmin = -1 * v_max,
@@ -692,7 +693,7 @@ def plot_xyz(xyz, L, x = None, ofile = None, show = True, title = None, legend =
 
     if x is None:
         ax.scatter(xyz[:,0], xyz[:,1], xyz[:,2])
-    else:
+    elif len(x.shape) == 2:
         # color unique types if x is not None
         types = np.argmax(x, axis = 1)
         n_types = np.max(types) + 1
@@ -702,6 +703,9 @@ def plot_xyz(xyz, L, x = None, ofile = None, show = True, title = None, legend =
             ax.scatter(xyz[condition,0], xyz[condition,1], xyz[condition,2], label = t)
         if legend:
             plt.legend()
+    elif len(x.shape) == 1:
+        im = ax.scatter(xyz[:,0], xyz[:,1], xyz[:,2], c=x)
+        plt.colorbar(im)
 
     ax.set_xlabel('x')
     ax.set_ylabel('y')
@@ -736,7 +740,7 @@ def plot_xyz_gif(xyz, x, dir, ofile = 'xyz.gif', order = None):
     for filename in filenames:
         frames.append(imageio.imread(filename))
 
-    imageio.mimsave(osp.join(dir, ofile), frames, format='GIF', fps=2)
+    imageio.mimsave(osp.join(dir, ofile), frames, format='GIF', fps=1)
 
     # remove files
     for filename in set(filenames):

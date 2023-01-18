@@ -1,4 +1,3 @@
-import math
 import os.path as osp
 import sys
 
@@ -12,7 +11,6 @@ import torch_geometric.nn as gnn
 from .base_networks import (MLP, AverageTo2d, ConvBlock, DeconvBlock,
                             FillDiagonalsFromArray, LinearBlock, Symmetrize2D,
                             UnetBlock, act2module, torch_triu_to_full)
-from .old_networks import *
 from .pyg_fns import WeightedGATv2Conv, WeightedSignedConv
 from .sign_net.sign_net import SignNet
 from .sign_net.transform import to_dense_list_EVD
@@ -96,7 +94,6 @@ def get_model(opt, verbose = True):
 
     return model
 
-
 class ContactGNN(nn.Module):
     '''
     Graph neural network that maps contact map data to node embeddings of arbitrary length.
@@ -106,7 +103,7 @@ class ContactGNN(nn.Module):
                 update_hidden_sizes_list,
                 act, inner_act, out_act,
                 message_passing, use_edge_attr, edge_dim,
-                head_architecture_L, head_architecture_D, head_hidden_sizes_list,
+                head_architecture, head_architecture_2, head_hidden_sizes_list,
                 head_act, use_bias, rescale, gated, dropout,
                 training_norm, num_heads, concat_heads,
                 ofile = sys.stdout, verbose = True,
@@ -128,8 +125,8 @@ class ContactGNN(nn.Module):
                                     {idendity, gcn, signedconv, z, gat, weighted_gat}
             use_edge_attr: True to use edge attributes/weights
             edge_dim: 0 for edge weights, 1+ for edge_attr
-            head_architecture_L: type of head architecture {None, fc, inner, bilinear, AverageTo2d.mode_options}
-            head_architecture_D: type of head architecture {None, fc, inner, bilinear, AverageTo2d.mode_options}
+            head_architecture: type of head architecture {None, fc, inner, bilinear, AverageTo2d.mode_options}
+            head_architecture_2: type of head architecture {None, fc, inner, bilinear, AverageTo2d.mode_options}
             head_hidden_sizes_list: hidden sizes of head architecture
             head_act: activation for head_architecture (and head_architecture_2)
             use_bias: True to use bias term - applies for message passing and head
@@ -148,12 +145,10 @@ class ContactGNN(nn.Module):
         self.message_passing = message_passing.lower()
         self.use_edge_attr = use_edge_attr
         self.edge_dim = edge_dim
-        self.head_architecture_L = head_architecture_L
-        self.head_architecture_D = head_architecture_D
-        if self.head_architecture_L is not None:
-            self.head_architecture_L = head_architecture_L.lower()
-        if self.head_architecture_D is not None:
-            self.head_architecture_D = head_architecture_D.lower()
+        if head_architecture is not None:
+            head_architecture = head_architecture.lower()
+        self.head_architecture = head_architecture
+        self.head_architecture_2 = head_architecture_2
         self.to2D = AverageTo2d(mode = None)
 
         # set up activations
@@ -311,8 +306,9 @@ class ContactGNN(nn.Module):
         # and the input size for head_architecture
 
         ### Head Architecture ###
-        self.head_L = self.process_L()
-        self.head_D, self.head_D2 = self.process_D()
+        self.head_1 = self.process_head_architecture(self.head_architecture)
+        self.head_2 = self.process_head_architecture(self.head_architecture_2)
+        self.head = [self.head_1, self.head_2]
 
         if verbose:
             print("#### ARCHITECTURE ####", file = ofile)
@@ -320,16 +316,28 @@ class ContactGNN(nn.Module):
             print('Edge Encoder:\n', self.edge_encoder, '\n', file = ofile)
             print('Linear:\n', self.linear, '\n', file = ofile)
             print('Model:\n', self.model, '\n', file = ofile)
-            print('Head L:\n', self.head_L, '\n', file = ofile)
-            print('Head D:\n', self.head_D, '\n', self.head_D2, '\n', file = ofile)
+            print('Head 1:\n', self.head_1, '\n', file = ofile)
+            print('Head 2:\n', self.head_2, '\n', file = ofile)
 
-    def process_L(self):
-        head_architecture = self.head_architecture_L
-        if head_architecture is None:
-            return None
-
+    def process_head_architecture(self, head_architecture):
         split = head_architecture.split('_')
-        if head_architecture.startswith('bilinear'):
+        if head_architecture is None:
+            head = None
+        elif head_architecture.startswith('fc'):
+            if len(split) > 1:
+                output_size = int(split[1])
+                head_hidden_sizes_list = self.head_hidden_sizes_list + [output_size]
+            else:
+                head_hidden_sizes_list = self.head_hidden_sizes_list
+            head_list = []
+            input_size = self.latent_size * self.m
+            head_list.append(MLP(input_size, head_hidden_sizes_list, self.use_bias,
+                                self.head_act, self.out_act, dropout = self.dropout))
+            if 'fill' in head_architecture:
+                head_list.append(FillDiagonalsFromArray())
+
+            head = nn.Sequential(*head_list)
+        elif head_architecture.startswith('bilinear'):
             head = 'Bilinear'
             if 'chi' in split:
                 assert 'triu' in split, f"{head_architecture}"
@@ -382,81 +390,71 @@ class ContactGNN(nn.Module):
 
         return head
 
-    def process_D(self):
-        head_architecture = self.head_architecture_D
-        if head_architecture is None:
-            return None, None
-
-        split = head_architecture.split('_')
-        if head_architecture is None:
-            return None
-
-        if len(split) > 1:
-            output_size = int(split[1])
-            head_hidden_sizes_list = self.head_hidden_sizes_list + [output_size]
-        else:
-            head_hidden_sizes_list = self.head_hidden_sizes_list
-
-        head_list_a = []
-        head_list_b = []
-        input_size = self.latent_size
-
-        if 'dconv' in head_architecture:
-            output_size = int(input_size / 2)
-            for dilation in [1, 2, 4, 8, 16]:
-                head_list_a.append(ConvBlock(input_size, output_size, 3, padding = dilation,
-                                        activation = self.head_act,
-                                        dilation = dilation, conv1d = True))
-                input_size = output_size
-        if 'stride' in head_architecture:
-            # single strided conv layer to reduce
-            head_list_a.append(ConvBlock(input_size, input_size, 3, stride = 2, padding = 1,
-                                    activation = self.head_act, conv1d = True))
-            # new_m = math.floor((self.m-3+2)/2)+1
-            input_size = int(input_size * self.m/2)
-        elif 'pool' in head_architecture:
-            head_list_a.append(ConvBlock(input_size, input_size, 3,
-                                    activation = self.head_act, pool = 'maxpool',
-                                    conv1d = True))
-            input_size = int(input_size * self.m / 2)
-        else:
-            input_size = input_size * self.m
-
-        if 'fc' in head_architecture:
-            head_list_b.append(MLP(input_size, head_hidden_sizes_list, self.use_bias,
-                                self.head_act, self.out_act, dropout = self.dropout))
-        if 'fill' in head_architecture:
-            head_list_b.append(FillDiagonalsFromArray())
-
-        head_a = None; head_b = None
-        if head_list_a:
-            head_a = nn.Sequential(*head_list_a)
-        if head_list_b:
-            head_b = nn.Sequential(*head_list_b)
-
-        return head_a, head_b
-
     def forward(self, graph, additional_x=None):
-        self.batch_size = int(graph.batch.max()) + 1
         latent = self.latent(graph, additional_x)
         _, output_size = latent.shape
 
-        if self.head_architecture_L is None and self.head_architecture_D is None:
+        if self.head_architecture is None and self.head_architecture_2 is None:
             return latent
 
-        L_out = self.plaid_component(latent)
-        D_out = self.diagonal_component(latent)
-        if L_out is None:
-            return D_out
-        elif D_out is None:
-            return L_out
+        first = True
+        for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
+            if architecture is None:
+                continue
+            elif architecture.startswith('fc'):
+                latent = latent.reshape(-1, self.m * output_size)
+                out_temp = self.head[i](latent)
+            else:
+                if architecture.startswith('bilinear'):
+                    latent = latent.reshape(-1, self.m, output_size)
+                    if self.head[i] == 'Bilinear':
+                        out_temp = latent
+                    elif 'chi' in architecture:
+                        latent = latent.reshape(-1, self.m * output_size)
+                        self.W = self.head[i](latent)
+                        out_temp = latent.reshape(-1, self.m, output_size)
+                    else:
+                        out_temp = self.head[i](latent)
 
-        try:
-            return L_out + D_out
-        except RuntimeError:
-            print(out.shape, out_temp.shape)
-            raise
+                    if 'asym' in architecture:
+                        out_temp = torch.einsum('nik,njk->nij', out_temp @ self.W, out_temp)
+                    else:
+                        W = self.sym(self.W)
+                        if len(W.shape) == 2:
+                            left = torch.einsum('nij,jk->nik', out_temp, W)
+                        elif len(W.shape) == 3:
+                            left = torch.einsum('nij,njk->nik', out_temp, W)
+                        out_temp = torch.einsum('nik,njk->nij', left, out_temp)
+                elif architecture == 'inner':
+                    latent = latent.reshape(-1, self.m, output_size)
+                    out_temp = torch.einsum('nik, njk->nij', latent, latent)
+                elif architecture in self.to2D.mode_options:
+                    latent = latent.reshape(-1, self.m, output_size)
+                    latent = latent.permute(0, 2, 1) # permute to combine over m index
+                    out_temp = self.to2D(latent)
+                    out_temp = out_temp.permute(0, 2, 3, 1) # permute back
+                    latent = latent.permute(0, 2, 1) # permute back
+                    out_temp = self.head[i](out_temp)
+                    if len(out_temp.shape) > 3:
+                        out_temp = torch.squeeze(out_temp, 3)
 
+                if self.rescale is not None:
+                    out_temp = torch.unsqueeze(out_temp, 1)
+                    m_new = int(self.m * self.rescale)
+                    out_temp = F.interpolate(out_temp, size = (m_new, m_new))
+                    out_temp = torch.squeeze(out_temp, 1)
+
+            if first:
+                out = out_temp
+                first = False
+            else:
+                try:
+                    out = out + out_temp
+                except RuntimeError:
+                    print(out.shape, out_temp.shape)
+                    raise
+
+        return out
 
     def latent(self, graph, additional_x):
         if self.node_encoder is not None:
@@ -487,124 +485,65 @@ class ContactGNN(nn.Module):
 
         return latent
 
-    def diagonal_component(self, latent):
+    def diagonal_component(self, graph, additional_x=None):
+        latent = self.latent(graph, additional_x)
+
+        for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
+            if architecture is None:
+                continue
+            elif architecture.startswith('fc'):
+                latent_copy = torch.clone(latent)
+                latent_copy = latent_copy.reshape(-1)
+                return self.head[i](latent_copy)
+            elif architecture in self.to2D.mode_options:
+                _, output_size = latent.shape
+                latent_copy = torch.clone(latent)
+                latent_copy = latent_copy.reshape(-1, self.m, output_size)
+                latent_copy = latent_copy.permute(0, 2, 1) # permute to combine over m index
+                latent_copy = self.to2D(latent_copy)
+                _, output_size, _, _ = latent_copy.shape
+                latent_copy = latent_copy.permute(0, 2, 3, 1) # permute back
+                out_temp = self.head[i](latent_copy)
+                if len(out_temp.shape) > 3:
+                    out_temp = torch.squeeze(out_temp, 3)
+                return out_temp
+
+        return None
+
+    def plaid_component(self, graph, additional_x=None):
+        latent = self.latent(graph, additional_x)
         _, output_size = latent.shape
-        if self.head_architecture_D is None:
-            return none
-        elif 'fc' in self.head_architecture_D:
-            if self.head_D is not None:
-                latent = latent.reshape(self.batch_size, self.m, output_size)
-                latent = latent.permute(0, 2, 1) # permute to combine over m index
-                D_out = self.head_D(latent)
-                latent = latent.permute(0, 2, 1) # permute back
-            else:
-                D_out = torch.clone(latent)
-            D_out = D_out.reshape(self.batch_size, -1)
-            D_out = self.head_D2(D_out)
-        elif self.head_architecture_D in self.to2D.mode_options:
-            latent = latent.reshape(self.batch_size, self.m, output_size)
-            latent = latent.permute(0, 2, 1) # permute to combine over m index
-            D_out = self.to2D(latent)
-            D_out = D_out.permute(0, 2, 3, 1) # permute back
-            latent = latent.permute(0, 2, 1) # permute back
-            D_out = self.head(D_out)
-            if len(D_out.shape) > 3:
-                D_out = torch.squeeze(D_out, 3)
 
-            if self.rescale is not None:
-                D_out = torch.unsqueeze(D_out, 1)
-                m_new = int(self.m * self.rescale)
-                D_out = F.interpolate(D_out, size = (m_new, m_new))
-                D_out = torch.squeeze(D_out, 1)
+        out_temp = None
+        for i, architecture in enumerate([self.head_architecture, self.head_architecture_2]):
+            if architecture is None:
+                continue
+            elif architecture.startswith('bilinear'):
+                latent = latent.reshape(-1, self.m, output_size)
+                if self.head[i] == 'Bilinear':
+                    out_temp = latent
+                elif 'chi' in architecture:
+                    latent = latent.reshape(-1, self.m * output_size)
+                    W = self.head[i](latent)
+                    self.W = W.reshape(-1)
+                    out_temp = latent.reshape(-1, self.m, output_size)
+                else:
+                    out_temp = self.head[i](latent)
 
-        return D_out
+                if 'asym' in architecture:
+                    out_temp = torch.einsum('nik,njk->nij', out_temp @ self.W, out_temp)
+                else:
+                    left = torch.einsum('nij,jk->nik', out_temp, self.sym(self.W))
+                    out_temp = torch.einsum('nik,njk->nij', left, out_temp)
+            elif architecture == 'inner':
+                latent = latent.reshape(-1, self.m, output_size)
+                out_temp = torch.einsum('nik, njk->nij', latent, latent)
 
-    def plaid_component(self, latent):
-        _, output_size = latent.shape
-        if self.head_architecture_L is None:
-            return None
-        elif self.head_architecture_L.startswith('bilinear'):
-            latent = latent.reshape(-1, self.m, output_size)
-            if self.head_L == 'Bilinear':
-                L_out = latent
-            elif 'chi' in self.head_architecture_L:
-                latent = latent.reshape(-1, self.m * output_size)
-                self.W = self.head_L(latent)
-                L_out = latent.reshape(-1, self.m, output_size)
-            else:
-                L_out = self.head_L(latent)
-
-            if 'asym' in self.head_architecture_L:
-                L_out = torch.einsum('nik,njk->nij', L_out @ self.W, L_out)
-            else:
-                W = self.sym(self.W)
-                if len(W.shape) == 2:
-                    left = torch.einsum('nij,jk->nik', L_out, W)
-                elif len(W.shape) == 3:
-                    left = torch.einsum('nij,njk->nik', L_out, W)
-                L_out = torch.einsum('nik,njk->nij', left, L_out)
-        elif self.head_architecture_L == 'inner':
-            latent = latent.reshape(-1, self.m, output_size)
-            L_out = torch.einsum('nik, njk->nij', latent, latent)
 
         if self.rescale is not None:
-            L_out = torch.unsqueeze(L_out, 1)
+            out_temp = torch.unsqueeze(out_temp, 1)
             m_new = int(self.m * self.rescale)
-            L_out = F.interpolate(L_out, size = (m_new, m_new))
-            L_out = torch.squeeze(L_out, 1)
+            out_temp = F.interpolate(out_temp, size = (m_new, m_new))
+            out_temp = torch.squeeze(out_temp, 1)
 
-        return L_out
-
-class SignNetGNN(nn.Module):
-    # Modified from https://github.com/cptq/SignNet-BasisNet/blob/main/Alchemy/sign_net/sign_net.py
-    def __init__(self, node_feat, edge_feat, n_hid, nl_signnet,
-                    nl_rho, k, ignore_eigval, gnn_model, ofile, verbose):
-        super().__init__()
-        self.sign_net = SignNet(n_hid, nl_signnet, nl_rho, ignore_eigval, k)
-        self.gnn = gnn_model
-
-        if verbose:
-            print("#### ARCHITECTURE ####", file = ofile)
-            print('Sign Net:\n', self.sign_net, '\n', file = ofile)
-
-
-    def reset_parameters(self):
-        self.sign_net.reset_parameters()
-        self.gnn.reset_parameters()
-
-    def forward(self, data):
-        pos = self.sign_net(data)
-        return self.gnn(data, pos)
-
-    def latent(self, data, *args):
-        pos = self.sign_net(data)
-        return self.gnn.latent(data, pos)
-
-    def plaid_component(self, latent):
-        return self.gnn.plaid_component(data, latent)
-
-    def diagonal_component(self, latent):
-        return self.gnn.diagonal_component(data, latent)
-
-class SignPlus(nn.Module):
-    # Modified from https://github.com/cptq/SignNet-BasisNet/blob/main/LearningFilters/signbasisnet.py
-    # negate v, do not negate x
-    def __init__(self, model, k):
-        super(SignPlus, self).__init__()
-        self.model = model
-        self.k = k
-
-    def forward(self, data):
-        eigS_dense, eigV_dense = to_dense_list_EVD(data.eigen_values, data.eigen_vectors, data.batch, self.k)
-        x = eigV_dense
-
-        return self.model(data, x) + self.model(data, -x)
-
-    def latent(self, data, *args):
-        return None
-
-    def plaid_component(self, latent):
-        return None
-
-    def diagonal_component(self, latent):
-        return None
+        return out_temp

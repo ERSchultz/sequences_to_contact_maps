@@ -21,7 +21,7 @@ rootName='ContactGNNEnergy6' # change to run multiple bash files at once
 dirname="/project/depablo/erschultz/dataset_11_18_22-/project/depablo/erschultz/dataset_11_21_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='constant-ContactDistance-GeneticDistance_norm-AdjPCs_12'
+preTransforms='constant-ContactDistance-GeneticDistance_norm-AdjPCs_8'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8-8'
@@ -29,22 +29,24 @@ EncoderHiddenSizesList='64'
 updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
+outputPreprocesing='log'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
-headArchitecture='bilinear_triu'
-headArchitecture2='fc-fill'
-headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+headArchitecture='bilinear'
+headArchitecture2='pool-fc-fill_1024'
+headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 useScratch='false'
 
-k=12
+k=8
 useSignPlus='true'
-batchSize=2
-resumeTraining='true'
+batchSize=1
 
-# 5th attempt signplus, more PCs
 
-id=343
+# sign_plus with log preprocessing bilinear
+# pool
+
+id=354
 for lr in 1e-4
 do
   train

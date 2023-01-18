@@ -38,15 +38,16 @@ headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
 useScratch='false'
 
-
 k=8
-useSignNet='true'
-batchSize=2
+useSignPlus='true'
+batchSize=1
+scheduler='ReduceLROnPlateau'
+milestones='none'
 
 
-# sign_net with log preprocessing
+# sign_plus with log preprocessing and new scheduler
 
-id=349
+id=350
 for lr in 1e-4
 do
   train

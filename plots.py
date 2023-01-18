@@ -9,6 +9,7 @@ from shutil import rmtree
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 import torch
 from scipy.ndimage import uniform_filter
 from utils.argparse_utils import (finalize_opt, get_base_parser,
@@ -121,7 +122,8 @@ def plot_xyz_gif_wrapper():
     m=200
 
     x = np.load(osp.join(dir, 'x.npy'))[:m, :]
-    xyz = xyz_load(file, multiple_timesteps=True)[::50, :m, :]
+    x = np.arange(1, m+1)
+    xyz = xyz_load(file, multiple_timesteps=True)[::, :m, :]
     print(xyz.shape)
     xyz_write(xyz, osp.join(dir, 'data_out/output_x.xyz'), 'w', x = x)
 
@@ -439,9 +441,28 @@ def plot_GNN_vs_PCA():
         cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                  [(0,    'white'),
                                                   (1,    'red')], N=126)
-        fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+        fig, (ax1, ax2, ax3, axcb) = plt.subplots(1, 4,
+                                        gridspec_kw={'width_ratios':[1,1,1,0.08]})
+        fig.set_figheight(6)
+        fig.set_figwidth(6*2.5)
+        fig.suptitle(f'Sample {sample}')
+        vmin = 0
+        vmax = np.mean(y)
+        s1 = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
+                        ax = ax1, cbar = False)
+        s1.set_title('Experiment')
+        s2 = sns.heatmap(y_pca, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
+                        ax = ax2, cbar = False)
+        s2.set_title(f'PCA(k=8)\nSCC={np.round(pca_results["scc_var"], 3)}')
+        s2.set_yticks([])
+        s3 = sns.heatmap(y_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
+                        ax = ax3, cbar_ax = axcb)
+        s3.set_title(f'GNN\nSCC={np.round(gnn_results["scc_var"], 3)}')
+        s3.set_yticks([])
 
-
+        plt.tight_layout()
+        plt.savefig(osp.join(sample_dir, 'PCA_vs_GNN.png'))
+        plt.close()
 
 if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
@@ -463,6 +484,6 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_09_30_22')
-    # plot_combined_models('ContactGNNEnergy', [341, 342])
-    plot_GNN_vs_PCA()
+    plot_combined_models('ContactGNNEnergy', [341, 349])
+    # plot_GNN_vs_PCA()
     # main()
