@@ -7,7 +7,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch_geometric.nn as gnn
 
-# from .argparse_utils import finalize_opt, get_base_parser
 from .base_networks import (AverageTo2d, ConvBlock, DeconvBlock, LinearBlock,
                             Symmetrize2D, UnetBlock, act2module)
 

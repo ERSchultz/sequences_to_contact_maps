@@ -29,7 +29,7 @@ from .clean_directories import clean_directories
 from .energy_utils import calculate_diag_chi_step
 from .InteractionConverter import InteractionConverter
 from .load_utils import load_sc_contacts, load_X_psi
-from .neural_net_utils import get_data_loaders, get_dataset, load_saved_model
+from .neural_nets.utils import get_data_loaders, get_dataset, load_saved_model
 from .utils import DiagonalPreprocessing, crop, triu_to_full
 from .xyz_utils import (find_dist_between_centroids, find_label_centroid,
                         xyz_load)

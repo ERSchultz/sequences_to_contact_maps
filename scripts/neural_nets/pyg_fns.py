@@ -18,7 +18,7 @@ from torch_geometric.utils import (add_self_loops, degree, remove_self_loops,
 from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 from torch_sparse import SparseTensor, matmul, set_diag
 
-from .energy_utils import calculate_D
+from ..energy_utils import calculate_D
 
 
 # node transforms
