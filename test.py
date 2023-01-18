@@ -194,7 +194,7 @@ def debugModel(model_type):
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
         opt.y_preprocessing = 'sweeprand_log_inf'
-        opt.rescale = 2
+        opt.rescale = 4
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
@@ -204,9 +204,9 @@ def debugModel(model_type):
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym_diag'
         opt.output_preprocesing = 'log'
-        opt.encoder_hidden_sizes_list=AC.str2list('none')
-        # opt.edge_encoder_hidden_sizes_list=[100,100,3]
-        opt.update_hidden_sizes_list=[100,100,64]
+        opt.encoder_hidden_sizes_list=[32]
+        opt.edge_encoder_hidden_sizes_list=[16]
+        opt.update_hidden_sizes_list=[100,128]
         opt.hidden_sizes_list=[8]
         opt.gated = False
         opt.dropout = 0.0
@@ -316,7 +316,7 @@ def debugModel(model_type):
     opt.weight_decay = 1e-5
     opt.w_reg = None
     opt.reg_lambda = 10
-    opt.batch_size = 2
+    opt.batch_size = 1
     opt.gamma = 0.1
 
     # other

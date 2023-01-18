@@ -144,6 +144,7 @@ class ContactGNN(nn.Module):
         super(ContactGNN, self).__init__()
 
         self.m = m
+        self.input_size = input_size
         self.output_dim = output_dim
         self.message_passing = message_passing.lower()
         self.use_edge_attr = use_edge_attr
@@ -172,24 +173,26 @@ class ContactGNN(nn.Module):
         self.dropout = dropout
 
         ### Encoder Architecture ###
-        self.node_encoder = None
         self.edge_encoder = None
-        if node_encoder_hidden_sizes_list is not None:
-            encoder = []
-            for output_size in node_encoder_hidden_sizes_list:
-                module = gnn.Linear(input_size, output_size, bias = use_bias)
-                encoder.extend([(module, 'x -> x'), self.act])
-                input_size = output_size
-            self.node_encoder = gnn.Sequential('x', encoder)
-
         if edge_encoder_hidden_sizes_list is not None:
             encoder = []
-            input_size += edge_dim
+            input_size = self.input_size * 2 + edge_dim
             for output_size in edge_encoder_hidden_sizes_list:
                 encoder.append(LinearBlock(input_size, output_size, activation = self.act,
                                         bias = use_bias))
                 input_size = output_size
             self.edge_encoder = nn.Sequential(*encoder)
+            self.edge_dim = output_size
+
+        self.node_encoder = None
+        if node_encoder_hidden_sizes_list is not None:
+            encoder = []
+            input_size = self.input_size
+            for output_size in node_encoder_hidden_sizes_list:
+                module = gnn.Linear(input_size, output_size, bias = use_bias)
+                encoder.extend([(module, 'x -> x'), self.act])
+                input_size = output_size
+            self.node_encoder = gnn.Sequential('x', encoder)
 
         if sign_net:
             output_size = update_hidden_sizes_list[-1]
@@ -469,7 +472,7 @@ class ContactGNN(nn.Module):
 
         if self.edge_encoder is not None:
             row, col = graph.edge_index
-            concat = torch.cat((x[row], x[col], graph.edge_attr), dim = -1)
+            concat = torch.cat((graph.x[row], graph.x[col], graph.edge_attr), dim = -1)
             edge_attr = self.edge_encoder(concat)
         else:
             edge_attr = graph.edge_attr
