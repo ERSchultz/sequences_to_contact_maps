@@ -16,20 +16,20 @@ from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
+from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
+                                    get_base_parser)
+from scripts.energy_utils import *
+from scripts.load_utils import load_sc_contacts, save_sc_contacts
+from scripts.neural_nets.dataset_classes import make_dataset
+from scripts.neural_nets.networks import get_model
+from scripts.neural_nets.utils import get_dataset
+from scripts.plotting_utils import plot_matrix
+from scripts.similarity_measures import SCC
+from scripts.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
+                           print_time, triu_to_full)
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
-from utils.argparse_utils import (ArgparserConverter, finalize_opt,
-                                  get_base_parser)
-from utils.dataset_classes import make_dataset
-from utils.energy_utils import *
-from utils.load_utils import load_sc_contacts, save_sc_contacts
-from utils.networks import get_model
-from utils.neural_net_utils import get_dataset
-from utils.plotting_utils import plot_matrix
-from utils.similarity_measures import SCC
-from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
-                         print_time, triu_to_full)
 
 
 def test_num_workers():

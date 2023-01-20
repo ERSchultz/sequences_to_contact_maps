@@ -11,12 +11,13 @@ import torch.optim as optim
 
 locale.setlocale(locale.LC_ALL, '')
 
-from utils.argparse_utils import argparse_setup, save_args
-from utils.clean_directories import clean_directories
-from utils.networks import get_model
-from utils.neural_net_utils import get_data_loaders, get_dataset, optimizer_to
-from utils.plotting_utils import plotting_script
-from utils.utils import print_time
+from scripts.argparse_utils import argparse_setup, save_args
+from scripts.clean_directories import clean_directories
+from scripts.neural_nets.networks import get_model
+from scripts.neural_nets.utils import (get_data_loaders, get_dataset,
+                                       optimizer_to)
+from scripts.plotting_utils import plotting_script
+from scripts.utils import print_time
 
 
 def main():

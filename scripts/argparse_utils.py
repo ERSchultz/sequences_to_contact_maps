@@ -12,10 +12,12 @@ import torch
 import torch.nn.functional as F
 import torch_geometric.transforms
 
-from .pyg_fns import (AdjPCATransform, AdjPCs, AdjTransform, ContactDistance,
-                      Degree, DiagonalParameterDistance, GeneticDistance,
-                      GeneticPosition, NoiseLevel, OneHotGeneticPosition,
-                      WeightedLocalDegreeProfile)
+from .neural_nets.pyg_fns import (AdjPCATransform, AdjPCs, AdjTransform,
+                                  ContactDistance, Degree,
+                                  DiagonalParameterDistance, GeneticDistance,
+                                  GeneticPosition, NoiseLevel,
+                                  OneHotGeneticPosition,
+                                  WeightedLocalDegreeProfile)
 from .utils import DiagonalPreprocessing
 
 

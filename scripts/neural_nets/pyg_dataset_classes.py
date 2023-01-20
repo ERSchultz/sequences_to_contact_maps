@@ -19,12 +19,12 @@ from scipy.ndimage import uniform_filter
 from skimage.measure import block_reduce
 from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 
-from .argparse_utils import finalize_opt, get_base_parser
+from ..argparse_utils import finalize_opt, get_base_parser
+from ..energy_utils import calculate_D, calculate_SD
+from ..knightRuiz import knightRuiz
+from ..utils import DiagonalPreprocessing, rescale_matrix
 from .dataset_classes import DiagFunctions, make_dataset
-from .energy_utils import calculate_D, calculate_SD
-from .knightRuiz import knightRuiz
 from .networks import get_model
-from .utils import DiagonalPreprocessing, rescale_matrix
 
 
 class ContactsGraph(torch_geometric.data.Dataset):
