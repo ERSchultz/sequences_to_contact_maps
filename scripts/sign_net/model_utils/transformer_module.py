@@ -4,7 +4,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from utils.sign_net.model_utils.masked_layers import MaskedBN, MaskedLN
+
+from .masked_layers import MaskedBN, MaskedLN
 
 
 class PositionalEncoding(nn.Module):

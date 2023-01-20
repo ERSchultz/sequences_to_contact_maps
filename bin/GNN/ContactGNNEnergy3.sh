@@ -35,15 +35,19 @@ yNorm='mean'
 headArchitecture='bilinear_triu'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
-rescale=2
+rescale=4
 useScratch='false'
 
 k=8
 useSignPlus='true'
+batchSize=1
+scheduler='ReduceLROnPlateau'
+milestones='none'
 
-# 3rd attempt signplus, log output
 
-id=341
+# sign_plus with log preprocessing and new scheduler, and rescale = 4
+
+id=351
 for lr in 1e-4
 do
   train

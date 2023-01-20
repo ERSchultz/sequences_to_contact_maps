@@ -12,10 +12,12 @@ import torch
 import torch.nn.functional as F
 import torch_geometric.transforms
 
-from .pyg_fns import (AdjPCATransform, AdjPCs, AdjTransform, ContactDistance,
-                      Degree, DiagonalParameterDistance, GeneticDistance,
-                      GeneticPosition, NoiseLevel, OneHotGeneticPosition,
-                      WeightedLocalDegreeProfile)
+from .neural_nets.pyg_fns import (AdjPCATransform, AdjPCs, AdjTransform,
+                                  ContactDistance, Degree,
+                                  DiagonalParameterDistance, GeneticDistance,
+                                  GeneticPosition, NoiseLevel,
+                                  OneHotGeneticPosition,
+                                  WeightedLocalDegreeProfile)
 from .utils import DiagonalPreprocessing
 
 
@@ -121,14 +123,20 @@ def get_base_parser():
                         help='How often to print')
     parser.add_argument('--lr', type=float, default=1e-3,
                         help='Learning rate. Default=0.001')
+    parser.add_argument('--min_lr', type=AC.str2float, default=1e-7,
+                        help='minium lr (model stops training at min_lr, None to ignore)')
     parser.add_argument('--weight_decay', type=float, default=0.0,
                         help='Weight Decay. Default=0.0')
     parser.add_argument('--gpus', type=int, default=1,
                         help='Number of gpus')
-    parser.add_argument('--milestones', type=AC.str2list, default=[2],
+    parser.add_argument('--scheduler', type=AC.str2None,
+                        help='choice of LR scheduler')
+    parser.add_argument('--milestones', type=AC.str2list, default=None,
                         help='Milestones for lr decay - format: <milestone1-milestone2>')
     parser.add_argument('--gamma', type=float, default=0.1,
                         help='Gamma for lr scheduler')
+    parser.add_argument('--patience', type=int, default=10,
+                        help='patience for lr scheduler')
     parser.add_argument('--loss', type=str, default='mse',
                         help='Type of loss to use: options: {"mse", "cross_entropy"}')
     parser.add_argument('--w_reg', type=AC.str2None,
@@ -631,7 +639,7 @@ def copy_data_to_scratch(opt):
 
     tf = time.time()
     delta_t = np.round(tf - t0, 0)
-    print("Took {} seconds to move data to scratch".format(delta_t), file = opt.log_file)
+    print(f"Took {delta_t} seconds to move data to scratch", file = opt.log_file)
 
 def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_preprocessing, output_mode):
     sample_dir = osp.join(data_folder, 'samples', sample)
@@ -872,6 +880,8 @@ class ArgparserConverter():
             if v.lower() == 'none':
                 return None
             elif v.replace('.', '').replace('-', '').isnumeric():
+                return float(v)
+            elif 'e-' in v:
                 return float(v)
             else:
                 raise argparse.ArgumentTypeError('none or float expected not {}'.format(v))

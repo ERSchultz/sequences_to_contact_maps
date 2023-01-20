@@ -32,7 +32,7 @@ numHeads=8
 outputPreprocesing='log'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
-headArchitecture='bilinear_triu'
+headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
@@ -40,13 +40,12 @@ useScratch='false'
 
 k=8
 useSignPlus='true'
-batchSize=2
-loss='huber'
-resumeTraining='true'
+batchSize=1
 
-# 4th attempt signplus, log output and huber
 
-id=342
+# sign_plus with log preprocessing bilinear
+
+id=352
 for lr in 1e-4
 do
   train

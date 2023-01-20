@@ -9,17 +9,19 @@ from shutil import rmtree
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 import torch
 from scipy.ndimage import uniform_filter
-from utils.argparse_utils import (finalize_opt, get_base_parser,
-                                  get_opt_header, opt2list)
-from utils.energy_utils import calculate_diag_chi_step
-from utils.load_utils import load_contact_map
-from utils.plotting_utils import (plot_centroid_distance, plot_combined_models,
-                                  plot_diag_chi, plot_sc_contact_maps,
-                                  plot_xyz_gif, plotting_script)
-from utils.utils import DiagonalPreprocessing
-from utils.xyz_utils import xyz_load, xyz_write
+from scripts.argparse_utils import (finalize_opt, get_base_parser,
+                                    get_opt_header, opt2list)
+from scripts.energy_utils import calculate_diag_chi_step
+from scripts.load_utils import load_contact_map
+from scripts.plotting_utils import (plot_centroid_distance,
+                                    plot_combined_models, plot_diag_chi,
+                                    plot_sc_contact_maps, plot_xyz_gif,
+                                    plotting_script)
+from scripts.utils import DiagonalPreprocessing
+from scripts.xyz_utils import xyz_load, xyz_write
 
 
 def update_result_tables(model_type = None, mode = None, output_mode = 'contact'):
@@ -121,7 +123,8 @@ def plot_xyz_gif_wrapper():
     m=200
 
     x = np.load(osp.join(dir, 'x.npy'))[:m, :]
-    xyz = xyz_load(file, multiple_timesteps=True)[::50, :m, :]
+    x = np.arange(1, m+1)
+    xyz = xyz_load(file, multiple_timesteps=True)[::, :m, :]
     print(xyz.shape)
     xyz_write(xyz, osp.join(dir, 'data_out/output_x.xyz'), 'w', x = x)
 
@@ -413,11 +416,60 @@ def main(id):
     plotting_script(None, opt, samples = [410, 653, 1462, 1801, 2290])
     # interogateParams(None, opt)
 
+def plot_GNN_vs_PCA():
+    dir = '/home/erschultz/dataset_11_14_22/samples'
+    for sample in range(2217, 2222):
+        sample_dir = osp.join(dir, f'sample{sample}')
+
+        y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
+        y /= np.mean(np.diagonal(y))
+
+
+        pca_dir = osp.join(sample_dir, 'PCA-normalize-E/k8/replicate1')
+        with open(osp.join(pca_dir, 'distance_pearson.json'), 'r') as f:
+            # TODO this is after final iteration, not convergence
+            pca_results = json.load(f)
+        y_pca = np.load(osp.join(pca_dir, 'y.npy')).astype(np.float64)
+        y_pca /= np.mean(np.diagonal(y_pca))
+
+
+        gnn_dir = osp.join(sample_dir, 'GNN-341-E/k0/replicate1')
+        with open(osp.join(gnn_dir, 'distance_pearson.json'), 'r') as f:
+            gnn_results = json.load(f)
+        y_gnn = np.load(osp.join(gnn_dir, 'y.npy')).astype(np.float64)
+        y_gnn /= np.mean(np.diagonal(y_gnn))
+
+        cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                 [(0,    'white'),
+                                                  (1,    'red')], N=126)
+        fig, (ax1, ax2, ax3, axcb) = plt.subplots(1, 4,
+                                        gridspec_kw={'width_ratios':[1,1,1,0.08]})
+        fig.set_figheight(6)
+        fig.set_figwidth(6*2.5)
+        fig.suptitle(f'Sample {sample}')
+        vmin = 0
+        vmax = np.mean(y)
+        s1 = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
+                        ax = ax1, cbar = False)
+        s1.set_title('Experiment')
+        s2 = sns.heatmap(y_pca, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
+                        ax = ax2, cbar = False)
+        s2.set_title(f'PCA(k=8)\nSCC={np.round(pca_results["scc_var"], 3)}')
+        s2.set_yticks([])
+        s3 = sns.heatmap(y_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
+                        ax = ax3, cbar_ax = axcb)
+        s3.set_title(f'GNN\nSCC={np.round(gnn_results["scc_var"], 3)}')
+        s3.set_yticks([])
+
+        plt.tight_layout()
+        plt.savefig(osp.join(sample_dir, 'PCA_vs_GNN.png'))
+        plt.close()
+
 if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     dir = '/home/erschultz/sequences_to_contact_maps/'
     data_dir = osp.join(dir, 'single_cell_nagano_imputed/samples/sample443')
@@ -433,5 +485,6 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_09_30_22')
-    plot_combined_models('ContactGNNEnergy', [338, 343])
+    plot_combined_models('ContactGNNEnergy', [341, 349])
+    # plot_GNN_vs_PCA()
     # main()

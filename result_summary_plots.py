@@ -7,14 +7,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import statsmodels.api as sm
 from scipy.sparse.csgraph import laplacian
+from scripts.argparse_utils import ArgparserConverter
+from scripts.energy_utils import s_to_E
+from scripts.load_utils import load_all, load_final_max_ent_S
+from scripts.plotting_utils import plot_matrix
+from scripts.R_pca import R_pca
+from scripts.utils import LETTERS, DiagonalPreprocessing, pearson_round
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
-from utils.argparse_utils import ArgparserConverter
-from utils.energy_utils import s_to_E
-from utils.load_utils import load_all, load_final_max_ent_S
-from utils.plotting_utils import plot_matrix
-from utils.R_pca import R_pca
-from utils.utils import LETTERS, DiagonalPreprocessing, pearson_round
 
 
 def getArgs():

@@ -21,28 +21,32 @@ rootName='ContactGNNEnergy5' # change to run multiple bash files at once
 dirname="/project/depablo/erschultz/dataset_11_18_22-/project/depablo/erschultz/dataset_11_21_22"
 m=1024
 messagePassing='weighted_GAT'
-preTransforms='constant-ContactDistance-GeneticDistance_norm'
+preTransforms='constant-ContactDistance-GeneticDistance_norm-AdjPCs_8'
 mlpModelID='none'
 useEdgeAttr='true'
 hiddenSizesList='8-8-8-8'
-EncoderHiddenSizesList='none'
+EncoderHiddenSizesList='64'
 updateHiddenSizesList='1000-1000-64'
 numHeads=8
 
 outputPreprocesing='log'
 yPreprocessing='sweeprand_log_inf'
 yNorm='mean'
-headArchitecture='bilinear_chi_triu'
-headArchitecture2='fc-fill_1024'
+headArchitecture='bilinear'
+headArchitecture2='dconv-pool-fc-fill_1024'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 useScratch='false'
-batchSize=2
-resumeTraining='true'
 
-# chi triu head arch - new version, with log, batchSize = 2
+k=8
+useSignPlus='true'
+batchSize=1
 
-id=335
+
+# sign_plus with log preprocessing bilinear
+# dconv pool
+
+id=353
 for lr in 1e-4
 do
   train

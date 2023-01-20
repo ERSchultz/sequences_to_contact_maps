@@ -291,8 +291,8 @@ class Interpolater():
 
 
 def main():
-    dataset = 'dataset_11_14_22'
-    for sample in range(2017, 2022):
+    dataset = 'dataset_01_17_22'
+    for sample in range(1, 23):
         # this is the recommended option
         interpolater = Interpolater(['zeros', 'mappability-0.7'], dataset, sample)
         interpolater.run()

@@ -2,15 +2,16 @@
 # modified to allow for only top k eigenvectors
 
 import numpy as np
+import scripts.sign_net.model_utils.masked_layers as masked_layers
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import utils.sign_net.model_utils.masked_layers as masked_layers
 from torch_scatter import scatter
-from utils.sign_net.model_utils.elements import DiscreteEncoder
-from utils.sign_net.model_utils.transformer_module import (
-    PositionalEncoding, TransformerEncoderLayer)
-from utils.sign_net.transform import to_dense_list_EVD
+
+from .model_utils.elements import DiscreteEncoder
+from .model_utils.transformer_module import (PositionalEncoding,
+                                             TransformerEncoderLayer)
+from .transform import to_dense_list_EVD
 
 
 class GNN3d(nn.Module):

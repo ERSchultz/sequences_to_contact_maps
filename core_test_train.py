@@ -11,12 +11,13 @@ import torch.optim as optim
 
 locale.setlocale(locale.LC_ALL, '')
 
-from utils.argparse_utils import argparse_setup, save_args
-from utils.clean_directories import clean_directories
-from utils.networks import get_model
-from utils.neural_net_utils import get_data_loaders, get_dataset, optimizer_to
-from utils.plotting_utils import plotting_script
-from utils.utils import print_time
+from scripts.argparse_utils import argparse_setup, save_args
+from scripts.clean_directories import clean_directories
+from scripts.neural_nets.networks import get_model
+from scripts.neural_nets.utils import (get_data_loaders, get_dataset,
+                                       optimizer_to)
+from scripts.plotting_utils import plotting_script
+from scripts.utils import print_time
 
 
 def main():
@@ -64,13 +65,24 @@ def core_test_train(model, opt):
         opt.optimizer.load_state_dict(save_dict['optimizer_state_dict'])
         optimizer_to(opt.optimizer, opt.device)
 
-    if opt.milestones is not None:
-        opt.scheduler = optim.lr_scheduler.MultiStepLR(opt.optimizer, milestones = opt.milestones,
-                                                    gamma = opt.gamma, verbose = opt.verbose)
-        if opt.resume_training:
-            opt.scheduler.load_state_dict(save_dict['scheduler_state_dict'])
-    else:
-        opt.scheduler = None
+
+    if isinstance(opt.scheduler, str):
+        scheduler = str(opt.scheduler).lower()
+        if scheduler == 'multisteplr':
+            assert opt.milestones is not None, "milestones needed for MultiStepLR"
+            opt.scheduler = optim.lr_scheduler.MultiStepLR(opt.optimizer, milestones = opt.milestones,
+                                                        gamma = opt.gamma, verbose = opt.verbose)
+
+        elif scheduler == 'reducelronplateau':
+            opt.scheduler = optim.lr_scheduler.ReduceLROnPlateau(opt.optimizer, mode = 'min',
+                                                    factor = opt.gamma, patience = opt.patience,
+                                                    min_lr = opt.min_lr*opt.gamma)
+        else:
+            opt.scheduler = None
+    print(f'Scheduler: {opt.scheduler}', file = opt.log_file)
+
+    if opt.resume_training and opt.scheduler is not None:
+        opt.scheduler.load_state_dict(save_dict['scheduler_state_dict'])
 
     if opt.use_parallel:
         model = torch.nn.DataParallel(model, device_ids = opt.gpu_ids)
@@ -132,6 +144,22 @@ def core_test_train(model, opt):
     opt.log_file.close()
 
 def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = []):
+    def save():
+        if opt.use_parallel:
+            model_state = model.module.state_dict()
+        else:
+            model_state = model.state_dict()
+        save_dict = {'model_state_dict': model_state,
+                    'epoch': e,
+                    'optimizer_state_dict': opt.optimizer.state_dict(),
+                    'scheduler_state_dict': None,
+                    'train_loss': train_loss,
+                    'val_loss': val_loss}
+        if opt.scheduler is not None:
+            save_dict['scheduler_state_dict'] = opt.scheduler.state_dict()
+        torch.save(save_dict, osp.join(opt.ofile_folder, 'model.pt'))
+
+    lr = opt.lr # keep track of lr
     for e in range(opt.start_epoch, opt.n_epochs+1):
         if opt.verbose:
             print('Epoch:', e)
@@ -209,8 +237,6 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
         avg_loss /= (t+1)
         train_loss.append(avg_loss)
 
-        if opt.scheduler is not None:
-            opt.scheduler.step()
         if e % opt.print_mod == 0 or e == opt.n_epochs:
             print('Epoch {}, loss = {:.4f}'.format(e, avg_loss), file = opt.log_file)
             print_val_loss = True
@@ -218,22 +244,27 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
             opt.log_file = open(opt.log_file_path, 'a')
         else:
             print_val_loss = False
-        val_loss.append(test(val_dataloader, model, opt, print_val_loss))
+
+        val_loss_i = test(val_dataloader, model, opt, print_val_loss)
+        val_loss.append(val_loss_i)
+
+        if opt.scheduler is not None:
+            if opt.milestones is None:
+                opt.scheduler.step(val_loss_i)
+            else:
+                opt.scheduler.step()
+            new_lr = opt.scheduler.optimizer.param_groups[0]['lr']
+            if new_lr < lr:
+                lr = new_lr
+                print(f'New lr: {lr}', file = opt.log_file)
+
+        if opt.min_lr is not None and lr < opt.min_lr:
+            print('Converged', file = opt.log_file)
+            save()
+            break
 
         if e % opt.save_mod == 0:
-            if opt.use_parallel:
-                model_state = model.module.state_dict()
-            else:
-                model_state = model.state_dict()
-            save_dict = {'model_state_dict': model_state,
-                        'epoch': e,
-                        'optimizer_state_dict': opt.optimizer.state_dict(),
-                        'scheduler_state_dict': None,
-                        'train_loss': train_loss,
-                        'val_loss': val_loss}
-            if opt.scheduler is not None:
-                save_dict['scheduler_state_dict'] = opt.scheduler.state_dict()
-            torch.save(save_dict, osp.join(opt.ofile_folder, 'model.pt'))
+            save()
 
     return train_loss, val_loss
 

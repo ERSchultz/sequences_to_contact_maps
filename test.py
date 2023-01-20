@@ -16,20 +16,20 @@ from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
+from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
+                                    get_base_parser)
+from scripts.energy_utils import *
+from scripts.load_utils import load_sc_contacts, save_sc_contacts
+from scripts.neural_nets.dataset_classes import make_dataset
+from scripts.neural_nets.networks import get_model
+from scripts.neural_nets.utils import get_dataset
+from scripts.plotting_utils import plot_matrix
+from scripts.similarity_measures import SCC
+from scripts.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
+                           print_time, triu_to_full)
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
-from utils.argparse_utils import (ArgparserConverter, finalize_opt,
-                                  get_base_parser)
-from utils.dataset_classes import make_dataset
-from utils.energy_utils import *
-from utils.load_utils import load_sc_contacts, save_sc_contacts
-from utils.networks import get_model
-from utils.neural_net_utils import get_dataset
-from utils.plotting_utils import plot_matrix
-from utils.similarity_measures import SCC
-from utils.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
-                         print_time, triu_to_full)
 
 
 def test_num_workers():
@@ -194,7 +194,7 @@ def debugModel(model_type):
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
         opt.y_preprocessing = 'sweeprand_log_inf'
-        opt.rescale = 2
+        opt.rescale = 4
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
@@ -204,18 +204,18 @@ def debugModel(model_type):
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym_diag'
         opt.output_preprocesing = 'log'
-        opt.encoder_hidden_sizes_list=AC.str2list('none')
-        # opt.edge_encoder_hidden_sizes_list=[100,100,3]
-        opt.update_hidden_sizes_list=[100,100,64]
+        opt.encoder_hidden_sizes_list=[32]
+        opt.edge_encoder_hidden_sizes_list=[16]
+        opt.update_hidden_sizes_list=[100,128]
         opt.hidden_sizes_list=[8]
         opt.gated = False
-        opt.dropout = 0.3
+        opt.dropout = 0.0
         opt.act = 'prelu'
         opt.inner_act = 'relu'
         opt.out_act = 'relu'
         opt.head_act = 'relu'
         opt.training_norm = None
-        opt.use_node_features = True
+        opt.use_node_features = False
         opt.k = 8
         opt.use_edge_weights = False
         opt.use_edge_attr = True
@@ -225,16 +225,16 @@ def debugModel(model_type):
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'bilinear_chi_triu'
-        opt.head_architecture_2 = 'fc-fill_1024'
-        opt.head_hidden_sizes_list = [1000, 1000, 1000]
+        opt.head_architecture = None
+        opt.head_architecture_2 = 'dconv-pool-fc-fill_1024'
+        opt.head_hidden_sizes_list = [1000, 1000]
         opt.crop = None
 
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True
         # opt.max_diagonal=500
-    elif model_type == 'signnet':
+    elif model_type.lower() == 'signnet':
         model_type = 'ContactGNNEnergy'
         opt.use_sign_plus = True
         opt.y_preprocessing = 'sweeprand_log_inf'
@@ -291,13 +291,17 @@ def debugModel(model_type):
         opt.use_bias = True
         opt.num_heads = 2
     elif model_type == 'MLP':
-        opt.scratch = '/home/erschultz/scratch/MLP1'
+        opt.scratch = '/home/erschultz/scratch'
         opt.preprocessing_norm=None
         opt.y_preprocessing='log'
         opt.hidden_sizes_list=AC.str2list('100-'*6 + '1024')
         opt.act='prelu'
         opt.out_act='prelu'
         opt.output_mode='diag_chi_continuous'
+        # opt.scheduler='multisteplr'
+        opt.scheduler='reducelronplateau'
+        opt.min_lr=1e-4
+        # opt.milestones=[2,4]
         opt.log_preprocessing=None
         opt.y_zero_diag_count=0
         # opt.training_norm='batch'
@@ -308,12 +312,11 @@ def debugModel(model_type):
 
     # hyperparameters
     opt.n_epochs = 2
-    opt.lr = 1e-4
-    opt.weight_decay = 0
+    opt.lr = 1e-3
+    opt.weight_decay = 1e-5
     opt.w_reg = None
     opt.reg_lambda = 10
-    opt.batch_size = 2
-    opt.milestones = None
+    opt.batch_size = 1
     opt.gamma = 0.1
 
     # other
@@ -691,20 +694,45 @@ def testGNNrank():
     '''
     dir = '/home/erschultz'
     dataset = 'dataset_11_14_22'
-    for sample in [1001]:
-        for GNN in [271]:
-            # print(GNN)
+    fig = plt.figure()
+    for sample in [2217]:
+        for GNN in [341]:
+            print(GNN)
             file = osp.join(dir, dataset, f'samples/sample{sample}/GNN-{GNN}-S/k0/replicate1/resources/plaid_hat.txt')
             s = np.loadtxt(file)
-            # file = osp.join(dir, dataset, f'samples/sample{sample}/GNN-{GNN}-E/k0/replicate1/resources/e.npy')
-            # plaid = np.load(file)
-            print('rank', np.linalg.matrix_rank(s))
-            w, v = np.linalg.eig(s)
-            prcnt = np.abs(w) / np.sum(np.abs(w))
+            # print('rank', np.linalg.matrix_rank(s))
+            # w, v = np.linalg.eig(s)
+            # prcnt = np.abs(w) / np.sum(np.abs(w))
+
+            pca = PCA()
+            pca = pca.fit(s)
+            prcnt = pca.explained_variance_ratio_
+
             print(prcnt[0:4])
+            plt.plot(prcnt[:8], label = 'GNN')
             print(np.sum(prcnt[0:4]))
             # plot_top_PCs(s, verbose = True, count = 4)
             print()
+
+        print('PCA')
+        file = osp.join(dir, dataset, f'samples/sample{sample}/PCA-normalize-E/k8/replicate1/s.npy')
+        s = np.load(file)
+        print('rank', np.linalg.matrix_rank(s))
+        # w, v = np.linalg.eig(s)
+        # prcnt = np.abs(w) / np.sum(np.abs(w))
+
+        pca = PCA()
+        pca = pca.fit(s)
+        prcnt = pca.explained_variance_ratio_
+        plt.plot(prcnt[:8], label = 'PCA(k=8)')
+        print(prcnt[0:4])
+        print(np.sum(prcnt[0:4]))
+        print()
+
+    plt.ylabel('PC % Variance Explained', fontsize=16)
+    plt.xlabel('PC', fontsize=16)
+    plt.legend()
+    plt.show()
 
 def main():
     dataset = 'dataset_11_21_22'
@@ -801,6 +829,6 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('signnet')
+    debugModel('ContactGNNEnergy')
     # testGNNrank()
     # plot_SCC_weights()
