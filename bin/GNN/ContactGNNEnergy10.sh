@@ -20,22 +20,15 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy10' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_12_20_22"
 m=1024
-messagePassing='weighted_GAT'
-preTransforms='constant-ContactDistance-GeneticDistance_norm'
-mlpModelID='none'
-useEdgeAttr='true'
+preTransforms='constant-ContactDistance-GeneticDistance_norm-AdjPCs_8'
 hiddenSizesList='8-8-8-8'
-EncoderHiddenSizesList='1000-1000-64'
+EncoderHiddenSizesList='64'
 updateHiddenSizesList='1000-1000-64'
-numHeads=8
 
-yPreprocessing='sweeprand_log_inf'
-yNorm='mean'
 headArchitecture='bilinear'
 headArchitecture2='fc-fill'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
 rescale=2
-useScratch='false'
 
 
 id=327
@@ -44,4 +37,4 @@ do
   train
   id=$(( $id + 1 ))
 done
-python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --GNN_file_name $rootName --scratch $scratch --use_scratch $useScratch
+python3 ~/sequences_to_contact_maps/scripts/clean_directories.py --data_folder $dirname --GNN_file_name $rootName --scratch $scratch

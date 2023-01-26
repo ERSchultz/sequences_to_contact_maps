@@ -69,7 +69,7 @@ prelu
 --training_norm
 none
 --head_architecture
-bilinear_triu
+bilinear-triu
 --head_architecture_2
 fc-fill
 --head_hidden_sizes_list

@@ -93,7 +93,7 @@ def get_base_parser():
                         help='size of crop to apply to image - format: <leftcrop-rightcrop>')
     parser.add_argument('--classes', type=int, default=10,
                         help='number of classes in percentile normalization')
-    parser.add_argument('--use_scratch', type=AC.str2bool, default=False,
+    parser.add_argument('--move_data_to_scratch', type=AC.str2bool, default=False,
                         help='True to move data to scratch')
     parser.add_argument('--use_scratch_parallel', type=AC.str2bool, default=False,
                         help='True to move data in parallel (use_scratch must be True)')
@@ -363,7 +363,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     process_transforms(opt)
 
     # move data to scratch
-    if opt.use_scratch and not local:
+    if opt.move_data_to_scratch and not local:
         copy_data_to_scratch(opt)
 
     # configure cuda

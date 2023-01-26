@@ -14,7 +14,8 @@ import torch
 from scipy.ndimage import uniform_filter
 from scripts.argparse_utils import (finalize_opt, get_base_parser,
                                     get_opt_header, opt2list)
-from scripts.energy_utils import calculate_diag_chi_step
+from scripts.energy_utils import (calculate_D, calculate_diag_chi_step,
+                                  calculate_SD_ED)
 from scripts.load_utils import load_contact_map
 from scripts.plotting_utils import (plot_centroid_distance,
                                     plot_combined_models, plot_diag_chi,
@@ -432,6 +433,14 @@ def plot_GNN_vs_PCA():
         y_pca = np.load(osp.join(pca_dir, 'y.npy')).astype(np.float64)
         y_pca /= np.mean(np.diagonal(y_pca))
 
+        s = np.load(osp.join(pca_dir, 's.npy'))
+        with open(osp.join(pca_dir, 'iteration16/config.json'), 'r') as f:
+            config = json.load(f)
+        diag_chis = np.loadtxt(osp.join(pca_dir, 'chis_diag.txt'))[-1]
+        diag_chis_continuous = calculate_diag_chi_step(config, diag_chis)
+        d = calculate_D(diag_chis_continuous)
+        sd, ed = calculate_SD_ED(s, d)
+
 
         gnn_dir = osp.join(sample_dir, 'GNN-341-E/k0/replicate1')
         with open(osp.join(gnn_dir, 'distance_pearson.json'), 'r') as f:
@@ -439,31 +448,163 @@ def plot_GNN_vs_PCA():
         y_gnn = np.load(osp.join(gnn_dir, 'y.npy')).astype(np.float64)
         y_gnn /= np.mean(np.diagonal(y_gnn))
 
+        sd_gnn = np.load(osp.join(gnn_dir, 's.npy'))
+
         cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                  [(0,    'white'),
                                                   (1,    'red')], N=126)
+        cmap2 = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                 [(0, 'blue'),
+                                                 (0.5, 'white'),
+                                                  (1, 'red')], N=126)
+
         fig, (ax1, ax2, ax3, axcb) = plt.subplots(1, 4,
                                         gridspec_kw={'width_ratios':[1,1,1,0.08]})
         fig.set_figheight(6)
         fig.set_figwidth(6*2.5)
-        fig.suptitle(f'Sample {sample}')
+        fig.suptitle(f'Sample {sample}', fontsize = 16)
         vmin = 0
         vmax = np.mean(y)
         s1 = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
                         ax = ax1, cbar = False)
-        s1.set_title('Experiment')
+        s1.set_title(r'Experimental Contact Map, $H$', fontsize = 16)
         s2 = sns.heatmap(y_pca, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
                         ax = ax2, cbar = False)
-        s2.set_title(f'PCA(k=8)\nSCC={np.round(pca_results["scc_var"], 3)}')
+        title = (r'Max Ent $\hat{H}$'
+                f'\nSCC={np.round(pca_results["scc_var"], 3)}')
+        s2.set_title(title, fontsize = 16)
         s2.set_yticks([])
         s3 = sns.heatmap(y_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
                         ax = ax3, cbar_ax = axcb)
-        s3.set_title(f'GNN\nSCC={np.round(gnn_results["scc_var"], 3)}')
+        title = (r'GNN $\hat{H}$'
+                f'\nSCC={np.round(gnn_results["scc_var"], 3)}')
+        s3.set_title(title, fontsize = 16)
         s3.set_yticks([])
 
         plt.tight_layout()
         plt.savefig(osp.join(sample_dir, 'PCA_vs_GNN.png'))
         plt.close()
+
+
+        fig, (ax1, ax2, ax3, axcb) = plt.subplots(1, 4,
+                                        gridspec_kw={'width_ratios':[1,1,1,0.08]})
+        fig.set_figheight(6)
+        fig.set_figwidth(6*2.5)
+        fig.suptitle(f'Sample {sample}', fontsize = 16)
+        arr = np.array([sd, sd_gnn])
+        vmin = np.nanpercentile(arr, 1)
+        vmax = np.nanpercentile(arr, 99)
+        vmax = max(vmax, vmin * -1)
+        vmin = vmax * -1
+        s1 = sns.heatmap(sd, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
+                        ax = ax1, cbar = False)
+        s1.set_title(r'Max Ent $\hat{S}$', fontsize = 16)
+        s1.set_yticks([])
+        s2 = sns.heatmap(sd_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
+                        ax = ax2, cbar = False)
+        s2.set_title(r'GNN $\hat{S}$', fontsize = 16)
+        s2.set_yticks([])
+        s3 = sns.heatmap(sd - sd_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
+                        ax = ax3, cbar_ax = axcb)
+        title = ('Difference\n'
+                r'(Max Ent $\hat{S}$ - GNN $\hat{S}$)')
+        s3.set_title(title, fontsize = 16)
+        s3.set_yticks([])
+
+        plt.tight_layout()
+        plt.savefig(osp.join(sample_dir, 'PCA_vs_GNN_S.png'))
+        plt.close()
+
+        # compare P(s)
+        fig, ax = plt.subplots()
+        ax2 = ax.twinx()
+
+        meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
+        meanDist_pca = DiagonalPreprocessing.genomic_distance_statistics(y_pca, 'prob')
+        meanDist_gnn = DiagonalPreprocessing.genomic_distance_statistics(y_gnn, 'prob')
+        for arr, fig_label, c in zip([meanDist, meanDist_pca, meanDist_gnn], ['Experiment', 'Max Ent', 'GNN'], ['k', 'r', 'b']):
+            ax.plot(np.arange(0, len(arr)), arr, label = fig_label, color = c)
+
+        ax.set_yscale('log')
+        ax.set_xscale('log')
+        ymin, ymax = ax2.get_ylim()
+        # ax2.set_ylim(None, ymax + 10)
+        # ax.set_ylim(10**-6, None)
+        ax.set_ylabel('Contact Probability, P(s)', fontsize = 16)
+        ax.set_xlabel('Polymer Distance, s', fontsize = 16)
+        ax.legend(loc='upper right')
+        plt.tight_layout()
+
+        plt.savefig(osp.join(sample_dir, 'PCA_vs_GNN_p_s.png'))
+        plt.close()
+
+
+
+
+def plot_Exp_vs_PCA():
+    dir = '/home/erschultz/dataset_11_14_22/samples'
+    for sample in range(2201, 2206):
+        sample_dir = osp.join(dir, f'sample{sample}')
+
+        y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
+        y /= np.mean(np.diagonal(y))
+
+        k = 8
+        pca_dir = osp.join(sample_dir, f'PCA-normalize-E/k{k}/replicate1')
+        with open(osp.join(pca_dir, 'distance_pearson.json'), 'r') as f:
+            # TODO this is after final iteration, not convergence
+            pca_results = json.load(f)
+        y_pca = np.load(osp.join(pca_dir, 'y.npy')).astype(np.float64)
+        y_pca /= np.mean(np.diagonal(y_pca))
+
+        s = np.load(osp.join(pca_dir, 's.npy'))
+        with open(osp.join(pca_dir, 'iteration16/config.json'), 'r') as f:
+            config = json.load(f)
+        diag_chis = np.loadtxt(osp.join(pca_dir, 'chis_diag.txt'))[-1]
+        diag_chis_continuous = calculate_diag_chi_step(config, diag_chis)
+        d = calculate_D(diag_chis_continuous)
+        sd, ed = calculate_SD_ED(s, d)
+
+
+
+        cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                 [(0,    'white'),
+                                                  (1,    'red')], N=126)
+        cmap2 = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                                 [(0, 'blue'),
+                                                 (0.5, 'white'),
+                                                  (1, 'red')], N=126)
+
+        fig, (axcb12, ax1, ax2, ax3, axcb3) = plt.subplots(1, 5,
+                                        gridspec_kw={'width_ratios':[0.08,1,1,1,0.08]})
+        fig.set_figheight(6)
+        fig.set_figwidth(6*2.5)
+        # fig.suptitle(f'Sample {sample}', fontsize = 16)
+        vmin = 0
+        vmax = np.mean(y)
+        s1 = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
+                        ax = ax1, cbar = False)
+        s1.set_title('Experiment', fontsize = 16)
+        s2 = sns.heatmap(y_pca, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
+                        ax = ax2, cbar_ax = axcb12)
+        s2.set_title(f'Max Ent with PCA(k={k})\nSCC={np.round(pca_results["scc_var"], 3)}', fontsize = 16)
+        s2.set_yticks([])
+        axcb12.yaxis.set_ticks_position('left')
+
+        arr = sd
+        vmin = np.nanpercentile(arr, 1)
+        vmax = np.nanpercentile(arr, 99)
+        vmax = max(vmax, vmin * -1)
+        vmin = vmax * -1
+        s3 = sns.heatmap(arr, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
+                        ax = ax3, cbar_ax = axcb3)
+        s3.set_title(r'Max ent $\hat{S}$', fontsize = 16)
+        s3.set_yticks([])
+
+        plt.tight_layout()
+        plt.savefig(osp.join(sample_dir, 'PCA_vs_Exp.png'))
+        plt.close()
+
 
 if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
@@ -485,6 +626,7 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_09_30_22')
-    plot_combined_models('ContactGNNEnergy', [341, 349])
+    plot_combined_models('ContactGNNEnergy', [265, 267])
     # plot_GNN_vs_PCA()
+    # plot_Exp_vs_PCA()
     # main()

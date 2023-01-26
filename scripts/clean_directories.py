@@ -59,26 +59,25 @@ def clean_directories(data_folder = 'dataset_04_18_21', GNN_path = None,
     parser.add_argument('--clean_scratch', action='store_true',
                         help='True clean scratch')
     parser.add_argument('--scratch', type=str, default=None)
-    parser.add_argument('--use_scratch', type=str2bool, default=True)
+    parser.add_argument('--move_data_to_scratch', type=str2bool, default=False)
     opt, _ = parser.parse_known_args()
 
     if isinstance(opt.data_folder, list):
         opt.data_folder = opt.data_folder[0]
 
-    if opt.use_scratch and opt.scratch is not None:
+    if opt.move_data_to_scratch and opt.scratch is not None:
         opt.data_folder = osp.join(opt.scratch, osp.split(opt.data_folder)[-1])
+        if opt.clean_scratch:
+            rmtree(opt.data_folder)
 
-    if opt.clean_scratch:
-        rmtree(opt.data_folder)
+    if opt.GNN_path is None and opt.GNN_file_name is not None:
+        opt.GNN_path = osp.join(opt.scratch, opt.GNN_file_name)
+
+    if osp.exists(opt.GNN_path):
+        print(f'Removing {opt.GNN_path}', file = ofile)
+        rmtree(opt.GNN_path)
     else:
-        if opt.GNN_path is None and opt.GNN_file_name is not None:
-            opt.GNN_path = osp.join(opt.data_folder, opt.GNN_file_name)
-
-        if osp.exists(opt.GNN_path):
-            print(f'Removing {opt.GNN_path}', file = ofile)
-            rmtree(opt.GNN_path)
-        else:
-            print(f'{opt.GNN_path} does not exist - cannot remove', file = ofile)
+        print(f'{opt.GNN_path} does not exist - cannot remove', file = ofile)
 
 
 if __name__ == '__main__':

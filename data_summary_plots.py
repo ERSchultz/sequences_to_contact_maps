@@ -7,16 +7,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
+from scripts.energy_utils import calculate_D, s_to_E
+from scripts.InteractionConverter import InteractionConverter
+from scripts.knightRuiz import knightRuiz
+from scripts.load_utils import load_all, load_contact_map, load_X_psi, load_Y
+from scripts.neural_nets.dataset_classes import make_dataset
+from scripts.plotting_utils import (plot_diag_chi, plot_matrix,
+                                    plot_mean_vs_genomic_distance,
+                                    plot_seq_binary, plot_seq_continuous)
+from scripts.utils import DiagonalPreprocessing
 from sklearn.metrics import mean_squared_error
-from utils.dataset_classes import make_dataset
-from utils.energy_utils import calculate_D, s_to_E
-from utils.InteractionConverter import InteractionConverter
-from utils.knightRuiz import knightRuiz
-from utils.load_utils import load_all, load_contact_map, load_X_psi, load_Y
-from utils.plotting_utils import (plot_diag_chi, plot_matrix,
-                                  plot_mean_vs_genomic_distance,
-                                  plot_seq_binary, plot_seq_continuous)
-from utils.utils import DiagonalPreprocessing
 
 
 def chi_to_latex(chi, ofile):
@@ -604,10 +604,10 @@ if __name__ == '__main__':
     dir = '/home/erschultz/sequences_to_contact_maps'
     dir = '/home/erschultz'
 
-    dataset = 'dataset_01_17_22'
+    dataset = 'dataset_11_21_22'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                plot_chi = False, sampleID = 201)
+    basic_plots(data_dir, plot_y = False, plot_energy = True, plot_x = False,
+                plot_chi = True, sampleID = 410)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

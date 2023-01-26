@@ -22,8 +22,7 @@ def calculate_SD_ED(S, D):
     return SD, ED
 
 def calculate_net_energy(S, D):
-    SD = calculate_SD(S, D)
-    ED = s_to_E(SD)
+    SD, ED = calculate_SD_ED(S, D)
     return ED
 
 def calculate_E_S(x, chi):

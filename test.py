@@ -206,7 +206,7 @@ def debugModel(model_type):
         opt.output_preprocesing = 'log'
         opt.encoder_hidden_sizes_list=[32]
         opt.edge_encoder_hidden_sizes_list=[16]
-        opt.update_hidden_sizes_list=[100,128]
+        opt.update_hidden_sizes_list=[100,64]
         opt.hidden_sizes_list=[8]
         opt.gated = False
         opt.dropout = 0.0
@@ -225,8 +225,8 @@ def debugModel(model_type):
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = None
-        opt.head_architecture_2 = 'dconv-pool-fc-fill_1024'
+        opt.head_architecture = 'dconv-bilinear-triu'
+        opt.head_architecture_2 = 'dconv-fc-fill_1024'
         opt.head_hidden_sizes_list = [1000, 1000]
         opt.crop = None
 
@@ -265,7 +265,6 @@ def debugModel(model_type):
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True
-
     elif model_type == 'ContactGNNDiag':
         opt.loss = 'mse'
         opt.preprocessing_norm = 'instance'
@@ -326,7 +325,6 @@ def debugModel(model_type):
     opt.print_params = True
     opt.gpus = 1
     # opt.delete_root = True
-    opt.use_scratch = False
     opt.num_workers = 2
     opt.use_scratch_parallel = False
 
@@ -373,7 +371,7 @@ def debugModel(model_type):
     # plt.legend()
     # plt.show()
 
-    if opt.use_scratch:
+    if opt.move_data_to_scratch:
         rmtree(opt.data_folder)
 
 def binom():

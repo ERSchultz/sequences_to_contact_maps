@@ -20,37 +20,32 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy2' # change to run multiple bash files at once
 dirname="/project/depablo/erschultz/dataset_11_18_22-/project/depablo/erschultz/dataset_11_21_22"
 m=1024
-messagePassing='weighted_GAT'
 preTransforms='constant-ContactDistance-GeneticDistance_norm-AdjPCs_8'
-mlpModelID='none'
-useEdgeAttr='true'
 hiddenSizesList='8-8-8-8'
 EncoderHiddenSizesList='64'
 updateHiddenSizesList='1000-1000-64'
-numHeads=8
 
 outputPreprocesing='log'
-yPreprocessing='sweeprand_log_inf'
-yNorm='mean'
-headArchitecture='bilinear_triu'
-headArchitecture2='fc-fill'
-headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+headArchitecture='conv-bilinear'
+headArchitecture2='fc-fill_1024'
+headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
-useScratch='false'
 
 k=8
 useSignPlus='true'
 batchSize=1
-scheduler='ReduceLROnPlateau'
-milestones='none'
 
+dirname="/home/erschultz/dataset_11_18_22-/home/erschultz/dataset_11_21_22"
+scratch='/home/erschultz/scratch'
+nEpochs=2
+plot=False
+plotPredictions=False
+# sign_plus with log preprocessing
 
-# sign_plus with log preprocessing and new scheduler
-
-id=350
+id=356
 for lr in 1e-4
 do
   train
   id=$(( $id + 1 ))
 done
-python3 ~/sequences_to_contact_maps/utils/clean_directories.py --data_folder $dirname --GNN_file_name $rootName --scratch $scratch --use_scratch $useScratch
+python3 ~/sequences_to_contact_maps/scripts/clean_directories.py --data_folder $dirname --GNN_file_name $rootName --scratch $scratch
