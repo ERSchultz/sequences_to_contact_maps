@@ -30,19 +30,20 @@ from .networks import get_model
 class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN:
     # https://github.com/rusty1s/pytorch_geometric/issues/1511
-    def __init__(self, dirname, root_name = None, m = 1024, y_preprocessing = 'diag',
-                y_log_transform = None, kr = False, rescale = None, mean_filt = None,
-                y_norm = 'mean', min_subtraction = True,
-                use_node_features = True, mlp_model_id = None,
-                sparsify_threshold = None, sparsify_threshold_upper = None,
-                split_neg_pos_edges = False, max_diagonal = None,
-                transform = None, pre_transform = None, output = 'contact',
-                crop = None, ofile = sys.stdout, verbose = True,
-                max_sample = float('inf'), samples = None,
-                diag = False, keep_zero_edges = False, output_preprocesing = None):
+    def __init__(self, dirname, scratch, root_name=None, m=1024, y_preprocessing='diag',
+                y_log_transform=None, kr=False, rescale=None, mean_filt=None,
+                y_norm='mean', min_subtraction=True,
+                use_node_features=True, mlp_model_id=None,
+                sparsify_threshold=None, sparsify_threshold_upper=None,
+                split_neg_pos_edges=False, max_diagonal=None,
+                transform=None, pre_transform=None, output='contact',
+                crop=None, ofile=sys.stdout, verbose=True,
+                max_sample=float('inf'), samples=None,
+                diag=False, keep_zero_edges=False, output_preprocesing=None):
         '''
         Inputs:
             dirname: directory path to raw data (or list of paths)
+            scratch: path to scratch (used for root)
             root_name: directory for loaded data
             m: number of particles/beads
             y_preprocessing: type of contact map preprocessing ('diag', None, etc)
@@ -104,17 +105,17 @@ class ContactsGraph(torch_geometric.data.Dataset):
             # find any currently existing graph data folders
             # make new folder for this dataset
             max_val = -1
-            for file in os.listdir(dirname):
-                file_path = osp.join(dirname, file)
+            for file in os.listdir(scratch):
+                file_path = osp.join(scratch, file)
                 if file.startswith('graphs') and osp.isdir(file_path):
                     # format is graphs<i> where i is integer
                     val = int(file[6:])
                     if val > max_val:
                         max_val = val
-            self.root = osp.join(dirname, f'graphs{max_val+1}')
+            self.root = osp.join(scratch, f'graphs{max_val+1}')
         else:
             # use exsting graph data folder
-            self.root = osp.join(dirname, root_name)
+            self.root = osp.join(scratch, root_name)
         super(ContactsGraph, self).__init__(self.root, transform, pre_transform)
 
         if verbose:

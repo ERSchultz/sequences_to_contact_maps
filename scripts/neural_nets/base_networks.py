@@ -393,6 +393,20 @@ class Symmetrize2D(nn.Module):
         else:
             raise Exception('Invalid shape: {}'.format(x.shape))
 
+class Bilinear(nn.Module):
+    def __init__(self):
+        super(Bilinear, self).__init__()
+
+    def forward(self, x, w):
+        if len(W.shape) == 2:
+            # W is fixed per batch
+            left = torch.einsum('nij,jk->nik', x, W)
+        elif len(W.shape) == 3:
+            # W varies with batch
+            left = torch.einsum('nij,njk->nik', x, W)
+        return torch.einsum('nik,njk->nij', left, L_out)
+
+
 class AverageTo2d(nn.Module):
     '''https://github.com/calico/basenji/blob/master/basenji/layers.py'''
     def __init__(self, concat_d = False, n = None, mode = 'avg'):

@@ -10,8 +10,7 @@ import torch_geometric.nn as gnn
 
 from ..sign_net.sign_net import SignNet
 from ..sign_net.transform import to_dense_list_EVD
-# from .argparse_utils import finalize_opt, get_base_parser
-from .base_networks import (MLP, AverageTo2d, ConvBlock, DeconvBlock,
+from .base_networks import (MLP, AverageTo2d, Bilinear, ConvBlock, DeconvBlock,
                             FillDiagonalsFromArray, LinearBlock, Symmetrize2D,
                             UnetBlock, act2module, torch_triu_to_full)
 from .old_networks import *
@@ -49,15 +48,9 @@ def get_model(opt, verbose = True):
             GNNClass = SparseContactGNN
         else:
             GNNClass = ContactGNN
-        if opt.output_mode is None:
-            output_dim = 2 # TODO this might not always be true
-        elif opt.output_mode.startswith('diag'):
-            output_dim = 1
-        else:
-            output_dim = 2
 
 
-        GNN_model = GNNClass(opt.input_m, opt.node_feature_size, output_dim,
+        GNN_model = GNNClass(opt.input_m, opt.node_feature_size,
                     opt.hidden_sizes_list,
                     opt.encoder_hidden_sizes_list, opt.edge_encoder_hidden_sizes_list,
                     opt.update_hidden_sizes_list,
@@ -101,7 +94,7 @@ class ContactGNN(nn.Module):
     '''
     Graph neural network that maps contact map data to node embeddings of arbitrary length.
     '''
-    def __init__(self, m, input_size, output_dim, MP_hidden_sizes_list,
+    def __init__(self, m, input_size, MP_hidden_sizes_list,
                 node_encoder_hidden_sizes_list, edge_encoder_hidden_sizes_list,
                 update_hidden_sizes_list,
                 act, inner_act, out_act,
@@ -115,7 +108,6 @@ class ContactGNN(nn.Module):
         Inputs:
             m: number of nodes
             input_size: size of input node feature vector
-            output_dim: number of dimensions in output (size of each dimension is m)
             MP_hidden_sizes_list: list of node feature vector hidden sizes during message passing
             node_encoder_hidden_sizes_list: list of hidden sizes for MLP encoder
             edge_encoder_hidden_sizes_list: list of hidden sizes for MLP encoder
@@ -145,7 +137,6 @@ class ContactGNN(nn.Module):
 
         self.m = m
         self.input_size = input_size
-        self.output_dim = output_dim
         self.message_passing = message_passing.lower()
         self.use_edge_attr = use_edge_attr
         self.edge_dim = edge_dim
@@ -161,6 +152,8 @@ class ContactGNN(nn.Module):
         self.act = act2module(act)
         self.inner_act = act2module(inner_act)
         self.out_act = act2module(out_act)
+        self.update_hidden_sizes_list = update_hidden_sizes_list
+        self.MP_hidden_sizes_list = MP_hidden_sizes_list
         self.head_hidden_sizes_list = head_hidden_sizes_list
         if head_hidden_sizes_list is not None and len(head_hidden_sizes_list) > 1:
             self.head_act = act2module(head_act)
@@ -171,6 +164,9 @@ class ContactGNN(nn.Module):
         self.rescale = rescale
         self.gated = gated
         self.dropout = dropout
+        self.training_norm = training_norm
+        self.num_heads = num_heads
+        self.concat_heads = concat_heads
 
         ### Encoder Architecture ###
         self.edge_encoder = None
@@ -206,8 +202,23 @@ class ContactGNN(nn.Module):
             self.linear = None
 
 
-
         ### Trunk Architecture ###
+        self.process_trunk(input_size)
+
+        ### Head Architecture ###
+        self.head_L, self.head_L2 = self.process_L()
+        self.head_D, self.head_D2 = self.process_D()
+
+        if verbose:
+            print("#### ARCHITECTURE ####", file = ofile)
+            print('Node Encoder:\n', self.node_encoder, '\n', file = ofile)
+            print('Edge Encoder:\n', self.edge_encoder, '\n', file = ofile)
+            print('Linear:\n', self.linear, '\n', file = ofile)
+            print('Model:\n', self.model, '\n', file = ofile)
+            print('Head L:\n', self.head_L, '\n', self.head_L2, '\n', file = ofile)
+            print('Head D:\n', self.head_D, '\n', self.head_D2, '\n', file = ofile)
+
+    def process_trunk(self, input_size):
         model = []
         if self.message_passing == 'identity':
             # debugging option to skip message passing
@@ -219,45 +230,45 @@ class ContactGNN(nn.Module):
                 inputs = 'x, edge_index'
             fn_header = f'{inputs} -> x'
 
-            for i, output_size in enumerate(MP_hidden_sizes_list):
+            for i, output_size in enumerate(self.MP_hidden_sizes_list):
                 if self.message_passing == 'gcn':
-                    module = gnn.GCNConv(input_size, output_size, bias = use_bias)
+                    module = gnn.GCNConv(input_size, output_size, bias = self.use_bias)
                 elif self.message_passing == 'transformer':
-                    module = gnn.TransformerConv(input_size, output_size,
-                                            heads = num_heads,
+                    module = gnn.TransformerConv(input_size, self.output_size,
+                                            heads = self.num_heads,
                                             edge_dim = self.edge_dim)
                 elif self.message_passing == 'gat':
                     module = gnn.GATv2Conv(input_size, output_size,
-                                            heads = num_heads, concat = concat_heads,
+                                            heads = self.num_heads, concat = self.concat_heads,
                                             edge_dim = self.edge_dim,
-                                            bias = use_bias)
+                                            bias = self.use_bias)
                 elif self.message_passing == 'weighted_gat':
                     module = WeightedGATv2Conv(input_size, output_size,
-                                            heads = num_heads, concat = concat_heads,
+                                            heads = self.num_heads, concat = self.concat_heads,
                                             dropout = self.dropout,
                                             edge_dim = self.edge_dim, edge_dim_MP = True,
-                                            bias = use_bias)
+                                            bias = self.use_bias)
                 model.append((module, fn_header))
-                if concat_heads:
-                    input_size = output_size * num_heads
+                if self.concat_heads:
+                    input_size = output_size * self.num_heads
                 else:
                     input_size = output_size
 
-                if i == len(MP_hidden_sizes_list) - 1:
+                if i == len(self.MP_hidden_sizes_list) - 1:
                     act = self.inner_act
                 else:
                     act = self.act
-                if update_hidden_sizes_list is not None:
-                    model.append(MLP(input_size, update_hidden_sizes_list, use_bias,
+                if self.update_hidden_sizes_list is not None:
+                    model.append(MLP(input_size, self.update_hidden_sizes_list, self.use_bias,
                                     self.act, act, dropout = self.dropout,
                                     dropout_last_layer = True, gated = self.gated))
-                    input_size = update_hidden_sizes_list[-1]
+                    input_size = self.update_hidden_sizes_list[-1]
                 else:
                     model.append(act)
 
-            if training_norm == 'instance':
+            if self.training_norm == 'instance':
                 model.append(gnn.InstanceNorm(input_size))
-            elif training_norm is not None:
+            elif self.training_norm is not None:
                 raise Exception(f'Invalid training_norm: {training_norm}')
 
             self.model = gnn.Sequential('x, edge_index, edge_attr', model)
@@ -270,9 +281,9 @@ class ContactGNN(nn.Module):
             assert self.head_architecture is not None
             first_layer = True
 
-            for output_size in MP_hidden_sizes_list:
+            for output_size in self.MP_hidden_sizes_list:
                 model.append((WeightedSignedConv(input_size, output_size,
-                                first_aggr = first_layer, bias = use_bias,
+                                first_aggr = first_layer, bias = self.use_bias,
                                 edge_dim = self.edge_dim),
                                 fn_header))
                 input_size = output_size
@@ -281,9 +292,9 @@ class ContactGNN(nn.Module):
                 # negative representation and positive representation respectively,
                 # so the total length is 2 * output_size
 
-                if update_hidden_sizes_list is not None:
-                    for update_output_size in update_hidden_sizes_list:
-                        model.extend([gnn.Linear(input_size, update_output_size, bias = use_bias), self.act])
+                if self.update_hidden_sizes_list is not None:
+                    for update_output_size in self.update_hidden_sizes_list:
+                        model.extend([gnn.Linear(input_size, update_output_size, bias = self.use_bias), self.act])
                         input_size = update_output_size
                 else:
                     model.append(self.act)
@@ -313,77 +324,57 @@ class ContactGNN(nn.Module):
         # this is the output_size of latent space
         # and the input size for head_architecture
 
-        ### Head Architecture ###
-        self.head_L = self.process_L()
-        self.head_D, self.head_D2 = self.process_D()
-
-        if verbose:
-            print("#### ARCHITECTURE ####", file = ofile)
-            print('Node Encoder:\n', self.node_encoder, '\n', file = ofile)
-            print('Edge Encoder:\n', self.edge_encoder, '\n', file = ofile)
-            print('Linear:\n', self.linear, '\n', file = ofile)
-            print('Model:\n', self.model, '\n', file = ofile)
-            print('Head L:\n', self.head_L, '\n', file = ofile)
-            print('Head D:\n', self.head_D, '\n', self.head_D2, '\n', file = ofile)
-
     def process_L(self):
         head_architecture = self.head_architecture_L
         if head_architecture is None:
             return None
 
-        split = head_architecture.split('_')
-        if head_architecture.startswith('bilinear'):
-            head = 'Bilinear'
-            if 'chi' in split:
-                assert 'triu' in split, f"{head_architecture}"
-                size = int(self.latent_size*(self.latent_size+1)/2)
-                input_size = self.latent_size * self.m
-                head_hidden_sizes_list = self.head_hidden_sizes_list + [size]
-                head = MLP(input_size, head_hidden_sizes_list, self.use_bias,
-                            self.head_act, self.out_act, dropout = self.dropout)
+        split = head_architecture.split('-')
+        head_list_a = []
+        head_list_b = []
+        input_size = self.latent_size
+        if 'dconv' in split:
+            for dilation in [1, 2, 4, 8, 16]:
+                head_list_a.append(ConvBlock(input_size, input_size, 3, padding = dilation,
+                                        activation = self.head_act,
+                                        dilation = dilation, conv1d = True))
+        elif 'conv' in split:
+            head_list_a.append(ConvBlock(input_size, input_size, 3, padding = 1,
+                                    activation = self.head_act, conv1d = True))
 
+        # if 'chi' in split:
+        #     assert 'triu' in split, f"{head_architecture}"
+        #     size = int(self.latent_size*(self.latent_size+1)/2)
+        #     input_size = self.latent_size * self.m
+        #     head_hidden_sizes_list = self.head_hidden_sizes_list + [size]
+        #     head = MLP(input_size, head_hidden_sizes_list, self.use_bias,
+        #                 self.head_act, self.out_act, dropout = self.dropout)
 
-            if 'triu' in split:
-                size = int(self.latent_size*(self.latent_size+1)/2)
-                init = torch.zeros(size)
-                self.sym = torch_triu_to_full
-            else:
-                init = torch.zeros((self.latent_size, self.latent_size))
-                torch.nn.init.xavier_normal_(init)
-                self.sym = Symmetrize2D()
-            if 'chi' not in split:
-                self.W = nn.Parameter(init)
-        elif head_architecture == 'inner':
-            head = 'Inner'
-        elif head_architecture in self.to2D.mode_options:
-            # Uses linear layers according to head_hidden_sizes_list after converting to 2D
-            self.to2D.mode = head_architecture # change mode
-            input_size = self.latent_size
-            # determine input_size
-            if head_architecture == 'concat':
-                input_size *= 2 # concat doubles size
-            elif head_architecture == 'outer':
-                input_size *= input_size # outer squares size
-            elif head_architecture == 'concat-outer':
-                input_size = input_size**2 + 2 * input_size
-            elif head_architecture == 'avg-outer':
-                input_size += input_size**2
-
-            head_list = []
-            for i, output_size in enumerate(self.head_hidden_sizes_list):
-                if i == len(self.head_hidden_sizes_list) - 1:
-                    act = self.out_act
-                else:
-                    act = self.head_act
-                head_list.append(LinearBlock(input_size, output_size, activation = act,
-                                        bias = self.use_bias, dropout = self.dropout))
-                input_size = output_size
-
-            head = nn.Sequential(*head_list)
+        if 'triu' in split:
+            size = int(self.latent_size*(self.latent_size+1)/2)
+            init = torch.zeros(size)
+            self.sym = torch_triu_to_full
         else:
-            raise Exception(f"Unkown head_architecture {head_architecture}")
+            init = torch.zeros((self.latent_size, self.latent_size))
+            torch.nn.init.xavier_normal_(init)
+            self.sym = Symmetrize2D()
+        if 'chi' not in split:
+            self.W = nn.Parameter(init)
 
-        return head
+        if 'bilinear' in split:
+            head_b = 'Bilinear'
+        elif 'inner' in split:
+            head_b = 'Inner'
+        else:
+            head_b = None
+
+        head_a = None
+        if head_list_a:
+            head_a = nn.Sequential(*head_list_a)
+        if head_list_b:
+            head_b = nn.Sequential(*head_list_b)
+
+        return head_a, head_b
 
     def process_D(self):
         head_architecture = self.head_architecture_D
@@ -411,6 +402,7 @@ class ContactGNN(nn.Module):
                                         activation = self.head_act,
                                         dilation = dilation, conv1d = True))
                 input_size = output_size
+
         if 'stride' in head_architecture:
             # single strided conv layer to reduce
             head_list_a.append(ConvBlock(input_size, input_size, 3, stride = 2, padding = 1,
@@ -459,7 +451,6 @@ class ContactGNN(nn.Module):
         except RuntimeError:
             print(out.shape, out_temp.shape)
             raise
-
 
     def latent(self, graph, additional_x):
         if self.node_encoder is not None:
@@ -526,16 +517,23 @@ class ContactGNN(nn.Module):
         _, output_size = latent.shape
         if self.head_architecture_L is None:
             return None
-        elif self.head_architecture_L.startswith('bilinear'):
-            latent = latent.reshape(-1, self.m, output_size)
-            if self.head_L == 'Bilinear':
-                L_out = latent
-            elif 'chi' in self.head_architecture_L:
-                latent = latent.reshape(-1, self.m * output_size)
-                self.W = self.head_L(latent)
-                L_out = latent.reshape(-1, self.m, output_size)
-            else:
-                L_out = self.head_L(latent)
+
+        latent = latent.reshape(self.batch_size, self.m, output_size)
+        if self.head_L is not None:
+            latent = latent.permute(0, 2, 1) # permute to combine over m index
+            L_out = self.head_L(latent)
+            L_out = L_out.permute(0, 2, 1) # permute back
+            latent = latent.permute(0, 2, 1) # permute back
+        else:
+            L_out = torch.clone(latent)
+
+        if self.head_L2 == 'Inner':
+            L_out = torch.einsum('nik, njk->nij', L_out, L_out)
+        elif self.head_L2 == 'Bilinear':
+            # if 'chi' in self.head_architecture_L:
+            #     latent = latent.reshape(-1, self.m * output_size)
+            #     self.W = self.head_L3(latent)
+            #     L_out = latent.reshape(-1, self.m, output_size)
 
             if 'asym' in self.head_architecture_L:
                 L_out = torch.einsum('nik,njk->nij', L_out @ self.W, L_out)
@@ -546,9 +544,7 @@ class ContactGNN(nn.Module):
                 elif len(W.shape) == 3:
                     left = torch.einsum('nij,njk->nik', L_out, W)
                 L_out = torch.einsum('nik,njk->nij', left, L_out)
-        elif self.head_architecture_L == 'inner':
-            latent = latent.reshape(-1, self.m, output_size)
-            L_out = torch.einsum('nik, njk->nij', latent, latent)
+
 
         if self.rescale is not None:
             L_out = torch.unsqueeze(L_out, 1)

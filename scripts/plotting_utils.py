@@ -241,8 +241,8 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None,
     plt.close()
 
 ### Functions for plotting sequences ###
-def plot_seq_binary(seq, show = False, save = True, title = None, labels = None,
-                    x_axis = True, ofile = 'seq.png', split = False):
+def plot_seq_binary(seq, show=False, save=True, title=None, labels=None,
+                    x_axis=True, ofile = 'seq.png', split=False):
     '''Plotting function for *non* mutually exclusive binary particle types'''
     m, k = seq.shape
     cmap = matplotlib.cm.get_cmap('tab10')
@@ -284,21 +284,27 @@ def plot_seq_binary(seq, show = False, save = True, title = None, labels = None,
         plt.show()
     plt.close()
 
-def plot_seq_continuous(seq, show=False, save=True, title=None):
+def plot_seq_continuous(seq, show=False, save=True, title=None, split=False):
     m, k = seq.shape
     cmap = matplotlib.cm.get_cmap('tab10')
     ind = np.arange(k) % cmap.N
-    colors = plt.cycler('color', cmap(ind))
+    colors = cmap(ind)
 
     plt.figure(figsize=(6, 3))
-    for i, c in enumerate(colors):
-        plt.plot(np.arange(0, m), seq[:, i], label = f'Label {i+1}', color = c['color'])
+    j=0
+    for i in range(k):
+        c = colors[j]
+        if split:
+            j += i % 2
+        else:
+            j += 1
+        plt.plot(np.arange(0, m), seq[:, i], label = f'Label {i+1}', color = c)
         # i+1 to switch to 1-indexing
 
     ax = plt.gca()
     if title is not None:
         plt.title(title, fontsize=16)
-    plt.legend()
+    plt.legend(loc='upper right')
     plt.xlabel('Distance', fontsize=16)
     plt.ylabel('Label Value', fontsize=16)
     plt.tight_layout()
@@ -705,7 +711,7 @@ def plot_xyz(xyz, L, x = None, ofile = None, show = True, title = None, legend =
             plt.legend()
     elif len(x.shape) == 1:
         im = ax.scatter(xyz[:,0], xyz[:,1], xyz[:,2], c=x)
-        plt.colorbar(im)
+        plt.colorbar(im, location='bottom')
 
     ax.set_xlabel('x')
     ax.set_ylabel('y')

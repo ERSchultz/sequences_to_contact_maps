@@ -466,3 +466,59 @@ def testGNNAutoencoder():
 
 if __name__ == '__main__':
     testGNNAutoencoder()
+
+    def process_L(self):
+        head_architecture = self.head_architecture_L
+        if head_architecture is None:
+            return None
+
+        split = head_architecture.split('_')
+        head_list = []
+        if head_architecture.startswith('bilinear'):
+            head = 'Bilinear'
+            if 'dconv' in head_architecture:
+                output_size = int(input_size / 2)
+                for dilation in [1, 2, 4, 8, 16]:
+                    head_list_a.append(ConvBlock(input_size, output_size, 3, padding = dilation,
+                                            activation = self.head_act,
+                                            dilation = dilation, conv1d = True))
+                    input_size = output_size
+
+            if 'stride' in head_architecture:
+                # single strided conv layer to reduce
+                head_list_a.append(ConvBlock(input_size, input_size, 3, stride = 2, padding = 1,
+                                        activation = self.head_act, conv1d = True))
+                # new_m = math.floor((self.m-3+2)/2)+1
+                input_size = int(input_size * self.m/2)
+            elif 'pool' in head_architecture:
+                head_list_a.append(ConvBlock(input_size, input_size, 3,
+                                        activation = self.head_act, pool = 'maxpool',
+                                        conv1d = True))
+                input_size = int(input_size * self.m / 2)
+            else:
+                input_size = input_size * self.m
+
+            if 'chi' in split:
+                assert 'triu' in split, f"{head_architecture}"
+                size = int(self.latent_size*(self.latent_size+1)/2)
+                input_size = self.latent_size * self.m
+                head_hidden_sizes_list = self.head_hidden_sizes_list + [size]
+                head = MLP(input_size, head_hidden_sizes_list, self.use_bias,
+                            self.head_act, self.out_act, dropout = self.dropout)
+
+            if 'triu' in split:
+                size = int(self.latent_size*(self.latent_size+1)/2)
+                init = torch.zeros(size)
+                self.sym = torch_triu_to_full
+            else:
+                init = torch.zeros((self.latent_size, self.latent_size))
+                torch.nn.init.xavier_normal_(init)
+                self.sym = Symmetrize2D()
+            if 'chi' not in split:
+                self.W = nn.Parameter(init)
+        elif head_architecture == 'inner':
+            head = 'Inner'
+        else:
+            raise Exception(f"Unkown head_architecture {head_architecture}")
+
+        return head

@@ -1,8 +1,7 @@
 # adapted from https://github.com/cptq/SignNet-BasisNet/tree/main/Alchemy/sign_net
 # modified to allow for only top k eigenvectors
-
 import numpy as np
-import scripts.sign_net.model_utils.masked_layers as masked_layers
+# import scripts.sign_net.model_utils.masked_layers as masked_layers
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

@@ -13,7 +13,7 @@ from .pyg_dataset_classes import ContactsGraph
 
 ## model functions ##
 def load_saved_model(opt, verbose = True, throw = True):
-    model = get_model(opt)
+    model = get_model(opt, verbose)
     model.to(opt.device)
     model_name = osp.join(opt.ofile_folder, 'model.pt')
     if osp.exists(model_name):
@@ -23,8 +23,8 @@ def load_saved_model(opt, verbose = True, throw = True):
         try:
             state_dict = save_dict['model_state_dict']
             # for key in list(state_dict.keys()):
-                # if key.startswith('encoder'):
-                    # state_dict[key.replace('encoder', 'node_encoder')] = state_dict.pop(key)
+                # if key.startswith('model.head_2'):
+                    # state_dict[key.replace('head_2', 'head_D2')] = state_dict.pop(key)
 
                 # starts = [1, 8, 15, 22]
                 # for module, start in zip([1, 3, 5, 7], starts):
@@ -71,7 +71,7 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
         else:
             max_sample = float('inf')
 
-        dataset = ContactsGraph(opt.data_folder, opt.root_name, opt.input_m, opt.y_preprocessing,
+        dataset = ContactsGraph(opt.data_folder, opt.scratch, opt.root_name, opt.input_m, opt.y_preprocessing,
                                 opt.log_preprocessing, opt.kr, opt.rescale, opt.mean_filt,
                                 opt.preprocessing_norm, opt.min_subtraction,
                                 opt.use_node_features, opt.mlp_model_id,

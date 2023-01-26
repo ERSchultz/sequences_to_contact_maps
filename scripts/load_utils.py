@@ -264,6 +264,7 @@ def load_final_max_ent_S(replicate_path, max_it_path = None):
 
         # load chi
         chi = load_final_max_ent_chi(k, replicate_path, max_it_path)
+        print(chi)
 
         if chi is None:
             raise Exception(f'chi not found: {replicate_path}, {max_it_path}')
