@@ -35,12 +35,8 @@ k=8
 useSignPlus='true'
 batchSize=1
 
-dirname="/home/erschultz/dataset_11_18_22-/home/erschultz/dataset_11_21_22"
-scratch='/home/erschultz/scratch'
-nEpochs=2
-plot=False
-plotPredictions=False
 # sign_plus with log preprocessing
+# conv
 
 id=356
 for lr in 1e-4
