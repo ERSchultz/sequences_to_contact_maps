@@ -105,8 +105,6 @@ true
 false
 --scratch
 /scratch/midway2/erschultz
---use_scratch
-false
 --use_scratch_parallel
 true
 --plot_predictions

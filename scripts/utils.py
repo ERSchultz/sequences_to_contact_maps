@@ -543,6 +543,9 @@ def pearson_round(x, y, stat = 'pearson', round = 2):
         fn = pearsonr
     elif stat == 'spearman':
         fn = spearmanr
+    x = np.array(x)
+    y = np.array(y)
+    assert x.shape == y.shape, f'shape mismatch, {x.shape} != {y.shape}'
     stat, _ = fn(x, y)
     return np.round(stat, round)
 

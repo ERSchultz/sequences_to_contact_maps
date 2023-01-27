@@ -93,8 +93,6 @@ true
 false
 --scratch
 /scratch/midway3/erschultz
---use_scratch
-true
 --use_scratch_parallel
 true
 --plot_predictions

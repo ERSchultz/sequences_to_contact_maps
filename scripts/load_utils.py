@@ -67,6 +67,8 @@ def load_Y(sample_folder, throw_exception = True):
         raise Exception(f'y not found for {sample_folder}')
     else:
         y = None
+    if y is not None:
+        y = y.astype(float)
 
     ydiag_file = osp.join(sample_folder, 'y_diag.npy')
     try:

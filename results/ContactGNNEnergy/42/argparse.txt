@@ -70,8 +70,6 @@ none
 0.1
 --verbose
 false
---use_scratch
-true
 --plot_predictions
 true
 --crop

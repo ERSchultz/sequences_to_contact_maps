@@ -13,7 +13,6 @@ maxent*
 test/**
 
 # datasets
-dataset_*
 single_cell*/schic*
 single_cell*/samples*
 single_cell*/contact_diffusion*

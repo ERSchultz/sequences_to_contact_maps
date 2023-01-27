@@ -79,8 +79,6 @@ none
 false
 --scratch
 /scratch/midway2/erschultz
---use_scratch
-true
 --plot_predictions
 true
 --crop

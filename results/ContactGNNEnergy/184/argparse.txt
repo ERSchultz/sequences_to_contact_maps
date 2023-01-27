@@ -81,8 +81,6 @@ none
 false
 --scratch
 /scratch/midway2/erschultz
---use_scratch
-true
 --use_scratch_parallel
 true
 --plot_predictions
