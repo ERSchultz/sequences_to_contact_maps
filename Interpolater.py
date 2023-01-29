@@ -291,13 +291,13 @@ class Interpolater():
 
 
 def main():
-    dataset = 'dataset_01_26_23'
-    for sample in range(1, 83):
+    dataset = 'dataset_test'
+    for sample in [2101, 2102]:
         # this is the recommended option
         interpolater = Interpolater(['zeros', 'mappability-0.7'], dataset, sample)
         interpolater.run()
 
-        dir = f'/home/erschultz/{dataset}/samples/sample{sample+200}'
+        dir = f'/home/erschultz/{dataset}/samples/sample{sample+100}'
         if not osp.exists(dir):
             os.mkdir(dir, mode=0o755)
         shutil.copyfile(osp.join(interpolater.odir, 'y_pool_zeros_mappability-0.7.png'),

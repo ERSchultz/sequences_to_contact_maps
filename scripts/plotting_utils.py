@@ -57,7 +57,7 @@ def plot_combined_models(modelType, ids):
     for log in [True, False]:
         plotModelsFromDirs(dirs, imagePath, opts, log_y = log)
 
-def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
+def plotModelsFromDirs(dirs, imagePath, opts, log_y=False):
     # check that only one param is different
     opt_header = get_opt_header(opts[0].model_type, opts[0].GNN_mode)
     opt_lists = []
@@ -168,15 +168,15 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y = False):
         plt.savefig(osp.join(imagePath, 'train_val_loss.png'))
     plt.close()
 
-def plotModelFromDir(dir, imagePath, opt = None, log_y = False):
+def plotModelFromDir(dir, imagePath, op =None, log_y=False):
     """Wrapper function for plotModelFromArrays given saved model."""
     saveDict = torch.load(dir, map_location=torch.device('cpu'))
     train_loss_arr = saveDict['train_loss']
     val_loss_arr = saveDict['val_loss']
     plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt, log_y)
 
-def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None,
-                        log_y = False):
+def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt=None,
+                        log_y=False):
     """Plots loss as function of epoch."""
     plt.plot(np.arange(1, len(train_loss_arr)+1), train_loss_arr, label = 'Training')
     plt.plot(np.arange(1, len(val_loss_arr)+1), val_loss_arr, label = 'Validation')
@@ -242,7 +242,7 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt = None,
 
 ### Functions for plotting sequences ###
 def plot_seq_binary(seq, show=False, save=True, title=None, labels=None,
-                    x_axis=True, ofile = 'seq.png', split=False):
+                    x_axis=True, ofile='seq.png', split=False):
     '''Plotting function for *non* mutually exclusive binary particle types'''
     m, k = seq.shape
     cmap = matplotlib.cm.get_cmap('tab10')
@@ -439,7 +439,7 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
 
     return mean_loss
 
-def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
+def plotEnergyPredictions(val_dataloader, model, opt, count=5):
     print('Prediction Results:', file = opt.log_file)
     assert opt.output_mode.startswith('energy')
     if opt.y_preprocessing is not None:
@@ -532,7 +532,7 @@ def plotEnergyPredictions(val_dataloader, model, opt, count = 5):
 
     return mean_loss
 
-def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
+def plotDiagChiPredictions(val_dataloader, model, opt, count=5):
     print('Prediction Results:', file = opt.log_file)
 
     loss_arr = np.zeros(min(count, opt.valN))
@@ -612,7 +612,7 @@ def plotDiagChiPredictions(val_dataloader, model, opt, count = 5):
 
     return mean_loss
 
-def downsamplingAnalysis(val_dataloader, model, opt, count = 5):
+def downsamplingAnalysis(val_dataloader, model, opt, count=5):
     print('Downsampling (40%) Results:', file = opt.log_file)
     opt_copy = copy.copy(opt) # shallow copy only
     if opt_copy.root_name is not None:
@@ -661,7 +661,7 @@ def downsamplingAnalysis(val_dataloader, model, opt, count = 5):
 
     return downsample_loss, original_loss, upsample_loss
 
-def rescalingAnalysis(val_dataloader, model, opt, count = 5):
+def rescalingAnalysis(val_dataloader, model, opt, count=5):
     print('Rescaling Results:', file = opt.log_file)
     opt_copy = copy.copy(opt) # shallow copy only
     if opt_copy.root_name is not None:
@@ -678,7 +678,7 @@ def rescalingAnalysis(val_dataloader, model, opt, count = 5):
     return analysisIterator(val_dataloader, model, opt_copy, count, 'rescaling')
 
 #### Functions for plotting xyz files ####
-def plot_xyz(xyz, L, x = None, ofile = None, show = True, title = None, legend = True):
+def plot_xyz(xyz, L, x=None, ofile=None, show=True, title=None, legend=True):
     '''
     Plots particles in xyz as 3D scatter plot.
     Only supports mutually exclusive bead types for coloring. # TODO

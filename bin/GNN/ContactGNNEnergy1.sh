@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE1
 #SBATCH --output=logFiles/ContactGNNEnergy1.out
-#SBATCH --time=24:00:00
+#SBATCH --time=1-24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -35,7 +35,7 @@ rescale=2
 k=8
 useSignPlus='true'
 batchSize=2
-
+resumeTraining='true'
 # signplus on big dataset
 
 id=348
