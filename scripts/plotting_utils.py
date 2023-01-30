@@ -284,7 +284,8 @@ def plot_seq_binary(seq, show=False, save=True, title=None, labels=None,
         plt.show()
     plt.close()
 
-def plot_seq_continuous(seq, show=False, save=True, title=None, split=False):
+def plot_seq_continuous(seq, show=False, save=True, title=None, ofile='seq.png',
+                    split=False):
     m, k = seq.shape
     cmap = matplotlib.cm.get_cmap('tab10')
     ind = np.arange(k) % cmap.N
@@ -311,7 +312,7 @@ def plot_seq_continuous(seq, show=False, save=True, title=None, split=False):
     if show:
         plt.show()
     if save:
-        plt.savefig('seq.png')
+        plt.savefig(ofile)
     plt.close()
 
 

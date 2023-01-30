@@ -592,7 +592,8 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
             else:
                 continue
 
-            plot_seq_binary(x, ofile = osp.join(path, 'x.png'))
+            # plot_seq_binary(x, ofile = osp.join(path, 'x.png'))
+            plot_seq_continuous(x,  ofile = osp.join(path, 'x.png'))
             # plot_seq_exclusive(x, ofile = osp.join(path, 'x.png'))
 
 # def loss(params, a, b, c):
@@ -604,10 +605,10 @@ if __name__ == '__main__':
     dir = '/home/erschultz/sequences_to_contact_maps'
     dir = '/home/erschultz'
 
-    dataset = 'dataset_11_21_22'
+    dataset = 'dataset_01_27_23_v4'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = False, plot_energy = True, plot_x = False,
-                plot_chi = True, sampleID = 410)
+    basic_plots(data_dir, plot_y = False, plot_energy = False, plot_x = True,
+                plot_chi = True, sampleID = 1)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

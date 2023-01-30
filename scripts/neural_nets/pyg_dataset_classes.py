@@ -17,15 +17,34 @@ import torch_geometric.transforms
 import torch_geometric.utils
 from scipy.ndimage import uniform_filter
 from skimage.measure import block_reduce
+from sklearn.cluster import KMeans
 from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 
 from ..argparse_utils import finalize_opt, get_base_parser
 from ..energy_utils import calculate_D, calculate_SD
 from ..knightRuiz import knightRuiz
+from ..load_utils import load_Y
 from ..utils import DiagonalPreprocessing, rescale_matrix
 from .dataset_classes import DiagFunctions, make_dataset
 from .networks import get_model
 
+
+def plaid_score(y, y_diag):
+    def c(y, a, b):
+        return a@y@b
+
+    def r(y, a, b):
+        denom = c(y,a,b)**2
+        num = c(y,a,a) * c(y,b,b)
+        return num/denom
+
+    kmeans = KMeans(n_clusters = 2)
+    kmeans.fit(y_diag)
+    m = len(y)
+    seq = np.zeros((m, 2))
+    seq[np.arange(m), kmeans.labels_] = 1
+
+    return r(y, seq[:, 1], seq[:, 0])
 
 class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN:
@@ -38,7 +57,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 split_neg_pos_edges=False, max_diagonal=None,
                 transform=None, pre_transform=None, output='contact',
                 crop=None, ofile=sys.stdout, verbose=True,
-                max_sample=float('inf'), samples=None,
+                max_sample=float('inf'), samples=None, plaid_score_cutoff=None,
                 diag=False, keep_zero_edges=False, output_preprocesing=None):
         '''
         Inputs:
@@ -68,6 +87,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             verbose: True to print
             max_sample: max sample id to save
             samples: set of samples to include (None for all)
+            plaid_score_cutoff: contact maps with plaid_score > cutoff are ignored
             diag: True if y_diag should be calculated
             keep_zero_edges: True to keep edges with 0 weight
             output_preprocesing: Type of preprocessing for prediction target
@@ -96,10 +116,20 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.num_edges_list = [] # list of number of edges per graph
         self.degree_list = [] # created in self.process()
         self.verbose = verbose
-        self.file_paths = make_dataset(self.dirname, maxSample = max_sample, samples = samples)
         self.diag = diag
         self.keep_zero_edges = keep_zero_edges
         self.output_preprocesing = output_preprocesing
+
+
+        self.file_paths = make_dataset(self.dirname, maxSample = max_sample, samples = samples)
+        if plaid_score_cutoff is not None:
+            for f in self.file_paths:
+                y, y_diag = load_Y(f)
+                y /= np.mean(np.diagonal(y))
+                score = plaid_score(y, y_diag)
+                if score > plaid_score_cutoff:
+                    self.file_paths.remove(f)
+
 
         if root_name is None:
             # find any currently existing graph data folders
@@ -121,6 +151,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if verbose:
             print('Dataset construction time: '
                     f'{np.round((time.time() - t0) / 60, 3)} minutes', file = ofile)
+            print(f'Number of samples: {self.len()}', file = ofile)
+
             print('Average num edges per graph: ',
                     f'{np.mean(self.num_edges_list)}', file = ofile)
             print('Average num edges per graph: ',

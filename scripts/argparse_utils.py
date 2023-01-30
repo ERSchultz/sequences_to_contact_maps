@@ -97,6 +97,9 @@ def get_base_parser():
                         help='True to move data to scratch')
     parser.add_argument('--use_scratch_parallel', type=AC.str2bool, default=False,
                         help='True to move data in parallel (use_scratch must be True)')
+    parser.add_argument('--plaid_score_cutoff', type=AC.str2float,
+                        help='Threshold on accepted plaid scores for traing data'
+                            'Contact maps with score > cutoff will be ignored')
 
     # dataloader args
     parser.add_argument('--split_percents', type=AC.str2list,

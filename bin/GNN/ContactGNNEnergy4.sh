@@ -27,19 +27,18 @@ updateHiddenSizesList='1000-1000-64'
 
 outputPreprocesing='log'
 headArchitecture='bilinear'
-headArchitecture2='dconv-fc-fill_1024'
+headArchitecture2='fc-fill_1024'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 
 k=8
 useSignPlus='true'
-batchSize=1
+batchSize=2
+plaidScoreCutoff=50
 
+# sign_plus with log preprocessing
+# plaid_score_cutoff
 
-# sign_plus with log preprocessing bilinear
-# dconv
-
-id=358
 for lr in 1e-4
 do
   train

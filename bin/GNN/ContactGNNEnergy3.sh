@@ -29,14 +29,14 @@ outputPreprocesing='log'
 headArchitecture='dconv-bilinear'
 headArchitecture2='fc-fill_1024'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
-rescale=4
+rescale=2
 
 k=8
 useSignPlus='true'
 batchSize=1
 
 
-id=357
+id=359
 for lr in 1e-4
 do
   train

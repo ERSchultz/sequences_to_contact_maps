@@ -231,6 +231,7 @@ def debugModel(model_type):
         opt.head_architecture_2 = 'dconv-fc-fill_1024'
         opt.head_hidden_sizes_list = [1000, 1000]
         opt.crop = None
+        opt.plaid_score_cutoff = 50
 
         opt.use_bias = True
         opt.num_heads = 8
@@ -322,7 +323,7 @@ def debugModel(model_type):
 
     # other
     opt.plot = False
-    opt.plot_predictions = False
+    opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = True
     opt.gpus = 1
@@ -377,6 +378,64 @@ def debugModel(model_type):
         rmtree(opt.data_folder)
 
 def binom():
+    def plot_binom_helper(x, y, xlabel, ylabel, ofile, density = False, title = ''):
+        reg = LinearRegression()
+        x_new = x.reshape(-1, 1)
+        y_new = y.reshape(-1, 1)
+        reg.fit(x_new, y_new)
+        score = np.round(reg.score(x_new, y_new), 3)
+        yhat = triu_to_full(reg.predict(x_new).reshape(-1))
+
+        if density:
+            xy = np.vstack([x,y])
+            z = gaussian_kde(xy)(xy)
+            idx = z.argsort()
+            x, y, z = x[idx], y[idx], z[idx]
+            plt.scatter(x, y, c=z, s=50)
+        else:
+            plt.scatter(x, y, s=50)
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        x2 = np.linspace(np.min(x), np.max(x), 100)
+        plt.plot(x2, reg.predict(x2.reshape(-1, 1)))
+        plt.title(fr'$r^2$={score}, y = {np.round(reg.coef_[0,0], 3)}x + {np.round(reg.intercept_[0], 3)}' + title)
+        plt.tight_layout()
+        plt.savefig(ofile)
+        plt.close()
+
+    def plot_binom_helper2(x, y, xlabel, ylabel, ofile):
+        reg = LinearRegression()
+        reg.fit(x, y)
+        score = np.round(reg.score(x, y), 3)
+        yhat = reg.predict(x)
+        print(reg.coef_, reg.intercept_)
+
+        plt.scatter(yhat.flatten(), y.flatten(), s=50)
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.title(fr'$r^2$={score}'
+                f'\nMSE: {np.round(mean_squared_error(y, yhat), 3)}')
+        plt.tight_layout()
+        plt.savefig(ofile)
+        plt.close()
+
+    def binom_nll(p, y, n, lmbda = 100):
+        ll = 0
+        l = 0
+        for i in range(len(p)):
+            # print(p[i], y[i])
+            left = p[i]**y[i]
+            right = (1 - p[i])**(n - y[i])
+            likelihood = left*right
+            l += likelihood
+            # ll += np.log(likelihood)
+        nll = -1 * np.log(l/(1+l))
+
+        p_full = triu_to_full(p)
+        reg = lmbda * np.linalg.norm(p_full, 'nuc')
+
+        return likelihood + reg
+
     dir = '/home/erschultz/sequences_to_contact_maps/dataset_04_27_22/samples/sample1'
     # dir = '/home/erschultz/dataset_test/samples/sample9'
     y = np.load(osp.join(dir, 'y_diag.npy'))
@@ -504,70 +563,12 @@ def binom():
     #                 bounds = [(0,1)]*len(y))
     # print(model)
 
-def binom_nll(p, y, n, lmbda = 100):
-    ll = 0
-    l = 0
-    for i in range(len(p)):
-        # print(p[i], y[i])
-        left = p[i]**y[i]
-        right = (1 - p[i])**(n - y[i])
-        likelihood = left*right
-        l += likelihood
-        # ll += np.log(likelihood)
-    nll = -1 * np.log(l/(1+l))
-
-    p_full = triu_to_full(p)
-    reg = lmbda * np.linalg.norm(p_full, 'nuc')
-
-    return likelihood + reg
-
 def s_sym_pca_mse(chi, v, s_sym):
     s = v @ triu_to_full(chi) @ v.T
 
     s_sym_pca = (s+s.T)/2
     mse = mean_squared_error(s_sym_pca, s_sym)
     return mse
-
-def plot_binom_helper(x, y, xlabel, ylabel, ofile, density = False, title = ''):
-    reg = LinearRegression()
-    x_new = x.reshape(-1, 1)
-    y_new = y.reshape(-1, 1)
-    reg.fit(x_new, y_new)
-    score = np.round(reg.score(x_new, y_new), 3)
-    yhat = triu_to_full(reg.predict(x_new).reshape(-1))
-
-    if density:
-        xy = np.vstack([x,y])
-        z = gaussian_kde(xy)(xy)
-        idx = z.argsort()
-        x, y, z = x[idx], y[idx], z[idx]
-        plt.scatter(x, y, c=z, s=50)
-    else:
-        plt.scatter(x, y, s=50)
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    x2 = np.linspace(np.min(x), np.max(x), 100)
-    plt.plot(x2, reg.predict(x2.reshape(-1, 1)))
-    plt.title(fr'$r^2$={score}, y = {np.round(reg.coef_[0,0], 3)}x + {np.round(reg.intercept_[0], 3)}' + title)
-    plt.tight_layout()
-    plt.savefig(ofile)
-    plt.close()
-
-def plot_binom_helper2(x, y, xlabel, ylabel, ofile):
-    reg = LinearRegression()
-    reg.fit(x, y)
-    score = np.round(reg.score(x, y), 3)
-    yhat = reg.predict(x)
-    print(reg.coef_, reg.intercept_)
-
-    plt.scatter(yhat.flatten(), y.flatten(), s=50)
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    plt.title(fr'$r^2$={score}'
-            f'\nMSE: {np.round(mean_squared_error(y, yhat), 3)}')
-    plt.tight_layout()
-    plt.savefig(ofile)
-    plt.close()
 
 def sc_structure_vs_sc_sample():
     # is sampling from bulk contact map the same as the individual structures
@@ -633,24 +634,6 @@ def sc_structure_vs_sc_sample():
         plt.legend()
         plt.savefig(osp.join(dir, 'sc vs sample.png'))
         plt.close()
-
-def prep_data_for_cluster():
-    dir = '/project2/depablo/erschultz/dataset_09_30_22/'
-    odir = osp.join(dir, 'dataset_09_30_22_mini')
-    if not osp.exists(odir):
-        os.mkdir(odir, mode = 0o755)
-    idir = osp.join(dir, 'samples')
-    if not osp.exists(idir):
-        os.mkdir(odir, idir = 0o755)
-    for id in os.listdir(idir):
-        opath = osp.join(odir, id)
-        if not osp.exists(opath):
-            os.mkdir(opath, mode = 0o755)
-        for file in ['y.npy', 's.npy', 'config.json', 'diag_chis_continuous.npy']:
-            ifile = osp.join(idir, id, file)
-            if osp.exists(ifile):
-                ofile = osp.join(odir, id, file)
-                copyfile(ifile, ofile)
 
 def find_best_p_s():
     # is there a curve in training that matches experimental curve well?
@@ -734,34 +717,6 @@ def testGNNrank():
     plt.legend()
     plt.show()
 
-def main():
-    dataset = 'dataset_11_21_22'
-    dir = f'/home/erschultz/{dataset}/samples/sample410'
-    y = np.load(osp.join(dir, 'y.npy'))
-
-    S = np.load(osp.join(dir, 's.npy'))
-    S = (S + S.T)/2
-    print(np.linalg.matrix_rank(S))
-    E = s_to_E(S)
-    with open(osp.join(dir, 'config.json')) as f:
-        config = json.load(f)
-    diag_chi_continuous = calculate_diag_chi_step(config)
-    D = calculate_D(diag_chi_continuous)
-    ED = calculate_net_energy(S, D)
-    print('--'*5)
-
-    val = 1
-    S2 = S - val
-    D2 = D + val
-    ED2 = calculate_net_energy(S2, D2)
-    print(np.allclose(ED, ED2))
-    print('diff\n', ED - ED2)
-    # plot_matrix(S, osp.join(dir, 'S.png'), title = 'S', cmap='blue-red')
-    # plot_matrix(E, osp.join(dir, 'E.png'), title = 'E', cmap='blue-red')
-    # plot_matrix(ED2, osp.join(dir, 'ED2.png'), title = 'ED2', cmap='blue-red')
-    # plot_matrix(ED - ED2, osp.join(dir, 'diff.png'), title = 'ED - ED2', cmap='blue-red')
-
-
 def main2():
     dataset = 'dataset_11_18_22'
     dir = f'/home/erschultz/{dataset}/samples/sample1462'
@@ -821,14 +776,11 @@ def plot_SCC_weights():
     plt.show()
 
 if __name__ == '__main__':
-    # main()
     # main2()
-    # temp()
-    # prep_data_for_cluster()
     # find_best_p_s()
     # binom()
-    edit_argparse()
+    # edit_argparse()
     # sc_nagano_to_dense()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # testGNNrank()
     # plot_SCC_weights()
