@@ -39,7 +39,7 @@ plaidScoreCutoff=50
 # sign_plus with log preprocessing
 # plaid_score_cutoff
 
-id=360
+id=361
 for lr in 1e-4
 do
   train
