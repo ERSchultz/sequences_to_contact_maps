@@ -33,7 +33,7 @@ rescale=2
 
 k=8
 useSignPlus='true'
-batchSize=2
+batchSize=1
 plaidScoreCutoff=50
 
 # sign_plus with log preprocessing

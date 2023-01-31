@@ -34,8 +34,7 @@ rescale=2
 
 k=8
 useSignPlus='true'
-batchSize=2
-resumeTraining='true'
+batchSize=1
 # signplus on big dataset
 
 id=348
