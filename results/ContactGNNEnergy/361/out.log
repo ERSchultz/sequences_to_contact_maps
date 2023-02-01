@@ -304,3 +304,128 @@ Mean test/val loss: 0.4451
 [25, 50, 75] quantiles test/val loss: [0.2968 0.4541 0.5899]
 
 Epoch 60, loss = 0.4336
+Mean test/val loss: 0.4440
+[25, 50, 75] quantiles test/val loss: [0.2869 0.4393 0.5741]
+
+Epoch 62, loss = 0.4314
+Mean test/val loss: 0.4434
+[25, 50, 75] quantiles test/val loss: [0.2831 0.4335 0.5749]
+
+Epoch 64, loss = 0.4293
+Mean test/val loss: 0.4406
+[25, 50, 75] quantiles test/val loss: [0.3213 0.3973 0.5562]
+
+Epoch 66, loss = 0.4276
+Mean test/val loss: 0.4386
+[25, 50, 75] quantiles test/val loss: [0.2995 0.4321 0.5658]
+
+Epoch 68, loss = 0.4261
+Mean test/val loss: 0.4386
+[25, 50, 75] quantiles test/val loss: [0.2913 0.4359 0.5509]
+
+Epoch 70, loss = 0.4246
+Mean test/val loss: 0.4370
+[25, 50, 75] quantiles test/val loss: [0.2905 0.4341 0.5841]
+
+Epoch 72, loss = 0.4233
+Mean test/val loss: 0.4370
+[25, 50, 75] quantiles test/val loss: [0.3042 0.4235 0.5463]
+
+Epoch 74, loss = 0.4220
+Mean test/val loss: 0.4352
+[25, 50, 75] quantiles test/val loss: [0.2798 0.4305 0.5489]
+
+Epoch 76, loss = 0.4207
+Mean test/val loss: 0.4342
+[25, 50, 75] quantiles test/val loss: [0.282  0.4271 0.5664]
+
+Epoch 78, loss = 0.4197
+Mean test/val loss: 0.4338
+[25, 50, 75] quantiles test/val loss: [0.2531 0.4363 0.5699]
+
+Epoch 80, loss = 0.4186
+Mean test/val loss: 0.4329
+[25, 50, 75] quantiles test/val loss: [0.2835 0.4112 0.5659]
+
+Epoch 82, loss = 0.4175
+Mean test/val loss: 0.4320
+[25, 50, 75] quantiles test/val loss: [0.2796 0.4012 0.5659]
+
+Epoch 84, loss = 0.4164
+Mean test/val loss: 0.4321
+[25, 50, 75] quantiles test/val loss: [0.299  0.4282 0.5313]
+
+Epoch 86, loss = 0.4155
+Mean test/val loss: 0.4303
+[25, 50, 75] quantiles test/val loss: [0.2795 0.4181 0.5721]
+
+Epoch 88, loss = 0.4146
+Mean test/val loss: 0.4312
+[25, 50, 75] quantiles test/val loss: [0.291  0.4175 0.5446]
+
+Epoch 90, loss = 0.4138
+Mean test/val loss: 0.4300
+[25, 50, 75] quantiles test/val loss: [0.2762 0.4136 0.5435]
+
+Epoch 92, loss = 0.4130
+Mean test/val loss: 0.4303
+[25, 50, 75] quantiles test/val loss: [0.2961 0.4139 0.5466]
+
+Epoch 94, loss = 0.4121
+Mean test/val loss: 0.4291
+[25, 50, 75] quantiles test/val loss: [0.2795 0.411  0.5404]
+
+Epoch 96, loss = 0.4111
+Mean test/val loss: 0.4291
+[25, 50, 75] quantiles test/val loss: [0.2915 0.4122 0.5269]
+
+Epoch 98, loss = 0.4102
+Mean test/val loss: 0.4282
+[25, 50, 75] quantiles test/val loss: [0.2662 0.412  0.57  ]
+
+Epoch 100, loss = 0.4095
+Mean test/val loss: 0.4281
+[25, 50, 75] quantiles test/val loss: [0.2692 0.3926 0.5568]
+
+
+Total parameters: 43362484
+Total training + validation time: 39.0 hours, 47.0 mins, and 20.29999999998836 secs
+Final val loss: 0.42806455058356124
+
+split sizes: train=3242, val=360, test=0, N=3602
+#### Plotting Script ####
+Prediction Results:
+dataset_11_18_22 sample950: 0.23691177368164062
+dataset_11_18_22 sample1645: 0.2493210881948471
+dataset_11_21_22 sample1514: 0.34244194626808167
+dataset_11_21_22 sample2351: 0.6802046895027161
+dataset_11_21_22 sample2211: 0.2519192695617676
+Loss: 0.352 +- 0.168
+
+Downsampling (40%) Results:
+dataset_11_18_22 sample1645-downsampling: 1.9588123559951782
+dataset_11_18_22 sample2351-downsampling: 9.111786842346191
+dataset_11_18_22 sample950-downsampling: 1.3264684677124023
+dataset_11_21_22 sample1514-downsampling: 4.988912105560303
+dataset_11_21_22 sample1645-downsampling: 3.201453924179077
+Loss: 5.982 +- 3.43
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy4downsample
+Original sampling (100%) Results:
+dataset_11_18_22 sample1645-regular: 2.005751371383667
+dataset_11_18_22 sample2351-regular: 8.563678741455078
+dataset_11_18_22 sample950-regular: 1.2936439514160156
+dataset_11_21_22 sample1514-regular: 4.723496913909912
+dataset_11_21_22 sample1645-regular: 3.067166328430176
+Loss: 5.48 +- 2.991
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy4regsample
+Upsampling (200%) Results:
+dataset_11_18_22 sample1645-upsampling: 1.9317779541015625
+dataset_11_18_22 sample2351-upsampling: 9.245223999023438
+dataset_11_18_22 sample950-upsampling: 1.2781919240951538
+dataset_11_21_22 sample1514-upsampling: 4.6411237716674805
+dataset_11_21_22 sample1645-upsampling: 3.0534844398498535
+Loss: 5.514 +- 3.078
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy4upsample

@@ -101,7 +101,7 @@ none
 --reg_lambda
 1e-1
 --batch_size
-2
+1
 --num_workers
 4
 --scheduler
