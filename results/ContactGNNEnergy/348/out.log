@@ -241,3 +241,108 @@ Mean test/val loss: 0.3998
 [25, 50, 75] quantiles test/val loss: [0.1694 0.3553 0.6029]
 
 Epoch 30, loss = 0.3833
+Mean test/val loss: 0.3856
+[25, 50, 75] quantiles test/val loss: [0.1587 0.3382 0.5815]
+
+Epoch 32, loss = 0.3827
+Mean test/val loss: 0.3825
+[25, 50, 75] quantiles test/val loss: [0.1555 0.3346 0.5739]
+
+Epoch 34, loss = 0.3737
+Mean test/val loss: 0.3889
+[25, 50, 75] quantiles test/val loss: [0.1661 0.345  0.5832]
+
+Epoch 36, loss = 0.4069
+Mean test/val loss: 0.3845
+[25, 50, 75] quantiles test/val loss: [0.1602 0.3374 0.5778]
+
+Epoch 38, loss = 6.2883
+Mean test/val loss: 0.3787
+[25, 50, 75] quantiles test/val loss: [0.1581 0.3333 0.5686]
+
+Epoch 40, loss = 0.3639
+Mean test/val loss: 0.3790
+[25, 50, 75] quantiles test/val loss: [0.1568 0.3314 0.5684]
+
+Epoch 42, loss = 0.3628
+Mean test/val loss: 0.3787
+[25, 50, 75] quantiles test/val loss: [0.1518 0.3295 0.5698]
+
+Epoch 44, loss = 0.3630
+Mean test/val loss: 0.3736
+[25, 50, 75] quantiles test/val loss: [0.1527 0.3213 0.5596]
+
+Epoch 46, loss = 0.3528
+Mean test/val loss: 0.3715
+[25, 50, 75] quantiles test/val loss: [0.1497 0.3225 0.5636]
+
+Epoch 48, loss = 0.3515
+Mean test/val loss: 0.3744
+[25, 50, 75] quantiles test/val loss: [0.1512 0.3239 0.571 ]
+
+Epoch 50, loss = 0.3479
+Mean test/val loss: 0.3698
+[25, 50, 75] quantiles test/val loss: [0.1537 0.3201 0.5518]
+
+New lr: 1e-05
+Epoch 52, loss = 0.3291
+Mean test/val loss: 0.3582
+[25, 50, 75] quantiles test/val loss: [0.141  0.3072 0.5414]
+
+Epoch 54, loss = 0.3267
+Mean test/val loss: 0.3577
+[25, 50, 75] quantiles test/val loss: [0.1407 0.306  0.5412]
+
+Epoch 56, loss = 0.3251
+Mean test/val loss: 0.3573
+[25, 50, 75] quantiles test/val loss: [0.1399 0.3063 0.54  ]
+
+Epoch 58, loss = 0.3237
+Mean test/val loss: 0.3572
+[25, 50, 75] quantiles test/val loss: [0.1401 0.3052 0.5401]
+
+Epoch 60, loss = 0.3228
+Mean test/val loss: 0.3568
+[25, 50, 75] quantiles test/val loss: [0.1388 0.3031 0.5387]
+
+Epoch 62, loss = 0.3217
+Mean test/val loss: 0.3567
+[25, 50, 75] quantiles test/val loss: [0.1397 0.3036 0.5402]
+
+Epoch 64, loss = 0.3206
+Mean test/val loss: 0.3571
+[25, 50, 75] quantiles test/val loss: [0.1385 0.3038 0.5412]
+
+Epoch 66, loss = 0.3196
+Mean test/val loss: 0.3569
+[25, 50, 75] quantiles test/val loss: [0.14   0.3052 0.5392]
+
+Epoch 68, loss = 0.3187
+Mean test/val loss: 0.3566
+[25, 50, 75] quantiles test/val loss: [0.1383 0.3035 0.5378]
+
+Epoch 70, loss = 0.3178
+Mean test/val loss: 0.3566
+[25, 50, 75] quantiles test/val loss: [0.1378 0.3044 0.54  ]
+
+Epoch 72, loss = 0.3169
+Mean test/val loss: 0.3568
+[25, 50, 75] quantiles test/val loss: [0.1389 0.3031 0.5392]
+
+Epoch 74, loss = 0.3161
+Mean test/val loss: 0.3566
+[25, 50, 75] quantiles test/val loss: [0.138  0.3026 0.5399]
+
+Epoch 76, loss = 0.3152
+Mean test/val loss: 0.3571
+[25, 50, 75] quantiles test/val loss: [0.1381 0.302  0.5398]
+
+Epoch 78, loss = 0.3144
+Mean test/val loss: 0.3570
+[25, 50, 75] quantiles test/val loss: [0.1377 0.3021 0.5409]
+
+Epoch 80, loss = 0.3137
+Mean test/val loss: 0.3577
+[25, 50, 75] quantiles test/val loss: [0.1377 0.3027 0.5398]
+
+Epoch 82, loss = 0.3129
