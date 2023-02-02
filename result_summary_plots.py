@@ -366,25 +366,6 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
                         scale = args.scale, svd = args.svd)
 
 
-    L_sym = laplacian(y, normed = True)
-    D, V  = np.linalg.eigh(L_sym)
-    order = np.argsort(D)
-    D = D[order]
-    V = V[:, order]
-    Vt = V.T
-    for i in range(3):
-        if np.mean(Vt[i][:100]) < 0:
-            PC = Vt[i] * -1
-            # PCs are sign invariant, so this doesn't matter mathematically
-            # goal is to help compare PCs visually by aligning them
-        else:
-            PC = Vt[i]
-        plt.plot(PC)
-        plt.savefig(osp.join(args.odir, f'L_sym_PC_{i+1}.png'))
-        plt.close()
-
-
-
     y_log = np.log(y + 1)
     plot_matrix(y_log, osp.join(args.odir, 'y_log.png'), vmax = 'mean')
     PC_y_log = plot_top_PCs(y_log, 'y_log', args.odir, args.log_file, count = 2,

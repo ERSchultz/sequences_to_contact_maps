@@ -36,6 +36,7 @@ k=8
 useSignPlus='true'
 batchSize=1
 # signplus on big dataset
+resumeTraining='true'
 
 id=348
 for lr in 1e-4

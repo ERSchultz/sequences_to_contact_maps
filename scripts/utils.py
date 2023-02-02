@@ -334,6 +334,18 @@ def rescale_matrix(inp, factor):
     processed = np.triu(processed)
     out = processed + np.triu(processed, 1).T
 
+def diagonal_rescale(inp, factor):
+    '''
+    Rescales input matrix by factor.
+    if inp is 1024x1024 and factor=2, out is 512x512
+    '''
+    assert len(inp.shape) == 2, f'must be 2d array not {inp.shape}'
+    m, _ = inp.shape
+    assert m % factor == 0, f'factor must evenly divide m: {m}%{factor}={m%factor}'
+
+    # diagonal-pool operation
+    out = block_reduce(inp, (factor, factor), lambda x, axis: np.sum(np.multiply(x, np.eye(factor)), axis = axis))
+
     return out
 
 ## plotting helper functions ##
@@ -575,15 +587,34 @@ def print_size(arr, name = '', file = sys.stdout):
             print(f'{name} size: {np.round(size, 1)} {size_name}', file = file)
             return
 
+def diagonalpool_HiC(HiC, factor):
+    HiC_new = np.zeros([int(len(HiC)/factor), int(len(HiC)/factor)])
+    for i in range(len(HiC_new)):
+        for j in range(len(HiC_new)):
+            HiC_new[i,j] = HiC[factor*i, factor*j]+HiC[factor*i+1,factor*j+1]
+    return HiC_new
+
 def test():
     # test rescale_contact_map
-    y = np.array([[1,2,3,0],[5,4,7,8],[9,0,5,12],[13,14,15,8]]).astype(np.float)
-    y = y + y.T
-    y /= np.mean(np.diagonal(y))
+    y = np.array([[0, 1, 2, 3],[4, 5, 6, 7],[8, 9, 10, 11],[12, 13, 14, 15]]).astype(np.float)
+    # y = y + y.T
     print(y)
-    y = rescale_contact_map(y, 2)
-    y /= np.mean(np.diagonal(y))
+    y_new = diagonal_rescale(y, 2)
+    # y /= np.mean(np.diagonal(y))
+    print(y_new)
+    y = diagonalpool_HiC(y, 2)
     print(y)
+    print('---')
+    y = np.array([[0, 1, 2],[3, 4, 5],[6, 7, 8]]).astype(np.float)
+    print(y)
+    y_new = diagonal_rescale(y, 3)
+    # y /= np.mean(np.diagonal(y))
+    print(y_new)
+    y = diagonalpool_HiC(y, 3)
+    print(y)
+
+
+
 
 if __name__ == '__main__':
     test()

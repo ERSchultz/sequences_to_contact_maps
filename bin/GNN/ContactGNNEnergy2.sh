@@ -35,6 +35,7 @@ k=8
 useSignPlus='true'
 batchSize=1
 plaidScoreCutoff=50
+resumeTraining='true'
 
 # sign_plus with log preprocessing
 # plaid_score_cutoff
