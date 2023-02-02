@@ -334,6 +334,8 @@ def rescale_matrix(inp, factor):
     processed = np.triu(processed)
     out = processed + np.triu(processed, 1).T
 
+    return out
+
 def diagonal_rescale(inp, factor):
     '''
     Rescales input matrix by factor.
