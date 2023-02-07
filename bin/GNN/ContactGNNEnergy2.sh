@@ -19,7 +19,7 @@ source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy2' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_02_01_23"
-m=1024
+m=512
 preTransforms='constant-ContactDistance-GeneticDistance_norm-AdjPCs_8'
 hiddenSizesList='8-8-8-8'
 EncoderHiddenSizesList='64'
@@ -27,7 +27,7 @@ updateHiddenSizesList='1000-1000-64'
 
 outputPreprocesing='log'
 headArchitecture='bilinear'
-headArchitecture2='fc-fill_1024'
+headArchitecture2='fc-fill_512'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 

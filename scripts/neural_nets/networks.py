@@ -449,7 +449,7 @@ class ContactGNN(nn.Module):
         try:
             return L_out + D_out
         except RuntimeError:
-            print(out.shape, out_temp.shape)
+            print(L_out.shape, D_out.shape)
             raise
 
     def latent(self, graph, additional_x):

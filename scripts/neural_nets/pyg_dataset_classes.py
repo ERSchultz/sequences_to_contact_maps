@@ -129,7 +129,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 score = plaid_score(y, y_diag)
                 if score > plaid_score_cutoff:
                     self.file_paths.remove(f)
-        print(self.file_paths)
+
 
 
 
