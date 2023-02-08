@@ -24,7 +24,7 @@ svd='false'
 
 source activate python3.9_pytorch1.9
 
-for i in 201/PCA-normalize-E/k4/replicate1
+for i in 273/PCA-normalize-E/k4/replicate1
 # 4 6 8
 # 1 2 3 4 6 7 8 9 11 12 13 14 15 17 18 19 20 21 23 24
 do

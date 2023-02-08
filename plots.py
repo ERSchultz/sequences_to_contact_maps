@@ -12,15 +12,16 @@ import numpy as np
 import seaborn as sns
 import torch
 from scipy.ndimage import uniform_filter
+
 from scripts.argparse_utils import (finalize_opt, get_base_parser,
                                     get_opt_header, opt2list)
 from scripts.energy_utils import (calculate_D, calculate_diag_chi_step,
                                   calculate_SD_ED)
-from scripts.load_utils import load_contact_map
+from scripts.load_utils import get_final_max_ent_folder, load_contact_map
 from scripts.plotting_utils import (plot_centroid_distance,
                                     plot_combined_models, plot_diag_chi,
-                                    plot_sc_contact_maps, plot_xyz_gif,
-                                    plotting_script)
+                                    plot_matrix, plot_sc_contact_maps,
+                                    plot_xyz_gif, plotting_script)
 from scripts.utils import DiagonalPreprocessing
 from scripts.xyz_utils import xyz_load, xyz_write
 
@@ -542,14 +543,14 @@ def plot_GNN_vs_PCA():
 
 
 def plot_Exp_vs_PCA():
-    dir = '/home/erschultz/dataset_11_14_22/samples'
-    for sample in range(2201, 2206):
+    dir = '/home/erschultz/dataset_01_26_23/samples'
+    for sample in range(276, 277):
         sample_dir = osp.join(dir, f'sample{sample}')
 
         y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
         y /= np.mean(np.diagonal(y))
 
-        k = 8
+        k = 4
         pca_dir = osp.join(sample_dir, f'PCA-normalize-E/k{k}/replicate1')
         with open(osp.join(pca_dir, 'distance_pearson.json'), 'r') as f:
             # TODO this is after final iteration, not convergence
@@ -557,13 +558,19 @@ def plot_Exp_vs_PCA():
         y_pca = np.load(osp.join(pca_dir, 'y.npy')).astype(np.float64)
         y_pca /= np.mean(np.diagonal(y_pca))
 
-        s = np.load(osp.join(pca_dir, 's.npy'))
-        with open(osp.join(pca_dir, 'iteration16/config.json'), 'r') as f:
+        L = np.load(osp.join(pca_dir, 's.npy'))
+        max_it = get_final_max_ent_folder(pca_dir)
+        with open(osp.join(max_it, 'config.json'), 'r') as f:
             config = json.load(f)
         diag_chis = np.loadtxt(osp.join(pca_dir, 'chis_diag.txt'))[-1]
         diag_chis_continuous = calculate_diag_chi_step(config, diag_chis)
-        d = calculate_D(diag_chis_continuous)
-        sd, ed = calculate_SD_ED(s, d)
+        D = calculate_D(diag_chis_continuous)
+        S, E = calculate_SD_ED(L, D)
+
+        plot_matrix(L, osp.join(pca_dir, 'L.png'), cmap='blue-red')
+        plot_matrix(D, osp.join(pca_dir, 'D.png'))
+        plot_matrix(S, osp.join(pca_dir, 'S.png'), cmap='blue-red')
+
 
 
 
@@ -591,7 +598,7 @@ def plot_Exp_vs_PCA():
         s2.set_yticks([])
         axcb12.yaxis.set_ticks_position('left')
 
-        arr = sd
+        arr = S
         vmin = np.nanpercentile(arr, 1)
         vmax = np.nanpercentile(arr, 99)
         vmax = max(vmax, vmin * -1)
@@ -626,7 +633,7 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_09_30_22')
-    plot_combined_models('ContactGNNEnergy', [360, 361])
+    # plot_combined_models('ContactGNNEnergy', [360, 361])
     # plot_GNN_vs_PCA()
     # plot_Exp_vs_PCA()
     # main()

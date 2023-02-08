@@ -505,59 +505,63 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
                         scale = args.scale, svd = args.svd)
         print(f'Rank of S: {np.linalg.matrix_rank(s)}', file = args.log_file)
         if args.method is None:
-            stat = pearson_round(PC_y[0], PC_s[0])
-            print("Correlation between PC 1 of y and S: ", stat, file = args.log_file)
-            stat = pearson_round(PC_y_diag[0], PC_s[0])
-            print("Correlation between PC 1 of y_diag and S: ", stat, file = args.log_file)
-            stat = pearson_round(PC_y_diag[1], PC_s[1])
-            print("Correlation between PC 2 of y_diag and S: ", stat, file = args.log_file)
-
             s_sym = (s + s.T) / 2
-            PC_s_sym = plot_top_PCs(s_sym, 's_sym', args.odir, args.log_file, count = 2,
+            PC_s_sym = plot_top_PCs(s_sym, 's_sym', args.odir, args.log_file, count = 4,
                         plot = args.plot_baseline, verbose = args.verbose,
                         scale = args.scale, svd = args.svd)
             print(f'Rank: {np.linalg.matrix_rank(s)}', file = args.log_file)
-            stat = pearson_round(PC_y[0], PC_s_sym[0])
-            print("Correlation between PC 1 of y and S_sym: ", stat, file = args.log_file)
-            stat = pearson_round(PC_y_diag[0], PC_s[0])
-            print("Correlation between PC 1 of y_diag and S_sym: ", stat, file = args.log_file)
-            stat = pearson_round(PC_y_diag[1], PC_s[1])
-            print("Correlation between PC 2 of y_diag and S_sym: ", stat, file = args.log_file)
-            stat = pearson_round(PC_y_log[0], PC_s[0])
-            print("Correlation between PC 1 of y_log and S_sym: ", stat, file = args.log_file)
-            stat = pearson_round(PC_y_log[1], PC_s[1])
-            print("Correlation between PC 2 of y_log and S_sym: ", stat, file = args.log_file)
+            for i in range(4):
+                stat = pearson_round(PC_y[i], PC_s_sym[i])
+                print(f"Correlation between PC {i+1} of y and S_sym: ", stat, file = args.log_file)
+
+            for i in range(4):
+                stat = pearson_round(PC_y_diag[i], PC_s_sym[i])
+                print(f"Correlation between PC {i+1} of y_diag and S_sym: ", stat, file = args.log_file)
+
+            for i in range(4):
+                stat = pearson_round(PC_y_log_diag[i], PC_s_sym[i])
+                print(f"Correlation between PC {i+1} of y_log_diag and S_sym: ", stat, file = args.log_file)
+
+            for i in range(4):
+                stat = pearson_round(PC_y_loginf_diag[i], PC_s_sym[i])
+                print(f"Correlation between PC {i+1} of y_log_inf_diag and S_sym: ", stat, file = args.log_file)
+
+            for i in range(4):
+                stat = pearson_round(PC_y_log[i], PC_s[i])
+                print(f"Correlation between PC {i+1} of y_log and S_sym: ", stat, file = args.log_file)
 
 
-    if e is not None:
-        PC_e = plot_top_PCs(e, 'e', args.odir, args.log_file, count = 2,
-                        plot = args.plot_baseline, verbose = args.verbose,
-                        scale = args.scale, svd = args.svd)
-        print(f'Rank of E: {np.linalg.matrix_rank(e)}', file = args.log_file)
-        if args.method is None:
-            stat = pearson_round(PC_y[0], PC_e[0])
-            print("Correlation between PC 1 of y and E: ", stat, file = args.log_file)
-            stat = pearson_round(PC_y_diag[0], PC_e[0])
-            print("Correlation between PC 1 of y_diag and E: ", stat, file = args.log_file)
-            stat = pearson_round(PC_y_diag[1], PC_e[1])
-            print("Correlation between PC 2 of y_diag and E: ", stat, file = args.log_file)
-            if s is not None:
-                stat = pearson_round(PC_s[0], PC_e[0])
-                print("Correlation between PC 1 of S and E: ", stat, file = args.log_file)
-            stat = pearson_round(PC_y_log[0], PC_e[0])
-            print("Correlation between PC 1 of y_log and E: ", stat, file = args.log_file)
-            stat = pearson_round(PC_y_log[1], PC_e[1])
-            print("Correlation between PC 2 of y_log and E: ", stat, file = args.log_file)
 
 
-        for i in range(1, 4):
-            # get e top i PCs
-            pca = PCA(n_components = i)
-            e_transform = pca.fit_transform(e)
-            e_i = pca.inverse_transform(e_transform)
-            np.save(osp.join(args.odir, f'e_{i}.npy'), e_i)
-            plot_matrix(e_i, osp.join(args.odir, f'e_{i}.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = f"E rank {i}")
-
+    # if e is not None:
+    #     PC_e = plot_top_PCs(e, 'e', args.odir, args.log_file, count = 2,
+    #                     plot = args.plot_baseline, verbose = args.verbose,
+    #                     scale = args.scale, svd = args.svd)
+    #     print(f'Rank of E: {np.linalg.matrix_rank(e)}', file = args.log_file)
+    #     if args.method is None:
+    #         stat = pearson_round(PC_y[0], PC_e[0])
+    #         print("Correlation between PC 1 of y and E: ", stat, file = args.log_file)
+    #         stat = pearson_round(PC_y_diag[0], PC_e[0])
+    #         print("Correlation between PC 1 of y_diag and E: ", stat, file = args.log_file)
+    #         stat = pearson_round(PC_y_diag[1], PC_e[1])
+    #         print("Correlation between PC 2 of y_diag and E: ", stat, file = args.log_file)
+    #         if s is not None:
+    #             stat = pearson_round(PC_s[0], PC_e[0])
+    #             print("Correlation between PC 1 of S and E: ", stat, file = args.log_file)
+    #         stat = pearson_round(PC_y_log[0], PC_e[0])
+    #         print("Correlation between PC 1 of y_log and E: ", stat, file = args.log_file)
+    #         stat = pearson_round(PC_y_log[1], PC_e[1])
+    #         print("Correlation between PC 2 of y_log and E: ", stat, file = args.log_file)
+    #
+    #
+    #     for i in range(1, 4):
+    #         # get e top i PCs
+    #         pca = PCA(n_components = i)
+    #         e_transform = pca.fit_transform(e)
+    #         e_i = pca.inverse_transform(e_transform)
+    #         np.save(osp.join(args.odir, f'e_{i}.npy'), e_i)
+    #         plot_matrix(e_i, osp.join(args.odir, f'e_{i}.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = f"E rank {i}")
+    #
 
     if s_hat is not None:
         PC_s_hat = plot_top_PCs(s_hat, 's_hat', args.odir, args.log_file, count = 2,
