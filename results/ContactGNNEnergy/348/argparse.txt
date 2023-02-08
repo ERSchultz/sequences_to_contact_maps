@@ -132,6 +132,6 @@ true
 --id
 348
 --resume_training
-false
+true
 --mlp_model_id
 none
