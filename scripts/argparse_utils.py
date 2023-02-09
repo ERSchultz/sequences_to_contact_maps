@@ -15,7 +15,7 @@ import torch_geometric.transforms
 from .neural_nets.pyg_fns import (AdjPCATransform, AdjPCs, AdjTransform,
                                   ContactDistance, Degree,
                                   DiagonalParameterDistance, GeneticDistance,
-                                  GeneticPosition, NoiseLevel,
+                                  GeneticPosition, GridSize, NoiseLevel,
                                   OneHotGeneticPosition,
                                   WeightedLocalDegreeProfile)
 from .utils import DiagonalPreprocessing
@@ -567,6 +567,10 @@ def process_transforms(opt):
             transform = NoiseLevel(inverse)
             opt.node_transforms.append(transform)
             opt.node_feature_size += 1
+        elif t_str[0] == 'gridsize':
+            transform = GridSize()
+            opt.node_transforms.append(transform)
+            opt.node_feature_size += 1
         elif t_str[0] == 'diagonalparameterdistance':
             assert opt.use_edge_attr or opt.use_edge_weights
 
@@ -887,7 +891,7 @@ class ArgparserConverter():
             elif 'e-' in v:
                 return float(v)
             else:
-                raise argparse.ArgumentTypeError('none or float expected not {}'.format(v))
+                raise argparse.ArgumentTypeError(f'none or float expected not {v}')
         else:
             raise argparse.ArgumentTypeError('String value expected.')
 

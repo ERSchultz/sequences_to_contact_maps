@@ -43,9 +43,4 @@ do
   train
   id=$(( $id + 1 ))
 done
-for lr in 1e-4
-do
-  train
-  id=$(( $id + 1 ))
-done
 python3 ~/sequences_to_contact_maps/scripts/clean_directories.py --data_folder $dirname --GNN_file_name $rootName --scratch $scratch

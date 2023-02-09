@@ -1,3 +1,4 @@
+import json
 import os
 import os.path as osp
 from typing import Optional, Tuple, Union
@@ -313,12 +314,30 @@ class NoiseLevel(BaseTransform):
             data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
             data.x = torch.cat([data.x, c], dim=-1)
         else:
-            data.x = pos
+            data.x = c
 
         return data
 
     def __repr__(self):
         return (f'{self.__class__.__name__}(inverse={self.inverse})')
+
+class GridSize(BaseTransform):
+    '''Appends grid size as node feature.'''
+    def __call__(self, data):
+        with open(osp.join(data.path, 'config.json')) as f:
+            config = json.load(f)
+        gs = torch.full((data.num_nodes, 1), config['grid_size'], dtype=torch.float32)
+
+        if data.x is not None:
+            data.x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
+            data.x = torch.cat([data.x, gs], dim=-1)
+        else:
+            data.x = gs
+
+        return data
+
+    def __repr__(self):
+        return (f'{self.__class__.__name__}')
 
 
 

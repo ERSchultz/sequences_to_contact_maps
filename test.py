@@ -6,16 +6,21 @@ from shutil import copyfile, rmtree
 
 import cooler
 import hicrep.utils
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from core_test_train import core_test_train
-from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+from core_test_train import core_test_train
+from result_summary_plots import plot_top_PCs
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
 from scripts.energy_utils import *
@@ -27,9 +32,6 @@ from scripts.plotting_utils import plot_matrix
 from scripts.similarity_measures import SCC
 from scripts.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
                            print_time, triu_to_full)
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
 
 
 def test_num_workers():
@@ -222,7 +224,7 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm')
+        opt.pre_transforms=AC.str2list('GridSize-constant-ContactDistance-GeneticDistance_norm')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
@@ -313,7 +315,7 @@ def debugModel(model_type):
         # opt.m = 980
 
     # hyperparameters
-    opt.n_epochs = 2
+    opt.n_epochs = 1
     opt.lr = 1e-3
     opt.weight_decay = 1e-5
     opt.w_reg = None
@@ -323,8 +325,8 @@ def debugModel(model_type):
 
     # other
     opt.plot = False
-    opt.plot_predictions = True
-    opt.verbose = False
+    opt.plot_predictions = False
+    opt.verbose = True
     opt.print_params = True
     opt.gpus = 1
     # opt.delete_root = True
@@ -675,46 +677,49 @@ def testGNNrank():
     check rank of GNN predicted E.
     tend to be (really) low rank unfortunately
     '''
-    dir = '/home/erschultz'
-    dataset = 'dataset_11_14_22'
-    fig = plt.figure()
-    for sample in [2217]:
-        for GNN in [341]:
-            print(GNN)
-            file = osp.join(dir, dataset, f'samples/sample{sample}/GNN-{GNN}-S/k0/replicate1/resources/plaid_hat.txt')
-            s = np.loadtxt(file)
-            # print('rank', np.linalg.matrix_rank(s))
-            # w, v = np.linalg.eig(s)
-            # prcnt = np.abs(w) / np.sum(np.abs(w))
+    dir = '/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy'
+    GNN = 363
+    GNN_dir = osp.join(dir, f'{GNN}')
+    samples = [324, 981, 1936, 2834, 3464]
 
-            pca = PCA()
-            pca = pca.fit(s)
-            prcnt = pca.explained_variance_ratio_
+    cmap = matplotlib.cm.get_cmap('tab10')
+    ind = np.arange(len(samples)) % cmap.N
+    colors = cmap(ind)
 
-            print(prcnt[0:4])
-            plt.plot(prcnt[:8], label = 'GNN')
-            print(np.sum(prcnt[0:4]))
-            # plot_top_PCs(s, verbose = True, count = 4)
-            print()
+    fig, ax = plt.subplots()
+    ax2 = ax.twinx()
+    ax2.get_yaxis().set_visible(False)
 
-        print('PCA')
-        file = osp.join(dir, dataset, f'samples/sample{sample}/PCA-normalize-E/k8/replicate1/s.npy')
-        s = np.load(file)
-        print('rank', np.linalg.matrix_rank(s))
-        # w, v = np.linalg.eig(s)
-        # prcnt = np.abs(w) / np.sum(np.abs(w))
+    for i, sample in enumerate(samples):
+        s_dir = osp.join(GNN_dir, f'dataset_02_06_23_sample{sample}-regular/sample{sample}-regular')
+        s_hat = np.loadtxt(osp.join(s_dir, 'energy_hat.txt'))
+        s = np.loadtxt(osp.join(s_dir, 'energy.txt'))
+
+        ax2.plot(np.NaN, np.NaN, label = sample, color = colors[i])
 
         pca = PCA()
-        pca = pca.fit(s)
+        pca = pca.fit(s_hat)
         prcnt = pca.explained_variance_ratio_
-        plt.plot(prcnt[:8], label = 'PCA(k=8)')
+
+        print('GNN')
         print(prcnt[0:4])
+        ax.plot(prcnt[:8], label = 'GNN', color = colors[i], ls = '--')
         print(np.sum(prcnt[0:4]))
         print()
 
-    plt.ylabel('PC % Variance Explained', fontsize=16)
-    plt.xlabel('PC', fontsize=16)
-    plt.legend()
+        pca = pca.fit(s)
+        prcnt = pca.explained_variance_ratio_
+
+        print('Sim')
+        print(prcnt[0:4])
+        ax.plot(prcnt[:8], label = 'Sim', color = colors[i])
+        print(np.sum(prcnt[0:4]))
+        print()
+
+    ax.set_ylabel('PC % Variance Explained', fontsize=16)
+    ax.set_xlabel('PC', fontsize=16)
+    ax2.legend(loc='upper right')
+    ax.legend(loc='lower right')
     plt.show()
 
 def main2():
