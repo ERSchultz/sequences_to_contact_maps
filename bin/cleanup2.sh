@@ -1,6 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=cleanup2
-#SBATCH --partition=depablo-ivyb
+#SBATCH --account=pi-depablo
+#SBATCH --partition=depablo
 #SBATCH --ntasks=10
 #SBATCH --output=logFiles/cleanup2.log
 #SBATCH --time=8:00:00
