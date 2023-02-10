@@ -1,7 +1,7 @@
 --data_folder
-/project2/depablo/erschultz/dataset_02_01_23-/project2/depablo/erschultz/dataset_02_06_23
+/project2/depablo/erschultz/dataset_02_01_23-/project2/depablo/erschultz/dataset_02_06_23-/project2/depablo/erschultz/dataset_02_07_23
 --root_name
-ContactGNNEnergy2
+ContactGNNEnergy1
 --delete_root
 false
 --model_type
@@ -130,7 +130,7 @@ none
 --print_params
 true
 --id
-366
+367
 --resume_training
 false
 --mlp_model_id

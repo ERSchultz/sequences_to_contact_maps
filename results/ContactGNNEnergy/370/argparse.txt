@@ -1,7 +1,7 @@
 --data_folder
-/project2/depablo/erschultz/dataset_02_01_23-/project2/depablo/erschultz/dataset_02_06_23
+/project2/depablo/erschultz/dataset_02_08_23
 --root_name
-ContactGNNEnergy2
+ContactGNNEnergy5
 --delete_root
 false
 --model_type
@@ -53,7 +53,7 @@ none
 --transforms
 empty
 --pre_transforms
-constant-ContactDistance-GeneticDistance_norm-AdjPCs_8
+GridSize-constant-ContactDistance-GeneticDistance_norm-AdjPCs_8
 --top_k
 none
 --sparsify_threshold
@@ -130,7 +130,7 @@ none
 --print_params
 true
 --id
-366
+370
 --resume_training
 false
 --mlp_model_id
