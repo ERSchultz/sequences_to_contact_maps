@@ -328,3 +328,96 @@ Mean test/val loss: 0.3956
 [25, 50, 75] quantiles test/val loss: [0.0682 0.2334 0.5121]
 
 Epoch 72, loss = 0.3138
+Mean test/val loss: 0.3957
+[25, 50, 75] quantiles test/val loss: [0.068  0.2338 0.5112]
+
+Epoch 74, loss = 0.3126
+Mean test/val loss: 0.3961
+[25, 50, 75] quantiles test/val loss: [0.0675 0.2321 0.5125]
+
+Epoch 76, loss = 0.3115
+Mean test/val loss: 0.3962
+[25, 50, 75] quantiles test/val loss: [0.0675 0.2328 0.512 ]
+
+Epoch 78, loss = 0.3105
+Mean test/val loss: 0.3970
+[25, 50, 75] quantiles test/val loss: [0.0682 0.2315 0.5125]
+
+Epoch 80, loss = 0.3096
+Mean test/val loss: 0.3965
+[25, 50, 75] quantiles test/val loss: [0.0671 0.2319 0.5133]
+
+Epoch 82, loss = 0.3085
+Mean test/val loss: 0.3972
+[25, 50, 75] quantiles test/val loss: [0.0676 0.2298 0.5119]
+
+Epoch 84, loss = 0.3074
+Mean test/val loss: 0.3970
+[25, 50, 75] quantiles test/val loss: [0.0669 0.2313 0.5123]
+
+Epoch 86, loss = 0.3065
+Mean test/val loss: 0.3973
+[25, 50, 75] quantiles test/val loss: [0.0669 0.2315 0.5146]
+
+Epoch 88, loss = 0.3056
+Mean test/val loss: 0.3979
+[25, 50, 75] quantiles test/val loss: [0.0684 0.2323 0.5129]
+
+Epoch 90, loss = 0.3046
+Mean test/val loss: 0.3978
+[25, 50, 75] quantiles test/val loss: [0.0676 0.2306 0.5137]
+
+Epoch 92, loss = 0.3038
+Mean test/val loss: 0.3979
+[25, 50, 75] quantiles test/val loss: [0.067  0.2321 0.516 ]
+
+Epoch 94, loss = 0.3029
+Mean test/val loss: 0.3984
+[25, 50, 75] quantiles test/val loss: [0.0665 0.2314 0.5135]
+
+Epoch 96, loss = 0.3021
+Mean test/val loss: 0.3990
+[25, 50, 75] quantiles test/val loss: [0.0664 0.2302 0.5146]
+
+Epoch 98, loss = 0.3013
+Mean test/val loss: 0.3989
+[25, 50, 75] quantiles test/val loss: [0.0665 0.2309 0.5152]
+
+Epoch 100, loss = 0.3005
+Mean test/val loss: 0.3994
+[25, 50, 75] quantiles test/val loss: [0.0664 0.2291 0.5175]
+
+
+Total parameters: 26465972
+Total training + validation time: 29.0 hours, 36.0 mins, and 52.80000000000291 secs
+Final val loss: 0.39938512961706146
+
+split sizes: train=13500, val=1500, test=0, N=15000
+#### Plotting Script ####
+Prediction Results:
+dataset_02_06_23 sample2827: 0.200531005859375
+dataset_02_01_23 sample4707: 0.019694741815328598
+dataset_02_07_23 sample4944: 1.1121389865875244
+dataset_02_06_23 sample3849: 0.242781862616539
+dataset_02_06_23 sample734: 0.20360299944877625
+Loss: 0.356 +- 0.386
+
+Downsampling (40%) Results:
+dataset_02_01_23 sample2827-downsampling: 0.9883848428726196
+dataset_02_01_23 sample3849-downsampling: 2.806476593017578
+dataset_02_01_23 sample4707-downsampling: 0.8171523213386536
+dataset_02_01_23 sample4944-downsampling: 0.5228579044342041
+dataset_02_01_23 sample734-downsampling: 1.3527644872665405
+Loss: 13.034 +- 16.961
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy1downsample
+Original sampling (100%) Results:
+dataset_02_01_23 sample2827-regular: 0.9636139869689941
+dataset_02_01_23 sample3849-regular: 2.228271484375
+dataset_02_01_23 sample4707-regular: 0.6084787845611572
+dataset_02_01_23 sample4944-regular: 0.49695271253585815
+dataset_02_01_23 sample734-regular: 1.2544326782226562
+Loss: 10.733 +- 14.408
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy1regsample
+Upsampling (200%) Results:
