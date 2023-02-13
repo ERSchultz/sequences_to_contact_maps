@@ -209,9 +209,9 @@ def debugModel(model_type):
         opt.output_mode = 'energy_sym_diag'
         opt.output_preprocesing = 'log'
         opt.encoder_hidden_sizes_list=[32]
-        opt.edge_encoder_hidden_sizes_list=[16]
-        opt.update_hidden_sizes_list=[100,64]
-        opt.hidden_sizes_list=[8]
+        opt.edge_encoder_hidden_sizes_list=[64]
+        opt.update_hidden_sizes_list=[1000,1000,64]
+        opt.hidden_sizes_list=[8,8,8]
         opt.gated = False
         opt.dropout = 0.0
         opt.act = 'prelu'
@@ -231,7 +231,7 @@ def debugModel(model_type):
         opt.log_preprocessing = None
         opt.head_architecture = 'dconv-bilinear-triu'
         opt.head_architecture_2 = 'dconv-fc-fill_1024'
-        opt.head_hidden_sizes_list = [1000, 1000]
+        opt.head_hidden_sizes_list = [1000, 1000,1000,1000,1000]
         opt.crop = None
         opt.plaid_score_cutoff = 50
 
@@ -324,9 +324,10 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.plot = False
+    opt.pretrain_id=362
+    opt.plot = True
     opt.plot_predictions = False
-    opt.verbose = True
+    opt.verbose = False
     opt.print_params = True
     opt.gpus = 1
     # opt.delete_root = True

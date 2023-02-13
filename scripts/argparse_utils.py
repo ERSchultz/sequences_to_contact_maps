@@ -160,8 +160,8 @@ def get_base_parser():
                         help='Type of model')
     parser.add_argument('--id', type=AC.str2int,
                         help='id of model')
-    parser.add_argument('--pretrained', type=AC.str2bool, default=False,
-                        help='True if using a pretrained model')
+    parser.add_argument('--pretrain_id', type=AC.str2int,
+                        help='ID for using a pretrained model')
     parser.add_argument('--resume_training', type=AC.str2bool, default=False,
                         help='True if resuming training of a partially trained model')
     parser.add_argument('--k', type=AC.str2int,
@@ -169,7 +169,7 @@ def get_base_parser():
     parser.add_argument('--m', type=int, default=1024,
                         help='Number of particles')
     parser.add_argument('--seed', type=int, default=42,
-                        help='random seed to use. Default: 42')
+                        help='random seed to use')
     parser.add_argument('--act', type=AC.str2None, default='relu',
                         help='default activation') # TODO impelement throughout
     parser.add_argument('--inner_act', type=AC.str2None,

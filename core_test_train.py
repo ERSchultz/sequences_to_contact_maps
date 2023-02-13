@@ -36,6 +36,9 @@ def core_test_train(model, opt):
     dataset = get_dataset(opt)
     train_dataloader, val_dataloader, test_dataloader = get_data_loaders(dataset, opt)
 
+
+    train_loss_arr = []
+    val_loss_arr = []
     if opt.resume_training:
         model_name = osp.join(opt.ofile_folder, 'model.pt')
         if osp.exists(model_name):
@@ -54,9 +57,19 @@ def core_test_train(model, opt):
             val_loss_arr = save_dict['val_loss']
         else:
             raise Exception(f'save_dict does not exist for {opt.ofile_folder}')
-    else:
-        train_loss_arr = []
-        val_loss_arr = []
+    elif opt.pretrain_id is not None:
+        folder = osp.split(opt.ofile_folder)[0]
+        model_name = osp.join(folder, str(opt.pretrain_id), 'model.pt')
+        if osp.exists(model_name):
+            if opt.cuda:
+                save_dict = torch.load(model_name)
+            else:
+                save_dict = torch.load(model_name, map_location = 'cpu')
+
+            model.load_state_dict(save_dict['model_state_dict'])
+            print('Pre-trained model is loaded.', file = opt.log_file)
+        else:
+            raise Exception(f'save_dict does not exist for {model_name}')
 
     # Set up model and scheduler
     opt.optimizer = optim.Adam(model.parameters(), lr = opt.lr, weight_decay = opt.weight_decay)
