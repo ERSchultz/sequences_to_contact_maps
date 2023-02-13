@@ -41,7 +41,7 @@ milestones='25'
 # sign_plus with log preprocessing
 # merged dataset (all 3)
 
-id=371
+id=
 for lr in 1e-4
 do
   train
