@@ -315,9 +315,9 @@ def test(loader, model, opt, toprint):
     avg_loss = np.mean(loss_list)
     if toprint:
         print('Mean test/val loss: {:.4f}'.format(avg_loss), file = opt.log_file)
-        quantiles = np.percentile(loss_list, [25, 50, 75])
-        quantiles = np.round(quantiles, 4)
-        print(f'[25, 50, 75] quantiles test/val loss: {quantiles}\n', file = opt.log_file)
+        percentiles = np.percentile(loss_list, [25, 50, 75])
+        percentiles = np.round(percentiles, 4)
+        print(f'[25, 50, 75] percentiles test/val loss: {percentiles}\n', file = opt.log_file)
 
     return avg_loss
 
