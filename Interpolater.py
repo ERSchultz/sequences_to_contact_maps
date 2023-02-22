@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pyBigWig
 import scipy.stats as ss
-
 from scripts.plotting_utils import plot_matrix
 from scripts.utils import rescale_matrix
 
@@ -292,8 +291,8 @@ class Interpolater():
 
 
 def main():
-    dataset = 'dataset_01_26_23'
-    for sample in range(89, 93):
+    dataset = 'dataset_02_21_23'
+    for sample in range(1, 83):
         # this is the recommended option
         interpolater = Interpolater(['zeros', 'mappability-0.7'], dataset, sample)
         interpolater.run()
