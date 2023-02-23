@@ -8,4 +8,5 @@
 
 dir='/project2/depablo/erschultz'
 
-rm -r *plaid_cutoff
+cd ~
+rm -r dataset_02_20*
