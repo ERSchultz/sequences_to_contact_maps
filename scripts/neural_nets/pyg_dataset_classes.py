@@ -445,7 +445,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y_diag = torch.tensor(y_diag, dtype = torch.float32)
         return y, y_diag
 
-o
         if osp.exists(path):
             diag_chis_gt = torch.tensor(np.load(path), dtype = torch.float32)
         elif osp.exists(path2):
