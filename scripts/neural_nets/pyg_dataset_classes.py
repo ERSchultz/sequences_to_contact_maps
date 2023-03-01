@@ -447,8 +447,12 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def process_diag_params(self, raw_folder):
         path = osp.join(raw_folder, 'diag_chis_continuous.npy')
+        path2 = osp.join(raw_folder, 'diag_chis.npy')
         if osp.exists(path):
             diag_chis_gt = torch.tensor(np.load(path), dtype = torch.float32)
+        elif osp.exists(path2)""
+            diag_chis_gt = torch.tensor(np.load(path2), dtype = torch.float32)
+            assert len(diag_chis_gt) == self.m, f'incorrect size {len(diag_chis_gt)}'
         else:
             diag_chis_gt = None
             if self.output is not None:
