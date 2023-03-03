@@ -12,15 +12,11 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from core_test_train import core_test_train
+from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
-
-from core_test_train import core_test_train
-from result_summary_plots import plot_top_PCs
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
 from scripts.energy_utils import *
@@ -32,6 +28,9 @@ from scripts.plotting_utils import plot_matrix
 from scripts.similarity_measures import SCC
 from scripts.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
                            print_time, triu_to_full)
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
 
 def test_num_workers():
@@ -781,12 +780,37 @@ def plot_SCC_weights():
     plt.legend()
     plt.show()
 
+def temp_plot():
+    dir = '/home/erschultz/dataset_01_26_23/samples/sample202'
+    # /PCA-normalize-E/k8/replicate1'
+    y = np.load(osp.join(dir, 'y.npy'))
+    y = y.astype(float)
+    y /= np.mean(np.diagonal(y))
+
+    ticks = ['28.6 Mb', '54.2 Mb']
+    tick_locs = [0, 512]
+    plot_matrix(y, osp.join(dir, 'p_no_ticks.png'), title = None, vmin = 0,
+                vmax = 'mean', x_ticks = [], y_ticks = [])
+
+    plot_matrix(y, osp.join(dir, 'p_ticks.png'), title = None, vmin = 0,
+                vmax = 'mean', x_tick_locs = tick_locs, x_ticks = ticks, y_tick_locs = tick_locs, y_ticks = ticks)
+
+    # s = np.load(osp.join(dir, 's.npy'))
+    # L = (s+s.T)/2
+    # plot_matrix(L, osp.join(dir, 'L_no_ticks.png'), title = None, vmin = 'min',
+                # vmax = 'max', x_ticks = None, y_ticks = None, cmap='blue-red')
+
+
+
+
+
 if __name__ == '__main__':
+    temp_plot()
     # main2()
     # find_best_p_s()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
     # testGNNrank()
     # plot_SCC_weights()

@@ -750,8 +750,8 @@ def plot_xyz_gif(xyz, x, dir, ofile = 'xyz.gif', order = None):
     imageio.mimsave(osp.join(dir, ofile), frames, format='GIF', fps=1)
 
     # remove files
-    for filename in set(filenames):
-        os.remove(filename)
+    # for filename in set(filenames):
+        # os.remove(filename)
 
 def plot_sc_contact_maps(dataset, samples, ofolder = 'sc_contact', count = 20,
                         jobs = 1, overall = True, N_max = None, crop_size = None,
@@ -1010,7 +1010,7 @@ def plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, ref,
 ### Primary scripts ###
 def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 'max',
                     size_in = 6, minVal = None, maxVal = None, prcnt = False,
-                    cmap = None, x_ticks = None, y_ticks = None, triu = False,
+                    cmap = None, x_tick_locs = None, x_ticks = None, y_tick_locs = None, y_ticks = None, triu = False,
                     lines = []):
     """
     Plotting function for 2D arrays.
@@ -1105,15 +1105,17 @@ def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 'max',
     elif len(x_ticks) == 0:
         ax.axes.get_xaxis().set_visible(False)
     else:
-        ax.set_xticks([i+0.5 for i in range(W)])
-        ax.axes.set_xticklabels(x_ticks)
+        # ax.set_xticks([i+0.5 for i in range(W)])
+        ax.set_xticks(x_tick_locs)
+        ax.axes.set_xticklabels(x_ticks, rotation='horizontal')
 
     if y_ticks is None:
         pass
     elif len(y_ticks) == 0:
         ax.axes.get_yaxis().set_visible(False)
     else:
-        ax.set_yticks([i+0.5 for i in range(H)])
+        # ax.set_yticks([i+0.5 for i in range(H)])
+        ax.set_yticks(y_tick_locs)
         ax.axes.set_yticklabels(y_ticks, rotation='horizontal')
 
     if triu:

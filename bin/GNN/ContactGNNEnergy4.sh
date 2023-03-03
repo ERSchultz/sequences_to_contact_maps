@@ -25,7 +25,7 @@ hiddenSizesList='8-8-8-8'
 EncoderHiddenSizesList='64'
 updateHiddenSizesList='1000-1000-64'
 
-outputPreprocesing='log'
+outputPreprocesing='none'
 headArchitecture='bilinear'
 headArchitecture2='fc-fill_512'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'

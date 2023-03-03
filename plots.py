@@ -118,13 +118,13 @@ def update_result_tables(model_type = None, mode = None, output_mode = 'contact'
             wr.writerows(results)
 
 def plot_xyz_gif_wrapper():
-    dir = '/home/erschultz/dataset_test/samples/sample1'
+    dir = '/home/erschultz/dataset_test/samples/sample4001'
     file = osp.join(dir, 'data_out/output.xyz')
 
-    m=200
+    m=250
 
     x = np.load(osp.join(dir, 'x.npy'))[:m, :]
-    x = np.arange(1, m+1)
+    # x = np.arange(1, m+1) # use this to color by m
     xyz = xyz_load(file, multiple_timesteps=True)[::, :m, :]
     print(xyz.shape)
     xyz_write(xyz, osp.join(dir, 'data_out/output_x.xyz'), 'w', x = x)
