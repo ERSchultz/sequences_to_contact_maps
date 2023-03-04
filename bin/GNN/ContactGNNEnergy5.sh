@@ -38,7 +38,7 @@ batchSize=1
 # sign_plus with log preprocessing
 
 
-id=386
+id=389
 for lr in 1e-4
 do
   train
