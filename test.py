@@ -9,6 +9,7 @@ import hicrep.utils
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -20,11 +21,11 @@ from scipy.stats import gaussian_kde
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
 from scripts.energy_utils import *
-from scripts.load_utils import load_sc_contacts, save_sc_contacts
+from scripts.load_utils import load_L, load_sc_contacts, save_sc_contacts
 from scripts.neural_nets.dataset_classes import make_dataset
 from scripts.neural_nets.networks import get_model
 from scripts.neural_nets.utils import get_dataset
-from scripts.plotting_utils import plot_matrix
+from scripts.plotting_utils import RED_CMAP, plot_matrix
 from scripts.similarity_measures import SCC
 from scripts.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
                            print_time, triu_to_full)
@@ -672,42 +673,46 @@ def find_best_p_s():
     plt.legend()
     plt.show()
 
-def testGNNrank():
+def testGNNrank(dataset, GNN_ID):
     '''
     check rank of GNN predicted E.
     tend to be (really) low rank unfortunately
     '''
-    dir = '/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy'
-    GNN = 363
-    GNN_dir = osp.join(dir, f'{GNN}')
-    samples = [324, 981, 1936, 2834, 3464]
+    dir = f'/home/erschultz/{dataset}/samples'
+    samples = list(range(201, 211))
 
     cmap = matplotlib.cm.get_cmap('tab10')
     ind = np.arange(len(samples)) % cmap.N
     colors = cmap(ind)
+    pca = PCA()
 
     fig, ax = plt.subplots()
     ax2 = ax.twinx()
     ax2.get_yaxis().set_visible(False)
-
     for i, sample in enumerate(samples):
-        s_dir = osp.join(GNN_dir, f'dataset_02_06_23_sample{sample}-regular/sample{sample}-regular')
-        s_hat = np.loadtxt(osp.join(s_dir, 'energy_hat.txt'))
-        s = np.loadtxt(osp.join(s_dir, 'energy.txt'))
+        print(sample)
+        s_dir = osp.join(dir, f'sample{sample}')
+        S_gnn = np.load(osp.join(s_dir, f'GNN-{GNN_ID}-E/k0/replicate1/resources/s.npy'))
 
         ax2.plot(np.NaN, np.NaN, label = sample, color = colors[i])
 
-        pca = PCA()
-        pca = pca.fit(s_hat)
-        prcnt = pca.explained_variance_ratio_
 
         print('GNN')
+        pca = pca.fit(S_gnn)
+        prcnt = pca.explained_variance_ratio_
         print(prcnt[0:4])
         ax.plot(prcnt[:8], label = 'GNN', color = colors[i], ls = '--')
         print(np.sum(prcnt[0:4]))
         print()
 
-        pca = pca.fit(s)
+        pca_dir = osp.join(s_dir, f'PCA-normalize-E/k8/replicate1')
+        L = load_L(pca_dir)
+        with open(osp.join(pca_dir, 'iteration13/config.json'), 'r') as f:
+            config = json.load(f)
+        diag_chis_continuous = calculate_diag_chi_step(config)
+        D = calculate_D(diag_chis_continuous)
+        S = calculate_S(L, D)
+        pca = pca.fit(S)
         prcnt = pca.explained_variance_ratio_
 
         print('Sim')
@@ -720,6 +725,7 @@ def testGNNrank():
     ax.set_xlabel('PC', fontsize=16)
     ax2.legend(loc='upper right')
     ax.legend(loc='lower right')
+    plt.title(dataset)
     plt.show()
 
 def main2():
@@ -781,36 +787,97 @@ def plot_SCC_weights():
     plt.show()
 
 def temp_plot():
-    dir = '/home/erschultz/dataset_01_26_23/samples/sample202'
-    # /PCA-normalize-E/k8/replicate1'
-    y = np.load(osp.join(dir, 'y.npy'))
-    y = y.astype(float)
-    y /= np.mean(np.diagonal(y))
+    red_blue_cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                             [(0, 'blue'),
+                                             (0.5, 'white'),
+                                              (1, 'red')], N=126)
 
-    ticks = ['28.6 Mb', '54.2 Mb']
-    tick_locs = [0, 512]
-    plot_matrix(y, osp.join(dir, 'p_no_ticks.png'), title = None, vmin = 0,
-                vmax = 'mean', x_ticks = [], y_ticks = [])
+    sample=207
+    k=12
+    dir = f'/home/erschultz/dataset_01_26_23/samples/sample{sample}'
+    y_exp = np.load(osp.join(dir, 'y.npy')).astype(float)
+    y_exp /= np.mean(np.diagonal(y_exp))
 
-    plot_matrix(y, osp.join(dir, 'p_ticks.png'), title = None, vmin = 0,
-                vmax = 'mean', x_tick_locs = tick_locs, x_ticks = ticks, y_tick_locs = tick_locs, y_ticks = ticks)
+    pca_dir = osp.join(dir, f'PCA-normalize-E/k{k}/replicate1')
+    y_pca = np.load(osp.join(pca_dir, 'y.npy')).astype(float)
+    y_pca /= np.mean(np.diagonal(y_pca))
 
-    # s = np.load(osp.join(dir, 's.npy'))
-    # L = (s+s.T)/2
-    # plot_matrix(L, osp.join(dir, 'L_no_ticks.png'), title = None, vmin = 'min',
-                # vmax = 'max', x_ticks = None, y_ticks = None, cmap='blue-red')
+    def diff_plot(a, b, label_a, label_b, fname, mode = 'y'):
+        fig, (axcb12, ax1, ax2, ax3, axcb3) = plt.subplots(1, 5,
+                                        gridspec_kw={'width_ratios':[0.08,1,1,1,0.08]})
+        fig.set_figheight(6)
+        fig.set_figwidth(6*2.5)
+        # fig.suptitle(f'Sample {sample}', fontsize = 16)
+        if mode == 'y':
+            vmin = 0
+            vmax = np.mean(a)
+            cmap = RED_CMAP
+        elif mode == 'corr':
+            vmin = 0
+            vmax = 1
+            cmap = RED_CMAP
+        elif mode == 'diag':
+            vmin = np.nanpercentile(a, 1)
+            vmax = np.nanpercentile(a, 99)
+            d_vmin = 1-vmin
+            d_vmax = vmax-1
+            d = max(d_vmax, d_vmin)
+            vmin = 1 - d
+            vmax = 1 + d
+            cmap = red_blue_cmap
+        s1 = sns.heatmap(a, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
+                        ax = ax1, cbar = False)
+        s1.set_title(label_a, fontsize = 16)
+        s2 = sns.heatmap(b, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
+                        ax = ax2, cbar_ax = axcb12)
+        s2.set_title(label_b, fontsize = 16)
 
+        s2.set_yticks([])
+        axcb12.yaxis.set_ticks_position('left')
 
+        arr = a - b
+        vmin = np.nanpercentile(arr, 1)
+        vmax = np.nanpercentile(arr, 99)
+        vmax = max(vmax, vmin * -1)
+        vmin = vmax * -1
+        s3 = sns.heatmap(arr, linewidth = 0, vmin = vmin, vmax = vmax, cmap = red_blue_cmap,
+                        ax = ax3, cbar_ax = axcb3)
+        s3.set_title(f'{label_a} - {label_b}', fontsize = 16)
+        s3.set_yticks([])
+
+        fig.suptitle(f'Sample {sample}')
+        plt.tight_layout()
+        plt.savefig(osp.join(pca_dir, fname))
+        plt.close()
+
+    diff_plot(y_exp, y_pca, r'$H^{exp}$', r'$H^{pca}$', 'diff.png')
+
+    corr_exp = np.corrcoef(y_exp)
+    corr_pca = np.corrcoef(y_pca)
+    diff_plot(corr_exp, corr_pca, r'$H^{exp}$', r'$H^{pca}$', 'corr_diff.png', 'corr')
+
+    plot_matrix(corr_exp, osp.join(dir, 'corr.png'), vmin = 0, vmax = 'max')
+    plot_matrix(y_exp, osp.join(dir, 'y_max.png'), vmin = 0, vmax = 'max')
+
+    y_diag_exp = np.load(osp.join(dir, 'y_diag.npy'))
+    y_diag_pca = np.load(osp.join(pca_dir, 'y_diag.npy'))
+    diff_plot(y_diag_exp, y_diag_pca, r'$H^{exp}_{diag}$', r'$H^{pca}_{diag}$',
+            'diag_diff.png', 'diag')
+
+    corr_exp = np.corrcoef(y_diag_exp)
+    corr_pca = np.corrcoef(y_diag_pca)
+    diff_plot(corr_exp, corr_pca, r'$H^{exp}_{diag}$', r'$H^{pca}_{diag}$',
+            'corr_diag_diff.png', 'corr')
 
 
 
 if __name__ == '__main__':
-    temp_plot()
+    # temp_plot()
     # main2()
     # find_best_p_s()
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
     # debugModel('ContactGNNEnergy')
-    # testGNNrank()
+    testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()

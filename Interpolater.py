@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 import os.path as osp
 import shutil
@@ -6,7 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pyBigWig
 import scipy.stats as ss
-from scripts.plotting_utils import plot_matrix
+import seaborn as sns
+from scripts.plotting_utils import RED_CMAP, plot_matrix
 from scripts.utils import rescale_matrix
 
 
@@ -37,7 +39,6 @@ class Interpolater():
         else:
             assert dir is not None, 'must specify dir or dataset and sample'
             self.dir = dir
-
 
         self.odir = osp.join(self.dir, 'Interpolation') # output directory
         if not osp.exists(self.odir):
@@ -106,7 +107,7 @@ class Interpolater():
 
             y_interp = self.linear_interpolate(fill_mean = False)
 
-        print(f'Interpolating {len(self.interp_locations)} rows')
+        print(f'Interpolating {len(self.interp_locations)} rows', file = self.ofile)
 
         # plot_matrix(self.y, osp.join(self.odir, f'y_lines_{"_".join(self.methods)}.png'),
                     # vmax = 'mean', lines = self.interp_locations)
@@ -170,7 +171,8 @@ class Interpolater():
             cutoff = 0.6
 
         # http://hgdownload.soe.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/
-        bw = pyBigWig.open('/home/erschultz/sequences_to_contact_maps/chip_seq_data/wgEncodeDukeMapabilityUniqueness35bp.bigWig')
+        file = '/home/erschultz/sequences_to_contact_maps/chip_seq_data/wgEncodeDukeMapabilityUniqueness35bp.bigWig'
+        bw = pyBigWig.open(file)
 
         mappability = []
         for i in range(m):
@@ -289,30 +291,66 @@ class Interpolater():
 
         return y
 
+def wrapper(dataset, sample):
+    # this is the recommended option
+    interpolater = Interpolater(['zeros', 'mappability-0.7'], dataset, sample)
+    interpolater.run()
+
+    dir = f'/home/erschultz/{dataset}/samples/sample{sample+1000}'
+    if not osp.exists(dir):
+        os.mkdir(dir, mode=0o755)
+    shutil.copyfile(osp.join(interpolater.odir, 'y_pool_zeros_mappability-0.7.png'),
+                    osp.join(dir, 'y.png'))
+    shutil.copyfile(osp.join(interpolater.odir, 'y_pool_interpolate_zeros_mappability-0.7.npy'),
+                    osp.join(dir, 'y.npy'))
+
+    with open(osp.join(dir, 'import.log'), 'w') as f:
+        f.write(f'Interpolation of sample {sample} with mappability-0.7 and zeros\n')
+        f.write(f'chrom={interpolater.chrom}\n')
+        f.write(f'start={interpolater.start}\n')
+        f.write(f'end={interpolater.end}\n')
+        f.write(f'resolution={interpolater.res * 5}\n')
+        f.write('norm=NONE')
 
 def main():
-    dataset = 'dataset_02_21_23'
-    for sample in range(1, 83):
-        # this is the recommended option
-        interpolater = Interpolater(['zeros', 'mappability-0.7'], dataset, sample)
-        interpolater.run()
+    dataset = 'dataset_03_21_23'
+    mapping = [(dataset, i) for i in range(793,874)]
+    with multiprocessing.Pool(8) as p:
+        p.starmap(wrapper, mapping)
 
-        dir = f'/home/erschultz/{dataset}/samples/sample{sample+200}'
-        if not osp.exists(dir):
-            os.mkdir(dir, mode=0o755)
-        shutil.copyfile(osp.join(interpolater.odir, 'y_pool_zeros_mappability-0.7.png'),
-                        osp.join(dir, 'y.png'))
-        shutil.copyfile(osp.join(interpolater.odir, 'y_pool_interpolate_zeros_mappability-0.7.npy'),
-                        osp.join(dir, 'y.npy'))
 
-        with open(osp.join(dir, 'import.log'), 'w') as f:
-            f.write(f'Interpolation of sample {sample} with mappability-0.7 and zeros\n')
-            f.write(f'chrom={interpolater.chrom}\n')
-            f.write(f'start={interpolater.start}\n')
-            f.write(f'end={interpolater.end}\n')
-            f.write(f'resolution={interpolater.res * 5}\n')
-            f.write('norm=NONE')
+def example_figure(dataset, sample):
+    dir = osp.join(f'/home/erschultz/{dataset}')
+    dir_raw = osp.join(dir, f'samples/sample{sample}')
+    y_raw = np.load(osp.join(dir_raw, 'y.npy'))
+    # dir_interp = osp.join(dir, f'samples/sample{sample+200}')
+    # y_interp = np.load(osp.join(dir_interp, 'y.npy'))
+    y_interp = np.load(osp.join(dir_raw, 'Interpolation/zeros_mappability-0.7/y_interpolate_zeros_mappability-0.7.npy'))
+
+
+    fig, (ax1, ax2, axcb) = plt.subplots(1, 3,
+                                    gridspec_kw={'width_ratios':[1,1,0.08]})
+    fig.set_figheight(6)
+    fig.set_figwidth(6*1.5)
+    vmin = 0
+    vmax = np.mean(y_raw)
+
+    s1 = sns.heatmap(y_raw, linewidth = 0, vmin = vmin, vmax = vmax, cmap = RED_CMAP,
+                    ax = ax1, cbar = False)
+    s1.set_title('Raw Hi-C', fontsize = 16)
+    s2 = sns.heatmap(y_interp, linewidth = 0, vmin = vmin, vmax = vmax, cmap = RED_CMAP,
+                    ax = ax2, cbar_ax = axcb)
+    s2.set_title('Interpolation', fontsize = 16)
+
+    s2.set_yticks([])
+    # axcb.yaxis.set_ticks_position('left')
+
+    # fig.suptitle(f'Sample {sample}')
+    plt.tight_layout()
+    plt.savefig(osp.join(dir_raw, 'interp_figure.png'))
+    plt.close()
 
 
 if __name__ == '__main__':
     main()
+    # example_figure('dataset_02_04_23', 1)

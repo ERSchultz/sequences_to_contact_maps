@@ -21,9 +21,9 @@ from sklearn.cluster import KMeans
 from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 
 from ..argparse_utils import finalize_opt, get_base_parser
-from ..energy_utils import calculate_D, calculate_SD
+from ..energy_utils import calculate_D, calculate_S
 from ..knightRuiz import knightRuiz
-from ..load_utils import load_Y
+from ..load_utils import load_L, load_Y
 from ..utils import DiagonalPreprocessing, rescale_matrix
 from .dataset_classes import DiagFunctions, make_dataset
 from .networks import get_model
@@ -177,7 +177,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def process(self):
         for i, raw_folder in enumerate(self.raw_file_names):
-            x, psi = self.process_x_psi(raw_folder)
             self.contact_map, contact_map_diag = self.process_y(raw_folder)
             self.diag_chis_continuous, self.diag_chis_continuous_mlp = self.process_diag_params(raw_folder)
             edge_index, pos_edge_index, neg_edge_index = self.generate_edge_index()
@@ -221,63 +220,19 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
                 graph.energy = torch.tensor(D, dtype = torch.float32)
             elif self.output.startswith('energy_sym'):
-                # first look for s
-                s_path1 = osp.join(raw_folder, 's.npy')
-                s_path2 = osp.join(raw_folder, 's_matrix.txt')
-                if osp.exists(s_path1) or osp.exists(s_path2):
-                    if osp.exists(s_path1):
-                        s = np.load(s_path1)
-                    else:
-                        s = np.loadtxt(s_path2)
-                    if self.crop is not None:
-                        s = s[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
-                    energy = torch.tensor(s, dtype = torch.float32)
-                else:
-                    # look for chi
-                    chi_path1 = osp.join(raw_folder, 'chis.npy')
-                    chi_path2 = osp.join(osp.split(osp.split(raw_folder)[0])[0], 'chis.npy')
-                    if osp.exists(chi_path1):
-                        chi = np.load(chi_path1)
-                    elif osp.exists(chi_path2):
-                        chi = np.load(chi_path2)
-                    else:
-                        raise Exception(f'chi does not exist: {chi_path1}, {chi_path2}')
-                    chi = torch.tensor(chi, dtype = torch.float32)
-                    energy = x @ chi @ x.t()
+                energy = load_L(raw_folder)
+                graph.energy = (energy + energy.t()) / 2 # symmetric
 
-                graph.energy = (energy + energy.t()) / 2
                 if self.output.startswith('energy_sym_diag'):
                     D = calculate_D(graph.diag_chi_continuous)
                     if self.crop is not None:
                         D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
                     graph.energy += torch.tensor(D, dtype = torch.float32)
-            elif self.output == 'energy_SD' or self.output == 'energy_ED':
-                s_path1 = osp.join(raw_folder, 's.npy')
-                s_path2 = osp.join(raw_folder, 's_matrix.txt')
-                if osp.exists(s_path1):
-                    S = np.load(s_path1)
-                else:
-                    S = np.loadtxt(s_path2)
-                if self.crop is not None:
-                    S = S[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
-
-                D = calculate_D(graph.diag_chi_continuous)
-                if self.crop is not None:
-                    D = D[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
-
-                SD = calculate_SD(S, D)
-
-                if self.output == 'energy_SD':
-                    graph.energy = torch.tensor(SD, dtype = torch.float32)
-                else:
-                    ED = s_to_E(SD)
-                    graph.energy = torch.tensor(ED, dtype = torch.float32)
             else:
                 raise Exception(f'Unrecognized output {self.output}')
 
             if self.output is not None and self.output_preprocesing == 'log':
                 graph.energy = torch.sign(graph.energy) * torch.log(torch.abs(graph.energy)+1)
-
 
             del graph.diag_chi_continuous
             del graph.diag_chi_continuous_mlp
@@ -289,37 +244,26 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 deg = np.array(torch_geometric.utils.degree(graph.edge_index[0],
                                                             graph.num_nodes))
                 self.degree_list.append(deg)
-
-    def process_x_psi(self, raw_folder):
-        '''
-        Helper function to load the appropriate particle type matrix and
-        apply any necessary preprocessing.
-        '''
-        x_file = osp.join(raw_folder, 'x.npy')
-        if osp.exists(x_file):
-            x = np.load(x_file)
-            if self.crop is not None:
-                x = x[self.crop[0]:self.crop[1], :]
-
-            psi_file = osp.join(raw_folder, 'psi.npy')
-            if osp.exists(psi_file):
-                psi = np.load(psi_file)
-                if self.crop is not None:
-                    psi = psi[self.crop[0]:self.crop[1], :]
-            else:
-                psi = x.copy()
-
-            if self.rescale is not None:
-                x = block_reduce(x, (self.rescale, 1), np.mean) # mean-pool operation
-                psi = block_reduce(psi, (self.rescale, 1), np.mean)
-
-            x = torch.tensor(x, dtype = torch.float32)
-            psi = torch.tensor(psi, dtype = torch.float32)
-        else:
-            x = None
-            psi = None
-
-        return x, psi
+    # def process_psi(self, raw_folder):
+    #     '''
+    #     Helper function to load the appropriate particle type matrix and
+    #     apply any necessary preprocessing.
+    #     '''
+    #     x_file = osp.join(raw_folder, 'x.npy')
+    #     if osp.exists(x_file):
+    #         x = np.load(x_file)
+    #         if self.crop is not None:
+    #             x = x[self.crop[0]:self.crop[1], :]
+    #
+    #
+    #         if self.rescale is not None:
+    #             x = block_reduce(x, (self.rescale, 1), np.mean) # mean-pool operation
+    #
+    #         x = torch.tensor(x, dtype = torch.float32)
+    #     else:
+    #         x = None
+    #
+    #     return x
 
     def load_y(self, raw_folder):
         '''Helper function to load raw contact map and apply normalization.'''

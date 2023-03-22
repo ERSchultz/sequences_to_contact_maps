@@ -1,7 +1,7 @@
 ## interaction converter ##
 import numpy as np
 
-from .energy_utils import calculate_E_S
+from .energy_utils import calculate_L
 
 
 class InteractionConverter():
@@ -27,19 +27,19 @@ class InteractionConverter():
 
         self.types = np.arange(0, curr_type, 1)
 
-        if chi is not None:
-            self.E, self.S = calculate_E_S(self.allStrings, self.chi)
-        else:
-            self.S = None
-            self.E = None
-
-    def setChi(self, chi):
-        self.chi = chi
-
-    def getS(self):
-        _, s = calculate_E_S(self.allStrings, self.chi)
-        self.S = (s + s.T ) / 2
-        return self.S
+    #     if chi is not None:
+    #         self.E, self.S = calculate_E_S(self.allStrings, self.chi)
+    #     else:
+    #         self.S = None
+    #         self.E = None
+    #
+    # def setChi(self, chi):
+    #     self.chi = chi
+    #
+    def getL(self):
+        L = calculate_L(self.allStrings, self.chi)
+        self.L = (L + L.T ) / 2
+        return self.L
 
     def comb2Type(self, comb):
         # input comb must be a frozenset

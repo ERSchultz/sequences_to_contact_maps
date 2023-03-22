@@ -34,6 +34,9 @@ from .utils import DiagonalPreprocessing, crop, triu_to_full
 from .xyz_utils import (find_dist_between_centroids, find_label_centroid,
                         xyz_load)
 
+RED_CMAP = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+                                         [(0,    'white'),
+                                          (1,    'red')], N=126)
 
 #### Functions for plotting loss ####
 def plot_combined_models(modelType, ids):
@@ -50,7 +53,7 @@ def plot_combined_models(modelType, ids):
         opt = finalize_opt(opt, parser, local = True, debug = True)
         opts.append(opt)
 
-    imagePath = osp.join(path, '{} combined'.format(ArgparserConverter.list2str(ids)))
+    imagePath = osp.join(path, f'{ArgparserConverter.list2str(ids)} combined')
     if not osp.exists(imagePath):
         os.mkdir(imagePath, mode = 0o755)
 
@@ -411,13 +414,16 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
                 # plot dif
                 dif = y - yhat
                 plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
-                                vmax = v_max, title = r'S - $\hat{S}$', cmap = 'blue-red')
-            elif opt.output_mode == 'diag_chi_continuous' or opt.output_mode == 'diag_chi_step':
+                                vmax = v_max, title = r'S - $\hat{S}$',
+                                cmap = 'blue-red')
+            elif opt.output_mode in {'diag_chi_continuous', 'diag_chi_step'}:
                 plot_diag_chi(None, subpath, y, 'ground_truth', False,
-                            'diag_chi_hat.png', yhat, title = f'MSE: {np.round(loss, 3)}',
+                            'diag_chi_hat.png', yhat,
+                            title = f'MSE: {np.round(loss, 3)}',
                             label = 'estimate')
                 plot_diag_chi(None, subpath, y, 'ground_truth', True,
-                            'diag_chi_hat_log.png', yhat, title = f'MSE: {np.round(loss, 3)}',
+                            'diag_chi_hat_log.png', yhat,
+                            title = f'MSE: {np.round(loss, 3)}',
                             label = 'estimate')
 
                 np.savetxt(osp.join(subpath, 'diag_chi.txt'), y, fmt = '%.3f')
@@ -510,15 +516,17 @@ def plotEnergyPredictions(val_dataloader, model, opt, count=5):
         plaid_hat = model.plaid_component(latent)
         if plaid_hat is not None:
             plaid_hat = plaid_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
-            plot_matrix(plaid_hat, osp.join(subpath, 'plaid_hat.png'), vmin = -1 * v_max,
-                            vmax = v_max, title = 'plaid portion', cmap = 'blue-red')
+            plot_matrix(plaid_hat, osp.join(subpath, 'plaid_hat.png'),
+                            vmin = -1 * v_max, vmax = v_max,
+                            title = 'plaid portion', cmap = 'blue-red')
 
         # plot diag contribution
         diagonal_hat = model.diagonal_component(latent)
         if diagonal_hat is not None:
             diagonal_hat = diagonal_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
-            plot_matrix(diagonal_hat, osp.join(subpath, 'diagonal_hat.png'), vmin = -1 * v_max,
-                            vmax = v_max, title = 'diagonal portion', cmap = 'blue-red')
+            plot_matrix(diagonal_hat, osp.join(subpath, 'diagonal_hat.png'),
+                            vmin = -1 * v_max, vmax = v_max,
+                            title = 'diagonal portion', cmap = 'blue-red')
 
 
         # tar subpath
@@ -559,7 +567,7 @@ def plotDiagChiPredictions(val_dataloader, model, opt, count=5):
         if 'bond_length' in opt.output_mode:
             bond_length_hat = yhat[-1]
             yhat = yhat[:-1]
-        if opt.output_mode == 'diag_chi_continuous' or opt.output_mode == 'diag_chi_step':
+        if opt.output_mode in {'diag_chi_continuous', 'diag_chi_step'}:
             # no need to do anything
             pass
         elif opt.output_mode.startswith('diag_chi'):
@@ -580,7 +588,9 @@ def plotDiagChiPredictions(val_dataloader, model, opt, count=5):
             if method == 'logistic':
                 print('predicted params:', yhat)
                 min_val, max_val, slope, midpoint = yhat
-                yhat = (max_val - min_val)/(1 + np.exp(-1*slope * (d_arr - midpoint))) + min_val
+                num = max_val - min_val
+                denom = 1 + np.exp(-1*slope * (d_arr - midpoint))
+                yhat = num / denom + min_val
             elif method == 'log':
                 scale, slope, constant = yhat
                 yhat = scale * np.log(slope * d_arr + 1) + args.constant
@@ -601,8 +611,8 @@ def plotDiagChiPredictions(val_dataloader, model, opt, count=5):
                     'diag_chi_hat.png', yhat, title = f'MSE: {np.round(loss, 3)}',
                     label = 'estimate')
         plot_diag_chi(None, subpath, y, 'ground_truth', True,
-                    'diag_chi_hat_log.png', yhat, title = f'MSE: {np.round(loss, 3)}',
-                    label = 'estimate')
+                    'diag_chi_hat_log.png', yhat,
+                    title = f'MSE: {np.round(loss, 3)}',label = 'estimate')
 
         np.savetxt(osp.join(subpath, 'diag_chi.txt'), y, fmt = '%.3f')
         np.savetxt(osp.join(subpath, 'diag_chi_hat.txt'), yhat, fmt = '%.3f')
@@ -626,7 +636,8 @@ def downsamplingAnalysis(val_dataloader, model, opt, count=5):
         y_preprocessing = opt_copy.y_preprocessing
     opt_copy.y_preprocessing = 'sweep200000_' + y_preprocessing
 
-    downsample_loss = analysisIterator(val_dataloader, model, opt_copy, count, 'downsampling')
+    downsample_loss = analysisIterator(val_dataloader, model, opt_copy, count,
+                                        'downsampling')
 
     print('Original sampling (100%) Results:', file = opt.log_file)
     opt_copy = copy.copy(opt) # shallow copy only
@@ -640,7 +651,8 @@ def downsamplingAnalysis(val_dataloader, model, opt, count=5):
         y_preprocessing = opt_copy.y_preprocessing
     opt_copy.y_preprocessing = 'sweep500000_' + y_preprocessing
 
-    original_loss = analysisIterator(val_dataloader, model, opt_copy, count, 'regular')
+    original_loss = analysisIterator(val_dataloader, model, opt_copy, count,
+                                    'regular')
 
     print('Upsampling (200%) Results:', file = opt.log_file)
     opt_copy = copy.copy(opt) # shallow copy only
@@ -655,7 +667,8 @@ def downsamplingAnalysis(val_dataloader, model, opt, count=5):
     opt_copy.y_preprocessing = 'sweep1000000_' + y_preprocessing
 
     try:
-        upsample_loss = analysisIterator(val_dataloader, model, opt_copy, count, 'upsampling')
+        upsample_loss = analysisIterator(val_dataloader, model, opt_copy, count,
+                                        'upsampling')
     except Exception as e:
         print(e)
         upsample_loss = None
@@ -707,7 +720,8 @@ def plot_xyz(xyz, L, x=None, ofile=None, show=True, title=None, legend=True):
         for t in range(n_types):
             condition = types == t
             # print(condition)
-            ax.scatter(xyz[condition,0], xyz[condition,1], xyz[condition,2], label = t)
+            ax.scatter(xyz[condition,0], xyz[condition,1], xyz[condition,2],
+                        label = t)
         if legend:
             plt.legend()
     elif len(x.shape) == 1:
@@ -764,10 +778,12 @@ def plot_sc_contact_maps(dataset, samples, ofolder = 'sc_contact', count = 20,
         dir = osp.join(dataset, 'samples', f'sample{sample}')
         odir = osp.join(dir, ofolder)
 
-        sc_contacts = load_sc_contacts(dir, zero_diag = True, jobs = jobs, triu = True,
-                                        N_max = N_max, correct_diag = correct_diag,
+        sc_contacts = load_sc_contacts(dir, zero_diag = True, jobs = jobs,
+                                        triu = True, N_max = N_max,
+                                        correct_diag = correct_diag,
                                         sparsify = sparsify)
-        plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall, crop_size)
+        plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall,
+                                        crop_size)
 
 def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False,
                                 crop_size = None, vmax = 'mean', save_txt = False,
@@ -776,7 +792,7 @@ def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False,
     Plot sc contact maps.
 
     Inputs:
-        sc_contacts: np array of sc contact maps (in full or flattened upper traingle)
+        sc_contacts: array of sc contact maps (in full or flattened upper triangle)
         odir: directory to write to
         count: number of plots to make
         jobs: number of jobs for plotting in parallel
@@ -828,9 +844,11 @@ def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False,
             filenames.append(f'{i}.png')
             title = i if title_index else None
             if jobs > 1:
-                mapping.append((contact_map, osp.join(odir, f'{i}.png'), title, 0, vmax))
+                mapping.append((contact_map, osp.join(odir, f'{i}.png'),
+                                title, 0, vmax))
             else:
-                plot_matrix(contact_map, osp.join(odir, f'{i}.png'), title = title, vmax = vmax)
+                plot_matrix(contact_map, osp.join(odir, f'{i}.png'),
+                            title = title, vmax = vmax)
 
         if overall:
             overall_map += contact_map
@@ -864,7 +882,8 @@ def plot_centroid_distance(dir = '/home/eric/dataset_test/samples',
 
 def plot_centroid_distance_sample(dir, sample):
     sample_dir = osp.join(dir, f'sample{sample}')
-    xyz = xyz_load(osp.join(sample_dir, 'data_out', 'output.xyz'), multiple_timesteps = True)
+    xyz = xyz_load(osp.join(sample_dir, 'data_out', 'output.xyz'),
+                    multiple_timesteps = True)
     N, _, _ = xyz.shape
     _, psi = load_X_psi(osp.join(dir, f'sample{sample}'))
     m, k = psi.shape
@@ -1010,8 +1029,8 @@ def plot_mean_dist(meanDist, path, ofile, diag_chis_step, logx, ref,
 ### Primary scripts ###
 def plot_matrix(arr, ofile = None, title = None, vmin = 0, vmax = 'max',
                     size_in = 6, minVal = None, maxVal = None, prcnt = False,
-                    cmap = None, x_tick_locs = None, x_ticks = None, y_tick_locs = None, y_ticks = None, triu = False,
-                    lines = []):
+                    cmap = None, x_tick_locs = None, x_ticks = None,
+                    y_tick_locs = None, y_ticks = None, triu = False, lines = []):
     """
     Plotting function for 2D arrays.
 
@@ -1158,7 +1177,8 @@ def plot_matrix_gif(arr, dir, ofile = None, title = None, vmin = 0, vmax = 1,
 def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None,
                     dataset = None, samples = None):
     if model is None:
-        model, train_loss_arr, val_loss_arr = load_saved_model(opt, verbose = False, throw = False)
+        model, train_loss_arr, val_loss_arr = load_saved_model(opt, verbose = False,
+                                                                throw = False)
     if model is not None and dataset is None:
         dataset = get_dataset(opt, names = True, minmax = True, samples = samples)
         opt.valN = len(dataset)

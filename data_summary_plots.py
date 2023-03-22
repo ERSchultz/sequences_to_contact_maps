@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
-from scripts.energy_utils import calculate_D, s_to_E
+from scripts.energy_utils import calculate_D
 from scripts.InteractionConverter import InteractionConverter
 from scripts.knightRuiz import knightRuiz
 from scripts.load_utils import load_all, load_contact_map, load_X_psi, load_Y
@@ -197,7 +197,7 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
         if not osp.exists(figures_path):
             os.mkdir(figures_path, mode = 0o755)
 
-        x, psi, chi, _, e, s, y, ydiag = load_all(path, data_folder = dataFolder,
+        x, psi, chi, _, L, y, ydiag = load_all(path, data_folder = dataFolder,
                                                 save = True,
                                                 throw_exception = False)
 
@@ -318,38 +318,8 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
 
 
         if plot_energy:
-            SD = None
-            if s is not None:
-                plot_matrix(s, osp.join(path, 's.png'), vmax = 'max', vmin = 'min',
-                            cmap = 'blue-red')
-                s_sym = (s + s.T)/2
-                np.save(osp.join(path, 's_sym.npy'), s_sym)
-                plot_matrix(s_sym, osp.join(path, 's_sym.png'), vmax = 'max', vmin = 'min',
-                            cmap = 'blue-red')
-
-                SD = s_sym + D + np.diag(np.diagonal(D.copy()))
-                np.save(osp.join(path, 'sd.npy'), SD)
-                SD_gnn = s_sym + D
-                np.save(osp.join(path, 'sd_gnn.npy'), SD_gnn)
-                plot_matrix(SD, osp.join(path, 'SD.png'), vmax = 'max', vmin = 'min',
-                            cmap = 'blue-red')
-
-                # ref = np.loadtxt(osp.join(path, 'GNN-223-S/k0/replicate1/resources/s_matrix.txt'))
-                # ref_plaid = np.loadtxt(osp.join(path, 'GNN-223-S/k0/replicate1/resources/plaid_hat.txt'))
-                # ref_diag = np.loadtxt(osp.join(path, 'GNN-223-S/k0/replicate1/resources/diagonal_hat.txt'))
-                # print(mean_squared_error(SD, ref))
-                # res = minimize(loss, (1, 1), args = (SD, ref_plaid, ref_diag))
-                # print(res)
-
-            if e is not None:
-                plot_matrix(e, osp.join(path, 'e.png'), vmax = 'max', vmin = 'min',
-                            cmap = 'blue-red')
-                if SD is None:
-                    ED = e + 2*D
-                else:
-                    ED = s_to_E(SD)
-                np.save(osp.join(path, 'ed.npy'), ED)
-                plot_matrix(ED, osp.join(path, 'ED.png'), vmax = 'max', vmin = 'min',
+            if L is not None:
+                plot_matrix(L, osp.join(path, 'L.png'), vmax = 'max', vmin = 'min',
                             cmap = 'blue-red')
 
         if plot_x:
@@ -375,7 +345,7 @@ if __name__ == '__main__':
     dataset = 'dataset_02_04_23'
     data_dir = osp.join(dir, dataset)
     basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                plot_chi = False, sampleID = '202')
+                plot_chi = False, sampleID = 207)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

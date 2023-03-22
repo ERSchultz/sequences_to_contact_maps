@@ -12,7 +12,7 @@ import numpy as np
 import scipy.sparse as sp
 from scipy.ndimage import gaussian_filter
 
-from .energy_utils import calculate_E_S, calculate_S, s_to_E
+from .energy_utils import calculate_L
 from .utils import (LETTERS, DiagonalPreprocessing, print_size, print_time,
                     triu_to_full)
 from .xyz_utils import xyz_load, xyz_to_contact_grid
@@ -20,25 +20,28 @@ from .xyz_utils import xyz_load, xyz_to_contact_grid
 
 ## load data functions ##
 def load_X_psi(sample_folder, throw_exception = True, verbose = False):
-    x_file = osp.join(sample_folder, 'x.npy')
-    x_file2 = osp.join(sample_folder, 'data_out/pcf1.txt')
-    psi_file = osp.join(sample_folder, 'psi.npy')
-    if osp.exists(x_file):
-        x = np.load(x_file)
-        if verbose:
-            print(f'x loaded with shape {x.shape}')
-    elif osp.exists(x_file2):
-        x = []
-        for i in range(20):
-            f = osp.join(sample_folder, f'data_out/pcf{i}.txt')
-            if osp.exists(f):
-                x.append(np.loadtxt(f))
-        x = np.array(x).T
-    elif throw_exception:
-        raise Exception(f'x not found for {sample_folder}')
+    x_files = ['x.npy', 'resources/x.npy']
+    # if osp.exists(x_file2):
+    #     x = []
+    #     for i in range(20):
+    #         f = osp.join(sample_folder, f'data_out/pcf{i}.txt')
+    #         if osp.exists(f):
+    #             x.append(np.loadtxt(f))
+    #     x = np.array(x).T
+    for f in x_files:
+        f = osp.join(sample_folder, f)
+        if osp.exists(f):
+            x = np.load(f)
+            if verbose:
+                print(f'x loaded with shape {x.shape}')
+            break
     else:
-        x = None
+        if throw_exception:
+            raise Exception(f'x not found for {sample_folder}')
+        else:
+            x = None
 
+    psi_file = osp.join(sample_folder, 'psi.npy')
     if osp.exists(psi_file):
         psi = np.load(psi_file)
         if verbose:
@@ -95,61 +98,46 @@ def load_Y_diag(sample_folder, throw_exception = False):
 
     return ydiag
 
-def load_E_S(sample_folder, psi = None, chi = None, save = False, throw_exception = True):
+def load_L(sample_folder, psi = None, chi = None, save = False,
+                throw_exception = True):
     '''
-    Load E and S.
+    Load L
 
     Inputs:
         sample_folder: path to sample
         psi: psi np array (None to load if needed)
         chi: chi np array (None to load if needed)
-        save: True to save s.npy
-        throw_exception: True to throw exception if E and S missing
+        save: True to save L.npy
+        throw_exception: True to throw exception if L missing
     '''
-    calc = False # TRUE if need to calculate e or s matrix
+    calc = False # TRUE if need to calculate L
 
     load_fns = [np.load, np.loadtxt]
-    s_files = [osp.join(sample_folder, i) for i in ['s.npy', 's_matrix.txt']]
-    for s_file, load_fn in zip(s_files, load_fns):
-        if osp.exists(s_file):
-            s = load_fn(s_file)
+    files = [osp.join(sample_folder, i) for i in ['L.npy', 'L_matrix.txt']]
+    for f, load_fn in zip(files, load_fns):
+        if osp.exists(f):
+            L = load_fn(f)
             break
     else:
-        s = None
+        L = None
         calc = True
-
-    e_files = [osp.join(sample_folder, i) for i in ['e.npy', 'e_matrix.txt']]
-    for e_file, load_fn in zip(e_files, load_fns):
-        if osp.exists(e_file):
-            e = load_fn(e_file)
-            break
-    else:
-        if s is not None:
-            e = s_to_E(s)
-        else:
-            e = None
-            calc = True
 
     if calc:
         if psi is None:
             _, psi = load_X_psi(sample_folder, throw_exception=throw_exception)
         if chi is None:
-            chi_path = osp.join(sample_folder, 'chis.npy')
-            if osp.exists(chi_path):
-                chi = np.load(chi_path)
-            else:
-                chi = None
+            chi = load_chi(sample_folder, throw_exception=throw_exception)
         if psi is not None and chi is not None:
-            e, s = calculate_E_S(psi, chi)
+            L = calculate_L(psi, chi)
 
-        if save and s is not None:
-            np.save(osp.join(sample_folder, 's.npy'), s)
+        if save and L is not None:
+            np.save(osp.join(sample_folder, 'L.npy'), L)
 
-    return e, s
+    return L
 
 def load_all(sample_folder, plot = False, data_folder = None, log_file = None,
                 save = False, experimental = False, throw_exception = True):
-    '''Loads x, psi, chi, chi_diag, e, s, y, ydiag.'''
+    '''Loads x, psi, chi, chi_diag, L, y, ydiag.'''
     y, ydiag = load_Y(sample_folder, throw_exception = throw_exception)
 
     if experimental:
@@ -167,19 +155,7 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None,
             plt.savefig(osp.join(sample_folder, 'x_{}'.format(i)))
             plt.close()
 
-    chi = None
-    if data_folder is not None:
-        chi_path1 = osp.join(data_folder, 'chis.npy')
-    chi_path2 = osp.join(sample_folder, 'chis.npy')
-    chi_path3 = osp.join(sample_folder, 'chis.txt')
-    if data_folder is not None and osp.exists(chi_path1):
-        chi = np.load(chi_path1)
-    elif osp.exists(chi_path2):
-        chi = np.load(chi_path2)
-    elif osp.exists(chi_path3):
-        chi = triu_to_full(np.loadtxt(chi_path3))
-    elif throw_exception:
-        raise Exception('chi not found at {} or {}'.format(chi_path1, chi_path2))
+    chi = load_chi(sample_folder, throw_exception)
     if chi is not None:
         chi = chi.astype(np.float64)
         if log_file is not None:
@@ -193,9 +169,22 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None,
             if "diag_chis" in config:
                 chi_diag = np.array(config["diag_chis"])
 
-    e, s = load_E_S(sample_folder, psi, chi, save = save, throw_exception = throw_exception)
+    L = load_L(sample_folder, psi, chi, save = save,
+                    throw_exception = throw_exception)
 
-    return x, psi, chi, chi_diag, e, s, y, ydiag
+    return x, psi, chi, chi_diag, L, y, ydiag
+
+def load_chi(dir, throw_exception=True):
+    if osp.exists(osp.join(dir, 'chis.txt')):
+        chi = np.loadtxt(osp.join(dir, 'chis.txt'))[-1]
+        return triu_to_full(chi)
+    elif osp.exists(osp.join(dir, 'chis.npy')):
+        chi = np.load(osp.join(dir, 'chis.npy'))
+        return chi
+    elif throw_exception:
+        raise Exception(f'chi not found for {dir}')
+    else:
+        return None
 
 def load_max_ent_chi(k, path, throw_exception = True):
 
@@ -240,39 +229,24 @@ def get_final_max_ent_folder(replicate_folder, throw_exception = True):
     return osp.join(replicate_folder, f'iteration{max_it}')
 
 
-def load_final_max_ent_chi(k, replicate_folder = None, max_it_folder = None,
-                throw_exception = True):
-    # wrapper for load_max_ent_chi to use final iteration
-    if max_it_folder is None:
-        # find final it
-        max_it_folder = get_final_max_ent_folder(replicate_folder, throw_exception)
-
-    return load_max_ent_chi(k, max_it_folder, throw_exception = True)
-
-
-def load_final_max_ent_S(replicate_path, max_it_path = None):
-    s_path = osp.join(replicate_path, 'resources', 's.npy')
-    if osp.exists(s_path):
-        s = np.load(s_path)
+def load_final_max_ent_L(replicate_path, max_it_path = None):
+    # load x
+    x_file = osp.join(replicate_path, 'resources', 'x.npy')
+    if osp.exists(x_file):
+        x = np.load(x_file)
     else:
-        # load x
-        x_file = osp.join(replicate_path, 'resources', 'x.npy')
-        if osp.exists(x_file):
-            x = np.load(x_file)
-        else:
-            return None
+        return None
 
-        _, k = x.shape
+    _, k = x.shape
 
-        # load chi
-        chi = load_final_max_ent_chi(k, replicate_path, max_it_path)
-        print(chi)
+    # load chi
+    chi = load_chi(replicate_path)
 
-        if chi is None:
-            raise Exception(f'chi not found: {replicate_path}, {max_it_path}')
+    if chi is None:
+        raise Exception(f'chi not found: {replicate_path}, {max_it_path}')
 
-        # calculate s
-        s = calculate_S(x, chi)
+    # calculate s
+    s = calculate_L(x, chi)
 
     return s
 
@@ -314,7 +288,8 @@ def save_sc_contacts(xyz, odir, jobs = 5, triu = True, zero_diag = True,
 
     # process sc_contacts
     t0 = time.time()
-    print(f'found {multiprocessing.cpu_count()} total CPUs, {len(os.sched_getaffinity(0))} available CPUs, using {jobs}')
+    print(f'found {multiprocessing.cpu_count()} total CPUs, ',
+            f'{len(os.sched_getaffinity(0))} available CPUs, using {jobs}')
     mapping = []
     for i in range(N):
         ofile = osp.join(odir, f'y_sc_{i}.{fmt}')
@@ -354,7 +329,7 @@ def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
 
     Inputs:
         sample_folder: sample to load data for
-        N_min: minimum sc_contact to load (because early sweeps may not be equillibrated)
+        N_min: minimum sc_contact to load (early sweeps may not be equilibrated)
         N_max: maximum sc_contact to load (for computational efficiency)
         triu: True to flatten and upper triangularize sc_contact maps
         gaussian: True to apply gaussian filter
@@ -389,16 +364,20 @@ def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
     # process sc_contacts
     t0 = time.time()
     if jobs > 1:
-        print(f'found {multiprocessing.cpu_count()} total CPUs, {len(os.sched_getaffinity(0))} available CPUs, using {jobs}')
+        print(f'found {multiprocessing.cpu_count()} total CPUs, ',
+                f'{len(os.sched_getaffinity(0))} available CPUs, using {jobs}')
         mapping = []
         for i in range(N):
-            mapping.append((xyz[i], grid_size, triu, gaussian, zero_diag, sparsify, sparse_format))
+            mapping.append((xyz[i], grid_size, triu, gaussian, zero_diag,
+                            sparsify, sparse_format))
         with multiprocessing.Pool(jobs) as p:
             sc_contacts = p.starmap(load_sc_contacts_xyz, mapping)
     else:
         sc_contacts = []
         for i in range(N):
-            sc_contacts.append(load_sc_contacts_xyz(xyz[i], grid_size, triu, gaussian, zero_diag, sparsify, sparse_format))
+            sc_contacts.append(load_sc_contacts_xyz(xyz[i], grid_size, triu,
+                                                    gaussian, zero_diag,
+                                                    sparsify, sparse_format))
     if sparse_format:
         sc_contacts = sp.vstack(sc_contacts, format = 'csr')
         sc_contacts = sp.csr_array(sc_contacts)
@@ -410,8 +389,9 @@ def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
 
     if correct_diag:
         overall = np.load(osp.join(sample_folder, 'y.npy'))
-        mean_per_diag = DiagonalPreprocessing.genomic_distance_statistics(overall, mode = 'prob')
-        sc_contacts = DiagonalPreprocessing.process_bulk(sc_contacts, mean_per_diag, triu)
+        DP = DiagonalPreprocessing()
+        mean_per_diag = DP.genomic_distance_statistics(overall, mode = 'prob')
+        sc_contacts = DP.process_bulk(sc_contacts, mean_per_diag, triu)
 
     tf = time.time()
     print(f'Loaded {sc_contacts.shape[0]} sc contacts')
@@ -420,7 +400,8 @@ def load_sc_contacts(sample_folder, N_min = None, N_max = None, triu = False,
         return sc_contacts, xyz
     return sc_contacts
 
-def load_sc_contacts_xyz(xyz, grid_size, triu, gaussian, zero_diag, sparsify, sparse_format):
+def load_sc_contacts_xyz(xyz, grid_size, triu, gaussian, zero_diag,
+                            sparsify, sparse_format):
     m, _ = xyz.shape
 
     contact_map = xyz_to_contact_grid(xyz, grid_size, dtype = np.int8)

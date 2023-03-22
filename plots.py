@@ -15,8 +15,9 @@ from scipy.ndimage import uniform_filter
 from scripts.argparse_utils import (finalize_opt, get_base_parser,
                                     get_opt_header, opt2list)
 from scripts.energy_utils import (calculate_D, calculate_diag_chi_step,
-                                  calculate_SD_ED)
-from scripts.load_utils import get_final_max_ent_folder, load_contact_map
+                                  calculate_S)
+from scripts.load_utils import (get_final_max_ent_folder, load_contact_map,
+                                load_L)
 from scripts.plotting_utils import (plot_centroid_distance,
                                     plot_combined_models, plot_diag_chi,
                                     plot_matrix, plot_sc_contact_maps,
@@ -417,9 +418,9 @@ def main(id):
     plotting_script(None, opt, samples = [410, 653, 1462, 1801, 2290])
     # interogateParams(None, opt)
 
-def plot_GNN_vs_PCA():
-    dir = '/home/erschultz/dataset_11_14_22/samples'
-    for sample in range(2217, 2222):
+def plot_GNN_vs_PCA(GNN_ID):
+    dir = '/home/erschultz/dataset_01_26_23/samples'
+    for sample in range(201, 210):
         sample_dir = osp.join(dir, f'sample{sample}')
 
         y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
@@ -433,22 +434,22 @@ def plot_GNN_vs_PCA():
         y_pca = np.load(osp.join(pca_dir, 'y.npy')).astype(np.float64)
         y_pca /= np.mean(np.diagonal(y_pca))
 
-        s = np.load(osp.join(pca_dir, 's.npy'))
-        with open(osp.join(pca_dir, 'iteration16/config.json'), 'r') as f:
+        L = load_L(pca_dir)
+        with open(osp.join(pca_dir, 'iteration13/config.json'), 'r') as f:
             config = json.load(f)
         diag_chis = np.loadtxt(osp.join(pca_dir, 'chis_diag.txt'))[-1]
         diag_chis_continuous = calculate_diag_chi_step(config, diag_chis)
-        d = calculate_D(diag_chis_continuous)
-        sd, ed = calculate_SD_ED(s, d)
+        D = calculate_D(diag_chis_continuous)
+        S = calculate_S(L, D)
 
 
-        gnn_dir = osp.join(sample_dir, 'GNN-341-E/k0/replicate1')
+        gnn_dir = osp.join(sample_dir, f'GNN-{GNN_ID}-E/k0/replicate1')
         with open(osp.join(gnn_dir, 'distance_pearson.json'), 'r') as f:
             gnn_results = json.load(f)
         y_gnn = np.load(osp.join(gnn_dir, 'y.npy')).astype(np.float64)
         y_gnn /= np.mean(np.diagonal(y_gnn))
 
-        sd_gnn = np.load(osp.join(gnn_dir, 's.npy'))
+        S_gnn = np.load(osp.join(gnn_dir, 's.npy'))
 
         cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                  [(0,    'white'),
@@ -476,7 +477,8 @@ def plot_GNN_vs_PCA():
         s2.set_yticks([])
         s3 = sns.heatmap(y_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
                         ax = ax3, cbar_ax = axcb)
-        title = (r'GNN $\hat{H}$'
+        title = (f'GNN-{GNN_ID} '
+                r'$\hat{H}$'
                 f'\nSCC={np.round(gnn_results["scc_var"], 3)}')
         s3.set_title(title, fontsize = 16)
         s3.set_yticks([])
@@ -491,20 +493,20 @@ def plot_GNN_vs_PCA():
         fig.set_figheight(6)
         fig.set_figwidth(6*2.5)
         fig.suptitle(f'Sample {sample}', fontsize = 16)
-        arr = np.array([sd, sd_gnn])
+        arr = np.array([S, S_gnn])
         vmin = np.nanpercentile(arr, 1)
         vmax = np.nanpercentile(arr, 99)
         vmax = max(vmax, vmin * -1)
         vmin = vmax * -1
-        s1 = sns.heatmap(sd, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
+        s1 = sns.heatmap(S, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
                         ax = ax1, cbar = False)
         s1.set_title(r'Max Ent $\hat{S}$', fontsize = 16)
         s1.set_yticks([])
-        s2 = sns.heatmap(sd_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
+        s2 = sns.heatmap(S_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
                         ax = ax2, cbar = False)
-        s2.set_title(r'GNN $\hat{S}$', fontsize = 16)
+        s2.set_title(f'GNN-{GNN_ID}'+r'$\hat{S}$', fontsize = 16)
         s2.set_yticks([])
-        s3 = sns.heatmap(sd - sd_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
+        s3 = sns.heatmap(S - S_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
                         ax = ax3, cbar_ax = axcb)
         title = ('Difference\n'
                 r'(Max Ent $\hat{S}$ - GNN $\hat{S}$)')
@@ -522,7 +524,7 @@ def plot_GNN_vs_PCA():
         meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
         meanDist_pca = DiagonalPreprocessing.genomic_distance_statistics(y_pca, 'prob')
         meanDist_gnn = DiagonalPreprocessing.genomic_distance_statistics(y_gnn, 'prob')
-        for arr, fig_label, c in zip([meanDist, meanDist_pca, meanDist_gnn], ['Experiment', 'Max Ent', 'GNN'], ['k', 'r', 'b']):
+        for arr, fig_label, c in zip([meanDist, meanDist_pca, meanDist_gnn], ['Experiment', 'Max Ent', f'GNN-{GNN_ID}'], ['k', 'r', 'b']):
             ax.plot(np.arange(0, len(arr)), arr, label = fig_label, color = c)
 
         ax.set_yscale('log')
@@ -616,7 +618,7 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     dir = '/home/erschultz/sequences_to_contact_maps/'
     data_dir = osp.join(dir, 'single_cell_nagano_imputed/samples/sample443')
@@ -632,7 +634,7 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_09_30_22')
-    # plot_combined_models('ContactGNNEnergy', [378, 379])
-    # plot_GNN_vs_PCA()
+    # plot_combined_models('ContactGNNEnergy', [373, 374])
+    plot_GNN_vs_PCA(373)
     # plot_Exp_vs_PCA()
     # main()
