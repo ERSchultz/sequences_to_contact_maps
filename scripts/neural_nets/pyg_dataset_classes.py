@@ -221,6 +221,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 graph.energy = torch.tensor(D, dtype = torch.float32)
             elif self.output.startswith('energy_sym'):
                 energy = load_L(raw_folder)
+                energy = torch.tensor(energy, dtype = torch.float32)
                 graph.energy = (energy + energy.t()) / 2 # symmetric
 
                 if self.output.startswith('energy_sym_diag'):
