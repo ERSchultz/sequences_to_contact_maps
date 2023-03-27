@@ -869,6 +869,47 @@ def temp_plot():
     diff_plot(corr_exp, corr_pca, r'$H^{exp}_{diag}$', r'$H^{pca}_{diag}$',
             'corr_diag_diff.png', 'corr')
 
+def plot_all_contact_maps(dataset):
+    '''plot every contact map in dataset in a series of 5x5 panel images.'''
+    dir = f'/home/erschultz/{dataset}/samples'
+    rows = 5
+    cols = 5
+    fig, ax = plt.subplots(rows, cols)
+    fig.set_figheight(12)
+    fig.set_figwidth(12)
+    fig_ind = 1
+    row = 0
+    col = 0
+    for sample in sorted(os.listdir(dir)):
+        s_dir = osp.join(dir, sample)
+        assert osp.exists(s_dir)
+        y = np.load(osp.join(s_dir, 'y.npy'))
+        s = sns.heatmap(y, linewidth = 0, vmin = 0, vmax = np.mean(y), cmap = RED_CMAP,
+                        ax = ax[row][col], cbar = False)
+        s.set_title(sample, fontsize = 16)
+        s.set_xticks([])
+        s.set_yticks([])
+
+        col += 1
+        if col > cols-1:
+            col = 0
+            row += 1
+        if row > rows-1:
+            # save fit and reset
+            plt.tight_layout()
+            plt.savefig(osp.join(f'/home/erschultz/{dataset}/all_hic_{fig_ind}.png'))
+            plt.close()
+
+            fig, ax = plt.subplots(rows, cols)
+            fig.set_figheight(12)
+            fig.set_figwidth(12)
+            fig_ind += 1
+            row = 0
+            col = 0
+
+
+
+
 
 
 if __name__ == '__main__':
@@ -879,5 +920,6 @@ if __name__ == '__main__':
     # edit_argparse()
     # sc_nagano_to_dense()
     # debugModel('ContactGNNEnergy')
-    testGNNrank('dataset_02_04_23', 378)
+    # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()
+    plot_all_contact_maps('dataset_03_21_23-small')

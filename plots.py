@@ -18,7 +18,7 @@ from scripts.energy_utils import (calculate_D, calculate_diag_chi_step,
                                   calculate_S)
 from scripts.load_utils import (get_final_max_ent_folder, load_contact_map,
                                 load_L)
-from scripts.plotting_utils import (plot_centroid_distance,
+from scripts.plotting_utils import (RED_CMAP, plot_centroid_distance,
                                     plot_combined_models, plot_diag_chi,
                                     plot_matrix, plot_sc_contact_maps,
                                     plot_xyz_gif, plotting_script)
@@ -451,9 +451,6 @@ def plot_GNN_vs_PCA(GNN_ID):
 
         S_gnn = np.load(osp.join(gnn_dir, 's.npy'))
 
-        cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                 [(0,    'white'),
-                                                  (1,    'red')], N=126)
         cmap2 = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                  [(0, 'blue'),
                                                  (0.5, 'white'),
@@ -466,16 +463,16 @@ def plot_GNN_vs_PCA(GNN_ID):
         fig.suptitle(f'Sample {sample}', fontsize = 16)
         vmin = 0
         vmax = np.mean(y)
-        s1 = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
+        s1 = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = RED_CMAP,
                         ax = ax1, cbar = False)
         s1.set_title(r'Experimental Contact Map, $H$', fontsize = 16)
-        s2 = sns.heatmap(y_pca, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
+        s2 = sns.heatmap(y_pca, linewidth = 0, vmin = vmin, vmax = vmax, cmap = RED_CMAP,
                         ax = ax2, cbar = False)
         title = (r'Max Ent $\hat{H}$'
                 f'\nSCC={np.round(pca_results["scc_var"], 3)}')
         s2.set_title(title, fontsize = 16)
         s2.set_yticks([])
-        s3 = sns.heatmap(y_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
+        s3 = sns.heatmap(y_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = RED_CMAP,
                         ax = ax3, cbar_ax = axcb)
         title = (f'GNN-{GNN_ID} '
                 r'$\hat{H}$'
@@ -634,7 +631,7 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_09_30_22')
-    # plot_combined_models('ContactGNNEnergy', [373, 374])
-    plot_GNN_vs_PCA(373)
+    plot_combined_models('ContactGNNEnergy', [378, 379])
+    # plot_GNN_vs_PCA(373)
     # plot_Exp_vs_PCA()
     # main()

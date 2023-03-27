@@ -103,7 +103,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.rescale = rescale
         self.mean_filt = mean_filt
         self.y_norm = y_norm
-        self.min_subtraction = min_subtraction
+        # self.min_subtraction = min_subtraction # deprecated
         self.use_node_features = use_node_features
         self.mlp_model_id = mlp_model_id
         self.sparsify_threshold = sparsify_threshold

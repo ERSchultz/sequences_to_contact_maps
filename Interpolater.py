@@ -55,7 +55,9 @@ class Interpolater():
                 for line in f:
                     line = line.strip()
                     line = line.split('=')
-                    if line[0] == 'chrom':
+                    if line[0].startswith('https'):
+                        self.url = line[0]
+                    elif line[0] == 'chrom':
                         self.chrom = line[1]
                     elif line[0] == 'start':
                         self.start = int(float(line[1]))
@@ -292,20 +294,24 @@ class Interpolater():
         return y
 
 def wrapper(dataset, sample):
+    dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
+    if not osp.exists(dir):
+        return
     # this is the recommended option
     interpolater = Interpolater(['zeros', 'mappability-0.7'], dataset, sample)
-    interpolater.run()
+    # interpolater.run()
 
     dir = f'/home/erschultz/{dataset}/samples/sample{sample+1000}'
-    if not osp.exists(dir):
-        os.mkdir(dir, mode=0o755)
-    shutil.copyfile(osp.join(interpolater.odir, 'y_pool_zeros_mappability-0.7.png'),
-                    osp.join(dir, 'y.png'))
-    shutil.copyfile(osp.join(interpolater.odir, 'y_pool_interpolate_zeros_mappability-0.7.npy'),
-                    osp.join(dir, 'y.npy'))
+    # if not osp.exists(dir):
+    #     os.mkdir(dir, mode=0o755)
+    # shutil.copyfile(osp.join(interpolater.odir, 'y_pool_zeros_mappability-0.7.png'),
+    #                 osp.join(dir, 'y.png'))
+    # shutil.copyfile(osp.join(interpolater.odir, 'y_pool_interpolate_zeros_mappability-0.7.npy'),
+    #                 osp.join(dir, 'y.npy'))
 
     with open(osp.join(dir, 'import.log'), 'w') as f:
         f.write(f'Interpolation of sample {sample} with mappability-0.7 and zeros\n')
+        f.write(f'{interpolater.url}\n')
         f.write(f'chrom={interpolater.chrom}\n')
         f.write(f'start={interpolater.start}\n')
         f.write(f'end={interpolater.end}\n')
@@ -314,7 +320,9 @@ def wrapper(dataset, sample):
 
 def main():
     dataset = 'dataset_03_21_23'
-    mapping = [(dataset, i) for i in range(793,874)]
+    mapping = [(dataset, i) for i in range(1,874)]
+    # for dataset, i in mapping:
+        # wrapper(dataset, i)
     with multiprocessing.Pool(8) as p:
         p.starmap(wrapper, mapping)
 
