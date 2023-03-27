@@ -25,7 +25,7 @@ hiddenSizesList='8-8-8-8'
 EncoderHiddenSizesList='64'
 updateHiddenSizesList='1000-1000-64'
 
-outputPreprocesing='none'
+outputPreprocesing='log'
 headArchitecture='bilinear'
 headArchitecture2='fc-fill_512'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
@@ -38,7 +38,7 @@ batchSize=1
 # sign_plus with log preprocessing
 
 
-id=390
+id=392
 for lr in 1e-4
 do
   train
