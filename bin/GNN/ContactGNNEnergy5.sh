@@ -37,7 +37,7 @@ batchSize=1
 pretrainID=395
 nEpochs=40
 milestones='25'
-
+yPreprocessing='log_inf'
 # sign_plus with log preprocessing
 
 
