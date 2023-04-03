@@ -138,13 +138,13 @@ def debugModel(model_type):
 
     # dataset
     dir = "/home/erschultz"
-    datasets = ['dataset_11_18_22']
+    datasets = ['dataset_03_21_23-max_ent']
     opt.data_folder = [osp.join(dir, d) for d in datasets]
     opt.scratch = '/home/erschultz/scratch'
 
     # architecture
-    opt.m = 1024
-    opt.split_percents=[0.8,0.2,0.0]
+    opt.m = 512
+    opt.split_percents=[1/3,1/3,1/3]
     opt.split_sizes=None
     # opt.split_sizes=[1, 0, 0]
     # opt.split_percents = None
@@ -197,7 +197,7 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing = 'sweeprand_log_inf'
+        opt.y_preprocessing = 'log_inf'
         opt.rescale = 4
         opt.mean_filt = None
         opt.kr = False
@@ -230,7 +230,7 @@ def debugModel(model_type):
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
         opt.head_architecture = 'dconv-bilinear-triu'
-        opt.head_architecture_2 = 'dconv-fc-fill_1024'
+        opt.head_architecture_2 = f'dconv-fc-fill_{opt.m}'
         opt.head_hidden_sizes_list = [1000, 1000,1000,1000,1000]
         opt.crop = None
         opt.plaid_score_cutoff = 50
@@ -324,7 +324,7 @@ def debugModel(model_type):
     opt.gamma = 0.1
 
     # other
-    opt.pretrain_id=362
+    opt.pretrain_id = None
     opt.plot = True
     opt.plot_predictions = False
     opt.verbose = False
@@ -919,7 +919,7 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # sc_nagano_to_dense()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()
-    plot_all_contact_maps('dataset_03_21_23-small')
+    # plot_all_contact_maps('dataset_03_21_23-small')
