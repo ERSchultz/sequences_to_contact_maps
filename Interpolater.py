@@ -335,21 +335,44 @@ def example_figure(dataset, sample):
     # y_interp = np.load(osp.join(dir_interp, 'y.npy'))
     y_interp = np.load(osp.join(dir_raw, 'Interpolation/zeros_mappability-0.7/y_interpolate_zeros_mappability-0.7.npy'))
 
+    # get ticks in mb
+    with open(osp.join(dir_raw, 'import.log')) as f:
+        lines = f.readlines()
+        for line in lines:
+            if line.startswith('start'):
+                start = int(line.strip().split('=')[1]) / 1000000
+            elif line.startswith('end'):
+                end = int(line.strip().split('=')[1]) / 1000000
+            elif line.startswith('resolution'):
+                resolution = int(line.strip().split('=')[1]) / 1000000
+    print(start, end, resolution)
+    scale = 700
+    all_ticks = np.arange(0, 2560, scale)
+    all_ticks = np.append(all_ticks, 2560)
+    print(all_ticks, len(all_ticks))
+
+    all_tick_labels = np.arange(start, end, resolution*scale)
+    all_tick_labels = np.append(all_tick_labels, end)
+    print(all_tick_labels, len(all_tick_labels))
+    all_tick_labels = [f'{i} Mb' for i in all_tick_labels]
+    # return
 
     fig, (ax1, ax2, axcb) = plt.subplots(1, 3,
                                     gridspec_kw={'width_ratios':[1,1,0.08]})
     fig.set_figheight(6)
-    fig.set_figwidth(6*1.5)
+    fig.set_figwidth(6*2)
     vmin = 0
     vmax = np.mean(y_raw)
 
     s1 = sns.heatmap(y_raw, linewidth = 0, vmin = vmin, vmax = vmax, cmap = RED_CMAP,
                     ax = ax1, cbar = False)
     s1.set_title('Raw Hi-C', fontsize = 16)
+    s1.set_yticks(all_ticks, labels = all_tick_labels, rotation='horizontal')
+    s1.set_xticks(all_ticks, labels = all_tick_labels, rotation='horizontal')
     s2 = sns.heatmap(y_interp, linewidth = 0, vmin = vmin, vmax = vmax, cmap = RED_CMAP,
                     ax = ax2, cbar_ax = axcb)
     s2.set_title('Interpolation', fontsize = 16)
-
+    s2.set_xticks(all_ticks, labels = all_tick_labels, rotation='horizontal')
     s2.set_yticks([])
     # axcb.yaxis.set_ticks_position('left')
 
@@ -360,5 +383,5 @@ def example_figure(dataset, sample):
 
 
 if __name__ == '__main__':
-    main()
-    # example_figure('dataset_02_04_23', 1)
+    # main()
+    example_figure('dataset_02_04_23', 1)
