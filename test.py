@@ -18,6 +18,10 @@ from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
 from scripts.energy_utils import *
@@ -29,10 +33,8 @@ from scripts.plotting_utils import RED_CMAP, plot_matrix
 from scripts.similarity_measures import SCC
 from scripts.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
                            print_time, triu_to_full)
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
 
+LETTERS = 'ABCDEFGHIJKLMNOPQRSTUV'
 
 def test_num_workers():
     opt = argparseSetup() # get default args
@@ -638,41 +640,6 @@ def sc_structure_vs_sc_sample():
         plt.savefig(osp.join(dir, 'sc vs sample.png'))
         plt.close()
 
-def find_best_p_s():
-    # is there a curve in training that matches experimental curve well?
-    dir = '/home/erschultz/'
-    data_dir = osp.join(dir, 'dataset_11_14_22/samples/sample1') # experimental data sample
-    file = osp.join(data_dir, 'y.npy')
-    y_exp = np.load(file)
-    meanDist_ref = DiagonalPreprocessing.genomic_distance_statistics(y_exp, 'prob')
-
-    dir = '/home/erschultz/dataset_test_vbead' # simulated data dir
-    # sort samples
-    min_MSE = 1000
-    best_sample = None
-    best_meanDist = None
-    for sample in range(4000):
-        file = osp.join(dir, f'samples/sample{sample}', 'y.npy')
-        if osp.exists(file):
-            y = np.load(file)
-            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
-            # meanDist = np.log(meanDist)
-            mse = mean_squared_error(meanDist[:10], meanDist_ref[:10])
-            if mse < min_MSE:
-                min_MSE = mse
-                best_sample = sample
-                best_meanDist = meanDist
-                print(sample, mse)
-
-    print(best_sample, min_MSE)
-
-    plt.plot(meanDist_ref[:10], label = 'ref')
-    plt.plot(best_meanDist[:10], label = best_sample)
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.legend()
-    plt.show()
-
 def testGNNrank(dataset, GNN_ID):
     '''
     check rank of GNN predicted E.
@@ -728,40 +695,6 @@ def testGNNrank(dataset, GNN_ID):
     plt.title(dataset)
     plt.show()
 
-def main2():
-    dataset = 'dataset_11_18_22'
-    dir = f'/home/erschultz/{dataset}/samples/sample1462'
-    SD = np.load(osp.join(dir, 'sd.npy'))
-    np.fill_diagonal(SD, 0)
-
-    dir = osp.join(dir, 'GNN-287-E/k0/replicate1')
-    SD2 = np.load(osp.join(dir, 'resources/s.npy'))
-    np.fill_diagonal(SD2, 0)
-
-    vmin = np.min(SD)
-    vmax = np.max(SD)
-
-    # plot_matrix(SD, osp.join(dir, 'SD.png'), title = 'SD', cmap = 'blue-red', vmin=vmin, vmax=vmax)
-    # plot_matrix(SD2, osp.join(dir, 'SD2.png'), title = 'SD2', cmap = 'blue-red', vmin=vmin, vmax=vmax)
-
-
-    diff = SD - SD2
-    # plot_matrix(diff, osp.join(dir, 'diff.png'), title = 'SD - SD_GNN', cmap = 'blue-red', vmin='min', vmax='max')
-
-    print(mean_squared_error(SD, SD2))
-
-    dir = '/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/287/dataset_11_18_22_sample1462-regular/sample1462-regular'
-    SDgnn = np.loadtxt(osp.join(dir, 'energy.txt'))
-    SD2gnn = np.loadtxt(osp.join(dir, 'energy_hat.txt'))
-    diff = SD - SDgnn
-    print(diff)
-    plot_matrix(diff, osp.join(dir, 'diff.png'), title = 'SD - SDgnn', cmap = 'blue-red', vmin='min', vmax='max')
-
-    diff2 = SD2 - SD2gnn
-    print(diff2)
-    plot_matrix(diff2, osp.join(dir, 'diff2.png'), title = 'SD - SDgnn', cmap = 'blue-red', vmin='min', vmax='max')
-    print('mse', mean_squared_error(SDgnn, SD2gnn))
-
 def plot_SCC_weights():
     dir = '/home/erschultz/dataset_11_14_22/samples/sample2203'
     y = np.load(osp.join(dir, 'y.npy'))
@@ -786,140 +719,11 @@ def plot_SCC_weights():
     plt.legend()
     plt.show()
 
-def temp_plot():
-    red_blue_cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                             [(0, 'blue'),
-                                             (0.5, 'white'),
-                                              (1, 'red')], N=126)
-
-    sample=207
-    k=12
-    dir = f'/home/erschultz/dataset_01_26_23/samples/sample{sample}'
-    y_exp = np.load(osp.join(dir, 'y.npy')).astype(float)
-    y_exp /= np.mean(np.diagonal(y_exp))
-
-    pca_dir = osp.join(dir, f'PCA-normalize-E/k{k}/replicate1')
-    y_pca = np.load(osp.join(pca_dir, 'y.npy')).astype(float)
-    y_pca /= np.mean(np.diagonal(y_pca))
-
-    def diff_plot(a, b, label_a, label_b, fname, mode = 'y'):
-        fig, (axcb12, ax1, ax2, ax3, axcb3) = plt.subplots(1, 5,
-                                        gridspec_kw={'width_ratios':[0.08,1,1,1,0.08]})
-        fig.set_figheight(6)
-        fig.set_figwidth(6*2.5)
-        # fig.suptitle(f'Sample {sample}', fontsize = 16)
-        if mode == 'y':
-            vmin = 0
-            vmax = np.mean(a)
-            cmap = RED_CMAP
-        elif mode == 'corr':
-            vmin = 0
-            vmax = 1
-            cmap = RED_CMAP
-        elif mode == 'diag':
-            vmin = np.nanpercentile(a, 1)
-            vmax = np.nanpercentile(a, 99)
-            d_vmin = 1-vmin
-            d_vmax = vmax-1
-            d = max(d_vmax, d_vmin)
-            vmin = 1 - d
-            vmax = 1 + d
-            cmap = red_blue_cmap
-        s1 = sns.heatmap(a, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
-                        ax = ax1, cbar = False)
-        s1.set_title(label_a, fontsize = 16)
-        s2 = sns.heatmap(b, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
-                        ax = ax2, cbar_ax = axcb12)
-        s2.set_title(label_b, fontsize = 16)
-
-        s2.set_yticks([])
-        axcb12.yaxis.set_ticks_position('left')
-
-        arr = a - b
-        vmin = np.nanpercentile(arr, 1)
-        vmax = np.nanpercentile(arr, 99)
-        vmax = max(vmax, vmin * -1)
-        vmin = vmax * -1
-        s3 = sns.heatmap(arr, linewidth = 0, vmin = vmin, vmax = vmax, cmap = red_blue_cmap,
-                        ax = ax3, cbar_ax = axcb3)
-        s3.set_title(f'{label_a} - {label_b}', fontsize = 16)
-        s3.set_yticks([])
-
-        fig.suptitle(f'Sample {sample}')
-        plt.tight_layout()
-        plt.savefig(osp.join(pca_dir, fname))
-        plt.close()
-
-    diff_plot(y_exp, y_pca, r'$H^{exp}$', r'$H^{pca}$', 'diff.png')
-
-    corr_exp = np.corrcoef(y_exp)
-    corr_pca = np.corrcoef(y_pca)
-    diff_plot(corr_exp, corr_pca, r'$H^{exp}$', r'$H^{pca}$', 'corr_diff.png', 'corr')
-
-    plot_matrix(corr_exp, osp.join(dir, 'corr.png'), vmin = 0, vmax = 'max')
-    plot_matrix(y_exp, osp.join(dir, 'y_max.png'), vmin = 0, vmax = 'max')
-
-    y_diag_exp = np.load(osp.join(dir, 'y_diag.npy'))
-    y_diag_pca = np.load(osp.join(pca_dir, 'y_diag.npy'))
-    diff_plot(y_diag_exp, y_diag_pca, r'$H^{exp}_{diag}$', r'$H^{pca}_{diag}$',
-            'diag_diff.png', 'diag')
-
-    corr_exp = np.corrcoef(y_diag_exp)
-    corr_pca = np.corrcoef(y_diag_pca)
-    diff_plot(corr_exp, corr_pca, r'$H^{exp}_{diag}$', r'$H^{pca}_{diag}$',
-            'corr_diag_diff.png', 'corr')
-
-def plot_all_contact_maps(dataset):
-    '''plot every contact map in dataset in a series of 5x5 panel images.'''
-    dir = f'/home/erschultz/{dataset}/samples'
-    rows = 5
-    cols = 5
-    fig, ax = plt.subplots(rows, cols)
-    fig.set_figheight(12)
-    fig.set_figwidth(12)
-    fig_ind = 1
-    row = 0
-    col = 0
-    for sample in sorted(os.listdir(dir)):
-        s_dir = osp.join(dir, sample)
-        assert osp.exists(s_dir)
-        y = np.load(osp.join(s_dir, 'y.npy'))
-        s = sns.heatmap(y, linewidth = 0, vmin = 0, vmax = np.mean(y), cmap = RED_CMAP,
-                        ax = ax[row][col], cbar = False)
-        s.set_title(sample, fontsize = 16)
-        s.set_xticks([])
-        s.set_yticks([])
-
-        col += 1
-        if col > cols-1:
-            col = 0
-            row += 1
-        if row > rows-1:
-            # save fit and reset
-            plt.tight_layout()
-            plt.savefig(osp.join(f'/home/erschultz/{dataset}/all_hic_{fig_ind}.png'))
-            plt.close()
-
-            fig, ax = plt.subplots(rows, cols)
-            fig.set_figheight(12)
-            fig.set_figwidth(12)
-            fig_ind += 1
-            row = 0
-            col = 0
-
-
-
-
-
 
 if __name__ == '__main__':
-    # temp_plot()
-    # main2()
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    # sc_nagano_to_dense()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()
-    # plot_all_contact_maps('dataset_03_21_23-small')

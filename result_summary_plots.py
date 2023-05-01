@@ -50,7 +50,7 @@ def getArgs():
     args.data_folder = osp.join(args.root, args.dataset)
     if args.sample_folder is None:
         assert args.sample is not None
-        args.sample_folder = osp.join(args.data_folder, 'samples/sample{}'.format(args.sample))
+        args.sample_folder = osp.join(args.data_folder, f'samples/sample{args.sample}')
 
     # determine what to plot
     if args.method is None:
@@ -63,14 +63,14 @@ def getArgs():
 
     # check that model_id matches
     if args.model_id is not None:
-        argparse_path = osp.join(args.root, 'results/ContactGNNEnergy/{}/argparse.txt'.format(args.model_id))
+        argparse_path = osp.join(args.root, f'results/ContactGNNEnergy/{args.model_id}/argparse.txt')
         with open(argparse_path, 'r') as f:
             for line in f:
                 if line == '--data_folder\n':
                     break
             dataset = f.readline().strip()
             dataset = osp.split(dataset)[1]
-            assert dataset == args.dataset, 'Dataset mismatch: {} vs {}'.format(dataset, args.dataset)
+            assert dataset == args.dataset, f'Dataset mismatch: {dataset} vs {args.dataset}'
 
     # create output directory
     if args.method is None:
@@ -144,17 +144,15 @@ def plot_top_PCs(inp, inp_type='', odir=None, log_file=sys.stdout, count=2,
     if plot:
         i = 0
         while i < count:
+            PC = Vt[i]
+            PC *= np.sign(PC[:100])
+            # PCs are sign invariant, so this doesn't matter mathematically
+            # goal is to help compare PCs visually by aligning them
 
-            if np.mean(Vt[i][:100]) < 0:
-                PC = Vt[i] * -1
-                # PCs are sign invariant, so this doesn't matter mathematically
-                # goal is to help compare PCs visually by aligning them
-            else:
-                PC = Vt[i]
             plt.plot(PC)
             if pca is not None:
                 explained = pca.explained_variance_ratio_[i]
-                plt.title("Component {}: {}% of variance".format(i+1, np.round(explained * 100, 3)))
+                plt.title(f"Component {i+1}: {np.round(explained * 100, 3)}% of variance")
             if odir is not None:
                 plt.savefig(osp.join(odir, f'{inp_type}_PC_{i+1}.png'))
                 plt.close()
@@ -313,6 +311,7 @@ def predict_chi_in_psi_basis(psi, s, psi_letters = None, args = None):
     '''
     Wrapper function to predict hat_chi given psi.
     '''
+    raise Exception('deprecated')
     _, ell = psi.shape
 
     # use symmetric s
@@ -331,9 +330,10 @@ def predict_chi_in_psi_basis(psi, s, psi_letters = None, args = None):
 
     return hat_chi
 
-def load_method_S(root, sample_folder, sample, method, k, model_id):
+def load_method_L(root, sample_folder, sample, method, k, model_id):
     if method == 'GNN':
         # look in results
+        raise Exception('deprecated')
         gnn_path = osp.join(root, f'results/ContactGNNEnergy/{model_id}/sample{sample}/energy_hat.txt')
         if osp.exists(gnn_path):
             return np.loadtxt(gnn_path)
@@ -350,12 +350,12 @@ def load_method_S(root, sample_folder, sample, method, k, model_id):
                     for replicate_file in os.listdir(k_path):
                         replicate_path = osp.join(k_path, replicate_file)
                         if osp.isdir(replicate_path):
-                            s_hat = load_final_max_ent_S(k, replicate_path)
-                            return s_hat # return first replicate
+                            L_hat = load_final_max_ent_L(k, replicate_path)
+                            return L_hat # return first replicate
 
-    raise Exception('s_hat not found')
+    raise Exception('L_hat not found')
 
-def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
+def pca_analysis(args, y, ydiag, L, L_hat):
     # calculate PCA
     PC_y = plot_top_PCs(y, 'y', args.odir, args.log_file, count = 2,
                         plot = args.plot_baseline, verbose = args.verbose,
@@ -409,68 +409,44 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
 
     # robust PCA
     if args.robust:
-        L_log_file = osp.join(args.odir, 'L_log.npy')
-        L_file = osp.join(args.odir, 'L.npy')
-        S_log_file = osp.join(args.odir, 'S_log.npy')
-        S_file = osp.join(args.odir, 'S.npy')
-        if osp.exists(L_log_file) and not args.overwrite:
-            L_log = np.load(L_log_file)
-            L = np.load(L_file)
-            S_log = np.load(S_log_file)
-            S = np.load(S_file)
-        else:
-            y_log = np.log(y + 1e-8)
-            L_log, S_log = R_pca(y_log).fit(max_iter=2000)
-            np.save(L_log_file, L_log)
-            np.save(S_log_file, S_log)
-            L = np.exp(L_log)
-            S = np.exp(S_log)
-            np.save(L_file, L)
-            np.save(S_file, S)
-
-        plot_matrix(L_log, osp.join(args.odir, 'L_log.png'), vmin = 'min', vmax = 'max', title = 'L_log')
-        plot_matrix(L, osp.join(args.odir, 'L.png'), vmin = 'min', vmax = 'max', title = 'L')
-        plot_matrix(S_log, osp.join(args.odir, 'S_log.png'), vmin = 'min', vmax = 'max', title = 'S_log')
-        plot_matrix(S, osp.join(args.odir, 'S.png'), vmin = 'min', vmax = 'max', title = 'S')
-
-
-        PC_L_log = plot_top_PCs(L_log, 'L_log', args.odir, args.log_file, count = 2,
-                        plot = args.plot_baseline, verbose = args.verbose,
-                        scale = args.scale, svd = args.svd)
-        stat = pearson_round(PC_L_log[0], PC_y[0])
-        print("Correlation between PC 1 of L_log and Y: ", stat, file = args.log_file)
-        stat = pearson_round(PC_L_log[1], PC_y[1])
-        print("Correlation between PC 2 of L_log and Y: ", stat, file = args.log_file)
-        stat = pearson_round(PC_L_log[0], PC_y_diag[0])
-        print("Correlation between PC 1 of L_log and Y_diag: ", stat, file = args.log_file)
-        stat = pearson_round(PC_L_log[1], PC_y_diag[1])
-        print("Correlation between PC 2 of L_log and Y_diag: ", stat, file = args.log_file)
-
-        # L_log_diag_file = osp.join(args.odir, 'L_log_diag.npy')
-        # if osp.exists(L_log_diag_file) and not args.overwrite:
-        #     L_log_diag = np.load(L_log_diag_file)
+        raise Exception('deprecated')
+        # L_log_file = osp.join(args.odir, 'L_log.npy')
+        # L_file = osp.join(args.odir, 'L.npy')
+        # S_log_file = osp.join(args.odir, 'S_log.npy')
+        # S_file = osp.join(args.odir, 'S.npy')
+        # if osp.exists(L_log_file) and not args.overwrite:
+        #     L_log = np.load(L_log_file)
+        #     L = np.load(L_file)
+        #     S_log = np.load(S_log_file)
+        #     S = np.load(S_file)
         # else:
-        #     meanDist = genomic_distance_statistics(L_log)
-        #     L_log_diag = diagonal_preprocessing(L_log, meanDist)
-        #     plot_matrix(L_log_diag, osp.join(args.odir, 'L_log_diag.png'), vmin = 'min', vmax = 'max', title = 'L_log_diag')
-        #     np.save(L_log_diag_file, L_log_diag)
-        # PC_L_log_diag = plot_top_PCs(L_log_diag, 'L_log_diag', args.odir, args.log_file, count = 2, plot = args.plot_baseline, verbose = args.verbose)
-        # stat = pearson_round(PC_L_log_diag[0], PC_y_diag[0])
-        # print("Correlation between PC 1 of L_log_diag and Y_diag: ", stat, file = args.log_file)
-        # stat = pearson_round(PC_L_log_diag[1], PC_y_diag[1])
-        # print("Correlation between PC 2 of L_log_diag and Y_diag: ", stat, file = args.log_file)
+        #     y_log = np.log(y + 1e-8)
+        #     L_log, S_log = R_pca(y_log).fit(max_iter=2000)
+        #     np.save(L_log_file, L_log)
+        #     np.save(S_log_file, S_log)
+        #     L = np.exp(L_log)
+        #     S = np.exp(S_log)
+        #     np.save(L_file, L)
+        #     np.save(S_file, S)
+        #
+        # plot_matrix(L_log, osp.join(args.odir, 'L_log.png'), vmin = 'min', vmax = 'max', title = 'L_log')
+        # plot_matrix(L, osp.join(args.odir, 'L.png'), vmin = 'min', vmax = 'max', title = 'L')
+        # plot_matrix(S_log, osp.join(args.odir, 'S_log.png'), vmin = 'min', vmax = 'max', title = 'S_log')
+        # plot_matrix(S, osp.join(args.odir, 'S.png'), vmin = 'min', vmax = 'max', title = 'S')
+        #
+        #
+        # PC_L_log = plot_top_PCs(L_log, 'L_log', args.odir, args.log_file, count = 2,
+        #                 plot = args.plot_baseline, verbose = args.verbose,
+        #                 scale = args.scale, svd = args.svd)
+        # stat = pearson_round(=PC_L_log[0], PC_y[0])
+        # print("Correlation between PC 1 of L_log and Y: ", stat, file = args.log_file)
+        # stat = pearson_round(=PC_L_log[1], PC_y[1])
+        # print("Correlation between PC 2 of L_log and Y: ", stat, file = args.log_file)
+        # stat = pearson_round(=PC_L_log[0], PC_y_diag[0])
+        # print("Correlation between PC 1 of L_log and Y_diag: ", stat, file = args.log_file)
+        # stat = pearson_round(=PC_L_log[1], PC_y_diag[1])
+        # print("Correlation between PC 2 of L_log and Y_diag: ", stat, file = args.log_file)
 
-        meanDist = DiagonalPreprocessing.genomic_distance_statistics(L)
-        L_diag = DiagonalPreprocessing.process(L, meanDist)
-        plot_matrix(L_diag, osp.join(args.odir, 'L_diag.png'), vmin = 'min', vmax = 'max', title = 'L_diag')
-        np.save(osp.join(args.odir, 'L_diag.npy'), L_diag)
-        PC_L_diag = plot_top_PCs(L_diag, 'L_diag', args.odir, args.log_file, count = 2,
-                        plot = args.plot_baseline, verbose = args.verbose,
-                        scale = args.scale, svd = args.svd)
-        stat = pearson_round(PC_L_diag[0], PC_y_diag[0])
-        print("Correlation between PC 1 of L_diag and Y_diag: ", stat, file = args.log_file)
-        stat = pearson_round(PC_L_diag[1], PC_y_diag[1])
-        print("Correlation between PC 2 of L_diag and Y_diag: ", stat, file = args.log_file)
 
     if args.method is None and args.overwrite:
         ## Plot projection of y in lower rank space
@@ -498,174 +474,120 @@ def pca_analysis(args, y, ydiag, s, s_hat, e, e_hat):
                 np.save(osp.join(args.odir, f'y_diag_rank_{i}.npy'), y_i)
 
 
-    if s is not None:
-        PC_s = plot_top_PCs(s, 's', args.odir, args.log_file, count = 2,
+    if L is not None:
+        L = (L + L.T) / 2
+        PC_L = plot_top_PCs(L, 'L', args.odir, args.log_file, count = 2,
                         plot = args.plot_baseline, verbose = args.verbose,
                         scale = args.scale, svd = args.svd)
-        print(f'Rank of S: {np.linalg.matrix_rank(s)}', file = args.log_file)
+        print(f'Rank of L: {np.linalg.matrix_rank(L)}', file = args.log_file)
         if args.method is None:
-            s_sym = (s + s.T) / 2
-            PC_s_sym = plot_top_PCs(s_sym, 's_sym', args.odir, args.log_file, count = 4,
-                        plot = args.plot_baseline, verbose = args.verbose,
-                        scale = args.scale, svd = args.svd)
-            print(f'Rank: {np.linalg.matrix_rank(s)}', file = args.log_file)
             for i in range(4):
-                stat = pearson_round(PC_y[i], PC_s_sym[i])
-                print(f"Correlation between PC {i+1} of y and S_sym: ", stat, file = args.log_file)
+                stat = pearson_round(PC_y[i], PC_L[i])
+                print(f"Correlation between PC {i+1} of y and L: ", stat, file = args.log_file)
 
             for i in range(4):
-                stat = pearson_round(PC_y_diag[i], PC_s_sym[i])
-                print(f"Correlation between PC {i+1} of y_diag and S_sym: ", stat, file = args.log_file)
+                stat = pearson_round(PC_y_diag[i], PC_L[i])
+                print(f"Correlation between PC {i+1} of y_diag and L: ", stat, file = args.log_file)
 
             for i in range(4):
-                stat = pearson_round(PC_y_log_diag[i], PC_s_sym[i])
-                print(f"Correlation between PC {i+1} of y_log_diag and S_sym: ", stat, file = args.log_file)
+                stat = pearson_round(PC_y_log_diag[i], PC_L[i])
+                print(f"Correlation between PC {i+1} of y_log_diag and L: ", stat, file = args.log_file)
 
             for i in range(4):
-                stat = pearson_round(PC_y_loginf_diag[i], PC_s_sym[i])
-                print(f"Correlation between PC {i+1} of y_log_inf_diag and S_sym: ", stat, file = args.log_file)
+                stat = pearson_round(PC_y_loginf_diag[i], PC_L[i])
+                print(f"Correlation between PC {i+1} of y_log_inf_diag and L: ", stat, file = args.log_file)
 
-            for i in range(4):
-                stat = pearson_round(PC_y_log[i], PC_s[i])
-                print(f"Correlation between PC {i+1} of y_log and S_sym: ", stat, file = args.log_file)
-
-
-
-
-    # if e is not None:
-    #     PC_e = plot_top_PCs(e, 'e', args.odir, args.log_file, count = 2,
-    #                     plot = args.plot_baseline, verbose = args.verbose,
-    #                     scale = args.scale, svd = args.svd)
-    #     print(f'Rank of E: {np.linalg.matrix_rank(e)}', file = args.log_file)
-    #     if args.method is None:
-    #         stat = pearson_round(PC_y[0], PC_e[0])
-    #         print("Correlation between PC 1 of y and E: ", stat, file = args.log_file)
-    #         stat = pearson_round(PC_y_diag[0], PC_e[0])
-    #         print("Correlation between PC 1 of y_diag and E: ", stat, file = args.log_file)
-    #         stat = pearson_round(PC_y_diag[1], PC_e[1])
-    #         print("Correlation between PC 2 of y_diag and E: ", stat, file = args.log_file)
-    #         if s is not None:
-    #             stat = pearson_round(PC_s[0], PC_e[0])
-    #             print("Correlation between PC 1 of S and E: ", stat, file = args.log_file)
-    #         stat = pearson_round(PC_y_log[0], PC_e[0])
-    #         print("Correlation between PC 1 of y_log and E: ", stat, file = args.log_file)
-    #         stat = pearson_round(PC_y_log[1], PC_e[1])
-    #         print("Correlation between PC 2 of y_log and E: ", stat, file = args.log_file)
-    #
-    #
-    #     for i in range(1, 4):
-    #         # get e top i PCs
-    #         pca = PCA(n_components = i)
-    #         e_transform = pca.fit_transform(e)
-    #         e_i = pca.inverse_transform(e_transform)
-    #         np.save(osp.join(args.odir, f'e_{i}.npy'), e_i)
-    #         plot_matrix(e_i, osp.join(args.odir, f'e_{i}.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = f"E rank {i}")
-    #
-
-    if s_hat is not None:
-        PC_s_hat = plot_top_PCs(s_hat, 's_hat', args.odir, args.log_file, count = 2,
+    if L_hat is not None:
+        PC_L_hat = plot_top_PCs(L_hat, 'L_hat', args.odir, args.log_file, count = 2,
                         plot = True, verbose = True, scale = args.scale, svd = args.svd)
 
-        stat = pearson_round(PC_y_diag[0], PC_s_hat[0])
-        print("Correlation between PC 1 of y_diag and S_hat: ", stat, file = args.log_file)
+        stat = pearson_round(PC_y_diag[0], PC_L_hat[0])
+        print("Correlation between PC 1 of y_diag and L_hat: ", stat, file = args.log_file)
         for zero_index, one_index in enumerate([1,2,3]):
-            stat = pearson_round(PC_s[zero_index], PC_s_hat[zero_index])
-            print(f"Correlation between PC {one_index} of S and S_hat: ", stat, file = args.log_file)
-
-    if e_hat is not None:
-        PC_e_hat = plot_top_PCs(e_hat, 'e_hat', args.odir, args.log_file, count = 2,
-                        plot = True, verbose = True, scale = args.scale, svd = args.svd)
-        stat = pearson_round(PC_y_diag[0], PC_e_hat[0])
-        print("Correlation between PC 1 of y_diag and E: ", stat, file = args.log_file)
-        for zero_index, one_index in enumerate([1,2,3]):
-            stat = pearson_round(PC_e[zero_index], PC_e_hat[zero_index])
-            print(f"Correlation between PC {one_index} of E and E_hat: ", stat, file = args.log_file)
+            stat = pearson_round(PC_L[zero_index], PC_L_hat_hat[zero_index])
+            print(f"Correlation between PC {one_index} of L and L_hat: ", stat, file = args.log_file)
 
 def main():
     args = getArgs()
     print(args)
 
     ## load data ##
-    x, _, chi, chi_diag, e, s, y, ydiag = load_all(args.sample_folder, True,
+    x, psi, chi, chi_diag, L, y, ydiag = load_all(args.sample_folder, True,
                                                 args.data_folder, args.log_file,
                                                 experimental = args.experimental,
                                                 throw_exception = False)
 
     if args.method is not None:
-        s_hat = load_method_S(args.root, args.sample_folder, args.sample, args.method, args.k, args.model_id)
-        e_hat = s_to_E(s_hat)
+        L_hat = load_method_S(args.root, args.sample_folder, args.sample, args.method, args.k, args.model_id)
     else:
-        s_hat = None
-        e_hat = None
+        L_hat = None
 
     # pairwise PC correlation
-    pca_analysis(args, y, ydiag, s, s_hat, e, e_hat)
+    pca_analysis(args, y, ydiag, L, L_hat)
 
-
-    if e_hat is not None:
-        ## Compare MSE in PCA space ##
-        for i in range(1, 4):
-            # get e top i PCs
-            pca = PCA(n_components = i)
-            e_transform = pca.fit_transform(e)
-            e_i = pca.inverse_transform(e_transform)
-            np.save(osp.join(args.odir, f'e_{i}.npy'), e_i)
-            plot_matrix(e_i, osp.join(args.odir, f'e_{i}.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = f"E rank {i}")
-
-
-            # compare ehat to projection of e onto top PCs
-            mse = np.round(mean_squared_error(e_i, e_hat), 3)
-            print(f'E top {i} PCs - MSE: {mse}', file = args.log_file)
-
-        ## plot e_hat and e_dif ##
-        mse_e = np.round(mean_squared_error(e, e_hat), 3)
-        mse_s = np.round(mean_squared_error(s, s_hat), 3)
-        print(f'E - MSE: {mse_e}', file = args.log_file)
-        print(f'S - MSE: {mse_s}', file = args.log_file)
-        if args.plot:
-            # e
-            if args.method == 'GNN':
-                plot_title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{E}$', mse_e)
-            else:
-                plot_title = '{} (MSE Loss = {})'.format(r'$\hat{E}$', mse_e)
-            plot_matrix(e_hat, osp.join(args.odir, 'e_hat.png'), vmin = np.min(e), vmax = np.max(e), cmap = 'blue-red', title = plot_title)
-
-            dif = e_hat - e
-            v_max = np.max(e)
-            plot_matrix(dif, osp.join(args.odir, 'e_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{E}$ - E', cmap = 'blue-red')
-
-            # s
-            if args.method == 'GNN':
-                plot_title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{S}$', mse_s)
-            else:
-                plot_title = '{} (MSE Loss = {})'.format(r'$\hat{S}$', mse_s)
-            plot_matrix(s_hat, osp.join(args.odir, 's_hat.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = plot_title)
-
-            dif = s_hat - s
-            v_max = np.max(s)
-            plot_matrix(dif, osp.join(args.odir, 's_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
-
-
-
-        ## All pairs of bead types for all pairs of particles ##
-        print('\nAll possible pairwise interactions', file = args.log_file)
-        # first relabel marks with all possible pairs of marks for each bead
-        psi_tilde, psi_letters = x_to_psi(x)
-
-        args.save_file = 'chi_hat.npy'
-        hat_chi = predict_chi_in_psi_basis(psi_tilde, s_hat, psi_letters, args)
-        if args.plot:
-            s_hat_psi_basis = psi_tilde @ hat_chi @ psi_tilde.T
-            e_hat_psi_basis = s_to_E(s_hat_psi_basis)
-
-            mse = np.round(mean_squared_error(e, e_hat_psi_basis), 3)
-            if args.method == 'GNN':
-                plot_title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{E}_{\Psi-basis}$', mse)
-            else:
-                plot_title = '{} (MSE Loss = {})'.format(r'$\hat{E}_{\Psi-basis}$', mse)
-            plot_matrix(e_hat_psi_basis, vmin = np.min(e), vmax = np.max(e), cmap = 'blue-red', ofile = osp.join(args.odir, 'e_hat_psi_basis.png'), title = plot_title)
-
-        post_analysis_chi(args, psi_letters)
+    # ## Compare MSE in PCA space ##
+    # for i in range(1, 4):
+    #     # get e top i PCs
+    #     pca = PCA(n_components = i)
+    #     e_transform = pca.fit_transform(e)
+    #     e_i = pca.inverse_transform(e_transform)
+    #     np.save(osp.join(args.odir, f'e_{i}.npy'), e_i)
+    #     plot_matrix(e_i, osp.join(args.odir, f'e_{i}.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = f"E rank {i}")
+    #
+    #
+    #     # compare ehat to projection of e onto top PCs
+    #     mse = np.round(mean_squared_error(e_i, e_hat), 3)
+    #     print(f'E top {i} PCs - MSE: {mse}', file = args.log_file)
+    #
+    # ## plot e_hat and e_dif ##
+    # mse_e = np.round(mean_squared_error(e, e_hat), 3)
+    # mse_s = np.round(mean_squared_error(s, s_hat), 3)
+    # print(f'E - MSE: {mse_e}', file = args.log_file)
+    # print(f'S - MSE: {mse_s}', file = args.log_file)
+    # if args.plot:
+    #     # e
+    #     if args.method == 'GNN':
+    #         plot_title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{E}$', mse_e)
+    #     else:
+    #         plot_title = '{} (MSE Loss = {})'.format(r'$\hat{E}$', mse_e)
+    #     plot_matrix(e_hat, osp.join(args.odir, 'e_hat.png'), vmin = np.min(e), vmax = np.max(e), cmap = 'blue-red', title = plot_title)
+    #
+    #     dif = e_hat - e
+    #     v_max = np.max(e)
+    #     plot_matrix(dif, osp.join(args.odir, 'e_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{E}$ - E', cmap = 'blue-red')
+    #
+    #     # s
+    #     if args.method == 'GNN':
+    #         plot_title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{S}$', mse_s)
+    #     else:
+    #         plot_title = '{} (MSE Loss = {})'.format(r'$\hat{S}$', mse_s)
+    #     plot_matrix(s_hat, osp.join(args.odir, 's_hat.png'), vmin = 'min', vmax = 'max', cmap = 'blue-red', title = plot_title)
+    #
+    #     dif = s_hat - s
+    #     v_max = np.max(s)
+    #     plot_matrix(dif, osp.join(args.odir, 's_dif.png'), vmin = -1 * v_max, vmax = v_max, title = r'$\hat{S}$ - S', cmap = 'blue-red')
+    #
+    #
+    #
+    # ## All pairs of bead types for all pairs of particles ##
+    # print('\nAll possible pairwise interactions', file = args.log_file)
+    # # first relabel marks with all possible pairs of marks for each bead
+    # psi_tilde, psi_letters = x_to_psi(x)
+    #
+    # args.save_file = 'chi_hat.npy'
+    # hat_chi = predict_chi_in_psi_basis(psi_tilde, s_hat, psi_letters, args)
+    # if args.plot:
+    #     s_hat_psi_basis = psi_tilde @ hat_chi @ psi_tilde.T
+    #     e_hat_psi_basis = s_to_E(s_hat_psi_basis)
+    #
+    #     mse = np.round(mean_squared_error(e, e_hat_psi_basis), 3)
+    #     if args.method == 'GNN':
+    #         plot_title = 'Model ID = {}\n {} (MSE Loss = {})'.format(args.model_id, r'$\hat{E}_{\Psi-basis}$', mse)
+    #     else:
+    #         plot_title = '{} (MSE Loss = {})'.format(r'$\hat{E}_{\Psi-basis}$', mse)
+    #     plot_matrix(e_hat_psi_basis, vmin = np.min(e), vmax = np.max(e), cmap = 'blue-red', ofile = osp.join(args.odir, 'e_hat_psi_basis.png'), title = plot_title)
+    #
+    # post_analysis_chi(args, psi_letters)
 
 def post_analysis_chi(args, letters):
     chi = np.load(osp.join(args.sample_folder, 'chis.npy'))

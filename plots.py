@@ -14,16 +14,20 @@ import torch
 from scipy.ndimage import uniform_filter
 from scripts.argparse_utils import (finalize_opt, get_base_parser,
                                     get_opt_header, opt2list)
-from scripts.energy_utils import (calculate_D, calculate_diag_chi_step,
-                                  calculate_S)
 from scripts.load_utils import (get_final_max_ent_folder, load_contact_map,
                                 load_L)
-from scripts.plotting_utils import (RED_CMAP, plot_centroid_distance,
+from scripts.plotting_utils import (BLUE_RED_CMAP, RED_CMAP,
+                                    plot_centroid_distance,
                                     plot_combined_models, plot_diag_chi,
                                     plot_matrix, plot_sc_contact_maps,
                                     plot_xyz_gif, plotting_script)
-from scripts.utils import DiagonalPreprocessing
+from scripts.utils import DiagonalPreprocessing, pearson_round
 from scripts.xyz_utils import xyz_load, xyz_write
+from sklearn.decomposition import PCA
+
+sys.path.append("/home/erschultz/TICG-chromatin/pylib")
+from utils.energy_utils import (calculate_D, calculate_diag_chi_step,
+                                calculate_S)
 
 
 def update_result_tables(model_type = None, mode = None, output_mode = 'contact'):
@@ -418,21 +422,28 @@ def main(id):
     plotting_script(None, opt, samples = [410, 653, 1462, 1801, 2290])
     # interogateParams(None, opt)
 
-def plot_GNN_vs_PCA(GNN_ID):
-    dir = '/home/erschultz/dataset_01_26_23/samples'
+def plot_GNN_vs_PCA(dataset, k, GNN_ID):
+    dir = f'/home/erschultz/{dataset}/samples'
     for sample in range(201, 210):
-        sample_dir = osp.join(dir, f'sample{sample}')
+        sample_dir = osp.join(dir, f'sample{sample}_copy')
+        if not osp.exists(sample_dir):
+            print(f'sample_dir does not exist: {sample_dir}')
+            continue
 
         y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
         y /= np.mean(np.diagonal(y))
+        meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
+        y_diag = DiagonalPreprocessing.process(y, meanDist)
 
-
-        pca_dir = osp.join(sample_dir, 'PCA-normalize-E/k8/replicate1')
+        pca_dir = osp.join(sample_dir, f'PCA-normalize-E/k{k}/replicate1')
         with open(osp.join(pca_dir, 'distance_pearson.json'), 'r') as f:
             # TODO this is after final iteration, not convergence
             pca_results = json.load(f)
         y_pca = np.load(osp.join(pca_dir, 'y.npy')).astype(np.float64)
         y_pca /= np.mean(np.diagonal(y_pca))
+        meanDist = DiagonalPreprocessing.genomic_distance_statistics(y_pca)
+        y_pca_diag = DiagonalPreprocessing.process(y_pca, meanDist)
+
 
         L = load_L(pca_dir)
         with open(osp.join(pca_dir, 'iteration13/config.json'), 'r') as f:
@@ -443,13 +454,16 @@ def plot_GNN_vs_PCA(GNN_ID):
         S = calculate_S(L, D)
 
 
-        gnn_dir = osp.join(sample_dir, f'GNN-{GNN_ID}-E/k0/replicate1')
+        gnn_dir = osp.join(sample_dir, f'GNN-{GNN_ID}-S/k0/replicate1')
         with open(osp.join(gnn_dir, 'distance_pearson.json'), 'r') as f:
             gnn_results = json.load(f)
         y_gnn = np.load(osp.join(gnn_dir, 'y.npy')).astype(np.float64)
         y_gnn /= np.mean(np.diagonal(y_gnn))
+        meanDist = DiagonalPreprocessing.genomic_distance_statistics(y_gnn)
+        y_gnn_diag = DiagonalPreprocessing.process(y_gnn, meanDist)
 
-        S_gnn = np.load(osp.join(gnn_dir, 's.npy'))
+
+        S_gnn = np.load(osp.join(gnn_dir, 'S.npy'))
 
         cmap2 = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                  [(0, 'blue'),
@@ -469,6 +483,7 @@ def plot_GNN_vs_PCA(GNN_ID):
         s2 = sns.heatmap(y_pca, linewidth = 0, vmin = vmin, vmax = vmax, cmap = RED_CMAP,
                         ax = ax2, cbar = False)
         title = (r'Max Ent $\hat{H}$'
+                f' (k={k})'
                 f'\nSCC={np.round(pca_results["scc_var"], 3)}')
         s2.set_title(title, fontsize = 16)
         s2.set_yticks([])
@@ -484,6 +499,40 @@ def plot_GNN_vs_PCA(GNN_ID):
         plt.savefig(osp.join(sample_dir, 'PCA_vs_GNN.png'))
         plt.close()
 
+        fig, (ax1, ax2, ax3, axcb) = plt.subplots(1, 4,
+                                        gridspec_kw={'width_ratios':[1,1,1,0.08]})
+        fig.set_figheight(6)
+        fig.set_figwidth(6*2.5)
+        fig.suptitle(f'Sample {sample}', fontsize = 16)
+        vmin = np.nanpercentile(y_diag, 1)
+        vmax = np.nanpercentile(y_diag, 99)
+        d_vmin = 1-vmin
+        d_vmax = vmax-1
+        d = max(d_vmax, d_vmin)
+        vmin = 1 - d
+        vmax = 1 + d
+        s1 = sns.heatmap(y_diag, linewidth = 0, vmin = vmin, vmax = vmax, cmap = BLUE_RED_CMAP,
+                        ax = ax1, cbar = False)
+        s1.set_title(r'Experimental Contact Map, $H^{diag}$', fontsize = 16)
+        s2 = sns.heatmap(y_pca_diag, linewidth = 0, vmin = vmin, vmax = vmax, cmap = BLUE_RED_CMAP,
+                        ax = ax2, cbar = False)
+        title = (r'Max Ent $\hat{H}^{diag}$'
+                f' (k={k})'
+                f'\nSCC={np.round(pca_results["scc_var"], 3)}')
+        s2.set_title(title, fontsize = 16)
+        s2.set_yticks([])
+        s3 = sns.heatmap(y_gnn_diag, linewidth = 0, vmin = vmin, vmax = vmax, cmap = BLUE_RED_CMAP,
+                        ax = ax3, cbar_ax = axcb)
+        title = (f'GNN-{GNN_ID} '
+                r'$\hat{H}^{diag}$'
+                f'\nSCC={np.round(gnn_results["scc_var"], 3)}')
+        s3.set_title(title, fontsize = 16)
+        s3.set_yticks([])
+
+        plt.tight_layout()
+        plt.savefig(osp.join(sample_dir, 'PCA_vs_GNN_diag.png'))
+        plt.close()
+
 
         fig, (ax1, ax2, ax3, axcb) = plt.subplots(1, 4,
                                         gridspec_kw={'width_ratios':[1,1,1,0.08]})
@@ -497,11 +546,11 @@ def plot_GNN_vs_PCA(GNN_ID):
         vmin = vmax * -1
         s1 = sns.heatmap(S, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
                         ax = ax1, cbar = False)
-        s1.set_title(r'Max Ent $\hat{S}$', fontsize = 16)
+        s1.set_title(f'Max Ent (k={k}) '+ r'$\hat{S}$', fontsize = 16)
         s1.set_yticks([])
         s2 = sns.heatmap(S_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
                         ax = ax2, cbar = False)
-        s2.set_title(f'GNN-{GNN_ID}'+r'$\hat{S}$', fontsize = 16)
+        s2.set_title(f'GNN-{GNN_ID} '+r'$\hat{S}$', fontsize = 16)
         s2.set_yticks([])
         s3 = sns.heatmap(S - S_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
                         ax = ax3, cbar_ax = axcb)
@@ -521,7 +570,7 @@ def plot_GNN_vs_PCA(GNN_ID):
         meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
         meanDist_pca = DiagonalPreprocessing.genomic_distance_statistics(y_pca, 'prob')
         meanDist_gnn = DiagonalPreprocessing.genomic_distance_statistics(y_gnn, 'prob')
-        for arr, fig_label, c in zip([meanDist, meanDist_pca, meanDist_gnn], ['Experiment', 'Max Ent', f'GNN-{GNN_ID}'], ['k', 'r', 'b']):
+        for arr, fig_label, c in zip([meanDist, meanDist_pca, meanDist_gnn], ['Experiment', 'Max Ent', f'GNN-{GNN_ID}'], ['k', 'b', 'r']):
             ax.plot(np.arange(0, len(arr)), arr, label = fig_label, color = c)
 
         ax.set_yscale('log')
@@ -537,18 +586,79 @@ def plot_GNN_vs_PCA(GNN_ID):
         plt.savefig(osp.join(sample_dir, 'PCA_vs_GNN_p_s.png'))
         plt.close()
 
+def plot_first_PC(dataset, k, GNN_ID):
+    pca = PCA()
+    def get_pcs(input):
+        # normalize by genomic distance
+        meanDist = DiagonalPreprocessing.genomic_distance_statistics(input)
+        input_diag = DiagonalPreprocessing.process(input, meanDist)
+
+        # corrcoef
+        # input = np.corrcoef(input)
+
+        # pca.fit(input/np.std(input, axis = 0))
+        pca.fit(input)
+        V = pca.components_
+        for v in V:
+            v *= np.sign(np.mean(v[:100]))
+        return V
+
+    dir = f'/home/erschultz/{dataset}/samples'
+    for sample in range(201, 210):
+        sample_dir = osp.join(dir, f'sample{sample}_copy')
+        if not osp.exists(sample_dir):
+            print(f'sample_dir does not exist: {sample_dir}')
+            continue
+
+        y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
+        y /= np.mean(np.diagonal(y))
+
+        pca_dir = osp.join(sample_dir, f'PCA-normalize-E/k{k}/replicate1')
+        with open(osp.join(pca_dir, 'distance_pearson.json'), 'r') as f:
+            # TODO this is after final iteration, not convergence
+            pca_results = json.load(f)
+        y_pca = np.load(osp.join(pca_dir, 'y.npy')).astype(np.float64)
+        y_pca /= np.mean(np.diagonal(y_pca))
+
+        gnn_dir = osp.join(sample_dir, f'GNN-{GNN_ID}-S/k0/replicate1')
+        with open(osp.join(gnn_dir, 'distance_pearson.json'), 'r') as f:
+            gnn_results = json.load(f)
+        y_gnn = np.load(osp.join(gnn_dir, 'y.npy')).astype(np.float64)
+        y_gnn /= np.mean(np.diagonal(y_gnn))
 
 
+        # compare PCs
+        pcs = get_pcs(y)
+        pcs_pca = get_pcs(y_pca)
+        pcs_gnn = get_pcs(y_gnn)
 
-def plot_Exp_vs_PCA():
-    dir = '/home/erschultz/dataset_01_26_23/samples'
-    for sample in range(276, 277):
+        rows = 2; cols = 1
+        row = 0; col = 0
+        fig, ax = plt.subplots(rows, cols)
+        fig.set_figheight(12)
+        fig.set_figwidth(16)
+        for i in range(rows*cols):
+            ax[row].plot(pcs[i], label = 'Experiment', color = 'k')
+            ax[row].plot(pcs_pca[i], label = 'Max Ent', color = 'b')
+            ax[row].plot(pcs_gnn[i], label = f'GNN-{GNN_ID}', color = 'r')
+            ax[row].set_title(f'PC {i+1}\nCorr(Exp, GNN)={pearson_round(pcs[i], pcs_gnn[i])}')
+            ax[row].legend()
+
+            col += 1
+            if col > cols-1:
+                col = 0
+                row += 1
+        plt.savefig(osp.join(sample_dir, 'pc_comparison.png'))
+
+
+def plot_Exp_vs_PCA(dataset, k):
+    dir = f'/home/erschultz/{dataset}/samples'
+    for sample in range(201, 203):
         sample_dir = osp.join(dir, f'sample{sample}')
 
         y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
         y /= np.mean(np.diagonal(y))
 
-        k = 4
         pca_dir = osp.join(sample_dir, f'PCA-normalize-E/k{k}/replicate1')
         with open(osp.join(pca_dir, 'distance_pearson.json'), 'r') as f:
             # TODO this is after final iteration, not convergence
@@ -563,7 +673,7 @@ def plot_Exp_vs_PCA():
         diag_chis = np.loadtxt(osp.join(pca_dir, 'chis_diag.txt'))[-1]
         diag_chis_continuous = calculate_diag_chi_step(config, diag_chis)
         D = calculate_D(diag_chis_continuous)
-        S, E = calculate_SD_ED(L, D)
+        S = calculate_S(L, D)
 
         plot_matrix(L, osp.join(pca_dir, 'L.png'), cmap='blue-red')
         plot_matrix(D, osp.join(pca_dir, 'D.png'))
@@ -610,25 +720,62 @@ def plot_Exp_vs_PCA():
         plt.savefig(osp.join(sample_dir, 'PCA_vs_Exp.png'))
         plt.close()
 
+def plot_all_contact_maps(dataset):
+    '''plot every contact map in dataset in a series of 5x5 panel images.'''
+    dir = f'/home/erschultz/{dataset}/samples'
+    rows = 5
+    cols = 5
+    fig, ax = plt.subplots(rows, cols)
+    fig.set_figheight(12)
+    fig.set_figwidth(12)
+    fig_ind = 1
+    row = 0
+    col = 0
+    for sample in sorted(os.listdir(dir)):
+        s_dir = osp.join(dir, sample)
+        assert osp.exists(s_dir)
+        s = int(sample[6:])
+        if s < 1000:
+            continue
+        y = np.load(osp.join(s_dir, 'y.npy'))
+        s = sns.heatmap(y, linewidth = 0, vmin = 0, vmax = np.mean(y), cmap = RED_CMAP,
+                        ax = ax[row][col], cbar = False)
+        s.set_title(sample, fontsize = 16)
+        s.set_xticks([])
+        s.set_yticks([])
+
+        col += 1
+        if col > cols-1:
+            col = 0
+            row += 1
+        if row > rows-1:
+            # save fit and reset
+            plt.tight_layout()
+            plt.savefig(osp.join(f'/home/erschultz/{dataset}/all_hic_{fig_ind}.png'))
+            plt.close()
+
+            fig, ax = plt.subplots(rows, cols)
+            fig.set_figheight(12)
+            fig.set_figwidth(12)
+            fig_ind += 1
+            row = 0
+            col = 0
+
 
 if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     # data_dir = osp.join(dir, 'dataset_soren/samples/sample1')
     # file = osp.join(data_dir, 'y_kr.npy')
     # data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample4')
     # file = osp.join(data_dir, 'y.npy')
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_logistic', [3960, 3517, 2812, 3148], ref_file = file)
-    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [11,12, 13, 14])
-    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024', [201, 211, 221 ,231, 241], ref_file = file)
-    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/sequences_to_contact_maps/dataset_07_20_22', [1, 2, 3, 4, 5, 6])
-    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [1, 2, 3, 4, 5, 10, 11, 12, 13])
-    # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_09_30_22')
-    plot_combined_models('ContactGNNEnergy', [396, 397])
-    # plot_GNN_vs_PCA(373)
-    # plot_Exp_vs_PCA()
+    # plot_combined_models('ContactGNNEnergy', [398, 399])
+    # plot_GNN_vs_PCA('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
+    plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
+    # plot_Exp_vs_PCA("dataset_01_26_23", 4)
     # main()
+    # plot_all_contact_maps('dataset_04_06_23')

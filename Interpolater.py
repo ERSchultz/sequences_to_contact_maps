@@ -8,13 +8,13 @@ import numpy as np
 import pyBigWig
 import scipy.stats as ss
 import seaborn as sns
+
 from scripts.plotting_utils import RED_CMAP, plot_matrix
 from scripts.utils import rescale_matrix
 
 
 class Interpolater():
-    def __init__(self, methods, dataset = None, sample = None, dir = None,
-                chrom = None, start = None, end = None, res = None):
+    def __init__(self, methods, dataset = None, sample = None, dir = None):
         '''
         Class for interpolating contact maps.
 
@@ -28,10 +28,6 @@ class Interpolater():
             dataset: dataset for input data
             sample: sample for input data
             dir: dir for input and output (must specify if dataset/sample = None)
-            chrom: chromosome (enter as 5 not chr5)
-            start: start in bp
-            end: end in bp
-            res: resolution in bp
         '''
         self.methods = methods
         if dataset is not None and sample is not None:
@@ -65,8 +61,10 @@ class Interpolater():
                         self.end = int(float(line[1]))
                     elif line[0] == 'resolution':
                         self.res = int(line[1])
+                    elif line[0] == 'norm':
+                        self.norm = line[1]
 
-    def run(self, y = None):
+    def run(self, y = None, factor=5):
         '''Interpolate contact map y using self.methods.'''
         if y is None:
             y_file = osp.join(self.dir, 'y.npy')
@@ -79,7 +77,7 @@ class Interpolater():
         crop_right = 1200
         # plot_matrix(self.y[crop_left:crop_right, crop_left:crop_right],
                     # osp.join(self.odir, 'y_crop.png'), vmax = 'mean')
-        y_pool = rescale_matrix(self.y, 5)
+        y_pool = rescale_matrix(self.y, factor)
         # plot_matrix(y_pool[crop_left:crop_right, crop_left:crop_right],
                     # osp.join(self.odir, 'y_pool_crop.png'), vmax = 'mean')
         # plot_matrix(y_pool, osp.join(self.odir, 'y_pool.png'), vmax = 'mean')
@@ -116,7 +114,7 @@ class Interpolater():
         # plot_matrix(y_interp, osp.join(self.odir, f'y_{"_".join(self.methods)}.png'), vmax = 'mean')
         # plot_matrix(y_interp[crop_left:crop_right, crop_left:crop_right],
                     # osp.join(self.odir, f'y_crop_{"_".join(self.methods)}.png'), vmax = 'mean')
-        y_interp_pool = rescale_matrix(y_interp, 5)
+        y_interp_pool = rescale_matrix(y_interp, factor)
         plot_matrix(y_interp_pool, osp.join(self.odir, f'y_pool_{"_".join(self.methods)}.png'), vmax = 'mean')
         # plot_matrix(y_interp_pool[crop_left:crop_right, crop_left:crop_right],
                     # osp.join(self.odir, f'y_pool_crop_{"_".join(self.methods)}.png'), vmax = 'mean')
@@ -293,21 +291,21 @@ class Interpolater():
 
         return y
 
-def wrapper(dataset, sample):
+def wrapper(dataset, sample, factor):
     dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
     if not osp.exists(dir):
         return
     # this is the recommended option
     interpolater = Interpolater(['zeros', 'mappability-0.7'], dataset, sample)
-    # interpolater.run()
+    interpolater.run(factor = factor)
 
     dir = f'/home/erschultz/{dataset}/samples/sample{sample+1000}'
-    # if not osp.exists(dir):
-    #     os.mkdir(dir, mode=0o755)
-    # shutil.copyfile(osp.join(interpolater.odir, 'y_pool_zeros_mappability-0.7.png'),
-    #                 osp.join(dir, 'y.png'))
-    # shutil.copyfile(osp.join(interpolater.odir, 'y_pool_interpolate_zeros_mappability-0.7.npy'),
-    #                 osp.join(dir, 'y.npy'))
+    if not osp.exists(dir):
+        os.mkdir(dir, mode=0o755)
+    shutil.copyfile(osp.join(interpolater.odir, 'y_pool_zeros_mappability-0.7.png'),
+                    osp.join(dir, 'y.png'))
+    shutil.copyfile(osp.join(interpolater.odir, 'y_pool_interpolate_zeros_mappability-0.7.npy'),
+                    osp.join(dir, 'y.npy'))
 
     with open(osp.join(dir, 'import.log'), 'w') as f:
         f.write(f'Interpolation of sample {sample} with mappability-0.7 and zeros\n')
@@ -315,16 +313,17 @@ def wrapper(dataset, sample):
         f.write(f'chrom={interpolater.chrom}\n')
         f.write(f'start={interpolater.start}\n')
         f.write(f'end={interpolater.end}\n')
-        f.write(f'resolution={interpolater.res * 5}\n')
-        f.write('norm=NONE')
+        f.write(f'resolution={interpolater.res * factor}\n')
+        f.write(f'norm={interpolater.norm}')
 
 def main():
-    dataset = 'dataset_03_21_23'
-    mapping = [(dataset, i) for i in range(1,874)]
-    # for dataset, i in mapping:
-        # wrapper(dataset, i)
-    with multiprocessing.Pool(8) as p:
-        p.starmap(wrapper, mapping)
+    dataset = 'dataset_HCT116'
+    mapping = [(dataset, i, 5) for i in range(10, 11)]
+    # serial version
+    for dataset, i, factor in mapping:
+        wrapper(dataset, i, factor)
+    # with multiprocessing.Pool(15) as p:
+        # p.starmap(wrapper, mapping)
 
 
 def example_figure(dataset, sample):
@@ -381,7 +380,33 @@ def example_figure(dataset, sample):
     plt.savefig(osp.join(dir_raw, 'interp_figure.png'))
     plt.close()
 
+def check_interpolation():
+    '''Check if any of the experimental contact maps had too many rows/cols to be interpolated'''
+    dir = '/home/erschultz/dataset_04_09_23'
+    for sample in range(1, 31):
+        s_dir = osp.join(dir, 'samples', f'sample{sample}')
+        if not osp.exists(s_dir):
+            continue
+        try:
+            with open(osp.join(s_dir, 'Interpolation/zeros_mappability-0.7/log.log')) as f:
+                lines = f.readlines()
+                last = lines[-1]
+                rows = last.split(' ')[1]
+                rows = int(rows)
+                if rows > 1000:
+                    print(sample, rows)
+                    interp_dir = osp.join(dir, 'samples', f'sample{1000+sample}')
+                    # if osp.exists(interp_dir):
+                    #     shutil.rmtree(interp_dir)
+                    # if osp.exists(s_dir):
+                    #     shutil.rmtree(s_dir)
+        except Exception as e:
+            print(s_dir)
+            raise e
+
+
 
 if __name__ == '__main__':
-    # main()
-    example_figure('dataset_02_04_23', 1)
+    main()
+    # example_figure('dataset_02_04_23', 1)
+    # check_interpolation()

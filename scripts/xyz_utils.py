@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numba import jit, njit
 from scipy.sparse import csr_array
+from sklearn.metrics.pairwise import nan_euclidean_distances
 
 from .utils import LETTERS, print_time
 
@@ -230,6 +231,17 @@ def xyz_to_contact_distance(xyz, cutoff_distance, verbose = False):
                     contact_map[j,i] += 1
 
     return contact_map
+
+def xyz_to_distance(xyz, verbose = False):
+    N, m, _ = xyz.shape
+    D = np.zeros((N, m, m), dtype = np.float32)
+    for i in range(N):
+        if verbose:
+            print(i)
+        D_i = nan_euclidean_distances(xyz[i])
+        D[i] = D_i
+
+    return D
 
 def main():
     dir='/home/eric/dataset_test/samples/sample82'

@@ -5,17 +5,17 @@ import os.path as osp
 
 import hicrep
 import numpy as np
-from scipy.ndimage import uniform_filter
+import scipy
+import sklearn.metrics
 from scipy.stats import pearsonr, zscore
-
-from .load_utils import load_contact_map
 
 
 # similarity measures
 class SCC():
-    '''
-    Class for calculation of SCC as defined by https://pubmed.ncbi.nlm.nih.gov/28855260/
-    '''
+    """
+    Calculate Stratified Correlation Coefficient (SCC)
+    as defined by https://pubmed.ncbi.nlm.nih.gov/28855260/.
+    """
     def __init__(self):
         self.r_2k_dict = {} # memoized solution for var_stabilized r_2k
 
@@ -45,8 +45,8 @@ class SCC():
         else:
             return math.sqrt(np.var(x_k) * np.var(y_k))
 
-    def scc_file(self, xfile, yfile, h = 1, K = None, var_stabilized = True, verbose = False,
-                distance = False, chr = None, resolution = None):
+    def scc_file(self, xfile, yfile, h=1, K=None, var_stabilized=True,
+                verbose=False, distance=False):
         '''
         Wrapper for scc that takes file path as input. Must be .npy file.
 
@@ -65,12 +65,15 @@ class SCC():
             else:
                 return result
 
-        x = load_contact_map(xfile, chr, resolution)
-        y = load_contact_map(yfile, chr, resolution)
+        x = np.load(xfile)
+        y = np.load(yfile)
         return self.scc(x, y, h, K, var_stabilized, verbose, distance)
 
-    def scc(self, x, y, h = 1, K = 100, var_stabilized = True, verbose = False,
-            distance = False):
+    def mean_filter(self, x, size):
+        return scipy.ndimage.uniform_filter(x, size, mode="constant") / (size) ** 2
+
+    def scc(self, x, y, h=1, K=None, var_stabilized=False, verbose=False,
+            debug=False, distance=False):
         '''
         Compute scc between contact map x and y.
 
@@ -80,7 +83,8 @@ class SCC():
             h: span of mean filter (width = (1+2h)) (None or 0 to skip)
             K: maximum stratum (diagonal) to consider (5 Mb recommended)
             var_stabilized: True to use var_stabilized r_2k (default = True)
-            verbose: True to return diagonal correlations and weights
+            verbose: True to print when nan found
+            debug: True to return p_arr and w_arr
             distance: True to return 1 - scc
         '''
         if len(x.shape) == 1:
@@ -88,9 +92,11 @@ class SCC():
         if len(y.shape) == 1:
             y = triu_to_full(y)
 
-        if h is not None and h > 0:
-            x = uniform_filter(x.astype(np.float64), 1+2*h, mode = 'constant')
-            y = uniform_filter(y.astype(np.float64), 1+2*h, mode = 'constant')
+        if K is None:
+            K = len(y) - 2
+
+        x = self.mean_filter(x.astype(np.float64), 1+2*h)
+        y = self.mean_filter(y.astype(np.float64), 1+2*h)
 
         nan_list = []
         p_arr = []
@@ -131,13 +137,13 @@ class SCC():
 
         scc = np.sum(w_arr * p_arr / np.sum(w_arr))
 
-        # if verbose and len(nan_list) > 0:
-        #     print(f'{len(nan_list)} nans: k = {nan_list}')
+        if verbose and len(nan_list) > 0:
+            print(f'{len(nan_list)} nans: k = {nan_list}')
 
         if distance:
             scc =  1 - scc
 
-        if verbose:
+        if debug:
             return scc, p_arr, w_arr
         else:
             return scc

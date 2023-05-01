@@ -176,7 +176,8 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None,
 
 def load_chi(dir, throw_exception=True):
     if osp.exists(osp.join(dir, 'chis.txt')):
-        chi = np.loadtxt(osp.join(dir, 'chis.txt'))[-1]
+        chi = np.loadtxt(osp.join(dir, 'chis.txt'))
+        chi = np.atleast_2d(chi)[-1]
         return triu_to_full(chi)
     elif osp.exists(osp.join(dir, 'chis.npy')):
         chi = np.load(osp.join(dir, 'chis.npy'))
@@ -211,12 +212,13 @@ def load_max_ent_chi(k, path, throw_exception = True):
 
     return chi
 
-def get_final_max_ent_folder(replicate_folder, throw_exception = True):
+def get_final_max_ent_folder(replicate_folder, throw_exception = True, return_it = False):
     '''Find final max ent iteration within replicate folder.'''
     max_it = -1
     for file in os.listdir(replicate_folder):
-        if osp.isdir(osp.join(replicate_folder, file)) and file.startswith('iteration'):
-            it = int(file[9:])
+        if osp.isdir(osp.join(replicate_folder, file)) and 'iteration' in file:
+            start = file.find('iteration')+9
+            it = int(file[start:])
             if it > max_it:
                 max_it = it
 
@@ -226,10 +228,16 @@ def get_final_max_ent_folder(replicate_folder, throw_exception = True):
         else:
             return None
 
-    return osp.join(replicate_folder, f'iteration{max_it}')
+    final_folder = osp.join(replicate_folder, f'iteration{max_it}')
+    if return_it:
+        return final_folder, max_it
+    return final_folder
 
 
 def load_final_max_ent_L(replicate_path, max_it_path = None):
+    if replicate_path is None:
+        return None
+
     # load x
     x_file = osp.join(replicate_path, 'resources', 'x.npy')
     if osp.exists(x_file):

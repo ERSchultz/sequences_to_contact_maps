@@ -11,6 +11,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch_geometric.transforms
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 
 from .neural_nets.pyg_fns import (AdjPCATransform, AdjPCs, AdjTransform,
                                   ContactDistance, Degree,
@@ -18,7 +19,6 @@ from .neural_nets.pyg_fns import (AdjPCATransform, AdjPCs, AdjTransform,
                                   GeneticPosition, GridSize, NoiseLevel,
                                   OneHotGeneticPosition,
                                   WeightedLocalDegreeProfile)
-from .utils import DiagonalPreprocessing
 
 
 def get_base_parser():
@@ -864,6 +864,8 @@ class ArgparserConverter():
         elif isinstance(v, str):
             if v.lower() == 'none':
                 return None
+            elif v.lower() == 'nan':
+                return np.NaN
             elif v.isnumeric():
                 return int(v)
             elif v[0] == '-' and v[1:].isnumeric():
