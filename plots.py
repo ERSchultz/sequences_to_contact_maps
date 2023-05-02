@@ -723,8 +723,8 @@ def plot_Exp_vs_PCA(dataset, k):
 def plot_all_contact_maps(dataset):
     '''plot every contact map in dataset in a series of 5x5 panel images.'''
     dir = f'/home/erschultz/{dataset}/samples'
-    rows = 5
-    cols = 5
+    rows = 3
+    cols = 3
     fig, ax = plt.subplots(rows, cols)
     fig.set_figheight(12)
     fig.set_figwidth(12)
@@ -732,11 +732,12 @@ def plot_all_contact_maps(dataset):
     row = 0
     col = 0
     for sample in sorted(os.listdir(dir)):
+        print(sample, row, col)
         s_dir = osp.join(dir, sample)
         assert osp.exists(s_dir)
         s = int(sample[6:])
-        if s < 1000:
-            continue
+        # if s < 1000:
+        #     continue
         y = np.load(osp.join(s_dir, 'y.npy'))
         s = sns.heatmap(y, linewidth = 0, vmin = 0, vmax = np.mean(y), cmap = RED_CMAP,
                         ax = ax[row][col], cbar = False)
@@ -761,6 +762,10 @@ def plot_all_contact_maps(dataset):
             row = 0
             col = 0
 
+    # save remainder
+    plt.tight_layout()
+    plt.savefig(osp.join(f'/home/erschultz/{dataset}/all_hic_{fig_ind}.png'))
+    plt.close()
 
 if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
@@ -775,7 +780,7 @@ if __name__ == '__main__':
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
     # plot_combined_models('ContactGNNEnergy', [398, 399])
     # plot_GNN_vs_PCA('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
-    plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
+    # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_01_26_23", 4)
     # main()
-    # plot_all_contact_maps('dataset_04_06_23')
+    plot_all_contact_maps('dataset_04_28_23')

@@ -18,10 +18,6 @@ from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
-
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
 from scripts.energy_utils import *
@@ -33,6 +29,9 @@ from scripts.plotting_utils import RED_CMAP, plot_matrix
 from scripts.similarity_measures import SCC
 from scripts.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
                            print_time, triu_to_full)
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUV'
 
@@ -140,7 +139,7 @@ def debugModel(model_type):
 
     # dataset
     dir = "/home/erschultz"
-    datasets = ['dataset_03_21_23-max_ent']
+    datasets = ['dataset_04_04_23']
     opt.data_folder = [osp.join(dir, d) for d in datasets]
     opt.scratch = '/home/erschultz/scratch'
 
@@ -724,6 +723,6 @@ if __name__ == '__main__':
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()
