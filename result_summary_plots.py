@@ -8,7 +8,7 @@ import numpy as np
 import statsmodels.api as sm
 from scipy.sparse.csgraph import laplacian
 from scripts.argparse_utils import ArgparserConverter
-from scripts.load_utils import load_all, load_final_max_ent_L
+from scripts.load_utils import load_all, load_max_ent_L
 from scripts.plotting_utils import plot_matrix
 from scripts.R_pca import R_pca
 from scripts.utils import LETTERS, DiagonalPreprocessing, pearson_round
@@ -350,7 +350,7 @@ def load_method_L(root, sample_folder, sample, method, k, model_id):
                     for replicate_file in os.listdir(k_path):
                         replicate_path = osp.join(k_path, replicate_file)
                         if osp.isdir(replicate_path):
-                            L_hat = load_final_max_ent_L(k, replicate_path)
+                            L_hat = load_max_ent_L(k, replicate_path)
                             return L_hat # return first replicate
 
     raise Exception('L_hat not found')

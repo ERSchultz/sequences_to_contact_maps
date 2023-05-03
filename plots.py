@@ -424,8 +424,8 @@ def main(id):
 
 def plot_GNN_vs_PCA(dataset, k, GNN_ID):
     dir = f'/home/erschultz/{dataset}/samples'
-    for sample in range(201, 210):
-        sample_dir = osp.join(dir, f'sample{sample}_copy')
+    for sample in range(202, 203):
+        sample_dir = osp.join(dir, f'sample{sample}')
         if not osp.exists(sample_dir):
             print(f'sample_dir does not exist: {sample_dir}')
             continue
@@ -435,7 +435,10 @@ def plot_GNN_vs_PCA(dataset, k, GNN_ID):
         meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
         y_diag = DiagonalPreprocessing.process(y, meanDist)
 
-        pca_dir = osp.join(sample_dir, f'PCA-normalize-E/k{k}/replicate1')
+        if k is None:
+            pca_dir = osp.join(sample_dir, 'optimize_grid_b_140_phi_0.03-max_ent')
+        else:
+            pca_dir = osp.join(sample_dir, f'PCA-normalize-E/k{k}/replicate1')
         with open(osp.join(pca_dir, 'distance_pearson.json'), 'r') as f:
             # TODO this is after final iteration, not convergence
             pca_results = json.load(f)
@@ -448,8 +451,7 @@ def plot_GNN_vs_PCA(dataset, k, GNN_ID):
         L = load_L(pca_dir)
         with open(osp.join(pca_dir, 'iteration13/config.json'), 'r') as f:
             config = json.load(f)
-        diag_chis = np.loadtxt(osp.join(pca_dir, 'chis_diag.txt'))[-1]
-        diag_chis_continuous = calculate_diag_chi_step(config, diag_chis)
+        diag_chis_continuous = calculate_diag_chi_step(config)
         D = calculate_D(diag_chis_continuous)
         S = calculate_S(L, D)
 
@@ -461,7 +463,6 @@ def plot_GNN_vs_PCA(dataset, k, GNN_ID):
         y_gnn /= np.mean(np.diagonal(y_gnn))
         meanDist = DiagonalPreprocessing.genomic_distance_statistics(y_gnn)
         y_gnn_diag = DiagonalPreprocessing.process(y_gnn, meanDist)
-
 
         S_gnn = np.load(osp.join(gnn_dir, 'S.npy'))
 
@@ -494,6 +495,11 @@ def plot_GNN_vs_PCA(dataset, k, GNN_ID):
                 f'\nSCC={np.round(gnn_results["scc_var"], 3)}')
         s3.set_title(title, fontsize = 16)
         s3.set_yticks([])
+
+        s1.set_xticks([])
+        s1.set_yticks([])
+        s2.set_xticks([])
+
 
         plt.tight_layout()
         plt.savefig(osp.join(sample_dir, 'PCA_vs_GNN.png'))
@@ -558,6 +564,10 @@ def plot_GNN_vs_PCA(dataset, k, GNN_ID):
                 r'(Max Ent $\hat{S}$ - GNN $\hat{S}$)')
         s3.set_title(title, fontsize = 16)
         s3.set_yticks([])
+
+        s1.set_xticks([])
+        s1.set_yticks([])
+        s2.set_xticks([])
 
         plt.tight_layout()
         plt.savefig(osp.join(sample_dir, 'PCA_vs_GNN_S.png'))
@@ -651,27 +661,30 @@ def plot_first_PC(dataset, k, GNN_ID):
         plt.savefig(osp.join(sample_dir, 'pc_comparison.png'))
 
 
-def plot_Exp_vs_PCA(dataset, k):
+def plot_Exp_vs_PCA(dataset, k=None):
     dir = f'/home/erschultz/{dataset}/samples'
-    for sample in range(201, 203):
+    for sample in range(221, 222):
         sample_dir = osp.join(dir, f'sample{sample}')
 
         y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
         y /= np.mean(np.diagonal(y))
 
-        pca_dir = osp.join(sample_dir, f'PCA-normalize-E/k{k}/replicate1')
+        if k is None:
+            pca_dir = osp.join(sample_dir, 'optimize_grid_b_140_phi_0.03-max_ent')
+        else:
+            pca_dir = osp.join(sample_dir, f'PCA-normalize-E/k{k}/replicate1')
+
         with open(osp.join(pca_dir, 'distance_pearson.json'), 'r') as f:
             # TODO this is after final iteration, not convergence
             pca_results = json.load(f)
         y_pca = np.load(osp.join(pca_dir, 'y.npy')).astype(np.float64)
         y_pca /= np.mean(np.diagonal(y_pca))
 
-        L = np.load(osp.join(pca_dir, 's.npy'))
+        L = np.load(osp.join(pca_dir, 'L.npy'))
         max_it = get_final_max_ent_folder(pca_dir)
         with open(osp.join(max_it, 'config.json'), 'r') as f:
             config = json.load(f)
-        diag_chis = np.loadtxt(osp.join(pca_dir, 'chis_diag.txt'))[-1]
-        diag_chis_continuous = calculate_diag_chi_step(config, diag_chis)
+        diag_chis_continuous = calculate_diag_chi_step(config)
         D = calculate_D(diag_chis_continuous)
         S = calculate_S(L, D)
 
@@ -779,8 +792,8 @@ if __name__ == '__main__':
     # file = osp.join(data_dir, 'y.npy')
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
     # plot_combined_models('ContactGNNEnergy', [398, 399])
-    # plot_GNN_vs_PCA('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
+    plot_GNN_vs_PCA('dataset_02_04_23', None, 392)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
-    # plot_Exp_vs_PCA("dataset_01_26_23", 4)
+    # plot_Exp_vs_PCA("dataset_02_04_23")
     # main()
-    plot_all_contact_maps('dataset_04_28_23')
+    # plot_all_contact_maps('dataset_04_28_23')

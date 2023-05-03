@@ -10,9 +10,10 @@ import hicrep
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.sparse as sp
+from pylib.utils.energy_utils import (calculate_D, calculate_diag_chi_step,
+                                      calculate_L)
 from scipy.ndimage import gaussian_filter
 
-from .energy_utils import calculate_L
 from .utils import (LETTERS, DiagonalPreprocessing, print_size, print_time,
                     triu_to_full)
 from .xyz_utils import xyz_load, xyz_to_contact_grid
@@ -56,14 +57,18 @@ def load_X_psi(sample_folder, throw_exception = True, verbose = False):
 def load_Y(sample_folder, throw_exception = True):
     y_file = osp.join(sample_folder, 'y.npy')
     y_file2 = osp.join(sample_folder, 'data_out/contacts.txt')
-    y_file3 = osp.join(sample_folder, 'y.cool')
+    y_file3 = osp.join(sample_folder, 'production_out/contacts.txt')
+    y_file4 = osp.join(sample_folder, 'y.cool')
     if osp.exists(y_file):
         y = np.load(y_file)
     elif osp.exists(y_file2):
         y = np.loadtxt(y_file2)
         np.save(y_file, y) # save in proper place
     elif osp.exists(y_file3):
-        clr, binsize = hicrep.utils.readMcool(y_file3, -1)
+        y = np.loadtxt(y_file3)
+        np.save(y_file, y) # save in proper place
+    elif osp.exists(y_file4):
+        clr, binsize = hicrep.utils.readMcool(y_file4, -1)
         y = clr.matrix(balance=False).fetch('10')
         np.save(y_file, y) # save in proper place
     elif throw_exception:
@@ -233,13 +238,30 @@ def get_final_max_ent_folder(replicate_folder, throw_exception = True, return_it
         return final_folder, max_it
     return final_folder
 
+def load_max_ent_D(path):
+    if path is None:
+        return None
 
-def load_final_max_ent_L(replicate_path, max_it_path = None):
-    if replicate_path is None:
+    final = get_final_max_ent_folder(path)
+
+    config_file = osp.join(final, 'config.json')
+    if osp.exists(config_file):
+        with open(config_file, 'rb') as f:
+            config = json.load(f)
+    else:
+        return None
+
+    diag_chis_step = calculate_diag_chi_step(config)
+
+    D = calculate_D(diag_chis_step)
+    return D
+
+def load_max_ent_L(path):
+    if path is None:
         return None
 
     # load x
-    x_file = osp.join(replicate_path, 'resources', 'x.npy')
+    x_file = osp.join(path, 'resources', 'x.npy')
     if osp.exists(x_file):
         x = np.load(x_file)
     else:
@@ -248,10 +270,10 @@ def load_final_max_ent_L(replicate_path, max_it_path = None):
     _, k = x.shape
 
     # load chi
-    chi = load_chi(replicate_path)
+    chi = load_chi(path)
 
     if chi is None:
-        raise Exception(f'chi not found: {replicate_path}, {max_it_path}')
+        raise Exception(f'chi not found: {path}')
 
     # calculate s
     s = calculate_L(x, chi)
