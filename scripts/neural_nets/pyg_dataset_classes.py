@@ -277,11 +277,15 @@ class ContactsGraph(torch_geometric.data.Dataset):
             id = int(osp.split(raw_folder)[1][6:])
             rng = np.random.default_rng(seed = id)
             self.sweep = rng.choice([200000, 300000, 400000, 500000], 1)[0]
+
             y_path = osp.join(raw_folder, f'data_out/contacts{self.sweep}.txt')
+            y_path2 = osp.join(raw_folder, f'production_out/contacts{self.sweep}.txt')
             if osp.exists(y_path):
                 y = np.loadtxt(y_path).astype(np.float64)
+            elif osp.exists(y_path2):
+                y = np.loadtxt(y_path2).astype(np.float64)
             else:
-                raise Exception(f"Unknown preprocessing: {self.y_preprocessing} or y_path missing: {y_path}")
+                raise Exception(f"y_path missing: {y_path}, {y_path2}")
 
         elif self.y_preprocessing.startswith('sweep'):
             sweep, *y_preprocessing = self.y_preprocessing.split('_')
