@@ -567,13 +567,6 @@ def binom():
     #                 bounds = [(0,1)]*len(y))
     # print(model)
 
-def s_sym_pca_mse(chi, v, s_sym):
-    s = v @ triu_to_full(chi) @ v.T
-
-    s_sym_pca = (s+s.T)/2
-    mse = mean_squared_error(s_sym_pca, s_sym)
-    return mse
-
 def sc_structure_vs_sc_sample():
     # is sampling from bulk contact map the same as the individual structures
     # from the TICG model

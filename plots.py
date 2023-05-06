@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import torch
+from pylib.utils.plotting_utils import RED_CMAP, plot_matrix
+from pylib.utils.utils import load_json
 from scipy.ndimage import uniform_filter
 from scripts.argparse_utils import (finalize_opt, get_base_parser,
                                     get_opt_header, opt2list)
@@ -19,8 +21,8 @@ from scripts.load_utils import (get_final_max_ent_folder, load_contact_map,
 from scripts.plotting_utils import (BLUE_RED_CMAP, RED_CMAP,
                                     plot_centroid_distance,
                                     plot_combined_models, plot_diag_chi,
-                                    plot_matrix, plot_sc_contact_maps,
-                                    plot_xyz_gif, plotting_script)
+                                    plot_sc_contact_maps, plot_xyz_gif,
+                                    plotting_script)
 from scripts.utils import DiagonalPreprocessing, pearson_round
 from scripts.xyz_utils import xyz_load, xyz_write
 from sklearn.decomposition import PCA
@@ -424,7 +426,7 @@ def main(id):
 
 def plot_GNN_vs_PCA(dataset, k, GNN_ID):
     dir = f'/home/erschultz/{dataset}/samples'
-    for sample in range(202, 203):
+    for sample in range(1002, 1003):
         sample_dir = osp.join(dir, f'sample{sample}')
         if not osp.exists(sample_dir):
             print(f'sample_dir does not exist: {sample_dir}')
@@ -436,7 +438,7 @@ def plot_GNN_vs_PCA(dataset, k, GNN_ID):
         y_diag = DiagonalPreprocessing.process(y, meanDist)
 
         if k is None:
-            pca_dir = osp.join(sample_dir, 'optimize_grid_b_140_phi_0.03-max_ent')
+            pca_dir = osp.join(sample_dir, 'optimize_grid_b_140_phi_0.06-max_ent')
         else:
             pca_dir = osp.join(sample_dir, f'PCA-normalize-E/k{k}/replicate1')
         with open(osp.join(pca_dir, 'distance_pearson.json'), 'r') as f:
@@ -449,14 +451,15 @@ def plot_GNN_vs_PCA(dataset, k, GNN_ID):
 
 
         L = load_L(pca_dir)
-        with open(osp.join(pca_dir, 'iteration13/config.json'), 'r') as f:
+        max_it_dir = get_final_max_ent_folder(pca_dir)
+        with open(osp.join(max_it_dir, 'config.json'), 'r') as f:
             config = json.load(f)
         diag_chis_continuous = calculate_diag_chi_step(config)
         D = calculate_D(diag_chis_continuous)
         S = calculate_S(L, D)
 
 
-        gnn_dir = osp.join(sample_dir, f'GNN-{GNN_ID}-S/k0/replicate1')
+        gnn_dir = osp.join(sample_dir, f'optimize_grid_b_16.5_phi_0.06-GNN{GNN_ID}')
         with open(osp.join(gnn_dir, 'distance_pearson.json'), 'r') as f:
             gnn_results = json.load(f)
         y_gnn = np.load(osp.join(gnn_dir, 'y.npy')).astype(np.float64)
@@ -496,9 +499,9 @@ def plot_GNN_vs_PCA(dataset, k, GNN_ID):
         s3.set_title(title, fontsize = 16)
         s3.set_yticks([])
 
-        s1.set_xticks([])
-        s1.set_yticks([])
-        s2.set_xticks([])
+        # s1.set_xticks([])
+        # s1.set_yticks([])
+        # s2.set_xticks([])
 
 
         plt.tight_layout()
@@ -565,9 +568,9 @@ def plot_GNN_vs_PCA(dataset, k, GNN_ID):
         s3.set_title(title, fontsize = 16)
         s3.set_yticks([])
 
-        s1.set_xticks([])
-        s1.set_yticks([])
-        s2.set_xticks([])
+        # s1.set_xticks([])
+        # s1.set_yticks([])
+        # s2.set_xticks([])
 
         plt.tight_layout()
         plt.savefig(osp.join(sample_dir, 'PCA_vs_GNN_S.png'))
@@ -749,12 +752,12 @@ def plot_all_contact_maps(dataset):
         s_dir = osp.join(dir, sample)
         assert osp.exists(s_dir)
         s = int(sample[6:])
-        # if s < 1000:
+        # if s < 200:
         #     continue
         y = np.load(osp.join(s_dir, 'y.npy'))
         s = sns.heatmap(y, linewidth = 0, vmin = 0, vmax = np.mean(y), cmap = RED_CMAP,
                         ax = ax[row][col], cbar = False)
-        s.set_title(sample, fontsize = 16)
+        # s.set_title(sample, fontsize = 16)
         s.set_xticks([])
         s.set_yticks([])
 
@@ -780,6 +783,206 @@ def plot_all_contact_maps(dataset):
     plt.savefig(osp.join(f'/home/erschultz/{dataset}/all_hic_{fig_ind}.png'))
     plt.close()
 
+def plot_p_s(dataset, experimental=False, ref=False, params=False, label=None):
+    # plot different p(s) curves
+    dir = '/home/erschultz/'
+    if ref:
+        data_dir = osp.join(dir, 'dataset_11_14_22/samples/sample1') # experimental data sample
+        file = osp.join(data_dir, 'y.npy')
+        y_exp = np.load(file)
+        meanDist_ref = DiagonalPreprocessing.genomic_distance_statistics(y_exp, 'prob')
+
+    data_dir = osp.join(dir, dataset)
+
+    data = defaultdict(dict) # sample : {meanDist, diag_chis_step} : vals
+    samples, _ = get_samples(dataset)
+    for sample in samples:
+        sample_dir = osp.join(data_dir, 'samples', f'sample{sample}')
+        ifile = osp.join(sample_dir, 'y.npy')
+        if osp.exists(ifile):
+            y = np.load(ifile)
+            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
+            data[sample]['meanDist'] = meanDist
+
+            config_file = osp.join(sample_dir, 'config.json')
+            if osp.exists(config_file):
+                with open(config_file) as f:
+                    config = json.load(f)
+                    data[sample]['grid_size'] = config['grid_size']
+                    data[sample]['phi_chromatin'] = config['phi_chromatin']
+                    data[sample]['bond_length'] = config["bond_length"]
+                    data[sample]['grid_size'] = config["grid_size"]
+                    data[sample]['beadvol'] = config['beadvol']
+                    data[sample]['k_angle'] = config['k_angle']
+            if params:
+                diag_chis_step = calculate_diag_chi_step(config)
+                data[sample]['diag_chis_step'] = np.array(diag_chis_step)
+
+
+    for norm in [True, False]:
+        fig, ax = plt.subplots()
+        if params:
+            ax2 = ax.twinx()
+        if ref:
+            if norm:
+                X = np.arange(0, 1, len(meanDist_ref))
+            else:
+                X = np.arange(0, len(meanDist_ref), 1)
+            ax.plot(meanDist_ref, label = 'Experiment', color = 'k')
+
+        for i, sample in enumerate(data.keys()):
+            meanDist = data[sample]['meanDist']
+            if norm:
+                X = np.linspace(0, 1, len(meanDist))
+            else:
+                X = np.arange(0, len(meanDist), 1)
+            if i > 10:
+                ls = 'dashed'
+            else:
+                ls = 'solid'
+
+            if label is not None:
+                ax.plot(X, meanDist, label = data[sample][label], ls = ls)
+            else:
+                ax.plot(X, meanDist, label = sample, ls = ls)
+
+            if params:
+                diag_chis_step = data[sample]['diag_chis_step']
+                ax2.plot(X, diag_chis_step, ls = '--', label = 'Parameters')
+
+        ax.set_yscale('log')
+        ax.set_xscale('log')
+        ax.set_ylabel('Contact Probability', fontsize = 16)
+        ax.set_xlabel('Polymer Distance (beads)', fontsize = 16)
+
+        if params:
+            ax.legend(loc='lower left', title = 'Sample')
+            ax2.set_xscale('log')
+            ax2.set_ylabel('Diagonal Parameter', fontsize = 16)
+            ax2.legend(loc='upper right')
+        elif label is not None:
+            ax.legend(loc='upper right', title = label)
+        else:
+            ax.legend(loc='upper right', title = 'Sample')
+        if not experimental:
+            plt.title(f"b={data[sample]['bond_length']}, "
+                    r"$\Delta$"
+                    f"={data[sample]['grid_size']}, vb={data[sample]['beadvol']}")
+        plt.tight_layout()
+        plt.savefig(osp.join(data_dir, f'meanDist_norm_{norm}.png'))
+        plt.close()
+
+def plot_seq_comparison(seqs, labels):
+    '''Compare sequences in seqs.
+
+    Inputs:
+        seqs: list of arrays, arrays should be mxk
+        labels: list of labels
+    '''
+    for i, seq in enumerate(seqs):
+        if seq.shape[1] > seq.shape[0]:
+            seqs[i] = seq.T
+    rows = 3; cols = 3
+    row = 0; col = 0
+    fig, ax = plt.subplots(rows, cols)
+    fig.set_figheight(12)
+    fig.set_figwidth(16)
+    for i in range(rows*cols):
+        for seq, label in zip(seqs, labels):
+            ax[row, col].plot(seq[:, i], label = label)
+        ax[row, col].set_title(f'PC {i+1}')
+        ax[row, col].legend()
+
+        col += 1
+        if col > cols-1:
+            col = 0
+            row += 1
+    plt.show()
+
+def plot_energy_no_ticks():
+    dir = '/home/erschultz/dataset_02_04_23/samples'
+    for sample in [211, 213, 218]:
+        dir2 = osp.join(dir, f'sample{sample}/optimize_grid_b_140_phi_0.06-max_ent')
+        max_it_dir = get_final_max_ent_folder(dir2)
+        config = load_json(osp.join(max_it_dir, 'config.json'))
+        x = np.load(osp.join(dir2, 'resources/x.npy'))
+        L, D, S = calculate_all_energy(config, x, np.array(config["chis"]))
+        plot_matrix(L, osp.join(dir2, 'L_noticks.png'), cmap='bluered',
+                    x_ticks = [], y_ticks = [], vmin = -15, vmax = 15)
+        plot_matrix(D, osp.join(dir2, 'D_noticks.png'), vmin = 5, vmax = 25,
+                    cmap='bluered',
+                    x_ticks = [], y_ticks = [])
+        plot_matrix(S, osp.join(dir2, 'S_noticks.png'), cmap='bluered',
+                    x_ticks = [], y_ticks = [])
+
+def compare_different_cell_lines():
+    datasets = ['Su2020', 'dataset_02_04_23', 'dataset_HCT116']
+    cell_lines = ['IMR90', 'GM12878', 'HCT116']
+    samples = ['1002', '203', '1010']
+    GNN_ID = 396
+
+    odir = '/home/erschultz/TICG-chromatin/figures'
+    if not osp.exists(odir):
+        os.mkdir(odir, mode = 0o755)
+
+    composites = []
+    sccs = []
+    for dataset, cell_line, sample in zip(datasets, cell_lines, samples):
+        dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
+        gnn_dir = osp.join(dir, f'optimize_grid_b_16.5_phi_0.06-GNN{GNN_ID}')
+
+        y_exp = np.load(osp.join(dir, 'y.npy'))
+
+        y_sim = np.load(osp.join(gnn_dir, 'y.npy'))
+
+        scc_dict = load_json(osp.join(gnn_dir, 'distance_pearson.json'))
+        print(scc_dict)
+        scc = np.round(scc_dict['scc_var'], 3)
+        sccs.append(scc)
+
+        m = np.shape(y_sim)[0]
+        indu = np.triu_indices(m)
+        indl = np.tril_indices(m)
+
+        # make composite contact map
+        composite = np.zeros((m, m))
+        composite[indu] = y_sim[indu]
+        composite[indl] = y_exp[indl]
+
+        composites.append(composite)
+
+
+    fig, ax = plt.subplots(1, len(cell_lines)+1, gridspec_kw={'width_ratios':[1,1,1,0.08]})
+    fig.set_figheight(6)
+    fig.set_figwidth(6*2.5)
+    # fig.suptitle(f'Extrapolation Results', fontsize = 16)
+
+    arr = np.array(composites)
+    vmax = np.mean(arr)
+    for i, (composite, cell_line, scc) in enumerate(zip(composites, cell_lines, sccs)):
+        print(i)
+        if i == len(cell_lines) - 1:
+            s = sns.heatmap(composite, linewidth = 0, vmin = 0, vmax = vmax, cmap = RED_CMAP,
+                            ax = ax[i], cbar_ax = ax[i+1])
+        else:
+            s = sns.heatmap(composite, linewidth = 0, vmin = 0, vmax = vmax, cmap = RED_CMAP,
+                            ax = ax[i], cbar = False)
+        s.set_title(f'{cell_line}\nSCC={scc}', fontsize = 16)
+        ax[i].axline((0,0), slope=1, color = 'k', lw=1)
+        ax[i].text(0.99*m, 0.01*m, 'Simulation', fontsize=16, ha='right', va='top')
+        ax[i].text(0.01*m, 0.99*m, 'Experiment', fontsize=16)
+
+        if i > 0:
+            s.set_yticks([])
+
+    plt.tight_layout()
+    plt.savefig(osp.join(odir, 'extrapolation_figure.png'))
+    plt.close()
+
+
+
+
+
 if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
@@ -792,8 +995,9 @@ if __name__ == '__main__':
     # file = osp.join(data_dir, 'y.npy')
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
     # plot_combined_models('ContactGNNEnergy', [398, 399])
-    plot_GNN_vs_PCA('dataset_02_04_23', None, 392)
+    plot_GNN_vs_PCA('Su2020', None, 396)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")
     # main()
-    # plot_all_contact_maps('dataset_04_28_23')
+    # plot_all_contact_maps('dataset_02_16_23')
+    # compare_different_cell_lines()
