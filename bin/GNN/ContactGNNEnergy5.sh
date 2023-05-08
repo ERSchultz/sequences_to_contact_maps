@@ -34,9 +34,8 @@ rescale=2
 k=8
 useSignPlus='true'
 batchSize=1
-pretrainID=393
-nEpochs=40
-milestones='25'
+nEpochs=100
+milestones='50'
 # sign_plus with log preprocessing
 
 
