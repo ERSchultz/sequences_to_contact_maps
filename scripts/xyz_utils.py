@@ -13,6 +13,27 @@ from sklearn.metrics.pairwise import nan_euclidean_distances
 from .utils import LETTERS, print_time
 
 
+def calculate_rg(xyz, verbose=False):
+    if len(xyz.shape) == 2:
+        xyz.reshape(1, -1, 3)
+
+    rgs = np.zeros(len(xyz))
+    for i, xyz_i in enumerate(xyz):
+        center = np.nanmean(xyz_i, axis = 0)
+        delta = xyz_i - center
+        rg = np.sqrt(np.nanmean(delta**2))
+        rgs[i] = rg
+
+
+    rg_mean = np.nanmean(rgs)
+    rg_std = np.nanstd(rgs)
+    result = (rg_mean, rg_std)
+    if verbose:
+        print('rgs', rgs)
+        print('result', result)
+    return result
+
+
 def xyz_write(xyz, outfile, writestyle, comment = '', x = None):
     '''
     Write the coordinates of all particle to a file in .xyz format.
@@ -278,7 +299,13 @@ def main():
 
     # print(np.array_equal(y, overall))
 
+def test():
+    xyz = np.random.normal(size=(100, 3))
+    print(xyz)
+    rg = calculate_rg(xyz)
+    print(rg)
+
 
 
 if __name__ == '__main__':
-    main()
+    test()

@@ -777,7 +777,7 @@ def plot_xyz_gif(xyz, x, dir, ofile = 'xyz.gif', order = None):
     for filename in filenames:
         frames.append(imageio.imread(filename))
 
-    imageio.mimsave(osp.join(dir, ofile), frames, format='GIF', fps=1)
+    imageio.mimsave(osp.join(dir, ofile), frames, format='GIF', fps=2)
 
     # remove files
     # for filename in set(filenames):

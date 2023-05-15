@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.sparse as sp
 from pylib.utils.energy_utils import (calculate_D, calculate_diag_chi_step,
-                                      calculate_L)
+                                      calculate_L, calculate_S)
 from scipy.ndimage import gaussian_filter
 
 from .utils import (LETTERS, DiagonalPreprocessing, print_size, print_time,
@@ -201,19 +201,23 @@ def load_max_ent_chi(k, path, throw_exception = True):
     else:
         return None
 
-    chi = np.zeros((k,k))
-    for i, bead_i in enumerate(LETTERS[:k]):
-        for j in range(i,k):
-            bead_j = LETTERS[j]
-            try:
-                chi[i,j] = config[f'chi{bead_i}{bead_j}']
-            except KeyError:
-                if throw_exception:
-                    print(f'config_file: {config_file}')
-                    print(config)
-                    raise
-                else:
-                    return None
+    try:
+        chi = config['chis']
+        chi = np.array(chi)
+    except:
+        chi = np.zeros((k,k))
+        for i, bead_i in enumerate(LETTERS[:k]):
+            for j in range(i,k):
+                bead_j = LETTERS[j]
+                try:
+                    chi[i,j] = config[f'chi{bead_i}{bead_j}']
+                except KeyError:
+                    if throw_exception:
+                        print(f'config_file: {config_file}')
+                        print(config)
+                        raise
+                    else:
+                        return None
 
     return chi
 
@@ -276,9 +280,15 @@ def load_max_ent_L(path):
         raise Exception(f'chi not found: {path}')
 
     # calculate s
-    s = calculate_L(x, chi)
+    L = calculate_L(x, chi)
 
-    return s
+    return L
+
+def load_max_ent_S(path):
+    L = load_max_ent_L(path)
+    D = load_max_ent_D(path)
+    return calculate_S(L, D)
+
 
 def save_sc_contacts(xyz, odir, jobs = 5, triu = True, zero_diag = True,
                      sparsify = False, overwrite = False, fmt = 'npy',
