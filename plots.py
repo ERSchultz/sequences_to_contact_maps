@@ -28,6 +28,7 @@ from scripts.plotting_utils import (BLUE_RED_CMAP, RED_CMAP,
                                     plotting_script)
 from scripts.utils import DiagonalPreprocessing, pearson_round
 from scripts.xyz_utils import xyz_load, xyz_write
+from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
 
@@ -125,13 +126,23 @@ def update_result_tables(model_type = None, mode = None, output_mode = 'contact'
             wr.writerows(results)
 
 def plot_xyz_gif_wrapper():
-    dir = '/home/erschultz/consistency_check/baseline_energy_on'
+    dir = '/home/erschultz/dataset_02_04_23/samples/sample202/optimize_grid_b_140_phi_0.03-GNN403'
     file = osp.join(dir, 'production_out/output.xyz')
-
     m=512
+    k=2
+
+    y = np.load(osp.join(dir, 'y.npy'))
+    y_diag = epilib.get_oe(y)
+    seqs = epilib.get_pcs(y_diag, k, normalize = True)
+    kmeans = KMeans(n_clusters = k)
+    kmeans.fit(y_diag)
+    x = np.zeros((m, k))
+    x[np.arange(m), kmeans.labels_] = 1
+
+
 
     # x = np.load(osp.join(dir, 'x.npy'))[:m, :]
-    x = np.arange(1, m+1) # use this to color by m
+    # x = np.arange(1, m+1) # use this to color by m
     xyz = xyz_load(file, multiple_timesteps=True)[::, :m, :]
     print(xyz.shape)
     xyz_write(xyz, osp.join(dir, 'production_out/output_x.xyz'), 'w', x = x)
@@ -732,16 +743,17 @@ def plot_all_contact_maps(dataset):
     row = 0
     col = 0
     for sample in sorted(os.listdir(dir)):
-        print(sample, row, col)
+
         s_dir = osp.join(dir, sample)
         assert osp.exists(s_dir)
         s = int(sample[6:])
-        # if s < 200:
-        #     continue
+        if s < 200:
+            continue
+        print(sample, row, col)
         y = np.load(osp.join(s_dir, 'y.npy'))
         s = sns.heatmap(y, linewidth = 0, vmin = 0, vmax = np.mean(y), cmap = RED_CMAP,
                         ax = ax[row][col], cbar = False)
-        # s.set_title(sample, fontsize = 16)
+        s.set_title(sample, fontsize = 16)
         s.set_xticks([])
         s.set_yticks([])
 
@@ -1037,7 +1049,7 @@ def compare_different_cell_lines():
 
 if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
-    # plot_xyz_gif_wrapper()
+    plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
     # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
@@ -1047,11 +1059,11 @@ if __name__ == '__main__':
     # file = osp.join(data_dir, 'y.npy')
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
     # plot_combined_models('ContactGNNEnergy', [400, 401])
-    plot_GNN_vs_PCA('Su2020', 10, 403)
+    # plot_GNN_vs_PCA('Su2020', 10, 403)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")
     # main()
-    # plot_all_contact_maps('dataset_02_16_23')
+    # plot_all_contact_maps('dataset_04_05_23')
     # compare_different_cell_lines()
     # plot_first_PC('dataset_02_04_23', 10, 403)
     # plot_seq_comparison([np.load('/home/erschultz/dataset_02_04_23/samples/sample203/optimize_grid_b_16.5_phi_0.06-max_ent/iteration15/x.npy')], ['max_ent'])

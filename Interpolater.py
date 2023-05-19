@@ -8,7 +8,6 @@ import numpy as np
 import pyBigWig
 import scipy.stats as ss
 import seaborn as sns
-
 from scripts.plotting_utils import RED_CMAP, plot_matrix
 from scripts.utils import rescale_matrix
 
@@ -317,13 +316,13 @@ def wrapper(dataset, sample, factor):
         f.write(f'norm={interpolater.norm}')
 
 def main():
-    dataset = 'dataset_HCT116'
-    mapping = [(dataset, i, 5) for i in range(10, 11)]
+    dataset = 'dataset_04_05_23'
+    mapping = [(dataset, i, 5) for i in range(1, 211)]
     # serial version
-    for dataset, i, factor in mapping:
-        wrapper(dataset, i, factor)
-    # with multiprocessing.Pool(15) as p:
-        # p.starmap(wrapper, mapping)
+    # for dataset, i, factor in mapping:
+        # wrapper(dataset, i, factor)
+    with multiprocessing.Pool(18) as p:
+        p.starmap(wrapper, mapping)
 
 
 def example_figure(dataset, sample):
@@ -382,8 +381,8 @@ def example_figure(dataset, sample):
 
 def check_interpolation():
     '''Check if any of the experimental contact maps had too many rows/cols to be interpolated'''
-    dir = '/home/erschultz/dataset_04_09_23'
-    for sample in range(1, 31):
+    dir = '/home/erschultz/dataset_04_10_23'
+    for sample in range(1, 28):
         s_dir = osp.join(dir, 'samples', f'sample{sample}')
         if not osp.exists(s_dir):
             continue

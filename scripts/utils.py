@@ -2,6 +2,7 @@ import math
 import multiprocessing
 import os
 import os.path as osp
+import re
 import sys
 import time
 
@@ -10,12 +11,11 @@ import numpy as np
 import scipy.sparse as sp
 import torch
 from numba import jit, njit
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from scipy.stats import pearsonr, spearmanr
 from skimage.measure import block_reduce
 from sklearn.decomposition import PCA
 from sympy import solve, symbols
-
-from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 
 LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -408,6 +408,31 @@ def diagonalpool_HiC(HiC, factor):
             HiC_new[i,j] = HiC[factor*i, factor*j]+HiC[factor*i+1,factor*j+1]
     return HiC_new
 
+def load_time_dir(dir):
+    def load_time_file(file):
+        t = None
+        with open(file) as f:
+            for line in f:
+                if line.startswith('elapsed'):
+                    line_split = line.split()
+                    t = int(line_split[1][:-3])
+        return t
+
+    t_eq = load_time_file(osp.join(dir, 'equilibration/log.log'))
+
+    if osp.exists(osp.join(dir, 'production_out/log.log')):
+        t_prod = load_time_file(osp.join(dir, 'production_out/log.log'))
+    else:
+        assert osp.exists(osp.join(dir, 'core0'))
+        t_prod = []
+        for f in os.listdir(dir):
+            if f.startswith('core'):
+                t_prod.append(load_time_file(osp.join(dir, f, 'log.log')))
+        t_prod = np.sum(t_prod)
+
+    return t_eq + t_prod
+
+
 def test():
     # test rescale_contact_map
     y = np.array([[0, 1, 2, 3],[4, 5, 6, 7],[8, 9, 10, 11],[12, 13, 14, 15]]).astype(np.float)
@@ -437,7 +462,10 @@ def test2():
     y_new = rescale_matrix(y, 2, False)
     print(y_new)
 
+def test3():
+    t = load_time_dir('/home/erschultz/dataset_02_04_23/samples/sample201/optimize_grid_b_261_phi_0.006-max_ent10/iteration0')
+    print(t)
 
 
 if __name__ == '__main__':
-    test2()
+    test3()
