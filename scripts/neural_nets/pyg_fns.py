@@ -323,17 +323,25 @@ class NoiseLevel(BaseTransform):
 
 class GridSize(BaseTransform):
     '''Appends grid size as node feature.'''
+    def __init__(self, grid_file=None):
+        self.grid_file = grid_file
+
     def __call__(self, data):
         config_file = osp.join(data.path, 'config.json')
-        file = osp.join(data.path, 'none/k0/replicate1/grid_size.txt')
+        # file = osp.join(data.path, 'optimize_grid_b_140_phi_0.03/grid_size.txt')
+        if self.grid_file is not None:
+            grid_file = osp.join(data.path, self.grid_file)
+        else:
+            grid_file = None
+
         if osp.exists(config_file):
             with open(config_file) as f:
                 config = json.load(f)
             grid_size = config['grid_size']
-        elif osp.exists(file):
-            grid_size = np.loadtxt(file)[-1]
+        elif grid_file is not None and osp.exists(grid_file):
+            grid_size = np.atleast_1d(np.loadtxt(grid_file))[-1]
         else:
-            raise Exception(f"Grid size files not found for {data.path}")
+            raise Exception(f"Grid size files not found for {data.path}: {config_file}, {grid_file}")
 
         pos = torch.full((data.num_nodes, 1), grid_size, dtype=torch.float32)
 

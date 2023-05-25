@@ -1146,12 +1146,17 @@ def compare_different_cell_lines():
 
 
 def figure2(test=False):
-    sample_dir = '/home/erschultz/dataset_02_04_23/samples/sample202'
+    dataset = 'dataset_04_05_23'
+    # sample_dir = '/home/erschultz/dataset_02_04_23/samples/sample202'
+    sample_dir = f'/home/erschultz/{dataset}/samples/sample1001'
+    GNN_ID = 407
+    samples_list = [1001]
 
     y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
     y /= np.mean(np.diagonal(y))
     meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
     y_diag = DiagonalPreprocessing.process(y, meanDist)
+    m = len(y)
 
     import_file = osp.join(sample_dir, 'import.log')
     with open(import_file, 'r') as f:
@@ -1171,7 +1176,6 @@ def figure2(test=False):
     grid_dir = osp.join(sample_dir, 'optimize_grid_b_140_phi_0.03')
     k=10
     max_ent_dir = f'{grid_dir}-max_ent{k}'
-    GNN_ID = 403
     gnn_dir = f'{grid_dir}-GNN{GNN_ID}'
 
     final = get_final_max_ent_folder(max_ent_dir)
@@ -1205,8 +1209,8 @@ def figure2(test=False):
 
     # time and scc comparison
     if not test:
-        args = getArgs(data_folder = '/home/erschultz/dataset_02_04_23',
-                        samples = range(201, 211))
+        args = getArgs(data_folder = f'/home/erschultz/{dataset}',
+                        samples = samples_list)
         args.experimental = True
         args.convergence_definition = 'normal'
         data, converged_mask = loadData(args)
@@ -1228,7 +1232,6 @@ def figure2(test=False):
 
     # xyz
     file = osp.join(gnn_dir, 'production_out/output.xyz')
-    m=512
     y_diag = epilib.get_oe(y_gnn)
     seqs = epilib.get_pcs(y_diag, 2, normalize = True)
     kmeans = KMeans(n_clusters = 2)
@@ -1348,12 +1351,15 @@ def figure2(test=False):
             patch.set_facecolor(color)
 
     xyzs = [xyz[10], xyz[20], xyz[30], xyz[40]]
-    shifts = [(-1000,-1000,0), (500,500,-500), (-1000,-1000,3000), (500,500,2500)]
+    shifts = [(-1000,-1000,0), (500,500,-500), (-1000,-1000,3500), (500,500,3000)]
     for xyz_i, shift in zip(xyzs, shifts):
         # connect particles if polymer
         xyz_i -= np.mean(xyz_i)
         xyz_i += shift
         ax8.plot(xyz_i[:,0], xyz_i[:,1], xyz_i[:,2], color= '0.8')
+        # ax8.set_xticks([])
+        # ax8.set_yticks([])
+        # ax8.set_zticks([])
         # color unique types if x is not None
         types = np.argmax(x, axis = 1)
         for t, c in zip([0,1], ['#1f77b4', '#ff7f0e']):
@@ -1396,7 +1402,7 @@ if __name__ == '__main__':
     # main()
     # plot_all_contact_maps('dataset_04_05_23')
     # compare_different_cell_lines()
-    # figure2()
+    figure2()
     # plot_first_PC('dataset_02_04_23', 10, 403)
     # plot_seq_comparison([np.load('/home/erschultz/dataset_02_04_23/samples/sample203/optimize_grid_b_16.5_phi_0.06-max_ent/iteration15/x.npy')], ['max_ent'])
     # plot_energy_no_ticks()

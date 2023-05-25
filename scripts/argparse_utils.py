@@ -216,6 +216,8 @@ def get_base_parser():
                         help='Maximum diagonal to consider')
     parser.add_argument('--mlp_model_id', type=AC.str2int,
                         help='Model ID for MLP diagonal parameters')
+    # parser.add_argument('--grid_path', type=AC.str2None,
+    #                     help='argument in GridSize transform')
 
     # SimpleEpiNet args
     parser.add_argument('--kernel_w_list', type=AC.str2list,
@@ -248,7 +250,7 @@ def get_base_parser():
 
     return parser
 
-def finalize_opt(opt, parser, windows = False, local = False, debug = False):
+def finalize_opt(opt, parser, windows = False, local = False, debug = False, grid_path=None):
     '''
     Helper function to processes command line arguments.
 
@@ -262,7 +264,6 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
     Outputs:
         opt
     '''
-
     # set up output folders/files
     if windows:
         model_type_root = 'C:/Users/Eric/OneDrive/Documents/Research/Coding'
@@ -286,6 +287,8 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
                     if id > max_id:
                         max_id = id
             opt.id = max_id + 1
+            opt.grid_path = grid_path
+
     else:
         txt_file = osp.join(model_type_folder, str(opt.id), 'argparse.txt')
         if osp.exists(txt_file):
@@ -297,6 +300,9 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False):
             opt = parser.parse_args(args) # parse again
             # by inserting at position 1, the original arguments will override the txt file
             opt.id = id_copy
+            opt.grid_path = grid_path
+
+
 
     opt.ofile_folder = osp.join(model_type_folder, str(opt.id))
     if not osp.exists(opt.ofile_folder):
@@ -568,7 +574,7 @@ def process_transforms(opt):
             opt.node_transforms.append(transform)
             opt.node_feature_size += 1
         elif t_str[0] == 'gridsize':
-            transform = GridSize()
+            transform = GridSize(opt.grid_path)
             opt.node_transforms.append(transform)
             opt.node_feature_size += 1
         elif t_str[0] == 'diagonalparameterdistance':

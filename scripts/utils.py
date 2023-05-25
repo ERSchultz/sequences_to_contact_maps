@@ -3,7 +3,9 @@ import multiprocessing
 import os
 import os.path as osp
 import re
+import shutil
 import sys
+import tarfile
 import time
 
 import matplotlib.pyplot as plt
@@ -409,6 +411,7 @@ def diagonalpool_HiC(HiC, factor):
     return HiC_new
 
 def load_time_dir(dir):
+    assert osp.exists(dir), dir
     def load_time_file(file):
         t = None
         with open(file) as f:
@@ -418,9 +421,18 @@ def load_time_dir(dir):
                     t = int(line_split[1][:-3])
         return t
 
-    t_eq = load_time_file(osp.join(dir, 'equilibration/log.log'))
+    eq_log_file = osp.join(dir, 'equilibration/log.log')
+    if osp.exists(osp.join(dir, 'equilibration.tar.gz')):
+        t_file = tarfile.open(osp.join(dir, 'equilibration.tar.gz'))
+        log = t_file.extract('equilibration/log.log', dir)
+
+    t_eq = load_time_file(eq_log_file)
 
     if osp.exists(osp.join(dir, 'production_out/log.log')):
+        t_prod = load_time_file(osp.join(dir, 'production_out/log.log'))
+    elif osp.exists(osp.join(dir, 'production_out.tar.gz')):
+        t_file = tarfile.open(osp.join(dir, 'production_out.tar.gz'))
+        log = t_file.extract('production_out/log.log', dir)
         t_prod = load_time_file(osp.join(dir, 'production_out/log.log'))
     else:
         assert osp.exists(osp.join(dir, 'core0'))
@@ -429,6 +441,14 @@ def load_time_dir(dir):
             if f.startswith('core'):
                 t_prod.append(load_time_file(osp.join(dir, f, 'log.log')))
         t_prod = np.sum(t_prod)
+
+
+    # cleanup
+    for t_file in ['equilibration.tar.gz', 'production_out.tar.gz']:
+        if osp.exists(osp.join(dir, t_file)):
+            file = t_file.split('.')[0]
+            shutil.rmtree(osp.join(dir, file))
+
 
     return t_eq + t_prod
 
@@ -463,7 +483,9 @@ def test2():
     print(y_new)
 
 def test3():
-    t = load_time_dir('/home/erschultz/dataset_02_04_23/samples/sample201/optimize_grid_b_261_phi_0.006-max_ent10/iteration0')
+    sample_dir = '/home/erschultz/dataset_04_05_23/samples/sample1001'
+    dir = osp.join(sample_dir, 'optimize_grid_b_140_phi_0.03-max_ent10/iteration0')
+    t = load_time_dir(dir)
     print(t)
 
 

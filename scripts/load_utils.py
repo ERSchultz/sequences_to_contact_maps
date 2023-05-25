@@ -19,6 +19,59 @@ from .utils import (LETTERS, DiagonalPreprocessing, print_size, print_time,
 from .xyz_utils import xyz_load, xyz_to_contact_grid
 
 
+def load_import_log(dir, obj=None):
+    import_file = osp.join(dir, 'import.log')
+    if not osp.exists(import_file):
+        return
+
+    results = {}
+    with open(import_file) as f:
+        lines = f.readlines()
+        for line in lines:
+            line = line.strip().split('=')
+            if line[0].startswith('https') or line[0].endswith('.hic'):
+                url = line[0]
+            elif line[0] == 'chrom':
+                chrom = line[1]
+            elif line[0] == 'start':
+                start = int(line[1])
+                start_mb = start / 1000000
+            elif line[0] == 'end':
+                end = int(line[1])
+                end_mb = end / 1000000
+            elif line[0] == 'resolution':
+                resolution = int(line[1])
+                resolution_mb = resolution / 1000000
+            elif line[0] == 'norm':
+                norm = line[1]
+            elif line[0] == 'genome':
+                genome = line[1]
+
+    results['start'] = start
+    results['end'] = end
+    results['start_mb'] = start_mb
+    results['end_mb'] = end_mb
+    results['resolution'] = resolution
+    results['results'] = resolution_mb
+    results['norm'] = norm
+    results['genome'] = genome
+    results['chrom'] = chrom
+
+    if obj is not None:
+        obj.start = start
+        obj.end = end
+        obj.start_mb = start_mb
+        obj.end_mb = end_mb
+        obj.resolution = resolution
+        obj.resolution_mb = resolution_mb
+        obj.norm = norm
+        obj.genome = genome
+        obj.chrom = chrom
+
+    return results
+
+
+
 ## load data functions ##
 def load_X_psi(sample_folder, throw_exception = True, verbose = False):
     x_files = ['x.npy', 'resources/x.npy']

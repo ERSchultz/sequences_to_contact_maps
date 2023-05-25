@@ -9,6 +9,7 @@ import pyBigWig
 import scipy.stats as ss
 import seaborn as sns
 from liftover import get_lifter
+from scripts.load_utils import load_import_log
 # from pyliftover import LiftOver as get_lifter
 from scripts.plotting_utils import RED_CMAP, plot_matrix
 from scripts.utils import rescale_matrix
@@ -45,28 +46,8 @@ class Interpolater():
             os.mkdir(self.odir, mode = 0o755)
         self.ofile = open(osp.join(self.odir, 'log.log'), 'a')
 
-        # if import_log_file exists, infer chrom, start, end, res
-        import_log_file = osp.join(self.dir, 'import.log')
-        if osp.exists(import_log_file):
-            self.genome = 'hg19' # default
-            with open(import_log_file, 'r') as f:
-                for line in f:
-                    line = line.strip()
-                    line = line.split('=')
-                    if line[0].startswith('https') or line[0].endswith('.hic'):
-                        self.url = line[0]
-                    elif line[0] == 'chrom':
-                        self.chrom = line[1]
-                    elif line[0] == 'start':
-                        self.start = int(float(line[1]))
-                    elif line[0] == 'end':
-                        self.end = int(float(line[1]))
-                    elif line[0] == 'resolution':
-                        self.res = int(line[1])
-                    elif line[0] == 'norm':
-                        self.norm = line[1]
-                    elif line[0] == 'genome':
-                        self.genome = line[1]
+        self.genome = 'hg19' # default
+        load_import_log(self.dir, self)
 
     def run(self, y = None, factor=5):
         '''Interpolate contact map y using self.methods.'''
@@ -212,7 +193,7 @@ class Interpolater():
             try:
                 stat = bw.stats(f'chr{self.chrom}', left, right)[0]
             except RuntimeError:
-                print(f'chr{self.chrom}', left, right)
+                print(f'RuntimeError chr{self.chrom}', left, right)
                 raise
             mappability.append(stat)
             if stat < cutoff:
@@ -349,17 +330,17 @@ def wrapper(dataset, sample, factor):
         f.write(f'start={interpolater.start}\n')
         f.write(f'end={interpolater.end}\n')
         f.write(f'resolution={interpolater.res * factor}\n')
-        f.write(f'norm={interpolater.norm}')
+        f.write(f'norm={interpolater.norm}\n')
         f.write(f'genome={interpolater.genome}')
 
 def main():
-    dataset = 'Su2020'
-    mapping = [(dataset, i, 5) for i in range(13, 15)]
+    dataset = 'dataset_04_05_23'
+    mapping = [(dataset, i, 5) for i in range(263, 289)]
     # serial version
-    for dataset, i, factor in mapping:
-        wrapper(dataset, i, factor)
-    # with multiprocessing.Pool(18) as p:
-        # p.starmap(wrapper, mapping)
+    # for dataset, i, factor in mapping:
+    #     wrapper(dataset, i, factor)
+    with multiprocessing.Pool(18) as p:
+        p.starmap(wrapper, mapping)
 
 
 def example_figure(dataset, sample):
@@ -371,15 +352,10 @@ def example_figure(dataset, sample):
     y_interp = np.load(osp.join(dir_raw, 'Interpolation/zeros_mappability-0.7/y_interpolate_zeros_mappability-0.7.npy'))
 
     # get ticks in mb
-    with open(osp.join(dir_raw, 'import.log')) as f:
-        lines = f.readlines()
-        for line in lines:
-            if line.startswith('start'):
-                start = int(line.strip().split('=')[1]) / 1000000
-            elif line.startswith('end'):
-                end = int(line.strip().split('=')[1]) / 1000000
-            elif line.startswith('resolution'):
-                resolution = int(line.strip().split('=')[1]) / 1000000
+    result = load_import_log(dir_raw)
+    start = result['start_mb']
+    end = result['end_mb']
+    resoluton = result['resolutoin_mb']
     print(start, end, resolution)
     scale = 700
     all_ticks = np.arange(0, 2560, scale)

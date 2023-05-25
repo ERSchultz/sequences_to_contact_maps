@@ -670,24 +670,25 @@ def downsamplingAnalysis(val_dataloader, model, opt, count=5):
     original_loss = analysisIterator(val_dataloader, model, opt_copy, count,
                                     'regular')
 
-    print('Upsampling (200%) Results:', file = opt.log_file)
-    opt_copy = copy.copy(opt) # shallow copy only
-    if opt_copy.root_name is not None:
-        opt_copy.root_name += 'upsample'
-    if opt_copy.y_preprocessing.startswith('sweep'):
-        _, *y_preprocessing = opt_copy.y_preprocessing.split('_')
-        if isinstance(y_preprocessing, list):
-            y_preprocessing = '_'.join(y_preprocessing)
-    else:
-        y_preprocessing = opt_copy.y_preprocessing
-    opt_copy.y_preprocessing = 'sweep1000000_' + y_preprocessing
+    upsample_loss = None
+    # print('Upsampling (200%) Results:', file = opt.log_file)
+    # opt_copy = copy.copy(opt) # shallow copy only
+    # if opt_copy.root_name is not None:
+    #     opt_copy.root_name += 'upsample'
+    # if opt_copy.y_preprocessing.startswith('sweep'):
+    #     _, *y_preprocessing = opt_copy.y_preprocessing.split('_')
+    #     if isinstance(y_preprocessing, list):
+    #         y_preprocessing = '_'.join(y_preprocessing)
+    # else:
+    #     y_preprocessing = opt_copy.y_preprocessing
+    # opt_copy.y_preprocessing = 'sweep1000000_' + y_preprocessing
+    #
+    # try:
+    #     upsample_loss = analysisIterator(val_dataloader, model, opt_copy, count,
+    #                                     'upsampling')
+    # except Exception as e:
+    #     print(e)
 
-    try:
-        upsample_loss = analysisIterator(val_dataloader, model, opt_copy, count,
-                                        'upsampling')
-    except Exception as e:
-        print(e)
-        upsample_loss = None
 
     return downsample_loss, original_loss, upsample_loss
 

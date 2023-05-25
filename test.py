@@ -733,10 +733,10 @@ def check_max_ent_progress():
 
 
 if __name__ == '__main__':
-    check_max_ent_progress()
+    # check_max_ent_progress()
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()
