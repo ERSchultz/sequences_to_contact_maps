@@ -711,11 +711,32 @@ def plot_SCC_weights():
     plt.legend()
     plt.show()
 
+def check_max_ent_progress():
+    dir = '/home/erschultz/dataset_04_05_23/samples'
+    todo = 0
+    for f in os.listdir(dir):
+        found = False
+        fdir = osp.join(dir, f)
+        max_ent_dir = osp.join(fdir, 'optimize_grid_b_140_phi_0.03-max_ent10')
+        if osp.exists(max_ent_dir):
+            if osp.exists(osp.join(max_ent_dir, 'iteration15')):
+                found = True
+            else:
+                print(f'{f} in progress')
+
+        if not found:
+            todo += 1
+            print(f'{f} TODO')
+
+
+    print(todo)
+
 
 if __name__ == '__main__':
+    check_max_ent_progress()
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()

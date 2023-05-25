@@ -339,10 +339,10 @@ if __name__ == '__main__':
     dir = '/home/erschultz/sequences_to_contact_maps'
     dir = '/home/erschultz'
 
-    dataset = 'dataset_04_05_23'
+    dataset = 'Su2020'
     data_dir = osp.join(dir, dataset)
     basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                plot_chi = False, sampleID = 1001)
+                plot_chi = False, sampleID = 13)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

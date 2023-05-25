@@ -8,6 +8,8 @@ import numpy as np
 import pyBigWig
 import scipy.stats as ss
 import seaborn as sns
+from liftover import get_lifter
+# from pyliftover import LiftOver as get_lifter
 from scripts.plotting_utils import RED_CMAP, plot_matrix
 from scripts.utils import rescale_matrix
 
@@ -46,11 +48,12 @@ class Interpolater():
         # if import_log_file exists, infer chrom, start, end, res
         import_log_file = osp.join(self.dir, 'import.log')
         if osp.exists(import_log_file):
+            self.genome = 'hg19' # default
             with open(import_log_file, 'r') as f:
                 for line in f:
                     line = line.strip()
                     line = line.split('=')
-                    if line[0].startswith('https'):
+                    if line[0].startswith('https') or line[0].endswith('.hic'):
                         self.url = line[0]
                     elif line[0] == 'chrom':
                         self.chrom = line[1]
@@ -62,6 +65,8 @@ class Interpolater():
                         self.res = int(line[1])
                     elif line[0] == 'norm':
                         self.norm = line[1]
+                    elif line[0] == 'genome':
+                        self.genome = line[1]
 
     def run(self, y = None, factor=5):
         '''Interpolate contact map y using self.methods.'''
@@ -169,6 +174,10 @@ class Interpolater():
         if cutoff is None:
             cutoff = 0.6
 
+        if self.genome == 'hg38':
+            converter = get_lifter('hg38', 'hg19')
+
+
         # http://hgdownload.soe.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/
         file = '/home/erschultz/sequences_to_contact_maps/chip_seq_data/wgEncodeDukeMapabilityUniqueness35bp.bigWig'
         bw = pyBigWig.open(file)
@@ -177,7 +186,34 @@ class Interpolater():
         for i in range(m):
             left = self.start + i * self.res
             right = self.start + (i+1) * self.res
-            stat = bw.stats(f'chr{self.chrom}', left, right)[0]
+            if self.genome == 'hg38':
+                orig = f'{left}-{right}'
+                left_result = converter.convert_coordinate(f'chr{self.chrom}', left)
+                while len(left_result) == 0:
+                    # If left does not map to hg19, there will be no result
+                    # this finds nearest result
+                    left += 1
+                    left_result = converter.convert_coordinate(f'chr{self.chrom}', left)
+
+                right_result = converter.convert_coordinate(f'chr{self.chrom}', right)
+                while len(right_result) == 0:
+                    right += 1
+                    right_result = converter.convert_coordinate(f'chr{self.chrom}', right)
+
+                # if len(left_result) == 0 or len(right_result) == 0:
+                #     # liftover failed
+                #     print(f'Warning liftover failed for {orig}: {left}-{right}')
+                #     mappability.append(np.NaN)
+                #     continue
+
+                left = left_result[0][1]
+                right = right_result[0][1]
+
+            try:
+                stat = bw.stats(f'chr{self.chrom}', left, right)[0]
+            except RuntimeError:
+                print(f'chr{self.chrom}', left, right)
+                raise
             mappability.append(stat)
             if stat < cutoff:
                 self.interp_locations.add(i)
@@ -314,15 +350,16 @@ def wrapper(dataset, sample, factor):
         f.write(f'end={interpolater.end}\n')
         f.write(f'resolution={interpolater.res * factor}\n')
         f.write(f'norm={interpolater.norm}')
+        f.write(f'genome={interpolater.genome}')
 
 def main():
-    dataset = 'dataset_04_05_23'
-    mapping = [(dataset, i, 5) for i in range(1, 211)]
+    dataset = 'Su2020'
+    mapping = [(dataset, i, 5) for i in range(13, 15)]
     # serial version
-    # for dataset, i, factor in mapping:
-        # wrapper(dataset, i, factor)
-    with multiprocessing.Pool(18) as p:
-        p.starmap(wrapper, mapping)
+    for dataset, i, factor in mapping:
+        wrapper(dataset, i, factor)
+    # with multiprocessing.Pool(18) as p:
+        # p.starmap(wrapper, mapping)
 
 
 def example_figure(dataset, sample):
@@ -403,9 +440,19 @@ def check_interpolation():
             print(s_dir)
             raise e
 
+def test_liftover():
+    converter = get_lifter('hg38', 'hg19')
+    i = 16140001
+    result = converter.convert_coordinate(f'chr2', i)
+    while len(result) == 0:
+        i += 10
+        result = converter.convert_coordinate(f'chr2', i)
+
+    print(i, result)
 
 
 if __name__ == '__main__':
     main()
+    # test_liftover()
     # example_figure('dataset_02_04_23', 1)
     # check_interpolation()
