@@ -198,7 +198,8 @@ def debugModel(model_type):
         # opt.m = 50
         # opt.use_bias = False
     elif model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing = 'log_inf'
+        opt.y_preprocessing = 'sweeprand_log_inf'
+        opt.sweep_choices = [1,2,3]
         opt.rescale = 4
         opt.mean_filt = None
         opt.kr = False

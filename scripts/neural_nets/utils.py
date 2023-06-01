@@ -12,7 +12,7 @@ from .pyg_dataset_classes import ContactsGraph
 
 
 ## model functions ##
-def load_saved_model(opt, verbose = True, throw = True):
+def load_saved_model(opt, verbose=True, throw=True):
     model = get_model(opt, verbose)
     model.to(opt.device)
     model_name = osp.join(opt.ofile_folder, 'model.pt')
@@ -63,7 +63,8 @@ def load_saved_model(opt, verbose = True, throw = True):
     return model, train_loss_arr, val_loss_arr
 
 ## dataset functions ##
-def get_dataset(opt, names = False, minmax = False, verbose = True, samples = None):
+def get_dataset(opt, names=False, minmax=False, verbose=True,
+                samples=None, sub_dir='samples'):
     opt.root = None
     if opt.GNN_mode:
         if opt.split_sizes is not None and -1 not in opt.split_sizes:
@@ -79,7 +80,8 @@ def get_dataset(opt, names = False, minmax = False, verbose = True, samples = No
                                 opt.split_neg_pos_edges, opt.max_diagonal,
                                 opt.transforms_processed, opt.pre_transforms_processed,
                                 opt.output_mode, opt.crop, opt.log_file, verbose,
-                                max_sample, samples, opt.plaid_score_cutoff,
+                                max_sample, samples, sub_dir,
+                                opt.plaid_score_cutoff, opt.sweep_choices,
                                 opt.diag, opt.keep_zero_edges,
                                 opt.output_preprocesing)
         opt.root = dataset.root

@@ -14,7 +14,7 @@ from ..utils import DiagonalPreprocessing
 
 
 def make_dataset(dir_list, minSample = 0, maxSample = float('inf'), verbose = False,
-                samples = None, prefix = 'sample', use_ids = True):
+                samples = None, prefix = 'sample', use_ids = True, sub_dir = 'samples'):
     """
     Make list data file paths.
 
@@ -36,7 +36,7 @@ def make_dataset(dir_list, minSample = 0, maxSample = float('inf'), verbose = Fa
         dir_list = [dir_list]
 
     for dir in dir_list:
-        samples_dir = osp.join(dir, 'samples')
+        samples_dir = osp.join(dir, sub_dir)
         l = len(prefix)
         sample_files = [f for f in os.listdir(samples_dir) if prefix in f]
 

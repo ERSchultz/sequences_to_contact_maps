@@ -57,7 +57,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 split_neg_pos_edges=False, max_diagonal=None,
                 transform=None, pre_transform=None, output='contact',
                 crop=None, ofile=sys.stdout, verbose=True,
-                max_sample=float('inf'), samples=None, plaid_score_cutoff=None,
+                max_sample=float('inf'), samples=None, sub_dir='samples',
+                plaid_score_cutoff=None, sweep_choices=[2,3,4,5],
                 diag=False, keep_zero_edges=False, output_preprocesing=None):
         '''
         Inputs:
@@ -88,6 +89,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             max_sample: max sample id to save
             samples: set of samples to include (None for all)
             plaid_score_cutoff: contact maps with plaid_score > cutoff are ignored
+            sweep_choices: choices for num_sweeps for sweeprand y_preprocessing
             diag: True if y_diag should be calculated
             keep_zero_edges: True to keep edges with 0 weight
             output_preprocesing: Type of preprocessing for prediction target
@@ -113,6 +115,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.output = output
         self.crop = crop
         self.samples = None
+        self.sweep_choices = sweep_choices
         self.num_edges_list = [] # list of number of edges per graph
         self.degree_list = [] # created in self.process()
         self.verbose = verbose
@@ -121,7 +124,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.output_preprocesing = output_preprocesing
 
 
-        self.file_paths = make_dataset(self.dirname, maxSample = max_sample, samples = samples)
+        self.file_paths = make_dataset(self.dirname, maxSample = max_sample,
+                                        samples = samples, sub_dir = sub_dir)
         if plaid_score_cutoff is not None:
             for f in self.file_paths:
                 y, y_diag = load_Y(f)
@@ -269,6 +273,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def load_y(self, raw_folder):
         '''Helper function to load raw contact map and apply normalization.'''
         self.sweep = None
+        print('h275', self.y_preprocessing)
         if self.y_preprocessing.startswith('sweeprand'):
             _, *y_preprocessing = self.y_preprocessing.split('_')
             if isinstance(y_preprocessing, list):
@@ -276,7 +281,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             id = int(osp.split(raw_folder)[1][6:])
             rng = np.random.default_rng(seed = id)
-            self.sweep = rng.choice([200000, 300000, 400000, 500000], 1)[0]
+            self.sweep = rng.choice(self.sweep_choices, 1)[0]
+            self.sweep *= 100000
 
             y_path = osp.join(raw_folder, f'data_out/contacts{self.sweep}.txt')
             y_path2 = osp.join(raw_folder, f'production_out/contacts{self.sweep}.txt')

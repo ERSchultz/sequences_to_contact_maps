@@ -165,27 +165,31 @@ class Interpolater():
 
         mappability = []
         for i in range(m):
-            left = self.start + i * self.res
-            right = self.start + (i+1) * self.res
+            left = self.start + i * self.resolution
+            right = self.start + (i+1) * self.resolution
             if self.genome == 'hg38':
                 orig = f'{left}-{right}'
                 left_result = converter.convert_coordinate(f'chr{self.chrom}', left)
-                while len(left_result) == 0:
+                count = 0
+                while len(left_result) == 0 and count < self.resolution:
                     # If left does not map to hg19, there will be no result
                     # this finds nearest result
-                    left += 1
+                    left -= 1
+                    count += 1
                     left_result = converter.convert_coordinate(f'chr{self.chrom}', left)
 
                 right_result = converter.convert_coordinate(f'chr{self.chrom}', right)
-                while len(right_result) == 0:
+                count = 0
+                while len(right_result) == 0 and count < self.resolution:
                     right += 1
+                    count += 1
                     right_result = converter.convert_coordinate(f'chr{self.chrom}', right)
 
-                # if len(left_result) == 0 or len(right_result) == 0:
-                #     # liftover failed
-                #     print(f'Warning liftover failed for {orig}: {left}-{right}')
-                #     mappability.append(np.NaN)
-                #     continue
+                if len(left_result) == 0 or len(right_result) == 0:
+                    # liftover failed
+                    print(f'Warning liftover failed for {orig}')
+                    mappability.append(np.NaN)
+                    continue
 
                 left = left_result[0][1]
                 right = right_result[0][1]
@@ -265,9 +269,9 @@ class Interpolater():
         m = len(self.y)
         y = self.y.copy()
         for i in self.interp_locations:
-            if self.chrom is not None and self.res is not None:
-                left = self.start + i * self.res
-                right = self.start + (i+1) * self.res
+            if self.chrom is not None and self.resolution is not None:
+                left = self.start + i * self.resolution
+                right = self.start + (i+1) * self.resolution
                 print(i, f'chr{self.chrom}:{left}-{right}', file = self.ofile)
             else:
                 print(i, file = self.ofile)
@@ -329,19 +333,19 @@ def wrapper(dataset, sample, factor):
         f.write(f'chrom={interpolater.chrom}\n')
         f.write(f'start={interpolater.start}\n')
         f.write(f'end={interpolater.end}\n')
-        f.write(f'resolution={interpolater.res * factor}\n')
+        f.write(f'resolution={interpolater.resolution * factor}\n')
         f.write(f'norm={interpolater.norm}\n')
         f.write(f'genome={interpolater.genome}')
 
 def main():
-    dataset = 'dataset_04_05_23'
-    mapping = [(dataset, i, 5) for i in range(263, 289)]
+    dataset = 'dataset_04_10_23'
+    mapping = [(dataset, i, 5) for i in range(21, 22)]
     # serial version
-    # for dataset, i, factor in mapping:
-    #     wrapper(dataset, i, factor)
-    with multiprocessing.Pool(18) as p:
-        p.starmap(wrapper, mapping)
-
+    for dataset, i, factor in mapping:
+        wrapper(dataset, i, factor)
+    # with multiprocessing.Pool(18) as p:
+        # p.starmap(wrapper, mapping)
+#
 
 def example_figure(dataset, sample):
     dir = osp.join(f'/home/erschultz/{dataset}')

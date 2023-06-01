@@ -6,9 +6,11 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import statsmodels.api as sm
+from pylib.utils.energy_utils import calculate_L
 from scipy.sparse.csgraph import laplacian
 from scripts.argparse_utils import ArgparserConverter
-from scripts.load_utils import load_all, load_max_ent_L
+from scripts.load_utils import (get_final_max_ent_folder, load_all,
+                                load_max_ent_L)
 from scripts.plotting_utils import plot_matrix
 from scripts.R_pca import R_pca
 from scripts.utils import LETTERS, DiagonalPreprocessing, pearson_round
@@ -162,22 +164,20 @@ def plot_top_PCs(inp, inp_type='', odir=None, log_file=sys.stdout, count=2,
 
     return Vt
 
-def project_S_to_psi_basis(s, psi):
+def project_L_to_psi_basis(L, psi):
     '''
     Projects energy into basis of psi.
 
     Inputs:
-        s: s matrix (symmetric or asymmetric s, cannot be e)
+        L: L matrix (symmetric or asymmetric L)
         psi: bead labels
 
     Outputs:
-        s_proj: s matrix in basis of psi
-        e_proj: e matrix in basis of psi
+        L_proj: L matrix in basis of psi
     '''
-    hat_chi = predict_chi_in_psi_basis(psi, s)
-    s_proj = psi @ hat_chi @ psi.T
-    e_proj = s_to_E(s_proj)
-    return s_proj, e_proj
+    hat_chi = predict_chi_in_psi_basis(psi, L)
+    L_proj = calculate_L(psi, chi)
+    return L_proj
 
 def run_regression(X, Y, k_new, args, verbose = True):
     '''
@@ -195,8 +195,11 @@ def run_regression(X, Y, k_new, args, verbose = True):
     '''
     est = sm.OLS(Y, X)
     est = est.fit()
-    if verbose and args is not None:
-        print(est.summary(), '\n', file = args.log_file)
+    if verbose:
+        if args is not None:
+            print(est.summary(), '\n', file = args.log_file)
+        else:
+            print(est.summary(), '\n')
 
     # construct chi
     # converts chi back to matrix format
@@ -307,21 +310,23 @@ def find_all_pairs(psi, energy, letters):
 
     return X, Y, letters_new
 
-def predict_chi_in_psi_basis(psi, s, psi_letters = None, args = None):
+def predict_chi_in_psi_basis(psi, L, psi_letters=None, args=None, verbose=False):
     '''
     Wrapper function to predict hat_chi given psi.
     '''
-    raise Exception('deprecated')
-    _, ell = psi.shape
+    if psi.shape[1] > psi.shape[0]:
+        psi = psi.T # psi is m x k
 
-    # use symmetric s
-    s_sym = (s + s.T)/2
+    _, k = psi.shape
+
+    # ensure symmetric L
+    L_sym = (L + L.T)/2
 
     # find pairs of rows in psi
-    X, Y, letters_newer = find_all_pairs(psi, s_sym, psi_letters)
+    X, Y, letters_newer = find_all_pairs(psi, L_sym, psi_letters)
 
     # run linear regression
-    hat_chi = run_regression(X, Y, ell, args)
+    hat_chi = run_regression(X, Y, k, args, verbose = verbose)
 
     # save results
     if args is not None:
@@ -625,35 +630,37 @@ def post_analysis_chi(args, letters):
                 y_ticks = letters)
 
 def test_project():
-    dir = '/home/eric/sequences_to_contact_maps/dataset_01_15_22/samples/sample40'
-    replicate_dir = osp.join(dir, 'PCA/k4/replicate1')
-    s_pca = load_final_max_ent_S(4, replicate_dir)
-    e_pca = s_to_E(s_pca)
+    dir = '/home/erschultz/downsampling_analysis/samples3/sample100'
+    max_ent_dir = osp.join(dir, 'optimize_grid_b_140_phi_0.03-max_ent10')
+    final = get_final_max_ent_folder(max_ent_dir)
+    L_pca = load_max_ent_L(final)
 
-    x, psi, chi, e, s, y, ydiag = load_all(dir)
-
-    # visualize pca s projection
-    # s_pca_proj, e_pca_proj = project_S_to_psi_basis(s_pca, psi)
-    # plot_matrix(s_pca_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red',
-    #             ofile = osp.join(replicate_dir, 's_pca_proj.png'))
-    # plot_matrix(e_pca_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red',
-    #             ofile = osp.join(replicate_dir, 'e_pca_proj.png'))
+    x, psi, chi, chi_diag, L, y, ydiag = load_all(dir)
+    x = x.T; psi = psi.T
+    assert np.allclose(x, psi) # these should be the same
 
     # confirm that projecting s returns s
-    # s_proj, e_proj = project_S_to_psi_basis(s, psi)
-    # assert np.allclose(s, s_proj)
-    # assert np.allclose(e, e_proj)
+    L_proj = project_L_to_psi_basis(L, psi)
+    assert np.allclose(L, L_proj)
 
-    # what if you project s into noise basis
-    m, k = psi.shape
-    s_noise_proj, e_noise_proj = project_S_to_psi_basis(s, np.random.rand(m,k))
-    # plot_matrix(s_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red',
-    #             ofile = osp.join(dir, 's_pca_proj.png'))
-    plot_matrix(e_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red',
-                ofile = osp.join(dir, 'e_noise_proj.png'))
-    np.save(osp.join(dir, 'e_noise_proj.npy'), e_noise_proj)
+    # visualize pca L projection
+    L_pca_proj = project_L_to_psi_basis(L_pca, psi)
+    plot_matrix(L_pca_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red',
+                ofile = osp.join(max_ent_dir, 'L_pca_proj.png'))
+    plot_matrix(L_pca, vmin = 'min', vmax = 'max', cmap = 'blue-red',
+                ofile = osp.join(max_ent_dir, 'L.png'))
+
+
+    # # what if you project s into noise basis
+    # m, k = psi.shape
+    # s_noise_proj, e_noise_proj = project_L_to_psi_basis(s, np.random.rand(m,k))
+    # # plot_matrix(s_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red',
+    # #             ofile = osp.join(dir, 's_pca_proj.png'))
+    # plot_matrix(e_noise_proj, vmin = 'min', vmax = 'max', cmap = 'blue-red',
+    #             ofile = osp.join(dir, 'e_noise_proj.png'))
+    # np.save(osp.join(dir, 'e_noise_proj.npy'), e_noise_proj)
 
 
 if __name__ == '__main__':
-    main()
-    # test_project()
+    # main()
+    test_project()

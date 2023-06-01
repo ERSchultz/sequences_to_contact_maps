@@ -31,6 +31,7 @@ headArchitecture2='fc-fill_1024'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 
+sweepChoices='1-2-3'
 k=8
 useSignPlus='true'
 batchSize=1
@@ -39,7 +40,7 @@ milestones='50'
 # sign_plus with log preprocessing
 
 
-id=407
+id=410
 for lr in 1e-4
 do
   train

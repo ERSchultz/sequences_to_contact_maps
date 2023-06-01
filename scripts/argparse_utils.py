@@ -65,6 +65,8 @@ def get_base_parser():
                         help='mode for toxx (default mean)')
     parser.add_argument('--y_preprocessing', type=AC.str2None,
                         help='type of pre-processing for contact map')
+    parser.add_argument('--sweep_choices', type=AC.str2list, default=[2,3,4,5],
+                        help='choices for num_sweeps for y_preprocessing=sweeprand')
     parser.add_argument('--y_zero_diag_count', type=int, default=0,
                         help='number of diagonals of y set to 0')
     parser.add_argument('--log_preprocessing', type=AC.str2None,

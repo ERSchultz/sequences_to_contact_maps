@@ -47,6 +47,7 @@ def load_import_log(dir, obj=None):
             elif line[0] == 'genome':
                 genome = line[1]
 
+    results['url'] = url
     results['start'] = start
     results['end'] = end
     results['start_mb'] = start_mb
@@ -58,6 +59,7 @@ def load_import_log(dir, obj=None):
     results['chrom'] = chrom
 
     if obj is not None:
+        obj.url = url
         obj.start = start
         obj.end = end
         obj.start_mb = start_mb
@@ -240,10 +242,34 @@ def load_chi(dir, throw_exception=True):
     elif osp.exists(osp.join(dir, 'chis.npy')):
         chi = np.load(osp.join(dir, 'chis.npy'))
         return chi
-    elif throw_exception:
+    elif osp.exists(osp.join(dir, 'config.json')):
+        with open(osp.join(dir, 'config.json'), 'rb') as f:
+            config = json.load(f)
+
+        try:
+            chi = config['chis']
+            chi = np.array(chi)
+        except:
+            chi = np.zeros((k,k))
+            for i, bead_i in enumerate(LETTERS[:k]):
+                for j in range(i,k):
+                    bead_j = LETTERS[j]
+                    try:
+                        chi[i,j] = config[f'chi{bead_i}{bead_j}']
+                    except KeyError:
+                        if throw_exception:
+                            print(f'config_file: {config_file}')
+                            print(config)
+                            raise
+                        else:
+                            return None
+        return chi
+
+
+    if throw_exception:
         raise Exception(f'chi not found for {dir}')
-    else:
-        return None
+
+    return None
 
 def load_max_ent_chi(k, path, throw_exception = True):
 
@@ -313,7 +339,7 @@ def load_max_ent_D(path):
     D = calculate_D(diag_chis_step)
     return D
 
-def load_max_ent_L(path):
+def load_max_ent_L(path, throw_exception=False):
     if path is None:
         return None
 
@@ -321,8 +347,15 @@ def load_max_ent_L(path):
     x_file = osp.join(path, 'resources', 'x.npy')
     if osp.exists(x_file):
         x = np.load(x_file)
+    elif osp.exists(osp.join(path, 'x.npy')):
+        x = np.load(osp.join(path, 'x.npy'))
+    elif throw_exception:
+        raise Exception('x not found')
     else:
         return None
+
+    if x.shape[1] > x.shape[0]:
+        x = x.T
 
     _, k = x.shape
 

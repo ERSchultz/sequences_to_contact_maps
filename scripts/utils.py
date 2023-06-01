@@ -413,6 +413,9 @@ def diagonalpool_HiC(HiC, factor):
 def load_time_dir(dir):
     assert osp.exists(dir), dir
     def load_time_file(file):
+        if not osp.exists(file):
+            print(f'Warning: {file} does not exist')
+            return 0
         t = None
         with open(file) as f:
             for line in f:
@@ -424,9 +427,15 @@ def load_time_dir(dir):
     eq_log_file = osp.join(dir, 'equilibration/log.log')
     if osp.exists(osp.join(dir, 'equilibration.tar.gz')):
         t_file = tarfile.open(osp.join(dir, 'equilibration.tar.gz'))
-        log = t_file.extract('equilibration/log.log', dir)
+        try:
+            log = t_file.extract('equilibration/log.log', dir)
+        except KeyError:
+            print(dir)
+            raise
+
 
     t_eq = load_time_file(eq_log_file)
+
 
     if osp.exists(osp.join(dir, 'production_out/log.log')):
         t_prod = load_time_file(osp.join(dir, 'production_out/log.log'))
