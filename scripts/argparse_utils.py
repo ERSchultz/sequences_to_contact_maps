@@ -289,8 +289,6 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, gri
                     if id > max_id:
                         max_id = id
             opt.id = max_id + 1
-            opt.grid_path = grid_path
-
     else:
         txt_file = osp.join(model_type_folder, str(opt.id), 'argparse.txt')
         if osp.exists(txt_file):
@@ -302,7 +300,8 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, gri
             opt = parser.parse_args(args) # parse again
             # by inserting at position 1, the original arguments will override the txt file
             opt.id = id_copy
-            opt.grid_path = grid_path
+            
+    opt.grid_path = grid_path
 
 
 
