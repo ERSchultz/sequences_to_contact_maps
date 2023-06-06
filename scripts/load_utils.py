@@ -75,15 +75,8 @@ def load_import_log(dir, obj=None):
 
 
 ## load data functions ##
-def load_X_psi(sample_folder, throw_exception = True, verbose = False):
+def load_psi(sample_folder, throw_exception = True, verbose = False):
     x_files = ['x.npy', 'resources/x.npy']
-    # if osp.exists(x_file2):
-    #     x = []
-    #     for i in range(20):
-    #         f = osp.join(sample_folder, f'data_out/pcf{i}.txt')
-    #         if osp.exists(f):
-    #             x.append(np.loadtxt(f))
-    #     x = np.array(x).T
     for f in x_files:
         f = osp.join(sample_folder, f)
         if osp.exists(f):
@@ -97,17 +90,9 @@ def load_X_psi(sample_folder, throw_exception = True, verbose = False):
         else:
             x = None
 
-    psi_file = osp.join(sample_folder, 'psi.npy')
-    if osp.exists(psi_file):
-        psi = np.load(psi_file)
-        if verbose:
-            print(f'psi loaded with shape {psi.shape}')
-    else:
-        psi = x
-        if x is not None:
-            print(f'Warning: assuming x == psi for {sample_folder}')
+    assert not osp.exists(osp.join(sample_folder, 'psi.npy')), 'deprecated'
 
-    return x, psi
+    return x
 
 def load_Y(sample_folder, throw_exception = True):
     y_file = osp.join(sample_folder, 'y.npy')
@@ -184,7 +169,7 @@ def load_L(sample_folder, psi = None, chi = None, save = False,
 
     if calc:
         if psi is None:
-            _, psi = load_X_psi(sample_folder, throw_exception=throw_exception)
+            psi = load_psi(sample_folder, throw_exception=throw_exception)
         if chi is None:
             chi = load_chi(sample_folder, throw_exception=throw_exception)
         if psi is not None and chi is not None:
@@ -195,6 +180,23 @@ def load_L(sample_folder, psi = None, chi = None, save = False,
 
     return L
 
+def load_D(sample_folder, throw_exception = True):
+    config_file = osp.join(sample_folder, 'config.json')
+    with open(config_file, 'r') as f:
+        config = json.load(f)
+        diag_chi_step = calculate_diag_chi_step(config)
+
+    D = calculate_D(diag_chi_step)
+    return D
+
+def load_S(sample_folder, throw_exception = True):
+    L = load_L(sample_folder, throw_exception=throw_exception)
+    D = load_D(sample_folder, throw_exception=throw_exception)
+    S = calculate_S(L, D)
+
+    return S
+
+
 def load_all(sample_folder, plot = False, data_folder = None, log_file = None,
                 save = False, experimental = False, throw_exception = True):
     '''Loads x, psi, chi, chi_diag, L, y, ydiag.'''
@@ -204,7 +206,7 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None,
         # everything else is None
         return None, None, None, None, None, None, y, ydiag
 
-    x, psi = load_X_psi(sample_folder, throw_exception = throw_exception)
+    x = load_psi(sample_folder, throw_exception = throw_exception)
     # x = x.astype(float)
 
     if plot and x is not None:
@@ -229,10 +231,10 @@ def load_all(sample_folder, plot = False, data_folder = None, log_file = None,
             if "diag_chis" in config:
                 chi_diag = np.array(config["diag_chis"])
 
-    L = load_L(sample_folder, psi, chi, save = save,
+    L = load_L(sample_folder, x, chi, save = save,
                     throw_exception = throw_exception)
 
-    return x, psi, chi, chi_diag, L, y, ydiag
+    return x, chi, chi_diag, L, y, ydiag
 
 def load_chi(dir, throw_exception=True):
     if osp.exists(osp.join(dir, 'chis.txt')):
@@ -342,16 +344,19 @@ def load_max_ent_D(path):
 def load_max_ent_L(path, throw_exception=False):
     if path is None:
         return None
-
     # load x
-    x_file = osp.join(path, 'resources', 'x.npy')
-    if osp.exists(x_file):
-        x = np.load(x_file)
-    elif osp.exists(osp.join(path, 'x.npy')):
-        x = np.load(osp.join(path, 'x.npy'))
-    elif throw_exception:
-        raise Exception('x not found')
-    else:
+    x_file1 = osp.join(path, 'resources/x.npy')
+    x_file2 = osp.join(path, 'x.npy')
+    x_file3 = osp.join(path, 'iteration0/x.npy')
+    found = False
+    for x_file in [x_file1, x_file2, x_file3]:
+        if osp.exists(x_file):
+            x = np.load(x_file)
+            found = True
+
+    if not found and throw_exception:
+        raise Exception(f'x not found for {path}')
+    elif not found:
         return None
 
     if x.shape[1] > x.shape[0]:
@@ -362,16 +367,21 @@ def load_max_ent_L(path, throw_exception=False):
     # load chi
     chi = load_chi(path)
 
-    if chi is None:
+    if chi is None and throw_exception:
         raise Exception(f'chi not found: {path}')
 
     # calculate s
     L = calculate_L(x, chi)
 
+    if L is None and throw_exception:
+        raise Exception(f'L is None: {path}')
+
     return L
 
-def load_max_ent_S(path):
-    L = load_max_ent_L(path)
+def load_max_ent_S(path, throw_exception=False):
+    L = load_max_ent_L(path, throw_exception = throw_exception)
+    if L is None:
+        return None
     D = load_max_ent_D(path)
     return calculate_S(L, D)
 

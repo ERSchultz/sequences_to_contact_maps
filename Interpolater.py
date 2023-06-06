@@ -160,7 +160,7 @@ class Interpolater():
 
 
         # http://hgdownload.soe.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/
-        file = '/home/erschultz/sequences_to_contact_maps/chip_seq_data/wgEncodeDukeMapabilityUniqueness35bp.bigWig'
+        file = '/media/erschultz/1814ae69-5346-45a6-b219-f77f6739171c/home/erschultz/chip_seq_data/wgEncodeDukeMapabilityUniqueness35bp.bigWig'
         bw = pyBigWig.open(file)
 
         mappability = []
@@ -338,13 +338,13 @@ def wrapper(dataset, sample, factor):
         f.write(f'genome={interpolater.genome}')
 
 def main():
-    dataset = 'dataset_04_10_23'
-    mapping = [(dataset, i, 5) for i in range(21, 22)]
+    dataset = 'dataset_05_31_23'
+    mapping = [(dataset, i, 4) for i in range(1, 214)]
     # serial version
-    for dataset, i, factor in mapping:
-        wrapper(dataset, i, factor)
-    # with multiprocessing.Pool(18) as p:
-        # p.starmap(wrapper, mapping)
+    # for dataset, i, factor in mapping:
+        # wrapper(dataset, i, factor)
+    with multiprocessing.Pool(9) as p:
+        p.starmap(wrapper, mapping)
 #
 
 def example_figure(dataset, sample):

@@ -28,7 +28,7 @@ from .argparse_utils import (ArgparserConverter, finalize_opt, get_base_parser,
 from .clean_directories import clean_directories
 from .energy_utils import calculate_diag_chi_step
 from .InteractionConverter import InteractionConverter
-from .load_utils import load_sc_contacts, load_X_psi
+from .load_utils import load_psi, load_sc_contacts
 from .neural_nets.utils import get_data_loaders, get_dataset, load_saved_model
 from .utils import DiagonalPreprocessing, crop, triu_to_full
 from .xyz_utils import (find_dist_between_centroids, find_label_centroid,
@@ -902,7 +902,7 @@ def plot_centroid_distance_sample(dir, sample):
     xyz = xyz_load(osp.join(sample_dir, 'data_out', 'output.xyz'),
                     multiple_timesteps = True)
     N, _, _ = xyz.shape
-    _, psi = load_X_psi(osp.join(dir, f'sample{sample}'))
+    psi = load_psi(osp.join(dir, f'sample{sample}'))
     m, k = psi.shape
     # TODO hard coded psi below
     k=3
