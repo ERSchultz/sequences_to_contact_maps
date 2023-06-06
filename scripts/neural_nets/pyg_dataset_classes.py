@@ -273,7 +273,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def load_y(self, raw_folder):
         '''Helper function to load raw contact map and apply normalization.'''
         self.sweep = None
-        print('h275', self.y_preprocessing)
         if self.y_preprocessing.startswith('sweeprand'):
             _, *y_preprocessing = self.y_preprocessing.split('_')
             if isinstance(y_preprocessing, list):
