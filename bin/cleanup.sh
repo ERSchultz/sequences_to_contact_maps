@@ -6,7 +6,12 @@
 #SBATCH --output=logFiles/cleanup.log
 #SBATCH --time=4:00:00
 
-dir='/project2/depablo/erschultz'
+dir='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy'
 
-cd ~
-rm -r dataset_02_20*
+
+for i in {1..500}
+do
+  cd $dir
+  cd $i
+  rm *upsampling.tar.gz
+done
