@@ -76,7 +76,7 @@ def load_import_log(dir, obj=None):
 
 ## load data functions ##
 def load_psi(sample_folder, throw_exception = True, verbose = False):
-    x_files = ['x.npy', 'resources/x.npy']
+    x_files = ['x.npy', 'resources/x.npy', 'iteration0/x.npy']
     for f in x_files:
         f = osp.join(sample_folder, f)
         if osp.exists(f):
@@ -92,6 +92,9 @@ def load_psi(sample_folder, throw_exception = True, verbose = False):
 
     assert not osp.exists(osp.join(sample_folder, 'psi.npy')), 'deprecated'
 
+    if x.shape[1] > x.shape[0]:
+        x = x.T
+        
     return x
 
 def load_Y(sample_folder, throw_exception = True):
@@ -345,22 +348,9 @@ def load_max_ent_L(path, throw_exception=False):
     if path is None:
         return None
     # load x
-    x_file1 = osp.join(path, 'resources/x.npy')
-    x_file2 = osp.join(path, 'x.npy')
-    x_file3 = osp.join(path, 'iteration0/x.npy')
-    found = False
-    for x_file in [x_file1, x_file2, x_file3]:
-        if osp.exists(x_file):
-            x = np.load(x_file)
-            found = True
-
-    if not found and throw_exception:
-        raise Exception(f'x not found for {path}')
-    elif not found:
-        return None
-
-    if x.shape[1] > x.shape[0]:
-        x = x.T
+    x = load_psi(path, throw_exception=throw_exception)
+    if x is None:
+        return
 
     _, k = x.shape
 

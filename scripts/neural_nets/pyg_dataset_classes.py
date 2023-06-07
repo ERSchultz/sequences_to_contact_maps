@@ -135,8 +135,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     self.file_paths.remove(f)
 
 
-
-
         if root_name is None:
             # find any currently existing graph data folders
             # make new folder for this dataset
@@ -182,7 +180,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def process(self):
         for i, raw_folder in enumerate(self.raw_file_names):
             self.contact_map, contact_map_diag = self.process_y(raw_folder)
-            self.diag_chis_continuous, self.diag_chis_continuous_mlp = self.process_diag_params(raw_folder)
+            self.process_diag_params(raw_folder)
+
             edge_index, pos_edge_index, neg_edge_index = self.generate_edge_index()
 
             if self.use_node_features:
@@ -337,6 +336,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y /= np.max(y)
         elif self.y_norm == 'mean':
             y /= np.mean(np.diagonal(y))
+        elif self.y_norm == 'mean_fill':
+            y /= np.mean(np.diagonal(y))
+            np.fill_diagonal(y, 1)
 
         if self.kr:
             y = knightRuiz(y)
@@ -434,7 +436,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             # set up argparse options
             parser = get_base_parser()
-            sys.argv = [sys.argv[0]] # delete args from get_params, otherwise gnn opt will try and use them
+            sys.argv = [sys.argv[0]] # delete args from get_params,
+                                    # otherwise gnn opt will try and use them
             opt = parser.parse_args([f'@{argparse_path}'])
             opt.id = int(self.mlp_model_id)
             output_mode = opt.output_mode
@@ -479,7 +482,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
             assert output_mode.startswith('diag_chi_step') or output_mode.startswith('diag_chi_continuous')
             diag_chis_mlp = yhat
 
-        return diag_chis_gt, diag_chis_mlp
+        self.diag_chis_continuous = diag_chis_gt
+        self.diag_chis_continuous_mlp = diag_chis_mlp
 
     def get(self, index):
          data = torch.load(self.processed_paths[index])

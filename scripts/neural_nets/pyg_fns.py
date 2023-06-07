@@ -6,6 +6,8 @@ from typing import Optional, Tuple, Union
 import numpy as np
 import torch
 import torch.nn.functional as F
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from pylib.utils.energy_utils import calculate_D
 from sklearn.decomposition import PCA
 from torch import Tensor
 from torch.nn import Parameter
@@ -18,8 +20,6 @@ from torch_geometric.utils import (add_self_loops, degree, remove_self_loops,
                                    softmax)
 from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 from torch_sparse import SparseTensor, matmul, set_diag
-
-from ..energy_utils import calculate_D
 
 
 # node transforms
@@ -551,7 +551,7 @@ class ContactDistance(BaseTransform):
         repr = f'{self.__class__.__name__}(norm={self.norm}'
 
         if self.max is not None:
-            repr += f', max={self.max})'
+            repr += f', max={self.max}'
 
         if self.split_edges:
             repr += f', split_edges={self.split_edges})'
@@ -559,6 +559,56 @@ class ContactDistance(BaseTransform):
             repr += ')'
 
         return repr
+
+class MeanContactDistance(BaseTransform):
+    '''
+    Appends contact map entries to edge attr vector.
+    '''
+    def __init__(self, norm = False, max_val = None, cat = True,
+                    convert_to_attr = False):
+        '''
+        Inputs:
+            cat: True to concatenate attr, False to overwrite
+            convert_to_attr: True for edge attr, False for edge weight
+        '''
+        self.norm = norm
+        self.max = max_val
+        self.cat = cat
+        self.convert_to_attr = convert_to_attr # bool, converts to 2d array
+        # else would be an edge weight
+
+    def __call__(self, data):
+        mean_per_diagonal = DiagonalPreprocessing.genomic_distance_statistics(data.contact_map, mode = 'freq')
+        contact_map = calculate_D(mean_per_diagonal)
+        contact_map = torch.tensor(contact_map, dtype = torch.float32)
+
+        (row, col), pseudo = data.edge_index, data.edge_attr
+        edge_attr = contact_map[row, col]
+        if self.convert_to_attr:
+            edge_attr = edge_attr.reshape(-1, 1)
+
+        if self.norm:
+            edge_attr /= (edge_attr.max() if self.max is None else self.max)
+
+        if pseudo is not None and self.cat:
+            pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
+            data.edge_attr = torch.cat([pseudo, edge_attr.type_as(pseudo)], dim=-1)
+        else:
+            data.edge_attr = edge_attr
+
+        return data
+
+
+    def __repr__(self) -> str:
+        repr = f'{self.__class__.__name__}(norm={self.norm}'
+
+        if self.max is not None:
+            repr += f', max={self.max})'
+        else:
+            repr += ')'
+
+        return repr
+
 
 class DiagonalParameterDistance(BaseTransform):
     '''

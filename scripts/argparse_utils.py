@@ -16,7 +16,8 @@ from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from .neural_nets.pyg_fns import (AdjPCATransform, AdjPCs, AdjTransform,
                                   ContactDistance, Degree,
                                   DiagonalParameterDistance, GeneticDistance,
-                                  GeneticPosition, GridSize, NoiseLevel,
+                                  GeneticPosition, GridSize,
+                                  MeanContactDistance, NoiseLevel,
                                   OneHotGeneticPosition,
                                   WeightedLocalDegreeProfile)
 
@@ -300,7 +301,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, gri
             opt = parser.parse_args(args) # parse again
             # by inserting at position 1, the original arguments will override the txt file
             opt.id = id_copy
-            
+
     opt.grid_path = grid_path
 
 
@@ -529,6 +530,19 @@ def process_transforms(opt):
 
             transform = ContactDistance(norm = norm,
                                         split_edges = opt.split_neg_pos_edges,
+                                        convert_to_attr = opt.use_edge_attr)
+            opt.edge_transforms.append(transform)
+        elif t_str[0] == 'meancontactdistance':
+            opt.edge_transforms.append(f'MeanContactDistance')
+            assert opt.use_edge_attr or opt.use_edge_weights
+            if opt.use_edge_attr:
+                opt.edge_dim += 1
+            norm = False
+            for mode_str in t_str[1:]:
+                if mode_str == 'norm':
+                    norm = True
+
+            transform = MeanContactDistance(norm = norm,
                                         convert_to_attr = opt.use_edge_attr)
             opt.edge_transforms.append(transform)
         elif t_str[0] == 'geneticdistance':

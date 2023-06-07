@@ -434,7 +434,6 @@ class ContactGNN(nn.Module):
     def forward(self, graph, additional_x=None):
         self.batch_size = int(graph.batch.max()) + 1
         latent = self.latent(graph, additional_x)
-        _, output_size = latent.shape
 
         if self.head_architecture_L is None and self.head_architecture_D is None:
             return latent
@@ -579,11 +578,11 @@ class SignNetGNN(nn.Module):
         pos = self.sign_net(data)
         return self.gnn.latent(data, pos)
 
-    def plaid_component(self, latent):
-        return self.gnn.plaid_component(data, latent)
+    def plaid_component(self, data):
+        return None
 
-    def diagonal_component(self, latent):
-        return self.gnn.diagonal_component(data, latent)
+    def diagonal_component(self, data):
+        return None
 
 class SignPlus(nn.Module):
     # Modified from https://github.com/cptq/SignNet-BasisNet/blob/main/LearningFilters/signbasisnet.py
@@ -593,17 +592,21 @@ class SignPlus(nn.Module):
         self.model = model
         self.k = k
 
-    def forward(self, data):
+    def get_eig(self, data):
         eigS_dense, eigV_dense = to_dense_list_EVD(data.eigen_values, data.eigen_vectors, data.batch, self.k)
-        x = eigV_dense
+        return eigV_dense
 
+    def forward(self, data):
+        x = self.get_eig(data)
         return self.model(data, x) + self.model(data, -x)
 
-    def latent(self, data, *args):
-        return None
+    def latent(self, data):
+        x = self.get_eig(data)
+        self.model.batch_size = int(data.batch.max()) + 1
+        return self.model.latent(data, x), self.model.latent(data, -x)
 
     def plaid_component(self, latent):
-        return None
+        return self.model.plaid_component(latent)
 
     def diagonal_component(self, latent):
-        return None
+        return self.model.diagonal_component(latent)

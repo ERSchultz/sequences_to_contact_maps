@@ -32,6 +32,7 @@ headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 
 sweepChoices='2-3-4-5'
+yNorm='mean_fill'
 k=8
 useSignPlus='true'
 batchSize=1
@@ -40,7 +41,7 @@ milestones='50'
 # sign_plus with log preprocessing
 
 
-id=413
+id=414
 for lr in 1e-4
 do
   train

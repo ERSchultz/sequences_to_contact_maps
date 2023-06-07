@@ -10,12 +10,12 @@ from scipy.optimize import minimize
 from scripts.energy_utils import calculate_D
 from scripts.InteractionConverter import InteractionConverter
 from scripts.knightRuiz import knightRuiz
-from scripts.load_utils import load_all, load_contact_map, load_X_psi, load_Y
+from scripts.load_utils import load_all, load_contact_map, load_psi, load_Y
 from scripts.neural_nets.dataset_classes import make_dataset
 from scripts.plotting_utils import (plot_diag_chi, plot_matrix,
                                     plot_mean_vs_genomic_distance,
                                     plot_seq_binary, plot_seq_continuous)
-from scripts.utils import DiagonalPreprocessing
+from scripts.utils import DiagonalPreprocessing, rescale_matrix
 from sklearn.metrics import mean_squared_error
 
 
@@ -35,7 +35,7 @@ def getPairwiseContacts(data_folder):
     samples = make_dataset(data_folder)
     for sample in samples:
         print(sample)
-        _, psi = load_X_psi(sample)
+        psi = load_psi(sample)
         m, k = psi.shape
         label_count = np.sum(psi, axis = 0)
         print(label_count)
@@ -197,9 +197,10 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
         if not osp.exists(figures_path):
             os.mkdir(figures_path, mode = 0o755)
 
-        x, psi, chi, _, L, y, ydiag = load_all(path, data_folder = dataFolder,
+        x, chi, _, L, y, ydiag = load_all(path, data_folder = dataFolder,
                                                 save = True,
                                                 throw_exception = False)
+        m = len(y)
 
         config_file = osp.join(path, 'config.json')
         config = None
@@ -217,6 +218,7 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
                 loading = config['dense_diagonal_loading']
 
         if plot_y:
+            y /= np.mean(np.diagonal(y))
             contacts = int(np.sum(y) / 2)
             sparsity = np.round(np.count_nonzero(y) / len(y)**2 * 100, 2)
             title = f'# contacts: {contacts}, sparsity: {sparsity}%'
@@ -227,17 +229,18 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
             np.savetxt(osp.join(path, 'meanDist.txt'), meanDist)
             plot_mean_vs_genomic_distance(y, path, 'meanDist_log.png', logx = True, config = config)
 
-            p = y/np.mean(np.diagonal(y))
-            plot_matrix(p, osp.join(path, 'p.png'), vmax = 'mean')
-
             plot_matrix(ydiag, osp.join(path, 'y_diag.png'),
                         title = f'Sample {id}\ndiag normalization', vmin = 'center1', cmap = 'blue-red')
+            # plt.hist(ydiag)
+            # plt.savefig(osp.join(path, 'y_diag_hist.png'))
+
             ydiag_log = np.log(ydiag)
             ydiag_log[np.isinf(ydiag_log)] = 0
             nonzero = np.count_nonzero(ydiag_log)
             prcnt = np.round(nonzero / 1024**2 * 100, 1)
             plot_matrix(ydiag_log, osp.join(path, 'y_diag_log.png'), title = f'diag + log\nEdges={nonzero} ({prcnt}%)', cmap = 'bluered')
-
+            # plt.hist(ydiag_log)
+            # plt.savefig(osp.join(path, 'y_diag_log.png'))
 
             y_kr, y_kr_diag = compare_kr(figures_path, y, y, ydiag)
             plot_mean_vs_genomic_distance(y_kr, figures_path, 'meanDistKR_log.png',
@@ -274,6 +277,24 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
                 y_log = np.log(y + 1)
             plot_matrix(y_log, osp.join(path, 'y_log.png'), title = 'log normalization', vmax = 'max')
             plot_mean_vs_genomic_distance(y_log, figures_path, 'meanDistLog.png', config = config)
+
+            y_log_inf_file = osp.join(path, 'y_log_inf.npy')
+            y_rescale = rescale_matrix(y, 2)
+            y_rescale /= np.mean(np.diagonal(y_rescale))
+            np.fill_diagonal(y_rescale, 1)
+            if osp.exists(y_log_inf_file):
+                y_log_inf = np.load(y_log_inf_file)
+            else:
+                y_log_inf = np.log(y_rescale)
+                y_log_inf[np.isinf(y_log_inf)] = np.nan
+            plot_matrix(y_log_inf, osp.join(path, 'y_log_inf.png'), title = 'log_inf normalization', vmin = 'min', vmax = 'max')
+            arr = y_log_inf[np.triu_indices(len(y_log_inf))] * 10
+            print(arr, arr.shape)
+            bin_width = 1
+            plt.hist(arr, alpha = 0.5,
+                        weights = np.ones_like(arr) / len(arr),
+                        bins = range(math.floor(np.nanmin(arr)), math.ceil(np.nanmax(arr)) + bin_width, bin_width))
+            plt.savefig(osp.join(path, 'y_log_inf_hist.png'))
 
             y_log_diag_file = osp.join(path, 'y_log_diag.npy')
             if osp.exists(y_log_diag_file):
@@ -323,12 +344,6 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
                             cmap = 'blue-red')
 
         if plot_x:
-            x_path = osp.join(path, 'x.npy')
-            if osp.exists(x_path):
-                x = np.load(x_path)
-            else:
-                continue
-
             # plot_seq_binary(x, ofile = osp.join(path, 'x.png'))
             plot_seq_continuous(x,  ofile = osp.join(path, 'x.png'))
             # plot_seq_exclusive(x, ofile = osp.join(path, 'x.png'))
@@ -339,10 +354,10 @@ if __name__ == '__main__':
     dir = '/home/erschultz/sequences_to_contact_maps'
     dir = '/home/erschultz'
 
-    dataset = 'Su2020'
+    dataset = 'dataset_05_28_23'
     data_dir = osp.join(dir, dataset)
     basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                plot_chi = False, sampleID = 13)
+                plot_chi = False, sampleID = 324)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

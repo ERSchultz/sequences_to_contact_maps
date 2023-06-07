@@ -790,7 +790,7 @@ def plot_p_s(dataset, experimental=False, ref=False, params=False, label=None):
     # plot different p(s) curves
     dir = '/home/erschultz/'
     if ref:
-        data_dir = osp.join(dir, 'dataset_11_14_22/samples/sample1') # experimental data sample
+        data_dir = osp.join(dir, 'dataset_04_10_23/samples/sample1001') # experimental data sample
         file = osp.join(data_dir, 'y.npy')
         y_exp = np.load(file)
         meanDist_ref = DiagonalPreprocessing.genomic_distance_statistics(y_exp, 'prob')
@@ -798,8 +798,7 @@ def plot_p_s(dataset, experimental=False, ref=False, params=False, label=None):
     data_dir = osp.join(dir, dataset)
 
     data = defaultdict(dict) # sample : {meanDist, diag_chis_step} : vals
-    samples, _ = get_samples(dataset)
-    for sample in samples:
+    for sample in range(1, 5000):
         sample_dir = osp.join(data_dir, 'samples', f'sample{sample}')
         ifile = osp.join(sample_dir, 'y.npy')
         if osp.exists(ifile):
@@ -821,17 +820,16 @@ def plot_p_s(dataset, experimental=False, ref=False, params=False, label=None):
                 diag_chis_step = calculate_diag_chi_step(config)
                 data[sample]['diag_chis_step'] = np.array(diag_chis_step)
 
-
     for norm in [True, False]:
         fig, ax = plt.subplots()
         if params:
             ax2 = ax.twinx()
         if ref:
             if norm:
-                X = np.arange(0, 1, len(meanDist_ref))
+                X = np.linspace(0, 1, len(meanDist_ref))
             else:
                 X = np.arange(0, len(meanDist_ref), 1)
-            ax.plot(meanDist_ref, label = 'Experiment', color = 'k')
+            ax.plot(X, meanDist_ref, label = 'Experiment', color = 'k')
 
         for i, sample in enumerate(data.keys()):
             meanDist = data[sample]['meanDist']
@@ -1150,9 +1148,10 @@ def compare_different_cell_lines():
 
 def figure2(test=False):
     # dataset = 'dataset_04_05_23'; sample = 1001; GN_ID = 407
-    dataset = 'dataset_02_04_23'; sample = 202; GNN_ID = 403
+    dataset = 'dataset_02_04_23'; sample = 212; GNN_ID = 403
+    samples_list = range(211, 221)
+
     sample_dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
-    samples_list = range(201, 211)
 
     y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
     y /= np.mean(np.diagonal(y))
@@ -1177,7 +1176,7 @@ def figure2(test=False):
 
     grid_dir = osp.join(sample_dir, 'optimize_grid_b_140_phi_0.03')
     k=10
-    max_ent_dir = f'{grid_dir}-max_ent{k}'
+    max_ent_dir = f'{grid_dir}-max_ent{k}_repeat'
     gnn_dir = f'{grid_dir}-GNN{GNN_ID}'
 
     final = get_final_max_ent_folder(max_ent_dir)
@@ -1224,7 +1223,7 @@ def figure2(test=False):
         max_ent_sccs = data[10][max_ent]['scc_var']
         max_ent_sccs = [i for i in max_ent_sccs if not np.isnan(i)]
 
-        gnn = f'GNN{GNN_ID}'
+        gnn = f'GNN{GNN_ID}_short'
         gnn_times = data[0][gnn]['total_time']
         gnn_sccs = data[0][gnn]['scc_var']
 
@@ -1350,13 +1349,13 @@ def figure2(test=False):
     data = [max_ent_sccs, max_ent_sccs_strict, gnn_sccs]
     # print('scc data', data)
     b1 = ax6.boxplot(data, vert = True,
-                        patch_artist = True, labels = labels, fontsize=16)
+                        patch_artist = True, labels = labels)
     ax6.set_ylabel('SCC', fontsize=16)
 
     data = [max_ent_times, max_ent_times_strict, gnn_times]
     # print('time data', data)
     b2 = ax7.boxplot(data,  vert = True,
-                        patch_artist = True, labels = labels, fontsize=16)
+                        patch_artist = True, labels = labels)
     # axes[1].set_yscale('log')
     ax7.set_ylabel('Time (mins)', fontsize=16)
 
@@ -1695,12 +1694,13 @@ if __name__ == '__main__':
     # data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample4')
     # file = osp.join(data_dir, 'y.npy')
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    plot_combined_models('ContactGNNEnergy', [407, 410])
+    # plot_combined_models('ContactGNNEnergy', [407, 410])
     # plot_GNN_vs_PCA('dataset_04_05_23', 10, 407)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")
     # main()
-    # plot_all_contact_maps('dataset_04_05_23')
+    # plot_all_contact_maps('dataset_05_28_23')
+    plot_p_s('dataset_05_28_23', ref=True)
     # compare_different_cell_lines()
     # figure2()
     # interpretation_figure()

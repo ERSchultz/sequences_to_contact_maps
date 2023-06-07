@@ -40,7 +40,7 @@ milestones='50'
 # sign_plus with log preprocessing
 
 
-id=414
+id=415
 for lr in 1e-4
 do
   train

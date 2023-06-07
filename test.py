@@ -205,7 +205,7 @@ def debugModel(model_type):
         opt.kr = False
         opt.keep_zero_edges = False
         opt.loss = 'mse'
-        opt.preprocessing_norm = 'mean'
+        opt.preprocessing_norm = 'mean_fill'
         opt.message_passing = 'weighted_GAT'
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym_diag'
@@ -226,7 +226,7 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('GridSize-constant-ContactDistance-GeneticDistance_norm')
+        opt.pre_transforms=AC.str2list('GridSize-constant-ContactDistance-GeneticDistance_norm-MeanContactDistance')
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None

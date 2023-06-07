@@ -444,7 +444,7 @@ def load_time_dir(dir):
         log = t_file.extract('production_out/log.log', dir)
         t_prod = load_time_file(osp.join(dir, 'production_out/log.log'))
     else:
-        assert osp.exists(osp.join(dir, 'core0'))
+        assert osp.exists(osp.join(dir, 'core0')), dir
         t_prod = []
         for f in os.listdir(dir):
             if f.startswith('core'):
