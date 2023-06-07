@@ -279,8 +279,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             id = int(osp.split(raw_folder)[1][6:])
             rng = np.random.default_rng(seed = id)
-            self.sweep = rng.choice(self.sweep_choices, 1)[0]
-            self.sweep *= 100000
+            sweep = rng.choice(self.sweep_choices, 1)[0]
+            self.sweep = int(sweep * 100000)
 
             y_path = osp.join(raw_folder, f'data_out/contacts{self.sweep}.txt')
             y_path2 = osp.join(raw_folder, f'production_out/contacts{self.sweep}.txt')
