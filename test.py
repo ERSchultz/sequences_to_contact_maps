@@ -264,10 +264,10 @@ def debugModel(model_type):
         # opt.transforms=AC.str2list('constant')
         opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-AdjPCs_8-AdjPCA_3')
         opt.k=8
-        opt.head_architecture = 'bilinear_triu'
-        opt.head_architecture_2 = 'fc-fill_1024'
-        opt.head_hidden_sizes_list = [1000, 1000, 1000]
-        # opt.crop = [0,21]
+        opt.head_architecture = 'dconv-bilinear-triu'
+        opt.head_architecture_2 = f'dconv-fc-fill_{opt.m}'
+        opt.head_hidden_sizes_list = [1000, 1000,1000,1000,1000]
+        opt.crop = None
 
         opt.use_bias = True
         opt.num_heads = 8
@@ -328,7 +328,7 @@ def debugModel(model_type):
     # other
     opt.pretrain_id = None
     opt.plot = True
-    opt.plot_predictions = False
+    opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = True
     opt.gpus = 1
@@ -738,6 +738,6 @@ if __name__ == '__main__':
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    debugModel('signnet')
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()

@@ -23,7 +23,7 @@ from scipy.ndimage import uniform_filter
 from scripts.argparse_utils import (finalize_opt, get_base_parser,
                                     get_opt_header, opt2list)
 from scripts.load_utils import (get_final_max_ent_folder, load_contact_map,
-                                load_L)
+                                load_import_log, load_L)
 from scripts.plotting_utils import (BLUE_RED_CMAP, RED_CMAP,
                                     plot_centroid_distance,
                                     plot_combined_models, plot_diag_chi,
@@ -953,17 +953,11 @@ def compare_different_cell_lines():
         ref_meanDists.append(DiagonalPreprocessing.genomic_distance_statistics(y_exp, 'prob'))
         ref_pcs.append(epilib.get_pcs(epilib.get_oe(y_exp), 12, align = True).T)
 
-        import_file = osp.join(dir, 'import.log')
-        with open(import_file, 'r') as f:
-            for line in f.readlines():
-                line = line.strip()
-                line = line.split('=')
-                if line[0] == 'start':
-                    start = int(line[1]) / 1000000 # Mb
-                if line[0] == 'end':
-                    end = int(line[1]) / 1000000
-                if line[0] == 'chrom':
-                    chrom = line[1]
+        result = load_import_log(dir)
+        start = result['start_mb']
+        end = result['end_mb']
+        chrom = result['chrom']
+        resolution = result['resolution']
         chroms.append(chrom)
         m = len(y_exp)
         all_ticks = np.arange(0, m)
@@ -1159,15 +1153,11 @@ def figure2(test=False):
     y_diag = DiagonalPreprocessing.process(y, meanDist)
     m = len(y)
 
-    import_file = osp.join(sample_dir, 'import.log')
-    with open(import_file, 'r') as f:
-        for line in f.readlines():
-            line = line.strip()
-            line = line.split('=')
-            if line[0] == 'start':
-                start = int(line[1]) / 1000000 # Mb
-            if line[0] == 'end':
-                end = int(line[1]) / 1000000
+    result = load_import_log(sample_dir)
+    start = result['start_mb']
+    end = result['end_mb']
+    chrom = result['chrom']
+    resolution = result['resolution']
     all_ticks = np.arange(0, len(y))
     all_labels = np.linspace(start, end, len(y))
     all_labels = np.round(all_labels, 1)
@@ -1262,6 +1252,7 @@ def figure2(test=False):
     ax2 = plt.subplot(2, 24, (8, 13))
     ax_cb = plt.subplot(2, 48*2, 29*2-1)
     ax4 = plt.subplot(2, 24, (17, 24)) # pc
+    # ax4_2 = plt.subplot(4, 24, (41, 48)) # diagonal
     ax5 = plt.subplot(2, 24, (25, 30)) # meandist
     ax6 = plt.subplot(2, 48, (64, 70))
     ax7 = plt.subplot(2, 48, (74, 80))
@@ -1327,21 +1318,34 @@ def figure2(test=False):
     ax4.plot(pcs_pca[0], label = 'Max Ent', color = 'b')
     ax4.plot(pcs_gnn[0], label = f'GNN-{GNN_ID}', color = 'r')
     ax4.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
+    ax4.set_yticks([])
 
     ax4.set_title(f'PC 1\nCorr(Exp, GNN)={pearson_round(pcs[0], pcs_gnn[0])}')
     ax4.legend()
 
+    # resized = rotate_bound(y,-45)
+    # height=50
+    # center = resized.shape[0] // 2
+    # resized = resized[center-height:center, :]
+    # sns.heatmap(resized, ax = ax4_2, linewidth = 0, vmin = vmin, vmax = vmax,
+    #             cmap = RED_CMAP, cbar = False)
+    # ax4_2.set_xticks([])
+    # ax4_2.set_yticks([])
+
+
+
     # compare P(s)
+    log_labels = np.linspace(0, resolution*(len(meanDist)-1), len(meanDist))
     meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
     meanDist_pca = DiagonalPreprocessing.genomic_distance_statistics(y_pca, 'prob')
     meanDist_gnn = DiagonalPreprocessing.genomic_distance_statistics(y_gnn, 'prob')
     for arr, fig_label, c in zip([meanDist, meanDist_pca, meanDist_gnn], ['Experiment', 'Max Ent', f'GNN-{GNN_ID}'], ['k', 'b', 'r']):
-        ax5.plot(np.arange(0, len(arr)), arr, label = fig_label, color = c)
+        ax5.plot(log_labels, arr, label = fig_label, color = c)
 
     ax5.set_yscale('log')
     ax5.set_xscale('log')
     ax5.set_ylabel('Contact Probability', fontsize = 16)
-    ax5.set_xlabel('Polymer Distance (beads)', fontsize = 16)
+    ax5.set_xlabel('Genomic Separation (bp)', fontsize = 16)
     ax5.legend(loc='upper right')
 
     # time and scc
@@ -1700,9 +1704,9 @@ if __name__ == '__main__':
     # plot_Exp_vs_PCA("dataset_02_04_23")
     # main()
     # plot_all_contact_maps('dataset_05_28_23')
-    plot_p_s('dataset_05_28_23', ref=True)
+    # plot_p_s('dataset_05_28_23', ref=True)
     # compare_different_cell_lines()
-    # figure2()
+    figure2(True)
     # interpretation_figure()
     # interpretation_figure_test()
     # plot_first_PC('dataset_02_04_23', 10, 403)

@@ -529,20 +529,24 @@ def plotEnergyPredictions(val_dataloader, model, opt, count=5):
 
         # plot plaid contribution
         latent = model.latent(data, None)
-        plaid_hat = model.plaid_component(latent)
-        if plaid_hat is not None:
-            plaid_hat = plaid_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
-            plot_matrix(plaid_hat, osp.join(subpath, 'plaid_hat.png'),
-                            vmin = -1 * v_max, vmax = v_max,
-                            title = 'plaid portion', cmap = 'blue-red')
+        if len(latent.shape) == 2:
+            latent = torch.unsqueeze(latent, 0)
 
-        # plot diag contribution
-        diagonal_hat = model.diagonal_component(latent)
-        if diagonal_hat is not None:
-            diagonal_hat = diagonal_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
-            plot_matrix(diagonal_hat, osp.join(subpath, 'diagonal_hat.png'),
-                            vmin = -1 * v_max, vmax = v_max,
-                            title = 'diagonal portion', cmap = 'blue-red')
+        for i, latent_i in enumerate(latent):
+            plaid_hat = model.plaid_component(latent_i)
+            if plaid_hat is not None:
+                plaid_hat = plaid_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
+                plot_matrix(plaid_hat, osp.join(subpath, f'plaid_hat_{i}.png'),
+                                vmin = -1 * v_max, vmax = v_max,
+                                title = 'plaid portion', cmap = 'blue-red')
+
+            # plot diag contribution
+            diagonal_hat = model.diagonal_component(latent_i)
+            if diagonal_hat is not None:
+                diagonal_hat = diagonal_hat.cpu().detach().numpy().reshape((opt.m,opt.m))
+                plot_matrix(diagonal_hat, osp.join(subpath, f'diagonal_hat_{i}.png'),
+                                vmin = -1 * v_max, vmax = v_max,
+                                title = 'diagonal portion', cmap = 'blue-red')
 
 
         # tar subpath

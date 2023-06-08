@@ -25,6 +25,8 @@ def load_import_log(dir, obj=None):
         return
 
     results = {}
+    url = None
+    genome = None
     with open(import_file) as f:
         lines = f.readlines()
         for line in lines:
@@ -94,7 +96,7 @@ def load_psi(sample_folder, throw_exception = True, verbose = False):
 
     if x.shape[1] > x.shape[0]:
         x = x.T
-        
+
     return x
 
 def load_Y(sample_folder, throw_exception = True):

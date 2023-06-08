@@ -600,10 +600,11 @@ class SignPlus(nn.Module):
         x = self.get_eig(data)
         return self.model(data, x) + self.model(data, -x)
 
-    def latent(self, data):
+    def latent(self, data, *args):
         x = self.get_eig(data)
         self.model.batch_size = int(data.batch.max()) + 1
-        return self.model.latent(data, x), self.model.latent(data, -x)
+        result = torch.stack((self.model.latent(data, x), self.model.latent(data, -x)))
+        return result
 
     def plaid_component(self, latent):
         return self.model.plaid_component(latent)
