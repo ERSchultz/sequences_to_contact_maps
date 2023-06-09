@@ -27,7 +27,7 @@ updateHiddenSizesList='1000-1000-64'
 
 outputPreprocesing='log'
 headArchitecture='bilinear'
-headArchitecture2='fc-fill_1024'
+headArchitecture2='fc-fill_512'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 
