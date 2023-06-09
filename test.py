@@ -165,7 +165,7 @@ def debugModel(model_type):
         opt.output_mode = 'energy_sym_diag'
         opt.output_preprocesing = 'log'
         opt.encoder_hidden_sizes_list=[32]
-        opt.edge_encoder_hidden_sizes_list=[64]
+        opt.edge_encoder_hidden_sizes_list=[100, 100, 32]
         opt.update_hidden_sizes_list=[1000,1000,64]
         opt.hidden_sizes_list=[8,8,8]
         opt.gated = False
@@ -234,7 +234,7 @@ def debugModel(model_type):
         opt.concat_heads = True
 
     # hyperparameters
-    opt.n_epochs = 1
+    opt.n_epochs = 2
     opt.lr = 1e-3
     opt.weight_decay = 1e-5
     opt.w_reg = None; opt.reg_lambda = 10
@@ -245,7 +245,7 @@ def debugModel(model_type):
     opt.pretrain_id = None
     opt.plot = False
     opt.plot_predictions = False
-    opt.verbose = True
+    opt.verbose = False
     opt.print_params = True
     opt.gpus = 1
     # opt.delete_root = True

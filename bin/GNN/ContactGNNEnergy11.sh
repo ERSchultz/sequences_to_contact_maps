@@ -18,24 +18,31 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy11' # change to run multiple bash files at once
-dirname="/project/depablo/erschultz/dataset_11_18_22-/project/depablo/erschultz/dataset_11_21_22"
+dirname="/project2/depablo/erschultz/dataset_05_28_23"
 m=1024
-preTransforms='constant-ContactDistance-GeneticDistance_norm-AdjPCs_8'
+preTransforms='constant-ContactDistance-MeanContactDistance-MeanContactDistance_bonded-GeneticDistance_norm-AdjPCs_8'
 hiddenSizesList='8-8-8-8'
+EdgeEncoderHiddenSizesList='1000-1000-64'
 EncoderHiddenSizesList='64'
 updateHiddenSizesList='1000-1000-64'
 
-headArchitecture='bilinear_triu'
-headArchitecture2='fc-fill'
-headHiddenSizesList='1000-1000-1000-1000-1000-1000-1024'
+outputPreprocesing='log'
+headArchitecture='bilinear'
+headArchitecture2='fc-fill_1024'
+headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 
+sweepChoices='2-3-4-5'
+yNorm='mean_fill'
 k=8
-useSignNet='true'
-# first attempt at signNet
-resumeTraining='true'
+useSignPlus='true'
+batchSize=1
+nEpochs=80
+milestones='50'
+# sign_plus with log preprocessing
 
-id=331
+
+id=420
 for lr in 1e-4
 do
   train
