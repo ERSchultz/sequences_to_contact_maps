@@ -151,53 +151,7 @@ def debugModel(model_type):
     # opt.split_percents = None
     opt.random_split=True
 
-    if model_type == 'Akita':
-        opt.kernel_w_list=AC.str2list('5-5-5')
-        opt.hidden_sizes_list=AC.str2list('4-6-8')
-        opt.dilation_list_trunk=AC.str2list('2-4-8-16')
-        opt.bottleneck=4
-        opt.dilation_list_head=AC.str2list('2-4-8-16')
-        opt.out_act=nn.ReLU(True)
-        opt.training_norm='batch'
-        opt.down_sampling='conv'
-    elif model_type == 'UNet':
-        opt.toxx = True
-        opt.toxx_mode = 'mean'
-        opt.x_reshape = False
-        opt.nf = 8
-        opt.out_act = 'sigmoid'
-        opt.training_norm = 'batch'
-    elif model_type == 'DeepC':
-        opt.k=10
-        opt.preprocessing_norm=None
-        opt.y_preprocessing='diag'
-        opt.kernel_w_list=AC.str2list('5-5-5')
-        opt.hidden_sizes_list=AC.str2list('32-64-128')
-        opt.dilation_list=AC.str2list('32-64-256')
-    elif model_type == 'ContactGNN':
-        opt.GNN_mode = True
-        opt.output_mode = 'sequence'
-        opt.loss = 'BCE'
-        opt.preprocessing_norm = None
-        opt.message_passing='SignedConv'
-        opt.hidden_sizes_list=AC.str2list('16-2')
-        opt.out_act = None
-        opt.use_node_features = False
-        opt.use_edge_weights = False
-        opt.transforms=AC.str2list('none')
-        opt.pre_transforms=AC.str2list('degree')
-        opt.split_neg_pos_edges_for_feature_augmentation = True
-        opt.top_k = None
-        opt.sparsify_threshold = 0.176
-        opt.sparsify_threshold_upper = None
-        opt.relabel_11_to_00 = False
-        opt.log_preprocessing = 'True'
-        opt.head_architecture = 'fc'
-        opt.head_hidden_sizes_list = [2]
-        # opt.crop=[50,100]
-        # opt.m = 50
-        # opt.use_bias = False
-    elif model_type == 'ContactGNNEnergy':
+    if model_type == 'ContactGNNEnergy':
         opt.y_preprocessing = 'log_inf'
         opt.sweep_choices = [1,2,3]
         opt.rescale = 4
@@ -272,56 +226,12 @@ def debugModel(model_type):
         opt.use_bias = True
         opt.num_heads = 8
         opt.concat_heads = True
-    elif model_type == 'ContactGNNDiag':
-        opt.loss = 'mse'
-        opt.preprocessing_norm = 'instance'
-        opt.message_passing='gat'
-        opt.GNN_mode = True
-        opt.output_mode = 'diag_chi'
-        opt.encoder_hidden_sizes_list=None
-        opt.update_hidden_sizes_list=None
-        opt.hidden_sizes_list=[3,3]
-        opt.training_norm = 'instance'
-        opt.use_edge_weights = False
-        opt.use_edge_attr = True
-        opt.transforms=AC.str2list('empty')
-        opt.pre_transforms=AC.str2list('degree-contactdistance')
-        opt.split_edges_for_feature_augmentation = False
-        opt.sparsify_threshold = 0.176
-        opt.sparsify_threshold_upper = None
-        opt.log_preprocessing = None
-        opt.head_architecture = 'concat'
-        opt.head_architecture_2 = 'bilinear'
-        opt.head_hidden_sizes_list = [1000, 1000, 1000, 1]
-        opt.use_bias = True
-        opt.use_bias = True
-        opt.num_heads = 2
-    elif model_type == 'MLP':
-        opt.scratch = '/home/erschultz/scratch'
-        opt.preprocessing_norm=None
-        opt.y_preprocessing='log'
-        opt.hidden_sizes_list=AC.str2list('100-'*6 + '1024')
-        opt.act='prelu'
-        opt.out_act='prelu'
-        opt.output_mode='diag_chi_continuous'
-        # opt.scheduler='multisteplr'
-        opt.scheduler='reducelronplateau'
-        opt.min_lr=1e-4
-        # opt.milestones=[2,4]
-        opt.log_preprocessing=None
-        opt.y_zero_diag_count=0
-        # opt.training_norm='batch'
-        opt.dropout=False
-        opt.dropout_p=0.1
-        # opt.crop=[20,512]
-        # opt.m = 980
 
     # hyperparameters
     opt.n_epochs = 1
     opt.lr = 1e-3
     opt.weight_decay = 1e-5
-    opt.w_reg = None
-    opt.reg_lambda = 10
+    opt.w_reg = None; opt.reg_lambda = 10
     opt.batch_size = 1
     opt.gamma = 0.1
 

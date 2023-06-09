@@ -960,7 +960,6 @@ def compare_different_cell_lines():
         resolution = result['resolution']
         chroms.append(chrom)
         m = len(y_exp)
-        all_ticks = np.arange(0, m)
         all_labels = np.linspace(start, end, m)
         all_labels = np.round(all_labels, 1)
         genome_ticks = [0, m//3, 2*m//3, m-1]
@@ -1142,13 +1141,55 @@ def compare_different_cell_lines():
 
 def figure2(test=False):
     # dataset = 'dataset_04_05_23'; sample = 1001; GN_ID = 407
-    dataset = 'dataset_02_04_23'; sample = 212; GNN_ID = 403
+    dataset = 'dataset_02_04_23'; sample = 211; GNN_ID = 403
     samples_list = range(211, 221)
 
-    sample_dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
+    def get_dirs(sample_dir):
+        grid_dir = osp.join(sample_dir, 'optimize_grid_b_140_phi_0.03')
+        k=10
+        max_ent_dir = f'{grid_dir}-max_ent{k}_repeat'
+        gnn_dir = f'{grid_dir}-GNN{GNN_ID}'
 
-    y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
-    y /= np.mean(np.diagonal(y))
+        return max_ent_dir, gnn_dir
+
+
+    def get_y(sample_dir):
+        max_ent_dir, gnn_dir = get_dirs(sample_dir)
+        y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
+        y /= np.mean(np.diagonal(y))
+
+        final = get_final_max_ent_folder(max_ent_dir)
+        y_pca = np.load(osp.join(final, 'y.npy')).astype(np.float64)
+        y_pca /= np.mean(np.diagonal(y_pca))
+
+        y_gnn = np.load(osp.join(gnn_dir, 'y.npy')).astype(np.float64)
+        y_gnn /= np.mean(np.diagonal(y_gnn))
+
+        return y, y_pca, y_gnn
+
+
+    # avg pearsonr
+    gnn_pearsons = []
+    pca_pearsons= []
+    for s in samples_list:
+        sample_dir = f'/home/erschultz/{dataset}/samples/sample{s}'
+        y, y_pca, y_gnn = get_y(sample_dir)
+
+        pcs = epilib.get_pcs(epilib.get_oe(y), 12, align = True).T
+        pcs_pca = epilib.get_pcs(epilib.get_oe(y_pca), 12, align = True).T
+        pcs_gnn = epilib.get_pcs(epilib.get_oe(y_gnn), 12, align = True).T
+
+        # make sure they are aligned by ensuring corr is positive
+        pcs_pca[0] *= np.sign(pearson_round(pcs[0], pcs_pca[0]))
+        pcs_gnn[0] *= np.sign(pearson_round(pcs[0], pcs_gnn[0]))
+        gnn_pearsons.append(pearson_round(pcs[0], pcs_gnn[0]))
+        pca_pearsons.append(pearson_round(pcs[0], pcs_pca[0]))
+    print(gnn_pearsons)
+
+
+    sample_dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
+    max_ent_dir, gnn_dir = get_dirs(sample_dir)
+    y, y_pca, y_gnn = get_y(sample_dir)
     meanDist = DiagonalPreprocessing.genomic_distance_statistics(y)
     y_diag = DiagonalPreprocessing.process(y, meanDist)
     m = len(y)
@@ -1158,24 +1199,16 @@ def figure2(test=False):
     end = result['end_mb']
     chrom = result['chrom']
     resolution = result['resolution']
-    all_ticks = np.arange(0, len(y))
     all_labels = np.linspace(start, end, len(y))
     all_labels = np.round(all_labels, 1)
     genome_ticks = [0, len(y)//3, 2*len(y)//3, len(y)-1]
     genome_labels = [f'{all_labels[i]} Mb' for i in genome_ticks]
-
-    grid_dir = osp.join(sample_dir, 'optimize_grid_b_140_phi_0.03')
-    k=10
-    max_ent_dir = f'{grid_dir}-max_ent{k}_repeat'
-    gnn_dir = f'{grid_dir}-GNN{GNN_ID}'
 
     final = get_final_max_ent_folder(max_ent_dir)
     with open(osp.join(final, 'distance_pearson.json'), 'r') as f:
         # TODO this is after final iteration, not convergence
         pca_results = json.load(f)
         pca_scc = np.round(pca_results["scc_var"], 3)
-    y_pca = np.load(osp.join(final, 'y.npy')).astype(np.float64)
-    y_pca /= np.mean(np.diagonal(y_pca))
     meanDist = DiagonalPreprocessing.genomic_distance_statistics(y_pca)
     y_pca_diag = DiagonalPreprocessing.process(y_pca, meanDist)
     L = load_L(max_ent_dir)
@@ -1189,8 +1222,6 @@ def figure2(test=False):
     with open(osp.join(gnn_dir, 'distance_pearson.json'), 'r') as f:
         gnn_results = json.load(f)
         gnn_scc = np.round(gnn_results["scc_var"], 3)
-    y_gnn = np.load(osp.join(gnn_dir, 'y.npy')).astype(np.float64)
-    y_gnn /= np.mean(np.diagonal(y_gnn))
     meanDist = DiagonalPreprocessing.genomic_distance_statistics(y_gnn)
     y_gnn_diag = DiagonalPreprocessing.process(y_gnn, meanDist)
 
@@ -1199,6 +1230,9 @@ def figure2(test=False):
     pcs = epilib.get_pcs(epilib.get_oe(y), 12, align = True).T
     pcs_pca = epilib.get_pcs(epilib.get_oe(y_pca), 12, align = True).T
     pcs_gnn = epilib.get_pcs(epilib.get_oe(y_gnn), 12, align = True).T
+
+
+
 
     # time and scc comparison
     if not test:
@@ -1244,6 +1278,8 @@ def figure2(test=False):
     x = np.zeros((m, 2))
     x[np.arange(m), kmeans.labels_] = 1
     xyz = xyz_load(file, multiple_timesteps=True)[::, :m, :]
+    print(xyz.shape)
+    xyz_write(xyz, osp.join(gnn_dir, 'xyz.xyz'), 'w', x = x)
 
 
     ### combined figure ###
@@ -1254,8 +1290,10 @@ def figure2(test=False):
     ax4 = plt.subplot(2, 24, (17, 24)) # pc
     # ax4_2 = plt.subplot(4, 24, (41, 48)) # diagonal
     ax5 = plt.subplot(2, 24, (25, 30)) # meandist
-    ax6 = plt.subplot(2, 48, (64, 70))
-    ax7 = plt.subplot(2, 48, (74, 80))
+    ax6 = plt.subplot(2, 48, (64, 68))
+    ax7 = plt.subplot(2, 48, (72, 76))
+    ax8 = plt.subplot(2, 48, (80, 84))
+    axes = [ax1, ax4, ax5, ax6, ax7, ax8]
 
 
     vmin = 0
@@ -1315,12 +1353,12 @@ def figure2(test=False):
     pcs_gnn[0] *= np.sign(pearson_round(pcs[0], pcs_gnn[0]))
 
     ax4.plot(pcs[0], label = 'Experiment', color = 'k')
-    ax4.plot(pcs_pca[0], label = 'Max Ent', color = 'b')
-    ax4.plot(pcs_gnn[0], label = f'GNN-{GNN_ID}', color = 'r')
+    ax4.plot(pcs_pca[0], label = f'Max Ent (r={pearson_round(pcs[0], pcs_pca[0])})', color = 'b')
+    ax4.plot(pcs_gnn[0], label = f'GNN-{GNN_ID} (r={pearson_round(pcs[0], pcs_gnn[0])})', color = 'r')
     ax4.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
     ax4.set_yticks([])
-
-    ax4.set_title(f'PC 1\nCorr(Exp, GNN)={pearson_round(pcs[0], pcs_gnn[0])}')
+    ax4.set_ylabel('PC 1', fontsize=16)
+    # ax4.set_title(f'PC 1\nCorr(Exp, GNN)={pearson_round(pcs[0], pcs_gnn[0])}')
     ax4.legend()
 
     # resized = rotate_bound(y,-45)
@@ -1349,32 +1387,40 @@ def figure2(test=False):
     ax5.legend(loc='upper right')
 
     # time and scc
-    labels = ['Max Ent\nConv', 'Max Ent\nMax It', 'GNN']
+    labels = ['Max Ent\n(Conv)', 'Max Ent\n(Max It)', 'GNN']
+    ticks = range(1, 4)
     data = [max_ent_sccs, max_ent_sccs_strict, gnn_sccs]
-    # print('scc data', data)
     b1 = ax6.boxplot(data, vert = True,
                         patch_artist = True, labels = labels)
     ax6.set_ylabel('SCC', fontsize=16)
 
     data = [max_ent_times, max_ent_times_strict, gnn_times]
-    # print('time data', data)
     b2 = ax7.boxplot(data,  vert = True,
                         patch_artist = True, labels = labels)
     # axes[1].set_yscale('log')
     ax7.set_ylabel('Time (mins)', fontsize=16)
 
+    data = [np.NaN, pca_pearsons, gnn_pearsons]
+    b3 = ax8.boxplot(data, vert = True,
+                        patch_artist = True, labels = labels)
+    # axes[1].set_yscale('log')
+    ax8.set_ylabel('Pearson Correlation of PC 1', fontsize=16)
+
     # fill with colors
     colors = ['b', 'b', 'r']
-    for bplot in [b1, b2]:
+    for bplot in [b1, b2, b3]:
         for patch, color in zip(bplot['boxes'], colors):
             patch.set_facecolor(color)
+    # rotate xticks
+    for ax in [ax6, ax7, ax8]:
+        ax.set_xticks(ticks, labels, rotation=45, ha='center')
 
 
 
-    for n, ax in enumerate([ax1, ax4, ax5, ax6]):
+    for n, ax in enumerate(axes):
         ax.text(-0.1, 1.05, string.ascii_uppercase[n], transform=ax.transAxes,
                 size=20, weight='bold')
-    ax7.text(2.75, 1.05, string.ascii_uppercase[n+1], transform=ax.transAxes,
+    axes[-1].text(1.35, 1.05, string.ascii_uppercase[n+1], transform=ax.transAxes,
             size=20, weight='bold')
 
     plt.tight_layout()
@@ -1403,7 +1449,6 @@ def interpretation_figure():
                 start = int(line[1]) / 1000000 # Mb
             if line[0] == 'end':
                 end = int(line[1]) / 1000000
-    all_ticks = np.arange(0, len(y))
     all_labels = np.linspace(start, end, len(y))
     all_labels = np.round(all_labels, 1)
     genome_ticks = [0, len(y)//3, 2*len(y)//3, len(y)-1]
@@ -1578,7 +1623,6 @@ def interpretation_figure_test():
                 start = int(line[1]) / 1000000 # Mb
             if line[0] == 'end':
                 end = int(line[1]) / 1000000
-    all_ticks = np.arange(0, len(y))
     all_labels = np.linspace(start, end, len(y))
     all_labels = np.round(all_labels, 1)
     genome_ticks = [0, len(y)//3, 2*len(y)//3, len(y)-1]
@@ -1698,7 +1742,7 @@ if __name__ == '__main__':
     # data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample4')
     # file = osp.join(data_dir, 'y.npy')
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    # plot_combined_models('ContactGNNEnergy', [407, 410])
+    # plot_combined_models('ContactGNNEnergy', [414, 415])
     # plot_GNN_vs_PCA('dataset_04_05_23', 10, 407)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")

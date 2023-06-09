@@ -41,17 +41,26 @@ def xyz_write(xyz, outfile, writestyle, comment = '', x = None):
         xyz: shape (T, N, 3) or (N, 3) array of all particle positions (angstroms)
         outfile: name of file
         writestyle: 'w' (write) or 'a' (append)
+        x: additional columns to include
     '''
     if len(xyz.shape) == 3:
-        T, N, _ = xyz.shape
-        for i in range(T):
+        N, m, _ = xyz.shape
+        for i in range(N):
             xyz_write(xyz[i, :, :], outfile, 'a', comment = comment, x = x)
     else:
-        N = len(xyz)
+        m, _ = xyz.shape
+        if x is not None:
+            assert len(x) == m
+            _, k = x.shape
+
         with open(outfile, writestyle) as f:
-            f.write('{}\n{}\n'.format(N, comment))
-            for i in range(N):
-                f.write(f'{i} {xyz[i,0]} {xyz[i,1]} {xyz[i,2]}\n')
+            f.write('{}\n{}\n'.format(m, comment))
+            for i in range(m):
+                row = f'{i} {xyz[i,0]} {xyz[i,1]} {xyz[i,2]}'
+                if x is not None:
+                    for j in range(k):
+                        row += f' {x[i,j]}'
+                f.write(row + '\n')
 
 def xyz_load(xyz_filepath, delim = '\t', multiple_timesteps = False, save = False,
             N_min = None, N_max = None, down_sampling = 1):
