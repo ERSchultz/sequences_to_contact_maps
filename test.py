@@ -154,7 +154,7 @@ def debugModel(model_type):
     if model_type == 'ContactGNNEnergy':
         opt.y_preprocessing = 'log_inf'
         opt.sweep_choices = [1,2,3]
-        opt.rescale = 4
+        opt.rescale = 1
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
@@ -180,7 +180,13 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('GridSize-constant-ContactDistance-GeneticDistance_norm-MeanContactDistance')
+        opt.pre_transforms=['GridSize',
+                            'constant',
+                            'ContactDistance',
+                            # 'ContactDistance_bonded',
+                            'GeneticDistance_norm',
+                            'MeanContactDistance',
+                            'MeanContactDistance_bonded']
         opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
@@ -237,9 +243,9 @@ def debugModel(model_type):
 
     # other
     opt.pretrain_id = None
-    opt.plot = True
-    opt.plot_predictions = True
-    opt.verbose = False
+    opt.plot = False
+    opt.plot_predictions = False
+    opt.verbose = True
     opt.print_params = True
     opt.gpus = 1
     # opt.delete_root = True
@@ -648,6 +654,6 @@ if __name__ == '__main__':
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    debugModel('signnet')
+    debugModel('ContactGNNEnergy')
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()

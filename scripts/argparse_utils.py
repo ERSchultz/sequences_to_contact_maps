@@ -524,13 +524,17 @@ def process_transforms(opt):
             if opt.use_edge_attr:
                 opt.edge_dim += 1
             norm = False
+            bonded = False
             for mode_str in t_str[1:]:
                 if mode_str == 'norm':
                     norm = True
+                if mode_str == 'bonded':
+                    bonded = True
 
             transform = ContactDistance(norm = norm,
                                         split_edges = opt.split_neg_pos_edges,
-                                        convert_to_attr = opt.use_edge_attr)
+                                        convert_to_attr = opt.use_edge_attr,
+                                        bonded = bonded)
             opt.edge_transforms.append(transform)
         elif t_str[0] == 'meancontactdistance':
             opt.edge_transforms.append(f'MeanContactDistance')
@@ -538,12 +542,16 @@ def process_transforms(opt):
             if opt.use_edge_attr:
                 opt.edge_dim += 1
             norm = False
+            bonded = False
             for mode_str in t_str[1:]:
                 if mode_str == 'norm':
                     norm = True
+                if mode_str == 'bonded':
+                    bonded = True
 
             transform = MeanContactDistance(norm = norm,
-                                        convert_to_attr = opt.use_edge_attr)
+                                        convert_to_attr = opt.use_edge_attr,
+                                        bonded = bonded)
             opt.edge_transforms.append(transform)
         elif t_str[0] == 'geneticdistance':
             assert opt.use_edge_attr or opt.use_edge_weights

@@ -126,6 +126,8 @@ def rescale_matrix(inp, factor, triu=True):
     Rescales input matrix by factor.
     if inp is 1024x1024 and factor=2, out is 512x512
     '''
+    if inp is None:
+        return None
     assert len(inp.shape) == 2, f'must be 2d array not {inp.shape}'
     m, _ = inp.shape
     assert m % factor == 0, f'factor must evenly divide m {m}%{factor}={m%factor}'

@@ -179,7 +179,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
     def process(self):
         for i, raw_folder in enumerate(self.raw_file_names):
-            self.contact_map, contact_map_diag = self.process_y(raw_folder)
+            self.process_y(raw_folder)
             self.process_diag_params(raw_folder)
 
             edge_index, pos_edge_index, neg_edge_index = self.generate_edge_index()
@@ -198,8 +198,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             # copy these temporarily
             graph.weighted_degree = self.weighted_degree
-            graph.contact_map = self.contact_map
-            graph.contact_map_diag = contact_map_diag
+            graph.contact_map = self.contact_map # created by process_y
+            graph.contact_map_diag = self.contact_map_diag
+            graph.contact_map_bonded = self.contact_map_bonded
             graph.diag_chi_continuous = self.diag_chis_continuous
             graph.diag_chi_continuous_mlp = self.diag_chis_continuous_mlp
 
@@ -210,6 +211,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             if self.output != 'contact':
                 del graph.contact_map
             del graph.contact_map_diag
+            del graph.contact_map_bonded
 
             if self.output is None:
                 pass
@@ -326,30 +328,58 @@ class ContactsGraph(torch_geometric.data.Dataset):
         '''
         y, preprocessing = self.load_y(raw_folder)
 
+        # get bonded contact map
+        split = raw_folder.split(os.sep)
+        dir = '/' + osp.join(*split[:-3])
+        dataset = split[-3]
+        sample = split[-1][6:]
+        setup_file = osp.join(dir, dataset, f'setup/sample_{sample}.txt')
+        y_bonded = None
+        if osp.exists(setup_file):
+            with open(setup_file) as f:
+                for line in f:
+                    line = line.strip()
+                    if line == '--diag_chi_experiment':
+                        exp_subpath = f.readline().strip()
+            y_bonded_file = osp.join(dir, exp_subpath, 'y.npy')
+            if osp.exists(y_bonded_file):
+                y_bonded = np.load(y_bonded_file).astype(np.float64)
+
         if self.mean_filt is not None:
             y = uniform_filter(y, self.mean_filt)
 
         if self.rescale is not None:
             y = rescale_matrix(y, self.rescale)
+            y_bonded = rescale_matrix(y_bonded, self.rescale)
 
-        if self.y_norm == 'max':
-            y /= np.max(y)
-        elif self.y_norm == 'mean':
-            y /= np.mean(np.diagonal(y))
-        elif self.y_norm == 'mean_fill':
-            y /= np.mean(np.diagonal(y))
-            np.fill_diagonal(y, 1)
+        for y_i in [y, y_bonded]:
+            if y_i is None:
+                continue
+            if self.y_norm == 'max':
+                y_i /= np.max(y_i)
+            elif self.y_norm == 'mean':
+                y_i /= np.mean(np.diagonal(y_i))
+            elif self.y_norm == 'mean_fill':
+                y_i /= np.mean(np.diagonal(y_i))
+                np.fill_diagonal(y_i, 1)
 
         if self.kr:
             y = knightRuiz(y)
+            y_bonded = knightRuiz(y_bonded)
 
         y_copy = np.copy(y)
         if preprocessing == 'log':
             y = np.log(y+1)
+            if y_bonded is not None:
+                y_bonded = np.log(y_bonded+1)
         elif preprocessing == 'log_inf':
             y = np.log(y)
             y[np.isinf(y)] = np.nan
+            if y_bonded is not None:
+                y_bonded = np.log(y_bonded)
+                y_bonded[np.isinf(y_bonded)] = np.nan
         elif preprocessing is not None:
+            raise Exception('Deprecated')
             # override y
             assert self.y_norm is None, f'y_norm={self.y_norm} not None, preprocessing={preprocessing}'
             y_path = osp.join(raw_folder, f'y_{preprocessing}.npy')
@@ -370,12 +400,15 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
             if y_diag is not None:
                 y_diag = y_diag[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
+            if y_bonded is not None:
+                y_bonded = y_bonded[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
 
         if self.max_diagonal is not None:
             y = np.tril(y, self.max_diagonal)
             y = np.triu(y, -self.max_diagonal)
 
         if self.y_log_transform is not None:
+            raise Exception('Deprecated')
             assert not self.y_preprocessing.endswith('log'), "don't use log twice in a row"
             if self.y_log_transform == 'ln':
                 y = np.log(y)
@@ -399,10 +432,15 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
 
         # self.plotDegreeProfile(y)
-        y = torch.tensor(y, dtype = torch.float32)
+        self.contact_map = torch.tensor(y, dtype = torch.float32)
         if y_diag is not None:
-            y_diag = torch.tensor(y_diag, dtype = torch.float32)
-        return y, y_diag
+            self.contact_map_diag = torch.tensor(y_diag, dtype = torch.float32)
+        else:
+            self.contact_map_diag = None
+        if y_bonded is not None:
+            self.contact_map_bonded = torch.tensor(y_bonded, dtype = torch.float32)
+        else:
+            self.contact_map_bonded = None
 
     def process_diag_params(self, raw_folder):
         path = osp.join(raw_folder, 'diag_chis_continuous.npy')

@@ -17,6 +17,8 @@ import scipy.sparse as sps
 #f1 boolean indicating if the intermediate convergance statistics
 # should also be outputted
 def knightRuizAlg(A, tol=1e-6, f1 = False):
+    if A is None:
+        return None
     n = A.shape[0]
     e = np.ones((n,1), dtype = np.float64)
     res = []

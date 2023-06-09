@@ -476,22 +476,27 @@ class ContactDistance(BaseTransform):
     Appends contact map entries to edge attr vector.
     '''
     def __init__(self, norm = False, max_val = None, cat = True, split_edges = False,
-                    convert_to_attr = False):
+                    convert_to_attr = False, bonded = False):
         '''
         Inputs:
-            cat: True to concatenate attr, False to overwrite
-            split_edges: True if graph has 'positive' and 'negative' edges
-            convert_to_attr: True for edge attr, False for edge weight
+            norm (bool): True for instant normalization
+            max_val (None or int): Normalize by max_val if given, otherwise by true max
+            cat (bool): True to concatenate attr, False to overwrite
+            split_edges (bool): True if graph has 'positive' and 'negative' edges
+            convert_to_attr (bool): True for edge attr, False for edge weight
+            bonded (bool): True to use bonded contact map instead of experiment
         '''
         self.norm = norm
         self.max = max_val
         self.cat = cat
-        self.split_edges = split_edges # bool
-        self.convert_to_attr = convert_to_attr # bool, converts to 2d array
+        self.split_edges = split_edges
+        self.convert_to_attr = convert_to_attr # converts to 2d array
+        self.bonded = bonded
         # else would be an edge weight
 
     def __call__(self, data):
         if self.split_edges:
+            assert not self.bonded, 'Not Implemented yet'
             # positive
             if 'pos_edge_attr' in data._mapping:
                 pseudo = data.pos_edge_attr
@@ -531,7 +536,11 @@ class ContactDistance(BaseTransform):
 
         else:
             (row, col), pseudo = data.edge_index, data.edge_attr
-            edge_attr = data.contact_map[row, col]
+            if self.bonded:
+                assert data.contact_map_bonded is not None, "Can't be None"
+                edge_attr = data.contact_map_bonded[row, col]
+            else:
+                edge_attr = data.contact_map[row, col]
             if self.convert_to_attr:
                 edge_attr = edge_attr.reshape(-1, 1)
 
@@ -553,6 +562,9 @@ class ContactDistance(BaseTransform):
         if self.max is not None:
             repr += f', max={self.max}'
 
+        if self.bonded:
+            repr += f', bonded={self.bonded}'
+
         if self.split_edges:
             repr += f', split_edges={self.split_edges})'
         else:
@@ -562,23 +574,33 @@ class ContactDistance(BaseTransform):
 
 class MeanContactDistance(BaseTransform):
     '''
-    Appends contact map entries to edge attr vector.
+    Appends mean diagonal of contact map to edge attr vector.
     '''
-    def __init__(self, norm = False, max_val = None, cat = True,
-                    convert_to_attr = False):
+    def __init__(self, norm=False, max_val=None, cat=True,
+                    convert_to_attr=False, bonded=False):
         '''
         Inputs:
-            cat: True to concatenate attr, False to overwrite
-            convert_to_attr: True for edge attr, False for edge weight
+            norm (bool): True for instant normalization
+            max_val (None or int): Normalize by max_val if given, otherwise by true max
+            cat (bool): True to concatenate attr, False to overwrite
+            split_edges (bool): True if graph has 'positive' and 'negative' edges
+            convert_to_attr (bool): True for edge attr, False for edge weight
+            bonded (bool): True to use bonded contact map instead of experiment
         '''
         self.norm = norm
         self.max = max_val
         self.cat = cat
         self.convert_to_attr = convert_to_attr # bool, converts to 2d array
         # else would be an edge weight
+        self.bonded = bonded
 
     def __call__(self, data):
-        mean_per_diagonal = DiagonalPreprocessing.genomic_distance_statistics(data.contact_map, mode = 'freq')
+        if self.bonded:
+            assert data.contact_map_bonded is not None, "Can't be None"
+            mean_per_diagonal = DiagonalPreprocessing.genomic_distance_statistics(data.contact_map_bonded, mode = 'freq')
+            mean_per_diagonal[np.isnan(mean_per_diagonal)] = np.nanmin(mean_per_diagonal)
+        else:
+            mean_per_diagonal = DiagonalPreprocessing.genomic_distance_statistics(data.contact_map, mode = 'freq')
         contact_map = calculate_D(mean_per_diagonal)
         contact_map = torch.tensor(contact_map, dtype = torch.float32)
 
@@ -603,7 +625,10 @@ class MeanContactDistance(BaseTransform):
         repr = f'{self.__class__.__name__}(norm={self.norm}'
 
         if self.max is not None:
-            repr += f', max={self.max})'
+            repr += f', max={self.max}'
+
+        if self.bonded:
+            repr += f', bonded={self.bonded})'
         else:
             repr += ')'
 
