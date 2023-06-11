@@ -1,6 +1,6 @@
 #! /bin/bash
 
-for i in 7 8 11
+for i in 9 10
 # 9 10
 # 0 todo
 do
