@@ -312,22 +312,26 @@ class Interpolater():
         return y
 
 def wrapper(dataset, sample, factor):
-    dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
-    if not osp.exists(dir):
+    high_res_dir = f'/home/erschultz/{dataset}/chroms_10k/sample{sample}'
+    if not osp.exists(high_res_dir):
         return
     # this is the recommended option
-    interpolater = Interpolater(['zeros', 'mappability-0.7'], dataset, sample)
+    interpolater = Interpolater(['zeros', 'mappability-0.7'], dir = high_res_dir)
     interpolater.run(factor = factor)
 
-    dir = f'/home/erschultz/{dataset}/samples/sample{sample+1000}'
-    if not osp.exists(dir):
-        os.mkdir(dir, mode=0o755)
+    odir = f'/home/erschultz/{dataset}/chroms/'
+    if not osp.exists(odir):
+        os.mkdir(odir, mode=0o755)
+    odir = f'/home/erschultz/{dataset}/chroms/sample{sample}'
+    assert odir != high_res_dir # prevent overwriting data on accident
+    if not osp.exists(odir):
+        os.mkdir(odir, mode=0o755)
     shutil.copyfile(osp.join(interpolater.odir, 'y_pool_zeros_mappability-0.7.png'),
-                    osp.join(dir, 'y.png'))
+                    osp.join(odir, 'y.png'))
     shutil.copyfile(osp.join(interpolater.odir, 'y_pool_interpolate_zeros_mappability-0.7.npy'),
-                    osp.join(dir, 'y.npy'))
+                    osp.join(odir, 'y.npy'))
 
-    with open(osp.join(dir, 'import.log'), 'w') as f:
+    with open(osp.join(odir, 'import.log'), 'w') as f:
         f.write(f'Interpolation of sample {sample} with mappability-0.7 and zeros\n')
         f.write(f'{interpolater.url}\n')
         f.write(f'chrom={interpolater.chrom}\n')
@@ -338,12 +342,12 @@ def wrapper(dataset, sample, factor):
         f.write(f'genome={interpolater.genome}')
 
 def main():
-    dataset = 'dataset_05_31_23'
-    mapping = [(dataset, i, 4) for i in range(1, 214)]
+    dataset = 'dataset_02_04_23'
+    mapping = [(dataset, i, 5) for i in range(1, 24)]
     # serial version
     # for dataset, i, factor in mapping:
         # wrapper(dataset, i, factor)
-    with multiprocessing.Pool(9) as p:
+    with multiprocessing.Pool(5) as p:
         p.starmap(wrapper, mapping)
 #
 

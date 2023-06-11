@@ -42,6 +42,7 @@ milestones='50'
 # sign_plus with log preprocessing
 
 
+resumeTraining='true'
 id=420
 for lr in 1e-4
 do

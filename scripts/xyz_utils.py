@@ -43,6 +43,8 @@ def xyz_write(xyz, outfile, writestyle, comment = '', x = None):
         writestyle: 'w' (write) or 'a' (append)
         x: additional columns to include
     '''
+    if writestyle == 'w' and osp.exists(outfile):
+        os.remove(outfile)
     if len(xyz.shape) == 3:
         N, m, _ = xyz.shape
         for i in range(N):
@@ -50,11 +52,11 @@ def xyz_write(xyz, outfile, writestyle, comment = '', x = None):
     else:
         m, _ = xyz.shape
         if x is not None:
-            assert len(x) == m
+            assert len(x) == m, f'{len(x)} != {m}'
             _, k = x.shape
 
         with open(outfile, writestyle) as f:
-            f.write('{}\n{}\n'.format(m, comment))
+            f.write(f'{m}\n{comment}\n')
             for i in range(m):
                 row = f'{i} {xyz[i,0]} {xyz[i,1]} {xyz[i,2]}'
                 if x is not None:

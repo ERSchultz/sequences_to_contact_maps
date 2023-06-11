@@ -1184,7 +1184,7 @@ def figure2(test=False):
         pcs_gnn[0] *= np.sign(pearson_round(pcs[0], pcs_gnn[0]))
         gnn_pearsons.append(pearson_round(pcs[0], pcs_gnn[0]))
         pca_pearsons.append(pearson_round(pcs[0], pcs_pca[0]))
-    print(gnn_pearsons)
+    print('GNN pearsons', gnn_pearsons)
 
 
     sample_dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
@@ -1199,6 +1199,7 @@ def figure2(test=False):
     end = result['end_mb']
     chrom = result['chrom']
     resolution = result['resolution']
+    resolution_mb = result['resolution_mb']
     all_labels = np.linspace(start, end, len(y))
     all_labels = np.round(all_labels, 1)
     genome_ticks = [0, len(y)//3, 2*len(y)//3, len(y)-1]
@@ -1271,14 +1272,29 @@ def figure2(test=False):
 
     # xyz
     file = osp.join(gnn_dir, 'production_out/output.xyz')
-    y_diag = epilib.get_oe(y_gnn)
-    seqs = epilib.get_pcs(y_diag, 2, normalize = True)
-    kmeans = KMeans(n_clusters = 2)
-    kmeans.fit(y_diag)
-    x = np.zeros((m, 2))
-    x[np.arange(m), kmeans.labels_] = 1
     xyz = xyz_load(file, multiple_timesteps=True)[::, :m, :]
-    print(xyz.shape)
+
+    y_chr = np.load(osp.join('/home/erschultz', dataset, f'chroms_50k/sample{chrom}/y.npy'))
+    y_chr_diag = epilib.get_oe(y_chr)
+    seq = epilib.get_pcs(y_chr_diag, 1, normalize = True)[:, 0]
+    x = np.zeros((len(seq), 2))
+    # kmeans = KMeans(n_clusters = 2)
+    # kmeans.fit(y_chr_diag)
+
+    # x[np.arange(len(y_chr)), kmeans.labels_] = 1
+
+    # ensure that positive PC is compartment A
+    chip_seq = np.load(f'/media/erschultz/1814ae69-5346-45a6-b219-f77f6739171c/home/erschultz/chip_seq_data/GM12878/hg19/signal_p_value/ENCFF850KGH/{chrom}.npy')
+    chip_seq = chip_seq[:, 1]
+    corr = pearson_round(chip_seq, seq, stat = 'spearman')
+    seq *= np.sign(corr)
+
+    x[seq > 0, 0] = seq[seq > 0]
+    x[seq < 0, 1] = -seq[seq < 0]
+
+    left = int(start / resolution_mb)
+    right = int(end / resolution_mb) + 1
+    x = x[left:right]
     xyz_write(xyz, osp.join(gnn_dir, 'xyz.xyz'), 'w', x = x)
 
 
@@ -1735,14 +1751,14 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     # data_dir = osp.join(dir, 'dataset_soren/samples/sample1')
     # file = osp.join(data_dir, 'y_kr.npy')
     # data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample4')
     # file = osp.join(data_dir, 'y.npy')
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    # plot_combined_models('ContactGNNEnergy', [414, 415])
+    plot_combined_models('ContactGNNEnergy', [416, 417])
     # plot_GNN_vs_PCA('dataset_04_05_23', 10, 407)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")
@@ -1750,7 +1766,7 @@ if __name__ == '__main__':
     # plot_all_contact_maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
     # compare_different_cell_lines()
-    figure2(True)
+    # figure2(True)
     # interpretation_figure()
     # interpretation_figure_test()
     # plot_first_PC('dataset_02_04_23', 10, 403)
