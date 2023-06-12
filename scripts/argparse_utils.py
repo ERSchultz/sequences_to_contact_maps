@@ -219,7 +219,7 @@ def get_base_parser():
                         help='Maximum diagonal to consider')
     parser.add_argument('--mlp_model_id', type=AC.str2int,
                         help='Model ID for MLP diagonal parameters')
-    # parser.add_argument('--grid_path', type=AC.str2None,
+    # parser.add_argument('--bonded_path', type=AC.str2None,
     #                     help='argument in GridSize transform')
 
     # SimpleEpiNet args
@@ -253,7 +253,7 @@ def get_base_parser():
 
     return parser
 
-def finalize_opt(opt, parser, windows = False, local = False, debug = False, grid_path=None):
+def finalize_opt(opt, parser, windows = False, local = False, debug = False, bonded_path=None):
     '''
     Helper function to processes command line arguments.
 
@@ -302,7 +302,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, gri
             # by inserting at position 1, the original arguments will override the txt file
             opt.id = id_copy
 
-    opt.grid_path = grid_path
+    opt.bonded_path = bonded_path
 
 
 
@@ -597,7 +597,7 @@ def process_transforms(opt):
             opt.node_transforms.append(transform)
             opt.node_feature_size += 1
         elif t_str[0] == 'gridsize':
-            transform = GridSize(opt.grid_path)
+            transform = GridSize(opt.bonded_path)
             opt.node_transforms.append(transform)
             opt.node_feature_size += 1
         elif t_str[0] == 'diagonalparameterdistance':

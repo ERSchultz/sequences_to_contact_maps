@@ -1288,6 +1288,7 @@ def figure2(test=False):
     chip_seq = chip_seq[:, 1]
     corr = pearson_round(chip_seq, seq, stat = 'spearman')
     seq *= np.sign(corr)
+    seq = np.sign(seq)
 
     x[seq > 0, 0] = seq[seq > 0]
     x[seq < 0, 1] = -seq[seq < 0]
@@ -1758,7 +1759,7 @@ if __name__ == '__main__':
     # data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample4')
     # file = osp.join(data_dir, 'y.npy')
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    plot_combined_models('ContactGNNEnergy', [407, 416])
+    # plot_combined_models('ContactGNNEnergy', [407, 416])
     # plot_GNN_vs_PCA('dataset_04_05_23', 10, 407)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")
@@ -1766,7 +1767,7 @@ if __name__ == '__main__':
     # plot_all_contact_maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
     # compare_different_cell_lines()
-    # figure2(True)
+    figure2(True)
     # interpretation_figure()
     # interpretation_figure_test()
     # plot_first_PC('dataset_02_04_23', 10, 403)

@@ -59,7 +59,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 crop=None, ofile=sys.stdout, verbose=True,
                 max_sample=float('inf'), samples=None, sub_dir='samples',
                 plaid_score_cutoff=None, sweep_choices=[2,3,4,5],
-                diag=False, keep_zero_edges=False, output_preprocesing=None):
+                diag=False, keep_zero_edges=False, output_preprocesing=None,
+                bonded_root = None):
         '''
         Inputs:
             dirname: directory path to raw data (or list of paths)
@@ -122,6 +123,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.diag = diag
         self.keep_zero_edges = keep_zero_edges
         self.output_preprocesing = output_preprocesing
+        self.bonded_root = bonded_root
 
 
         self.file_paths = make_dataset(self.dirname, maxSample = max_sample,
@@ -334,6 +336,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         dataset = split[-3]
         sample = split[-1][6:]
         setup_file = osp.join(dir, dataset, f'setup/sample_{sample}.txt')
+        bonded_file = osp.join(raw_folder, f'{self.bonded_root}/y.npy')
         y_bonded = None
         if osp.exists(setup_file):
             with open(setup_file) as f:
@@ -342,8 +345,10 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     if line == '--diag_chi_experiment':
                         exp_subpath = f.readline().strip()
             y_bonded_file = osp.join(dir, exp_subpath, 'y.npy')
-            if osp.exists(y_bonded_file):
-                y_bonded = np.load(y_bonded_file).astype(np.float64)
+            assert osp.exists(y_bonded_file), y_bonded_file
+            y_bonded = np.load(y_bonded_file).astype(np.float64)
+        elif osp.exists(bonded_file):
+            y_bonded = np.load(bonded_file).astype(np.float64)
 
         if self.mean_filt is not None:
             y = uniform_filter(y, self.mean_filt)

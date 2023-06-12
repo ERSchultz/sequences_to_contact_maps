@@ -323,8 +323,8 @@ class NoiseLevel(BaseTransform):
 
 class GridSize(BaseTransform):
     '''Appends grid size as node feature.'''
-    def __init__(self, grid_file=None):
-        self.grid_file = grid_file
+    def __init__(self, grid_path=None):
+        self.grid_file = osp.join(grid_path, 'grid_size.txt')
 
     def __call__(self, data):
         config_file = osp.join(data.path, 'config.json')
@@ -577,7 +577,8 @@ class MeanContactDistance(BaseTransform):
     Appends mean diagonal of contact map to edge attr vector.
     '''
     def __init__(self, norm=False, max_val=None, cat=True,
-                    convert_to_attr=False, bonded=False):
+                    convert_to_attr=False, bonded=False,
+                    bonded_path=None):
         '''
         Inputs:
             norm (bool): True for instant normalization
