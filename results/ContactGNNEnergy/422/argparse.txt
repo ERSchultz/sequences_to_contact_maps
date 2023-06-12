@@ -1,7 +1,7 @@
 --data_folder
-/project2/depablo/erschultz/dataset_05_28_23
+/project2/depablo/erschultz/dataset_05_23_23
 --root_name
-ContactGNNEnergy11
+ContactGNNEnergy10
 --delete_root
 false
 --model_type
@@ -17,7 +17,7 @@ sweeprand_log_inf
 --sweep_choices
 2-3-4-5
 --preprocessing_norm
-mean_fill
+mean
 --log_preprocessing
 none
 --kr
@@ -49,13 +49,13 @@ true
 --encoder_hidden_sizes_list
 64
 --edge_encoder_hidden_sizes_list
-1000-1000-64
+none
 --update_hidden_sizes_list
 1000-1000-64
 --transforms
 empty
 --pre_transforms
-constant-ContactDistance-MeanContactDistance-MeanContactDistance_bonded-GeneticDistance_norm-AdjPCs_8
+constant-ContactDistance-MeanContactDistance_bonded-GeneticDistance_norm-AdjPCs_8
 --top_k
 none
 --sparsify_threshold
@@ -132,9 +132,9 @@ none
 --print_params
 true
 --id
-420
+422
 --resume_training
-true
+false
 --pretrain_id
 none
 --mlp_model_id
