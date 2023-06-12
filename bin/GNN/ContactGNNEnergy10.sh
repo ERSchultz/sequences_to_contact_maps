@@ -31,7 +31,7 @@ headArchitecture2='fc-fill_1024'
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 
-sweepChoices='.5-1-1.5'
+sweepChoices='2-3-4-5'
 k=8
 useSignPlus='true'
 batchSize=1
