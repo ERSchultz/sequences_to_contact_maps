@@ -324,7 +324,10 @@ class NoiseLevel(BaseTransform):
 class GridSize(BaseTransform):
     '''Appends grid size as node feature.'''
     def __init__(self, grid_path=None):
-        self.grid_file = osp.join(grid_path, 'grid_size.txt')
+        if grid_path is not None:
+            self.grid_file = osp.join(grid_path, 'grid_size.txt')
+        else:
+            self.grid_file = None
 
     def __call__(self, data):
         config_file = osp.join(data.path, 'config.json')

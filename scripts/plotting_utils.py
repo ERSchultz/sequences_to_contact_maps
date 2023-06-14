@@ -30,7 +30,7 @@ from .energy_utils import calculate_diag_chi_step
 from .InteractionConverter import InteractionConverter
 from .load_utils import load_psi, load_sc_contacts
 from .neural_nets.utils import get_data_loaders, get_dataset, load_saved_model
-from .utils import DiagonalPreprocessing, crop, triu_to_full
+from .utils import DiagonalPreprocessing, crop, round_up_by_10, triu_to_full
 from .xyz_utils import (find_dist_between_centroids, find_label_centroid,
                         xyz_load)
 
@@ -150,7 +150,6 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y=False):
     ax2.legend(loc = 3)
 
     ax.set_xlabel('Epoch', fontsize = 16)
-    ax.set_ylim(None, 10)
     if opts[0].loss != opts[1].loss:
         ylabel = 'Loss'
     else:
@@ -167,6 +166,9 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y=False):
             ylabel = 'Loss'
     if log_y:
         ylabel = f'{ylabel} (log-scale)'
+        ax.set_ylim(None, np.nanpercentile(train_loss_arr, 99))
+    else:
+        ax.set_ylim(0, np.nanpercentile(train_loss_arr, 99))
     ax.set_ylabel(ylabel, fontsize = 16)
 
     if opt.y_preprocessing is not None:

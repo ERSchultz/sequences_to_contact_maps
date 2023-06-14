@@ -665,7 +665,6 @@ def plot_first_PC(dataset, k, GNN_ID):
                 row += 1
         plt.savefig(osp.join(sample_dir, 'pc_comparison.png'))
 
-
 def plot_Exp_vs_PCA(dataset, k=None):
     dir = f'/home/erschultz/{dataset}/samples'
     for sample in range(221, 222):
@@ -1141,13 +1140,13 @@ def compare_different_cell_lines():
 
 def figure2(test=False):
     # dataset = 'dataset_04_05_23'; sample = 1001; GN_ID = 407
-    dataset = 'dataset_02_04_23'; sample = 211; GNN_ID = 403
-    samples_list = range(211, 221)
+    dataset = 'dataset_02_04_23'; sample = 202; GNN_ID = 419
+    samples_list = range(201, 221)
 
     def get_dirs(sample_dir):
         grid_dir = osp.join(sample_dir, 'optimize_grid_b_140_phi_0.03')
         k=10
-        max_ent_dir = f'{grid_dir}-max_ent{k}_repeat'
+        max_ent_dir = f'{grid_dir}-max_ent{k}'
         gnn_dir = f'{grid_dir}-GNN{GNN_ID}'
 
         return max_ent_dir, gnn_dir
@@ -1248,7 +1247,7 @@ def figure2(test=False):
         max_ent_sccs = data[10][max_ent]['scc_var']
         max_ent_sccs = [i for i in max_ent_sccs if not np.isnan(i)]
 
-        gnn = f'GNN{GNN_ID}_short'
+        gnn = f'optimize_grid_b_140_phi_0.03-GNN{GNN_ID}'
         gnn_times = data[0][gnn]['total_time']
         gnn_sccs = data[0][gnn]['scc_var']
 
@@ -1293,8 +1292,9 @@ def figure2(test=False):
     x[seq > 0, 0] = seq[seq > 0]
     x[seq < 0, 1] = -seq[seq < 0]
 
+    print(start / resolution_mb, end / resolution_mb)
     left = int(start / resolution_mb)
-    right = int(end / resolution_mb) + 1
+    right = int(end / resolution_mb)
     x = x[left:right]
     xyz_write(xyz, osp.join(gnn_dir, 'xyz.xyz'), 'w', x = x)
 
@@ -1371,7 +1371,7 @@ def figure2(test=False):
 
     ax4.plot(pcs[0], label = 'Experiment', color = 'k')
     ax4.plot(pcs_pca[0], label = f'Max Ent (r={pearson_round(pcs[0], pcs_pca[0])})', color = 'b')
-    ax4.plot(pcs_gnn[0], label = f'GNN-{GNN_ID} (r={pearson_round(pcs[0], pcs_gnn[0])})', color = 'r')
+    ax4.plot(pcs_gnn[0], label = f'GNN (r={pearson_round(pcs[0], pcs_gnn[0])})', color = 'r')
     ax4.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
     ax4.set_yticks([])
     ax4.set_ylabel('PC 1', fontsize=16)
@@ -1394,7 +1394,10 @@ def figure2(test=False):
     meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
     meanDist_pca = DiagonalPreprocessing.genomic_distance_statistics(y_pca, 'prob')
     meanDist_gnn = DiagonalPreprocessing.genomic_distance_statistics(y_gnn, 'prob')
-    for arr, fig_label, c in zip([meanDist, meanDist_pca, meanDist_gnn], ['Experiment', 'Max Ent', f'GNN-{GNN_ID}'], ['k', 'b', 'r']):
+    data = zip([meanDist, meanDist_pca, meanDist_gnn],
+                ['Experiment', 'Max Ent', f'GNN-'],
+                ['k', 'b', 'r'])
+    for arr, fig_label, c in data:
         ax5.plot(log_labels, arr, label = fig_label, color = c)
 
     ax5.set_yscale('log')
@@ -1752,14 +1755,14 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     # data_dir = osp.join(dir, 'dataset_soren/samples/sample1')
     # file = osp.join(data_dir, 'y_kr.npy')
     # data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample4')
     # file = osp.join(data_dir, 'y.npy')
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    # plot_combined_models('ContactGNNEnergy', [407, 416])
+    plot_combined_models('ContactGNNEnergy', [421, 422])
     # plot_GNN_vs_PCA('dataset_04_05_23', 10, 407)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")
@@ -1767,7 +1770,7 @@ if __name__ == '__main__':
     # plot_all_contact_maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
     # compare_different_cell_lines()
-    figure2(True)
+    # figure2()
     # interpretation_figure()
     # interpretation_figure_test()
     # plot_first_PC('dataset_02_04_23', 10, 403)
