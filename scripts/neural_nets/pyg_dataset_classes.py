@@ -339,11 +339,15 @@ class ContactsGraph(torch_geometric.data.Dataset):
         bonded_file = osp.join(raw_folder, f'{self.bonded_root}/y.npy')
         y_bonded = None
         if osp.exists(setup_file):
+            found = False
             with open(setup_file) as f:
                 for line in f:
                     line = line.strip()
                     if line == '--diag_chi_experiment':
                         exp_subpath = f.readline().strip()
+                        found = True
+            if not found:
+                raise Exception(f'--diag_chi_experiment missing from {setup_file}')
             y_bonded_file = osp.join(dir, exp_subpath, 'y.npy')
             assert osp.exists(y_bonded_file), y_bonded_file
             y_bonded = np.load(y_bonded_file).astype(np.float64)

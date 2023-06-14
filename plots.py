@@ -5,6 +5,7 @@ import os
 import os.path as osp
 import string
 import sys
+from collections import defaultdict
 from shutil import rmtree
 
 import matplotlib
@@ -18,8 +19,12 @@ from pylib.utils.energy_utils import (calculate_all_energy, calculate_D,
                                       calculate_S)
 from pylib.utils.plotting_utils import *
 from pylib.utils.utils import load_json
-from result_summary_plots import predict_chi_in_psi_basis
 from scipy.ndimage import uniform_filter
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.metrics import mean_squared_error
+
+from result_summary_plots import predict_chi_in_psi_basis
 from scripts.argparse_utils import (finalize_opt, get_base_parser,
                                     get_opt_header, opt2list)
 from scripts.load_utils import (get_final_max_ent_folder, load_contact_map,
@@ -31,9 +36,6 @@ from scripts.plotting_utils import (BLUE_RED_CMAP, RED_CMAP,
                                     plotting_script)
 from scripts.utils import DiagonalPreprocessing, pearson_round
 from scripts.xyz_utils import xyz_load, xyz_write
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-from sklearn.metrics import mean_squared_error
 
 sys.path.append('/home/erschultz/TICG-chromatin/scripts')
 from makeLatexTable_new import *
@@ -616,18 +618,20 @@ def plot_GNN_vs_PCA(dataset, k, GNN_ID):
 
 def plot_first_PC(dataset, k, GNN_ID):
     dir = f'/home/erschultz/{dataset}/samples'
-    for sample in range(201, 210):
+    samples = list(range(201, 221))
+
+    # collect data
+    data = defaultdict(lambda: dict()) # sample : method : pcs
+    for sample in samples:
         sample_dir = osp.join(dir, f'sample{sample}')
-        if not osp.exists(sample_dir):
-            print(f'sample_dir does not exist: {sample_dir}')
-            continue
+        assert osp.exists(sample_dir), f'sample_dir does not exist: {sample_dir}'
 
         y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
         y /= np.mean(np.diagonal(y))
 
         grid_dir = osp.join(sample_dir, 'optimize_grid_b_140_phi_0.03')
 
-        max_ent_dir = f'{grid_dir}-max_ent'
+        max_ent_dir = f'{grid_dir}-max_ent{k}'
         final = get_final_max_ent_folder(max_ent_dir)
         with open(osp.join(final, 'distance_pearson.json'), 'r') as f:
             # TODO this is after final iteration, not convergence
@@ -647,23 +651,66 @@ def plot_first_PC(dataset, k, GNN_ID):
         pcs_pca = epilib.get_pcs(epilib.get_oe(y_pca), 12, align = True).T
         pcs_gnn = epilib.get_pcs(epilib.get_oe(y_gnn), 12, align = True).T
 
+        # change sign of first pc s.t corr is positive
+        pcs_pca[0] *= np.sign(pearson_round(pcs[0], pcs_pca[0]))
+        pcs_gnn[0] *= np.sign(pearson_round(pcs[0], pcs_gnn[0]))
+        data[sample]['max_ent'] = pcs_pca
+        data[sample]['gnn'] = pcs_gnn
+        data[sample]['experiment'] = pcs
+
+
+    # plot first few 2 pcs per sample
+    for sample in samples:
+        sample_dir = osp.join(dir, f'sample{sample}')
+        pcs_pca = data[sample]['max_ent']
+        pcs_gnn = data[sample]['gnn']
+        pcs = data[sample]['experiment']
+
         rows = 2; cols = 1
         row = 0; col = 0
-        fig, ax = plt.subplots(rows, cols)
+        fig, axes = plt.subplots(rows, cols)
         fig.set_figheight(12)
         fig.set_figwidth(16)
         for i in range(rows*cols):
-            ax[row].plot(pcs[i], label = 'Experiment', color = 'k')
-            ax[row].plot(pcs_pca[i], label = 'Max Ent', color = 'b')
-            ax[row].plot(pcs_gnn[i], label = f'GNN-{GNN_ID}', color = 'r')
-            ax[row].set_title(f'PC {i+1}\nCorr(Exp, GNN)={pearson_round(pcs[i], pcs_gnn[i])}')
-            ax[row].legend()
+            ax = axes[row]
+            ax.plot(pcs[i], label = 'Experiment', color = 'k')
+            ax.plot(pcs_pca[i], label = 'Max Ent', color = 'b')
+            ax.plot(pcs_gnn[i], label = f'GNN-{GNN_ID}', color = 'r')
+            ax.set_title(f'PC {i+1}\nCorr(Exp, GNN)={pearson_round(pcs[i], pcs_gnn[i])}')
+            ax.legend()
 
             col += 1
             if col > cols-1:
                 col = 0
                 row += 1
         plt.savefig(osp.join(sample_dir, 'pc_comparison.png'))
+
+    # plot first pc for all samples
+    rows = 3; cols = 4
+    row = 0; col = 0
+    fig, axes = plt.subplots(rows, cols)
+    fig.set_figheight(12)
+    fig.set_figwidth(16)
+    for i in range(rows*cols):
+        ax = axes[row, col]
+        sample = samples[i]
+        pcs_pca = data[sample]['max_ent']
+        pcs_gnn = data[sample]['gnn']
+        pcs = data[sample]['experiment']
+
+        ax.plot(pcs[0], label = 'Experiment', color = 'k')
+        ax.plot(pcs_pca[0], label = 'Max Ent', color = 'b')
+        ax.plot(pcs_gnn[0], label = f'GNN-{GNN_ID}', color = 'r')
+        ax.set_title(f'Sample {sample}\nCorr(Exp, GNN)={pearson_round(pcs[0], pcs_gnn[0])}')
+        ax.legend()
+
+        col += 1
+        if col > cols-1:
+            col = 0
+            row += 1
+    plt.tight_layout()
+    plt.savefig(osp.join(f'/home/erschultz/{dataset}/pc_comparison.png'))
+
 
 def plot_Exp_vs_PCA(dataset, k=None):
     dir = f'/home/erschultz/{dataset}/samples'
@@ -1139,9 +1186,13 @@ def compare_different_cell_lines():
 
 
 def figure2(test=False):
+    label_fontsize=18
+    legend_fontsize=16
+    tick_fontsize=13
+    letter_fontsize=20
     # dataset = 'dataset_04_05_23'; sample = 1001; GN_ID = 407
     dataset = 'dataset_02_04_23'; sample = 202; GNN_ID = 419
-    samples_list = range(201, 221)
+    samples_list = range(201, 211)
 
     def get_dirs(sample_dir):
         grid_dir = osp.join(sample_dir, 'optimize_grid_b_140_phi_0.03')
@@ -1201,7 +1252,8 @@ def figure2(test=False):
     resolution_mb = result['resolution_mb']
     all_labels = np.linspace(start, end, len(y))
     all_labels = np.round(all_labels, 1)
-    genome_ticks = [0, len(y)//3, 2*len(y)//3, len(y)-1]
+    # genome_ticks = [0, len(y)//3, 2*len(y)//3, len(y)-1]
+    genome_ticks = [0, len(y)-1]
     genome_labels = [f'{all_labels[i]} Mb' for i in genome_ticks]
 
     final = get_final_max_ent_folder(max_ent_dir)
@@ -1273,33 +1325,36 @@ def figure2(test=False):
     file = osp.join(gnn_dir, 'production_out/output.xyz')
     xyz = xyz_load(file, multiple_timesteps=True)[::, :m, :]
 
-    y_chr = np.load(osp.join('/home/erschultz', dataset, f'chroms_50k/sample{chrom}/y.npy'))
-    y_chr_diag = epilib.get_oe(y_chr)
-    seq = epilib.get_pcs(y_chr_diag, 1, normalize = True)[:, 0]
-    x = np.zeros((len(seq), 2))
-    # kmeans = KMeans(n_clusters = 2)
-    # kmeans.fit(y_chr_diag)
+    if not test:
+        y_chr = np.load(osp.join('/home/erschultz', dataset, f'chroms_50k/sample{chrom}/y.npy'))
+        y_chr_diag = epilib.get_oe(y_chr)
+        seq = epilib.get_pcs(y_chr_diag, 1, normalize = True)[:, 0]
+        x = np.zeros((len(seq), 2))
+        # kmeans = KMeans(n_clusters = 2)
+        # kmeans.fit(y_chr_diag)
 
-    # x[np.arange(len(y_chr)), kmeans.labels_] = 1
+        # x[np.arange(len(y_chr)), kmeans.labels_] = 1
 
-    # ensure that positive PC is compartment A
-    chip_seq = np.load(f'/media/erschultz/1814ae69-5346-45a6-b219-f77f6739171c/home/erschultz/chip_seq_data/GM12878/hg19/signal_p_value/ENCFF850KGH/{chrom}.npy')
-    chip_seq = chip_seq[:, 1]
-    corr = pearson_round(chip_seq, seq, stat = 'spearman')
-    seq *= np.sign(corr)
-    seq = np.sign(seq)
+        # ensure that positive PC is compartment A
+        chip_seq = np.load(f'/media/erschultz/1814ae69-5346-45a6-b219-f77f6739171c/home/erschultz/chip_seq_data/GM12878/hg19/signal_p_value/ENCFF850KGH/{chrom}.npy')
+        chip_seq = chip_seq[:, 1]
+        corr = pearson_round(chip_seq, seq, stat = 'spearman')
+        seq *= np.sign(corr)
+        seq = np.sign(seq)
 
-    x[seq > 0, 0] = seq[seq > 0]
-    x[seq < 0, 1] = -seq[seq < 0]
+        x[seq > 0, 0] = seq[seq > 0]
+        x[seq < 0, 1] = -seq[seq < 0]
 
-    print(start / resolution_mb, end / resolution_mb)
-    left = int(start / resolution_mb)
-    right = int(end / resolution_mb)
-    x = x[left:right]
-    xyz_write(xyz, osp.join(gnn_dir, 'xyz.xyz'), 'w', x = x)
+        print(start / resolution_mb, end / resolution_mb)
+        left = int(start / resolution_mb)
+        right = int(end / resolution_mb)
+        x = x[left:right]
+        xyz_write(xyz, osp.join(gnn_dir, 'xyz.xyz'), 'w', x = x)
 
 
     ### combined figure ###
+    print('---'*9)
+    print('Starting Figure')
     plt.figure(figsize=(18, 12))
     ax1 = plt.subplot(2, 24, (1, 6))
     ax2 = plt.subplot(2, 24, (8, 13))
@@ -1329,16 +1384,18 @@ def figure2(test=False):
         s = sns.heatmap(composite, linewidth = 0, vmin = vmin, vmax = vmax, cmap = RED_CMAP,
                         ax = ax, cbar_ax = ax_cb)
         if i == 0:
-            s.set_yticks(genome_ticks, labels = genome_labels)
+            s.set_yticks(genome_ticks, labels = genome_labels,
+                    fontsize = tick_fontsize)
         else:
             s.set_yticks([])
-        title = (f'{label} ' + r'$\hat{H}$'
-                f'\nSCC={scc}')
-        s.set_title(title, fontsize = 16)
+        title = (f'{label} ' + r'$\hat{H}$')
+        print(title, f': SCC={scc}')
+        # s.set_title(title, fontsize = label_fontsize)
         s.axline((0,0), slope=1, color = 'k', lw=1)
-        s.text(0.99*m, 0.01*m, label, fontsize=16, ha='right', va='top')
-        s.text(0.01*m, 0.99*m, 'Experiment', fontsize=16)
-        s.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
+        s.text(0.99*m, 0.01*m, label, fontsize=letter_fontsize, ha='right', va='top', weight='bold')
+        s.text(0.01*m, 0.99*m, 'Experiment', fontsize=letter_fontsize, weight='bold')
+        s.set_xticks(genome_ticks, labels = genome_labels, rotation = 0,
+                    fontsize = tick_fontsize)
 
 
     # separate hic maps
@@ -1372,11 +1429,13 @@ def figure2(test=False):
     ax4.plot(pcs[0], label = 'Experiment', color = 'k')
     ax4.plot(pcs_pca[0], label = f'Max Ent (r={pearson_round(pcs[0], pcs_pca[0])})', color = 'b')
     ax4.plot(pcs_gnn[0], label = f'GNN (r={pearson_round(pcs[0], pcs_gnn[0])})', color = 'r')
-    ax4.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
+    ax4.set_xticks(genome_ticks, labels = genome_labels, rotation = 0,
+                    fontsize = tick_fontsize)
     ax4.set_yticks([])
-    ax4.set_ylabel('PC 1', fontsize=16)
+    ax4.set_ylabel('PC 1', fontsize=label_fontsize)
+    ax5.tick_params(axis='both', which='major', labelsize=tick_fontsize)
     # ax4.set_title(f'PC 1\nCorr(Exp, GNN)={pearson_round(pcs[0], pcs_gnn[0])}')
-    ax4.legend()
+    ax4.legend(fontsize=legend_fontsize)
 
     # resized = rotate_bound(y,-45)
     # height=50
@@ -1404,7 +1463,7 @@ def figure2(test=False):
     ax5.set_xscale('log')
     ax5.set_ylabel('Contact Probability', fontsize = 16)
     ax5.set_xlabel('Genomic Separation (bp)', fontsize = 16)
-    ax5.legend(loc='upper right')
+    ax5.legend(loc='upper right', fontsize=legend_fontsize)
 
     # time and scc
     labels = ['Max Ent\n(Conv)', 'Max Ent\n(Max It)', 'GNN']
@@ -1434,12 +1493,13 @@ def figure2(test=False):
     # rotate xticks
     for ax in [ax6, ax7, ax8]:
         ax.set_xticks(ticks, labels, rotation=45, ha='center')
+        ax.tick_params(axis='both', which='major', labelsize=tick_fontsize)
 
 
 
     for n, ax in enumerate(axes):
         ax.text(-0.1, 1.05, string.ascii_uppercase[n], transform=ax.transAxes,
-                size=20, weight='bold')
+                size=letter_fontsize, weight='bold')
     axes[-1].text(1.35, 1.05, string.ascii_uppercase[n+1], transform=ax.transAxes,
             size=20, weight='bold')
 
@@ -1755,7 +1815,7 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     # data_dir = osp.join(dir, 'dataset_soren/samples/sample1')
     # file = osp.join(data_dir, 'y_kr.npy')
@@ -1770,9 +1830,9 @@ if __name__ == '__main__':
     # plot_all_contact_maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
     # compare_different_cell_lines()
-    # figure2()
+    # figure2(True)
     # interpretation_figure()
     # interpretation_figure_test()
-    # plot_first_PC('dataset_02_04_23', 10, 403)
+    # plot_first_PC('dataset_02_04_23', 10, 419)
     # plot_seq_comparison([np.load('/home/erschultz/dataset_02_04_23/samples/sample203/optimize_grid_b_16.5_phi_0.06-max_ent/iteration15/x.npy')], ['max_ent'])
     # plot_energy_no_ticks()

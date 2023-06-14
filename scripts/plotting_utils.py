@@ -107,12 +107,10 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y=False):
         diff_name = differences_names.pop()
         diff = differences.pop()
         if diff_name == 'edge_transforms':
-            new_diff = ([], [])
-            for a, b in zip(diff[0], diff[1]):
-                if a != b:
-                    new_diff[0].append(a)
-                    new_diff[1].append(b)
-            diff = new_diff
+            diff_a, diff_b = diff
+            diff_a = set(diff_a); diff_b = set(diff_b)
+            intersect = diff_a.intersection(diff_b)
+            diff = (diff_a.difference(intersect), diff_b.difference(intersect))
         print(diff)
     else:
         for name, (a, b) in zip(differences_names, differences):

@@ -33,13 +33,14 @@ rescale=2
 
 sweepChoices='2-3-4-5'
 k=8
+yNorm='mean_fill'
 useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='50'
 # sign_plus with log preprocessing
 
-id=421
+id=423
 for lr in 1e-4
 do
   train

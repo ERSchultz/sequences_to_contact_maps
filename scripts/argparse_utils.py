@@ -519,7 +519,6 @@ def process_transforms(opt):
             transform = AdjPCs(k, norm, opt.use_sign_net or opt.use_sign_plus)
             opt.node_transforms.append(transform)
         elif t_str[0] == 'contactdistance':
-            opt.edge_transforms.append(f'ContactDistance')
             assert opt.use_edge_attr or opt.use_edge_weights
             if opt.use_edge_attr:
                 opt.edge_dim += 1
@@ -537,7 +536,6 @@ def process_transforms(opt):
                                         bonded = bonded)
             opt.edge_transforms.append(transform)
         elif t_str[0] == 'meancontactdistance':
-            opt.edge_transforms.append(f'MeanContactDistance')
             assert opt.use_edge_attr or opt.use_edge_weights
             if opt.use_edge_attr:
                 opt.edge_dim += 1
