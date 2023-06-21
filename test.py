@@ -165,7 +165,7 @@ def debugModel(model_type):
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym_diag'
         opt.output_preprocesing = 'log'
-        opt.encoder_hidden_sizes_list=[32]
+        opt.encoder_hidden_sizes_list=[30]
         opt.edge_encoder_hidden_sizes_list=[30]
         opt.update_hidden_sizes_list=[1000,1000,16]
         opt.hidden_sizes_list=[8,8,8]
@@ -181,9 +181,8 @@ def debugModel(model_type):
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=['GridSize',
-                            'ContactDistance',
-                            # 'ContactDistance_bonded',
+        opt.pre_transforms=['ContactDistance',
+                            'Constant',
                             'GeneticDistance_norm',
                             'MeanContactDistance',
                             'MeanContactDistance_bonded']
@@ -212,8 +211,8 @@ def debugModel(model_type):
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym_diag'
         opt.output_preprocesing = 'log'
-        opt.encoder_hidden_sizes_list=AC.str2list('none')
-        # opt.edge_encoder_hidden_sizes_list=[100,100,3]
+        opt.encoder_hidden_sizes_list=None
+        opt.edge_encoder_hidden_sizes_list=[16]
         opt.update_hidden_sizes_list=[100,100,64]
         opt.hidden_sizes_list=[8]
         opt.act = 'prelu'
@@ -222,7 +221,7 @@ def debugModel(model_type):
         opt.head_act = 'relu'
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('constant-ContactDistance-GeneticDistance_norm-AdjPCs_8-AdjPCA_3')
+        opt.pre_transforms=AC.str2list('ContactDistance-GeneticDistance_norm-AdjPCs_8')
         opt.k=8
         opt.head_architecture = 'dconv-bilinear-triu'
         opt.head_architecture_2 = f'dconv-fc-fill_{opt.m}'

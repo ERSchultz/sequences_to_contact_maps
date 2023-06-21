@@ -22,7 +22,6 @@ dirname="/project2/depablo/erschultz/dataset_04_28_23"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-GeneticDistance_norm-AdjPCs_8'
 hiddenSizesList='8-8-8-8'
-EncoderHiddenSizesList='64'
 EdgeEncoderHiddenSizesList='32'
 updateHiddenSizesList='1000-1000-64'
 

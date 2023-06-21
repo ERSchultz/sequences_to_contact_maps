@@ -169,17 +169,6 @@ class ContactGNN(nn.Module):
         self.concat_heads = concat_heads
 
         ### Encoder Architecture ###
-        self.edge_encoder = None
-        if edge_encoder_hidden_sizes_list is not None:
-            encoder = []
-            input_size = self.input_size * 2 + edge_dim
-            for output_size in edge_encoder_hidden_sizes_list:
-                encoder.append(LinearBlock(input_size, output_size, activation = self.act,
-                                        bias = use_bias))
-                input_size = output_size
-            self.edge_encoder = nn.Sequential(*encoder)
-            self.edge_dim = output_size
-
         self.node_encoder = None
         if node_encoder_hidden_sizes_list is not None:
             encoder = []
@@ -201,6 +190,17 @@ class ContactGNN(nn.Module):
         else:
             self.linear = None
 
+        self.edge_encoder = None
+        if edge_encoder_hidden_sizes_list is not None:
+            encoder = []
+            input_edge_size = output_size * 2 + edge_dim
+            for output_size in edge_encoder_hidden_sizes_list:
+                encoder.append(LinearBlock(input_edge_size, output_size, activation = self.act,
+                                        bias = use_bias))
+                input_edge_size = output_size
+            self.edge_encoder = nn.Sequential(*encoder)
+            self.edge_dim = output_size
+
 
         ### Trunk Architecture ###
         self.process_trunk(input_size)
@@ -212,8 +212,8 @@ class ContactGNN(nn.Module):
         if verbose:
             print("#### ARCHITECTURE ####", file = ofile)
             print('Node Encoder:\n', self.node_encoder, '\n', file = ofile)
-            print('Edge Encoder:\n', self.edge_encoder, '\n', file = ofile)
             print('Linear:\n', self.linear, '\n', file = ofile)
+            print('Edge Encoder:\n', self.edge_encoder, '\n', file = ofile)
             print('Model:\n', self.model, '\n', file = ofile)
             print('Head L:\n', self.head_L, '\n', self.head_L2, '\n', file = ofile)
             print('Head D:\n', self.head_D, '\n', self.head_D2, '\n', file = ofile)
@@ -463,11 +463,14 @@ class ContactGNN(nn.Module):
             x = graph.x
 
         if additional_x is not None:
-            x = self.linear(torch.cat([x, additional_x], dim=-1))
+            if x is None:
+                x = self.linear(additional_x)
+            else:
+                x = self.linear(torch.cat([x, additional_x], dim=-1))
 
         if self.edge_encoder is not None:
             row, col = graph.edge_index
-            concat = torch.cat((graph.x[row], graph.x[col], graph.edge_attr), dim = -1)
+            concat = torch.cat((x[row], x[col], graph.edge_attr), dim = -1)
             edge_attr = self.edge_encoder(concat)
         else:
             edge_attr = graph.edge_attr
