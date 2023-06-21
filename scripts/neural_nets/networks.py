@@ -334,9 +334,14 @@ class ContactGNN(nn.Module):
         head_list_b = []
         input_size = self.latent_size
         if 'dconv' in split:
-            for dilation in [1, 2, 4, 8, 16]:
+            dilations = [1, 2, 4, 8, 16]
+            for dilation in dilations:
+                if dilation == dilations[-1]:
+                    act = self.out_act
+                else:
+                    act = self.head_act
                 head_list_a.append(ConvBlock(input_size, input_size, 3, padding = dilation,
-                                        activation = self.head_act,
+                                        activation = act,
                                         dilation = dilation, conv1d = True))
         elif 'conv' in split:
             head_list_a.append(ConvBlock(input_size, input_size, 3, padding = 1,

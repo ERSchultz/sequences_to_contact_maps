@@ -13,11 +13,15 @@ import seaborn as sns
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from core_test_train import core_test_train
-from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+from core_test_train import core_test_train
+from result_summary_plots import plot_top_PCs
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
 from scripts.energy_utils import *
@@ -29,9 +33,6 @@ from scripts.plotting_utils import RED_CMAP, plot_matrix
 from scripts.similarity_measures import SCC
 from scripts.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
                            print_time, triu_to_full)
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUV'
 
@@ -165,14 +166,14 @@ def debugModel(model_type):
         opt.output_mode = 'energy_sym_diag'
         opt.output_preprocesing = 'log'
         opt.encoder_hidden_sizes_list=[32]
-        opt.edge_encoder_hidden_sizes_list=[100, 100, 32]
-        opt.update_hidden_sizes_list=[1000,1000,64]
+        opt.edge_encoder_hidden_sizes_list=[30]
+        opt.update_hidden_sizes_list=[1000,1000,16]
         opt.hidden_sizes_list=[8,8,8]
         opt.gated = False
         opt.dropout = 0.0
-        opt.act = 'prelu'
+        opt.act = 'leaky'
         opt.inner_act = 'relu'
-        opt.out_act = 'relu'
+        opt.out_act = 'prelu'
         opt.head_act = 'relu'
         opt.training_norm = None
         opt.use_node_features = False
@@ -181,7 +182,6 @@ def debugModel(model_type):
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
         opt.pre_transforms=['GridSize',
-                            'constant',
                             'ContactDistance',
                             # 'ContactDistance_bonded',
                             'GeneticDistance_norm',
@@ -629,14 +629,14 @@ def plot_SCC_weights():
     plt.show()
 
 def check_max_ent_progress():
-    dir = '/home/erschultz/dataset_04_05_23/samples'
+    dir = '/home/erschultz/dataset_05_31_23/samples'
     todo = 0
     for f in os.listdir(dir):
         found = False
         fdir = osp.join(dir, f)
         max_ent_dir = osp.join(fdir, 'optimize_grid_b_140_phi_0.03-max_ent10')
         if osp.exists(max_ent_dir):
-            if osp.exists(osp.join(max_ent_dir, 'iteration15')):
+            if osp.exists(osp.join(max_ent_dir, 'iteration14')):
                 found = True
             else:
                 print(f'{f} in progress')

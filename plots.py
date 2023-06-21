@@ -968,11 +968,18 @@ def plot_energy_no_ticks():
         plot_matrix(S, osp.join(dir2, 'S_noticks.png'), cmap=cmap,
                     x_ticks = [], y_ticks = [], vmin = 'center', percentile=15)
 
-def compare_different_cell_lines():
-    datasets = ['Su2020', 'dataset_02_04_23', 'dataset_HCT116']
-    cell_lines = ['IMR90', 'GM12878', 'HCT116']
-    samples = ['1002', '202', '1010']
-    GNN_ID = 403
+def generalization_figure():
+    label_fontsize=18
+    legend_fontsize=16
+    tick_fontsize=13
+    letter_fontsize=20
+    # datasets = ['Su2020', 'dataset_02_04_23', 'dataset_HCT116']
+    # cell_lines = ['IMR90', 'GM12878', 'HCT116']
+    # samples = ['1002', '202', '1010']
+    datasets = ['dataset_04_05_23', 'dataset_04_05_23', 'dataset_04_05_23']
+    cell_lines = ['GM12878', 'HCT116', 'HL-60']
+    samples = [1213, 1248, 1286]
+    GNN_ID = 423
 
     odir = '/home/erschultz/TICG-chromatin/figures'
     if not osp.exists(odir):
@@ -990,12 +997,17 @@ def compare_different_cell_lines():
     genome_labels_list = []
     chroms = []
 
+    # collect data
+    print('---'*9)
+    print('Collecting Data')
     for dataset, cell_line, sample in zip(datasets, cell_lines, samples):
+        print(cell_line)
         dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
         gnn_dir = osp.join(dir, f'optimize_grid_b_140_phi_0.03-GNN{GNN_ID}')
         max_ent_dir = osp.join(dir, f'optimize_grid_b_140_phi_0.03-max_ent10')
 
         y_exp = np.load(osp.join(dir, 'y.npy'))
+        y_exp /= np.mean(y_exp.diagonal())
         ref_meanDists.append(DiagonalPreprocessing.genomic_distance_statistics(y_exp, 'prob'))
         ref_pcs.append(epilib.get_pcs(epilib.get_oe(y_exp), 12, align = True).T)
 
@@ -1014,6 +1026,7 @@ def compare_different_cell_lines():
         genome_labels_list.append(genome_labels)
 
         y_gnn = np.load(osp.join(gnn_dir, 'y.npy'))
+        y_gnn /= np.mean(y_gnn.diagonal())
         gnn_meanDists.append(DiagonalPreprocessing.genomic_distance_statistics(y_gnn, 'prob'))
         gnn_pcs.append(epilib.get_pcs(epilib.get_oe(y_gnn), 12, align = True).T)
 
@@ -1035,8 +1048,11 @@ def compare_different_cell_lines():
         composite = np.zeros((m, m))
         composite[indu] = y_gnn[indu]
         composite[indl] = y_exp[indl]
-
+        np.fill_diagonal(composite, 1)
+        print(composite)
         composites.append(composite)
+
+
 
 
     ### plot hic ###
@@ -1101,6 +1117,10 @@ def compare_different_cell_lines():
     # fig.suptitle(f'Extrapolation Results', fontsize = 16)
     for i, (pc_gnn, pc_max_ent, pc_ref, cell_line) in enumerate(zip(gnn_pcs, max_ent_pcs, ref_pcs, cell_lines)):
         ax = axes[i]
+        # make sure they are aligned by ensuring corr is positive
+        pc_max_ent[0] *= np.sign(pearson_round(pc_ref[0], pc_max_ent[0]))
+        pc_gnn[0] *= np.sign(pearson_round(pc_ref[0], pc_gnn[0]))
+
         ax.plot(pc_ref[0], label = 'Experiment', color = 'k')
         ax.plot(pc_gnn[0], label = 'GNN', color = 'r')
         ax.plot(pc_max_ent[0], label = 'Max Ent', color = 'b')
@@ -1110,7 +1130,7 @@ def compare_different_cell_lines():
             ax.set_yticks([])
         else:
             ax.legend()
-            ax.set_ylabel('Value', fontsize=16)
+            ax.set_ylabel('PC 1', fontsize=16)
 
     fig.supxlabel('Polymer Distance (beads)', fontsize = 16)
     plt.tight_layout()
@@ -1119,6 +1139,8 @@ def compare_different_cell_lines():
 
 
     ### combined figure ###
+    print('---'*9)
+    print('Starting Figure')
     fig, axes = plt.subplots(3, len(cell_lines),
                             gridspec_kw={'height_ratios':[1, 0.8, 0.9]})
     fig.set_figheight(6*3)
@@ -1126,8 +1148,8 @@ def compare_different_cell_lines():
 
     arr = np.array(composites)
     vmax = np.mean(arr)
-    data = zip(composites, cell_lines, sccs, genome_ticks_list, genome_labels_list)
-    for i, (composite, cell_line, scc, genome_ticks, genome_labels) in enumerate(data):
+    data = zip(composites, cell_lines, sccs, genome_ticks_list, genome_labels_list, chroms)
+    for i, (composite, cell_line, scc, genome_ticks, genome_labels, chrom) in enumerate(data):
         print(i)
         ax = axes[0][i]
         # if i == len(cell_lines) - 1:
@@ -1136,25 +1158,30 @@ def compare_different_cell_lines():
         # else:
         s = sns.heatmap(composite, linewidth = 0, vmin = 0, vmax = vmax, cmap = RED_CMAP,
                         ax = ax, cbar = False)
-        s.set_title(f'{cell_line}\nSCC={scc}', fontsize = 16)
+        s.set_title(f'{cell_line} Chr{chrom}', fontsize = letter_fontsize)
+        print(f'{cell_line}\nSCC={scc}')
         ax.axline((0,0), slope=1, color = 'k', lw=1)
-        ax.text(0.99*m, 0.01*m, 'GNN', fontsize=16, ha='right', va='top')
-        ax.text(0.01*m, 0.99*m, 'Experiment', fontsize=16)
+        ax.text(0.99*m, 0.01*m, 'GNN', fontsize=letter_fontsize, ha='right', va='top',
+                weight='bold')
+        ax.text(0.01*m, 0.99*m, 'Experiment', fontsize=letter_fontsize, weight='bold')
         s.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
         s.set_yticks(genome_ticks, labels = genome_labels)
+        s.tick_params(axis='both', which='major', labelsize=tick_fontsize)
 
     data = zip(gnn_pcs, max_ent_pcs, ref_pcs, cell_lines, genome_ticks_list, genome_labels_list)
     for i, (pc_gnn, pc_max_ent, pc_ref, cell_line, genome_ticks, genome_labels) in enumerate(data):
         ax = axes[1][i]
         ax.plot(pc_ref[0], label = 'Experiment', color = 'k')
-        ax.plot(pc_max_ent[0], label = 'Max Ent', color = 'b')
-        ax.plot(pc_gnn[0], label = 'GNN', color = 'r')
+        ax.plot(pc_max_ent[0], label = f'Max Ent (r={pearson_round(pc_max_ent[0], pc_ref[0])})', color = 'b')
+        ax.plot(pc_gnn[0], label = f'GNN (r={pearson_round(pc_gnn[0], pc_ref[0])})', color = 'r')
         ax.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
-        ax.set_title(f'{cell_line}\nCorr(Exp, GNN)={pearson_round(pc_gnn[0], pc_ref[0])}', fontsize = 16)
+        ax.tick_params(axis='both', which='major', labelsize=tick_fontsize)
+
+        # ax.set_title(f'{cell_line}\nCorr(Exp, GNN)=', fontsize = 16)
         # ax.set_ylim(-0.1, 0.1)
+        ax.legend(fontsize=legend_fontsize)
         if i == 0:
-            ax.legend()
-            ax.set_ylabel('Value', fontsize=16)
+            ax.set_ylabel('PC 1', fontsize=label_fontsize)
 
     data = zip(gnn_meanDists, max_ent_meanDists, ref_meanDists, cell_lines)
     for i, (gnn_meanDist, max_ent_meanDist, ref_meanDist, cell_line) in enumerate(data):
@@ -1162,23 +1189,28 @@ def compare_different_cell_lines():
         rmse = mean_squared_error(gnn_meanDist, ref_meanDist, squared = False)
         rmse = np.round(rmse, 3)
 
+        log_labels = np.linspace(0, resolution*(len(ref_meanDist)-1), len(ref_meanDist))
+        # assumes resolution is the same for each sample
+
         ax = axes[2][i]
         ax.set_yscale('log')
         ax.set_xscale('log')
-        ax.plot(ref_meanDist, label = 'Experiment', color = 'k')
-        ax.plot(max_ent_meanDist, label = 'Max Ent', color = 'b')
-        ax.plot(gnn_meanDist, label = 'GNN', color = 'red')
-        ax.set_title(f'{cell_line}\nRMSE(Exp, GNN)={rmse}', fontsize = 16)
+        ax.plot(log_labels, ref_meanDist, label = 'Experiment', color = 'k')
+        ax.plot(log_labels, max_ent_meanDist, label = 'Max Ent', color = 'b')
+        ax.plot(log_labels, gnn_meanDist, label = 'GNN', color = 'red')
+        ax.tick_params(axis='both', which='major', labelsize=tick_fontsize)
+
+        # ax.set_title(f'{cell_line}\nRMSE(Exp, GNN)={rmse}', fontsize = 16)
 
         if i == 0:
-            ax.legend()
-            ax.set_ylabel('Contact Probability', fontsize=16)
+            ax.legend(fontsize=legend_fontsize)
+            ax.set_ylabel('Contact Probability', fontsize=label_fontsize)
 
-    axes[2][1].set_xlabel('Polymer Distance (beads)', fontsize = 16)
+    axes[2][1].set_xlabel('Genomic Separation (bp)', fontsize = label_fontsize)
 
     for n, ax in enumerate([axes[0][0], axes[1][0], axes[2][0]]):
-        ax.text(-0.1, 1.1, string.ascii_uppercase[n], transform=ax.transAxes,
-                size=20, weight='bold')
+        ax.text(-0.1, 1.05, string.ascii_uppercase[n], transform=ax.transAxes,
+                size=letter_fontsize, weight='bold')
 
     plt.tight_layout()
     plt.savefig(osp.join(odir, 'extrapolation_figure.png'))
@@ -1190,13 +1222,14 @@ def figure2(test=False):
     legend_fontsize=16
     tick_fontsize=13
     letter_fontsize=20
+    dataset = 'dataset_02_04_23'; sample = 203; GNN_ID = 419
     # dataset = 'dataset_04_05_23'; sample = 1001; GN_ID = 407
-    dataset = 'dataset_02_04_23'; sample = 202; GNN_ID = 419
+    # dataset = 'dataset_04_05_23'; sample = 1001; GNN_ID = 423
     samples_list = range(201, 211)
 
+    k=10
     def get_dirs(sample_dir):
         grid_dir = osp.join(sample_dir, 'optimize_grid_b_140_phi_0.03')
-        k=10
         max_ent_dir = f'{grid_dir}-max_ent{k}'
         gnn_dir = f'{grid_dir}-GNN{GNN_ID}'
 
@@ -1216,25 +1249,6 @@ def figure2(test=False):
         y_gnn /= np.mean(np.diagonal(y_gnn))
 
         return y, y_pca, y_gnn
-
-
-    # avg pearsonr
-    gnn_pearsons = []
-    pca_pearsons= []
-    for s in samples_list:
-        sample_dir = f'/home/erschultz/{dataset}/samples/sample{s}'
-        y, y_pca, y_gnn = get_y(sample_dir)
-
-        pcs = epilib.get_pcs(epilib.get_oe(y), 12, align = True).T
-        pcs_pca = epilib.get_pcs(epilib.get_oe(y_pca), 12, align = True).T
-        pcs_gnn = epilib.get_pcs(epilib.get_oe(y_gnn), 12, align = True).T
-
-        # make sure they are aligned by ensuring corr is positive
-        pcs_pca[0] *= np.sign(pearson_round(pcs[0], pcs_pca[0]))
-        pcs_gnn[0] *= np.sign(pearson_round(pcs[0], pcs_gnn[0]))
-        gnn_pearsons.append(pearson_round(pcs[0], pcs_gnn[0]))
-        pca_pearsons.append(pearson_round(pcs[0], pcs_pca[0]))
-    print('GNN pearsons', gnn_pearsons)
 
 
     sample_dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
@@ -1282,43 +1296,49 @@ def figure2(test=False):
     pcs = epilib.get_pcs(epilib.get_oe(y), 12, align = True).T
     pcs_pca = epilib.get_pcs(epilib.get_oe(y_pca), 12, align = True).T
     pcs_gnn = epilib.get_pcs(epilib.get_oe(y_gnn), 12, align = True).T
+    # make sure they are aligned by ensuring corr is positive
+    pcs_pca[0] *= np.sign(pearson_round(pcs[0], pcs_pca[0]))
+    pcs_gnn[0] *= np.sign(pearson_round(pcs[0], pcs_gnn[0]))
 
 
 
 
-    # time and scc comparison
+    # boxplot data
     if not test:
         args = getArgs(data_folder = f'/home/erschultz/{dataset}',
                         samples = samples_list)
         args.experimental = True
         args.convergence_definition = 'normal'
-        data, converged_mask = loadData(args)
+        args.gnn_id = GNN_ID
+        data, converged_mask = load_data(args)
         max_ent = osp.split(max_ent_dir)[1]
-        max_ent_times = data[10][max_ent]['converged_time']
+        max_ent_times = data[k][max_ent]['converged_time']
         max_ent_times = [i for i in max_ent_times if i is not None]
-        max_ent_sccs = data[10][max_ent]['scc_var']
+        max_ent_sccs = data[k][max_ent]['scc_var']
         max_ent_sccs = [i for i in max_ent_sccs if not np.isnan(i)]
+        max_ent_pearsons = data[k][max_ent]['pearson_pc_1']
 
         gnn = f'optimize_grid_b_140_phi_0.03-GNN{GNN_ID}'
         gnn_times = data[0][gnn]['total_time']
         gnn_sccs = data[0][gnn]['scc_var']
+        gnn_pearsons = data[0][gnn]['pearson_pc_1']
 
-        args = getArgs(data_folder = f'/home/erschultz/{dataset}',
-                        samples = samples_list)
-        args.experimental = True
+
         args.convergence_definition = None
-        data, converged_mask = loadData(args)
+        data, converged_mask = load_data(args)
         max_ent_times_strict = data[10][max_ent]['converged_time']
         max_ent_times_strict = [i for i in max_ent_times_strict if i is not None]
         max_ent_sccs_strict = data[10][max_ent]['scc_var']
         max_ent_sccs_strict = [i for i in max_ent_sccs_strict if not np.isnan(i)]
     else:
         max_ent_times = np.random.normal(size=100)
-        max_ent_sccs = np.random.normal(size=100)
+        max_ent_sccs = np.random.normal(loc=0.7, scale = 0.1, size=100)
         max_ent_times_strict = np.random.normal(size=100)
-        max_ent_sccs_strict = np.random.normal(size=100)
+        max_ent_sccs_strict = np.random.normal(loc=0.75, scale = 0.05, size=100)
+        max_ent_pearsons = np.random.normal(size=100)
         gnn_times = np.random.normal(size=100)
-        gnn_sccs = np.random.normal(size=100)
+        gnn_sccs = np.random.normal(loc=0.6, scale = 0.12, size=100)
+        gnn_pearsons = np.random.normal(size=100)
 
 
     # xyz
@@ -1347,7 +1367,7 @@ def figure2(test=False):
 
         print(start / resolution_mb, end / resolution_mb)
         left = int(start / resolution_mb)
-        right = int(end / resolution_mb)
+        right = int(end / resolution_mb) + 1
         x = x[left:right]
         xyz_write(xyz, osp.join(gnn_dir, 'xyz.xyz'), 'w', x = x)
 
@@ -1422,10 +1442,6 @@ def figure2(test=False):
     # for s in [s1, s2, s3]:
     #     s.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
 
-    # make sure they are aligned by ensuring corr is positive
-    pcs_pca[0] *= np.sign(pearson_round(pcs[0], pcs_pca[0]))
-    pcs_gnn[0] *= np.sign(pearson_round(pcs[0], pcs_gnn[0]))
-
     ax4.plot(pcs[0], label = 'Experiment', color = 'k')
     ax4.plot(pcs_pca[0], label = f'Max Ent (r={pearson_round(pcs[0], pcs_pca[0])})', color = 'b')
     ax4.plot(pcs_gnn[0], label = f'GNN (r={pearson_round(pcs[0], pcs_gnn[0])})', color = 'r')
@@ -1454,15 +1470,15 @@ def figure2(test=False):
     meanDist_pca = DiagonalPreprocessing.genomic_distance_statistics(y_pca, 'prob')
     meanDist_gnn = DiagonalPreprocessing.genomic_distance_statistics(y_gnn, 'prob')
     data = zip([meanDist, meanDist_pca, meanDist_gnn],
-                ['Experiment', 'Max Ent', f'GNN-'],
+                ['Experiment', 'Max Ent', f'GNN'],
                 ['k', 'b', 'r'])
     for arr, fig_label, c in data:
         ax5.plot(log_labels, arr, label = fig_label, color = c)
 
     ax5.set_yscale('log')
     ax5.set_xscale('log')
-    ax5.set_ylabel('Contact Probability', fontsize = 16)
-    ax5.set_xlabel('Genomic Separation (bp)', fontsize = 16)
+    ax5.set_ylabel('Contact Probability', fontsize = label_fontsize)
+    ax5.set_xlabel('Genomic Separation (bp)', fontsize = label_fontsize)
     ax5.legend(loc='upper right', fontsize=legend_fontsize)
 
     # time and scc
@@ -1471,6 +1487,7 @@ def figure2(test=False):
     data = [max_ent_sccs, max_ent_sccs_strict, gnn_sccs]
     b1 = ax6.boxplot(data, vert = True,
                         patch_artist = True, labels = labels)
+    ax6.set_ylim()
     ax6.set_ylabel('SCC', fontsize=16)
 
     data = [max_ent_times, max_ent_times_strict, gnn_times]
@@ -1479,7 +1496,7 @@ def figure2(test=False):
     # axes[1].set_yscale('log')
     ax7.set_ylabel('Time (mins)', fontsize=16)
 
-    data = [np.NaN, pca_pearsons, gnn_pearsons]
+    data = [np.NaN, max_ent_pearsons, gnn_pearsons]
     b3 = ax8.boxplot(data, vert = True,
                         patch_artist = True, labels = labels)
     # axes[1].set_yscale('log')
@@ -1822,15 +1839,15 @@ if __name__ == '__main__':
     # data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample4')
     # file = osp.join(data_dir, 'y.npy')
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    plot_combined_models('ContactGNNEnergy', [421, 422])
+    # plot_combined_models('ContactGNNEnergy', [421, 422])
     # plot_GNN_vs_PCA('dataset_04_05_23', 10, 407)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")
     # main()
     # plot_all_contact_maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
-    # compare_different_cell_lines()
-    # figure2(True)
+    # generalization_figure()
+    figure2()
     # interpretation_figure()
     # interpretation_figure_test()
     # plot_first_PC('dataset_02_04_23', 10, 419)
