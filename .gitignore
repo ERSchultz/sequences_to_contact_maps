@@ -34,6 +34,7 @@ results/Akita/**
 results/MLP/*.pt
 results/*/*/sample*/**
 results/*/*/dataset*/**
+results/*/*/dataset*/**/*
 results/*/*combined
 
 # chip_seq
