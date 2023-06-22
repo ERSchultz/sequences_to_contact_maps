@@ -11,6 +11,7 @@ from shutil import rmtree
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy
 import seaborn as sns
 import torch
 from pylib.utils import epilib
@@ -973,20 +974,22 @@ def generalization_figure():
     legend_fontsize=16
     tick_fontsize=13
     letter_fontsize=20
-    # datasets = ['Su2020', 'dataset_02_04_23', 'dataset_HCT116']
-    # cell_lines = ['IMR90', 'GM12878', 'HCT116']
-    # samples = ['1002', '202', '1010']
-    datasets = ['dataset_04_05_23', 'dataset_04_05_23', 'dataset_04_05_23']
-    cell_lines = ['GM12878', 'HCT116', 'HL-60']
-    samples = [1213, 1248, 1286]
-    GNN_ID = 423
+    datasets = ['dataset_05_31_23']*3
+    cell_lines = ['IMR90', 'HMEC', 'HAP1']
+    samples = [1002, 1037, 1198]
+    # datasets = ['dataset_04_05_23', 'dataset_04_05_23', 'dataset_04_05_23']
+    # cell_lines = ['GM12878', 'HCT116', 'HL-60']
+    # samples = [1213, 1248, 1286]
+    GNN_ID = 419
 
     odir = '/home/erschultz/TICG-chromatin/figures'
     if not osp.exists(odir):
         os.mkdir(odir, mode = 0o755)
 
     composites = []
+    max_ent_composites = []
     sccs = []
+    max_ent_sccs = []
     max_ent_meanDists = []
     gnn_meanDists = []
     ref_meanDists = []
@@ -1036,9 +1039,12 @@ def generalization_figure():
         max_ent_pcs.append(epilib.get_pcs(epilib.get_oe(y_max_ent), 12, align = True).T)
 
         scc_dict = load_json(osp.join(gnn_dir, 'distance_pearson.json'))
-        print(scc_dict)
         scc = np.round(scc_dict['scc_var'], 3)
         sccs.append(scc)
+
+        scc_dict = load_json(osp.join(max_ent_dir, 'iteration14/distance_pearson.json'))
+        scc = np.round(scc_dict['scc_var'], 3)
+        max_ent_sccs.append(scc)
 
         m = np.shape(y_gnn)[0]
         indu = np.triu_indices(m)
@@ -1049,42 +1055,68 @@ def generalization_figure():
         composite[indu] = y_gnn[indu]
         composite[indl] = y_exp[indl]
         np.fill_diagonal(composite, 1)
-        print(composite)
         composites.append(composite)
+
+        composite = np.zeros((m, m))
+        composite[indu] = y_max_ent[indu]
+        composite[indl] = y_exp[indl]
+        np.fill_diagonal(composite, 1)
+        max_ent_composites.append(composite)
 
 
 
 
     ### plot hic ###
-    fig, ax = plt.subplots(1, len(cell_lines)+1, gridspec_kw={'width_ratios':[1,1,1,0.08]})
-    fig.set_figheight(6)
-    fig.set_figwidth(6*2.5)
-    # fig.suptitle(f'Extrapolation Results', fontsize = 16)
+    print('---'*9)
+    print('Starting Hic Figure')
+    fig, axes = plt.subplots(2, len(cell_lines))
+    fig.set_figheight(12)
+    fig.set_figwidth(18)
 
     arr = np.array(composites)
     vmax = np.mean(arr)
-    for i, (composite, cell_line, scc, chrom) in enumerate(zip(composites, cell_lines, sccs, chroms)):
+    data = zip(composites, cell_lines, sccs, genome_ticks_list, genome_labels_list, chroms)
+    for i, (composite, cell_line, scc, genome_ticks, genome_labels, chrom) in enumerate(data):
         print(i)
-        if i == len(cell_lines) - 1:
-            s = sns.heatmap(composite, linewidth = 0, vmin = 0, vmax = vmax, cmap = RED_CMAP,
-                            ax = ax[i], cbar_ax = ax[i+1])
-        else:
-            s = sns.heatmap(composite, linewidth = 0, vmin = 0, vmax = vmax, cmap = RED_CMAP,
-                            ax = ax[i], cbar = False)
-        s.set_title(f'{cell_line} Chr{chrom}\nSCC={scc}', fontsize = 16)
-        ax[i].axline((0,0), slope=1, color = 'k', lw=1)
-        ax[i].text(0.99*m, 0.01*m, 'Simulation', fontsize=16, ha='right', va='top')
-        ax[i].text(0.01*m, 0.99*m, 'Experiment', fontsize=16)
+        ax = axes[0][i]
+        s = sns.heatmap(composite, linewidth = 0, vmin = 0, vmax = vmax, cmap = RED_CMAP,
+                        ax = ax, cbar = False)
+        s.set_title(f'{cell_line} Chr{chrom}\nSCC={scc}', fontsize = letter_fontsize)
+        ax.axline((0,0), slope=1, color = 'k', lw=1)
+        ax.text(0.99*m, 0.01*m, 'GNN', fontsize=letter_fontsize, ha='right', va='top',
+                weight='bold')
+        ax.text(0.01*m, 0.99*m, 'Experiment', fontsize=letter_fontsize, weight='bold')
+        s.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
+        s.set_yticks(genome_ticks, labels = genome_labels)
+        s.tick_params(axis='both', which='major', labelsize=tick_fontsize)
 
-        if i > 0:
-            s.set_yticks([])
+    arr = np.array(max_ent_composites)
+    vmax = np.mean(arr)
+    data = zip(max_ent_composites, max_ent_sccs, genome_ticks_list, genome_labels_list)
+    for i, (composite, scc, genome_ticks, genome_labels) in enumerate(data):
+        print(i)
+        ax = axes[1][i]
+        s = sns.heatmap(composite, linewidth = 0, vmin = 0, vmax = vmax, cmap = RED_CMAP,
+                        ax = ax, cbar = False)
+        s.set_title(f'SCC={scc}', fontsize = letter_fontsize)
+        ax.axline((0,0), slope=1, color = 'k', lw=1)
+        ax.text(0.99*m, 0.01*m, 'Max Ent', fontsize=letter_fontsize, ha='right', va='top',
+                weight='bold')
+        ax.text(0.01*m, 0.99*m, 'Experiment', fontsize=letter_fontsize, weight='bold')
+        s.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
+        s.set_yticks(genome_ticks, labels = genome_labels)
+        s.tick_params(axis='both', which='major', labelsize=tick_fontsize)
+
+    for n, ax in enumerate([axes[0][0], axes[1][0]]):
+        ax.text(-0.1, 1.05, string.ascii_uppercase[n], transform=ax.transAxes,
+                size=letter_fontsize, weight='bold')
 
     plt.tight_layout()
     plt.savefig(osp.join(odir, 'extrapolation_hic.png'))
     plt.close()
 
     ### plot meanDist ###
-    fig, axes = plt.subplots(1, len(cell_lines), gridspec_kw={'width_ratios':[1,1,1]})
+    fig, axes = plt.subplots(1, len(cell_lines))
     fig.set_figheight(6)
     fig.set_figwidth(6*2.5)
     data = zip(gnn_meanDists, max_ent_meanDists, ref_meanDists, cell_lines)
@@ -1111,7 +1143,7 @@ def generalization_figure():
     plt.close()
 
     ### plot pc1 ###
-    fig, axes = plt.subplots(1, len(cell_lines), gridspec_kw={'width_ratios':[1,1,1]})
+    fig, axes = plt.subplots(1, len(cell_lines))
     fig.set_figheight(4)
     fig.set_figwidth(6*2.5)
     # fig.suptitle(f'Extrapolation Results', fontsize = 16)
@@ -1142,9 +1174,9 @@ def generalization_figure():
     print('---'*9)
     print('Starting Figure')
     fig, axes = plt.subplots(3, len(cell_lines),
-                            gridspec_kw={'height_ratios':[1, 0.8, 0.9]})
-    fig.set_figheight(6*3)
-    fig.set_figwidth(6*3)
+                            gridspec_kw={'height_ratios':[1, 0.6, 0.5]})
+    fig.set_figheight(12)
+    fig.set_figwidth(18)
 
     arr = np.array(composites)
     vmax = np.mean(arr)
@@ -1222,7 +1254,7 @@ def figure2(test=False):
     legend_fontsize=16
     tick_fontsize=13
     letter_fontsize=20
-    dataset = 'dataset_02_04_23'; sample = 203; GNN_ID = 419
+    dataset = 'dataset_02_04_23'; sample = 202; GNN_ID = 419
     # dataset = 'dataset_04_05_23'; sample = 1001; GN_ID = 407
     # dataset = 'dataset_04_05_23'; sample = 1001; GNN_ID = 423
     samples_list = range(201, 211)
@@ -1293,15 +1325,34 @@ def figure2(test=False):
 
     S_gnn = np.load(osp.join(gnn_dir, 'S.npy'))
 
-    pcs = epilib.get_pcs(epilib.get_oe(y), 12, align = True).T
-    pcs_pca = epilib.get_pcs(epilib.get_oe(y_pca), 12, align = True).T
-    pcs_gnn = epilib.get_pcs(epilib.get_oe(y_gnn), 12, align = True).T
+    def get_pcs(input, smooth=False, h=1, verbose=False):
+        if input is None:
+            return None
+
+        if smooth:
+            input = scipy.ndimage.gaussian_filter(input, (h, h))
+
+        input = epilib.get_oe(input)
+        # input = np.corrcoef(input)
+
+        if verbose:
+            print(input)
+        seqs = epilib.get_pcs(input, 12,
+                            normalize = False, align = True)
+        return seqs.T # k x m
+
+    smooth = True; h = 1
+    pcs = get_pcs(y, smooth, h)
+    pcs_pca = get_pcs(y_pca, smooth, h)
+    pcs_gnn = get_pcs(y_gnn, smooth, h)
+    # pcs = epilib.get_pcs(epilib.get_oe(y), 12).T
+    # pcs_pca = epilib.get_pcs(epilib.get_oe(y_pca), 12).T
+    # pcs_gnn = epilib.get_pcs(epilib.get_oe(y_gnn), 12).T
+
+
     # make sure they are aligned by ensuring corr is positive
     pcs_pca[0] *= np.sign(pearson_round(pcs[0], pcs_pca[0]))
     pcs_gnn[0] *= np.sign(pearson_round(pcs[0], pcs_gnn[0]))
-
-
-
 
     # boxplot data
     if not test:
@@ -1326,16 +1377,18 @@ def figure2(test=False):
 
         args.convergence_definition = None
         data, converged_mask = load_data(args)
-        max_ent_times_strict = data[10][max_ent]['converged_time']
+        max_ent_times_strict = data[k][max_ent]['converged_time']
         max_ent_times_strict = [i for i in max_ent_times_strict if i is not None]
-        max_ent_sccs_strict = data[10][max_ent]['scc_var']
+        max_ent_sccs_strict = data[k][max_ent]['scc_var']
         max_ent_sccs_strict = [i for i in max_ent_sccs_strict if not np.isnan(i)]
+        max_ent_pearsons_strict = data[k][max_ent]['pearson_pc_1']
     else:
         max_ent_times = np.random.normal(size=100)
         max_ent_sccs = np.random.normal(loc=0.7, scale = 0.1, size=100)
         max_ent_times_strict = np.random.normal(size=100)
         max_ent_sccs_strict = np.random.normal(loc=0.75, scale = 0.05, size=100)
         max_ent_pearsons = np.random.normal(size=100)
+        max_ent_pearsons_strict = np.random.normal(size=100)
         gnn_times = np.random.normal(size=100)
         gnn_sccs = np.random.normal(loc=0.6, scale = 0.12, size=100)
         gnn_pearsons = np.random.normal(size=100)
@@ -1345,37 +1398,37 @@ def figure2(test=False):
     file = osp.join(gnn_dir, 'production_out/output.xyz')
     xyz = xyz_load(file, multiple_timesteps=True)[::, :m, :]
 
-    if not test:
-        y_chr = np.load(osp.join('/home/erschultz', dataset, f'chroms_50k/sample{chrom}/y.npy'))
-        y_chr_diag = epilib.get_oe(y_chr)
-        seq = epilib.get_pcs(y_chr_diag, 1, normalize = True)[:, 0]
-        x = np.zeros((len(seq), 2))
-        # kmeans = KMeans(n_clusters = 2)
-        # kmeans.fit(y_chr_diag)
-
-        # x[np.arange(len(y_chr)), kmeans.labels_] = 1
-
-        # ensure that positive PC is compartment A
-        chip_seq = np.load(f'/media/erschultz/1814ae69-5346-45a6-b219-f77f6739171c/home/erschultz/chip_seq_data/GM12878/hg19/signal_p_value/ENCFF850KGH/{chrom}.npy')
-        chip_seq = chip_seq[:, 1]
-        corr = pearson_round(chip_seq, seq, stat = 'spearman')
-        seq *= np.sign(corr)
-        seq = np.sign(seq)
-
-        x[seq > 0, 0] = seq[seq > 0]
-        x[seq < 0, 1] = -seq[seq < 0]
-
-        print(start / resolution_mb, end / resolution_mb)
-        left = int(start / resolution_mb)
-        right = int(end / resolution_mb) + 1
-        x = x[left:right]
-        xyz_write(xyz, osp.join(gnn_dir, 'xyz.xyz'), 'w', x = x)
+    # if not test:
+    #     y_chr = np.load(osp.join('/home/erschultz', dataset, f'chroms_50k/sample{chrom}/y.npy'))
+    #     y_chr_diag = epilib.get_oe(y_chr)
+    #     seq = epilib.get_pcs(y_chr_diag, 1, normalize = True)[:, 0]
+    #     x = np.zeros((len(seq), 2))
+    #     # kmeans = KMeans(n_clusters = 2)
+    #     # kmeans.fit(y_chr_diag)
+    #
+    #     # x[np.arange(len(y_chr)), kmeans.labels_] = 1
+    #
+    #     # ensure that positive PC is compartment A
+    #     chip_seq = np.load(f'/media/erschultz/1814ae69-5346-45a6-b219-f77f6739171c/home/erschultz/chip_seq_data/GM12878/hg19/signal_p_value/ENCFF850KGH/{chrom}.npy')
+    #     chip_seq = chip_seq[:, 1]
+    #     corr = pearson_round(chip_seq, seq, stat = 'spearman')
+    #     seq *= np.sign(corr)
+    #     seq = np.sign(seq)
+    #
+    #     x[seq > 0, 0] = seq[seq > 0]
+    #     x[seq < 0, 1] = -seq[seq < 0]
+    #
+    #     print(start / resolution_mb, end / resolution_mb)
+    #     left = int(start / resolution_mb)
+    #     right = int(end / resolution_mb) + 1
+    #     x = x[left:right]
+    #     xyz_write(xyz, osp.join(gnn_dir, 'xyz.xyz'), 'w', x = x)
 
 
     ### combined figure ###
     print('---'*9)
     print('Starting Figure')
-    plt.figure(figsize=(18, 12))
+    plt.figure(figsize=(20, 12))
     ax1 = plt.subplot(2, 24, (1, 6))
     ax2 = plt.subplot(2, 24, (8, 13))
     ax_cb = plt.subplot(2, 48*2, 29*2-1)
@@ -1473,6 +1526,7 @@ def figure2(test=False):
                 ['Experiment', 'Max Ent', f'GNN'],
                 ['k', 'b', 'r'])
     for arr, fig_label, c in data:
+        print(fig_label, mean_squared_error(meanDist, arr))
         ax5.plot(log_labels, arr, label = fig_label, color = c)
 
     ax5.set_yscale('log')
@@ -1482,25 +1536,32 @@ def figure2(test=False):
     ax5.legend(loc='upper right', fontsize=legend_fontsize)
 
     # time and scc
-    labels = ['Max Ent\n(Conv)', 'Max Ent\n(Max It)', 'GNN']
+    labels = ['Max Ent', 'Max Ent\n(long)', 'GNN']
     ticks = range(1, 4)
     data = [max_ent_sccs, max_ent_sccs_strict, gnn_sccs]
+    print(max_ent_sccs, np.mean(max_ent_sccs))
+    print(gnn_sccs, np.mean(gnn_sccs))
     b1 = ax6.boxplot(data, vert = True,
                         patch_artist = True, labels = labels)
     ax6.set_ylim()
     ax6.set_ylabel('SCC', fontsize=16)
 
-    data = [max_ent_times, max_ent_times_strict, gnn_times]
-    b2 = ax7.boxplot(data,  vert = True,
-                        patch_artist = True, labels = labels)
-    # axes[1].set_yscale('log')
-    ax7.set_ylabel('Time (mins)', fontsize=16)
 
-    data = [np.NaN, max_ent_pearsons, gnn_pearsons]
-    b3 = ax8.boxplot(data, vert = True,
+
+    data = [max_ent_pearsons_strict, max_ent_pearsons, gnn_pearsons]
+    print(max_ent_pearsons_strict)
+    b3 = ax7.boxplot(data, vert = True,
                         patch_artist = True, labels = labels)
     # axes[1].set_yscale('log')
-    ax8.set_ylabel('Pearson Correlation of PC 1', fontsize=16)
+    ax7.set_ylabel('Pearson Correlation of PC 1', fontsize=16)
+
+    data = [max_ent_times, max_ent_times_strict, gnn_times]
+    b2 = ax8.boxplot(data,  vert = True,
+                        patch_artist = True, labels = labels)
+    # ax8.set_yticks([10, 50, 100])
+    # ax8.set_yscale('log')
+    ax8.set_ylim(0, 90)
+    ax8.set_ylabel('Time (mins)', fontsize=16)
 
     # fill with colors
     colors = ['b', 'b', 'r']
@@ -1521,8 +1582,12 @@ def figure2(test=False):
             size=20, weight='bold')
 
     plt.tight_layout()
+    # if test:
+    #     plt.show()
+    # else:
     plt.savefig('/home/erschultz/TICG-chromatin/figures/figure2.png')
     plt.close()
+
 
 def interpretation_figure():
     # dataset = 'dataset_04_05_23'; sample = 1001
@@ -1832,7 +1897,7 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     # data_dir = osp.join(dir, 'dataset_soren/samples/sample1')
     # file = osp.join(data_dir, 'y_kr.npy')
@@ -1847,7 +1912,7 @@ if __name__ == '__main__':
     # plot_all_contact_maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
     # generalization_figure()
-    figure2()
+    # figure2()
     # interpretation_figure()
     # interpretation_figure_test()
     # plot_first_PC('dataset_02_04_23', 10, 419)

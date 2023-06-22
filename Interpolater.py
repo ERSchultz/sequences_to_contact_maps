@@ -9,6 +9,7 @@ import pyBigWig
 import scipy.stats as ss
 import seaborn as sns
 from liftover import get_lifter
+
 from scripts.load_utils import load_import_log
 # from pyliftover import LiftOver as get_lifter
 from scripts.plotting_utils import RED_CMAP, plot_matrix
@@ -312,17 +313,19 @@ class Interpolater():
         return y
 
 def wrapper(dataset, sample, factor):
-    high_res_dir = f'/home/erschultz/{dataset}/chroms_10k/sample{sample}'
+    high_res_dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
     if not osp.exists(high_res_dir):
+        print(f'{high_res_dir} does not exist')
         return
+
     # this is the recommended option
     interpolater = Interpolater(['zeros', 'mappability-0.7'], dir = high_res_dir)
     interpolater.run(factor = factor)
 
-    odir = f'/home/erschultz/{dataset}/chroms/'
+    odir = f'/home/erschultz/{dataset}/samples/'
     if not osp.exists(odir):
         os.mkdir(odir, mode=0o755)
-    odir = f'/home/erschultz/{dataset}/chroms/sample{sample}'
+    odir = f'/home/erschultz/{dataset}/samples/sample{sample+1000}'
     assert odir != high_res_dir # prevent overwriting data on accident
     if not osp.exists(odir):
         os.mkdir(odir, mode=0o755)
@@ -342,14 +345,13 @@ def wrapper(dataset, sample, factor):
         f.write(f'genome={interpolater.genome}')
 
 def main():
-    dataset = 'dataset_02_04_23'
-    mapping = [(dataset, i, 5) for i in range(1, 24)]
+    dataset = 'Su2020'
+    mapping = [(dataset, i, 5) for i in range(4, 5)]
     # serial version
     # for dataset, i, factor in mapping:
         # wrapper(dataset, i, factor)
     with multiprocessing.Pool(5) as p:
         p.starmap(wrapper, mapping)
-#
 
 def example_figure(dataset, sample):
     dir = osp.join(f'/home/erschultz/{dataset}')

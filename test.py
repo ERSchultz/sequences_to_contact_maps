@@ -630,7 +630,7 @@ def plot_SCC_weights():
 def check_max_ent_progress():
     dir = '/home/erschultz/dataset_05_31_23/samples'
     todo = 0
-    for f in os.listdir(dir):
+    for f in sorted(os.listdir(dir)):
         found = False
         fdir = osp.join(dir, f)
         max_ent_dir = osp.join(fdir, 'optimize_grid_b_140_phi_0.03-max_ent10')
@@ -647,12 +647,11 @@ def check_max_ent_progress():
 
     print(todo)
 
-
 if __name__ == '__main__':
-    # check_max_ent_progress()
+    check_max_ent_progress()
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()
