@@ -767,7 +767,7 @@ def opt2list(opt):
         opt_list.extend([opt.use_node_features, opt.use_edge_weights, opt.use_edge_attr,
                         opt.node_transforms, opt.edge_transforms,
                         opt.sparsify_threshold, opt.sparsify_threshold_upper, opt.max_diagonal,
-                        opt.encoder_hidden_sizes_list,
+                        opt.encoder_hidden_sizes_list, opt.edge_encoder_hidden_sizes_list,
                         opt.hidden_sizes_list, opt.message_passing, opt.update_hidden_sizes_list,
                         f'{opt.head_architecture}+{opt.head_architecture_2}', opt.head_hidden_sizes_list])
         if opt.use_sign_net:
@@ -827,7 +827,7 @@ def get_opt_header(model_type, GNN_mode):
         opt_list.extend(['use_node_features','use_edge_weights', 'use_edge_attr',
                         'node_transforms', 'edge_transforms',
                         'sparsify_threshold', 'sparsify_threshold_upper', 'max_diagonal',
-                        'encoder_hidden_sizes',
+                        'encoder_hidden_sizes', 'edge_encoder_hidden_sizes',
                         'hidden_sizes', 'message_passing', 'update_hidden_sizes',
                         'head_architecture', 'head_hidden_sizes', 'sign_net'])
     if model_type == 'simpleEpiNet':

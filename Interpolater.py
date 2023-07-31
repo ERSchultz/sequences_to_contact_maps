@@ -9,7 +9,6 @@ import pyBigWig
 import scipy.stats as ss
 import seaborn as sns
 from liftover import get_lifter
-
 from scripts.load_utils import load_import_log
 # from pyliftover import LiftOver as get_lifter
 from scripts.plotting_utils import RED_CMAP, plot_matrix
@@ -313,7 +312,7 @@ class Interpolater():
         return y
 
 def wrapper(dataset, sample, factor):
-    high_res_dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
+    high_res_dir = f'/home/erschultz/{dataset}/samples_10k/sample{sample}'
     if not osp.exists(high_res_dir):
         print(f'{high_res_dir} does not exist')
         return
@@ -325,7 +324,7 @@ def wrapper(dataset, sample, factor):
     odir = f'/home/erschultz/{dataset}/samples/'
     if not osp.exists(odir):
         os.mkdir(odir, mode=0o755)
-    odir = f'/home/erschultz/{dataset}/samples/sample{sample+1000}'
+    odir = f'/home/erschultz/{dataset}/samples/sample{sample}'
     assert odir != high_res_dir # prevent overwriting data on accident
     if not osp.exists(odir):
         os.mkdir(odir, mode=0o755)
@@ -345,17 +344,17 @@ def wrapper(dataset, sample, factor):
         f.write(f'genome={interpolater.genome}')
 
 def main():
-    dataset = 'Su2020'
-    mapping = [(dataset, i, 5) for i in range(4, 5)]
+    dataset = 'dataset_06_29_23'
+    mapping = [(dataset, i, 5) for i in range(1, 636)]
     # serial version
     # for dataset, i, factor in mapping:
         # wrapper(dataset, i, factor)
-    with multiprocessing.Pool(5) as p:
+    with multiprocessing.Pool(15) as p:
         p.starmap(wrapper, mapping)
 
 def example_figure(dataset, sample):
     dir = osp.join(f'/home/erschultz/{dataset}')
-    dir_raw = osp.join(dir, f'samples/sample{sample}')
+    dir_raw = osp.join(dir, f'samples_10k/sample{sample}')
     y_raw = np.load(osp.join(dir_raw, 'y.npy'))
     # dir_interp = osp.join(dir, f'samples/sample{sample+200}')
     # y_interp = np.load(osp.join(dir_interp, 'y.npy'))
@@ -438,7 +437,7 @@ def test_liftover():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
     # test_liftover()
-    # example_figure('dataset_02_04_23', 1)
+    example_figure('dataset_02_04_23', 1)
     # check_interpolation()

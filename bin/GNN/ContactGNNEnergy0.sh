@@ -30,6 +30,11 @@ headArchitecture2="fc-fill_${m}"
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 
+act='leaky'
+innerAct='leaky'
+headAct='leaky'
+outAct='leaky'
+
 sweepChoices='2-3-4-5'
 yNorm='mean_fill'
 k=8
@@ -37,10 +42,14 @@ useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
-# sign_plus with log preprocessing
+outputMode='energy_sym'
 
 
-id=425
+
+# ablation of 427 with energy_sym
+
+
+id=430
 for lr in 1e-4
 do
   train

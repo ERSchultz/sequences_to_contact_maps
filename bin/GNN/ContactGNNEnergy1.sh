@@ -20,9 +20,8 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy1' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_04_28_23"
 m=512
-preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-GeneticDistance_norm-AdjPCs_8'
+preTransforms='ContactDistance-MeanContactDistance-GeneticDistance_norm-AdjPCs_8'
 hiddenSizesList='8-8-8-8'
-EdgeEncoderHiddenSizesList='32'
 updateHiddenSizesList='1000-1000-64'
 
 outputPreprocesing='log'
@@ -31,6 +30,11 @@ headArchitecture2="fc-fill_${m}"
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 
+act='leaky'
+innerAct='leaky'
+headAct='leaky'
+outAct='leaky'
+
 sweepChoices='2-3-4-5'
 yNorm='mean_fill'
 k=8
@@ -38,10 +42,12 @@ useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
-# sign_plus with log preprocessing
 
 
-id=426
+# ablation of 427 without bonded diag
+
+
+id=431
 for lr in 1e-4
 do
   train

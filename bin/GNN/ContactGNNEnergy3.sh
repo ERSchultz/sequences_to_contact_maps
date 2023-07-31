@@ -25,22 +25,28 @@ hiddenSizesList='8-8-8-8'
 updateHiddenSizesList='1000-1000-64'
 
 outputPreprocesing='log'
-headArchitecture='dconv-bilinear'
-headArchitecture2="dconv-fc-fill_${m}"
+headArchitecture='bilinear'
+headArchitecture2="fc-fill_${m}"
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
+
+act='leaky'
+innerAct='leaky'
+headAct='leaky'
+outAct='leaky'
 
 sweepChoices='2-3-4-5'
 yNorm='mean_fill'
 k=8
-useSignPlus='true'
+useSignPlus='false'
 batchSize=1
 nEpochs=80
 milestones='40'
-# sign_plus with log preprocessing
 
 
-id=428
+# ablation of 427 without signedconv (eigenvectors are naively appended)
+
+id=431
 for lr in 1e-4
 do
   train

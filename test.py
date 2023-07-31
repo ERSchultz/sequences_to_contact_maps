@@ -13,19 +13,17 @@ import seaborn as sns
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from core_test_train import core_test_train
+from pylib.utils import epilib
+from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
-
-from core_test_train import core_test_train
-from result_summary_plots import plot_top_PCs
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
 from scripts.energy_utils import *
-from scripts.load_utils import load_L, load_sc_contacts, save_sc_contacts
+from scripts.load_utils import (load_import_log, load_L, load_sc_contacts,
+                                save_sc_contacts)
 from scripts.neural_nets.dataset_classes import make_dataset
 from scripts.neural_nets.networks import get_model
 from scripts.neural_nets.utils import get_dataset
@@ -33,6 +31,9 @@ from scripts.plotting_utils import RED_CMAP, plot_matrix
 from scripts.similarity_measures import SCC
 from scripts.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
                            print_time, triu_to_full)
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUV'
 
@@ -161,7 +162,7 @@ def debugModel(model_type):
         opt.keep_zero_edges = False
         opt.loss = 'mse'
         opt.preprocessing_norm = 'mean_fill'
-        opt.message_passing = 'weighted_GAT'
+        opt.message_passing = 'GAT'
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym_diag'
         opt.output_preprocesing = 'log'
@@ -628,14 +629,14 @@ def plot_SCC_weights():
     plt.show()
 
 def check_max_ent_progress():
-    dir = '/home/erschultz/dataset_05_31_23/samples'
+    dir = '/home/erschultz/dataset_02_04_23/samples'
     todo = 0
     for f in sorted(os.listdir(dir)):
         found = False
         fdir = osp.join(dir, f)
-        max_ent_dir = osp.join(fdir, 'optimize_grid_b_140_phi_0.03-max_ent10')
+        max_ent_dir = osp.join(fdir, 'optimize_grid_b_261_phi_0.01-max_ent12')
         if osp.exists(max_ent_dir):
-            if osp.exists(osp.join(max_ent_dir, 'iteration14')):
+            if osp.exists(osp.join(max_ent_dir, 'iteration19')):
                 found = True
             else:
                 print(f'{f} in progress')
@@ -647,11 +648,42 @@ def check_max_ent_progress():
 
     print(todo)
 
+def test_pcs_meanval():
+    dataset = 'dataset_02_04_23'; sample = 202; GNN_ID = 427
+    k=10
+    sample_dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
+    result = load_import_log(sample_dir)
+    start = result['start_mb']
+    end = result['end_mb']
+    chrom = result['chrom']
+    print(chrom)
+
+    y_chr = np.load(osp.join('/home/erschultz', dataset, f'chroms_50k/sample{chrom}/y.npy'))
+    print(y_chr.shape)
+    y_chr_diag = epilib.get_oe(y_chr)
+    row_means = np.mean(y_chr_diag, axis=0)
+    nan_rows = row_means == 0
+    y_chr_diag = y_chr_diag[~nan_rows][:, ~nan_rows] # ignore nan_rows
+    # plot_matrix(y_chr_diag)
+    print(y_chr_diag.shape)
+    print('nan', np.sum(np.isnan(y_chr_diag)))
+    print('inf', np.sum(np.isinf(y_chr_diag)))
+    C = np.corrcoef(y_chr_diag)
+    print(C)
+    print('nan', np.sum(np.isnan(C)))
+    print('inf', np.sum(np.isinf(C)))
+    seq = epilib.get_pcs(y_chr_diag, 10, normalize = False, manual=False)[:, 0]
+    print(seq, np.mean(seq))
+    plt.plot(seq)
+    plt.show()
+
+
 if __name__ == '__main__':
-    check_max_ent_progress()
+    # check_max_ent_progress()
+    # test_pcs_meanval()
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()
