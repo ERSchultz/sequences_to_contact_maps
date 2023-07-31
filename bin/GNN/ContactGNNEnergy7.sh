@@ -20,7 +20,7 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy7' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_04_28_23"
 m=512
-preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-GeneticDistance_norm'
+preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-GeneticDistance_norm-constant'
 hiddenSizesList='8-8-8-8'
 updateHiddenSizesList='1000-1000-64'
 
@@ -44,7 +44,7 @@ nEpochs=80
 milestones='40'
 
 
-# ablation of 427 without signedconv (eigenvectors are also absent)
+# ablation of 427 without signedconv (eigenvectors are replaced by constant node feature)
 
 id=435
 for lr in 1e-4
