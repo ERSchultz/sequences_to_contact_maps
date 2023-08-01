@@ -46,7 +46,7 @@ milestones='40'
 
 # ablation of 427 without signedconv (eigenvectors are naively appended)
 
-id=431
+id=438
 for lr in 1e-4
 do
   train

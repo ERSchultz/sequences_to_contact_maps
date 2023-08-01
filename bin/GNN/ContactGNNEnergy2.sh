@@ -47,7 +47,7 @@ milestones='40'
 # ablation of 427 with mean y norm
 
 
-id=431
+id=437
 for lr in 1e-4
 do
   train
