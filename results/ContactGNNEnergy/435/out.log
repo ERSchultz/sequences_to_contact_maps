@@ -338,3 +338,43 @@ Mean test/val loss: 0.2990
 [25, 50, 75] percentiles test/val loss: [0.1399 0.2304 0.3727]
 
 Epoch 78, loss = 0.2419
+Mean test/val loss: 0.2984
+[25, 50, 75] percentiles test/val loss: [0.1413 0.2308 0.3756]
+
+Epoch 80, loss = 0.2410
+Mean test/val loss: 0.2985
+[25, 50, 75] percentiles test/val loss: [0.1391 0.2286 0.372 ]
+
+
+Total parameters: 26453616
+Total training + validation time: 3.0 hours, 53.0 mins, and 23.299999999999272 secs
+Final val loss: 0.2985108014270663
+
+split sizes: train=4500, val=500, test=0, N=5000
+#### Plotting Script ####
+Prediction Results:
+dataset_04_28_23 sample981: 0.5741596221923828
+dataset_04_28_23 sample324: 0.6627121567726135
+dataset_04_28_23 sample3464: 0.5167595148086548
+dataset_04_28_23 sample2834: 0.44050994515419006
+dataset_04_28_23 sample1936: 0.22482247650623322
+Loss: 0.484 +- 0.148
+
+Downsampling (40%) Results:
+dataset_04_28_23 sample1936-downsampling: 6.836036205291748
+dataset_04_28_23 sample2834-downsampling: 6.526927947998047
+dataset_04_28_23 sample324-downsampling: 11.081923484802246
+dataset_04_28_23 sample3464-downsampling: 9.154013633728027
+dataset_04_28_23 sample981-downsampling: 16.52021598815918
+Loss: 10.024 +- 3.646
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy7downsample
+Original sampling (100%) Results:
+dataset_04_28_23 sample1936-regular: 7.041179656982422
+dataset_04_28_23 sample2834-regular: 6.7715559005737305
+dataset_04_28_23 sample324-regular: 10.102092742919922
+dataset_04_28_23 sample3464-regular: 8.736953735351562
+dataset_04_28_23 sample981-regular: 10.295955657958984
+Loss: 8.59 +- 1.478
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy7regsample
