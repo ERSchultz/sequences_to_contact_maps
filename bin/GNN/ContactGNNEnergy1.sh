@@ -42,6 +42,7 @@ useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
+resumeTraining='true'
 
 
 # ablation of 427 without bonded diag
