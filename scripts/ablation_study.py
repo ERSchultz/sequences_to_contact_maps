@@ -8,14 +8,14 @@ import numpy as np
 def main():
     descr_dict = {427: 'Baseline',
             430: r'predict $S$ (instead of $S^\dag$)',
-            431: 'without H bonded',
-            432: 'without ContactDistance',
-            433: 'without meanConstact Distance',
-            434: 'without genetic distance norm',
-            435: 'without signconv (eigenvectors replaced with constant)',
-            436: 'with gatv2conv instead of modified',
-            437: 'with mean y_norm instead of mean_fill',
-            438: 'without signconv (eigenvectors are naively included)',
+            431: 'without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$',
+            432: 'without $\log(H_{ij})$ in $e_{ij}$',
+            433: 'without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$',
+            434: 'without $|i-j|$ in $e_{ij}$',
+            435: 'without SignNet (eigenvectors are replaced with constant node feature)',
+            436: 'original message passing layer from \citep{Brody2022HowNetworks} (instead of \cref{eq:mp})',
+            437: "without overwriting main diagonal with 1's",
+            438: 'without SignNet (eigenvectors are still included as node features)',
             }
     loss_dict = defaultdict(lambda: None)
 
@@ -62,7 +62,10 @@ def make_latex_table(descr_dict, loss_dict):
                 o.write("\t\t\\hline\n")
         o.write("\t\t\\hline\n")
         o.write("\t\\end{tabular}\n")
-        o.write("\t\\caption{Ablation results.}\n")
+        o.write('''\t\\caption{Neural network ablation results.
+        All results in the body of the paper correspond the the Baseline method.
+        }\n
+        ''')
         o.write("\t\\label{table:ablation}\n")
         o.write("\\end{table}")
 

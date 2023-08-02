@@ -46,7 +46,7 @@ milestones='40'
 
 # ablation of 427 without rescale
 
-id=437
+id=439
 for lr in 1e-4
 do
   train
