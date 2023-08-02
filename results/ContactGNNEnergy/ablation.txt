@@ -1,0 +1,22 @@
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|c|c|}
+		\hline
+		Method & Validation Loss (MSE) \\ 
+		\hline\hline
+		Baseline & 0.266 \\ 
+		\hline
+		predict $S$ (instead of $S^\dag$) & 0.39 \\ 
+		with gatv2conv instead of modified & 1.199 \\ 
+		with mean y_norm instead of mean_fill & 0.269 \\ 
+		without signconv (eigenvectors replaced with constant) & 0.299 \\ 
+		without signconv (eigenvectors are naively included) & 0.305 \\ 
+		without H bonded & None \\ 
+		without ContactDistance & 0.438 \\ 
+		without meanConstact Distance & 0.274 \\ 
+		without genetic distance norm & 0.269 \\ 
+		\hline
+	\end{tabular}
+	\caption{Ablation results.}
+	\label{table:ablation}
+\end{table}

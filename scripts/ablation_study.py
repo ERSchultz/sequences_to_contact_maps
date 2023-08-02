@@ -6,7 +6,7 @@ import numpy as np
 
 
 def main():
-    descr_dict = {427: 'original',
+    descr_dict = {427: 'Baseline',
             430: r'predict $S$ (instead of $S^\dag$)',
             431: 'without H bonded',
             432: 'without ContactDistance',
@@ -34,6 +34,37 @@ def main():
             loss_dict[id] = final_val_loss
 
     print(loss_dict)
+
+    make_latex_table(descr_dict, loss_dict)
+
+def make_latex_table(descr_dict, loss_dict):
+    ofile = '/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/ablation.txt'
+    with open(ofile, 'w') as o:
+        # set up first rows of table
+        o.write("\\begin{table}[h]\n")
+        o.write("\t\\centering\n")
+        num_cols = 2
+        num_cols_str = str(num_cols)
+
+        o.write("\t\\begin{tabular}{|" + "c|"*num_cols + "}\n")
+        # o.write("\\hline\n")
+        # o.write("\\multicolumn{" + num_cols_str + "}{|c|}{" + header + "} \\\ \n")
+        o.write("\t\t\\hline\n")
+
+        row = "\t\tMethod & Validation Loss (MSE) \\\ \n"
+        o.write(row)
+        o.write("\t\t\\hline\\hline\n")
+
+        id_list = [427, 430, 436, 437, 435, 438, 431, 432, 433, 434]
+        for id in id_list:
+            o.write(f"\t\t{descr_dict[id]} & {loss_dict[id]} \\\ \n")
+            if id == 427:
+                o.write("\t\t\\hline\n")
+        o.write("\t\t\\hline\n")
+        o.write("\t\\end{tabular}\n")
+        o.write("\t\\caption{Ablation results.}\n")
+        o.write("\t\\label{table:ablation}\n")
+        o.write("\\end{table}")
 
 
 if __name__ == '__main__':
