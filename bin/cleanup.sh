@@ -13,5 +13,6 @@ for i in {1..500}
 do
   cd $dir
   cd $i
-  rm *upsampling.tar.gz
+  rm *regular.tar.gz
+  rm *downsampling.tar.gz
 done
