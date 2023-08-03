@@ -976,13 +976,13 @@ def generalization_figure():
     label_fontsize=24
     tick_fontsize=22
     letter_fontsize=26
-    datasets = ['dataset_05_31_23']*3
+    datasets = ['dataset_06_29_23']*3
     cell_lines = ['IMR90', 'HMEC', 'HAP1']
     samples = [1002, 1037, 1198]
     # datasets = ['dataset_04_05_23', 'dataset_04_05_23', 'dataset_04_05_23']
     # cell_lines = ['GM12878', 'HCT116', 'HL-60']
     # samples = [1213, 1248, 1286]
-    GNN_ID = 427
+    GNN_ID = 434
 
     odir = '/home/erschultz/TICG-chromatin/figures'
     if not osp.exists(odir):
