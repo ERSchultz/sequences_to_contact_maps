@@ -1,7 +1,7 @@
 --data_folder
 /project2/depablo/erschultz/dataset_04_28_23
 --root_name
-ContactGNNEnergy1
+ContactGNNEnergy9
 --delete_root
 false
 --model_type
@@ -23,7 +23,7 @@ none
 --kr
 false
 --rescale
-2
+1
 --mean_filt
 none
 --output_preprocesing
@@ -55,7 +55,7 @@ none
 --transforms
 empty
 --pre_transforms
-ContactDistance-MeanContactDistance-GeneticDistance_norm-AdjPCs_8
+ContactDistance-MeanContactDistance-MeanContactDistance_bonded-GeneticDistance_norm-AdjPCs_8
 --top_k
 none
 --sparsify_threshold
@@ -132,9 +132,9 @@ none
 --print_params
 true
 --id
-431
+439
 --resume_training
-true
+false
 --pretrain_id
 none
 --mlp_model_id
