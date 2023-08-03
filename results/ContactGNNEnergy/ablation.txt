@@ -1,25 +1,28 @@
 \begin{table}[h]
 	\centering
-	\begin{tabular}{|c|c|}
+	\begin{tabular}{|c|c|c|}
 		\hline
-		Method & Validation Loss (MSE) \\ 
+		Method & Validation Loss (MSE) & Experimental SCC \\ 
 		\hline\hline
-		Baseline & 0.266 \\ 
+		baseline & 0.266 & 0.698 \\ 
 		\hline
-		predict $S$ (instead of $S^\dag$) & 0.39 \\ 
-		original message passing layer from \citep{Brody2022HowNetworks} (instead of \cref{eq:mp}) & 1.199 \\ 
-		without overwriting main diagonal with 1's & 0.269 \\ 
-		without SignNet (eigenvectors are replaced with constant node feature) & 0.299 \\ 
-		without SignNet (eigenvectors are still included as node features) & 0.305 \\ 
-		without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$ & None \\ 
-		without $\log(H_{ij})$ in $e_{ij}$ & 0.438 \\ 
-		without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$ & 0.274 \\ 
-		without $|i-j|$ in $e_{ij}$ & 0.269 \\ 
+		predict $S$ (instead of $S^\dag$) & 0.39 & 0.373 \\ 
+		original message passing layer from \citep{Brody2022HowNetworks} (instead of \cref{eq:mp}) & 1.199 & 0.033 \\ 
+		without overwriting main diagonal with 1's & 0.269 & 0.699 \\ 
+		without SignNet (eigenvectors are replaced with constant node feature) & 0.299 & 0.674 \\ 
+		without SignNet (eigenvectors are still included as node features) & 0.305 & 0.695 \\ 
+		without rescaling contact map & 0.216 & 0.659 \\ 
+		without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$ & 0.279 & 0.623 \\ 
+		without $\log(H_{ij})$ in $e_{ij}$ & 0.438 & 0.624 \\ 
+		without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$ & 0.274 & 0.614 \\ 
+		without $|i-j|$ in $e_{ij}$ & 0.269 & 0.712 \\ 
 		\hline
 	\end{tabular}
 	\caption{Neural network ablation results.
-        All results in the body of the paper correspond the the Baseline method.
+        See \nameref{ablation_study} for description of each method.
+        All results in the body of the paper correspond to the baseline method.
+        Validation Loss (MSE) is the average mean squared error on the validation set of 500 simulated simulated conatact maps and their synthetic parameters.
+        Experimental SCC is the average stratum adjusted correlation (SCC) between the experimental contact map and a contact map simulated using the GNN-predicted parameters, averaged over 10 experimental contact maps.
         }
-
-        	\label{table:ablation}
+	\label{table:ablation}
 \end{table}

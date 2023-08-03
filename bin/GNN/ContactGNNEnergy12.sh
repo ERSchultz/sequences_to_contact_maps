@@ -20,7 +20,7 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy12' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_04_28_23"
 m=512
-preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-GeneticDistance_norm-AdjPCs_8'
+preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
 hiddenSizesList='8-8-8-8'
 updateHiddenSizesList='1000-1000-64'
 
@@ -42,10 +42,11 @@ useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
-# sign_plus with log preprocessing
 
 
-id=427
+# new baseline (doesn't have |i-j|)
+
+id=434
 for lr in 1e-4
 do
   train

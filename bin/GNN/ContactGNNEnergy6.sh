@@ -35,7 +35,7 @@ innerAct='leaky'
 headAct='leaky'
 outAct='leaky'
 
-sweepChoices='2-3-4-5'
+sweepChoices='5'
 yNorm='mean_fill'
 k=8
 useSignPlus='true'
@@ -44,10 +44,10 @@ nEpochs=80
 milestones='40'
 
 
-# ablation of 427 without GeneticDistance_norm
+# ablation of 434 without sweepChoices
 
 
-id=434
+id=446
 for lr in 1e-4
 do
   train

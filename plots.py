@@ -1472,7 +1472,7 @@ def figure2(test=False):
         args.experimental = True
         args.convergence_definition = 'normal'
         args.gnn_id = GNN_ID
-        data, converged_mask = load_data(args)
+        data, _ = load_data(args)
         max_ent = osp.split(max_ent_dir)[1]
         max_ent_times = data[k][max_ent]['converged_time']
         max_ent_times = [i for i in max_ent_times if i is not None]
@@ -1487,7 +1487,7 @@ def figure2(test=False):
 
 
         args.convergence_definition = None
-        data, converged_mask = load_data(args)
+        data, _ = load_data(args)
         max_ent_times_strict = data[k][max_ent]['converged_time']
         max_ent_times_strict = [i for i in max_ent_times_strict if i is not None]
         max_ent_sccs_strict = data[k][max_ent]['scc_var']

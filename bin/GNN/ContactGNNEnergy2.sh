@@ -20,7 +20,7 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy2' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_04_28_23"
 m=512
-preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-GeneticDistance_norm-AdjPCs_8'
+preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
 hiddenSizesList='8-8-8-8'
 updateHiddenSizesList='1000-1000-64'
 
@@ -44,10 +44,10 @@ nEpochs=80
 milestones='40'
 
 
-# ablation of 427 with mean y norm
+# ablation of 434 with mean y norm
 
 
-id=437
+id=442
 for lr in 1e-4
 do
   train

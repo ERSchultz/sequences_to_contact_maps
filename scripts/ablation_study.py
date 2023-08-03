@@ -1,12 +1,16 @@
 import csv
 import os.path as osp
+import sys
 from collections import defaultdict
 
 import numpy as np
 
+sys.path.append('/home/erschultz/TICG-chromatin/scripts')
+from makeLatexTable_new import *
+
 
 def main():
-    descr_dict = {427: 'Baseline',
+    descr_dict = {427: 'baseline',
             430: r'predict $S$ (instead of $S^\dag$)',
             431: 'without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$',
             432: 'without $\log(H_{ij})$ in $e_{ij}$',
@@ -16,9 +20,11 @@ def main():
             436: 'original message passing layer from \citep{Brody2022HowNetworks} (instead of \cref{eq:mp})',
             437: "without overwriting main diagonal with 1's",
             438: 'without SignNet (eigenvectors are still included as node features)',
+            439: 'without rescaling contact map'
             }
-    loss_dict = defaultdict(lambda: None)
 
+
+    loss_dict = defaultdict(lambda: None)
     for id in descr_dict.keys():
         gnn_dir = osp.join('/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy', str(id))
         log_file = osp.join(gnn_dir, 'out.log')
@@ -32,18 +38,30 @@ def main():
                     final_val_loss = None
                     print(f'Warning: loss not found for {log_file}')
             loss_dict[id] = final_val_loss
-
     print(loss_dict)
 
-    make_latex_table(descr_dict, loss_dict)
 
-def make_latex_table(descr_dict, loss_dict):
+    odd_samples = [201, 202, 203, 204, 205, 206, 207, 216, 217, 218]
+    scc_dict = defaultdict(lambda: None)
+    args = getArgs(data_folder = f'/home/erschultz/dataset_02_04_23',
+                    samples = odd_samples)
+    args.experimental = True
+    args.convergence_definition = 'normal'
+    data, _ = load_data(args)
+    for id in descr_dict.keys():
+        gnn = f'optimize_grid_b_140_phi_0.03-GNN{id}'
+        sccs = data[0][gnn]['scc_var']
+        scc_dict[id] = np.round(np.mean(sccs), 3)
+
+    make_latex_table(descr_dict, loss_dict, scc_dict)
+
+def make_latex_table(descr_dict, loss_dict, scc_dict):
     ofile = '/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/ablation.txt'
     with open(ofile, 'w') as o:
         # set up first rows of table
         o.write("\\begin{table}[h]\n")
         o.write("\t\\centering\n")
-        num_cols = 2
+        num_cols = 3
         num_cols_str = str(num_cols)
 
         o.write("\t\\begin{tabular}{|" + "c|"*num_cols + "}\n")
@@ -51,21 +69,23 @@ def make_latex_table(descr_dict, loss_dict):
         # o.write("\\multicolumn{" + num_cols_str + "}{|c|}{" + header + "} \\\ \n")
         o.write("\t\t\\hline\n")
 
-        row = "\t\tMethod & Validation Loss (MSE) \\\ \n"
+        row = "\t\tMethod & Validation Loss (MSE) & Experimental SCC \\\ \n"
         o.write(row)
         o.write("\t\t\\hline\\hline\n")
 
-        id_list = [427, 430, 436, 437, 435, 438, 431, 432, 433, 434]
+        id_list = [427, 430, 436, 437, 435, 438, 439, 431, 432, 433, 434]
         for id in id_list:
-            o.write(f"\t\t{descr_dict[id]} & {loss_dict[id]} \\\ \n")
+            o.write(f"\t\t{descr_dict[id]} & {loss_dict[id]} & {scc_dict[id]} \\\ \n")
             if id == 427:
                 o.write("\t\t\\hline\n")
         o.write("\t\t\\hline\n")
         o.write("\t\\end{tabular}\n")
         o.write('''\t\\caption{Neural network ablation results.
-        All results in the body of the paper correspond the the Baseline method.
-        }\n
-        ''')
+        See \\nameref{ablation_study} for description of each method.
+        All results in the body of the paper correspond to the baseline method.
+        Validation Loss (MSE) is the average mean squared error on the validation set of 500 simulated simulated conatact maps and their synthetic parameters.
+        Experimental SCC is the average stratum adjusted correlation (SCC) between the experimental contact map and a contact map simulated using the GNN-predicted parameters, averaged over 10 experimental contact maps.
+        }\n''')
         o.write("\t\\label{table:ablation}\n")
         o.write("\\end{table}")
 
