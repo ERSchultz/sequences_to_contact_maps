@@ -1,21 +1,19 @@
-\begin{table}[h]
+\renewcommand\theadalign{bc}\renewcommand\theadfont{\bfseries}\begin{table}[h]
 	\centering
 	\begin{tabular}{|c|c|c|}
 		\hline
-		Method & Validation Loss (MSE) & Experimental SCC \\ 
+		\theat{Method} & \thead{Validation Loss \\ (MSE)} & \thead{Test Loss \\ (Experimental SCC)} \\ 
 		\hline\hline
-		baseline & 0.266 & 0.698 \\ 
-		\hline
-		predict $S$ (instead of $S^\dag$) & 0.39 & 0.373 \\ 
-		original message passing layer from \citep{Brody2022HowNetworks} (instead of \cref{eq:mp}) & 1.199 & 0.033 \\ 
-		without overwriting main diagonal with 1's & 0.269 & 0.699 \\ 
-		without SignNet (eigenvectors are replaced with constant node feature) & 0.299 & 0.674 \\ 
-		without SignNet (eigenvectors are still included as node features) & 0.305 & 0.695 \\ 
-		without rescaling contact map & 0.216 & 0.659 \\ 
-		without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$ & 0.279 & 0.623 \\ 
-		without $\log(H_{ij})$ in $e_{ij}$ & 0.438 & 0.624 \\ 
-		without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$ & 0.274 & 0.614 \\ 
-		without $|i-j|$ in $e_{ij}$ & 0.269 & 0.712 \\ 
+		baseline & 0.269 & 0.712 \\ 
+		predict $S$ (instead of $S^\dag$) & 0.391 & 0.405 \\ 
+		original message passing layer from \citep{Brody2022HowNetworks} (instead of \cref{eq:mp}) & 1.199 & 0.004 \\ 
+		without overwriting main diagonal with 1's & 0.272 & 0.682 \\ 
+		without SignNet & 0.303 & 0.692 \\ 
+		without rescaling contact map & 0.219 & 0.634 \\ 
+		only long simulation & 0.258 & 0.696 \\ 
+		without $\log(H_{ij})$ in $e_{ij}$ & 0.441 & 0.63 \\ 
+		without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$ & 0.273 & 0.664 \\ 
+		without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$ & 0.276 & 0.589 \\ 
 		\hline
 	\end{tabular}
 	\caption{Neural network ablation results.

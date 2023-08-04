@@ -978,7 +978,7 @@ def generalization_figure():
     letter_fontsize=26
     datasets = ['dataset_06_29_23']*3
     cell_lines = ['IMR90', 'HMEC', 'HAP1']
-    samples = [1002, 1037, 1198]
+    samples = [2, 103, 604]
     # datasets = ['dataset_04_05_23', 'dataset_04_05_23', 'dataset_04_05_23']
     # cell_lines = ['GM12878', 'HCT116', 'HL-60']
     # samples = [1213, 1248, 1286]
@@ -1009,7 +1009,7 @@ def generalization_figure():
         print(cell_line)
         dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
         gnn_dir = osp.join(dir, f'optimize_grid_b_140_phi_0.03-GNN{GNN_ID}')
-        max_ent_dir = osp.join(dir, f'optimize_grid_b_140_phi_0.03-max_ent10')
+        max_ent_dir = osp.join(dir, f'optimize_grid_b_140_phi_0.03-max_ent10_stop')
 
         y_exp = np.load(osp.join(dir, 'y.npy'))
         y_exp /= np.mean(y_exp.diagonal())
@@ -1044,7 +1044,7 @@ def generalization_figure():
         scc = np.round(scc_dict['scc_var'], 3)
         sccs.append(scc)
 
-        scc_dict = load_json(osp.join(max_ent_dir, 'iteration14/distance_pearson.json'))
+        scc_dict = load_json(osp.join(final, 'distance_pearson.json'))
         scc = np.round(scc_dict['scc_var'], 3)
         max_ent_sccs.append(scc)
 
@@ -1365,10 +1365,10 @@ def figure2(test=False):
     label_fontsize=24
     tick_fontsize=22
     letter_fontsize=26
-    dataset = 'dataset_02_04_23'; sample = 202; GNN_ID = 427
+    dataset = 'dataset_02_04_23'; sample = 208; GNN_ID = 434
     # dataset = 'dataset_04_05_23'; sample = 1001; GN_ID = 407
     # dataset = 'dataset_04_05_23'; sample = 1001; GNN_ID = 423
-    samples_list = range(201, 211)
+    samples_list = [208, 209, 210, 211, 212, 213, 214, 215, 223, 224]
 
     k=10
     def get_dirs(sample_dir):
@@ -1470,29 +1470,28 @@ def figure2(test=False):
         args = getArgs(data_folder = f'/home/erschultz/{dataset}',
                         samples = samples_list)
         args.experimental = True
-        args.convergence_definition = 'normal'
+        args.convergence_definition = None
         args.gnn_id = GNN_ID
         data, _ = load_data(args)
         max_ent = osp.split(max_ent_dir)[1]
-        max_ent_times = data[k][max_ent]['converged_time']
-        max_ent_times = [i for i in max_ent_times if i is not None]
-        max_ent_sccs = data[k][max_ent]['scc_var']
-        max_ent_sccs = [i for i in max_ent_sccs if not np.isnan(i)]
-        max_ent_pearsons = data[k][max_ent]['pearson_pc_1']
 
         gnn = f'optimize_grid_b_140_phi_0.03-GNN{GNN_ID}'
         gnn_times = data[0][gnn]['total_time']
         gnn_sccs = data[0][gnn]['scc_var']
         gnn_pearsons = data[0][gnn]['pearson_pc_1']
 
-
-        args.convergence_definition = None
-        data, _ = load_data(args)
         max_ent_times_strict = data[k][max_ent]['converged_time']
         max_ent_times_strict = [i for i in max_ent_times_strict if i is not None]
         max_ent_sccs_strict = data[k][max_ent]['scc_var']
         max_ent_sccs_strict = [i for i in max_ent_sccs_strict if not np.isnan(i)]
         max_ent_pearsons_strict = data[k][max_ent]['pearson_pc_1']
+
+        max_ent += '_stop'
+        max_ent_times = data[k][max_ent]['converged_time']
+        max_ent_times = [i for i in max_ent_times if i is not None]
+        max_ent_sccs = data[k][max_ent]['scc_var']
+        max_ent_sccs = [i for i in max_ent_sccs if not np.isnan(i)]
+        max_ent_pearsons = data[k][max_ent]['pearson_pc_1']
     else:
         max_ent_times = np.random.normal(size=100)
         max_ent_sccs = np.random.normal(loc=0.7, scale = 0.1, size=100)
@@ -1509,28 +1508,27 @@ def figure2(test=False):
     file = osp.join(gnn_dir, 'production_out/output.xyz')
     xyz = xyz_load(file, multiple_timesteps=True)[::, :m, :]
 
-    if not test:
-        pass
-        # y_chr = np.load(osp.join('/home/erschultz', dataset, f'chroms_50k/sample{chrom}/y.npy'))
-        # y_chr_diag = epilib.get_oe(y_chr)
-        # seq = epilib.get_pcs(y_chr_diag, 1, normalize = True)[:, 0]
-        # x = np.zeros((len(seq), 2))
-        # # kmeans = KMeans(n_clusters = 2)
-        # # kmeans.fit(y_chr_diag)
-        #
-        # # x[np.arange(len(y_chr)), kmeans.labels_] = 1
-        #
-        # # ensure that positive PC is compartment A
-        # chip_seq = np.load(f'/media/erschultz/1814ae69-5346-45a6-b219-f77f6739171c/home/erschultz/chip_seq_data/GM12878/hg19/signal_p_value/ENCFF850KGH/{chrom}.npy')
-        # chip_seq = chip_seq[:, 1]
-        # corr = pearson_round(chip_seq, seq, stat = 'spearman')
-        # seq *= np.sign(corr)
-        # seq = np.sign(seq)
-
-        # print(start / resolution_mb, end / resolution_mb)
-        # left = int(start / resolution_mb)
-        # right = int(end / resolution_mb)
-        # x = x[left:right]
+    # if not test:
+    #     y_chr = np.load(osp.join('/home/erschultz', dataset, f'chroms_50k/sample{chrom}/y.npy'))
+    #     y_chr_diag = epilib.get_oe(y_chr)
+    #     seq = epilib.get_pcs(y_chr_diag, 1, normalize = True)[:, 0]
+    #     x = np.zeros((len(seq), 2))
+    #     # kmeans = KMeans(n_clusters = 2)
+    #     # kmeans.fit(y_chr_diag)
+    #
+    #     # x[np.arange(len(y_chr)), kmeans.labels_] = 1
+    #
+    #     # ensure that positive PC is compartment A
+    #     chip_seq = np.load(f'/media/erschultz/1814ae69-5346-45a6-b219-f77f6739171c/home/erschultz/chip_seq_data/GM12878/hg19/signal_p_value/ENCFF850KGH/{chrom}.npy')
+    #     chip_seq = chip_seq[:, 1]
+    #     corr = pearson_round(chip_seq, seq, stat = 'spearman')
+    #     seq *= np.sign(corr)
+    #     seq = np.sign(seq)
+    #
+    #     print(start / resolution_mb, end / resolution_mb)
+    #     left = int(start / resolution_mb)
+    #     right = int(end / resolution_mb)
+    #     x = x[left:right]
 
     x = np.zeros((m, 2))
     y_diag = epilib.get_oe(y)
@@ -2041,7 +2039,7 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     # data_dir = osp.join(dir, 'dataset_soren/samples/sample1')
     # file = osp.join(data_dir, 'y_kr.npy')
@@ -2056,7 +2054,7 @@ if __name__ == '__main__':
     # plot_all_contact_maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
     # generalization_figure()
-    # figure2(True)
+    figure2()
     # interpretation_figure()
     # interpretation_figure_test()
     # plot_first_PC('dataset_02_04_23', 10, 419)

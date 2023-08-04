@@ -10,17 +10,17 @@ from makeLatexTable_new import *
 
 
 def main():
-    descr_dict = {427: 'baseline',
-            430: r'predict $S$ (instead of $S^\dag$)',
-            431: 'without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$',
-            432: 'without $\log(H_{ij})$ in $e_{ij}$',
-            433: 'without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$',
-            434: 'without $|i-j|$ in $e_{ij}$',
-            435: 'without SignNet (eigenvectors are replaced with constant node feature)',
-            436: 'original message passing layer from \citep{Brody2022HowNetworks} (instead of \cref{eq:mp})',
-            437: "without overwriting main diagonal with 1's",
-            438: 'without SignNet (eigenvectors are still included as node features)',
-            439: 'without rescaling contact map'
+    descr_dict = {434: 'baseline',
+            440: r'predict $S$',
+            441: 'without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$',
+            442: "without overwriting main diagonal with 1's",
+            443: 'without SignNet', # (eigenvectors are still included as node features)
+            444: 'without $\log(H_{ij})$ in $e_{ij}$',
+            445: 'without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$',
+            446: 'only long simulation',
+            # 447: 'without SignNet (eigenvectors are replaced with constant node feature)',
+            448: 'original message passing layer from \citep{Brody2022HowNetworks}',
+            449: 'without rescaling contact map'
             }
 
 
@@ -59,6 +59,8 @@ def make_latex_table(descr_dict, loss_dict, scc_dict):
     ofile = '/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/ablation.txt'
     with open(ofile, 'w') as o:
         # set up first rows of table
+        o.write("\\renewcommand\\theadalign{bc}\n")
+        o.write("\\renewcommand\\theadfont{\\bfseries}\n")
         o.write("\\begin{table}[h]\n")
         o.write("\t\\centering\n")
         num_cols = 3
@@ -69,11 +71,11 @@ def make_latex_table(descr_dict, loss_dict, scc_dict):
         # o.write("\\multicolumn{" + num_cols_str + "}{|c|}{" + header + "} \\\ \n")
         o.write("\t\t\\hline\n")
 
-        row = "\t\tMethod & Validation Loss (MSE) & Experimental SCC \\\ \n"
+        row = "\t\t\\thead{Method} & \\thead{Validation Loss \\\ (MSE)} & \\thead{Test Loss \\\ (Experimental SCC)} \\\ \n"
         o.write(row)
         o.write("\t\t\\hline\\hline\n")
 
-        id_list = [427, 430, 436, 437, 435, 438, 439, 431, 432, 433, 434]
+        id_list = [434, 440, 448, 442, 443, 449, 446, 444, 445, 441]
         for id in id_list:
             o.write(f"\t\t{descr_dict[id]} & {loss_dict[id]} & {scc_dict[id]} \\\ \n")
             if id == 427:
