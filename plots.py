@@ -1691,8 +1691,6 @@ def figure2(test=False):
     data = [max_ent_times, max_ent_times_strict, gnn_times]
     b2 = ax8.boxplot(data,  vert = True,
                         patch_artist = True, labels = labels)
-    for box in b2['boxes']:
-        box.set(edgecolor='black', linewidth=4)
     # ax8.set_yticks([10, 50, 100])
     # ax8.set_yscale('log')
     ax8.set_ylim(0, 90)
@@ -1703,6 +1701,7 @@ def figure2(test=False):
     for bplot in [b1, b2, b3]:
         for patch, color in zip(bplot['boxes'], colors):
             patch.set_facecolor(color)
+            patch.set(edgecolor='black', linewidth=2)
 
     # rotate xticks
     # Create offset transform by 5 points in x direction
@@ -2053,9 +2052,9 @@ if __name__ == '__main__':
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")
     # main()
-    # plot_all_contact_maps('dataset_05_28_23')
+    # plot_all_contact_cd maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
-    generalization_figure()
+    # generalization_figure()
     figure2()
     # interpretation_figure()
     # interpretation_figure_test()
