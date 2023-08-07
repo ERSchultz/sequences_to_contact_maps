@@ -1024,7 +1024,7 @@ def generalization_figure():
         chroms.append(chrom)
         m = len(y_exp)
         all_labels = np.linspace(start, end, m)
-        all_labels = np.round(all_labels, 1)
+        all_labels = np.round(all_labels, 0)
         genome_ticks = [0, m//3, 2*m//3, m-1]
         genome_labels = [f'{all_labels[i]}' for i in genome_ticks]
         genome_ticks_list.append(genome_ticks)
@@ -1408,7 +1408,7 @@ def figure2(test=False):
     resolution = result['resolution']
     resolution_mb = result['resolution_mb']
     all_labels = np.linspace(start, end, len(y))
-    all_labels = np.round(all_labels, 1)
+    all_labels = np.round(all_labels, 0)
     # genome_ticks = [0, len(y)//3, 2*len(y)//3, len(y)-1]
     genome_ticks = [0, len(y)-1]
     genome_labels = [f'{all_labels[i]}' for i in genome_ticks]
@@ -1754,7 +1754,7 @@ def interpretation_figure():
             if line[0] == 'end':
                 end = int(line[1]) / 1000000
     all_labels = np.linspace(start, end, len(y))
-    all_labels = np.round(all_labels, 1)
+    all_labels = np.round(all_labels, 0)
     genome_ticks = [0, len(y)//3, 2*len(y)//3, len(y)-1]
     genome_labels = [f'{all_labels[i]} Mb' for i in genome_ticks]
 
@@ -1928,7 +1928,7 @@ def interpretation_figure_test():
             if line[0] == 'end':
                 end = int(line[1]) / 1000000
     all_labels = np.linspace(start, end, len(y))
-    all_labels = np.round(all_labels, 1)
+    all_labels = np.round(all_labels, 0)
     genome_ticks = [0, len(y)//3, 2*len(y)//3, len(y)-1]
     genome_labels = [f'{all_labels[i]} Mb' for i in genome_ticks]
 
@@ -2053,7 +2053,7 @@ if __name__ == '__main__':
     # main()
     # plot_all_contact_maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
-    # generalization_figure()
+    generalization_figure()
     figure2()
     # interpretation_figure()
     # interpretation_figure_test()
