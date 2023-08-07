@@ -1691,6 +1691,8 @@ def figure2(test=False):
     data = [max_ent_times, max_ent_times_strict, gnn_times]
     b2 = ax8.boxplot(data,  vert = True,
                         patch_artist = True, labels = labels)
+    for box in b2['boxes']:
+        box.set(edgecolor='black', linewidth=4)
     # ax8.set_yticks([10, 50, 100])
     # ax8.set_yscale('log')
     ax8.set_ylim(0, 90)
