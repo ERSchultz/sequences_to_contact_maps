@@ -482,7 +482,7 @@ def plot_GNN_vs_PCA(dataset, k, GNN_ID):
 
         S_gnn = np.load(osp.join(gnn_dir, 'S.npy'))
 
-        cmap2 = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
+        BLUE_RED_CMAP = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
                                                  [(0, 'blue'),
                                                  (0.5, 'white'),
                                                   (1, 'red')], N=126)
@@ -566,15 +566,15 @@ def plot_GNN_vs_PCA(dataset, k, GNN_ID):
         vmax = np.nanpercentile(arr, 99)
         vmax = max(vmax, vmin * -1)
         vmin = vmax * -1
-        s1 = sns.heatmap(S, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
+        s1 = sns.heatmap(S, linewidth = 0, vmin = vmin, vmax = vmax, cmap = BLUE_RED_CMAP,
                         ax = ax1, cbar = False)
         s1.set_title(f'Max Ent (k={k}) '+ r'$\hat{S}$', fontsize = 16)
         s1.set_yticks([])
-        s2 = sns.heatmap(S_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
+        s2 = sns.heatmap(S_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = BLUE_RED_CMAP,
                         ax = ax2, cbar = False)
         s2.set_title(f'GNN-{GNN_ID} '+r'$\hat{S}$', fontsize = 16)
         s2.set_yticks([])
-        s3 = sns.heatmap(S - S_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
+        s3 = sns.heatmap(S - S_gnn, linewidth = 0, vmin = vmin, vmax = vmax, cmap = BLUE_RED_CMAP,
                         ax = ax3, cbar_ax = axcb)
         title = ('Difference\n'
                 r'(Max Ent $\hat{S}$ - GNN $\hat{S}$)')
@@ -740,16 +740,6 @@ def plot_Exp_vs_PCA(dataset, k=None):
         plot_matrix(S, osp.join(pca_dir, 'S.png'), cmap='blue-red')
 
 
-
-
-        cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                 [(0,    'white'),
-                                                  (1,    'red')], N=126)
-        cmap2 = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                                 [(0, 'blue'),
-                                                 (0.5, 'white'),
-                                                  (1, 'red')], N=126)
-
         fig, (axcb12, ax1, ax2, ax3, axcb3) = plt.subplots(1, 5,
                                         gridspec_kw={'width_ratios':[0.08,1,1,1,0.08]})
         fig.set_figheight(6)
@@ -757,10 +747,10 @@ def plot_Exp_vs_PCA(dataset, k=None):
         # fig.suptitle(f'Sample {sample}', fontsize = 16)
         vmin = 0
         vmax = np.mean(y)
-        s1 = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
+        s1 = sns.heatmap(y, linewidth = 0, vmin = vmin, vmax = vmax, cmap = RED_CMAP,
                         ax = ax1, cbar = False)
         s1.set_title('Experiment', fontsize = 16)
-        s2 = sns.heatmap(y_pca, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap,
+        s2 = sns.heatmap(y_pca, linewidth = 0, vmin = vmin, vmax = vmax, cmap = RED_CMAP,
                         ax = ax2, cbar_ax = axcb12)
         s2.set_title(f'Max Ent with PCA(k={k})\nSCC={np.round(pca_results["scc_var"], 3)}', fontsize = 16)
         s2.set_yticks([])
@@ -771,7 +761,7 @@ def plot_Exp_vs_PCA(dataset, k=None):
         vmax = np.nanpercentile(arr, 99)
         vmax = max(vmax, vmin * -1)
         vmin = vmax * -1
-        s3 = sns.heatmap(arr, linewidth = 0, vmin = vmin, vmax = vmax, cmap = cmap2,
+        s3 = sns.heatmap(arr, linewidth = 0, vmin = vmin, vmax = vmax, cmap = BLUE_RED_CMAP,
                         ax = ax3, cbar_ax = axcb3)
         s3.set_title(r'Max ent $\hat{S}$', fontsize = 16)
         s3.set_yticks([])

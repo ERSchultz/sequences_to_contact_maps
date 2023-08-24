@@ -634,9 +634,9 @@ def check_max_ent_progress():
     for f in sorted(os.listdir(dir)):
         found = False
         fdir = osp.join(dir, f)
-        max_ent_dir = osp.join(fdir, 'optimize_grid_b_261_phi_0.01-max_ent12')
+        max_ent_dir = osp.join(fdir, 'optimize_grid_b_261_phi_0.01-max_ent10')
         if osp.exists(max_ent_dir):
-            if osp.exists(osp.join(max_ent_dir, 'iteration19')):
+            if osp.exists(osp.join(max_ent_dir, 'iteration30')):
                 found = True
             else:
                 print(f'{f} in progress')
@@ -679,11 +679,11 @@ def test_pcs_meanval():
 
 
 if __name__ == '__main__':
-    # check_max_ent_progress()
+    check_max_ent_progress()
     # test_pcs_meanval()
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()

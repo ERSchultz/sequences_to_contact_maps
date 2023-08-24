@@ -24,7 +24,7 @@ preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-Ad
 hiddenSizesList='8-8-8-8'
 updateHiddenSizesList='1000-1000-64'
 
-outputPreprocesing='log'
+outputPreprocesing='none'
 headArchitecture='bilinear'
 headArchitecture2="fc-fill_${m}"
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
@@ -43,8 +43,10 @@ batchSize=1
 nEpochs=80
 milestones='40'
 
+# ablation of 450 without s_dag
 
-id=450
+
+id=451
 for lr in 1e-4
 do
   train

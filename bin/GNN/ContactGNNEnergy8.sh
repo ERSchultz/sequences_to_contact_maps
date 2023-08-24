@@ -18,7 +18,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy8' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_04_28_23"
+dirname="/project2/depablo/erschultz/dataset_08_17_23"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
 hiddenSizesList='8-8-8-8'
@@ -45,10 +45,10 @@ milestones='40'
 messagePassing='GAT'
 
 
-# ablation of 434 where I use the original gatv2conv
+# ablation of 450 where I use the original gatv2conv
 
 
-id=448
+id=459
 for lr in 1e-4
 do
   train
