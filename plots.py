@@ -25,7 +25,7 @@ from scipy.ndimage import uniform_filter
 from scripts.argparse_utils import (finalize_opt, get_base_parser,
                                     get_opt_header, opt2list)
 from scripts.load_utils import (get_final_max_ent_folder, load_contact_map,
-                                load_import_log, load_L)
+                                load_import_log, load_L, load_max_ent_chi)
 from scripts.plotting_utils import (BLUE_RED_CMAP, RED_CMAP,
                                     plot_centroid_distance,
                                     plot_combined_models, plot_diag_chi,
@@ -1570,15 +1570,15 @@ def interpretation_figure_test():
 
 
     # this is relatively close
-    L_max_ent -= np.mean(L_max_ent)
-    L_max_ent_hat = S_max_ent - np.mean(S_max_ent)
+    # L_max_ent -= np.mean(L_max_ent)
+    # L_max_ent_hat = S_max_ent - np.mean(S_max_ent)
 
 
     # this give the same result exactly
-    # L_max_ent = L_max_ent - calculate_D(meanDist_L)
-    # L_max_ent -= np.mean(L_max_ent)
-    # L_max_ent_hat = S_max_ent - calculate_D(meanDist_S)
-    # L_max_ent_hat -= np.mean(L_max_ent_hat)
+    L_max_ent = L_max_ent - calculate_D(meanDist_L)
+    L_max_ent -= np.mean(L_max_ent)
+    L_max_ent_hat = S_max_ent - calculate_D(meanDist_S)
+    L_max_ent_hat -= np.mean(L_max_ent_hat)
 
     # recalculate chi
     chi_max_ent =  predict_chi_in_psi_basis(x, L_max_ent, verbose = True)
@@ -1672,9 +1672,9 @@ if __name__ == '__main__':
     # plot_all_contact_cd maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
     # generalization_figure()
-    figure2()
+    # figure2()
     # interpretation_figure()
-    # interpretation_figure_test()
+    interpretation_figure_test()
     # plot_first_PC('dataset_02_04_23', 10, 419)
     # plot_seq_comparison([np.load('/home/erschultz/dataset_02_04_23/samples/sample203/optimize_grid_b_16.5_phi_0.06-max_ent/iteration15/x.npy')], ['max_ent'])
     # plot_energy_no_ticks()
