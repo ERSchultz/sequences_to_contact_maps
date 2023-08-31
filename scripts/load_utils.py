@@ -12,11 +12,11 @@ import numpy as np
 import scipy.sparse as sp
 from pylib.utils.energy_utils import (calculate_D, calculate_diag_chi_step,
                                       calculate_L, calculate_S)
+from pylib.utils.xyz import xyz_load, xyz_to_contact_grid
 from scipy.ndimage import gaussian_filter
 
 from .utils import (LETTERS, DiagonalPreprocessing, print_size, print_time,
                     triu_to_full)
-from .xyz_utils import xyz_load, xyz_to_contact_grid
 
 
 def load_import_log(dir, obj=None):

@@ -106,7 +106,6 @@ class SCC():
             x_k = np.diagonal(x, k)
             y_k = np.diagonal(y, k)
 
-
             # filter to subset of diagonals where at least 1 is nonzero
             # i.e if x_k[i] == y_k[i] == 0, ignore element i
             # use 1e-12 for numerical stability
