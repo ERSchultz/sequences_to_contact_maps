@@ -5,12 +5,12 @@ import os.path as osp
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from pylib.utils.energy_utils import calculate_diag_chi_step
 from scipy.ndimage import uniform_filter
 from torch.utils.data import Dataset
 
 from ..argparse_utils import ArgparserConverter
-from ..energy_utils import calculate_diag_chi_step
-from ..utils import DiagonalPreprocessing
 
 
 def make_dataset(dir_list, minSample = 0, maxSample = float('inf'), verbose = False,

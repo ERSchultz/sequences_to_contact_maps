@@ -2,69 +2,20 @@ import csv
 import json
 import os
 import os.path as osp
+import sys
 import time
 from collections import defaultdict
 
 import matplotlib.pyplot as plt
 import numpy as np
 from numba import jit, njit
-from pylib.utils.xyz import xyz_load, xyz_to_contact_grid
+from pylib.utils.xyz import *
 from scipy.sparse import csr_array
 from sklearn.metrics.pairwise import nan_euclidean_distances
 
-from .utils import LETTERS, print_time
+sys.path.append('/home/erschultz/sequences_to_contact_maps')
+from scripts.utils import LETTERS, print_time
 
-
-def calculate_rg(xyz, verbose=False):
-    if len(xyz.shape) == 2:
-        xyz.reshape(1, -1, 3)
-
-    rgs = np.zeros(len(xyz))
-    for i, xyz_i in enumerate(xyz):
-        center = np.nanmean(xyz_i, axis = 0)
-        delta = xyz_i - center
-        rg = np.sqrt(np.nanmean(delta**2))
-        rgs[i] = rg
-
-
-    rg_mean = np.nanmean(rgs)
-    rg_std = np.nanstd(rgs)
-    result = (rg_mean, rg_std)
-    if verbose:
-        print('rgs', rgs)
-        print('result', result)
-    return result
-
-
-def xyz_write(xyz, outfile, writestyle, comment = '', x = None):
-    '''
-    Write the coordinates of all particle to a file in .xyz format.
-    Inputs:
-        xyz: shape (T, N, 3) or (N, 3) array of all particle positions (angstroms)
-        outfile: name of file
-        writestyle: 'w' (write) or 'a' (append)
-        x: additional columns to include
-    '''
-    if writestyle == 'w' and osp.exists(outfile):
-        os.remove(outfile)
-    if len(xyz.shape) == 3:
-        N, m, _ = xyz.shape
-        for i in range(N):
-            xyz_write(xyz[i, :, :], outfile, 'a', comment = comment, x = x)
-    else:
-        m, _ = xyz.shape
-        if x is not None:
-            assert len(x) == m, f'{len(x)} != {m}'
-            _, k = x.shape
-
-        with open(outfile, writestyle) as f:
-            f.write(f'{m}\n{comment}\n')
-            for i in range(m):
-                row = f'{i} {xyz[i,0]} {xyz[i,1]} {xyz[i,2]}'
-                if x is not None:
-                    for j in range(k):
-                        row += f' {x[i,j]}'
-                f.write(row + '\n')
 
 def lammps_load(filepath, save = False, N_min = None, N_max = None, down_sampling = 1):
     xyz_npy_file = osp.join(osp.split(filepath)[0], 'xyz.npy')
@@ -191,17 +142,6 @@ def xyz_to_contact_distance(xyz, cutoff_distance, verbose = False):
 
     return contact_map
 
-def xyz_to_distance(xyz, verbose = False):
-    N, m, _ = xyz.shape
-    D = np.zeros((N, m, m), dtype = np.float32)
-    for i in range(N):
-        if verbose:
-            print(i)
-        D_i = nan_euclidean_distances(xyz[i])
-        D[i] = D_i
-
-    return D
-
 def main():
     dir='/home/eric/dataset_test/samples/sample82'
     file = osp.join(dir, 'data_out/output.xyz')
@@ -238,10 +178,10 @@ def main():
     # print(np.array_equal(y, overall))
 
 def test():
-    xyz = np.random.normal(size=(100, 3))
-    print(xyz)
-    rg = calculate_rg(xyz)
-    print(rg)
+    xyz = np.random.normal(size=(2, 100, 3))
+    xyz = [[[0,0,0],[],[]]]
+    angles = xyz_to_angles(xyz)
+    print(angles)
 
 
 

@@ -15,27 +15,27 @@ import scipy
 import seaborn as sns
 import torch
 from pylib.utils import epilib
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import (calculate_all_energy, calculate_D,
                                       calculate_diag_chi_step, calculate_L,
                                       calculate_S)
 from pylib.utils.plotting_utils import *
-from pylib.utils.utils import load_json
-from result_summary_plots import predict_chi_in_psi_basis
+from pylib.utils.utils import load_json, pearson_round
+from pylib.utils.xyz import xyz_load, xyz_write
 from scipy.ndimage import uniform_filter
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.metrics import mean_squared_error
+
+from result_summary_plots import predict_chi_in_psi_basis
 from scripts.argparse_utils import (finalize_opt, get_base_parser,
                                     get_opt_header, opt2list)
 from scripts.load_utils import (get_final_max_ent_folder, load_contact_map,
                                 load_import_log, load_L, load_max_ent_chi)
-from scripts.plotting_utils import (BLUE_RED_CMAP, RED_CMAP,
-                                    plot_centroid_distance,
+from scripts.plotting_utils import (plot_centroid_distance,
                                     plot_combined_models, plot_diag_chi,
                                     plot_sc_contact_maps, plot_xyz_gif,
                                     plotting_script)
-from scripts.utils import DiagonalPreprocessing, pearson_round
-from scripts.xyz_utils import xyz_load, xyz_write
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-from sklearn.metrics import mean_squared_error
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -1035,21 +1035,11 @@ def generalization_figure():
         scc = np.round(scc_dict['scc_var'], 3)
         max_ent_sccs.append(scc)
 
-        m = np.shape(y_gnn)[0]
-        indu = np.triu_indices(m)
-        indl = np.tril_indices(m)
-
         # make composite contact map
-        composite = np.zeros((m, m))
-        composite[indu] = y_gnn[indu]
-        composite[indl] = y_exp[indl]
-        np.fill_diagonal(composite, 1)
+        composite = make_composite(y_exp, y_gnn)
         composites.append(composite)
 
-        composite = np.zeros((m, m))
-        composite[indu] = y_max_ent[indu]
-        composite[indl] = y_exp[indl]
-        np.fill_diagonal(composite, 1)
+        composite = make_composite(y_exp, y_max_ent)
         max_ent_composites.append(composite)
 
 

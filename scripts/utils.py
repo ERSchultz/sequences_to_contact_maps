@@ -13,7 +13,7 @@ import numpy as np
 import scipy.sparse as sp
 import torch
 from numba import jit, njit
-from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from pylib.utils.utils import nan_pearsonr
 from scipy.stats import pearsonr, spearmanr
 from skimage.measure import block_reduce
 from sklearn.decomposition import PCA
@@ -360,24 +360,6 @@ def round_up_by_10(val):
     while val > mult:
         mult *= 10
     return mult
-
-def pearson_round(x, y, stat = 'pearson', round = 2):
-    "Wrapper function that combines np.round and pearsonr."
-    if stat == 'pearson':
-        fn = pearsonr
-    elif stat == 'nan_pearson':
-        fn = nan_pearsonr
-    elif stat == 'spearman':
-        fn = spearmanr
-    x = np.array(x)
-    y = np.array(y)
-    assert x.shape == y.shape, f'shape mismatch, {x.shape} != {y.shape}'
-    stat, _ = fn(x, y)
-    return np.round(stat, round)
-
-def nan_pearsonr(x, y):
-    na_ind = np.logical_or(np.isnan(x), np.isnan(y))
-    return pearsonr(x[~na_ind], y[~na_ind])
 
 def print_time(t0, tf, name = '', file = sys.stdout):
     print(f'{name} time: {np.round(tf - t0, 3)} s', file = file)

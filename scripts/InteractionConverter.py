@@ -1,7 +1,6 @@
 ## interaction converter ##
 import numpy as np
-
-from .energy_utils import calculate_L
+from pylib.utils.energy_utils import calculate_L
 
 
 class InteractionConverter():

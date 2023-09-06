@@ -45,7 +45,7 @@ milestones='40'
 
 # ablation of 451 without sdag
 
-id491
+id=461
 for lr in 1e-4
 do
   train

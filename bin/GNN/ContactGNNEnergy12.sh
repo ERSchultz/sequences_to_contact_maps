@@ -1,7 +1,7 @@
 #! /bin/bash
-#SBATCH --job-name=CGNNE12
+#SBATCH --job-name=CGNNE11
 #SBATCH --output=logFiles/ContactGNNEnergy12.out
-#SBATCH --time=1-24:00:00
+#SBATCH --time=24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -24,7 +24,7 @@ preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-Ad
 hiddenSizesList='8-8-8-8'
 updateHiddenSizesList='1000-1000-64'
 
-outputPreprocesing='log'
+outputPreprocesing='center'
 headArchitecture='bilinear'
 headArchitecture2="fc-fill_${m}"
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
@@ -43,10 +43,7 @@ batchSize=1
 nEpochs=80
 milestones='40'
 
-
-# new baseline (doesn't have |i-j|)
-
-id=434
+id=456
 for lr in 1e-4
 do
   train

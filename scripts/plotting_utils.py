@@ -18,6 +18,9 @@ import seaborn as sns
 import torch
 import torch.nn.functional as F
 import torch_geometric
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from pylib.utils.energy_utils import calculate_diag_chi_step
+from pylib.utils.plotting_utils import *
 from scipy.stats import pearsonr
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error, silhouette_score
@@ -26,32 +29,10 @@ from sympy import solve, symbols
 from .argparse_utils import (ArgparserConverter, finalize_opt, get_base_parser,
                              get_opt_header, opt2list)
 from .clean_directories import clean_directories
-from .energy_utils import calculate_diag_chi_step
 from .InteractionConverter import InteractionConverter
 from .load_utils import load_psi, load_sc_contacts
 from .neural_nets.utils import get_data_loaders, get_dataset, load_saved_model
-from .utils import DiagonalPreprocessing, crop, round_up_by_10, triu_to_full
-from .xyz_utils import (find_dist_between_centroids, find_label_centroid,
-                        xyz_load)
-
-sys.path.append("/home/erschultz/TICG-chromatin/pylib")
-from utils.plotting_utils import *
-
-RED_CMAP = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                         [(0,    'white'),
-                                          (1,    'red')], N=126)
-
-BLUE_CMAP = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                         [(0,    'white'),
-                                          (1,    'blue')], N=126)
-BLUE_RED_CMAP = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                         [(0, 'blue'),
-                                         (0.5, 'white'),
-                                          (1, 'red')], N=126)
-RED_BLUE_CMAP = matplotlib.colors.LinearSegmentedColormap.from_list('custom',
-                                         [(0, 'red'),
-                                         (0.5, 'white'),
-                                          (1, 'blue')], N=126)
+from .utils import crop, round_up_by_10, triu_to_full
 
 
 #### Functions for plotting loss ####

@@ -15,16 +15,17 @@ import torch
 import torch_geometric.data
 import torch_geometric.transforms
 import torch_geometric.utils
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from pylib.utils.energy_utils import calculate_D, calculate_S
 from scipy.ndimage import uniform_filter
 from skimage.measure import block_reduce
 from sklearn.cluster import KMeans
 from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 
 from ..argparse_utils import finalize_opt, get_base_parser
-from ..energy_utils import calculate_D, calculate_S
 from ..knightRuiz import knightRuiz
 from ..load_utils import load_L, load_Y
-from ..utils import DiagonalPreprocessing, rescale_matrix
+from ..utils import rescale_matrix
 from .dataset_classes import DiagFunctions, make_dataset
 from .networks import get_model
 
@@ -239,8 +240,11 @@ class ContactsGraph(torch_geometric.data.Dataset):
             else:
                 raise Exception(f'Unrecognized output {self.output}')
 
-            if self.output is not None and self.output_preprocesing == 'log':
-                graph.energy = torch.sign(graph.energy) * torch.log(torch.abs(graph.energy)+1)
+            if self.output is not None:
+                if 'center' in self.output_preprocesing:
+                    graph.energy -= torch.mean(graph.energy)
+                if 'log' in self.output_preprocesing:
+                    graph.energy = torch.sign(graph.energy) * torch.log(torch.abs(graph.energy)+1)
 
             del graph.diag_chi_continuous
             del graph.diag_chi_continuous_mlp

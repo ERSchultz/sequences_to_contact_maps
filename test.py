@@ -13,15 +13,20 @@ import seaborn as sns
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from core_test_train import core_test_train
 from pylib.utils import epilib
-from result_summary_plots import plot_top_PCs
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from pylib.utils.energy_utils import *
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+from core_test_train import core_test_train
+from result_summary_plots import plot_top_PCs
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
-from scripts.energy_utils import *
 from scripts.load_utils import (load_import_log, load_L, load_sc_contacts,
                                 save_sc_contacts)
 from scripts.neural_nets.dataset_classes import make_dataset
@@ -29,11 +34,7 @@ from scripts.neural_nets.networks import get_model
 from scripts.neural_nets.utils import get_dataset
 from scripts.plotting_utils import RED_CMAP, plot_matrix
 from scripts.similarity_measures import SCC
-from scripts.utils import (DiagonalPreprocessing, calc_dist_strat_corr, crop,
-                           print_time, triu_to_full)
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
+from scripts.utils import calc_dist_strat_corr, crop, print_time, triu_to_full
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUV'
 
@@ -165,7 +166,7 @@ def debugModel(model_type):
         opt.message_passing = 'GAT'
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym_diag'
-        opt.output_preprocesing = 'log'
+        opt.output_preprocesing = 'center'
         opt.encoder_hidden_sizes_list=[30]
         opt.edge_encoder_hidden_sizes_list=[30]
         opt.update_hidden_sizes_list=[1000,1000,16]
@@ -243,8 +244,8 @@ def debugModel(model_type):
 
     # other
     opt.pretrain_id = None
-    opt.plot = False
-    opt.plot_predictions = False
+    opt.plot = True
+    opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = True
     opt.gpus = 1
@@ -679,11 +680,11 @@ def test_pcs_meanval():
 
 
 if __name__ == '__main__':
-    check_max_ent_progress()
+    # check_max_ent_progress()
     # test_pcs_meanval()
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()
