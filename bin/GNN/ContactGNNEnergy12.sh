@@ -24,7 +24,7 @@ preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-Ad
 hiddenSizesList='8-8-8-8'
 updateHiddenSizesList='1000-1000-64'
 
-outputPreprocesing='center'
+outputPreprocesing='norm_log'
 headArchitecture='bilinear'
 headArchitecture2="fc-fill_${m}"
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
@@ -43,7 +43,7 @@ batchSize=1
 nEpochs=80
 milestones='40'
 
-id=456
+id=459
 for lr in 1e-4
 do
   train

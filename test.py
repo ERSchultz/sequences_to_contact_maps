@@ -16,6 +16,7 @@ import torch.nn.functional as F
 from pylib.utils import epilib
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import *
+from pylib.utils.plotting_utils import BLUE_RED_CMAP, RED_CMAP, plot_matrix
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
@@ -32,7 +33,6 @@ from scripts.load_utils import (load_import_log, load_L, load_sc_contacts,
 from scripts.neural_nets.dataset_classes import make_dataset
 from scripts.neural_nets.networks import get_model
 from scripts.neural_nets.utils import get_dataset
-from scripts.plotting_utils import RED_CMAP, plot_matrix
 from scripts.similarity_measures import SCC
 from scripts.utils import calc_dist_strat_corr, crop, print_time, triu_to_full
 
@@ -678,6 +678,65 @@ def test_pcs_meanval():
     plt.plot(seq)
     plt.show()
 
+def gnn_meanDist_s(GNN_ID, sample):
+    dir = '/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy'
+    dir = osp.join(dir, f'{GNN_ID}/dataset_08_25_23_sample{sample}/sample{sample}')
+    assert osp.exists(dir)
+    e_gt = np.loadtxt(osp.join(dir, 'energy.txt'))
+    e_hat = np.loadtxt(osp.join(dir, 'energy_hat.txt'))
+
+    ref = np.load(f'/home/erschultz/dataset_08_25_23/samples/sample{sample}/S.npy')
+    ref_mean = np.mean(ref)
+
+
+
+    e_orig_gt = np.multiply(np.sign(e_gt), np.exp(np.abs(e_gt)) - 1)
+    e_orig_hat = np.multiply(np.sign(e_hat), np.exp(np.abs(e_hat)) - 1)
+    # e_orig_gt += ref_mean
+    # e_orig_hat += ref_mean
+    diff = e_orig_gt - e_orig_hat
+    rmse = mean_squared_error(e_orig_gt, e_orig_hat, squared = False)
+    print(rmse)
+
+    print(ref - e_orig_gt)
+    assert np.allclose(ref, e_orig_gt, rtol=1e-01, atol=1e-01)
+
+    fig, axes = plt.subplots(1, 4,
+                                    gridspec_kw={'width_ratios':[1,1,1,0.08]})
+    fig.set_figheight(6)
+    fig.set_figwidth(6*2.5)
+    fig.suptitle(f'Sample {sample}', fontsize = 16)
+    arr = np.array([e_orig_gt, e_orig_hat])
+    vmin = np.nanpercentile(arr, 1)
+    vmax = np.nanpercentile(arr, 99)
+    vmax = max(vmax, vmin * -1)
+    vmin = vmax * -1
+    labels = ['Ground Truth', f'GNN Estimate\nRMSE={rmse:.2f}', 'Different (L-R)']
+    matrices = [e_orig_gt, e_orig_hat, diff]
+    for i, (matrix, label) in enumerate(zip(matrices, labels)):
+        ax = axes[i]
+        if i == len(matrices)-1:
+            s = sns.heatmap(matrix, linewidth = 0, vmin = vmin, vmax = vmax, cmap = BLUE_RED_CMAP,
+                            ax = ax, cbar_ax = axes[-1])
+        else:
+            s = sns.heatmap(matrix, linewidth = 0, vmin = vmin, vmax = vmax, cmap = BLUE_RED_CMAP,
+                            ax = ax, cbar = False)
+        s.set_title(label, fontsize = 16)
+        s.set_yticks([])
+    plt.tight_layout()
+    plt.savefig(osp.join(dir, 'energy_orig_comparison.png'))
+    plt.close()
+
+
+    for e, label in zip([e_gt, e_hat],['Ground Truth', 'GNN']):
+        meanDist = DiagonalPreprocessing.genomic_distance_statistics(e, 'freq')
+        plt.plot(meanDist, label = label)
+    plt.legend()
+    plt.xscale('log')
+    plt.ylabel('Mean', fontsize=16)
+    plt.xlabel('Off-diagonal Index', fontsize=16)
+    plt.savefig(osp.join(dir, 'meanDist_S.png'))
+    plt.close()
 
 if __name__ == '__main__':
     # check_max_ent_progress()
@@ -685,6 +744,7 @@ if __name__ == '__main__':
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    # debugModel('ContactGNNEnergy')
+    gnn_meanDist_s(451, 981)
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()

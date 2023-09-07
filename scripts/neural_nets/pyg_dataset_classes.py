@@ -243,6 +243,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
             if self.output is not None:
                 if 'center' in self.output_preprocesing:
                     graph.energy -= torch.mean(graph.energy)
+                if 'norm' in self.output_preprocesing:
+                    graph.energy /= torch.max(torch.abs(graph.energy))
                 if 'log' in self.output_preprocesing:
                     graph.energy = torch.sign(graph.energy) * torch.log(torch.abs(graph.energy)+1)
 
