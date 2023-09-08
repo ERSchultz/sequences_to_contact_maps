@@ -94,7 +94,7 @@ def load_psi(sample_folder, throw_exception = True, verbose = False):
 
     assert not osp.exists(osp.join(sample_folder, 'psi.npy')), 'deprecated'
 
-    if x.shape[1] > x.shape[0]:
+    if x is not None and x.shape[1] > x.shape[0]:
         x = x.T
 
     return x

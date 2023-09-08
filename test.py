@@ -13,19 +13,15 @@ import seaborn as sns
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from core_test_train import core_test_train
 from pylib.utils import epilib
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import *
 from pylib.utils.plotting_utils import BLUE_RED_CMAP, RED_CMAP, plot_matrix
+from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
-
-from core_test_train import core_test_train
-from result_summary_plots import plot_top_PCs
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
 from scripts.load_utils import (load_import_log, load_L, load_sc_contacts,
@@ -35,6 +31,9 @@ from scripts.neural_nets.networks import get_model
 from scripts.neural_nets.utils import get_dataset
 from scripts.similarity_measures import SCC
 from scripts.utils import calc_dist_strat_corr, crop, print_time, triu_to_full
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUV'
 
@@ -680,26 +679,33 @@ def test_pcs_meanval():
 
 def gnn_meanDist_s(GNN_ID, sample):
     dir = '/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy'
-    dir = osp.join(dir, f'{GNN_ID}/dataset_08_25_23_sample{sample}/sample{sample}')
+    dataset = 'dataset_08_25_23'
+    dir = osp.join(dir, f'{GNN_ID}/{dataset}_sample{sample}/sample{sample}')
     assert osp.exists(dir)
     e_gt = np.loadtxt(osp.join(dir, 'energy.txt'))
     e_hat = np.loadtxt(osp.join(dir, 'energy_hat.txt'))
 
-    ref = np.load(f'/home/erschultz/dataset_08_25_23/samples/sample{sample}/S.npy')
+    ref = np.load(f'/home/erschultz/{dataset}/samples/sample{sample}/S.npy')
+    print(ref[0,:10])
     ref_mean = np.mean(ref)
-
-
+    ref_center = ref - ref_mean
+    ref_max = np.max(np.abs(ref_center))
+    ref_center_norm = ref_center / ref_max
+    ref_center_norm_log = np.sign(ref_center_norm) * np.log(np.abs(ref_center_norm)+1)
+    # assert np.allclose(ref_center_norm_log, e_gt, rtol=1e-03, atol=1e-03), f'diff {ref_center_norm_log - e_gt}'
 
     e_orig_gt = np.multiply(np.sign(e_gt), np.exp(np.abs(e_gt)) - 1)
     e_orig_hat = np.multiply(np.sign(e_hat), np.exp(np.abs(e_hat)) - 1)
+    # e_orig_gt *= ref_max
     # e_orig_gt += ref_mean
+    # e_orig_hat *= ref_max
     # e_orig_hat += ref_mean
     diff = e_orig_gt - e_orig_hat
+    print(e_orig_gt[0,:10])
     rmse = mean_squared_error(e_orig_gt, e_orig_hat, squared = False)
     print(rmse)
 
-    print(ref - e_orig_gt)
-    assert np.allclose(ref, e_orig_gt, rtol=1e-01, atol=1e-01)
+    assert np.allclose(ref, e_orig_gt, rtol=1e-01, atol=1e-01), f'diff {ref - e_orig_gt} rmse {mean_squared_error(ref, e_orig_gt, squared = False)}'
 
     fig, axes = plt.subplots(1, 4,
                                     gridspec_kw={'width_ratios':[1,1,1,0.08]})
@@ -738,6 +744,31 @@ def gnn_meanDist_s(GNN_ID, sample):
     plt.savefig(osp.join(dir, 'meanDist_S.png'))
     plt.close()
 
+def test_center_norm_log():
+    ref = np.random.rand(2,4)
+    ref *= 6
+    ref += 2
+    print('ref', ref)
+    ref_mean = np.mean(ref)
+    print(ref_mean)
+    ref_center = ref - ref_mean
+    print('ref_center', ref_center)
+    ref_max = np.max(np.abs(ref_center))
+    ref_center_norm = ref_center / ref_max
+    print('ref_center_norm', ref_center_norm)
+    ref_center_norm_log = np.sign(ref_center_norm) * np.log(np.abs(ref_center_norm)+1)
+    print('ref_center_norm_log', ref_center_norm_log)
+
+    ref2 = ref_center_norm_log.copy()
+    ref2 = np.round(ref2, 3)
+
+    ref2 = np.multiply(np.sign(ref2), np.exp(np.abs(ref2)) - 1)
+    ref2 *= ref_max
+    # print(ref2)
+    ref2 += ref_mean
+    print('final', ref2)
+
+
 if __name__ == '__main__':
     # check_max_ent_progress()
     # test_pcs_meanval()
@@ -745,6 +776,7 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # debugModel('ContactGNNEnergy')
-    gnn_meanDist_s(451, 981)
+    gnn_meanDist_s(451, 3464)
+    # test_center_norm_log()
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()
