@@ -13,6 +13,7 @@ import torch.nn.functional as F
 import torch_geometric.transforms
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 
+from .neural_nets.losses import *
 from .neural_nets.pyg_fns import (AdjPCATransform, AdjPCs, AdjTransform,
                                   ContactDistance, Degree,
                                   DiagonalParameterDistance, GeneticDistance,
@@ -345,6 +346,10 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
         if opt.output_mode == 'contact':
             assert opt.preprocessing_norm is not None, 'must use some sort of preprocessing_norm'
         opt.criterion = F.binary_cross_entropy_with_logits
+    elif opt.loss == 'mse_center':
+        opt.criterion = mse_center
+    elif opt.loss == 'mse_and_mse_center':
+        opt.criterion = mse_and_mse_center
     else:
         raise Exception(f'Invalid loss: {repr(opt.loss)}')
 

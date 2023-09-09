@@ -456,14 +456,18 @@ def plotEnergyPredictions(val_dataloader, model, opt, count=5):
          preprocessing_norm = 'None'
     upper_title = f'Y Preprocessing: {preprocessing}, Norm: {preprocessing_norm}'
 
+    loss_dim = 1
     if opt.loss == 'mse':
         loss_title = 'MSE Loss'
     elif opt.loss == 'huber':
         loss_title = 'Huber Loss'
+    elif opt.loss == 'mse_and_mse_center':
+        loss_title = 'MSE+MSE_center'
+        loss_dim = 2
     else:
         loss_title = f'{opt.loss} loss'
 
-    loss_arr = np.zeros(min(count, opt.valN))
+    loss_arr = np.zeros((loss_dim, min(count, opt.valN)))
     for i, data in enumerate(val_dataloader):
         if i == count:
             break
@@ -474,7 +478,16 @@ def plotEnergyPredictions(val_dataloader, model, opt, count=5):
         yhat = model(data)
         path = data.path[0]
 
-        loss = opt.criterion(yhat, y).item()
+        if loss_dim > 1:
+            loss1, loss2 = opt.criterion(yhat, y, split_loss=True)
+            loss1 = loss1.item()
+            loss2 = loss2.item()
+            loss = loss1 + loss2
+            loss_arr[0, i] = loss1
+            loss_arr[1, i] = loss2
+        else:
+            loss = opt.criterion(yhat, y).item()
+            loss_arr[0, i] = loss
         y = y.cpu().numpy().reshape((opt.m, opt.m))
         yhat = yhat.cpu().detach().numpy().reshape((opt.m,opt.m))
 
@@ -487,7 +500,7 @@ def plotEnergyPredictions(val_dataloader, model, opt, count=5):
 
         yhat_title = '{}\n{} ({}: {})'.format(upper_title, r'$\hat{S}$',
                                                 loss_title, np.round(loss, 3))
-        loss_arr[i] = loss
+
         if opt.verbose:
             print('y', y, np.max(y))
             print('yhat', yhat, np.max(yhat))
@@ -536,8 +549,19 @@ def plotEnergyPredictions(val_dataloader, model, opt, count=5):
             f.add(sample)
         rmtree(sample)
 
-    mean_loss = np.round(np.mean(loss_arr), 3)
-    print(f'Loss: {mean_loss} +- {np.round(np.std(loss_arr), 3)}\n',
+    if loss_dim > 1:
+        print(loss_arr.shape)
+        sum_loss_arr = np.sum(loss_arr, 0)
+        mean_loss = np.round(np.mean(sum_loss_arr), 3)
+        std_loss = np.round(np.std(sum_loss_arr), 3)
+        mean_loss1 = np.round(np.mean(loss_arr[0]), 3)
+        mean_loss2 = np.round(np.mean(loss_arr[1]), 3)
+        print(f'Loss1: {mean_loss1}, Loss2: {mean_loss2}',
+            file = opt.log_file)
+    else:
+        mean_loss = np.round(np.mean(loss_arr), 3)
+        std_loss = np.round(np.std(loss_arr), 3)
+    print(f'{loss_title}: {mean_loss} +- {std_loss}\n',
         file = opt.log_file)
 
     return mean_loss
@@ -1003,7 +1027,6 @@ def plotting_script(model, opt, train_loss_arr = None, val_loss_arr = None,
         opt.batch_size = 1 # batch size must be 1
         opt.shuffle = False # for reproducibility
         _, val_dataloader, _ = get_data_loaders(dataset, opt)
-
 
 
     imagePath = opt.ofile_folder

@@ -141,7 +141,7 @@ def debugModel(model_type):
 
     # dataset
     dir = "/home/erschultz"
-    datasets = ['dataset_04_28_23']
+    datasets = ['dataset_08_25_23']
     opt.data_folder = [osp.join(dir, d) for d in datasets]
     opt.scratch = '/home/erschultz/scratch'
 
@@ -160,12 +160,12 @@ def debugModel(model_type):
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
-        opt.loss = 'mse'
+        opt.loss = 'mse_and_mse_center'
         opt.preprocessing_norm = 'mean_fill'
         opt.message_passing = 'GAT'
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym_diag'
-        opt.output_preprocesing = 'center'
+        opt.output_preprocesing = 'log'
         opt.encoder_hidden_sizes_list=[30]
         opt.edge_encoder_hidden_sizes_list=[30]
         opt.update_hidden_sizes_list=[1000,1000,16]
@@ -234,7 +234,7 @@ def debugModel(model_type):
         opt.concat_heads = True
 
     # hyperparameters
-    opt.n_epochs = 2
+    opt.n_epochs = 1
     opt.lr = 1e-3
     opt.weight_decay = 1e-5
     opt.w_reg = None; opt.reg_lambda = 10
@@ -243,7 +243,7 @@ def debugModel(model_type):
 
     # other
     opt.pretrain_id = None
-    opt.plot = True
+    opt.plot = False
     opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = True
@@ -775,8 +775,8 @@ if __name__ == '__main__':
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    # debugModel('ContactGNNEnergy')
-    gnn_meanDist_s(451, 3464)
+    debugModel('ContactGNNEnergy')
+    # gnn_meanDist_s(451, 3464)
     # test_center_norm_log()
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()
