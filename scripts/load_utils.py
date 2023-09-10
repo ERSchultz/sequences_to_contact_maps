@@ -253,24 +253,9 @@ def load_chi(dir, throw_exception=True):
         with open(osp.join(dir, 'config.json'), 'rb') as f:
             config = json.load(f)
 
-        try:
+        if 'chis' in config:
             chi = config['chis']
-            chi = np.array(chi)
-        except:
-            chi = np.zeros((k,k))
-            for i, bead_i in enumerate(LETTERS[:k]):
-                for j in range(i,k):
-                    bead_j = LETTERS[j]
-                    try:
-                        chi[i,j] = config[f'chi{bead_i}{bead_j}']
-                    except KeyError:
-                        if throw_exception:
-                            print(f'config_file: {config_file}')
-                            print(config)
-                            raise
-                        else:
-                            return None
-        return chi
+            return chi
 
 
     if throw_exception:
