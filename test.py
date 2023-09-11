@@ -161,12 +161,12 @@ def debugModel(model_type):
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
-        opt.loss = 'mse_and_mse_center'
+        opt.loss = 'mse_log_and_mse_center_log'
         opt.preprocessing_norm = 'mean_fill'
         opt.message_passing = 'GAT'
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym_diag'
-        opt.output_preprocesing = 'log'
+        opt.output_preprocesing = 'none'
         opt.encoder_hidden_sizes_list=[30]
         opt.edge_encoder_hidden_sizes_list=[30]
         opt.update_hidden_sizes_list=[1000,1000,16]

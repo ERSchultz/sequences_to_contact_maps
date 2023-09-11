@@ -11,6 +11,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch_geometric.transforms
+
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 
 from .neural_nets.losses import *
@@ -192,7 +193,7 @@ def get_base_parser():
                         help='True to use \hat{L} to help with estimation of D')
     parser.add_argument('--input_L_to_D_mode', type=str, default='mean_dist',
                         help='Mode for input_L_to_D')
-                        
+
     # GNN model args
     parser.add_argument('--use_sign_net', type=AC.str2bool, default=False,
                         help='True to use sign net architecture')
@@ -354,6 +355,12 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
         opt.criterion = mse_center
     elif opt.loss == 'mse_and_mse_center':
         opt.criterion = mse_and_mse_center
+    elif opt.loss == 'mse_log':
+        opt.criterion = mse_log
+    elif opt.loss == 'mse_center_log':
+        opt.criterion = mse_center_log
+    elif opt.loss == 'mse_log_and_mse_center_log':
+        opt.criterion = mse_log_and_mse_center_log
     else:
         raise Exception(f'Invalid loss: {repr(opt.loss)}')
 

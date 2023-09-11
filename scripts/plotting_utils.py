@@ -18,13 +18,14 @@ import seaborn as sns
 import torch
 import torch.nn.functional as F
 import torch_geometric
-from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
-from pylib.utils.energy_utils import calculate_diag_chi_step
-from pylib.utils.plotting_utils import *
 from scipy.stats import pearsonr
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error, silhouette_score
 from sympy import solve, symbols
+
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from pylib.utils.energy_utils import calculate_diag_chi_step
+from pylib.utils.plotting_utils import *
 
 from .argparse_utils import (ArgparserConverter, finalize_opt, get_base_parser,
                              get_opt_header, opt2list)
@@ -463,6 +464,11 @@ def plotEnergyPredictions(val_dataloader, model, opt, count=5):
         loss_title = 'Huber Loss'
     elif opt.loss == 'mse_and_mse_center':
         loss_title = 'MSE+MSE_center'
+        loss_dim = 2
+    elif opt.loss == 'mse_log':
+        loss_title = 'MSE_log'
+    elif opt.loss == 'mse_log_and_mse_center_log':
+        loss_title = 'MSE_log+MSE_center_log'
         loss_dim = 2
     else:
         loss_title = f'{opt.loss} loss'

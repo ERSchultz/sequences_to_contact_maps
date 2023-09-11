@@ -22,14 +22,39 @@ def mse_and_mse_center(input, target, lambda1=1, lambda2=1, split_loss=False):
         return mse1, mse2
     return mse1 + mse2
 
+def mse_log(input, target):
+    input_log = torch.sign(input) * torch.log(torch.abs(input) + 1)
+    target_log = torch.sign(target) * torch.log(torch.abs(target) + 1)
+    return F.mse_loss(input_log, target_log)
+
+def mse_center_log(input, target):
+    input_center = input - torch.mean(input)
+    target_center = target - torch.mean(target)
+
+    input_log = torch.sign(input_center) * torch.log(torch.abs(input_center) + 1)
+    target_log = torch.sign(target_center) * torch.log(torch.abs(target_center) + 1)
+    return F.mse_loss(input_log, target_log)
+
+def mse_log_and_mse_center_log(input, target, lambda1=1, lambda2=1, split_loss=False):
+    mse1 = lambda1 * mse_log(input, target)
+    mse2 = lambda2 * mse_center_log(input, target)
+    if split_loss:
+        return mse1, mse2
+    return mse1 + mse2
+
+
+
 def test():
-    e = np.loadtxt('/home/erschultz/sequences_to_contact_maps/results/test/76/dataset_08_25_23_sample8/sample8/energy.txt')
-    ehat = np.loadtxt('/home/erschultz/sequences_to_contact_maps/results/test/76/dataset_08_25_23_sample8/sample8/energy_hat.txt')
+    e = np.loadtxt('/home/erschultz/sequences_to_contact_maps/results/test/92/dataset_08_25_23_sample8/sample8/energy.txt')
+    ehat = np.loadtxt('/home/erschultz/sequences_to_contact_maps/results/test/92/dataset_08_25_23_sample8/sample8/energy_hat.txt')
     print(np.mean(e))
     e = torch.tensor(e)
     ehat = torch.tensor(ehat)
     mse1, mse2 = mse_and_mse_center(ehat, e, split_loss = True)
     print(mse1, mse2)
+
+    mse3 = mse_log(e, ehat)
+    print(mse3)
 
 if __name__ == '__main__':
     test()
