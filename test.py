@@ -156,7 +156,7 @@ def debugModel(model_type):
     if model_type == 'ContactGNNEnergy':
         opt.y_preprocessing = 'log_inf'
         opt.sweep_choices = [1,2,3]
-        opt.rescale = 1
+        opt.rescale = 2
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False

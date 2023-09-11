@@ -425,7 +425,9 @@ class ContactGNN(nn.Module):
             input_size = input_size * self.m
 
         if self.input_L_to_D:
-            input_size += self.m
+            print('h428', input_size)
+            input_size += int(self.m * self.rescale)
+            print(input_size)
 
         if 'fc' in head_architecture:
             head_list_b.append(MLP(input_size, head_hidden_sizes_list, self.use_bias,
