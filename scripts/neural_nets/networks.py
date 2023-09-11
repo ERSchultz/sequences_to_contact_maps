@@ -12,7 +12,7 @@ from ..sign_net.sign_net import SignNet
 from ..sign_net.transform import to_dense_list_EVD
 from .base_networks import (MLP, AverageTo2d, Bilinear, ConvBlock, DeconvBlock,
                             FillDiagonalsFromArray, LinearBlock, Symmetrize2D,
-                            UnetBlock, act2module, torch_mean_dist,
+                            UnetBlock, act2module, torch_eig, torch_mean_dist,
                             torch_triu_to_full)
 from .old_networks import *
 from .pyg_fns import WeightedGATv2Conv, WeightedSignedConv
@@ -168,7 +168,7 @@ class ContactGNN(nn.Module):
         self.gated = gated
         self.dropout = dropout
         self.input_L_to_D = input_L_to_D
-        self.input_L_to_D_mode = input_L_to_D_mode
+        self.input_L_to_D_mode = input_L_to_D_mode.lower()
         self.training_norm = training_norm
         self.num_heads = num_heads
         self.concat_heads = concat_heads
@@ -428,7 +428,10 @@ class ContactGNN(nn.Module):
             input_size = input_size * self.m
 
         if self.input_L_to_D:
-            input_size += int(self.m * self.rescale)
+            if 'meandist' in self.input_L_to_D_mode:
+                input_size += int(self.m * self.rescale)
+            if 'eigval' in self.input_L_to_D_mode:
+                input_size += 10
 
         if 'fc' in head_architecture:
             head_list_b.append(MLP(input_size, head_hidden_sizes_list, self.use_bias,
@@ -455,12 +458,21 @@ class ContactGNN(nn.Module):
         if L_out is None:
             return D_out
 
+        additional = None
         if self.input_L_to_D:
             # calculate mean along each diagonal of L_out
-            meanDist = torch_mean_dist(L_out)
-        else:
-            meanDist = None
-        D_out = self.diagonal_component(latent, meanDist)
+            if 'meandist' in self.input_L_to_D_mode and 'eigval' in self.input_L_to_D_mode:
+                meanDist = torch_mean_dist(L_out)
+                eig_vals = torch_eig(L_out, 10)
+                additional = torch.cat((meanDist, eig_vals), 1)
+            elif 'meandist' in self.input_L_to_D_mode:
+                additional = torch_mean_dist(L_out)
+            elif 'eigval' in self.input_L_to_D_mode:
+                additional = torch_eig(L_out, 10)
+            else:
+                raise Exception(f'{self.input_L_to_D_mode} not recognized')
+
+        D_out = self.diagonal_component(latent, additional)
         if D_out is None:
             return L_out
 
@@ -502,7 +514,7 @@ class ContactGNN(nn.Module):
 
         return latent
 
-    def diagonal_component(self, latent, meanDist=None):
+    def diagonal_component(self, latent, additional=None):
         _, output_size = latent.shape
         if self.head_architecture_D is None:
             return none
@@ -515,9 +527,9 @@ class ContactGNN(nn.Module):
             else:
                 D_out = torch.clone(latent)
             D_out = D_out.reshape(self.batch_size, -1)
-            if meanDist is not None:
-                # meanDist is shape Nxm
-                D_out = self.head_D2(torch.cat((D_out, meanDist), 1))
+            if additional is not None:
+                # additional is shape Nxm
+                D_out = self.head_D2(torch.cat((D_out, additional), 1))
             else:
                 D_out = self.head_D2(D_out)
         elif self.head_architecture_D in self.to2D.mode_options:

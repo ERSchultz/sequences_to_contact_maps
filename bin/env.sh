@@ -11,16 +11,27 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=erschultz@uchicago.edu
 
-envName=python3.9_pytorch1.9
+envName=python3.9_pytorch2.0
 ofile=logFiles/conda_env_spectre.log
-TORCH=1.9.0
+TORCH=2.0
 CUDA=111
 conda create --name $envName -y
 conda activate $envName
-conda install -y python=3.9 pytorch=1.9=py3.9_cuda11.1_cudnn8.0.5_0 pyg torchvision cudatoolkit=11.1 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scikit-image scipy pybigwig pybind11 sympy isort -c pytorch -c conda-forge -c bioconda -c pyg &>> $ofile
-python3 -m pip install pynvml importmagic hic-straw hicrep &>> $ofile
+conda install -y python=3.9 pytorch=2.0 pyg pytorch-scatter pytorch-sparse torchvision cudatoolkit=11.1 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scikit-image scipy pybigwig pybind11 sympy isort -c pytorch -c conda-forge -c bioconda -c pyg &>> $ofile
+python3 -m pip install pynvml importmagic hic-straw hicrep pip install opencv-python &>> $ofile
 conda env export > logFiles/env_local2.yml
 conda deactivate
+
+# envName=python3.9_pytorch1.9
+# ofile=logFiles/conda_env_spectre.log
+# TORCH=1.9.0
+# CUDA=111
+# conda create --name $envName -y
+# conda activate $envName
+# conda install -y python=3.9 pytorch=1.9=py3.9_cuda11.1_cudnn8.0.5_0 pyg pytorch-scatter torchvision cudatoolkit=11.1 matplotlib imageio numpy jupyterlab pillow seaborn numba pandas scikit-learn scikit-image scipy pybigwig pybind11 sympy isort -c pytorch -c conda-forge -c bioconda -c pyg &>> $ofile
+# python3 -m pip install pynvml importmagic hic-straw hicrep pip install opencv-python &>> $ofile
+# conda env export > logFiles/env_local2.yml
+# conda deactivate
 
 # midway3 env
 # envName=python3.9_pytorch1.9_cuda11.3

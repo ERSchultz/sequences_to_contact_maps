@@ -108,6 +108,17 @@ def torch_mean_dist(arr):
 
     return out
 
+def torch_eig(arr, k):
+    m = arr.shape[-1]
+    assert m == arr.shape[-2]
+
+    eig_vals = torch.real(torch.linalg.eigvals(arr))
+    if len(eig_vals.shape) == 1:
+        eig_vals = eig_vals.reshape(1, -1)
+    out = eig_vals[:, :k] / m
+
+    return out
+
 class UnetBlock(nn.Module):
     '''U Net Block adapted from https://github.com/phillipi/pix2pix.'''
     def __init__(self, input_size, inner_size, output_size = None, subBlock = None,
@@ -728,6 +739,18 @@ def test_tile_cat():
     result = torch.cat((inp, meanDist), 1)
     print(result)
 
+def test_torch_eig():
+    L1 = np.load('/home/erschultz/dataset_02_04_23/samples/sample240/optimize_grid_b_261_phi_0.01-max_ent10/iteration30/L.npy')
+    L2 =  np.load('/home/erschultz/dataset_02_04_23/samples/sample241/optimize_grid_b_261_phi_0.01-max_ent10/iteration30/L.npy')
+    L1 = np.sign(L1) * np.log(np.abs(L1)+1)
+    L2 = np.sign(L2) * np.log(np.abs(L2)+1)
+    L1 = torch.tensor(L1, dtype=torch.float32).reshape(-1, 512, 512)
+    L2 = torch.tensor(L2, dtype=torch.float32).reshape(-1, 512, 512)
+    L = torch.cat((L1, L2), 0)
+    print(L.shape)
+    eig_vals = torch_eig(L, 10)
+    print(eig_vals, eig_vals.shape)
+
 
 
 
@@ -740,4 +763,5 @@ if __name__ == '__main__':
     # test_unpool()
     # test_triu_to_full()
     # test_mean_dist()
-    test_tile_cat()
+    # test_tile_cat()
+    test_torch_eig()

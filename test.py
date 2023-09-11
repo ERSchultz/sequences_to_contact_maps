@@ -14,14 +14,18 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from core_test_train import core_test_train
-from pylib.utils import epilib
-from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
-from pylib.utils.energy_utils import *
-from pylib.utils.plotting_utils import BLUE_RED_CMAP, RED_CMAP, plot_matrix
 from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+from pylib.utils import epilib
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from pylib.utils.energy_utils import *
+from pylib.utils.plotting_utils import BLUE_RED_CMAP, RED_CMAP, plot_matrix
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
 from scripts.load_utils import (load_import_log, load_L, load_sc_contacts,
@@ -31,9 +35,6 @@ from scripts.neural_nets.networks import get_model
 from scripts.neural_nets.utils import get_dataset
 from scripts.similarity_measures import SCC
 from scripts.utils import calc_dist_strat_corr, crop, print_time, triu_to_full
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUV'
 
@@ -193,6 +194,7 @@ def debugModel(model_type):
         opt.log_preprocessing = None
         opt.head_architecture = 'dconv-bilinear-triu'
         opt.input_L_to_D = True
+        opt.input_L_to_D_mode = 'meandist_eigval'
         opt.head_architecture_2 = f'dconv-fc-fill_{opt.m}'
         opt.head_hidden_sizes_list = [1000, 1000,1000,1000,1000]
         # opt.crop = 128
