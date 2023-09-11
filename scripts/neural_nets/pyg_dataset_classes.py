@@ -240,7 +240,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             else:
                 raise Exception(f'Unrecognized output {self.output}')
 
-            if self.output is not None:
+            if self.output is not None and self.output_preprocesing is not None:
                 if 'center' in self.output_preprocesing:
                     graph.energy -= torch.mean(graph.energy)
                 if 'norm' in self.output_preprocesing:
