@@ -58,7 +58,8 @@ def get_model(opt, verbose = True):
                     opt.act, opt.inner_act, opt.out_act,
                     opt.message_passing, opt.use_edge_weights or opt.use_edge_attr, opt.edge_dim,
                     opt.head_architecture, opt.head_architecture_2, opt.head_hidden_sizes_list,
-                    opt.head_act, opt.use_bias, opt.rescale, opt.gated, opt.dropout, opt.input_L_to_D,
+                    opt.head_act, opt.use_bias, opt.rescale, opt.gated, opt.dropout,
+                    opt.input_L_to_D, opt.input_L_to_D_mode,
                     opt.training_norm, opt.num_heads, opt.concat_heads,
                     opt.log_file, opt.verbose or verbose,
                     opt.use_sign_net, opt.use_sign_plus, opt.k)
@@ -101,7 +102,8 @@ class ContactGNN(nn.Module):
                 act, inner_act, out_act,
                 message_passing, use_edge_attr, edge_dim,
                 head_architecture_L, head_architecture_D, head_hidden_sizes_list,
-                head_act, use_bias, rescale, gated, dropout, input_L_to_D,
+                head_act, use_bias, rescale, gated, dropout,
+                input_L_to_D, input_L_to_D_mode,
                 training_norm, num_heads, concat_heads,
                 ofile = sys.stdout, verbose = True,
                 sign_net = False, sign_plus = False, k = None):
@@ -166,6 +168,7 @@ class ContactGNN(nn.Module):
         self.gated = gated
         self.dropout = dropout
         self.input_L_to_D = input_L_to_D
+        self.input_L_to_D_mode = input_L_to_D_mode
         self.training_norm = training_norm
         self.num_heads = num_heads
         self.concat_heads = concat_heads
@@ -319,7 +322,7 @@ class ContactGNN(nn.Module):
             # designed for debugging
             self.model = None
         else:
-            raise Exception("Unkown message_passing {}".format(message_passing))
+            raise Exception(f"Unkown message_passing {message_passing}")
 
         self.latent_size = input_size
         # save input_size to latent_size
@@ -425,9 +428,7 @@ class ContactGNN(nn.Module):
             input_size = input_size * self.m
 
         if self.input_L_to_D:
-            print('h428', input_size)
             input_size += int(self.m * self.rescale)
-            print(input_size)
 
         if 'fc' in head_architecture:
             head_list_b.append(MLP(input_size, head_hidden_sizes_list, self.use_bias,
