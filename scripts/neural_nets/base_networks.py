@@ -80,6 +80,34 @@ def torch_triu_to_full(arr):
 
     return out
 
+def torch_mean_dist(arr):
+    arr_copy = torch.clone(arr)
+    assert arr_copy.shape[-1] == arr_copy.shape[-2]
+    if len(arr_copy.shape) == 3:
+        N, m, _ = arr_copy.shape
+    elif len(arr_copy.shape) == 2:
+        m, _ = arr_copy.shape
+        N = 1
+        arr_copy = arr.reshape(1, m, m)
+
+    distances = range(0, m, 1)
+    out = torch.zeros((N, m), dtype=torch.float32)
+    if arr.is_cuda:
+        out = out.to(arr.get_device())
+
+    for i in range(N):
+        # normalize
+        mean = torch.mean(torch.diagonal(arr_copy[i]))
+        if mean == 0:
+            arr_norm = arr
+        else:
+            arr_norm = arr_copy[i] / mean
+        for d in distances:
+            diag = torch.diagonal(arr_norm, offset = d)
+            out[i, d] = torch.mean(torch.diagonal(arr_norm, offset = d))
+
+    return out
+
 class UnetBlock(nn.Module):
     '''U Net Block adapted from https://github.com/phillipi/pix2pix.'''
     def __init__(self, input_size, inner_size, output_size = None, subBlock = None,
@@ -682,6 +710,26 @@ def test_triu_to_full():
     out = torch_triu_to_full(inp)
     print(out)
 
+def test_mean_dist():
+    inp = torch.tensor(np.array([1,2,3,4,5,6]), dtype = torch.float32)
+    out = torch_triu_to_full(inp)
+    out /= torch.mean(torch.diagonal(out))
+    print(out)
+    meanDist = torch_mean_dist(out)
+    print(meanDist)
+
+def test_tile_cat():
+    inp = torch.tensor(np.array([[1,2,3,4,5,6], [1,5,6,8,9,3]]), dtype = torch.float32)
+    print(inp)
+    out = torch_triu_to_full(inp)
+    out /= torch.mean(torch.diagonal(out))
+    meanDist = torch_mean_dist(out)
+    print(meanDist)
+    result = torch.cat((inp, meanDist), 1)
+    print(result)
+
+
+
 
 
 if __name__ == '__main__':
@@ -690,4 +738,6 @@ if __name__ == '__main__':
     # test_FillDiagonalsFromArray()
     # test_strided()
     # test_unpool()
-    test_triu_to_full()
+    # test_triu_to_full()
+    # test_mean_dist()
+    test_tile_cat()

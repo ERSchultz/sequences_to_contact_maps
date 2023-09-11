@@ -113,35 +113,6 @@ def find_dist_between_centroids(centroids):
     return distances
 
 # @njit
-def xyz_to_contact_distance(xyz, cutoff_distance, verbose = False):
-    '''
-    Converts xyz to contact map via grid
-    '''
-    if len(xyz.shape) == 3:
-        N = xyz.shape[0]
-        m = xyz.shape[1]
-    else:
-        N = 1
-        m = xyz.shape[0]
-        xyz = xyz.reshape(-1, m, 3)
-
-    contact_map = np.zeros((m,m))
-    t0 = time.time()
-    for n in range(N):
-        if verbose:
-            prcnt_done = n/N * 100
-            t = time.time() - t0
-            if prcnt_done % 5 == 0:
-                print(f'{prcnt_done}%')
-        for i in range(m):
-            for j in range(i+1):
-                dist = np.linalg.norm(xyz[n, i, :] -xyz[n, j, :])
-                if dist <= cutoff_distance:
-                    contact_map[i,j] += 1
-                    contact_map[j,i] += 1
-
-    return contact_map
-
 def main():
     dir='/home/eric/dataset_test/samples/sample82'
     file = osp.join(dir, 'data_out/output.xyz')

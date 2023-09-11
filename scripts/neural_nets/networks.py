@@ -12,7 +12,8 @@ from ..sign_net.sign_net import SignNet
 from ..sign_net.transform import to_dense_list_EVD
 from .base_networks import (MLP, AverageTo2d, Bilinear, ConvBlock, DeconvBlock,
                             FillDiagonalsFromArray, LinearBlock, Symmetrize2D,
-                            UnetBlock, act2module, torch_triu_to_full)
+                            UnetBlock, act2module, torch_mean_dist,
+                            torch_triu_to_full)
 from .old_networks import *
 from .pyg_fns import WeightedGATv2Conv, WeightedSignedConv
 
@@ -57,7 +58,7 @@ def get_model(opt, verbose = True):
                     opt.act, opt.inner_act, opt.out_act,
                     opt.message_passing, opt.use_edge_weights or opt.use_edge_attr, opt.edge_dim,
                     opt.head_architecture, opt.head_architecture_2, opt.head_hidden_sizes_list,
-                    opt.head_act, opt.use_bias, opt.rescale, opt.gated, opt.dropout,
+                    opt.head_act, opt.use_bias, opt.rescale, opt.gated, opt.dropout, opt.input_L_to_D,
                     opt.training_norm, opt.num_heads, opt.concat_heads,
                     opt.log_file, opt.verbose or verbose,
                     opt.use_sign_net, opt.use_sign_plus, opt.k)
@@ -100,7 +101,7 @@ class ContactGNN(nn.Module):
                 act, inner_act, out_act,
                 message_passing, use_edge_attr, edge_dim,
                 head_architecture_L, head_architecture_D, head_hidden_sizes_list,
-                head_act, use_bias, rescale, gated, dropout,
+                head_act, use_bias, rescale, gated, dropout, input_L_to_D,
                 training_norm, num_heads, concat_heads,
                 ofile = sys.stdout, verbose = True,
                 sign_net = False, sign_plus = False, k = None):
@@ -164,6 +165,7 @@ class ContactGNN(nn.Module):
         self.rescale = rescale
         self.gated = gated
         self.dropout = dropout
+        self.input_L_to_D = input_L_to_D
         self.training_norm = training_norm
         self.num_heads = num_heads
         self.concat_heads = concat_heads
@@ -422,6 +424,9 @@ class ContactGNN(nn.Module):
         else:
             input_size = input_size * self.m
 
+        if self.input_L_to_D:
+            input_size += self.m
+
         if 'fc' in head_architecture:
             head_list_b.append(MLP(input_size, head_hidden_sizes_list, self.use_bias,
                                 self.head_act, self.out_act, dropout = self.dropout))
@@ -444,10 +449,16 @@ class ContactGNN(nn.Module):
             return latent
 
         L_out = self.plaid_component(latent)
-        D_out = self.diagonal_component(latent)
         if L_out is None:
             return D_out
-        elif D_out is None:
+
+        if self.input_L_to_D:
+            # calculate mean along each diagonal of L_out
+            meanDist = torch_mean_dist(L_out)
+        else:
+            meanDist = None
+        D_out = self.diagonal_component(latent, meanDist)
+        if D_out is None:
             return L_out
 
         try:
@@ -488,7 +499,7 @@ class ContactGNN(nn.Module):
 
         return latent
 
-    def diagonal_component(self, latent):
+    def diagonal_component(self, latent, meanDist=None):
         _, output_size = latent.shape
         if self.head_architecture_D is None:
             return none
@@ -501,7 +512,11 @@ class ContactGNN(nn.Module):
             else:
                 D_out = torch.clone(latent)
             D_out = D_out.reshape(self.batch_size, -1)
-            D_out = self.head_D2(D_out)
+            if meanDist is not None:
+                # meanDist is shape Nxm
+                D_out = self.head_D2(torch.cat((D_out, meanDist), 1))
+            else:
+                D_out = self.head_D2(D_out)
         elif self.head_architecture_D in self.to2D.mode_options:
             latent = latent.reshape(self.batch_size, self.m, output_size)
             latent = latent.permute(0, 2, 1) # permute to combine over m index

@@ -192,9 +192,10 @@ def debugModel(model_type):
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
         opt.head_architecture = 'dconv-bilinear-triu'
+        opt.input_L_to_D = True
         opt.head_architecture_2 = f'dconv-fc-fill_{opt.m}'
         opt.head_hidden_sizes_list = [1000, 1000,1000,1000,1000]
-        opt.crop = None
+        # opt.crop = 128
         opt.plaid_score_cutoff = 50
 
         opt.use_bias = True
@@ -243,7 +244,7 @@ def debugModel(model_type):
 
     # other
     opt.pretrain_id = None
-    opt.plot = False
+    opt.plot = True
     opt.plot_predictions = True
     opt.verbose = False
     opt.print_params = True

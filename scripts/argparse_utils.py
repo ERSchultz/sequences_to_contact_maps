@@ -188,6 +188,8 @@ def get_base_parser():
                         help='true to use parameter sharing in autoencoder blocks')
     parser.add_argument('--use_bias', type=AC.str2bool, default=True,
                         help='true to use bias (only implemented in ContactGNN and MLP)')
+    parser.add_argument('--input_L_to_D', type=AC.str2bool, default=False,
+                        help='True to use \hat{L} to help with estimation of D')
 
     # GNN model args
     parser.add_argument('--use_sign_net', type=AC.str2bool, default=False,
