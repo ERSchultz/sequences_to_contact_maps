@@ -342,7 +342,7 @@ def load_max_ent_L(path, throw_exception=False):
     _, k = x.shape
 
     # load chi
-    chi = load_chi(path)
+    chi = load_chi(path, throw_exception)
 
     if chi is None and throw_exception:
         raise Exception(f'chi not found: {path}')
@@ -357,8 +357,6 @@ def load_max_ent_L(path, throw_exception=False):
 
 def load_max_ent_S(path, throw_exception=False):
     L = load_max_ent_L(path, throw_exception = throw_exception)
-    if L is None:
-        return None
     D = load_max_ent_D(path)
     return calculate_S(L, D)
 

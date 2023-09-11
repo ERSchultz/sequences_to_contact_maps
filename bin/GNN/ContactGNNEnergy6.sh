@@ -10,6 +10,7 @@
 #SBATCH --mem-per-cpu=2000
 #SBATCH --mail-type=END
 #SBATCH --mail-user=erschultz@uchicago.edu
+#SBATCH --exclude=midway3-0372
 
 cd ~/sequences_to_contact_maps
 
