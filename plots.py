@@ -3,6 +3,7 @@ import json
 import math
 import os
 import os.path as osp
+import re
 import string
 import sys
 from collections import defaultdict
@@ -14,6 +15,12 @@ import numpy as np
 import scipy
 import seaborn as sns
 import torch
+from result_summary_plots import predict_chi_in_psi_basis
+from scipy.ndimage import uniform_filter
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.metrics import mean_squared_error
+
 from pylib.utils import epilib
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import (calculate_all_energy, calculate_D,
@@ -22,8 +29,6 @@ from pylib.utils.energy_utils import (calculate_all_energy, calculate_D,
 from pylib.utils.plotting_utils import *
 from pylib.utils.utils import load_json, pearson_round
 from pylib.utils.xyz import xyz_load, xyz_write
-from result_summary_plots import predict_chi_in_psi_basis
-from scipy.ndimage import uniform_filter
 from scripts.argparse_utils import (finalize_opt, get_base_parser,
                                     get_opt_header, opt2list)
 from scripts.load_utils import (get_final_max_ent_folder, load_contact_map,
@@ -32,9 +37,6 @@ from scripts.plotting_utils import (plot_centroid_distance,
                                     plot_combined_models, plot_diag_chi,
                                     plot_sc_contact_maps, plot_xyz_gif,
                                     plotting_script)
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-from sklearn.metrics import mean_squared_error
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -60,9 +62,9 @@ def update_result_tables(model_type = None, mode = None, output_mode = 'contact'
         elif output_mode == 'sequence':
             opt_list.extend(['Final Validation Loss', 'AUC'])
         elif output_mode == 'energy':
-            opt_list.extend(['Final Validation Loss', 'Regular Loss', 'Downsampling Loss', 'Upsampling Loss'])
+            opt_list.extend(['Time (mins)', 'Final Validation Loss', 'Regular Loss', 'Downsampling Loss', 'Upsampling Loss'])
         else:
-            raise Exception('Unknown output_mode {}'.format(output_mode))
+            raise Exception(f'Unknown output_mode {output_mode}')
         results = [opt_list]
 
         # get data
@@ -112,6 +114,13 @@ def update_result_tables(model_type = None, mode = None, output_mode = 'contact'
                             for line in f:
                                 if line.startswith('Final val loss: '):
                                     final_val_loss = np.round(float(line.split(':')[1].strip()), 3)
+                                if line.startswith('Total training + validation time'):
+                                    line_split = line.split(':')[1].strip()
+                                    line_split = line_split.split(', ')
+                                    line_split = [re.sub('[a-zA-Z]', '', i) for i in line_split]
+                                    line_split = [float(i) for i in line_split]
+                                    time = line_split[0]*60 + line_split[1]
+
                         r_loss = None; d_loss = None; u_loss = None;
                         if osp.exists(osp.join(id_path, 'loss_analysis.json')):
                             with open(osp.join(id_path, 'loss_analysis.json')) as f:
@@ -122,7 +131,7 @@ def update_result_tables(model_type = None, mode = None, output_mode = 'contact'
                                 d_loss = loss_dict['downsample']
                             if 'upsample' in loss_dict.keys():
                                 u_loss = loss_dict['upsample']
-                        opt_list.extend([final_val_loss, r_loss, d_loss, u_loss])
+                        opt_list.extend([time, final_val_loss, r_loss, d_loss, u_loss])
                     results.append(opt_list)
 
         ofile = osp.join(model_path, 'results_table.csv')

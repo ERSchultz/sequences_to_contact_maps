@@ -3,7 +3,7 @@
 #SBATCH --output=logFiles/ContactGNNEnergy18.out
 #SBATCH --time=24:00:00
 #SBATCH --account=pi-depablo
-#SBATCH --partition=gpu
+#SBATCH --partition=depablo-gpugpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=16
@@ -43,9 +43,11 @@ useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
+inputLtoD='true'
+inputLtoDMode='meandist'
 loss='mse_log'
 
-id=470
+id=471
 for lr in 1e-4
 do
   train
