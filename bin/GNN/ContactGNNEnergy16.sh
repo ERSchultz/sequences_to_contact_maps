@@ -3,7 +3,7 @@
 #SBATCH --output=logFiles/ContactGNNEnergy16.out
 #SBATCH --time=24:00:00
 #SBATCH --account=pi-depablo
-#SBATCH --partition=depablo-gpu
+#SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=16
