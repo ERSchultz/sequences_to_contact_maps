@@ -11,7 +11,7 @@ from makeLatexTable_new import *
 
 def main():
     descr_dict = {434: 'baseline',
-            440: r'predict $S$',
+            # 472: r'predict $S$',
             441: 'without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$',
             442: "without overwriting main diagonal with 1's",
             443: 'without SignNet', # (eigenvectors are still included as node features)

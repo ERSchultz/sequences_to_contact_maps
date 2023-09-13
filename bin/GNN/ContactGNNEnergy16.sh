@@ -46,6 +46,7 @@ milestones='40'
 inputLtoD='true'
 inputLtoDMode='meandist_eigval'
 loss='mse_log'
+resumeTraining='true'
 
 id=468
 for lr in 1e-4

@@ -455,9 +455,6 @@ class ContactGNN(nn.Module):
             return latent
 
         L_out = self.plaid_component(latent)
-        if L_out is None:
-            return D_out
-
         additional = None
         if self.input_L_to_D:
             # calculate mean along each diagonal of L_out
@@ -471,8 +468,10 @@ class ContactGNN(nn.Module):
                 additional = torch_eig(L_out, 10)
             else:
                 raise Exception(f'{self.input_L_to_D_mode} not recognized')
-
         D_out = self.diagonal_component(latent, additional)
+
+        if L_out is None:
+            return D_out
         if D_out is None:
             return L_out
 

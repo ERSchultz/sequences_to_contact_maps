@@ -41,13 +41,16 @@ yNorm='mean_fill'
 k=8
 useSignPlus='true'
 batchSize=1
-nEpochs=80
-milestones='40'
+nEpochs=60
+milestones='30'
 inputLtoD='true'
-loss='mse_and_mse_center'
+weightDecay=0.001
+loss='mse_log'
 
-id=465
-for lr in 1e-4
+# 471 but weight decay
+
+id=474
+for lr in 1e-5
 do
   train
   id=$(( $id + 1 ))

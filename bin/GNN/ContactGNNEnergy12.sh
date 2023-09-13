@@ -43,9 +43,10 @@ useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
-inputLtoD='true'
 
-id=464
+# ablation of log
+
+id=472
 for lr in 1e-4
 do
   train
