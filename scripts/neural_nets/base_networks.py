@@ -722,12 +722,20 @@ def test_triu_to_full():
     print(out)
 
 def test_mean_dist():
-    inp = torch.tensor(np.array([1,2,3,4,5,6]), dtype = torch.float32)
-    out = torch_triu_to_full(inp)
-    out /= torch.mean(torch.diagonal(out))
-    print(out)
-    meanDist = torch_mean_dist(out)
-    print(meanDist)
+    inp = torch.tensor(np.random.rand(512,512), dtype = torch.float32)
+    inp = inp.to('cuda')
+    print(inp.is_cuda)
+    t0 = time.time()
+    num_its = 100
+    for _ in range(num_its):
+        meanDist = torch_mean_dist(inp)
+    tf = time.time()
+    t_tot = np.round(tf - t0, 3)
+    t_avg = np.round((tf - t0)/num_its, 3)
+
+    print(f"Tot time: {t_tot}\nAvg time: {t_avg}")
+
+
 
 def test_tile_cat():
     inp = torch.tensor(np.array([[1,2,3,4,5,6], [1,5,6,8,9,3]]), dtype = torch.float32)
@@ -762,6 +770,6 @@ if __name__ == '__main__':
     # test_strided()
     # test_unpool()
     # test_triu_to_full()
-    # test_mean_dist()
+    test_mean_dist()
     # test_tile_cat()
-    test_torch_eig()
+    # test_torch_eig()

@@ -43,11 +43,9 @@ useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
-inputLtoD='true'
-inputLtoDMode='meandist_eigval'
 loss='mse_log_and_mse_center_log'
 
-id=469
+id=477
 for lr in 1e-4
 do
   train

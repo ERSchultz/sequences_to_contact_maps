@@ -432,6 +432,8 @@ class ContactGNN(nn.Module):
                 input_size += int(self.m * self.rescale)
             if 'eigval' in self.input_L_to_D_mode:
                 input_size += 10
+            if 'subtract' in self.input_L_to_D_mode:
+                self.fill = FillDiagonalsFromArray()
 
         if 'fc' in head_architecture:
             head_list_b.append(MLP(input_size, head_hidden_sizes_list, self.use_bias,
@@ -466,9 +468,14 @@ class ContactGNN(nn.Module):
                 additional = torch_mean_dist(L_out)
             elif 'eigval' in self.input_L_to_D_mode:
                 additional = torch_eig(L_out, 10)
+            elif 'subtract' in self.input_L_to_D_mode:
+                meanDist = torch_mean_dist(L_out)
+                L_meanDist = self.fill(meanDist)
             else:
                 raise Exception(f'{self.input_L_to_D_mode} not recognized')
         D_out = self.diagonal_component(latent, additional)
+        if 'subtract' in self.input_L_to_D_mode:
+            D_out -= L_meanDist
 
         if L_out is None:
             return D_out

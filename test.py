@@ -194,7 +194,7 @@ def debugModel(model_type):
         opt.log_preprocessing = None
         opt.head_architecture = 'dconv-bilinear-triu'
         opt.input_L_to_D = True
-        opt.input_L_to_D_mode = 'meandist_eigval'
+        opt.input_L_to_D_mode = 'subtract'
         opt.head_architecture_2 = f'dconv-fc-fill_{opt.m}'
         opt.head_hidden_sizes_list = [1000, 1000,1000,1000,1000]
         # opt.crop = 128

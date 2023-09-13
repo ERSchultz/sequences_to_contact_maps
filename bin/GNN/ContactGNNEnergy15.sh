@@ -25,7 +25,7 @@ preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-Ad
 hiddenSizesList='8-8-8-8'
 updateHiddenSizesList='1000-1000-64'
 
-outputPreprocesing='log'
+outputPreprocesing='none'
 headArchitecture='bilinear'
 headArchitecture2="fc-fill_${m}"
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
@@ -41,12 +41,13 @@ yNorm='mean_fill'
 k=8
 useSignPlus='true'
 batchSize=1
-nEpochs=80
-milestones='40'
+nEpochs=60
+milestones='30'
 inputLtoD='true'
-inputLtoDMode='meandist_eigval'
+inputLtoDMode='subtract'
+loss='mse_log'
 
-id=467
+id=476
 for lr in 1e-4
 do
   train
