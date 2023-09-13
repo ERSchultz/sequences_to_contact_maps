@@ -1,0 +1,379 @@
+#### ARCHITECTURE ####
+Node Encoder:
+ None 
+
+Linear:
+ Linear(in_features=8, out_features=64, bias=True) 
+
+Edge Encoder:
+ None 
+
+Model:
+ Sequential(
+  (0): WeightedGATv2Conv(64, 8, heads=8)
+  (1): MLP(
+  (model): Sequential(
+    (0): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=64, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (1): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (2): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=64, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+  )
+)
+  (2): WeightedGATv2Conv(64, 8, heads=8)
+  (3): MLP(
+  (model): Sequential(
+    (0): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=64, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (1): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (2): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=64, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+  )
+)
+  (4): WeightedGATv2Conv(64, 8, heads=8)
+  (5): MLP(
+  (model): Sequential(
+    (0): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=64, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (1): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (2): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=64, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+  )
+)
+  (6): WeightedGATv2Conv(64, 8, heads=8)
+  (7): MLP(
+  (model): Sequential(
+    (0): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=64, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (1): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (2): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=64, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+  )
+)
+) 
+
+Head L:
+ None 
+ Bilinear 
+
+Head D:
+ None 
+ Sequential(
+  (0): MLP(
+    (model): Sequential(
+      (0): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=16896, out_features=1000, bias=True)
+          (1): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (1): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1000, bias=True)
+          (1): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (2): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1000, bias=True)
+          (1): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (3): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1000, bias=True)
+          (1): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (4): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1000, bias=True)
+          (1): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (5): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1000, bias=True)
+          (1): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (6): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=512, bias=True)
+          (1): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+    )
+  )
+  (1): FillDiagonalsFromArray()
+) 
+
+Namespace(GNN_mode=True, transforms=[], pre_transforms=['ContactDistance', 'MeanContactDistance', 'MeanContactDistance_bonded', 'AdjPCs_8'], sparsify_threshold=None, sparsify_threshold_upper=None, top_k=None, use_node_features=False, use_edge_weights=False, use_edge_attr=True, keep_zero_edges=False, data_folder=['/project2/depablo/erschultz/dataset_04_28_23'], scratch='/scratch/midway3/erschultz', root_name='ContactGNNEnergy18', delete_root=False, toxx=False, toxx_mode='mean', y_preprocessing='sweeprand_log_inf', sweep_choices=[2, 3, 4, 5], y_zero_diag_count=0, log_preprocessing=None, output_preprocesing=None, kr=False, mean_filt=None, rescale=2, gated=False, preprocessing_norm='mean_fill', min_subtraction=True, x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, move_data_to_scratch=False, use_scratch_parallel=False, plaid_score_cutoff=None, split_percents=[0.9, 0.1, 0.0], split_sizes=None, random_split=True, shuffle=True, batch_size=1, num_workers=4, start_epoch=1, n_epochs=80, save_mod=5, print_mod=2, lr=0.0001, min_lr=1e-06, weight_decay=0.0, gpus=1, scheduler='MultiStepLR', milestones=[40], gamma=0.1, patience=10, loss='mse_log', w_reg=None, reg_lambda=0.1, autoencoder_mode=False, verbose=False, print_params=True, output_mode='energy_sym_diag', model_type='ContactGNNEnergy', id=471, pretrain_id=None, resume_training=False, k=8, m=512, seed=42, act='leaky', inner_act='leaky', out_act='leaky', training_norm=None, dropout=0.0, parameter_sharing=False, use_bias=True, input_L_to_D=True, input_L_to_D_mode='meandist', use_sign_net=False, use_sign_plus=True, message_passing='weighted_GAT', head_architecture='bilinear', head_architecture_2='fc-fill_512', head_hidden_sizes_list=[1000, 1000, 1000, 1000, 1000, 1000], encoder_hidden_sizes_list=None, inner_hidden_sizes_list=None, edge_encoder_hidden_sizes_list=None, update_hidden_sizes_list=[1000, 1000, 64], head_act='leaky', num_heads=8, concat_heads=True, max_diagonal=None, mlp_model_id=None, kernel_w_list=None, hidden_sizes_list=[8, 8, 8, 8], nf=None, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, down_sampling=None, plot=True, plot_predictions=True, bonded_path=None, ofile_folder='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/471', log_file_path='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/471/out.log', log_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/471/out.log' mode='a' encoding='UTF-8'>, param_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/471/params.log' mode='a' encoding='UTF-8'>, split_neg_pos_edges=False, criterion=<function mse_log at 0x7f2a972a2550>, node_feature_size=0, input_m=256, edge_transforms=['ContactDistance(norm=False)', 'MeanContactDistance(norm=False)', 'MeanContactDistance(norm=False, bonded=True)'], node_transforms=['AdjPCs(k=8, normalize=False, sign_net=True)'], edge_dim=3, transforms_processed=None, diag=True, pre_transforms_processed=Compose([
+  ContactDistance(norm=False),
+  MeanContactDistance(norm=False),
+  MeanContactDistance(norm=False, bonded=True),
+  AdjPCs(k=8, normalize=False, sign_net=True)
+]), cuda=True, use_parallel=False, device=device(type='cuda'))
+
+Dataset construction time: 15.734 minutes
+Number of samples: 5000
+Average num edges per graph:  61627.9772
+Mean degree: [245.68 254.88 219.23 ... 251.09 215.5  255.  ] +- [ 9.13  0.37 26.94 ...  4.77 29.22  0.  ]
+
+split sizes: train=4500, val=500, test=0, N=5000
+Optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 0.0001
+    weight_decay: 0.0
+)
+Scheduler: <torch.optim.lr_scheduler.MultiStepLR object at 0x7f2a74cc8850>
+#### TRAINING/VALIDATION ####
+Epoch 2, loss = 1.0666
+Mean test/val loss: 0.8059
+[25, 50, 75] percentiles test/val loss: [0.3983 0.6668 1.0139]
+
+Epoch 4, loss = 1.0683
+Mean test/val loss: 0.8645
+[25, 50, 75] percentiles test/val loss: [0.4572 0.744  1.0886]
+
+Epoch 6, loss = 0.9525
+Mean test/val loss: 0.7610
+[25, 50, 75] percentiles test/val loss: [0.3767 0.6363 0.9578]
+
+Epoch 8, loss = 0.7068
+Mean test/val loss: 0.7976
+[25, 50, 75] percentiles test/val loss: [0.4651 0.6488 0.9895]
+
+Epoch 10, loss = 1.2821
+Mean test/val loss: 0.7240
+[25, 50, 75] percentiles test/val loss: [0.3711 0.5912 0.8977]
+
+Epoch 12, loss = 2.1362
+Mean test/val loss: 0.7924
+[25, 50, 75] percentiles test/val loss: [0.3853 0.6614 0.9908]
+
+Epoch 14, loss = 4.3361
+Mean test/val loss: 0.7969
+[25, 50, 75] percentiles test/val loss: [0.3732 0.6812 1.0391]
+
+Epoch 16, loss = 1.0053
+Mean test/val loss: 0.7713
+[25, 50, 75] percentiles test/val loss: [0.3687 0.6357 0.9641]
+
+Epoch 18, loss = 1.3640
+Mean test/val loss: 0.8559
+[25, 50, 75] percentiles test/val loss: [0.4246 0.6498 1.0788]
+
+Epoch 20, loss = 1.6987
+Mean test/val loss: 3.2719
+[25, 50, 75] percentiles test/val loss: [1.9458 2.7235 3.9101]
+
+Epoch 22, loss = 0.9861
+Mean test/val loss: 0.7410
+[25, 50, 75] percentiles test/val loss: [0.3496 0.5927 0.9466]
+
+Epoch 24, loss = 1.5511
+Mean test/val loss: 0.6654
+[25, 50, 75] percentiles test/val loss: [0.3647 0.5643 0.8433]
+
+Epoch 26, loss = 1.4189
+Mean test/val loss: 0.8772
+[25, 50, 75] percentiles test/val loss: [0.4594 0.6884 1.0486]
+
+Epoch 28, loss = 2.5998
+Mean test/val loss: 0.7806
+[25, 50, 75] percentiles test/val loss: [0.3819 0.6462 0.9854]
+
+Epoch 30, loss = 2.5675
+Mean test/val loss: 0.7821
+[25, 50, 75] percentiles test/val loss: [0.3612 0.6426 1.0238]
+
+Epoch 32, loss = 0.8379
+Mean test/val loss: 0.6452
+[25, 50, 75] percentiles test/val loss: [0.3393 0.5437 0.8296]
+
+Epoch 34, loss = 0.8558
+Mean test/val loss: 0.7701
+[25, 50, 75] percentiles test/val loss: [0.3673 0.5957 0.9767]
+
+Epoch 36, loss = 0.7748
+Mean test/val loss: 0.6088
+[25, 50, 75] percentiles test/val loss: [0.327  0.5168 0.7768]
+
+Epoch 38, loss = 1.7589
+Mean test/val loss: 0.7413
+[25, 50, 75] percentiles test/val loss: [0.3443 0.5985 0.9599]
+
+Epoch 40, loss = 0.8033
+Mean test/val loss: 0.7196
+[25, 50, 75] percentiles test/val loss: [0.327  0.5639 0.9243]
+
+New lr: 1e-05
+Epoch 42, loss = 0.7102
+Mean test/val loss: 0.7341
+[25, 50, 75] percentiles test/val loss: [0.3459 0.6119 0.9757]
+
+Epoch 44, loss = 0.6436
+Mean test/val loss: 0.6150
+[25, 50, 75] percentiles test/val loss: [0.2998 0.5038 0.7964]
+
+Epoch 46, loss = 0.5442
+Mean test/val loss: 0.5403
+[25, 50, 75] percentiles test/val loss: [0.2593 0.4499 0.7057]
+
+Epoch 48, loss = 0.5007
+Mean test/val loss: 0.5078
+[25, 50, 75] percentiles test/val loss: [0.2485 0.4174 0.6375]
+
+Epoch 50, loss = 0.4746
+Mean test/val loss: 0.4988
+[25, 50, 75] percentiles test/val loss: [0.2281 0.3988 0.6255]
+
+Epoch 52, loss = 0.6479
+Mean test/val loss: 0.5844
+[25, 50, 75] percentiles test/val loss: [0.2944 0.4881 0.7563]
+
+Epoch 54, loss = 0.6010
+Mean test/val loss: 0.6576
+[25, 50, 75] percentiles test/val loss: [0.3109 0.5732 0.8795]
+
+Epoch 56, loss = 0.5133
+Mean test/val loss: 0.5524
+[25, 50, 75] percentiles test/val loss: [0.2557 0.4313 0.7323]
+
+Epoch 58, loss = 0.4546
+Mean test/val loss: 0.4691
+[25, 50, 75] percentiles test/val loss: [0.2222 0.3681 0.5888]
+
+Epoch 60, loss = 0.4396
+Mean test/val loss: 0.4541
+[25, 50, 75] percentiles test/val loss: [0.2139 0.3587 0.5794]
+
+Epoch 62, loss = 0.5004
+Mean test/val loss: 0.5003
+[25, 50, 75] percentiles test/val loss: [0.2526 0.4033 0.6102]
+
+Epoch 64, loss = 0.5059
+Mean test/val loss: 0.4696
+[25, 50, 75] percentiles test/val loss: [0.2221 0.3709 0.5885]
+
+Epoch 66, loss = 0.4755
+Mean test/val loss: 0.4566
+[25, 50, 75] percentiles test/val loss: [0.2153 0.3556 0.5789]
+
+Epoch 68, loss = 0.4486
+Mean test/val loss: 0.5239
+[25, 50, 75] percentiles test/val loss: [0.2968 0.4427 0.639 ]
+
+Epoch 70, loss = 0.4450
+Mean test/val loss: 0.4421
+[25, 50, 75] percentiles test/val loss: [0.2091 0.3514 0.573 ]
+
+Epoch 72, loss = 0.4138
+Mean test/val loss: 0.4364
+[25, 50, 75] percentiles test/val loss: [0.1981 0.3352 0.5647]
+
+Epoch 74, loss = 0.4937
+Mean test/val loss: 0.4730
+[25, 50, 75] percentiles test/val loss: [0.2334 0.3705 0.5981]
+
+Epoch 76, loss = 0.4117
+Mean test/val loss: 0.4327
+[25, 50, 75] percentiles test/val loss: [0.2049 0.3419 0.5531]
+
+Epoch 78, loss = 0.3994
+Mean test/val loss: 0.4221
+[25, 50, 75] percentiles test/val loss: [0.1896 0.3295 0.5567]
+
+Epoch 80, loss = 0.4495
+Mean test/val loss: 0.4383
+[25, 50, 75] percentiles test/val loss: [0.2023 0.3398 0.5732]
+
+
+Total parameters: 26974000
+Total training + validation time: 20.0 hours, 28.0 mins, and 18.80000000000291 secs
+Final val loss: 0.43830165898427365
+
+split sizes: train=4500, val=500, test=0, N=5000
+#### Plotting Script ####
+Prediction Results:
+dataset_04_28_23 sample981: 0.5800073146820068
+dataset_04_28_23 sample324: 0.9082497358322144
+dataset_04_28_23 sample3464: 0.6404463052749634
+dataset_04_28_23 sample2834: 0.5902279615402222
+dataset_04_28_23 sample1936: 0.3121717870235443
+MSE_log: 0.606 +- 0.19
+
+Downsampling (40%) Results:
+dataset_04_28_23 sample1936-downsampling: 5.763140678405762
+dataset_04_28_23 sample2834-downsampling: 6.026710510253906
+dataset_04_28_23 sample324-downsampling: 14.39636516571045
+dataset_04_28_23 sample3464-downsampling: 8.742324829101562
+dataset_04_28_23 sample981-downsampling: 10.718017578125
+Loss: 9.129 +- 3.205
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy18downsample
+Original sampling (100%) Results:
+dataset_04_28_23 sample1936-regular: 4.631752014160156
+dataset_04_28_23 sample2834-regular: 5.9714250564575195
+dataset_04_28_23 sample324-regular: 12.363067626953125
+dataset_04_28_23 sample3464-regular: 8.516132354736328
+dataset_04_28_23 sample981-regular: 7.0267333984375
+Loss: 7.702 +- 2.656
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy18regsample
