@@ -1,7 +1,7 @@
 --data_folder
 /project2/depablo/erschultz/dataset_04_28_23
 --root_name
-ContactGNNEnergy16
+ContactGNNEnergy17
 --delete_root
 false
 --model_type
@@ -63,7 +63,7 @@ none
 --sparsify_threshold_upper
 none
 --loss
-mse_log
+mse_log_and_mse_center_log
 --act
 leaky
 --inner_act
@@ -132,14 +132,14 @@ none
 --print_params
 true
 --id
-468
+477
 --resume_training
-true
+false
 --pretrain_id
 none
 --mlp_model_id
 none
 --input_L_to_D
-true
+false
 --input_L_to_D_mode
-meandist_eigval
+meandist

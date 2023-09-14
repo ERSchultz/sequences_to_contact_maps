@@ -1,7 +1,7 @@
 --data_folder
 /project2/depablo/erschultz/dataset_04_28_23
 --root_name
-ContactGNNEnergy16
+ContactGNNEnergy13
 --delete_root
 false
 --model_type
@@ -89,13 +89,13 @@ false
 --use_sign_plus
 true
 --n_epochs
-80
+60
 --lr
-1e-4
+1e-5
 --min_lr
 1e-6
 --weight_decay
-0.
+0.001
 --dropout
 0.
 --w_reg
@@ -109,7 +109,7 @@ none
 --scheduler
 MultiStepLR
 --milestones
-40
+30
 --patience
 10
 --gamma
@@ -132,9 +132,9 @@ none
 --print_params
 true
 --id
-468
+474
 --resume_training
-true
+false
 --pretrain_id
 none
 --mlp_model_id
@@ -142,4 +142,4 @@ none
 --input_L_to_D
 true
 --input_L_to_D_mode
-meandist_eigval
+meandist
