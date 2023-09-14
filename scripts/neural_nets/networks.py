@@ -172,6 +172,7 @@ class ContactGNN(nn.Module):
         self.training_norm = training_norm
         self.num_heads = num_heads
         self.concat_heads = concat_heads
+        self.verbose = verbose
 
         ### Encoder Architecture ###
         self.node_encoder = None
@@ -457,6 +458,7 @@ class ContactGNN(nn.Module):
             return latent
 
         L_out = self.plaid_component(latent)
+
         additional = None
         if self.input_L_to_D:
             # calculate mean along each diagonal of L_out
@@ -507,10 +509,15 @@ class ContactGNN(nn.Module):
         else:
             edge_attr = graph.edge_attr
 
+
         if self.message_passing == 'identity':
             latent = x
         elif self.message_passing in {'gcn', 'transformer', 'gat', 'weighted_gat'}:
+            # print('x', x)
+            # print('graph.edge_index', graph.edge_index)
+            # print('edge_attr', edge_attr)
             latent = self.model(x, graph.edge_index, edge_attr)
+            # print('latent', latent)
         elif self.message_passing == 'signedconv':
             if self.use_edge_attr:
                 latent = self.model(x, graph.pos_edge_index, graph.neg_edge_index,
