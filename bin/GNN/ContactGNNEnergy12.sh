@@ -36,7 +36,7 @@ innerAct='leaky'
 headAct='leaky'
 outAct='leaky'
 
-sweepChoices='2-3-4-5'
+sweepChoices='2-3'
 yNorm='mean_fill'
 k=8
 useSignPlus='true'

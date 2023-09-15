@@ -15,12 +15,13 @@ import torch
 import torch_geometric.data
 import torch_geometric.transforms
 import torch_geometric.utils
-from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
-from pylib.utils.energy_utils import calculate_D, calculate_S
 from scipy.ndimage import uniform_filter
 from skimage.measure import block_reduce
 from sklearn.cluster import KMeans
 from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
+
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from pylib.utils.energy_utils import calculate_D, calculate_S
 
 from ..argparse_utils import finalize_opt, get_base_parser
 from ..knightRuiz import knightRuiz
