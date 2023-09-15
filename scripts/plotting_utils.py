@@ -18,14 +18,13 @@ import seaborn as sns
 import torch
 import torch.nn.functional as F
 import torch_geometric
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from pylib.utils.energy_utils import calculate_diag_chi_step
+from pylib.utils.plotting_utils import *
 from scipy.stats import pearsonr
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error, silhouette_score
 from sympy import solve, symbols
-
-from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
-from pylib.utils.energy_utils import calculate_diag_chi_step
-from pylib.utils.plotting_utils import *
 
 from .argparse_utils import (ArgparserConverter, finalize_opt, get_base_parser,
                              get_opt_header, opt2list)
@@ -229,13 +228,13 @@ def plotModelFromArrays(train_loss_arr, val_loss_arr, imagePath, opt=None,
     plt.xlabel('Epoch', fontsize = 16)
     if log_y:
         plt.ylabel(f'{ylabel} (log-scale)', fontsize = 16)
+        plt.yscale('log')
     else:
         plt.ylabel(ylabel, fontsize = 16)
 
     plt.legend()
     plt.tight_layout()
     if log_y:
-        plt.yscale('log')
         plt.savefig(osp.join(imagePath, 'train_val_loss_log.png'))
     else:
         plt.savefig(osp.join(imagePath, 'train_val_loss.png'))
