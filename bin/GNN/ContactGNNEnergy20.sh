@@ -43,9 +43,9 @@ useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
+pretrainID=434
 
-
-id=485
+id=486
 for lr in 1e-4
 do
   train
