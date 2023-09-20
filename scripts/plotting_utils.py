@@ -399,6 +399,8 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
             if opt.output_mode.startswith('energy'):
                 v_max = np.nanpercentile(y, 99)
                 v_min = np.nanpercentile(y, 1)
+                vmax = max(vmax, vmin * -1)
+                vmin = vmax * -1
 
                 plot_matrix(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min,
                                 vmax = v_max, cmap = 'blue-red', title = yhat_title)
@@ -410,7 +412,7 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
 
                 # plot dif
                 dif = y - yhat
-                plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
+                plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = v_max,
                                 vmax = v_max, title = r'S - $\hat{S}$',
                                 cmap = 'blue-red')
             elif opt.output_mode in {'diag_chi_continuous', 'diag_chi_step'}:

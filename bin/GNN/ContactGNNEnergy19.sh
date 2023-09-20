@@ -11,6 +11,7 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=erschultz@uchicago.edu
 #SBATCH --exclude=midway3-0372
+#SBATCH --dependency=afterok:8941921:8950390:8950389:8950388
 
 cd ~/sequences_to_contact_maps
 
@@ -19,13 +20,13 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy19' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_04_28_23"
+dirname="/project2/depablo/erschultz/dataset_09_19_23"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
 hiddenSizesList='8-8-8-8'
 updateHiddenSizesList='1000-1000-64'
 
-outputPreprocesing='none'
+outputPreprocesing='log'
 headArchitecture='bilinear'
 headArchitecture2="fc-fill_${m}"
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
@@ -41,15 +42,11 @@ yNorm='mean_fill'
 k=8
 useSignPlus='true'
 batchSize=1
-nEpochs=60
-milestones='30'
-inputLtoD='true'
-weightDecay=0.01
-loss='mse_log'
+nEpochs=80
+milestones='40'
+pretrainID=485
 
-# 471 but weight decay
-
-id=475
+id=489
 for lr in 1e-5
 do
   train

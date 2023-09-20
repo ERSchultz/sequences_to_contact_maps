@@ -698,8 +698,8 @@ def gnn_meanDist_s(GNN_ID, sample):
 
     e_orig_gt = e_gt
     e_orig_hat = e_hat
-    # e_orig_gt = np.multiply(np.sign(e_gt), np.exp(np.abs(e_gt)) - 1)
-    # e_orig_hat = np.multiply(np.sign(e_hat), np.exp(np.abs(e_hat)) - 1)
+    e_orig_gt = np.multiply(np.sign(e_gt), np.exp(np.abs(e_gt)) - 1)
+    e_orig_hat = np.multiply(np.sign(e_hat), np.exp(np.abs(e_hat)) - 1)
     # e_orig_gt *= ref_max
     # e_orig_gt += ref_mean
     # e_orig_hat *= ref_max
@@ -780,7 +780,7 @@ if __name__ == '__main__':
     # binom()
     # edit_argparse()
     # debugModel('ContactGNNEnergy')
-    gnn_meanDist_s(470, '981-regular')
+    gnn_meanDist_s(434, '981')
     # test_center_norm_log()
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()
