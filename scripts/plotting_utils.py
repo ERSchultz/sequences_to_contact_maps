@@ -399,8 +399,8 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
             if opt.output_mode.startswith('energy'):
                 v_max = np.nanpercentile(y, 99)
                 v_min = np.nanpercentile(y, 1)
-                vmax = max(vmax, vmin * -1)
-                vmin = vmax * -1
+                v_max = max(v_max, v_min * -1)
+                v_min = v_max * -1
 
                 plot_matrix(yhat, osp.join(subpath, 'energy_hat.png'), vmin = v_min,
                                 vmax = v_max, cmap = 'blue-red', title = yhat_title)
