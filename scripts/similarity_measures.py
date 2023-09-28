@@ -7,6 +7,7 @@ import hicrep
 import numpy as np
 import scipy
 import sklearn.metrics
+from pylib.utils.utils import triu_to_full
 from scipy.stats import pearsonr, zscore
 
 

@@ -21,6 +21,7 @@ import torch_geometric
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import calculate_diag_chi_step
 from pylib.utils.plotting_utils import *
+from pylib.utils.utils import triu_to_full
 from scipy.stats import pearsonr
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error, silhouette_score
@@ -32,7 +33,7 @@ from .clean_directories import clean_directories
 from .InteractionConverter import InteractionConverter
 from .load_utils import load_psi, load_sc_contacts
 from .neural_nets.utils import get_data_loaders, get_dataset, load_saved_model
-from .utils import crop, round_up_by_10, triu_to_full
+from .utils import crop, round_up_by_10
 
 
 #### Functions for plotting loss ####

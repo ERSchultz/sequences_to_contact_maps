@@ -17,7 +17,6 @@ from pylib.utils.utils import nan_pearsonr
 from scipy.stats import pearsonr, spearmanr
 from skimage.measure import block_reduce
 from sklearn.decomposition import PCA
-from sympy import solve, symbols
 
 LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -103,23 +102,6 @@ def crop(input, size):
         return input[:size, :size]
     else:
         return input
-
-def triu_to_full(arr, m = None):
-    '''Convert array of upper triangle to symmetric matrix.'''
-    # infer m given length of upper triangle
-    if m is None:
-        l, = arr.shape
-        x, y = symbols('x y')
-        y=x*(x+1)/2-l
-        result=solve(y)
-        m = int(np.max(result))
-
-    # need to reconstruct from upper traingle
-    y = np.zeros((m, m))
-    y[np.triu_indices(m)] = arr
-    y += np.triu(y, 1).T
-
-    return y
 
 def rescale_matrix(inp, factor, triu=True):
     '''

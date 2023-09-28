@@ -13,10 +13,11 @@ import scipy.sparse as sp
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import (calculate_D, calculate_diag_chi_step,
                                       calculate_L, calculate_S)
+from pylib.utils.utils import triu_to_full
 from pylib.utils.xyz import xyz_load, xyz_to_contact_grid
 from scipy.ndimage import gaussian_filter
 
-from .utils import LETTERS, print_size, print_time, triu_to_full
+from .utils import LETTERS, print_size, print_time
 
 
 def load_import_log(dir, obj=None):

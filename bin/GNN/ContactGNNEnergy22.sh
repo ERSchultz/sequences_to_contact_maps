@@ -1,6 +1,6 @@
 #! /bin/bash
-#SBATCH --job-name=CGNNE21
-#SBATCH --output=logFiles/ContactGNNEnergy21.out
+#SBATCH --job-name=CGNNE22
+#SBATCH --output=logFiles/ContactGNNEnergy22.out
 #SBATCH --time=24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
@@ -11,7 +11,6 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=erschultz@uchicago.edu
 #SBATCH --exclude=midway3-0372
-#SBATCH --dependency=afterok:9107338:9107339:9107340:9107341:9107342
 
 
 cd ~/sequences_to_contact_maps
@@ -20,7 +19,7 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
-rootName='ContactGNNEnergy21' # change to run multiple bash files at once
+rootName='ContactGNNEnergy19' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_26_23"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
@@ -45,8 +44,10 @@ useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
+pretrainID=490
 
-id=493
+
+id=494
 for lr in 1e-5
 do
   train

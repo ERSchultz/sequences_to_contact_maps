@@ -11,7 +11,6 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch_geometric.transforms
-
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 
 from .neural_nets.losses import *
@@ -770,7 +769,7 @@ def save_args(opt):
 
 def opt2list(opt):
     data_folder = '-'.join([osp.split(d)[1] for d in opt.data_folder])
-    opt_list = [opt.model_type, opt.id, data_folder, opt.preprocessing_norm,
+    opt_list = [opt.model_type, opt.id, data_folder, opt.pretrain_id, opt.preprocessing_norm,
         opt.y_preprocessing, opt.output_preprocesing, opt.mean_filt, opt.rescale,
         opt.kr, opt.min_subtraction, opt.log_preprocessing, opt.crop]
     opt_list.append(opt.split_percents if opt.split_percents is not None else opt.split_sizes)
@@ -833,7 +832,7 @@ def save_opt(opt, ofile):
         wr.writerow(opt_list)
 
 def get_opt_header(model_type, GNN_mode):
-    opt_list = ['model_type', 'id',  'dataset', 'preprocessing_norm',
+    opt_list = ['model_type', 'id',  'dataset', 'pretrain_id', 'preprocessing_norm',
         'y_preprocessing', 'output_preprocesing', 'mean_filt', 'rescale',
         'kr', 'min_subtraction', 'log_preprocessing', 'crop', 'split', 'shuffle',
         'batch_size', 'num_workers', 'n_epochs', 'lr', 'weight_decay', 'w reg', 'milestones',

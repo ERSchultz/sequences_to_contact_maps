@@ -714,7 +714,6 @@ def plot_first_PC(dataset, k, GNN_ID):
     plt.tight_layout()
     plt.savefig(osp.join(f'/home/erschultz/{dataset}/pc_comparison.png'))
 
-
 def plot_Exp_vs_PCA(dataset, k=None):
     dir = f'/home/erschultz/{dataset}/samples'
     for sample in range(221, 222):
@@ -1288,7 +1287,7 @@ def generalization_figure():
                 weight='bold')
         ax.text(0.01*m, 0.99*m, 'Experiment', fontsize=letter_fontsize, weight='bold')
         s.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
-        s.set_yticks(genome_ticks, labels = genome_labels)
+        s.set_yticks(genome_ticks, labels =figure2 genome_labels)
         s.tick_params(axis='both', which='major', labelsize=tick_fontsize)
 
     data = zip(gnn_pcs, max_ent_pcs, ref_pcs, cell_lines, genome_ticks_list, genome_labels_list)
@@ -1343,8 +1342,6 @@ def generalization_figure():
     plt.tight_layout()
     plt.savefig(osp.join(odir, 'extrapolation_figure2.png'))
     plt.close()
-
-
 
 def interpretation_figure():
     # dataset = 'dataset_04_05_23'; sample = 1001
@@ -1654,14 +1651,14 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     # data_dir = osp.join(dir, 'dataset_soren/samples/sample1')
     # file = osp.join(data_dir, 'y_kr.npy')
     # data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample4')
     # file = osp.join(data_dir, 'y.npy')
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    plot_combined_models('ContactGNNEnergy', [485, 486])
+    plot_combined_models('ContactGNNEnergy', [480, 481])
     # plot_GNN_vs_PCA('dataset_04_05_23', 10, 407)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")

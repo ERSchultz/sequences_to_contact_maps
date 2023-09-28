@@ -450,7 +450,7 @@ class ContactGNN(nn.Module):
 
         return head_a, head_b
 
-    def forward(self, graph, additional_x=None):
+    def forward(self, graph, additional_x=None, verbose=False):
         self.batch_size = int(graph.batch.max()) + 1
         latent = self.latent(graph, additional_x)
 
@@ -484,11 +484,16 @@ class ContactGNN(nn.Module):
         if D_out is None:
             return L_out
 
+        del latent
         try:
-            return L_out + D_out
+            S_out = L_out + D_out
         except RuntimeError:
             print(L_out.shape, D_out.shape)
             raise
+
+        del L_out; del D_out
+        torch.cuda.empty_cache()
+        return S_out
 
     def latent(self, graph, additional_x):
         if self.node_encoder is not None:
@@ -621,7 +626,7 @@ class SignNetGNN(nn.Module):
         self.sign_net.reset_parameters()
         self.gnn.reset_parameters()
 
-    def forward(self, data):
+    def forward(self, data, verbose=False):
         pos = self.sign_net(data)
         return self.gnn(data, pos)
 
@@ -643,12 +648,18 @@ class SignPlus(nn.Module):
         self.model = model
         self.k = k
 
-    def get_eig(self, data):
+    def get_eig(self, data, verbose=False):
         eigS_dense, eigV_dense = to_dense_list_EVD(data.eigen_values, data.eigen_vectors, data.batch, self.k)
+        if verbose:
+            print('eigV_dense', eigV_dense, torch.min(eigV_dense), torch.max(eigV_dense))
         return eigV_dense
 
-    def forward(self, data):
-        x = self.get_eig(data)
+    def forward(self, data, verbose=False):
+        x = self.get_eig(data, verbose)
+        if verbose:
+            print('x', data.x)
+            print('edge_attr', data.edge_attr, torch.min(data.edge_attr), torch.max(data.edge_attr))
+            print('edge_index', data.edge_index, torch.min(data.edge_index), torch.max(data.edge_index))
         return self.model(data, x) + self.model(data, -x)
 
     def latent(self, data, *args):
