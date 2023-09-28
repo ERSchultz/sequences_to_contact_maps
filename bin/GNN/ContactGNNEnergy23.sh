@@ -1,6 +1,6 @@
 #! /bin/bash
-#SBATCH --job-name=CGNNE19
-#SBATCH --output=logFiles/ContactGNNEnergy19.out
+#SBATCH --job-name=CGNNE23
+#SBATCH --output=logFiles/ContactGNNEnergy23.out
 #SBATCH --time=24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
@@ -20,7 +20,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy19' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_09_25_23"
+dirname="/project2/depablo/erschultz/dataset_09_26_23"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
 hiddenSizesList='8-8-8-8'
@@ -42,12 +42,13 @@ yNorm='mean_fill'
 k=8
 useSignPlus='true'
 batchSize=1
-nEpochs=80
-milestones='40'
+nEpochs=40
+milestones='none'
+pretrainID=490
 
 
-id=490
-for lr in 1e-5
+id=493
+for lr in 1e-6
 do
   train
   id=$(( $id + 1 ))
