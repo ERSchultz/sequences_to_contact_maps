@@ -91,7 +91,7 @@ true
 --n_epochs
 80
 --lr
-1e-4
+1e-5
 --min_lr
 1e-6
 --weight_decay
@@ -132,9 +132,9 @@ none
 --print_params
 true
 --id
-492
+495
 --resume_training
-true
+false
 --pretrain_id
 none
 --mlp_model_id

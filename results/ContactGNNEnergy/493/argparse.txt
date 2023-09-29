@@ -1,7 +1,7 @@
 --data_folder
-/project2/depablo/erschultz/dataset_09_25_23-/project2/depablo/erschultz/dataset_09_26_23
+/project2/depablo/erschultz/dataset_09_26_23
 --root_name
-ContactGNNEnergy20
+ContactGNNEnergy21
 --delete_root
 false
 --model_type
@@ -91,7 +91,7 @@ true
 --n_epochs
 80
 --lr
-1e-4
+1e-5
 --min_lr
 1e-6
 --weight_decay
@@ -132,9 +132,9 @@ none
 --print_params
 true
 --id
-492
+493
 --resume_training
-true
+false
 --pretrain_id
 none
 --mlp_model_id
