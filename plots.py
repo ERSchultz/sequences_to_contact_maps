@@ -975,7 +975,9 @@ def generalization_figure():
     # datasets = ['dataset_04_05_23', 'dataset_04_05_23', 'dataset_04_05_23']
     # cell_lines = ['GM12878', 'HCT116', 'HL-60']
     # samples = [1213, 1248, 1286]
-    GNN_ID = 434
+    GNN_ID = 490
+    grid_root = 'optimize_grid_b_180_phi_0.008_spheroid_1.5'
+
 
     odir = '/home/erschultz/TICG-chromatin/figures'
     if not osp.exists(odir):
@@ -1001,8 +1003,8 @@ def generalization_figure():
     for dataset, cell_line, sample in zip(datasets, cell_lines, samples):
         print(cell_line)
         dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
-        gnn_dir = osp.join(dir, f'optimize_grid_b_140_phi_0.03-GNN{GNN_ID}')
-        max_ent_dir = osp.join(dir, f'optimize_grid_b_140_phi_0.03-max_ent10_stop')
+        gnn_dir = osp.join(dir, f'{grid_root}-GNN{GNN_ID}')
+        max_ent_dir = osp.join(dir, f'{grid_root}-max_ent10_stop')
 
         y_exp = np.load(osp.join(dir, 'y.npy'))
         y_exp /= np.mean(y_exp.diagonal())
@@ -1287,7 +1289,7 @@ def generalization_figure():
                 weight='bold')
         ax.text(0.01*m, 0.99*m, 'Experiment', fontsize=letter_fontsize, weight='bold')
         s.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
-        s.set_yticks(genome_ticks, labels =figure2 genome_labels)
+        s.set_yticks(genome_ticks, labels = genome_labels)
         s.tick_params(axis='both', which='major', labelsize=tick_fontsize)
 
     data = zip(gnn_pcs, max_ent_pcs, ref_pcs, cell_lines, genome_ticks_list, genome_labels_list)
@@ -1658,7 +1660,7 @@ if __name__ == '__main__':
     # data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample4')
     # file = osp.join(data_dir, 'y.npy')
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    plot_combined_models('ContactGNNEnergy', [480, 481])
+    plot_combined_models('ContactGNNEnergy', [491, 493, 494])
     # plot_GNN_vs_PCA('dataset_04_05_23', 10, 407)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")
@@ -1666,7 +1668,6 @@ if __name__ == '__main__':
     # plot_all_contact_cd maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
     # generalization_figure()
-    # figure2()
     # interpretation_figure()
     # interpretation_figure_test()
     # plot_first_PC('dataset_02_04_23', 10, 419)

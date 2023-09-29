@@ -11,6 +11,7 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=erschultz@uchicago.edu
 #SBATCH --exclude=midway3-0372
+#SBATCH --dependency=afterok:9196145:9196146:9196147:9196148:9196149
 
 cd ~/sequences_to_contact_maps
 
@@ -19,7 +20,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy14' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_08_25_23"
+dirname="/project2/depablo/erschultz/dataset_09_28_23"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
 hiddenSizesList='8-8-8-8'
@@ -36,17 +37,17 @@ innerAct='leaky'
 headAct='leaky'
 outAct='leaky'
 
-sweepChoices='2-3-4-5'
+sweepChoices='2-3-4'
 yNorm='mean_fill'
 k=8
 useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
-inputLtoD='true'
 
-id=466
-for lr in 1e-4
+
+id=497
+for lr in 1e-5
 do
   train
   id=$(( $id + 1 ))

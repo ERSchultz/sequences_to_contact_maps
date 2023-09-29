@@ -1,6 +1,6 @@
 #! /bin/bash
-#SBATCH --job-name=CGNNE20
-#SBATCH --output=logFiles/ContactGNNEnergy20.out
+#SBATCH --job-name=CGNNE23
+#SBATCH --output=logFiles/ContactGNNEnergy23.out
 #SBATCH --time=24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
@@ -20,7 +20,7 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
-rootName='ContactGNNEnergy20' # change to run multiple bash files at once
+rootName='ContactGNNEnergy23' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_25_23-/project2/depablo/erschultz/dataset_09_26_23"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
