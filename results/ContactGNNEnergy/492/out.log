@@ -473,3 +473,87 @@ Scheduler: <torch.optim.lr_scheduler.MultiStepLR object at 0x7f256a9605e0>
 #### TRAINING/VALIDATION ####
 New lr: 1e-05
 Epoch 52, loss = 0.4220
+Mean test/val loss: 0.4678
+[25, 50, 75] percentiles test/val loss: [0.2386 0.392  0.6169]
+
+Epoch 54, loss = 0.4198
+Mean test/val loss: 0.4675
+[25, 50, 75] percentiles test/val loss: [0.2374 0.3912 0.6131]
+
+Epoch 56, loss = 0.4178
+Mean test/val loss: 0.4669
+[25, 50, 75] percentiles test/val loss: [0.2378 0.3904 0.614 ]
+
+Epoch 58, loss = 0.4159
+Mean test/val loss: 0.4662
+[25, 50, 75] percentiles test/val loss: [0.2372 0.391  0.6138]
+
+Epoch 60, loss = 0.4142
+Mean test/val loss: 0.4656
+[25, 50, 75] percentiles test/val loss: [0.2359 0.3887 0.6127]
+
+Epoch 62, loss = 0.4126
+Mean test/val loss: 0.4658
+[25, 50, 75] percentiles test/val loss: [0.2369 0.3879 0.6115]
+
+Epoch 64, loss = 0.4110
+Mean test/val loss: 0.4645
+[25, 50, 75] percentiles test/val loss: [0.2356 0.3888 0.613 ]
+
+Epoch 66, loss = 0.4096
+Mean test/val loss: 0.4659
+[25, 50, 75] percentiles test/val loss: [0.2369 0.3903 0.6155]
+
+Epoch 68, loss = 0.4082
+Mean test/val loss: 0.4638
+[25, 50, 75] percentiles test/val loss: [0.2362 0.3868 0.6102]
+
+Epoch 70, loss = 0.4068
+Mean test/val loss: 0.4636
+[25, 50, 75] percentiles test/val loss: [0.2348 0.3883 0.6103]
+
+Epoch 72, loss = 0.4055
+Mean test/val loss: 0.4638
+[25, 50, 75] percentiles test/val loss: [0.2349 0.3863 0.61  ]
+
+Epoch 74, loss = 0.4043
+Mean test/val loss: 0.4628
+[25, 50, 75] percentiles test/val loss: [0.2334 0.3858 0.6104]
+
+Epoch 76, loss = 0.4031
+Mean test/val loss: 0.4628
+[25, 50, 75] percentiles test/val loss: [0.2344 0.3848 0.6112]
+
+Epoch 78, loss = 0.4019
+Mean test/val loss: 0.4628
+[25, 50, 75] percentiles test/val loss: [0.2361 0.3865 0.6107]
+
+Epoch 80, loss = 0.4008
+Mean test/val loss: 0.4621
+[25, 50, 75] percentiles test/val loss: [0.2349 0.3862 0.6102]
+
+
+Total parameters: 26462000
+Total training + validation time: 14.0 hours, 18.0 mins, and 43.900000000001455 secs
+Final val loss: 0.4621357254943578
+
+split sizes: train=18000, val=2000, test=0, N=20000
+#### Plotting Script ####
+Prediction Results:
+dataset_09_25_23 sample3029: 0.23052124679088593
+dataset_09_25_23 sample6555: 0.31030184030532837
+dataset_09_25_23 sample9227: 0.6087741255760193
+dataset_09_25_23 sample8097: 0.2463057041168213
+dataset_09_26_23 sample9394: 0.7788770198822021
+MSE Loss: 0.435 +- 0.22
+
+Downsampling (40%) Results:
+dataset_09_25_23 sample3029-downsampling: 9.985332489013672
+dataset_09_25_23 sample6555-downsampling: 99.7298812866211
+dataset_09_25_23 sample8097-downsampling: 19.517627716064453
+dataset_09_25_23 sample9227-downsampling: 177.15780639648438
+dataset_09_25_23 sample9394-downsampling: 52.87451934814453
+Loss: 70.665 +- 52.695
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy20downsample
+Original sampling (100%) Results:
