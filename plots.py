@@ -69,7 +69,7 @@ def update_result_tables(model_type = None, mode = None, output_mode = 'contact'
         # get data
         model_path = osp.join('results', model_type)
         parser = get_base_parser()
-        for id in range(1, 500):
+        for id in range(1, 1000):
             id_path = osp.join(model_path, str(id))
             if osp.isdir(id_path):
                 txt_file = osp.join(id_path, 'argparse.txt')
@@ -1653,14 +1653,14 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     # data_dir = osp.join(dir, 'dataset_soren/samples/sample1')
     # file = osp.join(data_dir, 'y_kr.npy')
     # data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample4')
     # file = osp.join(data_dir, 'y.npy')
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    plot_combined_models('ContactGNNEnergy', [491, 493, 494])
+    # plot_combined_models('ContactGNNEnergy', [498, 499])
     # plot_GNN_vs_PCA('dataset_04_05_23', 10, 407)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")
