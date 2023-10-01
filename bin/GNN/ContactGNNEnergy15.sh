@@ -37,7 +37,7 @@ innerAct='leaky'
 headAct='leaky'
 outAct='leaky'
 
-sweepChoices='2-3-4'
+sweepChoices='4'
 yNorm='mean_fill'
 k=8
 useSignPlus='true'
@@ -46,7 +46,7 @@ nEpochs=80
 milestones='40'
 
 
-id=498
+id=503
 for lr in 1e-4
 do
   train
