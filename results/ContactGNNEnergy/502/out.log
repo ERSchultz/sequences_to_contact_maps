@@ -315,3 +315,67 @@ Mean test/val loss: 0.6142
 [25, 50, 75] percentiles test/val loss: [0.41   0.5688 0.7593]
 
 Epoch 66, loss = 0.5503
+Mean test/val loss: 0.6142
+[25, 50, 75] percentiles test/val loss: [0.4104 0.5687 0.7579]
+
+Epoch 68, loss = 0.5501
+Mean test/val loss: 0.6147
+[25, 50, 75] percentiles test/val loss: [0.4109 0.5689 0.7585]
+
+Epoch 70, loss = 0.5499
+Mean test/val loss: 0.6143
+[25, 50, 75] percentiles test/val loss: [0.4106 0.5683 0.7569]
+
+Epoch 72, loss = 0.5497
+Mean test/val loss: 0.6148
+[25, 50, 75] percentiles test/val loss: [0.4116 0.5676 0.7613]
+
+Epoch 74, loss = 0.5495
+Mean test/val loss: 0.6142
+[25, 50, 75] percentiles test/val loss: [0.4104 0.5684 0.7554]
+
+Epoch 76, loss = 0.5493
+Mean test/val loss: 0.6145
+[25, 50, 75] percentiles test/val loss: [0.4108 0.5685 0.7584]
+
+Epoch 78, loss = 0.5491
+Mean test/val loss: 0.6146
+[25, 50, 75] percentiles test/val loss: [0.4109 0.5697 0.7593]
+
+Epoch 80, loss = 0.5489
+Mean test/val loss: 0.6145
+[25, 50, 75] percentiles test/val loss: [0.411  0.5688 0.7555]
+
+
+Total parameters: 26462000
+Total training + validation time: 17.0 hours, 53.0 mins, and 27.19999999999709 secs
+Final val loss: 0.614526522833854
+
+split sizes: train=9000, val=1000, test=0, N=10000
+#### Plotting Script ####
+Prediction Results:
+dataset_09_29_23 sample1050: 0.8477276563644409
+dataset_09_29_23 sample7802: 0.5997989177703857
+dataset_09_29_23 sample156: 0.6553413271903992
+dataset_09_29_23 sample2452: 0.4870782196521759
+dataset_09_29_23 sample752: 0.371723473072052
+MSE Loss: 0.592 +- 0.161
+
+Downsampling (200k) Results:
+dataset_09_29_23 sample1050-downsampling: 228.74221801757812
+dataset_09_29_23 sample156-downsampling: 114.11776733398438
+dataset_09_29_23 sample2452-downsampling: 53.579742431640625
+dataset_09_29_23 sample752-downsampling: 75.81645202636719
+dataset_09_29_23 sample7802-downsampling: 57.80002975463867
+Loss: 106.011 +- 64.983
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy18downsample
+Original sampling (400k) Results:
+dataset_09_29_23 sample1050-regular: 169.19900512695312
+dataset_09_29_23 sample156-regular: 118.59271240234375
+dataset_09_29_23 sample2452-regular: 62.21982192993164
+dataset_09_29_23 sample752-regular: 74.24308013916016
+dataset_09_29_23 sample7802-regular: 47.88779067993164
+Loss: 94.428 +- 44.239
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy18regsample
