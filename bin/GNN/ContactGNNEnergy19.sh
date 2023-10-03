@@ -44,9 +44,10 @@ useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
+maxSample=5000
 
-
-id=490
+# alt of 490 with N = 5000
+id=505
 for lr in 1e-5
 do
   train

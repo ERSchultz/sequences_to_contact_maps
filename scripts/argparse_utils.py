@@ -118,6 +118,8 @@ def get_base_parser():
                         help='Training batch size')
     parser.add_argument('--num_workers', type=int, default=1,
                         help='Number of threads for data loader to use')
+    parser.add_argument('--max_sample', type=AC.str2int,
+                        help='max sample from dataset (None for all)')
 
     # train args
     parser.add_argument('--start_epoch', type=int, default=1,

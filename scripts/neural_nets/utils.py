@@ -69,6 +69,8 @@ def get_dataset(opt, names=False, minmax=False, verbose=True,
     if opt.GNN_mode:
         if opt.split_sizes is not None and -1 not in opt.split_sizes:
             max_sample = np.sum(opt.split_sizes)
+        elif opt.max_sample is not None:
+            max_sample = opt.max_sample
         else:
             max_sample = float('inf')
 
