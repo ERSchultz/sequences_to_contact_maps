@@ -186,3 +186,196 @@ Parameter Group 0
 Scheduler: <torch.optim.lr_scheduler.MultiStepLR object at 0x7f367c9cf1c0>
 #### TRAINING/VALIDATION ####
 Epoch 2, loss = 0.6579
+Mean test/val loss: 0.6461
+[25, 50, 75] percentiles test/val loss: [0.4299 0.5972 0.8014]
+
+Epoch 4, loss = 0.6427
+Mean test/val loss: 0.6426
+[25, 50, 75] percentiles test/val loss: [0.4244 0.5923 0.7931]
+
+Epoch 6, loss = 0.6321
+Mean test/val loss: 0.6414
+[25, 50, 75] percentiles test/val loss: [0.4302 0.5924 0.7925]
+
+Epoch 8, loss = 0.6231
+Mean test/val loss: 0.6344
+[25, 50, 75] percentiles test/val loss: [0.4252 0.5838 0.7868]
+
+Epoch 10, loss = 0.6148
+Mean test/val loss: 0.6280
+[25, 50, 75] percentiles test/val loss: [0.425  0.5811 0.7743]
+
+Epoch 12, loss = 0.6088
+Mean test/val loss: 0.6267
+[25, 50, 75] percentiles test/val loss: [0.4225 0.5773 0.7731]
+
+Epoch 14, loss = 0.6026
+Mean test/val loss: 0.6214
+[25, 50, 75] percentiles test/val loss: [0.4171 0.5742 0.7701]
+
+Epoch 16, loss = 0.5966
+Mean test/val loss: 0.6208
+[25, 50, 75] percentiles test/val loss: [0.4144 0.573  0.7726]
+
+Epoch 18, loss = 0.5915
+Mean test/val loss: 0.6133
+[25, 50, 75] percentiles test/val loss: [0.4144 0.5668 0.7607]
+
+Epoch 20, loss = 0.5863
+Mean test/val loss: 0.6203
+[25, 50, 75] percentiles test/val loss: [0.4196 0.5748 0.7629]
+
+Epoch 22, loss = 0.5824
+Mean test/val loss: 0.6338
+[25, 50, 75] percentiles test/val loss: [0.4224 0.585  0.7884]
+
+Epoch 24, loss = 0.5780
+Mean test/val loss: 0.6209
+[25, 50, 75] percentiles test/val loss: [0.4138 0.5733 0.7708]
+
+Epoch 26, loss = 0.5742
+Mean test/val loss: 0.6074
+[25, 50, 75] percentiles test/val loss: [0.4099 0.5635 0.7458]
+
+Epoch 28, loss = 0.5705
+Mean test/val loss: 0.6091
+[25, 50, 75] percentiles test/val loss: [0.4092 0.5639 0.7559]
+
+Epoch 30, loss = 0.5675
+Mean test/val loss: 0.6053
+[25, 50, 75] percentiles test/val loss: [0.4083 0.5612 0.7482]
+
+Epoch 32, loss = 0.5631
+Mean test/val loss: 0.6082
+[25, 50, 75] percentiles test/val loss: [0.4103 0.5681 0.7491]
+
+Epoch 34, loss = 0.5598
+Mean test/val loss: 0.6007
+[25, 50, 75] percentiles test/val loss: [0.4035 0.5536 0.7442]
+
+Epoch 36, loss = 0.5571
+Mean test/val loss: 0.6124
+[25, 50, 75] percentiles test/val loss: [0.4117 0.5683 0.7583]
+
+Epoch 38, loss = 0.5542
+Mean test/val loss: 0.6085
+[25, 50, 75] percentiles test/val loss: [0.41   0.5659 0.7484]
+
+Epoch 40, loss = 0.5516
+Mean test/val loss: 0.6011
+[25, 50, 75] percentiles test/val loss: [0.405  0.5568 0.7542]
+
+New lr: 1e-05
+Epoch 42, loss = 0.5103
+Mean test/val loss: 0.5740
+[25, 50, 75] percentiles test/val loss: [0.3872 0.5327 0.7077]
+
+Epoch 44, loss = 0.5059
+Mean test/val loss: 0.5724
+[25, 50, 75] percentiles test/val loss: [0.3848 0.5325 0.7038]
+
+Epoch 46, loss = 0.5032
+Mean test/val loss: 0.5718
+[25, 50, 75] percentiles test/val loss: [0.3833 0.5324 0.7013]
+
+Epoch 48, loss = 0.5011
+Mean test/val loss: 0.5721
+[25, 50, 75] percentiles test/val loss: [0.3837 0.5304 0.7048]
+
+Epoch 50, loss = 0.4993
+Mean test/val loss: 0.5720
+[25, 50, 75] percentiles test/val loss: [0.3839 0.5323 0.7036]
+
+Epoch 52, loss = 0.4976
+Mean test/val loss: 0.5719
+[25, 50, 75] percentiles test/val loss: [0.3836 0.5327 0.7012]
+
+Epoch 54, loss = 0.4962
+Mean test/val loss: 0.5714
+[25, 50, 75] percentiles test/val loss: [0.3822 0.5301 0.7015]
+
+Epoch 56, loss = 0.4948
+Mean test/val loss: 0.5722
+[25, 50, 75] percentiles test/val loss: [0.3829 0.5305 0.701 ]
+
+Epoch 58, loss = 0.4936
+Mean test/val loss: 0.5712
+[25, 50, 75] percentiles test/val loss: [0.3815 0.53   0.6992]
+
+Epoch 60, loss = 0.4924
+Mean test/val loss: 0.5714
+[25, 50, 75] percentiles test/val loss: [0.3819 0.5309 0.7017]
+
+Epoch 62, loss = 0.4913
+Mean test/val loss: 0.5714
+[25, 50, 75] percentiles test/val loss: [0.3809 0.5293 0.7003]
+
+Epoch 64, loss = 0.4901
+Mean test/val loss: 0.5719
+[25, 50, 75] percentiles test/val loss: [0.3816 0.5309 0.699 ]
+
+Epoch 66, loss = 0.4891
+Mean test/val loss: 0.5715
+[25, 50, 75] percentiles test/val loss: [0.3808 0.5309 0.7003]
+
+Epoch 68, loss = 0.4881
+Mean test/val loss: 0.5722
+[25, 50, 75] percentiles test/val loss: [0.3821 0.5304 0.7005]
+
+Epoch 70, loss = 0.4871
+Mean test/val loss: 0.5721
+[25, 50, 75] percentiles test/val loss: [0.3827 0.5302 0.6994]
+
+Epoch 72, loss = 0.4862
+Mean test/val loss: 0.5722
+[25, 50, 75] percentiles test/val loss: [0.3828 0.5304 0.6988]
+
+Epoch 74, loss = 0.4853
+Mean test/val loss: 0.5717
+[25, 50, 75] percentiles test/val loss: [0.3811 0.5313 0.7002]
+
+Epoch 76, loss = 0.4843
+Mean test/val loss: 0.5724
+[25, 50, 75] percentiles test/val loss: [0.3811 0.5306 0.6975]
+
+Epoch 78, loss = 0.4835
+Mean test/val loss: 0.5728
+[25, 50, 75] percentiles test/val loss: [0.3814 0.532  0.7   ]
+
+Epoch 80, loss = 0.4826
+Mean test/val loss: 0.5729
+[25, 50, 75] percentiles test/val loss: [0.3819 0.5303 0.7012]
+
+
+Total parameters: 26462000
+Total training + validation time: 18.0 hours, 3.0 mins, and 3.599999999998545 secs
+Final val loss: 0.5729423074945807
+
+split sizes: train=9000, val=1000, test=0, N=10000
+#### Plotting Script ####
+Prediction Results:
+dataset_09_29_23 sample1050: 0.8294515609741211
+dataset_09_29_23 sample7802: 0.536902904510498
+dataset_09_29_23 sample156: 0.6321215629577637
+dataset_09_29_23 sample2452: 0.43304911255836487
+dataset_09_29_23 sample752: 0.3447457551956177
+MSE Loss: 0.555 +- 0.168
+
+Downsampling (200k) Results:
+dataset_09_29_23 sample1050-downsampling: 220.0006561279297
+dataset_09_29_23 sample156-downsampling: 82.32581329345703
+dataset_09_29_23 sample2452-downsampling: 72.75188446044922
+dataset_09_29_23 sample752-downsampling: 67.08514404296875
+dataset_09_29_23 sample7802-downsampling: 73.24186706542969
+Loss: 103.081 +- 58.663
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy17downsample
+Original sampling (400k) Results:
+dataset_09_29_23 sample1050-regular: 231.1779327392578
+dataset_09_29_23 sample156-regular: 91.91029357910156
+dataset_09_29_23 sample2452-regular: 65.41345977783203
+dataset_09_29_23 sample752-regular: 57.885353088378906
+dataset_09_29_23 sample7802-regular: 58.38422775268555
+Loss: 100.954 +- 66.288
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy17regsample
