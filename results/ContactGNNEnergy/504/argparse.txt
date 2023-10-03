@@ -1,7 +1,7 @@
 --data_folder
-/project2/depablo/erschultz/dataset_09_28_23-/project2/depablo/erschultz/dataset_09_29_23
+/project2/depablo/erschultz/dataset_09_29_23
 --root_name
-ContactGNNEnergy23
+ContactGNNEnergy17
 --delete_root
 false
 --model_type
@@ -15,7 +15,7 @@ energy_sym_diag
 --y_preprocessing
 sweeprand_log_inf
 --sweep_choices
-2-3-4
+4
 --preprocessing_norm
 mean_fill
 --log_preprocessing
@@ -132,11 +132,11 @@ none
 --print_params
 true
 --id
-500
+504
 --resume_training
-true
+false
 --pretrain_id
-none
+496
 --mlp_model_id
 none
 --input_L_to_D
