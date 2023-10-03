@@ -260,26 +260,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 deg = np.array(torch_geometric.utils.degree(graph.edge_index[0],
                                                             graph.num_nodes))
                 self.degree_list.append(deg)
-    # def process_psi(self, raw_folder):
-    #     '''
-    #     Helper function to load the appropriate particle type matrix and
-    #     apply any necessary preprocessing.
-    #     '''
-    #     x_file = osp.join(raw_folder, 'x.npy')
-    #     if osp.exists(x_file):
-    #         x = np.load(x_file)
-    #         if self.crop is not None:
-    #             x = x[self.crop[0]:self.crop[1], :]
-    #
-    #
-    #         if self.rescale is not None:
-    #             x = block_reduce(x, (self.rescale, 1), np.mean) # mean-pool operation
-    #
-    #         x = torch.tensor(x, dtype = torch.float32)
-    #     else:
-    #         x = None
-    #
-    #     return x
 
     def load_y(self, raw_folder):
         '''Helper function to load raw contact map and apply normalization.'''

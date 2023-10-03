@@ -23,7 +23,7 @@ rootName='ContactGNNEnergy19' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_25_23"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
-hiddenSizesList='8-8-8-8'
+hiddenSizesList='8-8-8-8-8-8'
 updateHiddenSizesList='1000-1000-64'
 
 outputPreprocesing='log'
@@ -37,17 +37,17 @@ innerAct='leaky'
 headAct='leaky'
 outAct='leaky'
 
-sweepChoices='2-3-4'
+sweepChoices='2-3-4-5'
 yNorm='mean_fill'
 k=8
 useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
-maxSample=5000
 
-# alt of 490 with N = 5000
-id=505
+# more message passing layers
+
+id=510
 for lr in 1e-5
 do
   train
