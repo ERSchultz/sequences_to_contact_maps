@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE23
 #SBATCH --output=logFiles/ContactGNNEnergy23.out
-#SBATCH --time=24:00:00
+#SBATCH --time=1-24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -20,10 +20,10 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy23' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_09_28_23-/project2/depablo/erschultz/dataset_09_29_23"
+dirname="/project2/depablo/erschultz/dataset_09_25_23"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
-hiddenSizesList='8-8-8-8'
+hiddenSizesList='8-8-8-8-8-8'
 updateHiddenSizesList='1000-1000-64'
 
 outputPreprocesing='log'
@@ -37,16 +37,17 @@ innerAct='leaky'
 headAct='leaky'
 outAct='leaky'
 
-sweepChoices='2-3-4'
+sweepChoices='2-3-4-5'
 yNorm='mean_fill'
 k=8
 useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
-resumeTraining='true'
 
-id=500
+# more message passing layers
+
+id=516
 for lr in 1e-4
 do
   train

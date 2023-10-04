@@ -1,6 +1,6 @@
 #! /bin/bash
-#SBATCH --job-name=CGNNE20_1
-#SBATCH --output=logFiles/ContactGNNEnergy20_1.out
+#SBATCH --job-name=CGNNE20
+#SBATCH --output=logFiles/ContactGNNEnergy20.out
 #SBATCH --time=24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=gpu
@@ -46,7 +46,7 @@ batchSize=1
 nEpochs=80
 milestones='40'
 
-# deeper update layer
+# 507 but deeper update layer
 
 id=511
 for lr in 1e-4
