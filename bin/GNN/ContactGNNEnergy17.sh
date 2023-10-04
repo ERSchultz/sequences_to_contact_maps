@@ -11,6 +11,8 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=erschultz@uchicago.edu
 #SBATCH --exclude=midway3-0372
+#SBATCH --dependency=afterany:9468928
+
 
 cd ~/sequences_to_contact_maps
 
@@ -43,6 +45,7 @@ useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
+resumeTraining='true'
 
 # more params in hiddenSizesList
 
