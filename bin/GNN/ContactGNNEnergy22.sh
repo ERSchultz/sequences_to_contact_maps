@@ -19,7 +19,7 @@ source bin/GNN/GNN_fns.sh
 source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
-rootName='ContactGNNEnergy19' # change to run multiple bash files at once
+rootName='ContactGNNEnergy22' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_25_23"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
