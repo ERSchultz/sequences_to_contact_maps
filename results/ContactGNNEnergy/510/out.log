@@ -324,3 +324,31 @@ Mean test/val loss: 0.4363
 [25, 50, 75] percentiles test/val loss: [0.2207 0.3879 0.5565]
 
 Epoch 48, loss = 0.4293
+Mean test/val loss: 0.4351
+[25, 50, 75] percentiles test/val loss: [0.2215 0.385  0.5537]
+
+Epoch 50, loss = 0.4282
+Mean test/val loss: 0.4341
+[25, 50, 75] percentiles test/val loss: [0.2208 0.3855 0.5543]
+
+Epoch 52, loss = 0.4270
+Mean test/val loss: 0.4329
+[25, 50, 75] percentiles test/val loss: [0.2189 0.3834 0.5519]
+
+Epoch 54, loss = 0.4261
+Mean test/val loss: 0.4332
+[25, 50, 75] percentiles test/val loss: [0.2193 0.3827 0.5496]
+
+Epoch 56, loss = 0.4250
+Mean test/val loss: 0.4320
+[25, 50, 75] percentiles test/val loss: [0.2192 0.385  0.5497]
+
+Epoch 58, loss = 0.4242
+Mean test/val loss: 0.4310
+[25, 50, 75] percentiles test/val loss: [0.22   0.3834 0.549 ]
+
+Epoch 60, loss = 0.4231
+Mean test/val loss: 0.4307
+[25, 50, 75] percentiles test/val loss: [0.2179 0.3823 0.5462]
+
+Epoch 62, loss = 0.4222
