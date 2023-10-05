@@ -1,7 +1,7 @@
 --data_folder
 /project2/depablo/erschultz/dataset_09_25_23
 --root_name
-ContactGNNEnergy17
+ContactGNNEnergy14
 --delete_root
 false
 --model_type
@@ -45,13 +45,13 @@ false
 --use_edge_attr
 true
 --hidden_sizes_list
-16-16-16-16
+8-8-8-8
 --encoder_hidden_sizes_list
 none
 --edge_encoder_hidden_sizes_list
 none
 --update_hidden_sizes_list
-1000-1000-128
+1000-1000-64
 --transforms
 empty
 --pre_transforms
@@ -91,7 +91,7 @@ true
 --n_epochs
 80
 --lr
-1e-4
+1e-5
 --min_lr
 1e-6
 --weight_decay
@@ -132,9 +132,9 @@ none
 --print_params
 true
 --id
-508
+517
 --resume_training
-true
+false
 --pretrain_id
 none
 --mlp_model_id
