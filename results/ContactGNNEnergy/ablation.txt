@@ -1,19 +1,25 @@
-\renewcommand\theadalign{bc}\renewcommand\theadfont{\bfseries}\begin{table}[h]
+\renewcommand\theadalign{bc}
+\renewcommand\theadfont{\bfseries}
+\begin{table}[h]
 	\centering
-	\begin{tabular}{|c|c|c|}
+	\begin{tabular}{|c|c|c|c|}
 		\hline
-		\theat{Method} & \thead{Validation Loss \\ (MSE)} & \thead{Test Loss \\ (Experimental SCC)} \\ 
+		 \thead{ID} & \thead{Method} & \thead{Validation Loss \\ (MSE)} & \thead{Test Loss \\ (Experimental SCC)} \\ 
 		\hline\hline
-		baseline & 0.269 & 0.712 \\ 
-		predict $S$ (instead of $S^\dag$) & 0.391 & 0.405 \\ 
-		original message passing layer from \citep{Brody2022HowNetworks} (instead of \cref{eq:mp}) & 1.199 & 0.004 \\ 
-		without overwriting main diagonal with 1's & 0.272 & 0.682 \\ 
-		without SignNet & 0.303 & 0.692 \\ 
-		without rescaling contact map & 0.219 & 0.634 \\ 
-		only long simulation & 0.258 & 0.696 \\ 
-		without $\log(H_{ij})$ in $e_{ij}$ & 0.441 & 0.63 \\ 
-		without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$ & 0.273 & 0.664 \\ 
-		without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$ & 0.276 & 0.589 \\ 
+		 490 & baseline 2-3-4k sweeps & 0.434 & 0.583 \\ 
+		 505 & N=5000 samples & 0.507 & 0.603 \\ 
+		 507 & baseline 2-3-4-5k sweeps & 0.309 & 0.502 \\ 
+		 506 & N=20000 & 0.406 & 0.439 \\ 
+		 508 & latent dim=128 & 0.284 & 0.535 \\ 
+		 509 & only 500k sweeps & 0.295 & 0.553 \\ 
+		 510 & more MP layers, lr=1e-5 & 0.426 & 0.559 \\ 
+		 511 & deeper update layer & 0.292 & 0.503 \\ 
+		 512 & without SignNet & 0.337 & 0.569 \\ 
+		 513 & rescale=1, only 500k sweeps, lr=1e-5 & 0.356 & 0.599 \\ 
+		 514 & rescale=1 & 0.231 & 0.464 \\ 
+		 515 & rescale=1, only 500k sweeps & None & nan \\ 
+		 516 & more MP layers & None & nan \\ 
+		 517 & lr=1e-5 & 0.425 & 0.559 \\ 
 		\hline
 	\end{tabular}
 	\caption{Neural network ablation results.

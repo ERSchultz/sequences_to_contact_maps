@@ -1,8 +1,7 @@
 #! /bin/bash
 
-for i in 19 22
-  # pending: 15 17 19 18 9 21 14 23
-	# done: 3, 20, 16
+for i in 10 11 12 13
+  # pending: 19 22
 do
   sbatch ~/sequences_to_contact_maps/bin/GNN/ContactGNNEnergy${i}.sh
 done
