@@ -17,8 +17,8 @@
 		 512 & without SignNet & 0.337 & 0.569 \\ 
 		 513 & rescale=1, only 500k sweeps, lr=1e-5 & 0.356 & 0.599 \\ 
 		 514 & rescale=1 & 0.231 & 0.464 \\ 
-		 515 & rescale=1, only 500k sweeps & None & nan \\ 
-		 516 & more MP layers & None & nan \\ 
+		 515 & rescale=1, only 500k sweeps & 0.217 & 0.546 \\ 
+		 516 & more MP layers & 0.301 & 0.528 \\ 
 		 517 & lr=1e-5 & 0.425 & 0.559 \\ 
 		\hline
 	\end{tabular}

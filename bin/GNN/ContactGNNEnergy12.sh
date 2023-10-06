@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE12
 #SBATCH --output=logFiles/ContactGNNEnergy12.out
-#SBATCH --time=24:00:00
+#SBATCH --time=1-24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -43,6 +43,7 @@ useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
+resumeTraining='true'
 
 # more params in hiddenSizesList and deeper update layer and 1 more MP layer
 

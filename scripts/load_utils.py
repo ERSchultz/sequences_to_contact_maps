@@ -23,6 +23,7 @@ from .utils import LETTERS, print_size, print_time
 def load_import_log(dir, obj=None):
     import_file = osp.join(dir, 'import.log')
     if not osp.exists(import_file):
+        print(f'{import_file} does not exist')
         return
 
     results = {}

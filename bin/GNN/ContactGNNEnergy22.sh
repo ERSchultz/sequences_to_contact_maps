@@ -11,6 +11,8 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=erschultz@uchicago.edu
 #SBATCH --exclude=midway3-0372
+#SBATCH --dependency=afterok:9610530
+
 
 
 cd ~/sequences_to_contact_maps
@@ -44,7 +46,6 @@ useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40-70'
-
 
 
 id=522

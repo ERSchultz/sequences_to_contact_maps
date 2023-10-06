@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE13
 #SBATCH --output=logFiles/ContactGNNEnergy13.out
-#SBATCH --time=24:00:00
+#SBATCH --time=1-24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -11,7 +11,8 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=erschultz@uchicago.edu
 #SBATCH --exclude=midway3-0372
-#SBATCH --dependency=afterok:9196145:9196146:9196147:9196148:9196149
+#SBATCH --dependency=afterok:9610530
+
 
 cd ~/sequences_to_contact_maps
 
@@ -37,7 +38,7 @@ innerAct='leaky'
 headAct='leaky'
 outAct='leaky'
 
-sweepChoices='2-3-4-5'
+sweepChoices='3-4-5-6'
 yNorm='mean_fill'
 k=8
 useSignPlus='true'

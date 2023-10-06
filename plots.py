@@ -1655,12 +1655,8 @@ if __name__ == '__main__':
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
     # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
-    # data_dir = osp.join(dir, 'dataset_soren/samples/sample1')
-    # file = osp.join(data_dir, 'y_kr.npy')
-    # data_dir = osp.join(dir, 'dataset_07_20_22/samples/sample4')
-    # file = osp.join(data_dir, 'y.npy')
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    plot_combined_models('ContactGNNEnergy', [501, 502])
+    plot_combined_models('ContactGNNEnergy', [510, 516])
     # plot_GNN_vs_PCA('dataset_04_05_23', 10, 407)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")
