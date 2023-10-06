@@ -23,8 +23,8 @@ rootName='ContactGNNEnergy22' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_25_23"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
-hiddenSizesList='8-8-8-8'
-updateHiddenSizesList='1000-1000-64'
+hiddenSizesList='16-16-16-16-16'
+updateHiddenSizesList='1000-1000-1000-1000-64'
 
 outputPreprocesing='log'
 headArchitecture='bilinear'
@@ -37,17 +37,17 @@ innerAct='leaky'
 headAct='leaky'
 outAct='leaky'
 
-sweepChoices='5'
+sweepChoices='4-5-6'
 yNorm='mean_fill'
 k=8
 useSignPlus='true'
 batchSize=1
 nEpochs=80
-milestones='40'
+milestones='40-70'
 
-# ablation of 507 without rescale and with only 500k sweeps
 
-id=515
+
+id=522
 for lr in 1e-4
 do
   train
