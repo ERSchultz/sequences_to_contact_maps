@@ -286,3 +286,95 @@ Mean test/val loss: 0.2299
 [25, 50, 75] percentiles test/val loss: [0.1183 0.1942 0.2906]
 
 Epoch 52, loss = 0.2028
+Mean test/val loss: 0.2265
+[25, 50, 75] percentiles test/val loss: [0.1163 0.1899 0.2851]
+
+Epoch 54, loss = 0.2004
+Mean test/val loss: 0.2258
+[25, 50, 75] percentiles test/val loss: [0.1157 0.1886 0.2836]
+
+Epoch 56, loss = 0.1984
+Mean test/val loss: 0.2242
+[25, 50, 75] percentiles test/val loss: [0.1154 0.188  0.2812]
+
+Epoch 58, loss = 0.1965
+Mean test/val loss: 0.2235
+[25, 50, 75] percentiles test/val loss: [0.1142 0.1868 0.2821]
+
+Epoch 60, loss = 0.1946
+Mean test/val loss: 0.2234
+[25, 50, 75] percentiles test/val loss: [0.1145 0.1854 0.2801]
+
+Epoch 62, loss = 0.1930
+Mean test/val loss: 0.2226
+[25, 50, 75] percentiles test/val loss: [0.1149 0.1857 0.2793]
+
+Epoch 64, loss = 0.1913
+Mean test/val loss: 0.2206
+[25, 50, 75] percentiles test/val loss: [0.1143 0.1841 0.276 ]
+
+Epoch 66, loss = 0.1899
+Mean test/val loss: 0.2207
+[25, 50, 75] percentiles test/val loss: [0.1131 0.1836 0.2782]
+
+Epoch 68, loss = 0.1885
+Mean test/val loss: 0.2201
+[25, 50, 75] percentiles test/val loss: [0.1128 0.1826 0.2769]
+
+Epoch 70, loss = 0.1871
+Mean test/val loss: 0.2190
+[25, 50, 75] percentiles test/val loss: [0.1119 0.1823 0.2756]
+
+Epoch 72, loss = 0.1858
+Mean test/val loss: 0.2191
+[25, 50, 75] percentiles test/val loss: [0.1132 0.181  0.2756]
+
+Epoch 74, loss = 0.1847
+Mean test/val loss: 0.2182
+[25, 50, 75] percentiles test/val loss: [0.1116 0.1823 0.2741]
+
+Epoch 76, loss = 0.1835
+Mean test/val loss: 0.2183
+[25, 50, 75] percentiles test/val loss: [0.1126 0.1825 0.2738]
+
+Epoch 78, loss = 0.1824
+Mean test/val loss: 0.2170
+[25, 50, 75] percentiles test/val loss: [0.1111 0.1826 0.2716]
+
+Epoch 80, loss = 0.1813
+Mean test/val loss: 0.2167
+[25, 50, 75] percentiles test/val loss: [0.1113 0.18   0.2716]
+
+
+Total parameters: 42846000
+Total training + validation time: 28.0 hours, 55.0 mins, and 34.39999999999418 secs
+Final val loss: 0.2167432208978571
+
+split sizes: train=9000, val=1000, test=0, N=10000
+#### Plotting Script ####
+Prediction Results:
+dataset_09_25_23 sample1050: 0.29529088735580444
+dataset_09_25_23 sample7802: 0.41193169355392456
+dataset_09_25_23 sample156: 0.34410759806632996
+dataset_09_25_23 sample2452: 0.054788265377283096
+dataset_09_25_23 sample752: 0.014510193839669228
+MSE Loss: 0.224 +- 0.16
+
+Downsampling (200k) Results:
+dataset_09_25_23 sample1050-downsampling: 28.564022064208984
+dataset_09_25_23 sample156-downsampling: 17.721088409423828
+dataset_09_25_23 sample2452-downsampling: 62.333885192871094
+dataset_09_25_23 sample752-downsampling: 3.2740211486816406
+dataset_09_25_23 sample7802-downsampling: 30.872535705566406
+Loss: 28.553 +- 19.508
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy22downsample
+Original sampling (400k) Results:
+dataset_09_25_23 sample1050-regular: 30.898143768310547
+dataset_09_25_23 sample156-regular: 19.87735366821289
+dataset_09_25_23 sample2452-regular: 14.965963363647461
+dataset_09_25_23 sample752-regular: 0.7813944816589355
+dataset_09_25_23 sample7802-regular: 32.89302062988281
+Loss: 19.883 +- 11.659
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy22regsample
