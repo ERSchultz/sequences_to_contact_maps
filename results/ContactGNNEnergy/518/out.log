@@ -257,3 +257,124 @@ Mean test/val loss: 0.5786
 [25, 50, 75] percentiles test/val loss: [0.3837 0.5299 0.7251]
 
 Epoch 38, loss = 0.5603
+Mean test/val loss: 0.5764
+[25, 50, 75] percentiles test/val loss: [0.3844 0.5279 0.7152]
+
+Epoch 40, loss = 0.5540
+Mean test/val loss: 0.5927
+[25, 50, 75] percentiles test/val loss: [0.3927 0.5388 0.7324]
+
+New lr: 1e-05
+Epoch 42, loss = 0.5082
+Mean test/val loss: 0.5359
+[25, 50, 75] percentiles test/val loss: [0.3562 0.4909 0.6703]
+
+Epoch 44, loss = 0.5024
+Mean test/val loss: 0.5340
+[25, 50, 75] percentiles test/val loss: [0.352  0.4898 0.6669]
+
+Epoch 46, loss = 0.4986
+Mean test/val loss: 0.5319
+[25, 50, 75] percentiles test/val loss: [0.3502 0.4883 0.6687]
+
+Epoch 48, loss = 0.4954
+Mean test/val loss: 0.5301
+[25, 50, 75] percentiles test/val loss: [0.3493 0.4861 0.6622]
+
+Epoch 50, loss = 0.4927
+Mean test/val loss: 0.5295
+[25, 50, 75] percentiles test/val loss: [0.3515 0.4869 0.6648]
+
+Epoch 52, loss = 0.4902
+Mean test/val loss: 0.5293
+[25, 50, 75] percentiles test/val loss: [0.3487 0.486  0.6591]
+
+Epoch 54, loss = 0.4880
+Mean test/val loss: 0.5281
+[25, 50, 75] percentiles test/val loss: [0.3499 0.4829 0.6608]
+
+Epoch 56, loss = 0.4860
+Mean test/val loss: 0.5272
+[25, 50, 75] percentiles test/val loss: [0.3481 0.4833 0.6564]
+
+Epoch 58, loss = 0.4840
+Mean test/val loss: 0.5268
+[25, 50, 75] percentiles test/val loss: [0.3492 0.4823 0.6602]
+
+Epoch 60, loss = 0.4822
+Mean test/val loss: 0.5256
+[25, 50, 75] percentiles test/val loss: [0.35   0.4798 0.6561]
+
+Epoch 62, loss = 0.4804
+Mean test/val loss: 0.5252
+[25, 50, 75] percentiles test/val loss: [0.3474 0.4823 0.6567]
+
+Epoch 64, loss = 0.4787
+Mean test/val loss: 0.5253
+[25, 50, 75] percentiles test/val loss: [0.3479 0.4808 0.6567]
+
+Epoch 66, loss = 0.4772
+Mean test/val loss: 0.5244
+[25, 50, 75] percentiles test/val loss: [0.3482 0.4798 0.6544]
+
+Epoch 68, loss = 0.4756
+Mean test/val loss: 0.5244
+[25, 50, 75] percentiles test/val loss: [0.3462 0.482  0.6544]
+
+Epoch 70, loss = 0.4741
+Mean test/val loss: 0.5234
+[25, 50, 75] percentiles test/val loss: [0.3474 0.4781 0.651 ]
+
+Epoch 72, loss = 0.4727
+Mean test/val loss: 0.5228
+[25, 50, 75] percentiles test/val loss: [0.3452 0.4807 0.6539]
+
+Epoch 74, loss = 0.4713
+Mean test/val loss: 0.5236
+[25, 50, 75] percentiles test/val loss: [0.3468 0.4809 0.6504]
+
+Epoch 76, loss = 0.4701
+Mean test/val loss: 0.5231
+[25, 50, 75] percentiles test/val loss: [0.3458 0.4795 0.6486]
+
+Epoch 78, loss = 0.4688
+Mean test/val loss: 0.5223
+[25, 50, 75] percentiles test/val loss: [0.3443 0.4775 0.6474]
+
+Epoch 80, loss = 0.4676
+Mean test/val loss: 0.5215
+[25, 50, 75] percentiles test/val loss: [0.3468 0.4763 0.649 ]
+
+
+Total parameters: 26462000
+Total training + validation time: 18.0 hours, 5.0 mins, and 25.19999999999709 secs
+Final val loss: 0.5214804928638042
+
+split sizes: train=9000, val=1000, test=0, N=10000
+#### Plotting Script ####
+Prediction Results:
+dataset_09_28_23 sample1050: 0.8933890461921692
+dataset_09_28_23 sample7802: 0.4147379398345947
+dataset_09_28_23 sample156: 0.5428188443183899
+dataset_09_28_23 sample2452: 0.23899556696414948
+dataset_09_28_23 sample752: 0.00808537658303976
+MSE Loss: 0.42 +- 0.297
+
+Downsampling (200k) Results:
+dataset_09_28_23 sample1050-downsampling: 216.8853302001953
+dataset_09_28_23 sample156-downsampling: 108.19086456298828
+dataset_09_28_23 sample2452-downsampling: 26.899188995361328
+dataset_09_28_23 sample752-downsampling: 1.2845821380615234
+dataset_09_28_23 sample7802-downsampling: 36.5157356262207
+Loss: 77.955 +- 77.998
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy10downsample
+Original sampling (400k) Results:
+dataset_09_28_23 sample1050-regular: 173.6432647705078
+dataset_09_28_23 sample156-regular: 105.29148864746094
+dataset_09_28_23 sample2452-regular: 23.51422882080078
+dataset_09_28_23 sample752-regular: 0.8880078792572021
+dataset_09_28_23 sample7802-regular: 35.31661605834961
+Loss: 67.731 +- 63.407
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy10regsample

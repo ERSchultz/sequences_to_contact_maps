@@ -257,3 +257,124 @@ Mean test/val loss: 0.3572
 [25, 50, 75] percentiles test/val loss: [0.1838 0.3211 0.4635]
 
 Epoch 38, loss = 0.3487
+Mean test/val loss: 0.3535
+[25, 50, 75] percentiles test/val loss: [0.189  0.3233 0.4544]
+
+Epoch 40, loss = 0.3457
+Mean test/val loss: 0.3464
+[25, 50, 75] percentiles test/val loss: [0.1799 0.3117 0.4536]
+
+New lr: 1e-05
+Epoch 42, loss = 0.3059
+Mean test/val loss: 0.3252
+[25, 50, 75] percentiles test/val loss: [0.1708 0.2974 0.4238]
+
+Epoch 44, loss = 0.3011
+Mean test/val loss: 0.3236
+[25, 50, 75] percentiles test/val loss: [0.1691 0.2948 0.419 ]
+
+Epoch 46, loss = 0.2978
+Mean test/val loss: 0.3216
+[25, 50, 75] percentiles test/val loss: [0.169  0.2937 0.4165]
+
+Epoch 48, loss = 0.2950
+Mean test/val loss: 0.3201
+[25, 50, 75] percentiles test/val loss: [0.168  0.293  0.4148]
+
+Epoch 50, loss = 0.2926
+Mean test/val loss: 0.3189
+[25, 50, 75] percentiles test/val loss: [0.1674 0.2904 0.4157]
+
+Epoch 52, loss = 0.2905
+Mean test/val loss: 0.3181
+[25, 50, 75] percentiles test/val loss: [0.1676 0.2895 0.4137]
+
+Epoch 54, loss = 0.2885
+Mean test/val loss: 0.3170
+[25, 50, 75] percentiles test/val loss: [0.167  0.2894 0.4086]
+
+Epoch 56, loss = 0.2867
+Mean test/val loss: 0.3160
+[25, 50, 75] percentiles test/val loss: [0.1675 0.2868 0.4104]
+
+Epoch 58, loss = 0.2850
+Mean test/val loss: 0.3151
+[25, 50, 75] percentiles test/val loss: [0.1667 0.2863 0.408 ]
+
+Epoch 60, loss = 0.2833
+Mean test/val loss: 0.3141
+[25, 50, 75] percentiles test/val loss: [0.1674 0.289  0.4049]
+
+Epoch 62, loss = 0.2819
+Mean test/val loss: 0.3140
+[25, 50, 75] percentiles test/val loss: [0.1665 0.2879 0.4044]
+
+Epoch 64, loss = 0.2805
+Mean test/val loss: 0.3133
+[25, 50, 75] percentiles test/val loss: [0.1667 0.2868 0.4034]
+
+Epoch 66, loss = 0.2792
+Mean test/val loss: 0.3119
+[25, 50, 75] percentiles test/val loss: [0.1658 0.2862 0.4033]
+
+Epoch 68, loss = 0.2779
+Mean test/val loss: 0.3116
+[25, 50, 75] percentiles test/val loss: [0.1661 0.2844 0.402 ]
+
+Epoch 70, loss = 0.2767
+Mean test/val loss: 0.3119
+[25, 50, 75] percentiles test/val loss: [0.1662 0.2855 0.4014]
+
+Epoch 72, loss = 0.2756
+Mean test/val loss: 0.3110
+[25, 50, 75] percentiles test/val loss: [0.165  0.2861 0.4038]
+
+Epoch 74, loss = 0.2744
+Mean test/val loss: 0.3103
+[25, 50, 75] percentiles test/val loss: [0.1652 0.2863 0.403 ]
+
+Epoch 76, loss = 0.2733
+Mean test/val loss: 0.3103
+[25, 50, 75] percentiles test/val loss: [0.1653 0.2838 0.4016]
+
+Epoch 78, loss = 0.2723
+Mean test/val loss: 0.3097
+[25, 50, 75] percentiles test/val loss: [0.165  0.2827 0.4019]
+
+Epoch 80, loss = 0.2713
+Mean test/val loss: 0.3097
+[25, 50, 75] percentiles test/val loss: [0.1655 0.2844 0.3996]
+
+
+Total parameters: 26462000
+Total training + validation time: 18.0 hours, 11.0 mins, and 44.099999999998545 secs
+Final val loss: 0.3097067713625729
+
+split sizes: train=9000, val=1000, test=0, N=10000
+#### Plotting Script ####
+Prediction Results:
+dataset_09_25_23 sample1050: 0.529444694519043
+dataset_09_25_23 sample7802: 0.5502115488052368
+dataset_09_25_23 sample156: 0.6136170029640198
+dataset_09_25_23 sample2452: 0.07066592574119568
+dataset_09_25_23 sample752: 0.024695996195077896
+MSE Loss: 0.358 +- 0.255
+
+Downsampling (200k) Results:
+dataset_09_25_23 sample1050-downsampling: 24.824966430664062
+dataset_09_25_23 sample156-downsampling: 27.029829025268555
+dataset_09_25_23 sample2452-downsampling: 13.5465087890625
+dataset_09_25_23 sample752-downsampling: 1.0183405876159668
+dataset_09_25_23 sample7802-downsampling: 37.05788803100586
+Loss: 20.696 +- 12.355
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy13downsample
+Original sampling (400k) Results:
+dataset_09_25_23 sample1050-regular: 24.75929832458496
+dataset_09_25_23 sample156-regular: 28.943960189819336
+dataset_09_25_23 sample2452-regular: 14.383493423461914
+dataset_09_25_23 sample752-regular: 0.9086868762969971
+dataset_09_25_23 sample7802-regular: 39.716190338134766
+Loss: 21.742 +- 13.208
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy13regsample
