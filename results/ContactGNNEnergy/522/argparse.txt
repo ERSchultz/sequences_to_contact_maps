@@ -1,7 +1,7 @@
 --data_folder
 /project2/depablo/erschultz/dataset_09_25_23
 --root_name
-ContactGNNEnergy12
+ContactGNNEnergy22
 --delete_root
 false
 --model_type
@@ -15,7 +15,7 @@ energy_sym_diag
 --y_preprocessing
 sweeprand_log_inf
 --sweep_choices
-2-3-4-5
+4-5-6
 --preprocessing_norm
 mean_fill
 --log_preprocessing
@@ -23,7 +23,7 @@ none
 --kr
 false
 --rescale
-2
+1
 --mean_filt
 none
 --output_preprocesing
@@ -51,7 +51,7 @@ none
 --edge_encoder_hidden_sizes_list
 none
 --update_hidden_sizes_list
-1000-1000-1000-1000-128
+1000-1000-1000-1000-64
 --transforms
 empty
 --pre_transforms
@@ -109,7 +109,7 @@ none
 --scheduler
 MultiStepLR
 --milestones
-40
+40-70
 --patience
 10
 --gamma
@@ -132,9 +132,9 @@ none
 --print_params
 true
 --id
-520
+522
 --resume_training
-true
+false
 --pretrain_id
 none
 --mlp_model_id

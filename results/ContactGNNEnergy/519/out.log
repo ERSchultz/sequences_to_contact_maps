@@ -413,3 +413,51 @@ Mean test/val loss: 0.4667
 [25, 50, 75] percentiles test/val loss: [0.314  0.4325 0.5821]
 
 Epoch 74, loss = 0.4054
+Mean test/val loss: 0.4664
+[25, 50, 75] percentiles test/val loss: [0.3133 0.433  0.5781]
+
+Epoch 76, loss = 0.4037
+Mean test/val loss: 0.4660
+[25, 50, 75] percentiles test/val loss: [0.3128 0.4317 0.5766]
+
+Epoch 78, loss = 0.4019
+Mean test/val loss: 0.4661
+[25, 50, 75] percentiles test/val loss: [0.314  0.4324 0.5777]
+
+Epoch 80, loss = 0.4002
+Mean test/val loss: 0.4648
+[25, 50, 75] percentiles test/val loss: [0.3117 0.4307 0.5794]
+
+
+Total parameters: 54773008
+Total training + validation time: 25.0 hours, 57.0 mins, and 18.10000000000582 secs
+Final val loss: 0.46479241794766857
+
+split sizes: train=9000, val=1000, test=0, N=10000
+#### Plotting Script ####
+Prediction Results:
+dataset_09_28_23 sample1050: 0.8671518564224243
+dataset_09_28_23 sample7802: 0.36966651678085327
+dataset_09_28_23 sample156: 0.48701900243759155
+dataset_09_28_23 sample2452: 0.20684246718883514
+dataset_09_28_23 sample752: 0.0059263636358082294
+MSE Loss: 0.387 +- 0.289
+
+Downsampling (200k) Results:
+dataset_09_28_23 sample1050-downsampling: 142.036865234375
+dataset_09_28_23 sample156-downsampling: 137.88412475585938
+dataset_09_28_23 sample2452-downsampling: 22.940948486328125
+dataset_09_28_23 sample752-downsampling: 0.3808436691761017
+dataset_09_28_23 sample7802-downsampling: 34.94566345214844
+Loss: 67.638 +- 60.1
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy11downsample
+Original sampling (400k) Results:
+dataset_09_28_23 sample1050-regular: 135.62265014648438
+dataset_09_28_23 sample156-regular: 130.16705322265625
+dataset_09_28_23 sample2452-regular: 20.077537536621094
+dataset_09_28_23 sample752-regular: 0.41469407081604004
+dataset_09_28_23 sample7802-regular: 37.14599609375
+Loss: 64.686 +- 56.919
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy11regsample
