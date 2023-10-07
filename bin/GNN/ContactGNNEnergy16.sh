@@ -19,7 +19,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy16' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_09_25_23"
+dirname="/project2/depablo/erschultz/dataset_09_28_23_s_100_cutoff_0.36"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
 hiddenSizesList='8-8-8-8'
@@ -42,11 +42,10 @@ k=8
 useSignPlus='true'
 batchSize=1
 nEpochs=80
-milestones='40'
+milestones='40-70'
 
-# k=5 with sweepchoices = 2-3-4-5
 
-id=507
+id=525
 for lr in 1e-4
 do
   train
