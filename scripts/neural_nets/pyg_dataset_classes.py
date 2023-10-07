@@ -185,7 +185,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
     def process(self):
         for i, raw_folder in enumerate(self.raw_file_names):
             self.process_y(raw_folder)
-            self.process_diag_params(raw_folder)
+            self.process_diag_params(raw_folder) # used for calculating S = L+D
 
             edge_index, pos_edge_index, neg_edge_index = self.generate_edge_index()
 
@@ -207,7 +207,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.contact_map_diag = self.contact_map_diag
             graph.contact_map_bonded = self.contact_map_bonded
             graph.diag_chi_continuous = self.diag_chis_continuous
-            graph.diag_chi_continuous_mlp = self.diag_chis_continuous_mlp
 
             if self.pre_transform is not None:
                 graph = self.pre_transform(graph)
@@ -251,7 +250,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
                     graph.energy = torch.sign(graph.energy) * torch.log(torch.abs(graph.energy)+1)
 
             del graph.diag_chi_continuous
-            del graph.diag_chi_continuous_mlp
 
             torch.save(graph, self.processed_paths[i])
 
@@ -322,8 +320,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
         split = raw_folder.split(os.sep)
         dir = '/' + osp.join(*split[:-3])
         dataset = split[-3]
-        sample = split[-1][6:]
-        setup_file = osp.join(dir, dataset, f'setup/sample_{sample}.txt')
+        sample = split[-1][6:] # TODO remove split("_s_")
+        setup_file = osp.join(dir, dataset.split('_s_')[0], f'setup/sample_{sample}.txt')
         bonded_file = osp.join(raw_folder, f'{self.bonded_root}/y.npy')
         y_bonded = None
         if osp.exists(setup_file):
@@ -452,73 +450,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             if self.output is not None:
                 raise Exception(f'chi_diag not found for {raw_folder}')
 
-        if self.mlp_model_id is None:
-            diag_chis_mlp = None
-        else:
-            # extract sample info
-            sample = osp.split(raw_folder)[1]
-            sample_id = int(sample[6:])
-            sample_path_split = osp.normpath(raw_folder).split(os.sep)
-
-            model_path = f'/home/erschultz/sequences_to_contact_maps/results/MLP/{self.mlp_model_id}'
-            argparse_path = osp.join(model_path, 'argparse.txt')
-            with open(argparse_path, 'r') as f:
-                for line in f:
-                    if line == '--data_folder\n':
-                        break
-                data_folder = f.readline().strip()
-                mlp_dataset = osp.split(data_folder)[1]
-
-            # set up argparse options
-            parser = get_base_parser()
-            sys.argv = [sys.argv[0]] # delete args from get_params,
-                                    # otherwise gnn opt will try and use them
-            opt = parser.parse_args([f'@{argparse_path}'])
-            opt.id = int(self.mlp_model_id)
-            output_mode = opt.output_mode
-            opt = finalize_opt(opt, parser, local = True, debug = True)
-            opt.data_folder = osp.join('/',*sample_path_split[:-2]) # use sample_dataset not mlp_dataset
-            opt.log_file = sys.stdout # change
-            opt.output_mode = None # None for prediction mode
-            opt.crop = (0, self.m)
-
-            # get model
-            model = get_model(opt, False).to(opt.device)
-            model_name = osp.join(opt.ofile_folder, 'model.pt')
-            if osp.exists(model_name):
-                save_dict = torch.load(model_name, map_location=torch.device('cpu'))
-                model.load_state_dict(save_dict['model_state_dict'])
-            else:
-                raise Exception(f'Model does not exist: {model_name}')
-            model.eval()
-
-            # get dataset
-            dataset = DiagFunctions(opt.data_folder, None, opt.preprocessing_norm,
-                                    opt.y_preprocessing,
-                                    opt.log_preprocessing, opt.y_zero_diag_count,
-                                    opt.output_mode,
-                                    names = False, samples = [sample_id])
-
-            # get prediction
-            for i, x in enumerate(dataset):
-                x = x[0]
-                x = x.to(opt.device)
-                yhat = model(x)
-                yhat = yhat.cpu().detach().numpy()
-                yhat = yhat.reshape((-1)).astype(np.float64)
-
-            if 'bond_length' in output_mode:
-                bond_length = yhat[-1]
-                yhat = yhat[:-1]
-                with open('bond_length.txt', 'w') as f:
-                    f.write(str(bond_length))
-                print('MLP bond_length:', bond_length)
-
-            assert output_mode.startswith('diag_chi_step') or output_mode.startswith('diag_chi_continuous')
-            diag_chis_mlp = yhat
-
         self.diag_chis_continuous = diag_chis_gt
-        self.diag_chis_continuous_mlp = diag_chis_mlp
 
     def get(self, index):
          data = torch.load(self.processed_paths[index])

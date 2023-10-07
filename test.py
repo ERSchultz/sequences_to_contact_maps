@@ -18,6 +18,7 @@ from pylib.utils import epilib
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import *
 from pylib.utils.plotting_utils import BLUE_RED_CMAP, RED_CMAP, plot_matrix
+from pylib.utils.utils import triu_to_full
 from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.optimize import minimize
@@ -30,7 +31,7 @@ from scripts.neural_nets.dataset_classes import make_dataset
 from scripts.neural_nets.networks import get_model
 from scripts.neural_nets.utils import get_dataset
 from scripts.similarity_measures import SCC
-from scripts.utils import calc_dist_strat_corr, crop, print_time, triu_to_full
+from scripts.utils import calc_dist_strat_corr, crop, print_time
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
@@ -141,7 +142,7 @@ def debugModel(model_type):
 
     # dataset
     dir = "/home/erschultz"
-    datasets = ['dataset_08_25_23']
+    datasets = ['dataset_09_28_23_s_1_cutoff_0.36']
     opt.data_folder = [osp.join(dir, d) for d in datasets]
     opt.scratch = '/home/erschultz/scratch'
 
@@ -154,8 +155,8 @@ def debugModel(model_type):
     opt.random_split=True
 
     if model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing = 'log_inf'
-        opt.sweep_choices = [1,2,3]
+        opt.y_preprocessing = 'sweeprand_log_inf'
+        opt.sweep_choices = [2,3]
         opt.rescale = 2
         opt.mean_filt = None
         opt.kr = False
@@ -197,7 +198,7 @@ def debugModel(model_type):
         opt.head_architecture_2 = f'dconv-fc-fill_{opt.m}'
         opt.head_hidden_sizes_list = [1000, 1000,1000,1000,1000]
         # opt.crop = 128
-        opt.plaid_score_cutoff = 50
+        opt.plaid_score_cutoff = None
 
         opt.use_bias = True
         opt.num_heads = 8
@@ -779,8 +780,8 @@ if __name__ == '__main__':
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    # debugModel('ContactGNNEnergy')
-    gnn_meanDist_s(434, '981')
+    debugModel('ContactGNNEnergy')
+    # gnn_meanDist_s(434, '981')
     # test_center_norm_log()
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()
