@@ -3,7 +3,7 @@
 #SBATCH --output=logFiles/ContactGNNEnergy16.out
 #SBATCH --time=24:00:00
 #SBATCH --account=pi-depablo
-#SBATCH --partition=gpu
+#SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=12
@@ -19,7 +19,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy16' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_09_28_23_s_100_cutoff_0.36"
+dirname="/project2/depablo/erschultz/dataset_09_28_23_s_100_cutoff_0.01"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
 hiddenSizesList='8-8-8-8'
