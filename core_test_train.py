@@ -35,7 +35,13 @@ def core_test_train(model, opt):
     # split dataset
     dataset = get_dataset(opt)
     train_dataloader, val_dataloader, test_dataloader = get_data_loaders(dataset, opt)
-
+    val_samples = []
+    for i, sample in enumerate(val_dataloader):
+        sample_id = int(osp.split(sample.path[0])[1][6:])
+        val_samples.append(sample_id)
+        if i > 100:
+            break
+    print(f'First 100 val samples: {val_samples}', file = opt.log_file)
 
     train_loss_arr = []
     val_loss_arr = []

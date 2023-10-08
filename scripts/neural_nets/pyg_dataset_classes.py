@@ -162,8 +162,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
 
             print('Average num edges per graph: ',
                     f'{np.mean(self.num_edges_list)}', file = ofile)
-            print('Num edges per graph: ',
-                    f'{self.num_edges_list}', file = ofile)
+            # print('Num edges per graph: ',
+            #         f'{self.num_edges_list}', file = ofile)
             print('Average num edges per graph: ',
                     f'{np.mean(self.num_edges_list)}')
 

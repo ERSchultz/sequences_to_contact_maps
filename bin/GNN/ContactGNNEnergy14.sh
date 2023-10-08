@@ -42,11 +42,11 @@ yNorm='mean_fill'
 k=8
 useSignPlus='true'
 batchSize=1
-nEpochs=80
-milestones='40-70'
+nEpochs=1
+# milestones='40-70'
 
 
-id=523
+id=526
 for lr in 1e-4
 do
   train
