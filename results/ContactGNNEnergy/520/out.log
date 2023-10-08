@@ -676,3 +676,55 @@ Scheduler: <torch.optim.lr_scheduler.MultiStepLR object at 0x7f1972ec7730>
 #### TRAINING/VALIDATION ####
 New lr: 1e-05
 Epoch 72, loss = 0.2437
+Mean test/val loss: 0.2463
+[25, 50, 75] percentiles test/val loss: [0.1486 0.2383 0.3289]
+
+Epoch 74, loss = 0.2415
+Mean test/val loss: 0.2469
+[25, 50, 75] percentiles test/val loss: [0.1489 0.2387 0.3293]
+
+Epoch 76, loss = 0.2397
+Mean test/val loss: 0.2504
+[25, 50, 75] percentiles test/val loss: [0.1517 0.2434 0.3333]
+
+Epoch 78, loss = 0.2380
+Mean test/val loss: 0.2479
+[25, 50, 75] percentiles test/val loss: [0.1493 0.2397 0.3315]
+
+Epoch 80, loss = 0.2365
+Mean test/val loss: 0.2471
+[25, 50, 75] percentiles test/val loss: [0.149  0.2383 0.3334]
+
+
+Total parameters: 54773008
+Total training + validation time: 3.0 hours, 32.0 mins, and 23.299999999999272 secs
+Final val loss: 0.24705182339411574
+
+split sizes: train=8997, val=999, test=0, N=9996
+#### Plotting Script ####
+Prediction Results:
+dataset_09_25_23 sample2504: 0.316989928483963
+dataset_09_25_23 sample1389: 0.03682047128677368
+dataset_09_25_23 sample6451: 0.2623477876186371
+dataset_09_25_23 sample6781: 0.2680381238460541
+dataset_09_25_23 sample617: 0.2026766538619995
+MSE Loss: 0.217 +- 0.097
+
+Downsampling (200k) Results:
+dataset_09_25_23 sample1389-downsampling: 1.6540443897247314
+dataset_09_25_23 sample2504-downsampling: 10.718663215637207
+dataset_09_25_23 sample617-downsampling: 26.884681701660156
+dataset_09_25_23 sample6451-downsampling: 30.71056365966797
+dataset_09_25_23 sample6781-downsampling: 5.55101203918457
+Loss: 15.104 +- 11.608
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy12downsample
+Original sampling (400k) Results:
+dataset_09_25_23 sample1389-regular: 1.4540424346923828
+dataset_09_25_23 sample2504-regular: 10.94450855255127
+dataset_09_25_23 sample617-regular: 21.952341079711914
+dataset_09_25_23 sample6451-regular: 25.64504051208496
+dataset_09_25_23 sample6781-regular: 5.226187705993652
+Loss: 13.044 +- 9.359
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy12regsample
