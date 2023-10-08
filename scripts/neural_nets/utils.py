@@ -164,6 +164,11 @@ def split_dataset(dataset, opt):
         val_dataset = Subset(dataset, range(opt.testN, opt.testN+opt.valN))
         train_dataset = Subset(dataset, range(opt.testN+opt.valN, opt.testN+opt.valN+opt.trainN))
 
+    print("Val dataset samples: ")
+    for sample in dataset:
+        print(sample.path)
+
+
     assert len(test_dataset) == opt.testN, f"{len(test_dataset)} != {opt.testN}"
     assert len(train_dataset) == opt.trainN, f"{len(train_dataset)} != {opt.trainN}"
 
