@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE14
 #SBATCH --output=logFiles/ContactGNNEnergy14.out
-#SBATCH --time=24:00:00
+#SBATCH --time=1-24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -11,7 +11,6 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=erschultz@uchicago.edu
 #SBATCH --exclude=midway3-0372
-#SBATCH --dependency=afterok:9196145:9196146:9196147:9196148:9196149
 
 cd ~/sequences_to_contact_maps
 
@@ -22,7 +21,7 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy14' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_28_23"
 m=512
-preTransforms='ContactDistance_corr-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
+preTransforms='ContactDistance_diagnorm-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
 hiddenSizesList='8-8-8-8'
 updateHiddenSizesList='1000-1000-64'
 
@@ -45,7 +44,7 @@ batchSize=1
 nEpochs=70
 milestones='40'
 
-# only diag corr
+# only diag_norm
 
 id=530
 for lr in 1e-4
