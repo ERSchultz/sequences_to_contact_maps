@@ -125,11 +125,11 @@ def load_Y(sample_folder, throw_exception = True):
             max_sweeps = -1
             for f in files:
                 if f.startswith('contacts') and f.endswith('.txt'):
-                    sweeps = int(f[8:-5])
+                    sweeps = int(f[8:-4])
                     if sweeps > max_sweeps:
                         max_sweeps = sweeps
-            y = np.loadtxt(osp.join(sample_folder, f'contacts{max_sweeps}.txt'))
-
+            y = np.loadtxt(osp.join(sample_folder, 'production_out', f'contacts{max_sweeps}.txt'))
+            np.save(y_file, y) # save in proper place
         except Exception as e:
             if throw_exception:
                 raise e

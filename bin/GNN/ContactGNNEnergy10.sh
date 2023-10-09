@@ -21,7 +21,7 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy10' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_28_23"
 m=512
-preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
+preTransforms='ContactDistance-ContactDistance_diagnorm-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
 hiddenSizesList='8-8-8-8'
 updateHiddenSizesList='1000-1000-64'
 
@@ -41,14 +41,13 @@ yNorm='mean_fill'
 k=8
 useSignPlus='true'
 batchSize=1
-nEpochs=80
+nEpochs=70
 milestones='40'
 
-# baseline
-# k=5 with sweepchoices = 2-3-4-5
+# add diag norm feature as well
 
 
-id=518
+id=526
 for lr in 1e-4
 do
   train

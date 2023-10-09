@@ -462,6 +462,7 @@ def process_transforms(opt):
     # pre-transforms
     processed = []
     opt.diag = False # True if y_diag is needed for transform
+    opt.corr = False # True if correlation matrix is needed for transform
     for t_str in opt.pre_transforms:
         t_str = t_str.lower().split('_')
         if t_str[0] == 'constant':
@@ -541,16 +542,30 @@ def process_transforms(opt):
                 opt.edge_dim += 1
             norm = False
             bonded = False
+            rank = None
+            diag_norm = False
+            corr = False
             for mode_str in t_str[1:]:
                 if mode_str == 'norm':
                     norm = True
                 if mode_str == 'bonded':
                     bonded = True
-
+                if mode_str.startswith('rank'):
+                    rank = mode_str[4:]
+                    assert rank.isnumeric()
+                    rank = int(rank)
+                if mode_str == 'diagnorm':
+                    opt.diag = True
+                    diag_norm = True
+                if mode_str == 'corr':
+                    opt.diag = True
+                    opt.corr = True
+                    corr = True
             transform = ContactDistance(norm = norm,
                                         split_edges = opt.split_neg_pos_edges,
                                         convert_to_attr = opt.use_edge_attr,
-                                        bonded = bonded)
+                                        bonded = bonded, diag_normalize = diag_norm,
+                                        corr = corr, rank = rank)
             opt.edge_transforms.append(transform)
         elif t_str[0] == 'meancontactdistance':
             assert opt.use_edge_attr or opt.use_edge_weights

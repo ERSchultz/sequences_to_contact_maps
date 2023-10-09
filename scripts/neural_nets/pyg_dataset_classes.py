@@ -60,7 +60,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 crop=None, ofile=sys.stdout, verbose=True,
                 max_sample=float('inf'), samples=None, sub_dir='samples',
                 plaid_score_cutoff=None, sweep_choices=[2,3,4,5],
-                diag=False, keep_zero_edges=False, output_preprocesing=None,
+                diag=False, corr=False, keep_zero_edges=False, output_preprocesing=None,
                 bonded_root = None):
         '''
         Inputs:
@@ -122,6 +122,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.degree_list = [] # created in self.process()
         self.verbose = verbose
         self.diag = diag
+        self.corr = corr
         self.keep_zero_edges = keep_zero_edges
         self.output_preprocesing = output_preprocesing
         self.bonded_root = bonded_root
@@ -205,6 +206,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.weighted_degree = self.weighted_degree
             graph.contact_map = self.contact_map # created by process_y
             graph.contact_map_diag = self.contact_map_diag
+            graph.contact_map_corr = self.contact_map_corr
             graph.contact_map_bonded = self.contact_map_bonded
             graph.diag_chi_continuous = self.diag_chis_continuous
 
@@ -215,6 +217,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             if self.output != 'contact':
                 del graph.contact_map
             del graph.contact_map_diag
+            del graph.contact_map_corr
             del graph.contact_map_bonded
 
             if self.output is None:
@@ -384,12 +387,18 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 raise Exception(f"Unknown preprocessing: {preprocessing} or y_path missing: {y_path}")
 
         if self.diag:
-            # use y_copy since diag of log works worse in max ent framework
+            # y is now log(contact map)
+            # use y_copy instead
             meanDist = DiagonalPreprocessing.genomic_distance_statistics(y_copy)
             y_diag = DiagonalPreprocessing.process(y_copy, meanDist, verbose = False)
             # y_diag = np.nan_to_num(y_diag)
         else:
             y_diag = None
+
+        if self.corr:
+            y_corr = np.corrcoef(y_diag)
+        else:
+            y_corr = None
 
         if self.crop is not None:
             y = y[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
@@ -397,6 +406,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 y_diag = y_diag[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
             if y_bonded is not None:
                 y_bonded = y_bonded[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
+            if y_corr is not None:
+                y_corr = y_corr[self.crop[0]:self.crop[1], self.crop[0]:self.crop[1]]
 
         if self.max_diagonal is not None:
             y = np.tril(y, self.max_diagonal)
@@ -425,7 +436,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if self.sparsify_threshold_upper is not None:
             y[np.abs(y) > self.sparsify_threshold_upper] = np.nan
 
-
         # self.plotDegreeProfile(y)
         self.contact_map = torch.tensor(y, dtype = torch.float32)
         if y_diag is not None:
@@ -436,6 +446,11 @@ class ContactsGraph(torch_geometric.data.Dataset):
             self.contact_map_bonded = torch.tensor(y_bonded, dtype = torch.float32)
         else:
             self.contact_map_bonded = None
+
+        if y_corr is not None:
+            self.contact_map_corr = torch.tensor(y_corr, dtype = torch.float32)
+        else:
+            self.contact_map_corr = None
 
     def process_diag_params(self, raw_folder):
         path = osp.join(raw_folder, 'diag_chis_continuous.npy')

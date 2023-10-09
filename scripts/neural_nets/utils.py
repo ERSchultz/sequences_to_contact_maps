@@ -84,7 +84,7 @@ def get_dataset(opt, names=False, minmax=False, verbose=True,
                                 opt.output_mode, opt.crop, opt.log_file, verbose,
                                 max_sample, samples, sub_dir,
                                 opt.plaid_score_cutoff, opt.sweep_choices,
-                                opt.diag, opt.keep_zero_edges,
+                                opt.diag, opt.corr, opt.keep_zero_edges,
                                 opt.output_preprocesing, opt.bonded_path)
         opt.root = dataset.root
         print('\n'*3)

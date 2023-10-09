@@ -23,20 +23,30 @@ def main():
     #         448: 'original message passing layer from \citep{Brody2022HowNetworks}',
     #         449: 'without rescaling contact map'
     #         }
-    descr_dict = {490: 'baseline 2-3-4k sweeps',
-            505: 'N=5000 samples',
-            507: 'baseline 2-3-4-5k sweeps',
-            506: 'N=20000',
-            508: 'latent dim=128',
-            509: 'only 500k sweeps',
-            510: 'more MP layers, lr=1e-5',
-            511: 'deeper update layer',
-            512: 'without SignNet', # (eigenvectors are still included as node features)
-            513: 'rescale=1, only 500k sweeps, lr=1e-5',
-            514: 'rescale=1',
-            515: 'rescale=1, only 500k sweeps',
-            516: 'more MP layers',
-            517: 'lr=1e-5',
+    # descr_dict = {490: 'baseline 2-3-400k sweeps',
+    #         505: 'N=5000 samples',
+    #         507: 'baseline 2-3-4-500k sweeps',
+    #         506: 'N=20000',
+    #         508: 'latent dim=128',
+    #         509: 'only 500k sweeps',
+    #         510: 'more MP layers, lr=1e-5',
+    #         511: 'deeper update layer',
+    #         512: 'without SignNet', # (eigenvectors are still included as node features)
+    #         513: 'rescale=1, only 500k sweeps, lr=1e-5',
+    #         514: 'rescale=1',
+    #         515: 'rescale=1, only 500k sweeps',
+    #         516: 'more MP layers',
+    #         517: 'lr=1e-5',
+    #         520: '+params in hiddenSizesList, deeper update layer, +1 MP layer',
+    #         521: 'sweepchoices = 3-4-5-600k',
+    #         522: 'rescale=1, 4-5-600k sweeps'
+    #         }
+    descr_dict = {496: 'baseline 2-3-4k sweeps',
+            518: 'baseline 2-3-4-5k sweeps',
+            519: '+params in hiddenSizesList, deeper update layer, +1 MP layer',
+            523: 's_1_cutoff_0.36',
+            524: 's_10_cutoff_0.08',
+            525: 's_100_cutoff_0.01'
             }
     id_list = descr_dict.keys()
     print(id_list)
@@ -66,6 +76,7 @@ def main():
     args.experimental = True
     args.bad_methods = ['b_140', 'b_261', 'spheroid_2.0', 'max_ent']
     args.convergence_definition = 'normal'
+    args.gnn_id = id_list
     data, _ = load_data(args)
     for id in descr_dict.keys():
         gnn = f'optimize_grid_b_180_phi_0.008_spheroid_1.5-GNN{id}'

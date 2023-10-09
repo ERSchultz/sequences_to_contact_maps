@@ -184,9 +184,12 @@ def debugModel(model_type):
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
         opt.pre_transforms=['ContactDistance',
+                            # 'ContactDistance_diagnorm',
+                            # 'ContactDistance_corr',
+                            'ContactDistance_corr_rank5',
                             'Constant',
-                            'GeneticDistance_norm',
-                            'MeanContactDistance',
+                            # 'GeneticDistance_norm',
+                            # 'MeanContactDistance',
                             'MeanContactDistance_bonded']
         opt.mlp_model_id=None
         opt.sparsify_threshold = None

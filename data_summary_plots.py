@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
-from scripts.energy_utils import calculate_D
+from pylib.utils.energy_utils import calculate_D
 from scripts.InteractionConverter import InteractionConverter
 from scripts.knightRuiz import knightRuiz
 from scripts.load_utils import load_all, load_contact_map, load_psi, load_Y
@@ -15,7 +15,8 @@ from scripts.neural_nets.dataset_classes import make_dataset
 from scripts.plotting_utils import (plot_diag_chi, plot_matrix,
                                     plot_mean_vs_genomic_distance,
                                     plot_seq_binary, plot_seq_continuous)
-from scripts.utils import DiagonalPreprocessing, rescale_matrix
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from scripts.utils import rescale_matrix
 from sklearn.metrics import mean_squared_error
 
 
@@ -182,6 +183,9 @@ def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
                 plot_chi = False, sampleID = None):
     '''Generate basic plots of data in dataFolder.'''
     in_paths = sorted(make_dataset(dataFolder, use_ids = False))
+    print(in_paths)
+    if isinstance(sampleID, list):
+        sampleID = [str(i) for i in sampleID]
     for path in in_paths:
         id = osp.split(path)[1][6:]
         if isinstance(sampleID, list) and id not in sampleID:
@@ -354,10 +358,10 @@ if __name__ == '__main__':
     dir = '/home/erschultz/sequences_to_contact_maps'
     dir = '/home/erschultz'
 
-    dataset = 'dataset_05_28_23'
+    dataset = 'dataset_09_28_23_s_1_cutoff_0.36'
     data_dir = osp.join(dir, dataset)
-    basic_plots(data_dir, plot_y = True, plot_energy = False, plot_x = False,
-                plot_chi = False, sampleID = 324)
+    basic_plots(data_dir, plot_y = False, plot_energy = False, plot_x = False,
+                plot_chi = False, sampleID = None)
     # plot_genomic_distance_statistics(data_dir)
     # freqSampleDistributionPlots(dataset, sample, splits = [None])
     # getPairwiseContacts(data_dir)

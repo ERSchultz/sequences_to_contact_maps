@@ -241,7 +241,6 @@ class AdjPCs(BaseTransform):
 
         return repr
 
-
 class AdjTransform(BaseTransform):
     '''Appends rows of adjacency matrix to feature vector.'''
     def __call__(self, data):
@@ -358,7 +357,6 @@ class GridSize(BaseTransform):
 
     def __repr__(self):
         return (f'{self.__class__.__name__}')
-
 
 
 # edge transforms
@@ -479,7 +477,8 @@ class ContactDistance(BaseTransform):
     Appends contact map entries to edge attr vector.
     '''
     def __init__(self, norm = False, max_val = None, cat = True, split_edges = False,
-                    convert_to_attr = False, bonded = False):
+                    convert_to_attr = False, bonded = False, diag_normalize=False,
+                    corr = False, rank = None):
         '''
         Inputs:
             norm (bool): True for instant normalization
@@ -493,13 +492,19 @@ class ContactDistance(BaseTransform):
         self.max = max_val
         self.cat = cat
         self.split_edges = split_edges
-        self.convert_to_attr = convert_to_attr # converts to 2d array
+        self.convert_to_attr = convert_to_attr # converts to 2d array,
+                                               # else would be an edge weight
         self.bonded = bonded
-        # else would be an edge weight
+        self.diag_norm = diag_normalize
+        self.corr = corr
+        self.rank = rank
+        assert not (self.bonded and self.diag_norm), 'mutually exclusive options'
+        assert not (self.bonded and self.corr), 'mutually exclusive options'
+        assert not (self.corr and self.diag_norm), 'mutually exclusive options'
 
     def __call__(self, data):
         if self.split_edges:
-            assert not self.bonded, 'Not Implemented yet'
+            assert not self.bonded and not self.diag_norm, 'Not Implemented yet'
             # positive
             if 'pos_edge_attr' in data._mapping:
                 pseudo = data.pos_edge_attr
@@ -541,9 +546,21 @@ class ContactDistance(BaseTransform):
             (row, col), pseudo = data.edge_index, data.edge_attr
             if self.bonded:
                 assert data.contact_map_bonded is not None, "Can't be None"
-                edge_attr = data.contact_map_bonded[row, col]
+                graph = data.contact_map_bonded
+            elif self.diag_norm:
+                graph = data.contact_map_diag
+            elif self.corr:
+                graph = data.contact_map_corr
             else:
-                edge_attr = data.contact_map[row, col]
+                graph = data.contact_map
+
+            if self.rank is not None:
+                pca = PCA(n_components = self.rank)
+                transform = pca.fit_transform(graph)
+                graph = pca.inverse_transform(transform)
+                graph = torch.tensor(graph, dtype=torch.float32)
+
+            edge_attr = graph[row, col]
             if self.convert_to_attr:
                 edge_attr = edge_attr.reshape(-1, 1)
 
@@ -566,7 +583,16 @@ class ContactDistance(BaseTransform):
             repr += f', max={self.max}'
 
         if self.bonded:
-            repr += f', bonded={self.bonded}'
+            repr += ', bonded=True'
+
+        if self.diag_norm:
+            repr += ', diag_norm=True'
+
+        if self.corr:
+            repr += ', corr=True'
+
+        if self.rank is not None:
+            repr += f', rank={self.rank}'
 
         if self.split_edges:
             repr += f', split_edges={self.split_edges})'
@@ -637,7 +663,6 @@ class MeanContactDistance(BaseTransform):
             repr += ')'
 
         return repr
-
 
 class DiagonalParameterDistance(BaseTransform):
     '''
