@@ -106,6 +106,7 @@ def load_Y(sample_folder, throw_exception = True):
     y_file2 = osp.join(sample_folder, 'data_out/contacts.txt')
     y_file3 = osp.join(sample_folder, 'production_out/contacts.txt')
     y_file4 = osp.join(sample_folder, 'y.cool')
+    y = None
     if osp.exists(y_file):
         y = np.load(y_file)
     elif osp.exists(y_file2):
@@ -118,11 +119,26 @@ def load_Y(sample_folder, throw_exception = True):
         clr, binsize = hicrep.utils.readMcool(y_file4, -1)
         y = clr.matrix(balance=False).fetch('10')
         np.save(y_file, y) # save in proper place
-    elif throw_exception:
+    else:
+        files = os.listdir(osp.join(sample_folder, 'production_out'))
+        try:
+            max_sweeps = -1
+            for f in files:
+                if f.startswith('contacts') and f.endswith('.txt'):
+                    sweeps = int(f[8:-5])
+                    if sweeps > max_sweeps:
+                        max_sweeps = sweeps
+            y = np.loadtxt(osp.join(sample_folder, f'contacts{max_sweeps}.txt'))
+
+        except Exception as e:
+            if throw_exception:
+                raise e
+            else:
+                print(e)
+
+    if y is None and throw_exception:
         raise Exception(f'y not found for {sample_folder}')
     else:
-        y = None
-    if y is not None:
         y = y.astype(float)
 
     ydiag_file = osp.join(sample_folder, 'y_diag.npy')
