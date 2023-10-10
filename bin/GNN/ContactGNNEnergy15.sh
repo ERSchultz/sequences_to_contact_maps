@@ -21,9 +21,9 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy15' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_28_23"
 m=512
-preTransforms='ContactDistance_corr_rank5-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
-hiddenSizesList='8-8-8-8'
-updateHiddenSizesList='1000-1000-64'
+preTransforms='ContactDistance_corr-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
+hiddenSizesList='16-16-16-16'
+updateHiddenSizesList='1000-1000-1000-1000-128'
 
 outputPreprocesing='log'
 headArchitecture='bilinear'
@@ -44,9 +44,9 @@ batchSize=1
 nEpochs=70
 milestones='40'
 
-# only diag corr rank 5
+# only diag corr, wider
 
-id=531
+id=536
 for lr in 1e-4
 do
   train

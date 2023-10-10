@@ -22,8 +22,8 @@ rootName='ContactGNNEnergy14' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_09_28_23"
 m=512
 preTransforms='ContactDistance_diagnorm-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_8'
-hiddenSizesList='8-8-8-8'
-updateHiddenSizesList='1000-1000-64'
+hiddenSizesList='16-16-16-16'
+updateHiddenSizesList='1000-1000-1000-1000-128'
 
 outputPreprocesing='log'
 headArchitecture='bilinear'
@@ -44,9 +44,9 @@ batchSize=1
 nEpochs=70
 milestones='40'
 
-# only diag_norm
+# only diag_norm, wider
 
-id=530
+id=535
 for lr in 1e-4
 do
   train
