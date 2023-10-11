@@ -47,7 +47,7 @@ pretrainID=529
 
 # only corr, wider, pretrain
 
-id=538
+id=539
 for lr in 1e-4
 do
   train
