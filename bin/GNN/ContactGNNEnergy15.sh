@@ -44,7 +44,7 @@ batchSize=1
 nEpochs=70
 milestones='40'
 
-# only diag corr, wider
+# only corr, wider
 
 id=536
 for lr in 1e-4
