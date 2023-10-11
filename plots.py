@@ -1347,10 +1347,9 @@ def generalization_figure():
 
 def interpretation_figure():
     # dataset = 'dataset_04_05_23'; sample = 1001
-    dataset = 'dataset_02_04_23'; sample = 203
+    dataset = 'dataset_02_04_23'; sample = 201
     sample_dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
-    GNN_ID = 403
-    samples_list = [1001]
+    GNN_ID = 531
 
     y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
     y /= np.mean(np.diagonal(y))
@@ -1372,8 +1371,8 @@ def interpretation_figure():
     genome_ticks = [0, len(y)//3, 2*len(y)//3, len(y)-1]
     genome_labels = [f'{all_labels[i]} Mb' for i in genome_ticks]
 
-    grid_dir = osp.join(sample_dir, 'optimize_grid_b_140_phi_0.03')
-    k=10
+    grid_dir = osp.join(sample_dir, 'optimize_grid_b_180_phi_0.008_spheroid_1.5')
+    k=5
     max_ent_dir = f'{grid_dir}-max_ent{k}'
     gnn_dir = f'{grid_dir}-GNN{GNN_ID}'
 
@@ -1400,7 +1399,6 @@ def interpretation_figure():
     S_gnn = np.load(osp.join(gnn_dir, 'S.npy'))
     meanDist_S_gnn = DiagonalPreprocessing.genomic_distance_statistics(S_gnn, 'freq')
 
-
     # get new L
     L_max_ent = L_max_ent - calculate_D(meanDist_L_max_ent)
     L_max_ent -= np.mean(L_max_ent)
@@ -1408,18 +1406,18 @@ def interpretation_figure():
     L_gnn -= np.mean(L_gnn)
 
     # get new x
-    w, V = np.linalg.eig(L_max_ent)
-    x_eig = V[:,:k]
-    assert np.sum((np.isreal(x_eig)))
-    x = np.real(x_eig)
-    chis_eig = np.zeros_like(chi_max_ent)
-    for i, val in enumerate(w[:k]):
-        assert np.isreal(val)
-        chis_eig[i,i] = np.real(val)
+    # w, V = np.linalg.eig(L_max_ent)
+    # x_eig = V[:,:k]
+    # assert np.sum((np.isreal(x_eig)))
+    # x = np.real(x_eig)
+    # chis_eig = np.zeros_like(chi_max_ent)
+    # for i, val in enumerate(w[:k]):
+    #     assert np.isreal(val)
+    #     chis_eig[i,i] = np.real(val)
 
     # get new chi
     # chi_max_ent =  predict_chi_in_psi_basis(x, L_max_ent, verbose = True)
-    chi_max_ent = chis_eig
+    chi_max_ent = predict_chi_in_psi_basis(x, L_max_ent, verbose = False)
     chi_gnn = predict_chi_in_psi_basis(x, L_gnn, verbose = True)
 
     ### combined figure ###
@@ -1522,9 +1520,8 @@ def interpretation_figure():
 
 def interpretation_figure_test():
     # dataset = 'dataset_04_05_23'; sample = 1001
-    dataset = 'dataset_02_04_23'; sample = 202
+    dataset = 'dataset_02_04_23'; sample = 201
     sample_dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
-    samples_list = [1001]
 
     y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
     y /= np.mean(np.diagonal(y))
@@ -1546,8 +1543,8 @@ def interpretation_figure_test():
     genome_ticks = [0, len(y)//3, 2*len(y)//3, len(y)-1]
     genome_labels = [f'{all_labels[i]} Mb' for i in genome_ticks]
 
-    grid_dir = osp.join(sample_dir, 'optimize_grid_b_140_phi_0.03')
-    k=10
+    grid_dir = osp.join(sample_dir, 'optimize_grid_b_180_phi_0.008_spheroid_1.5')
+    k=5
     max_ent_dir = f'{grid_dir}-max_ent{k}'
 
 
@@ -1569,7 +1566,6 @@ def interpretation_figure_test():
     # L_max_ent -= np.mean(L_max_ent)
     # L_max_ent_hat = S_max_ent - np.mean(S_max_ent)
 
-
     # this give the same result exactly
     L_max_ent = L_max_ent - calculate_D(meanDist_L)
     L_max_ent -= np.mean(L_max_ent)
@@ -1577,9 +1573,8 @@ def interpretation_figure_test():
     L_max_ent_hat -= np.mean(L_max_ent_hat)
 
     # recalculate chi
-    chi_max_ent =  predict_chi_in_psi_basis(x, L_max_ent, verbose = True)
+    chi_max_ent = predict_chi_in_psi_basis(x, L_max_ent, verbose = True)
     chi_max_ent_hat = predict_chi_in_psi_basis(x, L_max_ent_hat, verbose = False)
-
 
     ### combined figure ###
     plt.figure(figsize=(18, 12))
@@ -1656,7 +1651,7 @@ if __name__ == '__main__':
     # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    plot_combined_models('ContactGNNEnergy', [529, 531])
+    # plot_combined_models('ContactGNNEnergy', [529, 531])
     # plot_GNN_vs_PCA('dataset_04_05_23', 10, 407)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")
@@ -1664,7 +1659,7 @@ if __name__ == '__main__':
     # plot_all_contact_cd maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
     # generalization_figure()
-    # interpretation_figure()
+    interpretation_figure()
     # interpretation_figure_test()
     # plot_first_PC('dataset_02_04_23', 10, 419)
     # plot_seq_comparison([np.load('/home/erschultz/dataset_02_04_23/samples/sample203/optimize_grid_b_16.5_phi_0.06-max_ent/iteration15/x.npy')], ['max_ent'])
