@@ -43,7 +43,7 @@ useSignPlus='true'
 batchSize=1
 nEpochs=70
 milestones='40'
-pretrainID=529
+pretrainID=536
 
 # only corr, wider, pretrain
 
