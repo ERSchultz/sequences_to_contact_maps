@@ -11,7 +11,8 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=erschultz@uchicago.edu
 #SBATCH --exclude=midway3-0372
-#SBATCH --dependency=afterany:9777133:9777134:9777135:9777136:9777137
+#SBATCH --dependency=afterany:9778039:9778040:9778041:9778042:9778043:9778044:9778045:9778046:9778047:9778048
+
 
 cd ~/sequences_to_contact_maps
 
