@@ -529,6 +529,20 @@ def plotEnergyPredictions(val_dataloader, model, opt, count=5):
         plot_matrix(dif, osp.join(subpath, 'edif.png'), vmin = -1 * v_max,
                         vmax = v_max, title = r'S - $\hat{S}$', cmap = 'blue-red')
 
+        # plot meanDist
+        for arr, label in zip([y, yhat],['Ground Truth', 'GNN']):
+            meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'freq')
+            print(label, meanDist[:5])
+
+            plt.plot(meanDist, label = label)
+        plt.legend()
+        plt.xscale('log')
+        plt.ylabel('Mean', fontsize=16)
+        plt.xlabel('Off-diagonal Index', fontsize=16)
+        plt.tight_layout()
+        plt.savefig(osp.join(subpath, 'meanDist_S.png'))
+        plt.close()
+
         # plot plaid contribution
         latent = model.latent(data, None)
         if len(latent.shape) == 2:
