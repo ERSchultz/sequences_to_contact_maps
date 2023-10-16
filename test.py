@@ -162,7 +162,10 @@ def debugModel(model_type):
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
-        opt.loss = 'mse_log_and_mse_center_log'
+        opt.loss = 'mse_log_and_mse_top_k_diagonals'
+        opt.loss_k = 3
+        opt.lambda1=0.001
+        opt.lambda2=0.1
         opt.preprocessing_norm = 'mean_fill'
         opt.message_passing = 'GAT'
         opt.GNN_mode = True
@@ -220,8 +223,8 @@ def debugModel(model_type):
         opt.output_mode = 'energy_sym_diag'
         opt.output_preprocesing = 'log'
         opt.encoder_hidden_sizes_list=None
-        opt.edge_encoder_hidden_sizes_list=[16]
-        opt.update_hidden_sizes_list=[100,100,64]
+        opt.edge_encoder_hidden_sizes_list=[8]
+        opt.update_hidden_sizes_list=[100,100,32]
         opt.hidden_sizes_list=[8]
         opt.act = 'prelu'
         opt.inner_act = 'relu'
@@ -233,11 +236,11 @@ def debugModel(model_type):
         opt.k=8
         opt.head_architecture = 'dconv-bilinear-triu'
         opt.head_architecture_2 = f'dconv-fc-fill_{opt.m}'
-        opt.head_hidden_sizes_list = [1000, 1000,1000,1000,1000]
+        opt.head_hidden_sizes_list = [1000,1000,1000]
         opt.crop = None
 
         opt.use_bias = True
-        opt.num_heads = 8
+        opt.num_heads = 6
         opt.concat_heads = True
 
     # hyperparameters

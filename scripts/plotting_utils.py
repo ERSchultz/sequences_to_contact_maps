@@ -472,6 +472,15 @@ def plotEnergyPredictions(val_dataloader, model, opt, count=5):
     elif opt.loss == 'mse_log_and_mse_center_log':
         loss_title = 'MSE_log+MSE_center_log'
         loss_dim = 2
+    elif opt.loss == 'mse_and_mse_log':
+        loss_title = 'MSE+MSE_log'
+        loss_dim = 2
+    elif opt.loss == 'mse_log_and_mse_kth_diagonal':
+        loss_title = 'MSE_log+MSE_k_diag'
+        loss_dim = 2
+    elif opt.loss == 'mse_log_and_mse_top_k_diagonals':
+        loss_title = 'MSE_log+MSE_top_k_diag'
+        loss_dim = 2
     else:
         loss_title = f'{opt.loss} loss'
 

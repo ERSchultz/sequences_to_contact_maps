@@ -41,7 +41,8 @@ def get_base_parser():
     parser.add_argument('--sparsify_threshold_upper', type=AC.str2float,
                         help='remove all edges with weight < threshold (None to do nothing)')
     parser.add_argument('--top_k', type=AC.str2int, default=None,
-                        help='filter to top k largest edges per node (None to do nothing) - DEPRECATED')
+                        help='filter to top k largest edges per node'
+                            '(None to do nothing) - DEPRECATED')
     parser.add_argument('--use_node_features', type=AC.str2bool, default=False,
                         help='True to use node features for GNN models')
     parser.add_argument('--use_edge_weights', type=AC.str2bool, default=True,
@@ -57,7 +58,8 @@ def get_base_parser():
     parser.add_argument('--scratch', type=str, default='/scratch/midway2/erschultz',
                         help='Location of scratch dir')
     parser.add_argument('--root_name', type=AC.str2None,
-                        help='name of file to save graph data (leave as None to create root automatically)'
+                        help='name of file to save graph data'
+                            '(leave as None to create root automatically)'
                             '(root is the directory path - defined later)')
     parser.add_argument('--delete_root', type=AC.str2bool, default=True,
                         help='True to delete root directory after runtime')
@@ -148,6 +150,12 @@ def get_base_parser():
                         help='patience for lr scheduler')
     parser.add_argument('--loss', type=str, default='mse',
                         help='Type of loss to use: options: {"mse", "cross_entropy"}')
+    parser.add_argument('--loss_k', type=int,
+                        help='k for loss functions')
+    parser.add_argument('--lambda1', type=float, default=1,
+                        help='weight for loss function')
+    parser.add_argument('--lambda2', type=float, default=1,
+                        help='weight for loss function')
     parser.add_argument('--w_reg', type=AC.str2None,
                         help='Type of regularization to use for W, options: {"l1", "l2"}')
     parser.add_argument('--reg_lambda', type=float, default=1e-4,
@@ -246,7 +254,8 @@ def get_base_parser():
     parser.add_argument('--dilation_list_trunk', type=AC.str2list,
                         help='List of dilations for dilated convolutional layers of trunk')
     parser.add_argument('--bottleneck', type=int,
-                        help='Number of filters in bottleneck (must be <= hidden_size_dilation_trunk)')
+                        help='Number of filters in bottleneck')
+                        # (must be <= hidden_size_dilation_trunk)
     parser.add_argument('--dilation_list_head', type=AC.str2list,
                         help='List of dilations for dilated convolutional layers of head')
     parser.add_argument('--down_sampling', type=AC.str2None,
@@ -332,6 +341,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
         assert not opt.use_edge_weights
 
     # configure loss
+    opt.loss = opt.loss.lower()
     if opt.loss == 'mse':
         opt.criterion = F.mse_loss
         opt.channels = 1
@@ -341,7 +351,8 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
     elif opt.loss == 'cross_entropy':
         assert opt.out_act is None, "Cannot use output activation with cross entropy"
         assert not opt.GNN_mode, 'cross_entropy not tested for GNN'
-        assert opt.y_preprocessing == 'prcnt', 'must use percentile preprocessing with cross entropy'
+        msg = 'must use percentile preprocessing with cross entropy'
+        assert opt.y_preprocessing == 'prcnt', msg
         assert opt.preprocessing_norm is None, 'Cannot normalize with cross entropy'
         opt.channels = opt.classes
         opt.y_reshape = False
@@ -350,7 +361,8 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
     elif opt.loss == 'BCE':
         assert opt.out_act is None, "Cannot use output activation with BCE"
         if opt.output_mode == 'contact':
-            assert opt.preprocessing_norm is not None, 'must use some sort of preprocessing_norm'
+            msg = 'must use some sort of preprocessing_norm'
+            assert opt.preprocessing_norm is not None, msg
         opt.criterion = F.binary_cross_entropy_with_logits
     elif opt.loss == 'mse_center':
         opt.criterion = mse_center
@@ -360,8 +372,16 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
         opt.criterion = mse_log
     elif opt.loss == 'mse_center_log':
         opt.criterion = mse_center_log
+    elif opt.loss == 'mse_and_mse_log':
+        opt.criterion = MSE_and_MSE_log(opt.lambda1, opt.lambda2)
     elif opt.loss == 'mse_log_and_mse_center_log':
         opt.criterion = mse_log_and_mse_center_log
+    elif opt.loss == 'mse_log_and_mse_kth_diagonal':
+        opt.criterion = MSE_log_and_MSE_kth_diagonal(opt.loss_k, opt.lambda1,
+                                                    opt.lambda2)
+    elif opt.loss == 'mse_log_and_mse_top_k_diagonals':
+        opt.criterion = MSE_log_and_MSE_top_k_diagonals(opt.loss_k, opt.lambda1,
+                                                        opt.lambda2)
     else:
         raise Exception(f'Invalid loss: {repr(opt.loss)}')
 
@@ -376,7 +396,8 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
             assert opt.k is not None
             opt.node_feature_size += opt.k
         else:
-            assert (len(opt.transforms) + len(opt.pre_transforms)) > 0, f"need feature augmentation for id={opt.id}"
+            msg = f"need feature augmentation for id={opt.id}"
+            assert (len(opt.transforms) + len(opt.pre_transforms)) > 0, msg
 
     if opt.rescale is not None:
         assert opt.rescale != 0, f'{opt.id}'
@@ -707,7 +728,8 @@ def copy_data_to_scratch(opt):
     delta_t = np.round(tf - t0, 0)
     print(f"Took {delta_t} seconds to move data to scratch", file = opt.log_file)
 
-def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx, y_preprocessing, output_mode):
+def copy_data_to_scratch_inner(sample, data_folder, scratch_path, toxx,
+                                y_preprocessing, output_mode):
     sample_dir = osp.join(data_folder, 'samples', sample)
     if not osp.isdir(sample_dir):
         return
@@ -786,9 +808,10 @@ def save_args(opt):
 
 def opt2list(opt):
     data_folder = '-'.join([osp.split(d)[1] for d in opt.data_folder])
-    opt_list = [opt.model_type, opt.id, data_folder, opt.pretrain_id, opt.preprocessing_norm,
-        opt.y_preprocessing, opt.output_preprocesing, opt.mean_filt, opt.rescale,
-        opt.kr, opt.min_subtraction, opt.log_preprocessing, opt.crop]
+    opt_list = [opt.model_type, opt.id, data_folder, opt.pretrain_id,
+                opt.preprocessing_norm, opt.y_preprocessing, opt.output_preprocesing,
+                opt.mean_filt, opt.rescale, opt.kr, opt.min_subtraction,
+                opt.log_preprocessing, opt.crop]
     opt_list.append(opt.split_percents if opt.split_percents is not None else opt.split_sizes)
     opt_list.extend([opt.shuffle, opt.batch_size, opt.num_workers, opt.n_epochs, opt.lr,
         opt.weight_decay, opt.w_reg,
@@ -798,11 +821,14 @@ def opt2list(opt):
     if opt.GNN_mode:
         opt_list.extend([opt.use_node_features, opt.use_edge_weights, opt.use_edge_attr,
                         opt.node_transforms, opt.edge_transforms,
-                        opt.sparsify_threshold, opt.sparsify_threshold_upper, opt.max_diagonal,
-                        opt.encoder_hidden_sizes_list, opt.edge_encoder_hidden_sizes_list,
+                        opt.sparsify_threshold, opt.sparsify_threshold_upper,
+                        opt.max_diagonal, opt.encoder_hidden_sizes_list,
+                        opt.edge_encoder_hidden_sizes_list,
                         opt.input_L_to_D, opt.input_L_to_D_mode,
-                        opt.hidden_sizes_list, opt.message_passing, opt.update_hidden_sizes_list,
-                        f'{opt.head_architecture}+{opt.head_architecture_2}', opt.head_hidden_sizes_list])
+                        opt.hidden_sizes_list, opt.message_passing,
+                        opt.update_hidden_sizes_list,
+                        f'{opt.head_architecture}+{opt.head_architecture_2}',
+                        opt.head_hidden_sizes_list])
         if opt.use_sign_net:
             opt_list.append('sign_net')
         elif opt.use_sign_plus:
