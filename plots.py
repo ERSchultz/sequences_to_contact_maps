@@ -23,8 +23,12 @@ from pylib.utils.energy_utils import (calculate_all_energy, calculate_D,
 from pylib.utils.plotting_utils import *
 from pylib.utils.utils import load_json, pearson_round
 from pylib.utils.xyz import xyz_load, xyz_write
-from result_summary_plots import predict_chi_in_psi_basis
 from scipy.ndimage import uniform_filter
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.metrics import mean_squared_error
+
+from result_summary_plots import predict_chi_in_psi_basis
 from scripts.argparse_utils import (finalize_opt, get_base_parser,
                                     get_opt_header, opt2list)
 from scripts.load_utils import (get_final_max_ent_folder, load_contact_map,
@@ -33,9 +37,6 @@ from scripts.plotting_utils import (plot_centroid_distance,
                                     plot_combined_models, plot_diag_chi,
                                     plot_sc_contact_maps, plot_xyz_gif,
                                     plotting_script)
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-from sklearn.metrics import mean_squared_error
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -1648,10 +1649,10 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    plot_combined_models('ContactGNNEnergy', [531, 537])
+    plot_combined_models('ContactGNNEnergy', [536, 541])
     # plot_GNN_vs_PCA('dataset_04_05_23', 10, 407)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")

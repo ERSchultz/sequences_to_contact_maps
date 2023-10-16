@@ -13,8 +13,8 @@ id='none'
 mlpModelID='none'
 
 # preprocessing
-yPreprocessing='sweeprand_log_inf'
-sweepChoices='2-3-4-5'
+yPreprocessing='log_inf'
+sweepChoices='none'
 yNorm='mean'
 yLogTransform='none'
 maxDiagonal='none'

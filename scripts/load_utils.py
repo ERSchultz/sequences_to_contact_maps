@@ -272,7 +272,7 @@ def load_chi(dir, throw_exception=True):
             config = json.load(f)
 
         if 'chis' in config:
-            chi = config['chis']
+            chi = np.array(config['chis'])
             return chi
 
 
@@ -358,7 +358,6 @@ def load_max_ent_L(path, throw_exception=False):
         return
 
     _, k = x.shape
-
     # load chi
     chi = load_chi(path, throw_exception)
 

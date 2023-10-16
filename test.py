@@ -13,16 +13,20 @@ import seaborn as sns
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from core_test_train import core_test_train
 from pylib.utils import epilib
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import *
 from pylib.utils.plotting_utils import BLUE_RED_CMAP, RED_CMAP, plot_matrix
 from pylib.utils.utils import triu_to_full
-from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+from core_test_train import core_test_train
+from result_summary_plots import plot_top_PCs
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
 from scripts.load_utils import (load_import_log, load_L, load_sc_contacts,
@@ -32,9 +36,6 @@ from scripts.neural_nets.networks import get_model
 from scripts.neural_nets.utils import get_dataset
 from scripts.similarity_measures import SCC
 from scripts.utils import calc_dist_strat_corr, crop, print_time
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUV'
 
@@ -142,7 +143,7 @@ def debugModel(model_type):
 
     # dataset
     dir = "/home/erschultz"
-    datasets = ['dataset_09_28_23_s_1_cutoff_0.36']
+    datasets = ['dataset_09_28_23']
     opt.data_folder = [osp.join(dir, d) for d in datasets]
     opt.scratch = '/home/erschultz/scratch'
 
@@ -155,8 +156,8 @@ def debugModel(model_type):
     opt.random_split=True
 
     if model_type == 'ContactGNNEnergy':
-        opt.y_preprocessing = 'sweeprand_log_inf'
-        opt.sweep_choices = [2,3]
+        opt.y_preprocessing = 'log_inf'
+        opt.sweep_choices = None
         opt.rescale = 2
         opt.mean_filt = None
         opt.kr = False
