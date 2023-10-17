@@ -44,10 +44,12 @@ batchSize=1
 nEpochs=70
 milestones='40'
 maxSample=5000
+inputLtoD='true'
+inputLtoDMode='meandist'
 
-# N=5000 baseline, wide architecture
+# meandist 
 
-id=548
+id=557
 for lr in 1e-4
 do
   train

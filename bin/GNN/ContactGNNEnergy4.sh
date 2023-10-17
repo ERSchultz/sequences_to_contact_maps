@@ -43,13 +43,13 @@ batchSize=1
 nEpochs=70
 milestones='40'
 maxSample=5000
-loss='mse_and_mse_log'
-lossLambda1=0.1
-lossLambda2=1
+inputLtoD='true'
+inputLtoDMode='subtract'
+loss='mse_log'
 
-# using mse_and_mse_log
+# subtract and mse_log
 
-id=552
+id=561
 for lr in 1e-4
 do
   train

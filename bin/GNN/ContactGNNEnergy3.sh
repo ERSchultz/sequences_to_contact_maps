@@ -43,11 +43,13 @@ batchSize=1
 nEpochs=70
 milestones='40'
 maxSample=5000
-loss='mse_and_mse_log'
+inputLtoD='true'
+inputLtoDMode='meandist'
+loss='mse_log'
 
-# using mse_and_mse_log
+# meandist and mse_log
 
-id=551
+id=560
 for lr in 1e-4
 do
   train
