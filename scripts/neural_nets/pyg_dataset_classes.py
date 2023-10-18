@@ -329,7 +329,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             dataset = dataset.split('_s_')[0]
         elif '_cutoff_' in dataset:
             dataset = dataset.split('_cutoff_')[0]
-        setup_file = osp.join(dir, , f'setup/sample_{sample}.txt')
+        setup_file = osp.join(dir, dataset, f'setup/sample_{sample}.txt')
         bonded_file = osp.join(raw_folder, f'{self.bonded_root}/y.npy')
         y_bonded = None
         if osp.exists(setup_file):
