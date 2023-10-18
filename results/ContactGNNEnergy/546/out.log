@@ -362,3 +362,26 @@ Mean test/val loss: 0.4123
 [25, 50, 75] percentiles test/val loss: [0.2603 0.3648 0.5132]
 
 Epoch 78, loss = 0.3553
+Mean test/val loss: 0.4112
+[25, 50, 75] percentiles test/val loss: [0.2596 0.3614 0.5102]
+
+Epoch 80, loss = 0.3533
+Mean test/val loss: 0.4100
+[25, 50, 75] percentiles test/val loss: [0.2587 0.3594 0.5133]
+
+
+Total parameters: 30466128
+Total training + validation time: 17.0 hours, 18.0 mins, and 25.099999999998545 secs
+Final val loss: 0.4100485396590084
+
+split sizes: train=9000, val=1000, test=0, N=10000
+#### Plotting Script ####
+Prediction Results:
+dataset_10_12_23 sample1050: 0.08075261116027832
+dataset_10_12_23 sample7802: 0.533485472202301
+dataset_10_12_23 sample156: 0.4460310935974121
+dataset_10_12_23 sample2452: 0.5395045280456543
+dataset_10_12_23 sample752: 0.46474209427833557
+MSE Loss: 0.413 +- 0.17
+
+Downsampling (200k) Results:
