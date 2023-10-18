@@ -45,7 +45,7 @@ milestones='40'
 maxSample=5000
 loss='mse_log_and_mse_kth_diagonal'
 
-# using mse_and_mse_log
+# using mse_log_and_mse_kth_diagonal
 
 id=554
 for lr in 1e-4

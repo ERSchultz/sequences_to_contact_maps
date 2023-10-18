@@ -47,7 +47,7 @@ loss='mse_log_and_mse_kth_diagonal'
 lossLambda1=1
 lossLambda2=0.01
 
-# using mse_and_mse_log
+# using mse_log_and_mse_kth_diagonal
 
 id=556
 for lr in 1e-4
