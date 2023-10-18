@@ -44,6 +44,7 @@ useSignPlus='true'
 batchSize=1
 nEpochs=80
 milestones='40'
+resumeTraining='true'
 
 # 545 rescale 1
 
