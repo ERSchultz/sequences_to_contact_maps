@@ -581,3 +581,44 @@ Parameter Group 0
 Scheduler: <torch.optim.lr_scheduler.MultiStepLR object at 0x7f2f83299f40>
 #### TRAINING/VALIDATION ####
 Epoch 56, loss = 0.2571
+Mean test/val loss: 0.3000
+[25, 50, 75] percentiles test/val loss: [0.176  0.2551 0.3627]
+
+New lr: 1e-05
+Epoch 58, loss = 0.2531
+Mean test/val loss: 0.2980
+[25, 50, 75] percentiles test/val loss: [0.1743 0.2525 0.3611]
+
+Epoch 60, loss = 0.2494
+Mean test/val loss: 0.2958
+[25, 50, 75] percentiles test/val loss: [0.1746 0.2512 0.3566]
+
+Epoch 62, loss = 0.2460
+Mean test/val loss: 0.2939
+[25, 50, 75] percentiles test/val loss: [0.1721 0.249  0.357 ]
+
+Epoch 64, loss = 0.2426
+Mean test/val loss: 0.2930
+[25, 50, 75] percentiles test/val loss: [0.1718 0.2491 0.356 ]
+
+Epoch 66, loss = 0.2392
+Mean test/val loss: 0.2915
+[25, 50, 75] percentiles test/val loss: [0.1694 0.248  0.354 ]
+
+Epoch 68, loss = 0.2365
+Mean test/val loss: 0.2903
+[25, 50, 75] percentiles test/val loss: [0.1695 0.245  0.3524]
+
+Epoch 70, loss = 0.2336
+Mean test/val loss: 0.2899
+[25, 50, 75] percentiles test/val loss: [0.1698 0.245  0.3515]
+
+Epoch 72, loss = 0.2307
+Mean test/val loss: 0.2877
+[25, 50, 75] percentiles test/val loss: [0.1667 0.245  0.3468]
+
+Epoch 74, loss = 0.2281
+Mean test/val loss: 0.2880
+[25, 50, 75] percentiles test/val loss: [0.1668 0.2419 0.3498]
+
+Epoch 76, loss = 0.2255
