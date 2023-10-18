@@ -1,9 +1,9 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE4
 #SBATCH --output=logFiles/ContactGNNEnergy4.out
-#SBATCH --time=24:00:00
+#SBATCH --time=1-24:00:00
 #SBATCH --account=pi-depablo
-#SBATCH --partition=gpu
+#SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=12
@@ -40,16 +40,16 @@ yNorm='mean_fill'
 k=10
 useSignPlus='true'
 batchSize=1
-nEpochs=70
+nEpochs=80
 milestones='40'
-maxSample=5000
 inputLtoD='true'
 inputLtoDMode='subtract'
 loss='mse_log'
 
 # subtract and mse_log
+# 561 but entire dataset
 
-id=561
+id=562
 for lr in 1e-4
 do
   train

@@ -1,9 +1,9 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE5
 #SBATCH --output=logFiles/ContactGNNEnergy5.out
-#SBATCH --time=24:00:00
+#SBATCH --time=1-24:00:00
 #SBATCH --account=pi-depablo
-#SBATCH --partition=gpu
+#SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=12
@@ -19,7 +19,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy5' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_09_28_23"
+dirname="/project2/depablo/erschultz/dataset_10_12_23"
 m=512
 preTransforms='ContactDistance_corr-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_10'
 hiddenSizesList='16-16-16-16'
@@ -40,16 +40,15 @@ yNorm='mean_fill'
 k=10
 useSignPlus='true'
 batchSize=1
-nEpochs=70
+nEpochs=80
 milestones='40'
-maxSample=5000
-loss='mse_and_mse_log'
-lossLambda1=0.01
-lossLambda2=1
+inputLtoD='true'
+inputLtoDMode='subtract'
+loss='mse_log'
 
-# using mse_and_mse_log
+# 561 but 10_12 dataset
 
-id=553
+id=563
 for lr in 1e-4
 do
   train

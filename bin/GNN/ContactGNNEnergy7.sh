@@ -45,11 +45,11 @@ milestones='40'
 maxSample=5000
 loss='mse_log_and_mse_kth_diagonal'
 lossLambda1=1
-lossLambda2=0.1
+lossLambda2=0.001
 
 # using mse_log_and_mse_kth_diagonal
 
-id=555
+id=565
 for lr in 1e-4
 do
   train
