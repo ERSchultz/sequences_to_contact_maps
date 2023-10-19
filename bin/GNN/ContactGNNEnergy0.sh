@@ -26,7 +26,7 @@ preTransforms='ContactDistance_corr-MeanContactDistance-MeanContactDistance_bond
 hiddenSizesList='16-16-16-16'
 updateHiddenSizesList='1000-1000-1000-1000-128'
 
-outputPreprocesing='log'
+outputPreprocesing='none'
 headArchitecture='bilinear'
 headArchitecture2="fc-fill_${m}"
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
@@ -45,12 +45,14 @@ nEpochs=70
 milestones='40'
 maxSample=5000
 inputLtoD='true'
-inputLtoDMode='meandist'
+inputLtoDMode='subtract'
+loss='mse_log'
 
-# meandist 
+# subtract and mse_log
+# 561 but lower lr
 
-id=557
-for lr in 1e-4
+id=566
+for lr in 1e-5
 do
   train
   id=$(( $id + 1 ))
