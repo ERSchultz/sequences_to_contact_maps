@@ -41,18 +41,18 @@ yNorm='mean_fill'
 k=10
 useSignPlus='true'
 batchSize=1
-nEpochs=70
-milestones='40'
+nEpochs=80
+milestones='10-50'
 maxSample=5000
 inputLtoD='true'
 inputLtoDMode='subtract'
 loss='mse_log'
 
 # subtract and mse_log
-# 561 but lower lr
+# 561 but more milestones
 
-id=566
-for lr in 1e-5
+id=577
+for lr in 1e-r
 do
   train
   id=$(( $id + 1 ))

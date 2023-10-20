@@ -44,7 +44,6 @@ nEpochs=70
 milestones='40'
 maxSample=5000
 
-# mse_log
 # 548 but new dataset
 
 id=575
