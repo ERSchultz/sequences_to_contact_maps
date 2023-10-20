@@ -3,7 +3,7 @@
 #SBATCH --output=logFiles/ContactGNNEnergy11.out
 #SBATCH --time=24:00:00
 #SBATCH --account=pi-depablo
-#SBATCH --partition=gpu
+#SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=12
@@ -11,7 +11,6 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=erschultz@uchicago.edu
 #SBATCH --exclude=midway3-0372
-#SBATCH --dependency=afterany:9778039:9778040:9778041:9778042:9778043:9778044:9778045:9778046:9778047:9778048
 
 
 cd ~/sequences_to_contact_maps
@@ -21,13 +20,13 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy11' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_10_12_23"
+dirname="/project2/depablo/erschultz/dataset_10_14_23"
 m=512
 preTransforms='ContactDistance_corr-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_10'
-hiddenSizesList='8-8-8-8'
-updateHiddenSizesList='1000-1000-1000-64'
+hiddenSizesList='16-16-16-16'
+updateHiddenSizesList='1000-1000-1000-1000-128'
 
-outputPreprocesing='log'
+outputPreprocesing='none'
 headArchitecture='bilinear'
 headArchitecture2="fc-fill_${m}"
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
@@ -42,12 +41,15 @@ yNorm='mean_fill'
 k=10
 useSignPlus='true'
 batchSize=1
-nEpochs=80
+nEpochs=70
 milestones='40'
+maxSample=5000
+loss='mse_log'
 
-# 545, shallower
+# mse_log
+# 550 but new dataset
 
-id=546
+id=571
 for lr in 1e-4
 do
   train

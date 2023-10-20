@@ -19,7 +19,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy9' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_10_12_23"
+dirname="/project2/depablo/erschultz/dataset_10_13_23"
 m=512
 preTransforms='ContactDistance_corr-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_10'
 hiddenSizesList='16-16-16-16'
