@@ -374,3 +374,55 @@ Mean test/val loss: 0.7152
 [25, 50, 75] percentiles test/val loss: [0.4521 0.6217 0.8752]
 
 Epoch 72, loss = 0.6039
+Mean test/val loss: 0.7126
+[25, 50, 75] percentiles test/val loss: [0.4535 0.6194 0.8715]
+
+Epoch 74, loss = 0.5995
+Mean test/val loss: 0.7124
+[25, 50, 75] percentiles test/val loss: [0.4561 0.6156 0.8766]
+
+Epoch 76, loss = 0.5947
+Mean test/val loss: 0.7125
+[25, 50, 75] percentiles test/val loss: [0.4519 0.617  0.8747]
+
+Epoch 78, loss = 0.5915
+Mean test/val loss: 0.7104
+[25, 50, 75] percentiles test/val loss: [0.4508 0.618  0.8707]
+
+Epoch 80, loss = 0.5870
+Mean test/val loss: 0.7129
+[25, 50, 75] percentiles test/val loss: [0.4526 0.6239 0.8739]
+
+
+Total parameters: 51479472
+Total training + validation time: 46.0 hours, 34.0 mins, and 14.299999999988358 secs
+Final val loss: 0.7128807177795097
+
+split sizes: train=9000, val=1000, test=0, N=10000
+#### Plotting Script ####
+Prediction Results:
+dataset_09_28_23 sample1050: 1.8950104713439941
+dataset_09_28_23 sample7802: 0.6501363515853882
+dataset_09_28_23 sample156: 0.6437951326370239
+dataset_09_28_23 sample2452: 0.29395782947540283
+dataset_09_28_23 sample752: 0.007907127030193806
+MSE_log: 0.698 +- 0.645
+
+Downsampling (200k) Results:
+dataset_09_28_23 sample1050-downsampling: 51.148193359375
+dataset_09_28_23 sample156-downsampling: 31.55519676208496
+dataset_09_28_23 sample2452-downsampling: 17.068876266479492
+dataset_09_28_23 sample752-downsampling: 0.37815743684768677
+dataset_09_28_23 sample7802-downsampling: 10.705010414123535
+Loss: 22.171 +- 17.664
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy4downsample
+Original sampling (400k) Results:
+dataset_09_28_23 sample1050-regular: 51.117706298828125
+dataset_09_28_23 sample156-regular: 28.040878295898438
+dataset_09_28_23 sample2452-regular: 13.14613151550293
+dataset_09_28_23 sample752-regular: 0.35495394468307495
+dataset_09_28_23 sample7802-regular: 9.372299194335938
+Loss: 20.406 +- 17.765
+
+Removing /scratch/midway3/erschultz/ContactGNNEnergy4regsample
