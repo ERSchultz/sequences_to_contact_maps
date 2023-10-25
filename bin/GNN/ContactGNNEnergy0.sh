@@ -52,7 +52,7 @@ loss='mse_log'
 # 561 but more milestones
 
 id=577
-for lr in 1e-r
+for lr in 1e-4
 do
   train
   id=$(( $id + 1 ))

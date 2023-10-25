@@ -40,13 +40,12 @@ yNorm='mean_fill'
 k=10
 useSignPlus='true'
 batchSize=1
-nEpochs=70
+nEpochs=80
 milestones='40'
-maxSample=5000
 
-# 548 but new dataset
+# 548 but new dataset, all samples
 
-id=575
+id=578
 for lr in 1e-4
 do
   train
