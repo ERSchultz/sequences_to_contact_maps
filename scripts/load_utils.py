@@ -331,6 +331,32 @@ def get_final_max_ent_folder(replicate_folder, throw_exception = True, return_it
         return final_folder, max_it
     return final_folder
 
+def get_converged_max_ent_folder(replicate_folder, conv_defn, throw_exception=True):
+    if conv_defn == 'strict':
+        eps = 1e-3
+    elif conv_defn == 'normal':
+        eps = 1e-2
+    else:
+        raise Exception(f'Unrecognized conv_defn: {conv_defn}')
+
+    conv_file = osp.join(replicate_folder, 'convergence.txt')
+    assert osp.exists(conv_file), f'conv_file does not exists: {conv_file}'
+    conv = np.atleast_1d(np.loadtxt(conv_file))
+    converged_it = None
+    for j in range(1, len(conv)):
+        diff = conv[j] - conv[j-1]
+        if np.abs(diff) < eps and conv[j] < conv[0]:
+            converged_it = j
+            break
+
+    if converged_it is not None:
+        final = osp.join(replicate_folder, f'iteration{j}')
+        return final
+    elif throw_exception:
+        raise Exception(f'{replicate_folder} did not converge')
+    else:
+        return None
+
 def load_max_ent_D(path):
     if path is None:
         return None

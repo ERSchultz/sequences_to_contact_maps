@@ -30,7 +30,7 @@ from result_summary_plots import plot_top_PCs
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
 from scripts.load_utils import (load_import_log, load_L, load_sc_contacts,
-                                save_sc_contacts)
+                                save_sc_contacts, get_converged_max_ent_folder)
 from scripts.neural_nets.dataset_classes import make_dataset
 from scripts.neural_nets.networks import get_model
 from scripts.neural_nets.utils import get_dataset
@@ -780,6 +780,14 @@ def test_center_norm_log():
     ref2 += ref_mean
     print('final', ref2)
 
+def test_load_converged():
+    dir = '/home/erschultz/dataset_02_04_23/samples/sample201'
+    assert osp.exists(dir), f'{dir}'
+    dir = osp.join(dir, 'optimize_grid_b_180_v_8_spheroid_1.5-max_ent10')
+    assert osp.exists(dir), f'{dir}'
+    final = get_converged_max_ent_folder(dir, 'normal')
+    print(final)
+
 
 if __name__ == '__main__':
     # check_max_ent_progress()
@@ -787,7 +795,8 @@ if __name__ == '__main__':
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    test_load_converged()
+    # debugModel('ContactGNNEnergy')
     # gnn_meanDist_s(434, '981')
     # test_center_norm_log()
     # testGNNrank('dataset_02_04_23', 378)
