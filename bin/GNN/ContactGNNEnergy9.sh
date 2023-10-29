@@ -44,11 +44,12 @@ nEpochs=70
 milestones='40'
 maxSample=5000
 loss='mse_log'
+pretrainID=569
 
 # mse_log
-# 550 but new dataset
+# 579 but pretrain
 
-id=579
+id=581
 for lr in 1e-4
 do
   train

@@ -42,14 +42,16 @@ yNorm='mean_fill'
 k=10
 useSignPlus='true'
 batchSize=1
-nEpochs=80
+nEpochs=70
 milestones='40'
-loss='mse_log'
+maxSample=5000
+loss='mse_log_and_mse_kth_diagonal'
+lossLambda2=1e-1
 
 # mse_log
 # 550 but new dataset
 
-id=580
+id=582
 for lr in 1e-4
 do
   train

@@ -44,10 +44,10 @@ batchSize=1
 nEpochs=70
 milestones='40'
 maxSample=5000
-loss='mse_log'
+loss='mse_log_and_mse_kth_diagonal'
+lossLambda2=1e-2
 
-# mse_log
-# 550 but new dataset
+# mse_log_and_k
 
 id=571
 for lr in 1e-4
