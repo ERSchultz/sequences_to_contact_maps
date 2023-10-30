@@ -44,15 +44,12 @@ useSignPlus='true'
 batchSize=1
 nEpochs=70
 milestones='40'
-maxSample=5000
-inputLtoD='true'
-inputLtoDMode='subtract'
-loss='mse_log'
+loss='mse_log_and_mse_kth_diagonal'
+lossLambda2=1e-2
 
-# subtract and mse_log
-# 561 but new dataset
+# mse_log_and_k
 
-id=572
+id=584
 for lr in 1e-4
 do
   train
