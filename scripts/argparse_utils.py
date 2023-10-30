@@ -370,6 +370,8 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
         opt.criterion = mse_and_mse_center
     elif opt.loss == 'mse_log':
         opt.criterion = mse_log
+    elif opt.loss == 'mse_log_scc':
+        opt.criterion = MSE_log_scc(opt.m)
     elif opt.loss == 'mse_center_log':
         opt.criterion = mse_center_log
     elif opt.loss == 'mse_and_mse_log':

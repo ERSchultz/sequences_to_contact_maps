@@ -25,7 +25,7 @@ preTransforms='ContactDistance_corr-MeanContactDistance-MeanContactDistance_bond
 hiddenSizesList='16-16-16-16'
 updateHiddenSizesList='1000-1000-1000-1000-128'
 
-outputPreprocesing='log'
+outputPreprocesing='none'
 headArchitecture='bilinear'
 headArchitecture2="fc-fill_${m}"
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
@@ -40,12 +40,14 @@ yNorm='mean_fill'
 k=10
 useSignPlus='true'
 batchSize=1
-nEpochs=80
+nEpochs=70
 milestones='40'
+maxSample=5000
+loss='mse_log_scc'
 
-# 548 but new dataset, all samples
+# mse_log_scc
 
-id=578
+id=587
 for lr in 1e-4
 do
   train

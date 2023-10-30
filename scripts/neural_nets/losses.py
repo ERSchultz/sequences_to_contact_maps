@@ -55,6 +55,18 @@ def mse_top_k_diagonals(input, target, k):
 
     return loss / k
 
+class MSE_log_scc():
+    def __init__(self, m):
+        weights = scipy.linalg.toeplitz(np.arange(0, m))
+        self.weights = torch.tensor(weights, dtype=torch.float32)
+
+    def __call__(input, target):
+        input_log = torch.sign(input) * torch.log(torch.abs(input) + 1)
+        target_log = torch.sign(target) * torch.log(torch.abs(target) + 1)
+        diff = input_log - target_log
+        error = torch.multiply(diff, self.weights)
+        return torch.mean(torch.square(error))
+
 class MSE_and_MSE_log():
     def __init__(self, lambda1, lambda2):
         self.lambda1 = lambda1
@@ -118,13 +130,17 @@ def test():
 
     # mse4 = mse_kth_diagonal(e, ehat, 2)
 
-    mse5 = mse_top_k_diagonals(e, ehat, 2)
-    print(mse5)
+    # mse5 = mse_top_k_diagonals(e, ehat, 2)
+    # print(mse5)
+    #
+    # ind = torch.triu_indices(10, 10, -3)
+    # print(e)
+    # print(ind)
+    # print(e[ind[0], ind[1]])
 
-    ind = torch.triu_indices(10, 10, -3)
-    print(e)
-    print(ind)
-    print(e[ind[0], ind[1]])
+    metric = MSE_log_scc(len(e))
+    mse6 = metric(e, ehat)
+    print(mse6)
 
 
 if __name__ == '__main__':
