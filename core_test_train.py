@@ -163,20 +163,27 @@ def core_test_train(model, opt):
     opt.log_file.close()
 
 def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = []):
-    def save():
+    def save(early_stop=False):
         if opt.use_parallel:
             model_state = model.module.state_dict()
         else:
             model_state = model.state_dict()
-        save_dict = {'model_state_dict': model_state,
-                    'epoch': e,
-                    'optimizer_state_dict': opt.optimizer.state_dict(),
-                    'scheduler_state_dict': None,
-                    'train_loss': train_loss,
-                    'val_loss': val_loss}
-        if opt.scheduler is not None:
-            save_dict['scheduler_state_dict'] = opt.scheduler.state_dict()
-        torch.save(save_dict, osp.join(opt.ofile_folder, 'model.pt'))
+        if early_stop:
+            save_dict = {'model_state_dict': model_state,
+                        'epoch': e,
+                        'train_loss': train_loss,
+                        'val_loss': val_loss}
+            torch.save(save_dict, osp.join(opt.ofile_folder, 'model_early_stop.pt'))
+        else:
+            save_dict = {'model_state_dict': model_state,
+                        'epoch': e,
+                        'optimizer_state_dict': opt.optimizer.state_dict(),
+                        'scheduler_state_dict': None,
+                        'train_loss': train_loss,
+                        'val_loss': val_loss}
+            if opt.scheduler is not None:
+                save_dict['scheduler_state_dict'] = opt.scheduler.state_dict()
+            torch.save(save_dict, osp.join(opt.ofile_folder, 'model.pt'))
 
     lr = opt.lr # keep track of lr
     for e in range(opt.start_epoch, opt.n_epochs+1):
@@ -276,6 +283,7 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
             if new_lr < lr:
                 lr = new_lr
                 print(f'New lr: {lr}', file = opt.log_file)
+                save(True)
 
         if opt.min_lr is not None and lr < opt.min_lr:
             print('Converged', file = opt.log_file)

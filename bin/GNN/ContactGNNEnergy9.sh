@@ -40,8 +40,8 @@ yNorm='mean_fill'
 k=10
 useSignPlus='true'
 batchSize=1
-nEpochs=70
-milestones='40'
+nEpochs=40
+milestones='30'
 maxSample=5000
 loss='mse_log'
 pretrainID=569
@@ -49,7 +49,7 @@ pretrainID=569
 # mse_log
 # 579 but pretrain
 
-id=581
+id=587
 for lr in 1e-4
 do
   train

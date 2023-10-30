@@ -42,16 +42,15 @@ yNorm='mean_fill'
 k=10
 useSignPlus='true'
 batchSize=1
-nEpochs=70
-milestones='40'
-maxSample=5000
-loss='mse_log_and_mse_kth_diagonal'
-lossLambda2=1e-1
+nEpochs=50
+milestones='30'
+loss='mse_log'
+pretrainID=569
 
 # mse_log
-# 550 but new dataset
+# 579 but pretrain
 
-id=582
+id=588
 for lr in 1e-4
 do
   train
