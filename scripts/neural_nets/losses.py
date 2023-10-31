@@ -60,7 +60,7 @@ class MSE_log_scc():
         weights = scipy.linalg.toeplitz(np.arange(0, m))
         self.weights = torch.tensor(weights, dtype=torch.float32)
 
-    def __call__(input, target):
+    def __call__(self, input, target):
         input_log = torch.sign(input) * torch.log(torch.abs(input) + 1)
         target_log = torch.sign(target) * torch.log(torch.abs(target) + 1)
         diff = input_log - target_log
@@ -114,8 +114,10 @@ def test():
     sample = 2452
     s_dir = osp.join(gnn_dir, f'{dataset}_sample{sample}/sample{sample}')
     # e = np.loadtxt(osp.join(s_dir, 'energy.txt'))
-    e = scipy.linalg.toeplitz(np.arange(0, 512))
-    ehat = np.loadtxt(osp.join(s_dir, 'energy_hat.txt'))
+    # e = scipy.linalg.toeplitz(np.arange(0, 512))
+    # ehat = np.loadtxt(osp.join(s_dir, 'energy_hat.txt'))
+    e = np.random.rand(100).reshape(10, 10)
+    ehat = np.random.rand(100).reshape(10, 10)
     e = e[:10, :10]
     ehat = ehat[:10,:10]
     print(e)

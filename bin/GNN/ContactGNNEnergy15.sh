@@ -47,7 +47,7 @@ loss='mse_log_scc'
 
 # mse_log_scc
 
-id=587
+id=589
 for lr in 1e-4
 do
   train
