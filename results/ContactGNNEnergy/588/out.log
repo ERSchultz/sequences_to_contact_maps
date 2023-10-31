@@ -282,3 +282,71 @@ Mean test/val loss: 0.8822
 [25, 50, 75] percentiles test/val loss: [0.5532 0.7817 1.0842]
 
 Epoch 26, loss = 0.8227
+Mean test/val loss: 0.8629
+[25, 50, 75] percentiles test/val loss: [0.5403 0.7726 1.0552]
+
+Epoch 28, loss = 0.8113
+Mean test/val loss: 0.9003
+[25, 50, 75] percentiles test/val loss: [0.5528 0.8002 1.0985]
+
+Epoch 30, loss = 0.8019
+Mean test/val loss: 0.8833
+[25, 50, 75] percentiles test/val loss: [0.5565 0.7803 1.0833]
+
+New lr: 1e-05
+Epoch 32, loss = 0.7198
+Mean test/val loss: 0.8157
+[25, 50, 75] percentiles test/val loss: [0.5054 0.7174 1.0016]
+
+Epoch 34, loss = 0.7067
+Mean test/val loss: 0.8131
+[25, 50, 75] percentiles test/val loss: [0.5036 0.7128 0.9893]
+
+Epoch 36, loss = 0.6975
+Mean test/val loss: 0.8107
+[25, 50, 75] percentiles test/val loss: [0.5015 0.7141 0.9847]
+
+Epoch 38, loss = 0.6898
+Mean test/val loss: 0.8117
+[25, 50, 75] percentiles test/val loss: [0.504  0.711  0.9835]
+
+Epoch 40, loss = 0.6827
+Mean test/val loss: 0.8093
+[25, 50, 75] percentiles test/val loss: [0.5037 0.7113 0.9829]
+
+Epoch 42, loss = 0.6763
+Mean test/val loss: 0.8100
+[25, 50, 75] percentiles test/val loss: [0.4989 0.7116 0.9889]
+
+Epoch 44, loss = 0.6703
+Mean test/val loss: 0.8082
+[25, 50, 75] percentiles test/val loss: [0.5017 0.7085 0.9838]
+
+Epoch 46, loss = 0.6648
+Mean test/val loss: 0.8111
+[25, 50, 75] percentiles test/val loss: [0.5026 0.7101 0.9922]
+
+Epoch 48, loss = 0.6595
+Mean test/val loss: 0.8094
+[25, 50, 75] percentiles test/val loss: [0.4991 0.7053 0.989 ]
+
+Epoch 50, loss = 0.6541
+Mean test/val loss: 0.8095
+[25, 50, 75] percentiles test/val loss: [0.4971 0.708  0.9906]
+
+
+Total parameters: 51479472
+Total training + validation time: 14.0 hours, 19.0 mins, and 9.099999999998545 secs
+Final val loss: 0.8094963430613279
+
+split sizes: train=9000, val=1000, test=0, N=10000
+#### Plotting Script ####
+Prediction Results:
+dataset_10_14_23 sample1050: 0.20653243362903595
+dataset_10_14_23 sample7802: 0.7505826950073242
+dataset_10_14_23 sample156: 0.38066715002059937
+dataset_10_14_23 sample2452: 0.7019894123077393
+dataset_10_14_23 sample752: 0.5731081366539001
+MSE_log: 0.523 +- 0.203
+
+Downsampling (200k) Results:
