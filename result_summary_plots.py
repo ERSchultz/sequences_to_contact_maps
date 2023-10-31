@@ -8,14 +8,13 @@ import numpy as np
 import statsmodels.api as sm
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import calculate_L
-from pylib.utils.utils import pearson_round
+from pylib.utils.plotting_utils import plot_matrix
+from pylib.utils.utils import pearson_round, LETTERS
 from scipy.sparse.csgraph import laplacian
-from scripts.argparse_utils import ArgparserConverter
-from scripts.load_utils import (get_final_max_ent_folder, load_all,
-                                load_max_ent_L)
-from scripts.plotting_utils import plot_matrix
-from scripts.R_pca import R_pca
-from scripts.utils import LETTERS
+
+# from scripts.argparse_utils import ArgparserConverter
+# from scripts.load_utils import (get_final_max_ent_folder, load_all,
+#                                load_max_ent_L)
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
 
