@@ -23,24 +23,24 @@ def main():
     #         448: 'original message passing layer from \citep{Brody2022HowNetworks}',
     #         449: 'without rescaling contact map'
     #         }
-    # descr_dict = {490: 'baseline 2-3-400k sweeps',
-    #         505: 'N=5000 samples',
-    #         507: 'baseline 2-3-4-500k sweeps',
-    #         506: 'N=20000',
-    #         508: 'latent dim=128',
-    #         509: 'only 500k sweeps',
-    #         510: 'more MP layers, lr=1e-5',
-    #         511: 'deeper update layer',
-    #         512: 'without SignNet', # (eigenvectors are still included as node features)
-    #         513: 'rescale=1, only 500k sweeps, lr=1e-5',
-    #         514: 'rescale=1',
-    #         515: 'rescale=1, only 500k sweeps',
-    #         516: 'more MP layers',
-    #         517: 'lr=1e-5',
-    #         520: '+params in hiddenSizesList, deeper update layer, +1 MP layer',
-    #         521: 'sweepchoices = 3-4-5-600k',
-    #         522: 'rescale=1, 4-5-600k sweeps'
-    #         }
+    descr_dict = {490: 'baseline 2-3-400k sweeps',
+            505: 'N=5000 samples',
+            507: 'baseline 2-3-4-500k sweeps',
+            506: 'N=20000',
+            508: 'latent dim=128',
+            509: 'only 500k sweeps',
+            510: 'more MP layers, lr=1e-5',
+            511: 'deeper update layer',
+            512: 'without SignNet', # (eigenvectors are still included as node features)
+            513: 'rescale=1, only 500k sweeps, lr=1e-5',
+            514: 'rescale=1',
+            515: 'rescale=1, only 500k sweeps',
+            516: 'more MP layers',
+            517: 'lr=1e-5',
+            520: '+params in hiddenSizesList, deeper update layer, +1 MP layer',
+            521: 'sweepchoices = 3-4-5-600k',
+            522: 'rescale=1, 4-5-600k sweeps'
+            }
     descr_dict = {496: 'baseline 2-3-4k sweeps',
             518: 'baseline 2-3-4-5k sweeps',
             519: '+params in hiddenSizesList, deeper update layer, +1 MP layer',
@@ -48,6 +48,16 @@ def main():
             524: 's_10_cutoff_0.08',
             525: 's_100_cutoff_0.01'
             }
+    descr_dict = {579: 'Baseline',
+            590: 'no log-loss',
+            591: 'no rescale',
+            592: 'without SignNet and without eigenvectors',
+            593: 'without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$',
+            594: 'without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$',
+            595: 'without $H$_corr',
+            596: '$H$ instead of $H$_corr',
+            597: 'without SignNet but with eigenvectors'}
+            598: 'original message passing layer from \citep{Brody2022HowNetworks}',
     id_list = descr_dict.keys()
     print(id_list)
 

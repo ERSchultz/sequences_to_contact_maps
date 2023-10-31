@@ -19,9 +19,9 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy5' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_10_12_23"
+dirname="/project2/depablo/erschultz/dataset_10_14_23"
 m=512
-preTransforms='ContactDistance_corr-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_10'
+preTransforms='ContactDistance_corr-MeanContactDistance-AdjPCs_10'
 hiddenSizesList='16-16-16-16'
 updateHiddenSizesList='1000-1000-1000-1000-128'
 
@@ -40,15 +40,15 @@ yNorm='mean_fill'
 k=10
 useSignPlus='true'
 batchSize=1
-nEpochs=80
+nEpochs=70
 milestones='40'
-inputLtoD='true'
-inputLtoDMode='subtract'
+maxSample=5000
 loss='mse_log'
 
-# 561 but 10_12 dataset
+# 579 ablation
+# no MeanContactDistance_bonded
 
-id=563
+id=594
 for lr in 1e-4
 do
   train

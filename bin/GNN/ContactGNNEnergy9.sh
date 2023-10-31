@@ -40,16 +40,17 @@ yNorm='mean_fill'
 k=10
 useSignPlus='true'
 batchSize=1
-nEpochs=40
-milestones='30'
+nEpochs=70
+milestones='40'
 maxSample=5000
 loss='mse_log'
-pretrainID=569
+messagePassing='GAT'
 
-# mse_log
-# 579 but pretrain
 
-id=587
+# 579 ablation
+# messagePassing='GAT'
+
+id=598
 for lr in 1e-4
 do
   train
