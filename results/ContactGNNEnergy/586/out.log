@@ -338,3 +338,55 @@ Mean test/val loss: 4.7609
 [25, 50, 75] percentiles test/val loss: [2.5477 3.8282 5.4672]
 
 Epoch 54, loss = 3.8244
+Mean test/val loss: 4.7481
+[25, 50, 75] percentiles test/val loss: [2.4982 3.8171 5.4639]
+
+Epoch 56, loss = 3.7708
+Mean test/val loss: 4.7185
+[25, 50, 75] percentiles test/val loss: [2.5346 3.7662 5.4526]
+
+Epoch 58, loss = 3.7229
+Mean test/val loss: 4.7139
+[25, 50, 75] percentiles test/val loss: [2.495  3.7839 5.402 ]
+
+Epoch 60, loss = 3.6767
+Mean test/val loss: 4.6717
+[25, 50, 75] percentiles test/val loss: [2.473  3.7339 5.417 ]
+
+Epoch 62, loss = 3.6328
+Mean test/val loss: 4.6609
+[25, 50, 75] percentiles test/val loss: [2.412  3.7647 5.4045]
+
+Epoch 64, loss = 3.5921
+Mean test/val loss: 4.6509
+[25, 50, 75] percentiles test/val loss: [2.4431 3.7672 5.3579]
+
+Epoch 66, loss = 3.5607
+Mean test/val loss: 4.6489
+[25, 50, 75] percentiles test/val loss: [2.4781 3.7581 5.3616]
+
+Epoch 68, loss = 3.5207
+Mean test/val loss: 4.6356
+[25, 50, 75] percentiles test/val loss: [2.4644 3.7066 5.3682]
+
+Epoch 70, loss = 3.4876
+Mean test/val loss: 4.6260
+[25, 50, 75] percentiles test/val loss: [2.443  3.725  5.3192]
+
+
+Total parameters: 51479472
+Total training + validation time: 10.0 hours, 14.0 mins, and 22.900000000001455 secs
+Final val loss: 4.625986992716789
+
+split sizes: train=4500, val=500, test=0, N=5000
+#### Plotting Script ####
+Prediction Results:
+dataset_10_14_23 sample981: 5.487853050231934
+dataset_10_14_23 sample324: 3.138731837272644
+dataset_10_14_23 sample3464: 13.581469535827637
+dataset_10_14_23 sample2834: 3.215261697769165
+dataset_10_14_23 sample1936: 2.5821391344070435
+Loss1: 1.353, Loss2: 4.248
+MSE_log+MSE_top_k_diag: 5.601 +- 4.113
+
+Downsampling (200k) Results:

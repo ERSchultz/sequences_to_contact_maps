@@ -64,6 +64,8 @@ class MSE_log_scc():
         input_log = torch.sign(input) * torch.log(torch.abs(input) + 1)
         target_log = torch.sign(target) * torch.log(torch.abs(target) + 1)
         diff = input_log - target_log
+        if diff.is_cuda and not self.weights.is_cuda:
+            self.weights = self.weights.to(diff.get_device())
         error = torch.multiply(diff, self.weights)
         return torch.mean(torch.square(error))
 
