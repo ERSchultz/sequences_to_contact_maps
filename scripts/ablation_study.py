@@ -51,7 +51,7 @@ def main():
     descr_dict = {579: 'Baseline',
             590: 'no log-loss',
             591: 'no rescale',
-            592: 'without SignNet and without eigenvectors',
+            # 592: 'without SignNet and without eigenvectors',
             593: 'without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$',
             594: 'without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$',
             595: 'without $H$_corr',
