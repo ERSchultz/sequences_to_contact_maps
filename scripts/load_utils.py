@@ -28,6 +28,7 @@ def load_import_log(dir, obj=None):
 
     results = {}
     url = None
+    cell_line = None
     genome = None
     with open(import_file) as f:
         lines = f.readlines()
@@ -35,6 +36,8 @@ def load_import_log(dir, obj=None):
             line = line.strip().split('=')
             if line[0].startswith('https') or line[0].endswith('.hic'):
                 url = line[0]
+                url_split = url.split('/')
+                cell_line = url_split[-3]
             elif line[0] == 'chrom':
                 chrom = line[1]
             elif line[0] == 'start':
@@ -52,6 +55,7 @@ def load_import_log(dir, obj=None):
                 genome = line[1]
 
     results['url'] = url
+    results['cell_line'] = cell_line
     results['start'] = start
     results['end'] = end
     results['start_mb'] = start_mb
@@ -64,6 +68,7 @@ def load_import_log(dir, obj=None):
 
     if obj is not None:
         obj.url = url
+        obj.cell_line = cell_line
         obj.start = start
         obj.end = end
         obj.start_mb = start_mb

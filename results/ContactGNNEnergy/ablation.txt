@@ -6,12 +6,16 @@
 		\hline
 		 \thead{ID} & \thead{Method} & \thead{Validation Loss \\ (MSE)} & \thead{Test Loss \\ (Experimental SCC)} \\ 
 		\hline\hline
-		 496 & baseline 2-3-4k sweeps & 0.522 & 0.546 \\ 
-		 518 & baseline 2-3-4-5k sweeps & 0.521 & 0.499 \\ 
-		 519 & +params in hiddenSizesList, deeper update layer, +1 MP layer & 0.465 & 0.419 \\ 
-		 523 & s_1_cutoff_0.36 & 0.488 & 0.529 \\ 
-		 524 & s_10_cutoff_0.08 & 0.435 & 0.464 \\ 
-		 525 & s_100_cutoff_0.01 & 0.435 & 0.478 \\ 
+		 579 & Baseline & 0.888 & 0.712 \\ 
+		 590 & no log-loss & 26.333 & 0.691 \\ 
+		 591 & no rescale & 0.758 & 0.692 \\ 
+		 592 & without SignNet and without eigenvectors & None & nan \\ 
+		 593 & without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$ & 1.073 & 0.678 \\ 
+		 594 & without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$ & 0.887 & 0.655 \\ 
+		 595 & without $H$_corr & 1.046 & 0.623 \\ 
+		 596 & $H$ instead of $H$_corr & 0.567 & 0.617 \\ 
+		 597 & without SignNet but with eigenvectors & 1.1 & 0.557 \\ 
+		 598 & original message passing layer from \citep{Brody2022HowNetworks} & 2.208 & 0.071 \\ 
 		\hline
 	\end{tabular}
 	\caption{Neural network ablation results.

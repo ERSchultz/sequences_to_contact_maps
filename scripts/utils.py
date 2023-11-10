@@ -399,9 +399,7 @@ def load_time_dir(dir):
             print(dir)
             raise
 
-
     t_eq = load_time_file(eq_log_file)
-
 
     if osp.exists(osp.join(dir, 'production_out/log.log')):
         t_prod = load_time_file(osp.join(dir, 'production_out/log.log'))

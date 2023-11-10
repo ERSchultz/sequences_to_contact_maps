@@ -52,12 +52,12 @@ def main():
             590: 'no log-loss',
             591: 'no rescale',
             592: 'without SignNet and without eigenvectors',
-            593: 'without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$',
+            593: 'without $\mean(\diagonal(H^\prime, |i-j|))$ in $e_{ij}$',
             594: 'without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$',
-            595: 'without $H$_corr',
-            596: '$H$ instead of $H$_corr',
-            597: 'without SignNet but with eigenvectors'}
-            598: 'original message passing layer from \citep{Brody2022HowNetworks}',
+            595: 'without $Corr(\tilde{H}^\prime)_{ij}$',
+            596: '$H$_{ij} instead of $Corr(\tilde{H}^\prime)_{ij}$',
+            597: 'without SignNet but with eigenvectors',
+            598: 'original message passing layer from \citep{Brody2022HowNetworks}'}
     id_list = descr_dict.keys()
     print(id_list)
 
@@ -89,7 +89,7 @@ def main():
     args.gnn_id = id_list
     data, _ = load_data(args)
     for id in descr_dict.keys():
-        gnn = f'optimize_grid_b_180_phi_0.008_spheroid_1.5-GNN{id}'
+        gnn = f'optimize_grid_b_180_v_8_spheroid_1.5-GNN{id}'
         sccs = data[0][gnn]['scc_var']
         scc_dict[id] = np.round(np.mean(sccs), 3)
 
@@ -111,7 +111,7 @@ def make_latex_table(id_list, descr_dict, loss_dict, scc_dict):
         # o.write("\\multicolumn{" + num_cols_str + "}{|c|}{" + header + "} \\\ \n")
         o.write("\t\t\\hline\n")
 
-        row = "\t\t \\thead{ID} & \\thead{Method} & \\thead{Validation Loss \\\ (MSE)} & \\thead{Test Loss \\\ (Experimental SCC)} \\\ \n"
+        row = "\t\t \\thead{ID} & \\thead{Method} & \\thead{Simulated Validation Loss \\\ (MSE)} & \\thead{Experimental Validation Loss \\\ (Experimental SCC)} \\\ \n"
         o.write(row)
         o.write("\t\t\\hline\\hline\n")
 
@@ -122,8 +122,8 @@ def make_latex_table(id_list, descr_dict, loss_dict, scc_dict):
         o.write('''\t\\caption{Neural network ablation results.
         See \\nameref{ablation_study} for description of each method.
         All results in the body of the paper correspond to the baseline method.
-        Validation Loss (MSE) is the average mean squared error on the validation set of 500 simulated simulated conatact maps and their synthetic parameters.
-        Experimental SCC is the average stratum adjusted correlation (SCC) between the experimental contact map and a contact map simulated using the GNN-predicted parameters, averaged over 10 experimental contact maps.
+        Validation Loss (MSE) is the average mean squared error on the validation set of 500 simulated contact maps and their synthetic parameters.
+        Experimental SCC is the average stratum-adjusted correlation (SCC) between the experimental contact map and a contact map simulated using the GNN-predicted parameters, averaged over 10 experimental contact maps.
         }\n''')
         o.write("\t\\label{table:ablation}\n")
         o.write("\\end{table}")

@@ -9,7 +9,6 @@ import pyBigWig
 import scipy.stats as ss
 import seaborn as sns
 from liftover import get_lifter
-
 from scripts.load_utils import load_import_log
 # from pyliftover import LiftOver as get_lifter
 from scripts.plotting_utils import RED_CMAP, plot_matrix
@@ -345,13 +344,13 @@ def wrapper(dataset, sample, factor):
         f.write(f'genome={interpolater.genome}')
 
 def main():
-    dataset = 'dataset_06_29_23'
-    mapping = [(dataset, i, 5) for i in range(1, 636)]
+    dataset = 'dataset_11_07_23'
+    mapping = [(dataset, i, 5) for i in range(1, 136)]
     # serial version
-    # for dataset, i, factor in mapping:
-        # wrapper(dataset, i, factor)
-    with multiprocessing.Pool(15) as p:
-        p.starmap(wrapper, mapping)
+    for dataset, i, factor in mapping:
+        wrapper(dataset, i, factor)
+    # with multiprocessing.Pool(2) as p:
+        # p.starmap(wrapper, mapping)
 
 def example_figure(dataset, sample):
     dir = osp.join(f'/home/erschultz/{dataset}')
@@ -438,7 +437,7 @@ def test_liftover():
 
 
 if __name__ == '__main__':
-    # main()
+    main()
     # test_liftover()
-    example_figure('dataset_02_04_23', 1)
+    # example_figure('dataset_02_04_23', 1)
     # check_interpolation()

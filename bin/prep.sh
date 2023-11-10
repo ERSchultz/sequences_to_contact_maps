@@ -9,7 +9,7 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=erschultz@uchicago.edu
 
-cd '/home/erschultz/dataset_10_12_23/samples'
+cd '/home/erschultz/dataset_11_08_23/samples'
 for i in {1..10}
 do
   mkdir "sample${i}"

@@ -21,14 +21,10 @@ from pylib.utils.energy_utils import (calculate_all_energy, calculate_D,
                                       calculate_diag_chi_step, calculate_L,
                                       calculate_S)
 from pylib.utils.plotting_utils import *
-from pylib.utils.utils import load_json, pearson_round
+from pylib.utils.utils import load_json, make_composite, pearson_round
 from pylib.utils.xyz import xyz_load, xyz_write
-from scipy.ndimage import uniform_filter
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-from sklearn.metrics import mean_squared_error
-
 from result_summary_plots import predict_chi_in_psi_basis
+from scipy.ndimage import uniform_filter
 from scripts.argparse_utils import (finalize_opt, get_base_parser,
                                     get_opt_header, opt2list)
 from scripts.load_utils import (get_final_max_ent_folder, load_contact_map,
@@ -37,6 +33,9 @@ from scripts.plotting_utils import (plot_centroid_distance,
                                     plot_combined_models, plot_diag_chi,
                                     plot_sc_contact_maps, plot_xyz_gif,
                                     plotting_script)
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.metrics import mean_squared_error
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -967,8 +966,8 @@ def plot_energy_no_ticks():
                     use_cbar = False)
 
 def generalization_figure():
-    label_fontsize=24
-    tick_fontsize=22
+    label_fontsize=22
+    tick_fontsize=18
     letter_fontsize=26
     datasets = ['dataset_06_29_23']*3
     cell_lines = ['IMR90', 'HMEC', 'HAP1']
@@ -976,8 +975,8 @@ def generalization_figure():
     # datasets = ['dataset_04_05_23', 'dataset_04_05_23', 'dataset_04_05_23']
     # cell_lines = ['GM12878', 'HCT116', 'HL-60']
     # samples = [1213, 1248, 1286]
-    GNN_ID = 490
-    grid_root = 'optimize_grid_b_180_phi_0.008_spheroid_1.5'
+    GNN_ID = 579
+    grid_root = 'optimize_grid_b_180_v_8_spheroid_1.5'
 
 
     odir = '/home/erschultz/TICG-chromatin/figures'
@@ -1005,7 +1004,7 @@ def generalization_figure():
         print(cell_line)
         dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
         gnn_dir = osp.join(dir, f'{grid_root}-GNN{GNN_ID}')
-        max_ent_dir = osp.join(dir, f'{grid_root}-max_ent10_stop')
+        max_ent_dir = osp.join(dir, f'{grid_root}-max_ent10')
 
         y_exp = np.load(osp.join(dir, 'y.npy'))
         y_exp /= np.mean(y_exp.diagonal())
@@ -1071,9 +1070,12 @@ def generalization_figure():
                         ax = ax, cbar = False)
         s.set_title(f'{cell_line} Chr{chrom}\nSCC={scc}', fontsize = letter_fontsize)
         ax.axline((0,0), slope=1, color = 'k', lw=1)
-        ax.text(0.99*m, 0.01*m, 'GNN', fontsize=letter_fontsize, ha='right', va='top',
-                weight='bold')
-        ax.text(0.01*m, 0.99*m, 'Experiment', fontsize=letter_fontsize, weight='bold')
+        s.text(0.99*m, -0.08*m, 'GNN', fontsize=label_fontsize, ha='right', va='top', weight='bold')
+        s.text(0.01*m, 1.08*m, 'Experiment', fontsize=label_fontsize, weight='bold')
+
+        # ax.text(0.99*m, 0.01*m, 'GNN', fontsize=letter_fontsize, ha='right', va='top',
+        #         weight='bold')
+        # ax.text(0.01*m, 0.99*m, 'Experiment', fontsize=letter_fontsize, weight='bold')
         # s.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
         # s.set_yticks(genome_ticks, labels = genome_labels)
         s.set_xticks([])
@@ -1090,11 +1092,15 @@ def generalization_figure():
                         ax = ax, cbar = False)
         s.set_title(f'SCC={scc}', fontsize = letter_fontsize)
         ax.axline((0,0), slope=1, color = 'k', lw=1)
-        ax.text(0.99*m, 0.01*m, 'Max Ent', fontsize=letter_fontsize, ha='right', va='top',
-                weight='bold')
-        ax.text(0.01*m, 0.99*m, 'Experiment', fontsize=letter_fontsize, weight='bold')
-        s.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
+        s.text(0.99*m, -0.08*m, 'Max Ent', fontsize=label_fontsize, ha='right', va='top', weight='bold')
+        s.text(0.01*m, 1.08*m, 'Experiment', fontsize=label_fontsize, weight='bold')
+
+        # ax.text(0.99*m, 0.01*m, 'Max Ent', fontsize=letter_fontsize, ha='right', va='top',
+        #         weight='bold')
+        # ax.text(0.01*m, 0.99*m, 'Experiment', fontsize=letter_fontsize, weight='bold')
+        # s.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
         # s.set_yticks(genome_ticks, labels = genome_labels)
+        s.set_xticks([])
         s.set_yticks([])
         s.tick_params(axis='both', which='major', labelsize=tick_fontsize)
 
@@ -1184,11 +1190,15 @@ def generalization_figure():
         s.set_title(f'{cell_line} Chr{chrom}', fontsize = letter_fontsize)
         print(f'{cell_line}\nSCC={scc}')
         ax.axline((0,0), slope=1, color = 'k', lw=1)
-        ax.text(0.99*m, 0.01*m, 'GNN', fontsize=letter_fontsize, ha='right', va='top',
-                weight='bold')
-        ax.text(0.01*m, 0.99*m, 'Experiment', fontsize=letter_fontsize, weight='bold')
-        s.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
+
+        ax.text(0.99*m, -0.08*m, 'GNN', fontsize=label_fontsize, ha='right', va='top', weight='bold')
+        ax.text(0.01*m, 1.08*m, 'Experiment', fontsize=label_fontsize, weight='bold')
+        # ax.text(0.99*m, 0.01*m, 'GNN', fontsize=letter_fontsize, ha='right', va='top',
+        #         weight='bold')
+        # ax.text(0.01*m, 0.99*m, 'Experiment', fontsize=letter_fontsize, weight='bold')
+        # s.set_xticks(genome_ticks, labels = genome_labels, rotation = 0)
         # s.set_yticks(genome_ticks, labels = genome_labels)
+        s.set_xticks([])
         s.set_yticks([])
         s.tick_params(axis='both', which='major', labelsize=tick_fontsize)
 
@@ -1649,17 +1659,17 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    plot_combined_models('ContactGNNEnergy', [587, 588])
+    # plot_combined_models('ContactGNNEnergy', [587, 588])
     # plot_GNN_vs_PCA('dataset_04_05_23', 10, 407)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")
     # main()
     # plot_all_contact_cd maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
-    # generalization_figure()
+    generalization_figure()
     # interpretation_figure()
     # interpretation_figure_test()
     # plot_first_PC('dataset_02_04_23', 10, 419)
