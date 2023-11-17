@@ -344,8 +344,8 @@ def wrapper(dataset, sample, factor):
         f.write(f'genome={interpolater.genome}')
 
 def main():
-    dataset = 'dataset_11_07_23'
-    mapping = [(dataset, i, 5) for i in range(1, 136)]
+    dataset = 'dataset_HCT116_RAD21_KO'
+    mapping = [(dataset, i, 5) for i in range(1, 9)]
     # serial version
     for dataset, i, factor in mapping:
         wrapper(dataset, i, factor)
