@@ -19,9 +19,9 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy15' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_10_14_23"
+dirname="/project2/depablo/erschultz/dataset_11_16_23_hmec-/project2/depablo/erschultz/dataset_11_16_23_imr90-/project2/depablo/erschultz/dataset_11_16_23_k562"
 m=512
-preTransforms='ContactDistance_corr-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_10'
+preTransforms='ContactDistance_corr-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_10-GridSize'
 hiddenSizesList='16-16-16-16'
 updateHiddenSizesList='1000-1000-1000-1000-128'
 
@@ -40,14 +40,14 @@ yNorm='mean_fill'
 k=10
 useSignPlus='true'
 batchSize=1
-nEpochs=70
+nEpochs=60
 milestones='40'
-maxSample=5000
-loss='mse_log_scc'
+maxSample=1667 # 5000 total samples
+loss='mse_log'
 
-# mse_log_scc
+# 609 but with grid size node feature
 
-id=589
+id=610
 for lr in 1e-4
 do
   train

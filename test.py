@@ -13,29 +13,28 @@ import seaborn as sns
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from core_test_train import core_test_train
 from pylib.utils import epilib
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import *
 from pylib.utils.plotting_utils import BLUE_RED_CMAP, RED_CMAP, plot_matrix
 from pylib.utils.utils import triu_to_full
+from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
-
-from core_test_train import core_test_train
-from result_summary_plots import plot_top_PCs
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
-from scripts.load_utils import (load_import_log, load_L, load_sc_contacts,
-                                save_sc_contacts, get_converged_max_ent_folder)
+from scripts.load_utils import (get_converged_max_ent_folder, load_import_log,
+                                load_L, load_sc_contacts, save_sc_contacts)
 from scripts.neural_nets.dataset_classes import make_dataset
 from scripts.neural_nets.networks import get_model
 from scripts.neural_nets.utils import get_dataset
 from scripts.similarity_measures import SCC
 from scripts.utils import calc_dist_strat_corr, crop, print_time
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUV'
 
@@ -143,7 +142,7 @@ def debugModel(model_type):
 
     # dataset
     dir = "/home/erschultz"
-    datasets = ['dataset_09_28_23']
+    datasets = ['dataset_11_16_23_hmec']
     opt.data_folder = [osp.join(dir, d) for d in datasets]
     opt.scratch = '/home/erschultz/scratch'
 
@@ -192,6 +191,7 @@ def debugModel(model_type):
                             # 'ContactDistance_corr',
                             'ContactDistance_corr_rank5',
                             'Constant',
+                            'GridSize',
                             # 'GeneticDistance_norm',
                             # 'MeanContactDistance',
                             'MeanContactDistance_bonded']
@@ -795,8 +795,8 @@ if __name__ == '__main__':
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    test_load_converged()
-    # debugModel('ContactGNNEnergy')
+    # test_load_converged()
+    debugModel('ContactGNNEnergy')
     # gnn_meanDist_s(434, '981')
     # test_center_norm_log()
     # testGNNrank('dataset_02_04_23', 378)

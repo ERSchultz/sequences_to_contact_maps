@@ -329,13 +329,12 @@ class GridSize(BaseTransform):
             self.grid_file = None
 
     def __call__(self, data):
-        config_file = osp.join(data.path, 'config.json')
-        # file = osp.join(data.path, 'optimize_grid_b_140_phi_0.03/grid_size.txt')
         if self.grid_file is not None:
             grid_file = osp.join(data.path, self.grid_file)
         else:
             grid_file = None
 
+        config_file = osp.join(data.path, 'config.json')
         if osp.exists(config_file):
             with open(config_file) as f:
                 config = json.load(f)
