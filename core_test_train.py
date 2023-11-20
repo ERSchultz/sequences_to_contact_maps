@@ -1,3 +1,5 @@
+'''Core functionality for train/test with pytorch.'''
+
 import locale
 import os
 import os.path as osp

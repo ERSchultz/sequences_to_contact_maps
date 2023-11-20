@@ -1,3 +1,10 @@
+'''
+Functions for importing experimental Hi-C contact maps.
+
+import_contactmap_straw interacts with .hic files.
+Most other functions are some form of wrapper.
+'''
+
 import csv
 import multiprocessing
 import os
@@ -10,10 +17,25 @@ import pandas as pd
 from utils import *
 
 
-def import_contactmap_straw(sample_folder, hic_filename, chrom, start,
+def import_contactmap_straw(odir, hic_filename, chrom, start,
                             end, resolution, norm='NONE', multiHiCcompare=False):
+    '''
+    Load .hic file with hicstraw and write to disk as y.npy. Experimental details
+    are logged in odir/import.log.
+
+    Inputs:
+        odir: output directory
+        hic_filname: path to .hic file
+        chrom: chromosome
+        start: start basepair
+        end: end basepair
+        resolution: Hi-C resolution in basepairs
+        norm: Hi-C normlalization method
+        multiHiCcompare: True to write contact map in sparse format used by
+                            multiHiCcompare R package
+    '''
     basepairs = f"{chrom}:{start}:{end}"
-    print(basepairs, sample_folder)
+    print(basepairs, odir)
     result = hicstraw.straw("observed", norm, hic_filename, basepairs, basepairs, "BP", resolution)
     hic = hicstraw.HiCFile(hic_filename)
 
@@ -35,31 +57,46 @@ def import_contactmap_straw(sample_folder, hic_filename, chrom, start,
             print(row.binX, row.binY, row.counts, i, j)
 
     if np.max(y_arr) == 0:
-        print(f'{sample_folder} had no reads')
+        print(f'{odir} had no reads')
         return
 
-    if not osp.exists(sample_folder):
-        os.mkdir(sample_folder, mode = 0o755)
+    if not osp.exists(odir):
+        os.mkdir(odir, mode = 0o755)
 
     if multiHiCcompare:
-        with open(osp.join(sample_folder, 'y_sparse.txt'), 'w') as f:
+        with open(osp.join(odir, 'y_sparse.txt'), 'w') as f:
             wr = csv.writer(f, delimiter = '\t')
             wr.writerows(output)
 
     m, _ = y_arr.shape
 
-    with open(osp.join(sample_folder, 'import.log'), 'w') as f:
+    with open(osp.join(odir, 'import.log'), 'w') as f:
         if isinstance(chrom, str):
             chrom = chrom.strip('chr')
         f.write(f'{hic_filename}\nchrom={chrom}\nstart={start}\nend={end}\n')
         f.write(f'resolution={resolution}\nbeads={m}\nnorm={norm}\n')
         f.write(f'genome={hic.getGenomeID()}')
 
-    np.save(osp.join(sample_folder, 'y.npy'), y_arr)
-    print(f'{sample_folder} done')
+    np.save(osp.join(odir, 'y.npy'), y_arr)
+    print(f'{odir} done')
 
 def import_wrapper(odir, filename_list, resolution, norm, m,
                     i, ref_genome, chroms, seed):
+    '''
+    Wrapper function for import_contactmap_straw. Iterates through chromosomes
+    of input .hic files and downloads non-overlapping contact maps of size m.
+
+    Inputs:
+        odir: output directory
+        filename_list: list of .hic files to download
+        resolution: Hi-C resolution in basepairs
+        norm: Hi-C normalization method
+        m: number of rows/cols in contact maps that will be downloaded
+        i: start index for output folders
+        ref_genome: reference genome build (used to restrict to regions with good coverage)
+        chroms: list of chromosomes to download
+        seed: random seed (non-overlapping Hi-C maps are downloaded with a random gap in between)
+    '''
     rng = np.random.default_rng(seed)
     if isinstance(filename_list, str):
         filename_list = [filename_list]
@@ -132,7 +169,6 @@ def entire_chromosomes(filename, dataset, resolution,
 
     with multiprocessing.Pool(15) as p:
         p.starmap(import_contactmap_straw, mapping)
-
 
 def multiHiCcompare_files(filenames, dataset, resolution=50000, ref_genome='hg19',
                         chroms=range(1,23)):

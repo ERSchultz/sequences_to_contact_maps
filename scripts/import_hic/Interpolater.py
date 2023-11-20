@@ -1,3 +1,5 @@
+'''Functionality for interpolating Hi-C contact maps.'''
+
 import multiprocessing
 import os
 import os.path as osp

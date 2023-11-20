@@ -1,4 +1,8 @@
-# Taken from: https://github.com/ay-lab/HiCKRy
+'''
+Implements Knight-Ruiz matrix balancing algorithm.
+
+Taken from https://github.com/ay-lab/HiCKRy
+'''
 
 import os.path as osp
 

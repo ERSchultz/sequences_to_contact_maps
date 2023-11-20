@@ -1,3 +1,5 @@
+'''Functions for manipulation .xyz files.'''
+
 import csv
 import json
 import os
@@ -13,8 +15,7 @@ from pylib.utils.xyz import *
 from scipy.sparse import csr_array
 from sklearn.metrics.pairwise import nan_euclidean_distances
 
-sys.path.append('/home/erschultz/sequences_to_contact_maps')
-from scripts.utils import LETTERS, print_time
+from .utils import LETTERS, print_time
 
 
 def lammps_load(filepath, save = False, N_min = None, N_max = None, down_sampling = 1):
@@ -147,14 +148,3 @@ def main():
     # plotContactMap(dif, osp.join(dir, 'sc_contact', 'dif.png'), cmap = 'blue-red')
 
     # print(np.array_equal(y, overall))
-
-def test():
-    xyz = np.random.normal(size=(2, 100, 3))
-    xyz = [[[0,0,0],[],[]]]
-    angles = xyz_to_angles(xyz)
-    print(angles)
-
-
-
-if __name__ == '__main__':
-    test()

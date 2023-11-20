@@ -1,3 +1,8 @@
+'''
+Functions related to argparse package.
+Used to set up parameter options for neural networks.
+'''
+
 import argparse
 import csv
 import multiprocessing
@@ -24,7 +29,7 @@ from .neural_nets.pyg_fns import (AdjPCATransform, AdjPCs, AdjTransform,
 
 
 def get_base_parser():
-    '''Helper function that returns base parser'''
+    '''Helper function that returns basic parser with all necessary arguments.'''
     parser = argparse.ArgumentParser(description='Base parser', fromfile_prefix_chars='@',
                                     allow_abbrev = False)
     AC = ArgparserConverter()
@@ -454,6 +459,7 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
     return opt
 
 def process_transforms(opt):
+    '''Format pytorch geometric transformations based on opt.transforms and opt.pre_transfroms.'''
     # collect these for printing purposes (see opt2list)
     opt.edge_transforms = []
     opt.node_transforms = []
@@ -809,6 +815,7 @@ def save_args(opt):
             f.write(arg + '\n')
 
 def opt2list(opt):
+    '''Convert argparse.Namespace object to list.'''
     data_folder = '-'.join([osp.split(d)[1] for d in opt.data_folder])
     opt_list = [opt.model_type, opt.id, data_folder, opt.pretrain_id,
                 opt.preprocessing_norm, opt.y_preprocessing, opt.output_preprocesing,
@@ -877,6 +884,7 @@ def save_opt(opt, ofile):
         wr.writerow(opt_list)
 
 def get_opt_header(model_type, GNN_mode):
+    '''Return list of strings corresponding to variables in argparse.Namespace object.'''
     opt_list = ['model_type', 'id',  'dataset', 'pretrain_id', 'preprocessing_norm',
         'y_preprocessing', 'output_preprocesing', 'mean_filt', 'rescale',
         'kr', 'min_subtraction', 'log_preprocessing', 'crop', 'split', 'shuffle',

@@ -1,4 +1,4 @@
-'''mostly deprecated'''
+'''Mostly deprecated'''
 
 import argparse
 import os

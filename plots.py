@@ -1,3 +1,5 @@
+'''Commonly used plotting analysis functions.'''
+
 import csv
 import json
 import math

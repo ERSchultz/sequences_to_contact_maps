@@ -1,4 +1,9 @@
-# taken from https://github.com/dganguli/robust-pca/blob/master/r_pca.py
+'''
+Implementation of Robust PCA algorithm.
+
+Taken from https://github.com/dganguli/robust-pca/blob/master/r_pca.py
+'''
+
 from __future__ import division, print_function
 
 import numpy as np
