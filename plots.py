@@ -39,6 +39,181 @@ from sklearn.metrics import mean_squared_error
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
+
+def basic_plots(dataFolder, plot_y = False, plot_energy = True, plot_x = True,
+                plot_chi = False, sampleID = None):
+    '''Generate basic plots of data in dataFolder.'''
+    in_paths = sorted(make_dataset(dataFolder, use_ids = False))
+    print(in_paths)
+    if isinstance(sampleID, list):
+        sampleID = [str(i) for i in sampleID]
+    for path in in_paths:
+        id = osp.split(path)[1][6:]
+        if isinstance(sampleID, list) and id not in sampleID:
+            continue
+        elif isinstance(sampleID, int):
+            if not id.isnumeric():
+                continue
+            elif int(id) != sampleID:
+                continue
+        print(path)
+
+        figures_path = osp.join(path, 'figures')
+        if not osp.exists(figures_path):
+            os.mkdir(figures_path, mode = 0o755)
+
+        x, chi, _, L, y, ydiag = load_all(path, data_folder = dataFolder,
+                                                save = True,
+                                                throw_exception = False)
+        m = len(y)
+
+        config_file = osp.join(path, 'config.json')
+        config = None
+        dense = False
+        cutoff = None
+        loading = None
+        if osp.exists(config_file):
+            with open(config_file, 'r') as f:
+                config = json.load(f)
+            if 'dense_diagonal_on' in config.keys():
+                dense = config['dense_diagonal_on']
+            if 'dense_diagonal_cutoff' in config.keys():
+                cutoff = config['dense_diagonal_cutoff']
+            if 'dense_diagonal_loading' in config.keys():
+                loading = config['dense_diagonal_loading']
+
+        if plot_y:
+            y /= np.mean(np.diagonal(y))
+            contacts = int(np.sum(y) / 2)
+            sparsity = np.round(np.count_nonzero(y) / len(y)**2 * 100, 2)
+            title = f'# contacts: {contacts}, sparsity: {sparsity}%'
+            plot_matrix(y, osp.join(path, 'y.png'), vmax = 'mean', title = title)
+            np.savetxt(osp.join(path, 'y.txt'), y)
+
+            meanDist = plot_mean_vs_genomic_distance(y, path, 'meanDist.png', config = config)
+            np.savetxt(osp.join(path, 'meanDist.txt'), meanDist)
+            plot_mean_vs_genomic_distance(y, path, 'meanDist_log.png', logx = True, config = config)
+
+            plot_matrix(ydiag, osp.join(path, 'y_diag.png'),
+                        title = f'Sample {id}\ndiag normalization', vmin = 'center1', cmap = 'blue-red')
+            # plt.hist(ydiag)
+            # plt.savefig(osp.join(path, 'y_diag_hist.png'))
+
+            ydiag_log = np.log(ydiag)
+            ydiag_log[np.isinf(ydiag_log)] = 0
+            nonzero = np.count_nonzero(ydiag_log)
+            prcnt = np.round(nonzero / 1024**2 * 100, 1)
+            plot_matrix(ydiag_log, osp.join(path, 'y_diag_log.png'), title = f'diag + log\nEdges={nonzero} ({prcnt}%)', cmap = 'bluered')
+            # plt.hist(ydiag_log)
+            # plt.savefig(osp.join(path, 'y_diag_log.png'))
+
+            y_kr, y_kr_diag = compare_kr(figures_path, y, y, ydiag)
+            plot_mean_vs_genomic_distance(y_kr, figures_path, 'meanDistKR_log.png',
+                                        ref = meanDist, ref_label = 'not KR', logx = True)
+
+
+            # ydiag_log_sparse = ydiag_log.copy()
+            # ydiag_log_sparse[np.abs(ydiag_log_sparse) < 0.405] = 0
+            # nonzero = np.count_nonzero(ydiag_log_sparse)
+            # prcnt = np.round(nonzero / 1024**2 * 100, 1)
+            # plot_matrix(ydiag_log_sparse, osp.join(path, 'ydiag_log_sparse.png'), title = f'diag + log + sparse\nEdges={nonzero} ({prcnt}%)', cmap = 'bluered')
+
+            # y_diag_log_triu = ydiag_log.copy()
+            # y_diag_log_triu = np.tril(y_diag_log_triu, 512)
+            # y_diag_log_triu = np.triu(y_diag_log_triu, -512)
+            # nonzero = np.count_nonzero(y_diag_log_triu)
+            # prcnt = np.round(nonzero / 1024**2 * 100, 1)
+            # plot_matrix(y_diag_log_triu, osp.join(path, 'y_diag_log_triu.png'),
+            #             title = f'diag + log + triu normalization\nEdges={nonzero} ({prcnt}%)', cmap = 'bluered')
+            #
+            # y_diag_log_sparse_triu = ydiag_log_sparse.copy()
+            # y_diag_log_sparse_triu = np.tril(y_diag_log_sparse_triu, 512)
+            # y_diag_log_sparse_triu = np.triu(y_diag_log_sparse_triu, -512)
+            # nonzero = np.count_nonzero(y_diag_log_sparse_triu)
+            # prcnt = np.round(nonzero / 1024**2 * 100, 1)
+            # plot_matrix(y_diag_log_sparse_triu, osp.join(path, 'y_diag_log_sparse_triu.png'),
+            #             title = f'diag + log + sparse + triu\nEdges={nonzero} ({prcnt}%)', cmap = 'bluered')
+
+
+            y_log_file = osp.join(path, 'y_log.npy')
+            if osp.exists(y_log_file):
+                y_log = np.load(y_log_file)
+            else:
+                y_log = np.log(y + 1)
+            plot_matrix(y_log, osp.join(path, 'y_log.png'), title = 'log normalization', vmax = 'max')
+            plot_mean_vs_genomic_distance(y_log, figures_path, 'meanDistLog.png', config = config)
+
+            y_log_inf_file = osp.join(path, 'y_log_inf.npy')
+            y_rescale = rescale_matrix(y, 2)
+            y_rescale /= np.mean(np.diagonal(y_rescale))
+            np.fill_diagonal(y_rescale, 1)
+            if osp.exists(y_log_inf_file):
+                y_log_inf = np.load(y_log_inf_file)
+            else:
+                y_log_inf = np.log(y_rescale)
+                y_log_inf[np.isinf(y_log_inf)] = np.nan
+            plot_matrix(y_log_inf, osp.join(path, 'y_log_inf.png'), title = 'log_inf normalization', vmin = 'min', vmax = 'max')
+            arr = y_log_inf[np.triu_indices(len(y_log_inf))] * 10
+            print(arr, arr.shape)
+            bin_width = 1
+            plt.hist(arr, alpha = 0.5,
+                        weights = np.ones_like(arr) / len(arr),
+                        bins = range(math.floor(np.nanmin(arr)), math.ceil(np.nanmax(arr)) + bin_width, bin_width))
+            plt.savefig(osp.join(path, 'y_log_inf_hist.png'))
+
+            y_log_diag_file = osp.join(path, 'y_log_diag.npy')
+            if osp.exists(y_log_diag_file):
+                y_log_diag = np.load(y_log_diag_file)
+            else:
+                meanDistLog = DiagonalPreprocessing.genomic_distance_statistics(y_log)
+                np.savetxt(osp.join(path, 'meanDistLog.txt'), meanDistLog)
+                y_log_diag = DiagonalPreprocessing.process(y_log, meanDistLog)
+            nonzero = np.count_nonzero(y_log_diag)
+            prcnt = np.round(nonzero / 1024**2 * 100, 1)
+            plot_matrix(y_log_diag, osp.join(path, 'y_log_diag.png'),
+                        title = f'log + diag\nEdges={nonzero} ({prcnt}%)')
+
+            y_log_diag_log = np.log(y_log_diag)
+            y_log_diag_log[np.isinf(y_log_diag_log)] = 0
+            nonzero = np.count_nonzero(y_log_diag_log)
+            prcnt = np.round(nonzero / 1024**2 * 100, 1)
+            plot_matrix(y_log_diag_log, osp.join(path, 'y_log_diag_log.png'),
+                        title = f'log + diag + log\nEdges={nonzero} ({prcnt}%)', vmax = 'max', cmap = 'bluered')
+
+            # y_log_diag_log_sparse = y_log_diag_log.copy()
+            # y_log_diag_log_sparse[np.abs(y_log_diag_log_sparse) < 0.405] = 0
+            # nonzero = np.count_nonzero(y_log_diag_log_sparse)
+            # prcnt = np.round(nonzero / 1024**2 * 100, 1)
+            # plot_matrix(y_log_diag_log_sparse, osp.join(path, 'y_log_diag_log_sparse.png'), title = f'log + diag + log + sparse\nEdges={nonzero} ({prcnt}%)', cmap = 'bluered')
+
+            # compare_sweep(y, ydiag, path, figures_path)
+            # compare_sweep(y_kr, y_kr_diag, path, figures_path, 'y_kr')
+
+        if chi is not None:
+            chi_to_latex(chi, ofile = osp.join(path, 'chis.tek'))
+            if plot_chi:
+                plot_matrix(chi, osp.join(path, 'chi.png'), vmax = 'max', vmin = 'min',
+                            cmap = 'blue-red')
+
+        # plot diag chi
+        diag_chis_continuous_file = osp.join(path, 'diag_chis_continuous.npy')
+        if config is not None:
+            diag_chis_step = plot_diag_chi(config, path, ref = diag_chis_continuous_file, ref_label = 'continuous')
+            D = calculate_D(diag_chis_step)
+            plot_matrix(D, osp.join(path, 'D.png'), vmax = 'max', vmin = 0)
+
+
+        if plot_energy:
+            if L is not None:
+                plot_matrix(L, osp.join(path, 'L.png'), vmax = 'max', vmin = 'min',
+                            cmap = 'blue-red')
+
+        if plot_x:
+            # plot_seq_binary(x, ofile = osp.join(path, 'x.png'))
+            plot_seq_continuous(x,  ofile = osp.join(path, 'x.png'))
+            # plot_seq_exclusive(x, ofile = osp.join(path, 'x.png'))
+
+
 def update_result_tables(model_type = None, mode = None, output_mode = 'contact'):
     if model_type is None:
         model_types = ['Akita', 'DeepC', 'UNet', 'GNNAutoencoder', 'GNNAutoencoder2',

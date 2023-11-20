@@ -425,6 +425,13 @@ def load_time_dir(dir):
 
     return t_eq + t_prod
 
+def chi_to_latex(chi, ofile):
+    with open(ofile, 'w') as f:
+        f.write('\\begin{bmatrix}\n')
+        for row in range(len(chi)):
+            chi_row = [str(np.round(i, 1)) for i in chi[row]]
+            f.write(' & '.join(chi_row) + ' \\\ \n')
+        f.write('\\end{bmatrix}\n')
 
 def test():
     # test rescale_contact_map
