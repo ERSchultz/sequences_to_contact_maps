@@ -9,10 +9,11 @@ import pyBigWig
 import scipy.stats as ss
 import seaborn as sns
 from liftover import get_lifter
-from scripts.load_utils import load_import_log
 # from pyliftover import LiftOver as get_lifter
-from scripts.plotting_utils import RED_CMAP, plot_matrix
-from scripts.utils import rescale_matrix
+from pylib.utils.hic_utils import pool
+from pylib.utils.plotting_utils import RED_CMAP, plot_matrix
+
+from ..scripts.load_utils import load_import_log
 
 
 class Interpolater():
@@ -62,7 +63,7 @@ class Interpolater():
         crop_right = 1200
         # plot_matrix(self.y[crop_left:crop_right, crop_left:crop_right],
                     # osp.join(self.odir, 'y_crop.png'), vmax = 'mean')
-        y_pool = rescale_matrix(self.y, factor)
+        y_pool = pool(self.y, factor, False)
         # plot_matrix(y_pool[crop_left:crop_right, crop_left:crop_right],
                     # osp.join(self.odir, 'y_pool_crop.png'), vmax = 'mean')
         # plot_matrix(y_pool, osp.join(self.odir, 'y_pool.png'), vmax = 'mean')
@@ -99,7 +100,7 @@ class Interpolater():
         # plot_matrix(y_interp, osp.join(self.odir, f'y_{"_".join(self.methods)}.png'), vmax = 'mean')
         # plot_matrix(y_interp[crop_left:crop_right, crop_left:crop_right],
                     # osp.join(self.odir, f'y_crop_{"_".join(self.methods)}.png'), vmax = 'mean')
-        y_interp_pool = rescale_matrix(y_interp, factor)
+        y_interp_pool = pool(y_interp, factor, False)
         plot_matrix(y_interp_pool, osp.join(self.odir, f'y_pool_{"_".join(self.methods)}.png'), vmax = 'mean')
         # plot_matrix(y_interp_pool[crop_left:crop_right, crop_left:crop_right],
                     # osp.join(self.odir, f'y_pool_crop_{"_".join(self.methods)}.png'), vmax = 'mean')
