@@ -4,14 +4,66 @@ import os.path as osp
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.sparse as ss
+import seaborn as sns
+from pylib.utils import epilib
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.plotting_utils import plot_matrix
 
 
+def example_figure(dataset, sample):
+    dir = osp.join(f'/home/erschultz/{dataset}')
+    dir_raw = osp.join(dir, f'samples_10k/sample{sample}')
+    y_raw = np.load(osp.join(dir_raw, 'y.npy'))
+    # dir_interp = osp.join(dir, f'samples/sample{sample+200}')
+    # y_interp = np.load(osp.join(dir_interp, 'y.npy'))
+    y_interp = np.load(osp.join(dir_raw, 'Interpolation/zeros_mappability-0.7',
+                                'y_interpolate_zeros_mappability-0.7.npy'))
+
+    # get ticks in mb
+    result = load_import_log(dir_raw)
+    start = result['start_mb']
+    end = result['end_mb']
+    resoluton = result['resolutoin_mb']
+    print(start, end, resolution)
+    scale = 700
+    all_ticks = np.arange(0, 2560, scale)
+    all_ticks = np.append(all_ticks, 2560)
+    print(all_ticks, len(all_ticks))
+
+    all_tick_labels = np.arange(start, end, resolution*scale)
+    all_tick_labels = np.append(all_tick_labels, end)
+    print(all_tick_labels, len(all_tick_labels))
+    all_tick_labels = [f'{i} Mb' for i in all_tick_labels]
+    # return
+
+    fig, (ax1, ax2, axcb) = plt.subplots(1, 3,
+                                    gridspec_kw={'width_ratios':[1,1,0.08]})
+    fig.set_figheight(6)
+    fig.set_figwidth(6*2)
+    vmin = 0
+    vmax = np.mean(y_raw)
+
+    s1 = sns.heatmap(y_raw, linewidth = 0, vmin = vmin, vmax = vmax, cmap = RED_CMAP,
+                    ax = ax1, cbar = False)
+    s1.set_title('Raw Hi-C', fontsize = 16)
+    s1.set_yticks(all_ticks, labels = all_tick_labels, rotation='horizontal')
+    s1.set_xticks(all_ticks, labels = all_tick_labels, rotation='horizontal')
+    s2 = sns.heatmap(y_interp, linewidth = 0, vmin = vmin, vmax = vmax, cmap = RED_CMAP,
+                    ax = ax2, cbar_ax = axcb)
+    s2.set_title('Interpolation', fontsize = 16)
+    s2.set_xticks(all_ticks, labels = all_tick_labels, rotation='horizontal')
+    s2.set_yticks([])
+    # axcb.yaxis.set_ticks_position('left')
+
+    # fig.suptitle(f'Sample {sample}')
+    plt.tight_layout()
+    plt.savefig(osp.join(dir_raw, 'interp_figure.png'))
+    plt.close()
+
 def plot_p_s_chrom(cell_line, chrom):
     dir = f'/home/erschultz/dataset_{cell_line}'
     y_combined = None
-    for chrom_rep in os.listdir(dir):
+    for chrom_rep in sorted(os.listdir(dir)):
         if 'rep' not in chrom_rep:
             continue
         rep = chrom_rep[-1]
@@ -20,6 +72,8 @@ def plot_p_s_chrom(cell_line, chrom):
             y_combined = y
         else:
             y_combined += y
+        # print(np.sum(y.diagonal() > 0))
+        # y /= np.mean(y.diagonal(offset=1))
         meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
         plt.plot(meanDist, label = f'chr{chrom}-{rep}')
 
@@ -37,6 +91,7 @@ def plot_p_s_chrom(cell_line, chrom):
 
     plt.yscale('log')
     plt.xscale('log')
+    plt.ylim(2e-5, None)
     plt.ylabel('Probability', fontsize=16)
     plt.xlabel('Beads', fontsize=16)
     plt.legend()
@@ -136,10 +191,27 @@ def compare_inpt_out_Lyu():
     plt.savefig(osp.join(dir, f'p_s.png'))
     plt.close()
 
+def compare_pc1():
+    dir = '/home/erschultz/dataset_interp_test'
+    for s in range(1, 8):
+        for samples, name in zip(['samples', 'samples_pool'], ['interp', 'pool']):
+            s_dir = osp.join(dir, f'{samples}/sample{s}')
+            y = np.load(osp.join(s_dir, 'y.npy'))
+            oe = epilib.get_oe(y)
+            corr = np.corrcoef(oe)
+
+            plot_matrix(corr, osp.join(s_dir, 'y_corr.png'), vmin='center', cmap='bluered')
+
+            seqs = epilib.get_pcs(oe, 1, normalize = True)
+            plt.plot(seqs, label=name)
+            plt.xlabel('Beads', fontsize=16)
+        plt.savefig(osp.join(dir, f'sample{s}_seqs.png'))
+        plt.close()
 
 
 if __name__ == '__main__':
     # compare_inpt_out_Lyu()
-    plot_p_s_chrom('11_17_23', 17)
+    # plot_p_s_chrom('11_17_23', 17)
     plot_p_s_chrom_norm('11_17_23', 17)
-    plot_p_s_chroms('11_17_23')
+    # plot_p_s_chroms('11_17_23')
+    # compare_pc1()

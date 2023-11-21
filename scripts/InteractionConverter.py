@@ -3,7 +3,7 @@ from pylib.utils.energy_utils import calculate_L
 
 
 class InteractionConverter():
-    """Class that allows conversion between epigenetic mark bit string pairs and integer type id"""
+    """Class that allows conversion between epigenetic mark bit string pairs and integer type id."""
     def __init__(self, k, chi = None):
         self.k = k
         self.chi = chi

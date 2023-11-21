@@ -324,7 +324,7 @@ class GridSize(BaseTransform):
     '''Appends grid size as node feature.'''
     def __init__(self, grid_path=None):
         if grid_path is not None:
-            self.grid_file = osp.join(grid_path, 'grid_size.txt')
+            self.grid_file = osp.join(grid_path, 'grid.txt')
         else:
             self.grid_file = None
 

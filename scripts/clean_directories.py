@@ -47,7 +47,7 @@ def str2list(v, sep = '-'):
 
 
 
-def clean_directories(data_folder, GNN_path = None,
+def clean_directories(data_folder=None, GNN_path = None,
                     GNN_file_name = None, ofile = sys.stdout):
     parser = argparse.ArgumentParser(description='Simple parser', allow_abbrev=False)
     parser.add_argument('--data_folder', type=str2list, default=data_folder,

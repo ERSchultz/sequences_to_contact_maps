@@ -13,74 +13,11 @@ import scipy.sparse as sp
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import (calculate_D, calculate_diag_chi_step,
                                       calculate_L, calculate_S)
-from pylib.utils.utils import triu_to_full
+from pylib.utils.utils import load_import_log, triu_to_full
 from pylib.utils.xyz import xyz_load, xyz_to_contact_grid
 from scipy.ndimage import gaussian_filter
 
 from .utils import LETTERS, print_size, print_time
-
-
-def load_import_log(dir, obj=None):
-    import_file = osp.join(dir, 'import.log')
-    if not osp.exists(import_file):
-        print(f'{import_file} does not exist')
-        return
-
-    results = {}
-    url = None
-    cell_line = None
-    genome = None
-    with open(import_file) as f:
-        lines = f.readlines()
-        for line in lines:
-            line = line.strip().split('=')
-            if line[0].startswith('https') or line[0].endswith('.hic'):
-                url = line[0]
-                url_split = url.split('/')
-                cell_line = url_split[-3]
-            elif line[0] == 'chrom':
-                chrom = line[1]
-            elif line[0] == 'start':
-                start = int(line[1])
-                start_mb = start / 1000000
-            elif line[0] == 'end':
-                end = int(line[1])
-                end_mb = end / 1000000
-            elif line[0] == 'resolution':
-                resolution = int(line[1])
-                resolution_mb = resolution / 1000000
-            elif line[0] == 'norm':
-                norm = line[1]
-            elif line[0] == 'genome':
-                genome = line[1]
-
-    results['url'] = url
-    results['cell_line'] = cell_line
-    results['start'] = start
-    results['end'] = end
-    results['start_mb'] = start_mb
-    results['end_mb'] = end_mb
-    results['resolution'] = resolution
-    results['resolution_mb'] = resolution_mb
-    results['norm'] = norm
-    results['genome'] = genome
-    results['chrom'] = chrom
-
-    if obj is not None:
-        obj.url = url
-        obj.cell_line = cell_line
-        obj.start = start
-        obj.end = end
-        obj.start_mb = start_mb
-        obj.end_mb = end_mb
-        obj.resolution = resolution
-        obj.resolution_mb = resolution_mb
-        obj.norm = norm
-        obj.genome = genome
-        obj.chrom = chrom
-
-    return results
-
 
 
 ## load data functions ##

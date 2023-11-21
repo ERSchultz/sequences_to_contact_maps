@@ -9,13 +9,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pyBigWig
 import scipy.stats as ss
-import seaborn as sns
 from liftover import get_lifter
 # from pyliftover import LiftOver as get_lifter
 from pylib.utils.hic_utils import pool
 from pylib.utils.plotting_utils import RED_CMAP, plot_matrix
-
-from ..scripts.load_utils import load_import_log
+from pylib.utils.utils import load_import_log
 
 
 class Interpolater():
@@ -61,14 +59,9 @@ class Interpolater():
         else:
             self.y = y
 
-        crop_left = 500
-        crop_right = 1200
-        # plot_matrix(self.y[crop_left:crop_right, crop_left:crop_right],
-                    # osp.join(self.odir, 'y_crop.png'), vmax = 'mean')
-        y_pool = pool(self.y, factor, False)
-        # plot_matrix(y_pool[crop_left:crop_right, crop_left:crop_right],
-                    # osp.join(self.odir, 'y_pool_crop.png'), vmax = 'mean')
-        # plot_matrix(y_pool, osp.join(self.odir, 'y_pool.png'), vmax = 'mean')
+
+        y_pool = pool(self.y, factor, normalize=False)
+        plot_matrix(y_pool, osp.join(self.odir, 'y_pool.png'), vmax = 'mean')
 
         self.interp_locations = set()
         for method in self.methods:
@@ -97,16 +90,10 @@ class Interpolater():
 
         print(f'Interpolating {len(self.interp_locations)} rows', file = self.ofile)
 
-        # plot_matrix(self.y, osp.join(self.odir, f'y_lines_{"_".join(self.methods)}.png'),
-                    # vmax = 'mean', lines = self.interp_locations)
-        # plot_matrix(y_interp, osp.join(self.odir, f'y_{"_".join(self.methods)}.png'), vmax = 'mean')
-        # plot_matrix(y_interp[crop_left:crop_right, crop_left:crop_right],
-                    # osp.join(self.odir, f'y_crop_{"_".join(self.methods)}.png'), vmax = 'mean')
-        y_interp_pool = pool(y_interp, factor, False)
+        y_interp_pool = pool(y_interp, factor, normalize=False)
         plot_matrix(y_interp_pool, osp.join(self.odir, f'y_pool_{"_".join(self.methods)}.png'), vmax = 'mean')
-        # plot_matrix(y_interp_pool[crop_left:crop_right, crop_left:crop_right],
-                    # osp.join(self.odir, f'y_pool_crop_{"_".join(self.methods)}.png'), vmax = 'mean')
 
+        np.save(osp.join(self.odir, 'y_pool.npy'), y_pool)
         np.save(osp.join(self.odir, f'y_interpolate_{"_".join(self.methods)}.npy'), y_interp)
         np.save(osp.join(self.odir, f'y_pool_interpolate_{"_".join(self.methods)}.npy'), y_interp_pool)
 
@@ -347,62 +334,13 @@ def wrapper(dataset, sample, factor):
         f.write(f'genome={interpolater.genome}')
 
 def main():
-    dataset = 'dataset_HCT116_RAD21_KO'
-    mapping = [(dataset, i, 5) for i in range(1, 9)]
+    dataset = 'dataset_11_17_23'
+    mapping = [(dataset, i, 5) for i in range(1, 8)]
     # serial version
-    for dataset, i, factor in mapping:
-        wrapper(dataset, i, factor)
-    # with multiprocessing.Pool(2) as p:
-        # p.starmap(wrapper, mapping)
-
-def example_figure(dataset, sample):
-    dir = osp.join(f'/home/erschultz/{dataset}')
-    dir_raw = osp.join(dir, f'samples_10k/sample{sample}')
-    y_raw = np.load(osp.join(dir_raw, 'y.npy'))
-    # dir_interp = osp.join(dir, f'samples/sample{sample+200}')
-    # y_interp = np.load(osp.join(dir_interp, 'y.npy'))
-    y_interp = np.load(osp.join(dir_raw, 'Interpolation/zeros_mappability-0.7/y_interpolate_zeros_mappability-0.7.npy'))
-
-    # get ticks in mb
-    result = load_import_log(dir_raw)
-    start = result['start_mb']
-    end = result['end_mb']
-    resoluton = result['resolutoin_mb']
-    print(start, end, resolution)
-    scale = 700
-    all_ticks = np.arange(0, 2560, scale)
-    all_ticks = np.append(all_ticks, 2560)
-    print(all_ticks, len(all_ticks))
-
-    all_tick_labels = np.arange(start, end, resolution*scale)
-    all_tick_labels = np.append(all_tick_labels, end)
-    print(all_tick_labels, len(all_tick_labels))
-    all_tick_labels = [f'{i} Mb' for i in all_tick_labels]
-    # return
-
-    fig, (ax1, ax2, axcb) = plt.subplots(1, 3,
-                                    gridspec_kw={'width_ratios':[1,1,0.08]})
-    fig.set_figheight(6)
-    fig.set_figwidth(6*2)
-    vmin = 0
-    vmax = np.mean(y_raw)
-
-    s1 = sns.heatmap(y_raw, linewidth = 0, vmin = vmin, vmax = vmax, cmap = RED_CMAP,
-                    ax = ax1, cbar = False)
-    s1.set_title('Raw Hi-C', fontsize = 16)
-    s1.set_yticks(all_ticks, labels = all_tick_labels, rotation='horizontal')
-    s1.set_xticks(all_ticks, labels = all_tick_labels, rotation='horizontal')
-    s2 = sns.heatmap(y_interp, linewidth = 0, vmin = vmin, vmax = vmax, cmap = RED_CMAP,
-                    ax = ax2, cbar_ax = axcb)
-    s2.set_title('Interpolation', fontsize = 16)
-    s2.set_xticks(all_ticks, labels = all_tick_labels, rotation='horizontal')
-    s2.set_yticks([])
-    # axcb.yaxis.set_ticks_position('left')
-
-    # fig.suptitle(f'Sample {sample}')
-    plt.tight_layout()
-    plt.savefig(osp.join(dir_raw, 'interp_figure.png'))
-    plt.close()
+    # for dataset, i, factor in mapping:
+        # wrapper(dataset, i, factor)
+    with multiprocessing.Pool(10) as p:
+        p.starmap(wrapper, mapping)
 
 def check_interpolation():
     '''Check if any of the experimental contact maps had too many rows/cols to be interpolated'''

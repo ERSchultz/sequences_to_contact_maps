@@ -36,6 +36,12 @@ ALL_FILES = [
             ]
             # "https://www.encodeproject.org/files/ENCFF675SJE/@@download/ENCFF675SJE.hic"  hg38 A549
 
+GM12878_VARIANTS = [
+                "https://hicfiles.s3.amazonaws.com/hiseq/gm12878/in-situ/combined.hic", # in-situ
+                "https://hicfiles.s3.amazonaws.com/hiseq/gm12878/agar/HIC030.hic", # agar
+                "https://hicfiles.s3.amazonaws.com/hiseq/gm12878/dilution/HIC034.hic", # dilution
+                "https://hicfiles.s3.amazonaws.com/hiseq/gm12878/in-situ/combined_DpnII.hic", #DPnII
+                ]
 
 GM12878_REPLICATES = [f'https://hicfiles.s3.amazonaws.com/hiseq/gm12878/in-situ/HIC00{i}.hic' for i in range(1, 9)]
 # GM12878_REPLICATES.append(f'https://hicfiles.s3.amazonaws.com/hiseq/gm12878/in-situ/HIC010.hic')

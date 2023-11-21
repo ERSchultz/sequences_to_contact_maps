@@ -14,6 +14,8 @@ import bioframe  # https://github.com/open2c/bioframe
 import hicstraw  # https://github.com/aidenlab/straw
 import numpy as np
 import pandas as pd
+from pylib.utils.plotting_utils import plot_matrix
+from pylib.utils.utils import load_import_log
 from utils import *
 
 
@@ -132,7 +134,7 @@ def import_wrapper(odir, filename_list, resolution, norm, m,
         p.starmap(import_contactmap_straw, mapping)
 
 def single_experiment_dataset(filename, dataset, resolution, m,
-                                norm='NONE', i=1, ref_genome='hg19',
+                                norm='NONE', start_index=1, ref_genome='hg19',
                                 chroms=range(1,23), seed=None):
     dir = '/home/erschultz'
     data_folder = osp.join(dir, dataset)
@@ -142,7 +144,7 @@ def single_experiment_dataset(filename, dataset, resolution, m,
     if not osp.exists(odir):
         os.mkdir(odir, mode = 0o755)
 
-    import_wrapper(odir, filename, resolution, norm, m, i, ref_genome, chroms, seed)
+    import_wrapper(odir, filename, resolution, norm, m, start_index, ref_genome, chroms, seed)
 
 def entire_chromosomes(filename, dataset, resolution,
                         norm='NONE', ref_genome='hg19',
@@ -176,6 +178,67 @@ def multiHiCcompare_files(filenames, dataset, resolution=50000, ref_genome='hg19
         odir = osp.join('/home/erschultz', dataset, f'chroms_rep{i}')
         entire_chromosomes(filename, dataset, resolution, 'NONE', ref_genome,
                             chroms, odir, True)
+
+def split_multiHiCCompare(dataset, m, chroms=range(1,23), start_index=1,
+                        resolution=50000, ref_genome='hg19', seed=None):
+    rng = np.random.default_rng(seed)
+    data_dir = osp.join('/home/erschultz', dataset)
+    samples_dir = osp.join(data_dir, 'samples')
+    if not osp.exists(samples_dir):
+        os.mkdir(samples_dir, mode=0o755)
+
+    chrom_reps = [i for i in sorted(os.listdir(data_dir)) if 'rep' in i]
+
+    i = start_index
+    chromsizes = bioframe.fetch_chromsizes(ref_genome)
+    for chrom_rep in chrom_reps:
+        print(chrom_rep)
+        for chrom in chroms:
+            chrom_dir = osp.join(data_dir, f'{chrom_rep}/chr{chrom}')
+            y_file = osp.join(chrom_dir, 'y_multiHiCcompare.txt')
+            y = np.loadtxt(y_file)
+            size = len(y)
+
+            import_log = load_import_log(chrom_dir)
+
+            start = 0
+            end = start + m
+            while end < size:
+                start_mb = start * resolution / 1000000
+                end_mb = end * resolution / 1000000
+                print('\t', (start, end), start_mb, end_mb)
+                for region in HG19_BAD_REGIONS[chrom].split(','):
+                    region = region.split('-')
+                    region = [int(d) for d in region]
+                    if intersect((start_mb, end_mb), region):
+                        print(f'\tintersect with region {region}')
+                        start_mb = region[1] # skip to end of bad region
+                        start_mb += rng.choice(np.arange(6)) # add random shift
+                        break
+                else:
+                    print(f'\ti={i}: chr{chrom} {start_mb}-{end_mb}')
+                    odir = osp.join(samples_dir, f'sample{i}')
+                    if not osp.exists(odir):
+                        os.mkdir(odir, mode=0o755)
+
+                    with open(osp.join(odir, 'import.log'), 'w') as f:
+                        if isinstance(chrom, str):
+                            chrom = chrom.strip('chr')
+                        f.write(f'{import_log["url"]}\nchrom={chrom}\n')
+                        f.write(f'resolution={resolution}\nbeads={m}\nnorm={import_log["norm"]}\n')
+                        f.write(f'start={int(start_mb*1000000)}\nend={int(end_mb*1000000)}\n')
+                        f.write(f'genome={import_log["genome"]}')
+
+
+                    y_i = y[start:end,start:end]
+                    np.save(osp.join(odir, 'y.npy'), y_i)
+                    plot_matrix(y_i, osp.join(odir, 'y.png'), vmax='mean')
+                    i += 1
+                    start_mb = end_mb
+
+                start = int(start_mb * 1000000 / resolution)
+                end = start + m
+
 
 
 def mixed_experimental_dataset(dataset, resolution, m, norm='NONE',
@@ -233,14 +296,14 @@ def make_latex_table():
 if __name__ == '__main__':
     # make_latex_table()
     # single_experiment_dataset("https://hicfiles.s3.amazonaws.com/hiseq/gm12878/in-situ/combined.hic",
-                                # 'dataset_02_04_23', 10000, 512*5)
+    #                             'dataset_interp_test', 10000, 512*5, chroms=[1])
+    # single_experiment_dataset("https://hicfiles.s3.amazonaws.com/hiseq/gm12878/in-situ/combined.hic",
+    #                             'dataset_02_04_23', 10000, 512*5)
     # entire_chromosomes("https://hicfiles.s3.amazonaws.com/hiseq/gm12878/in-situ/combined.hic",
     #                     'dataset_02_05_23', 50000)
-    # single_experiment_dataset("https://ftp.ncbi.nlm.nih.gov/geo/series/GSE104nnn/GSE104333/suppl/GSE104333_Rao-2017-untreated_combined_30.hic",
-    #                             'dataset_HCT116', 10000, 512*5, i=10, chroms=[2])
-    # single_experiment_dataset("https://ftp.ncbi.nlm.nih.gov/geo/series/GSE104nnn/GSE104333/suppl/GSE104333_Rao-2017-treated_6hr_combined_30.hic",
-    #                             'dataset_HCT116_RAD21_KO', 10000, 512*5, chroms=[2])
     # Su2020imr90()
+    # multiHiCcompare_files(GM12878_VARIANTS, 'dataset_gm12878_variants')
     # multiHiCcompare_files(GM12878_REPLICATES, 'dataset_gm12878')
     # multiHiCcompare_files(HMEC_REPLICATES, 'dataset_hmec')
-    multiHiCcompare_files(ALL_FILES_in_situ, 'dataset_11_17_23', chroms=[17])
+    # multiHiCcompare_files(ALL_FILES_in_situ, 'dataset_11_20_23')
+    split_multiHiCCompare('dataset_11_20_23', 512)
