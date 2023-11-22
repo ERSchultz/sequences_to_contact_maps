@@ -346,7 +346,10 @@ def analysisIterator(val_dataloader, model, opt, count, mode):
         sample_id = int(sample[6:])
         samples.add(sample_id)
 
-    dataset = get_dataset(opt, True, True, False, samples = samples)
+    try:
+        dataset = get_dataset(opt, True, True, False, samples = samples)
+    except:
+        return
     assert opt.GNN_mode
     dataloader = torch_geometric.loader.DataLoader(dataset, batch_size = 1,
                                 shuffle = False, num_workers = opt.num_workers)

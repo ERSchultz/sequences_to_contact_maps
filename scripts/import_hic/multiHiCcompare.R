@@ -41,12 +41,12 @@ sparse2matrix <- function(sparse, dim, resolution)
   }
 }
 
-dataset='11_17_23'
+dataset='11_20_23'
 cell_line_list <- list()
 replicates=9
 data_dir=sprintf('/home/erschultz/dataset_%s', dataset)
 # load data in sparse upper triangular format1
-for (chr in 17:17) {
+for (chr in 1:22) {
   for (i in 0:(replicates-1)) {
     file = sprintf("%s/chroms_rep%s/chr%s/y_sparse.txt", data_dir, i, chr)
     print(file)
@@ -54,30 +54,27 @@ for (chr in 17:17) {
     table$V1 = as.factor(table$V1)
     cell_line_list[[i+1]] = data.frame(table)
   }
-}
-rm(table)
-
-
-# make groups & covariate input
-groups <- factor(c(rep(1, length(cell_line_list))))
-
-# make the hicexp object
-hicexp <- make_hicexp(data_list = cell_line_list, groups = groups)
-hicexp <- fastlo(hicexp)
-
-
-hic <- data.frame(hicexp@hic_table)
-cols = paste("IF", seq(1,replicates), sep='')
-hic_combined <- hic %>%
-  mutate(sum = rowSums(across(all_of(cols)))) %>%
-  select(c('region1', 'region2', 'sum'))
-resolution=50000
-dim <- floor(chrlens[chr] / resolution) + 1
-hic_full <- sparse2matrix(hic_combined, dim, resolution)
-write.table(round(hic_full, digits=6), sprintf("%s/chr%s_multiHiCcompare.txt", data_dir, chr), row.names = FALSE, col.names = FALSE, sep = "\t")
-for (i in 0:(replicates-1)){
-  dir=sprintf("%s/chroms_rep%s/chr%s/y_multiHiCcompare.txt", data_dir, i, chr)
-  hicsparsenorm <- data.frame(subset(hic,select=c(2,3,i+5)))
-  hic_full <- sparse2matrix(hicsparsenorm, dim, resolution)
-  write.table(round(hic_full, digits=6), dir, row.names = FALSE, col.names = FALSE, sep = "\t")
+  # make groups & covariate input
+  groups <- factor(c(rep(1, length(cell_line_list))))
+  
+  # make the hicexp object
+  hicexp <- make_hicexp(data_list = cell_line_list, groups = groups, remove.regions=NULL, remove_zeros=FALSE, filter=FALSE)
+  hicexp <- fastlo(hicexp)
+  
+  
+  hic <- data.frame(hicexp@hic_table)
+  cols = paste("IF", seq(1,replicates), sep='')
+  hic_combined <- hic %>%
+    mutate(sum = rowSums(across(all_of(cols)))) %>%
+    select(c('region1', 'region2', 'sum'))
+  resolution=50000
+  dim <- floor(chrlens[chr] / resolution) + 1
+  hic_full <- sparse2matrix(hic_combined, dim, resolution)
+  write.table(round(hic_full, digits=6), sprintf("%s/chr%s_multiHiCcompare.txt", data_dir, chr), row.names = FALSE, col.names = FALSE, sep = "\t")
+  for (i in 0:(replicates-1)){
+    dir=sprintf("%s/chroms_rep%s/chr%s/y_multiHiCcompare.txt", data_dir, i, chr)
+    hicsparsenorm <- data.frame(subset(hic,select=c(2,3,i+5)))
+    hic_full <- sparse2matrix(hicsparsenorm, dim, resolution)
+    write.table(round(hic_full, digits=6), dir, row.names = FALSE, col.names = FALSE, sep = "\t")
+  }
 }

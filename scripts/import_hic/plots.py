@@ -69,11 +69,12 @@ def plot_p_s_chrom(cell_line, chrom):
         rep = chrom_rep[-1]
         y = np.load(osp.join(dir, f'{chrom_rep}/chr{chrom}/y.npy'))
         if y_combined is None:
-            y_combined = y
+            y_combined = y.copy()
         else:
             y_combined += y
         # print(np.sum(y.diagonal() > 0))
         # y /= np.mean(y.diagonal(offset=1))
+        # y[y==0] = np.NaN
         meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
         plt.plot(meanDist, label = f'chr{chrom}-{rep}')
 
@@ -85,23 +86,24 @@ def plot_p_s_chrom(cell_line, chrom):
     if osp.exists(norm_file):
         y = np.loadtxt(norm_file)
         meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
-        plt.plot(meanDist, label = f'chr{chrom}-norm', c='k', ls=':')
-        plot_matrix(y, osp.join(dir, f'y_chr{chrom}_norm.png'), vmax=np.mean(y_combined))
+        plt.plot(meanDist, label = f'chr{chrom}-norm-combined', c='k', ls=':')
+        # plot_matrix(y, osp.join(dir, f'y_chr{chrom}_norm.png'), vmax=np.mean(y_combined))
 
 
     plt.yscale('log')
     plt.xscale('log')
     plt.ylim(2e-5, None)
-    plt.ylabel('Probability', fontsize=16)
-    plt.xlabel('Beads', fontsize=16)
+    plt.ylabel('Contact Probability', fontsize=16)
+    plt.xlabel('Polymer Distance (beads)', fontsize=16)
     plt.legend()
+    plt.tight_layout()
     plt.savefig(osp.join(dir, f'p_s_chrom{chrom}.png'))
     plt.close()
 
 def plot_p_s_chrom_norm(cell_line, chrom):
     '''Plots normalized replicates vs combined normalized replicate.'''
     dir = f'/home/erschultz/dataset_{cell_line}'
-    for chrom_rep in os.listdir(dir):
+    for chrom_rep in sorted(os.listdir(dir)):
         if 'rep' not in chrom_rep:
             continue
         rep = chrom_rep[-1]
@@ -109,19 +111,41 @@ def plot_p_s_chrom_norm(cell_line, chrom):
         meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
         plt.plot(meanDist, label = f'chr{chrom}-{rep}')
 
-    norm_file = osp.join(dir, f'chr{chrom}_multiHiCcompare.txt')
-    if osp.exists(norm_file):
-        y = np.loadtxt(norm_file)
-        meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
-        plt.plot(meanDist, label = f'chr{chrom}-norm', c='k', ls=':')
+    # norm_file = osp.join(dir, f'chr{chrom}_multiHiCcompare.txt')
+    # if osp.exists(norm_file):
+    #     y = np.loadtxt(norm_file)
+    #     meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
+    #     plt.plot(meanDist, label = f'chr{chrom}-norm', c='k', ls=':')
 
     plt.yscale('log')
     plt.xscale('log')
-    plt.ylabel('Probability', fontsize=16)
-    plt.xlabel('Beads', fontsize=16)
+    plt.ylabel('Contact Probability', fontsize=16)
+    plt.xlabel('Polymer Distance (beads)', fontsize=16)
     plt.legend()
+    plt.tight_layout()
     plt.savefig(osp.join(dir, f'p_s_chrom{chrom}_norm.png'))
     plt.close()
+
+
+def plot_p_s_replicates_norm(cell_line, chrom):
+    dir = f'/home/erschultz/dataset_{cell_line}'
+    for chrom_rep in sorted(os.listdir(dir)):
+        if 'rep' not in chrom_rep:
+            continue
+        rep = chrom_rep[-1]
+        rep_dir = osp.join(dir, f'{chrom_rep}/chr{chrom}')
+        y = np.loadtxt(osp.join(rep_dir, 'y_multiHiCcompare.txt'))
+        plot_matrix(y, osp.join(rep_dir, 'y.png'), vmax='mean')
+        meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
+        plt.plot(meanDist)
+
+        plt.yscale('log')
+        plt.xscale('log')
+        plt.ylabel('Contact Probability', fontsize=16)
+        plt.xlabel('Polymer Distance (beads)', fontsize=16)
+        plt.tight_layout()
+        plt.savefig(osp.join(rep_dir, f'p_s_chrom{chrom}_norm.png'))
+        plt.close()
 
 
 def plot_p_s_chroms(cell_line):
@@ -211,7 +235,8 @@ def compare_pc1():
 
 if __name__ == '__main__':
     # compare_inpt_out_Lyu()
-    # plot_p_s_chrom('11_17_23', 17)
-    plot_p_s_chrom_norm('11_17_23', 17)
+    plot_p_s_chrom('gm12878_variants', 17)
+    # plot_p_s_chrom_norm('11_17_23', 17)
     # plot_p_s_chroms('11_17_23')
+    # plot_p_s_replicates_norm('11_17_23', 17)
     # compare_pc1()
