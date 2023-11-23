@@ -37,7 +37,7 @@ headAct='leaky'
 outAct='leaky'
 
 yNorm='mean_fill'
-k=10
+k=8
 useSignPlus='true'
 batchSize=1
 nEpochs=60
