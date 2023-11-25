@@ -60,6 +60,21 @@ def example_figure(dataset, sample):
     plt.savefig(osp.join(dir_raw, 'interp_figure.png'))
     plt.close()
 
+def plot_chrom(cell_line, chrom):
+    dir = f'/home/erschultz/dataset_{cell_line}'
+    for chrom_rep in sorted(os.listdir(dir)):
+        if 'rep' not in chrom_rep:
+            continue
+        rep = chrom_rep[-1]
+        y = np.load(osp.join(dir, f'{chrom_rep}/chr{chrom}/y.npy'))
+        read_count = np.sum(np.triu(y))
+        print(rep, read_count)
+        plot_matrix(y, osp.join(dir, f'{chrom_rep}/chr{chrom}/y.png'), vmax='mean', title=f'Read Count = {read_count}')
+
+        # y = np.loadtxt(osp.join(dir, f'{chrom_rep}/chr{chrom}/y_multiHiCcompare.txt'))
+        # plot_matrix(y, osp.join(dir, f'{chrom_rep}/chr{chrom}/y_norm.png'), vmax='mean')
+
+
 def plot_p_s_chrom(cell_line, chrom):
     dir = f'/home/erschultz/dataset_{cell_line}'
     y_combined = None
@@ -235,7 +250,8 @@ def compare_pc1():
 
 if __name__ == '__main__':
     # compare_inpt_out_Lyu()
-    plot_p_s_chrom('gm12878_variants', 17)
+    plot_chrom('11_20_23', 17)
+    # plot_p_s_chrom('gm12878_variants', 17)
     # plot_p_s_chrom_norm('11_17_23', 17)
     # plot_p_s_chroms('11_17_23')
     # plot_p_s_replicates_norm('11_17_23', 17)
