@@ -8,6 +8,7 @@ import seaborn as sns
 from pylib.utils import epilib
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.plotting_utils import plot_matrix
+from pylib.utils.utils import load_import_log
 
 
 def example_figure(dataset, sample):
@@ -121,10 +122,13 @@ def plot_p_s_chrom_norm(cell_line, chrom):
     for chrom_rep in sorted(os.listdir(dir)):
         if 'rep' not in chrom_rep:
             continue
+        result = load_import_log(osp.join(dir, f'{chrom_rep}/chr{chrom}'))
+        print(result)
+
         rep = chrom_rep[-1]
         y = np.loadtxt(osp.join(dir, f'{chrom_rep}/chr{chrom}/y_multiHiCcompare.txt'))
         meanDist = DiagonalPreprocessing.genomic_distance_statistics(y, 'prob')
-        plt.plot(meanDist, label = f'chr{chrom}-{rep}')
+        plt.plot(meanDist, label = f'chr{chrom}-{result["cell_line"]}')
 
     # norm_file = osp.join(dir, f'chr{chrom}_multiHiCcompare.txt')
     # if osp.exists(norm_file):
@@ -250,9 +254,9 @@ def compare_pc1():
 
 if __name__ == '__main__':
     # compare_inpt_out_Lyu()
-    plot_chrom('11_20_23', 17)
+    # plot_chrom('11_20_23', 17)
     # plot_p_s_chrom('gm12878_variants', 17)
-    # plot_p_s_chrom_norm('11_17_23', 17)
+    plot_p_s_chrom_norm('11_17_23', 17)
     # plot_p_s_chroms('11_17_23')
     # plot_p_s_replicates_norm('11_17_23', 17)
     # compare_pc1()
