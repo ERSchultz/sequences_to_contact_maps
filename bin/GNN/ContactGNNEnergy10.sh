@@ -21,7 +21,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy10' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_11_27_23_imr90"
+dirname="/project2/depablo/erschultz/dataset_11_28_23_imr90"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_10'
 hiddenSizesList='16-16-16-16'
@@ -46,7 +46,7 @@ nEpochs=60
 milestones='40'
 loss='mse_log'
 
-id=622
+id=625
 for lr in 1e-4
 do
   train

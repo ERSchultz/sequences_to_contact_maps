@@ -41,12 +41,12 @@ sparse2matrix <- function(sparse, dim, resolution)
   }
 }
 
-dataset='11_20_23'
+dataset='gm12878_variants'
 cell_line_list <- list()
-replicates=9
+replicates=4
 data_dir=sprintf('/home/erschultz/dataset_%s', dataset)
 # load data in sparse upper triangular format1
-for (chr in 1:22) {
+for (chr in 15:22) {
   for (i in 0:(replicates-1)) {
     file = sprintf("%s/chroms_rep%s/chr%s/y_sparse.txt", data_dir, i, chr)
     print(file)

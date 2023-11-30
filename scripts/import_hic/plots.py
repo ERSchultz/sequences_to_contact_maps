@@ -8,6 +8,7 @@ import seaborn as sns
 from pylib.utils import epilib
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.plotting_utils import plot_matrix
+from pylib.utils.similarity_measures import SCC
 from pylib.utils.utils import load_import_log
 
 
@@ -251,12 +252,35 @@ def compare_pc1():
         plt.savefig(osp.join(dir, f'sample{s}_seqs.png'))
         plt.close()
 
+def scc_replicates():
+    dir = '/home/erschultz/dataset_gm12878_variants'
+    chr=15
+    y1 = np.loadtxt(osp.join(dir, f'chroms_rep0/chr{chr}/y_multiHiCcompare.txt'))
+    y2 = np.loadtxt(osp.join(dir, f'chroms_rep3/chr{chr}/y_multiHiCcompare.txt'))
+    scc = SCC(h=5, K=100) # TODO K
+
+    y1_meanDist = DiagonalPreprocessing.genomic_distance_statistics(y1)
+    y1_diag = DiagonalPreprocessing.process(y1, y1_meanDist, verbose = False)
+
+    y2_meanDist = DiagonalPreprocessing.genomic_distance_statistics(y2)
+    y2_diag = DiagonalPreprocessing.process(y2, y2_meanDist, verbose = False)
+
+    corr_scc_var = scc.scc(y1_diag, y2_diag, var_stabilized = True)
+    print(corr_scc_var)
+
+    corr_scc_var = scc.scc(y1, y2, var_stabilized = True)
+    print(corr_scc_var)
+
+
+
+
 
 if __name__ == '__main__':
     # compare_inpt_out_Lyu()
+    scc_replicates()
     # plot_chrom('11_20_23', 17)
-    # plot_p_s_chrom('gm12878_variants', 17)
-    plot_p_s_chrom_norm('11_17_23', 17)
+    # plot_p_s_chrom('gm12878_variants', 15)
+    # plot_p_s_chrom_norm('gm12878_variants', 15)
     # plot_p_s_chroms('11_17_23')
     # plot_p_s_replicates_norm('11_17_23', 17)
     # compare_pc1()
