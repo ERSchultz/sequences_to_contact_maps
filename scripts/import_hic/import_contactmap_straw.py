@@ -179,11 +179,11 @@ def multiHiCcompare_files(filenames, dataset, resolution=50000, ref_genome='hg19
         entire_chromosomes(filename, dataset, resolution, 'NONE', ref_genome,
                             chroms, odir, True)
 
-def split_multiHiCCompare(dataset, m, chroms=range(1,23), start_index=1,
+def split_multiHiCCompare(in_dataset, out_dataset, m, chroms=range(1,23), start_index=1,
                         resolution=50000, ref_genome='hg19', seed=None):
     rng = np.random.default_rng(seed)
-    data_dir = osp.join('/home/erschultz', dataset)
-    samples_dir = osp.join(data_dir, 'samples')
+    data_dir = osp.join('/home/erschultz', in_dataset)
+    samples_dir = osp.join('/home/erschultz', out_dataset, 'samples')
     if not osp.exists(samples_dir):
         os.mkdir(samples_dir, mode=0o755)
 
@@ -239,6 +239,58 @@ def split_multiHiCCompare(dataset, m, chroms=range(1,23), start_index=1,
                 start = int(start_mb * 1000000 / resolution)
                 end = start + m
 
+def split_multiHiCCompare2(in_dataset, out_dataset, m, chroms=range(1,23), start_index=1,
+                        resolution=50000, ref_genome='hg19', seed=None):
+    rng = np.random.default_rng(seed)
+    data_dir = osp.join('/home/erschultz', in_dataset)
+    samples_dir = osp.join('/home/erschultz', out_dataset, 'samples')
+    if not osp.exists(samples_dir):
+        os.mkdir(samples_dir, mode=0o755)
+
+    cell_lines = ['imr90', 'hap1', 'gm12878', 'hela', 'hmec', 'huvec', 'k562', 'kbm7', 'nhek']
+
+    i = start_index
+    chromsizes = bioframe.fetch_chromsizes(ref_genome)
+    for cell_line in cell_lines:
+        print(cell_line)
+        for chrom in chroms:
+            chrom_dir = osp.join(data_dir, f'chroms_{cell_line}/chr{chrom}')
+            y_file = osp.join(chrom_dir, 'y_multiHiCcompare.txt')
+            y = np.loadtxt(y_file)
+            size = len(y)
+            diag = y.diagonal() == 0
+            ind = np.arange(0, len(diag))
+
+            import_log = load_import_log(chrom_dir)
+
+            start = 0
+            end = start + m
+            while end < size:
+                if np.sum(diag[start:end]) > 0:
+                    start = end - np.argmax(np.flip(diag[start:end]))
+                    end = start + m
+                    continue
+
+                print(f'\ti={i}: chr{chrom} {start}-{end}')
+                odir = osp.join(samples_dir, f'sample{i}')
+                if not osp.exists(odir):
+                    os.mkdir(odir, mode=0o755)
+
+                with open(osp.join(odir, 'import.log'), 'w') as f:
+                    if isinstance(chrom, str):
+                        chrom = chrom.strip('chr')
+                    f.write(f'{import_log["url"]}\nchrom={chrom}\n')
+                    f.write(f'resolution={resolution}\nbeads={m}\nnorm={import_log["norm"]}\n')
+                    f.write(f'start={int(start*resolution)}\nend={int(end*resolution)}\n')
+                    f.write(f'genome={import_log["genome"]}')
+
+
+                y_i = y[start:end,start:end]
+                np.save(osp.join(odir, 'y.npy'), y_i)
+                plot_matrix(y_i, osp.join(odir, 'y.png'), vmax='mean')
+                i += 1
+                start = end
+                end = start + m
 
 
 def mixed_experimental_dataset(dataset, resolution, m, norm='NONE',
@@ -306,4 +358,4 @@ if __name__ == '__main__':
     # multiHiCcompare_files(GM12878_REPLICATES, 'dataset_gm12878')
     # multiHiCcompare_files(HMEC_REPLICATES, 'dataset_hmec')
     # multiHiCcompare_files(ALL_FILES_in_situ, 'dataset_11_20_23')
-    split_multiHiCCompare('dataset_11_20_23', 512)
+    split_multiHiCCompare2('dataset_11_20_23', 'dataset_12_01_23', 512)
