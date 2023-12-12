@@ -14,6 +14,7 @@ import bioframe  # https://github.com/open2c/bioframe
 import hicstraw  # https://github.com/aidenlab/straw
 import numpy as np
 import pandas as pd
+from pylib.utils.hic_utils import rescale_p_s_1
 from pylib.utils.plotting_utils import plot_matrix
 from pylib.utils.utils import load_import_log
 from utils import *
@@ -239,11 +240,14 @@ def split_multiHiCCompare(in_dataset, out_dataset, m, chroms=range(1,23), start_
                 start = int(start_mb * 1000000 / resolution)
                 end = start + m
 
-def split_multiHiCCompare2(in_dataset, out_dataset, m, chroms=range(1,23), start_index=1,
-                        resolution=50000, ref_genome='hg19', seed=None):
-    rng = np.random.default_rng(seed)
+def split2(in_dataset, out_dataset, m, chroms=range(1,23), start_index=1,
+                        resolution=50000, ref_genome='hg19', seed=None,
+                        file = 'y_multiHiCcompare.txt', scale=None):
     data_dir = osp.join('/home/erschultz', in_dataset)
-    samples_dir = osp.join('/home/erschultz', out_dataset, 'samples')
+    out_data_dir = osp.join('/home/erschultz', out_dataset)
+    if not osp.exists(out_data_dir):
+        os.mkdir(out_data_dir, mode=0o755)
+    samples_dir = osp.join(out_data_dir, 'samples')
     if not osp.exists(samples_dir):
         os.mkdir(samples_dir, mode=0o755)
 
@@ -255,8 +259,11 @@ def split_multiHiCCompare2(in_dataset, out_dataset, m, chroms=range(1,23), start
         print(cell_line)
         for chrom in chroms:
             chrom_dir = osp.join(data_dir, f'chroms_{cell_line}/chr{chrom}')
-            y_file = osp.join(chrom_dir, 'y_multiHiCcompare.txt')
-            y = np.loadtxt(y_file)
+            y_file = osp.join(chrom_dir, file)
+            if y_file.endswith('.txt'):
+                y = np.loadtxt(y_file)
+            elif y_file.endswith('.npy'):
+                y = np.load(y_file)
             size = len(y)
             diag = y.diagonal() == 0
             ind = np.arange(0, len(diag))
@@ -286,6 +293,9 @@ def split_multiHiCCompare2(in_dataset, out_dataset, m, chroms=range(1,23), start
 
 
                 y_i = y[start:end,start:end]
+                if scale is not None:
+                    y_i = rescale_p_s_1(y_i, scale)
+                    np.fill_diagonal(y_i, 1)
                 np.save(osp.join(odir, 'y.npy'), y_i)
                 plot_matrix(y_i, osp.join(odir, 'y.png'), vmax='mean')
                 i += 1
@@ -358,4 +368,5 @@ if __name__ == '__main__':
     # multiHiCcompare_files(GM12878_REPLICATES, 'dataset_gm12878')
     # multiHiCcompare_files(HMEC_REPLICATES, 'dataset_hmec')
     # multiHiCcompare_files(ALL_FILES_in_situ, 'dataset_11_20_23')
-    split_multiHiCCompare2('dataset_11_20_23', 'dataset_12_01_23', 512)
+    # split2('dataset_11_20_23', 'dataset_12_01_23', 512, file='y_multiHiCcompare.txt')
+    split2('dataset_11_20_23', 'dataset_12_06_23', 512, file='y.npy', scale=1e-1)

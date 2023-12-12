@@ -3,7 +3,7 @@
 #SBATCH --output=logFiles/ContactGNNEnergy10.out
 #SBATCH --time=24:00:00
 #SBATCH --account=pi-depablo
-#SBATCH --partition=depablo-gpu
+#SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=12
@@ -23,7 +23,7 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy10' # change to run multiple bash files at once
 dirname="/project/depablo/erschultz/dataset_12_08_23_imr90"
 m=512
-preTransforms='ContactDistance-MeanContactDistance-MeanContactDistance_bonded-AdjPCs_10'
+preTransforms='ContactDistance-MeanContactDistance-AdjPCs_10'
 hiddenSizesList='16-16-16-16'
 updateHiddenSizesList='1000-1000-1000-1000-128'
 
@@ -46,7 +46,7 @@ nEpochs=60
 milestones='40'
 loss='mse_log'
 
-id=629
+id=630
 for lr in 1e-4
 do
   train

@@ -18,6 +18,7 @@ from pylib.utils import epilib
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import *
 from pylib.utils.plotting_utils import BLUE_RED_CMAP, RED_CMAP, plot_matrix
+from pylib.utils.similarity_measures import SCC
 from pylib.utils.utils import triu_to_full
 from result_summary_plots import plot_top_PCs
 from scipy import linalg
@@ -30,7 +31,6 @@ from scripts.load_utils import (get_converged_max_ent_folder, load_import_log,
 from scripts.neural_nets.dataset_classes import make_dataset
 from scripts.neural_nets.networks import get_model
 from scripts.neural_nets.utils import get_dataset
-from scripts.similarity_measures import SCC
 from scripts.utils import calc_dist_strat_corr, crop, print_time
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
@@ -638,55 +638,6 @@ def plot_SCC_weights():
     plt.legend()
     plt.show()
 
-def check_max_ent_progress():
-    dir = '/home/erschultz/dataset_02_04_23/samples'
-    todo = 0
-    for f in sorted(os.listdir(dir)):
-        found = False
-        fdir = osp.join(dir, f)
-        max_ent_dir = osp.join(fdir, 'optimize_grid_b_261_phi_0.01-max_ent10')
-        if osp.exists(max_ent_dir):
-            if osp.exists(osp.join(max_ent_dir, 'iteration30')):
-                found = True
-            else:
-                print(f'{f} in progress')
-
-        if not found:
-            todo += 1
-            print(f'{f} TODO')
-
-
-    print(todo)
-
-def test_pcs_meanval():
-    dataset = 'dataset_02_04_23'; sample = 202; GNN_ID = 427
-    k=10
-    sample_dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
-    result = load_import_log(sample_dir)
-    start = result['start_mb']
-    end = result['end_mb']
-    chrom = result['chrom']
-    print(chrom)
-
-    y_chr = np.load(osp.join('/home/erschultz', dataset, f'chroms_50k/sample{chrom}/y.npy'))
-    print(y_chr.shape)
-    y_chr_diag = epilib.get_oe(y_chr)
-    row_means = np.mean(y_chr_diag, axis=0)
-    nan_rows = row_means == 0
-    y_chr_diag = y_chr_diag[~nan_rows][:, ~nan_rows] # ignore nan_rows
-    # plot_matrix(y_chr_diag)
-    print(y_chr_diag.shape)
-    print('nan', np.sum(np.isnan(y_chr_diag)))
-    print('inf', np.sum(np.isinf(y_chr_diag)))
-    C = np.corrcoef(y_chr_diag)
-    print(C)
-    print('nan', np.sum(np.isnan(C)))
-    print('inf', np.sum(np.isinf(C)))
-    seq = epilib.get_pcs(y_chr_diag, 10, normalize = False, manual=False)[:, 0]
-    print(seq, np.mean(seq))
-    plt.plot(seq)
-    plt.show()
-
 def gnn_meanDist_s(GNN_ID, sample):
     dir = '/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy'
     dataset = 'dataset_04_28_23'
@@ -780,22 +731,10 @@ def test_center_norm_log():
     ref2 += ref_mean
     print('final', ref2)
 
-def test_load_converged():
-    dir = '/home/erschultz/dataset_02_04_23/samples/sample201'
-    assert osp.exists(dir), f'{dir}'
-    dir = osp.join(dir, 'optimize_grid_b_180_v_8_spheroid_1.5-max_ent10')
-    assert osp.exists(dir), f'{dir}'
-    final = get_converged_max_ent_folder(dir, 'normal')
-    print(final)
-
-
 if __name__ == '__main__':
-    # check_max_ent_progress()
-    # test_pcs_meanval()
     # find_best_p_s()
     # binom()
     # edit_argparse()
-    # test_load_converged()
     debugModel('ContactGNNEnergy')
     # gnn_meanDist_s(434, '981')
     # test_center_norm_log()
