@@ -273,7 +273,8 @@ def get_final_max_ent_folder(replicate_folder, throw_exception = True, return_it
         return final_folder, max_it
     return final_folder
 
-def get_converged_max_ent_folder(replicate_folder, conv_defn, throw_exception=True):
+def get_converged_max_ent_folder(replicate_folder, conv_defn, throw_exception=True,
+                                return_it = False):
     if conv_defn == 'strict':
         eps = 1e-3
     elif conv_defn == 'normal':
@@ -292,8 +293,11 @@ def get_converged_max_ent_folder(replicate_folder, conv_defn, throw_exception=Tr
             break
 
     if converged_it is not None:
-        final = osp.join(replicate_folder, f'iteration{j}')
-        return final
+        if return_it:
+            return converged_it
+        else:
+            final = osp.join(replicate_folder, f'iteration{j}')
+            return final
     elif throw_exception:
         raise Exception(f'{replicate_folder} did not converge')
     else:
