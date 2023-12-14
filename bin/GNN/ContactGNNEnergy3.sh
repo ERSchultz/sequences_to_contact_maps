@@ -21,7 +21,7 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy3' # change to run multiple bash files at once
 dirname="/project/depablo/erschultz/dataset_12_12_23_imr90"
 m=512
-preTransforms='ContactDistance-MeanContactDistance'
+preTransforms='ContactDistance-MeanContactDistance-Constant'
 hiddenSizesList='16-16-16-16'
 updateHiddenSizesList='1000-1000-1000-1000-128'
 
@@ -46,7 +46,7 @@ maxSample=5000
 loss='mse_log'
 
 # 631 ablation
-# no signplus, no pcs
+# no signplus, no pcs (constant instead)
 
 id=634
 for lr in 1e-4

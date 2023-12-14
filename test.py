@@ -142,7 +142,7 @@ def debugModel(model_type):
 
     # dataset
     dir = "/home/erschultz"
-    datasets = ['dataset_11_16_23_hmec']
+    datasets = ['dataset_11_21_23_imr90']
     opt.data_folder = [osp.join(dir, d) for d in datasets]
     opt.scratch = '/home/erschultz/scratch'
 
@@ -189,9 +189,9 @@ def debugModel(model_type):
         opt.pre_transforms=['ContactDistance',
                             # 'ContactDistance_diagnorm',
                             # 'ContactDistance_corr',
-                            'ContactDistance_corr_rank5',
-                            'Constant',
-                            'GridSize',
+                            # 'ContactDistance_corr_rank5',
+                            # 'Constant',
+                            # 'GridSize',
                             # 'GeneticDistance_norm',
                             # 'MeanContactDistance',
                             'MeanContactDistance_bonded']

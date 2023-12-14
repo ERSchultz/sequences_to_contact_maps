@@ -38,14 +38,15 @@ outAct='leaky'
 
 yNorm='mean_fill'
 k=10
-useSignPlus='true'
+useSignPlus='false'
 batchSize=1
 nEpochs=60
 milestones='40'
 maxSample=5000
 loss='mse_log'
 
-# 631 duplicate
+# 631 ablation
+# no signplus
 
 id=636
 for lr in 1e-4
