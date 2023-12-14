@@ -44,6 +44,7 @@ nEpochs=60
 milestones='40'
 maxSample=5000
 loss='mse_log'
+resumeTraining='true'
 
 # 631 ablation
 # ContactDistance_corr instead of ContactDistance
