@@ -44,7 +44,7 @@ nEpochs=60
 milestones='40'
 maxSample=5000
 loss='mse_log'
-resumeTraining='true'
+
 
 # 631 ablation
 # no signplus, no pcs (constant instead)

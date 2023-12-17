@@ -1,7 +1,7 @@
 --data_folder
 /project/depablo/erschultz/dataset_12_12_23_imr90
 --root_name
-ContactGNNEnergy7
+ContactGNNEnergy5
 --delete_root
 false
 --model_type
@@ -55,7 +55,7 @@ none
 --transforms
 empty
 --pre_transforms
-ContactDistance_corr-MeanContactDistance-AdjPCs_10
+ContactDistance-MeanContactDistance-AdjPCs_10
 --top_k
 none
 --sparsify_threshold
@@ -93,7 +93,7 @@ false
 --use_sign_net
 false
 --use_sign_plus
-true
+false
 --n_epochs
 60
 --lr
@@ -138,9 +138,9 @@ none
 --print_params
 true
 --id
-638
+636
 --resume_training
-true
+false
 --pretrain_id
 none
 --mlp_model_id
