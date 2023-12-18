@@ -11,18 +11,18 @@ from makeLatexTable_new import *
 
 
 def main():
-    # descr_dict = {434: 'baseline',
-    #         # 472: r'predict $S$',
-    #         441: 'without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$',
-    #         442: "without overwriting main diagonal with 1's",
-    #         443: 'without SignNet', # (eigenvectors are still included as node features)
-    #         444: 'without $\log(H_{ij})$ in $e_{ij}$',
-    #         445: 'without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$',
-    #         446: 'only long simulation',
-    #         # 447: 'without SignNet (eigenvectors are replaced with constant node feature)',
-    #         448: 'original message passing layer from \citep{Brody2022HowNetworks}',
-    #         449: 'without rescaling contact map'
-    #         }
+    descr_dict = {434: 'baseline',
+            # 472: r'predict $S$',
+            441: 'without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$',
+            442: "without overwriting main diagonal with 1's",
+            443: 'without SignNet', # (eigenvectors are still included as node features)
+            444: 'without $\log(H_{ij})$ in $e_{ij}$',
+            445: 'without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$',
+            446: 'only long simulation',
+            # 447: 'without SignNet (eigenvectors are replaced with constant node feature)',
+            448: 'original message passing layer from \citep{Brody2022HowNetworks}',
+            449: 'without rescaling contact map'
+            }
     descr_dict = {490: 'baseline 2-3-400k sweeps',
             505: 'N=5000 samples',
             507: 'baseline 2-3-4-500k sweeps',
@@ -58,6 +58,16 @@ def main():
             596: '$H$_{ij} instead of $Corr(\tilde{H}^\prime)_{ij}$',
             597: 'without SignNet but with eigenvectors',
             598: 'original message passing layer from \citep{Brody2022HowNetworks}'}
+    descr_dict = {631: 'Baseline',
+            632: 'no log-transform in loss',
+            633: 'no rescale',
+            634: 'without SignNet and without eigenvectors',
+            635: 'without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$',
+            637: 'without $H_{ij}$',
+            638: '$Corr(\tilde{H}_{ij})$ instead of $H_{ij}$',
+            636: 'without SignNet but with eigenvectors',
+            639: 'pReLU activations',
+            640: 'original message passing layer from \citep{Brody2022HowNetworks}'}
     id_list = descr_dict.keys()
     print(id_list)
 
