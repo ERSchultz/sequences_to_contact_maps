@@ -7,7 +7,7 @@ import numpy as np
 
 sys.path.append('/home/erschultz/TICG-chromatin/scripts')
 from data_generation.modify_maxent import get_samples
-from makeLatexTable_new import *
+from makeLatexTable import *
 
 
 def main():
@@ -54,8 +54,8 @@ def main():
             # 592: 'without SignNet and without eigenvectors',
             593: 'without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$',
             594: 'without $\mean(\diagonal(H^b, |i-j|))$ in $e_{ij}$',
-            595: 'without $Corr(\tilde{H}^\prime)_{ij}$',
-            596: '$H$_{ij} instead of $Corr(\tilde{H}^\prime)_{ij}$',
+            595: 'without $Corr(\\tilde{H}^\prime)_{ij}$',
+            596: '$H$_{ij} instead of $Corr(\\tilde{H}^\prime)_{ij}$',
             597: 'without SignNet but with eigenvectors',
             598: 'original message passing layer from \citep{Brody2022HowNetworks}'}
     descr_dict = {631: 'Baseline',
@@ -64,7 +64,7 @@ def main():
             634: 'without SignNet and without eigenvectors',
             635: 'without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$',
             637: 'without $H_{ij}$',
-            638: '$Corr(\tilde{H}_{ij})$ instead of $H_{ij}$',
+            638: '$Corr(\\tilde{H}_{ij})$ instead of $H_{ij}$',
             636: 'without SignNet but with eigenvectors',
             639: 'pReLU activations',
             640: 'original message passing layer from \citep{Brody2022HowNetworks}'}
@@ -88,18 +88,18 @@ def main():
             loss_dict[id] = final_val_loss
     print(loss_dict)
 
-    dataset = 'dataset_02_04_23'
-    train_samples, _ = get_samples(dataset, train=True)
+    dataset = 'dataset_12_06_23'
+    train_samples, _ = get_samples(dataset, train=True, filter_cell_lines=['imr90'])
     scc_dict = defaultdict(lambda: None)
     args = getArgs(data_folder = f'/home/erschultz/{dataset}',
-                    samples = train_samples[:10])
+                    samples = train_samples)
     args.experimental = True
-    args.bad_methods = ['b_140', 'b_261', 'spheroid_2.0', 'max_ent']
+    args.bad_methods = ['b_140', 'b_261', 'spheroid_2.0', 'max_ent', 'grid200', 'phi']
     args.convergence_definition = 'normal'
     args.gnn_id = id_list
     data, _ = load_data(args)
     for id in descr_dict.keys():
-        gnn = f'optimize_grid_b_180_v_8_spheroid_1.5-GNN{id}'
+        gnn = f'optimize_grid_b_200_v_8_spheroid_1.5-GNN{id}'
         sccs = data[0][gnn]['scc_var']
         scc_dict[id] = np.round(np.mean(sccs), 3)
 

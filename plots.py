@@ -19,6 +19,7 @@ import seaborn as sns
 import torch
 from pylib.utils import epilib
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from pylib.utils.similarity_measures import SCC
 from pylib.utils.energy_utils import (calculate_all_energy, calculate_D,
                                       calculate_diag_chi_step, calculate_L,
                                       calculate_S)
@@ -1146,14 +1147,14 @@ def generalization_figure():
     label_fontsize=22
     tick_fontsize=18
     letter_fontsize=26
-    datasets = ['dataset_06_29_23']*3
-    cell_lines = ['IMR90', 'HMEC', 'HAP1']
-    samples = [2, 103, 604]
+    datasets = ['dataset_12_06_23']*3
+    cell_lines = ['GM12878', 'HMEC', 'HUVEC']
+    samples = [151, 295, 366]
     # datasets = ['dataset_04_05_23', 'dataset_04_05_23', 'dataset_04_05_23']
     # cell_lines = ['GM12878', 'HCT116', 'HL-60']
     # samples = [1213, 1248, 1286]
-    GNN_ID = 579
-    grid_root = 'optimize_grid_b_180_v_8_spheroid_1.5'
+    GNN_ID = 631
+    grid_root = 'optimize_grid_b_200_v_8_spheroid_1.5'
 
 
     odir = '/home/erschultz/TICG-chromatin/figures'
@@ -1177,6 +1178,7 @@ def generalization_figure():
     # collect data
     print('---'*9)
     print('Collecting Data')
+    scc = SCC(h=5, K=100)
     for dataset, cell_line, sample in zip(datasets, cell_lines, samples):
         print(cell_line)
         dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
@@ -1212,13 +1214,13 @@ def generalization_figure():
         max_ent_meanDists.append(DiagonalPreprocessing.genomic_distance_statistics(y_max_ent, 'prob'))
         max_ent_pcs.append(epilib.get_pcs(epilib.get_oe(y_max_ent), 12, align = True).T)
 
-        scc_dict = load_json(osp.join(gnn_dir, 'distance_pearson.json'))
-        scc = np.round(scc_dict['scc_var'], 3)
-        sccs.append(scc)
+        scc_gnn = scc.scc(y_exp, y_gnn)
+        scc_gnn = np.round(scc_gnn, 3)
+        sccs.append(scc_gnn)
 
-        scc_dict = load_json(osp.join(final, 'distance_pearson.json'))
-        scc = np.round(scc_dict['scc_var'], 3)
-        max_ent_sccs.append(scc)
+        scc_me = scc.scc(y_max_ent, y_exp)
+        scc_me = np.round(scc_me, 3)
+        max_ent_sccs.append(scc_me)
 
         # make composite contact map
         composite = make_composite(y_exp, y_gnn)
@@ -1306,7 +1308,6 @@ def generalization_figure():
         ax.plot(max_ent_meanDist, label = 'Max Ent', color = 'b')
         ax.plot(gnn_meanDist, label = 'GNN', color = 'red')
         ax.set_title(f'{cell_line}\nRMSE={rmse}', fontsize = 16)
-
         if i == 0:
             ax.legend()
             ax.set_ylabel('Contact Probability', fontsize=16)
@@ -1416,7 +1417,7 @@ def generalization_figure():
         ax.plot(log_labels, max_ent_meanDist, label = 'Maximum Entropy', color = 'b')
         ax.plot(log_labels, gnn_meanDist, label = 'GNN', color = 'red')
         ax.tick_params(axis='both', which='major', labelsize=tick_fontsize)
-        ax.set_ylim(10**-4, 1)
+        ax.set_ylim(10**-4, 2e-1)
 
         # ax.set_title(f'{cell_line}\nRMSE(Exp, GNN)={rmse}', fontsize = 16)
 
@@ -1836,7 +1837,7 @@ if __name__ == '__main__':
     # plot_diag_vs_diag_chi()
     # plot_xyz_gif_wrapper()
     # plot_centroid_distance(parallel = True, samples = [34, 35, 36])
-    update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
+    # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
     # plot_combined_models('ContactGNNEnergy', [614, 627])
@@ -1846,7 +1847,7 @@ if __name__ == '__main__':
     # main()
     # plot_all_contact_cd maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
-    # generalization_figure()
+    generalization_figure()
     # interpretation_figure()
     # interpretation_figure_test()
     # plot_first_PC('dataset_02_04_23', 10, 419)
