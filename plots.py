@@ -19,7 +19,7 @@ import seaborn as sns
 import torch
 from pylib.utils import epilib
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
-from pylib.utils.similarity_measures import SCC
+from pylib.utils.similarity_measures import SCC, hic_spector
 from pylib.utils.energy_utils import (calculate_all_energy, calculate_D,
                                       calculate_diag_chi_step, calculate_L,
                                       calculate_S)
@@ -1165,6 +1165,12 @@ def generalization_figure():
     max_ent_composites = []
     sccs = []
     max_ent_sccs = []
+    spectors = []
+    max_ent_spectors = []
+    corr_pc1s = []
+    max_ent_corr_pc1s = []
+    rmses = []
+    max_ent_rmses = []
     max_ent_meanDists = []
     gnn_meanDists = []
     ref_meanDists = []
@@ -1222,15 +1228,49 @@ def generalization_figure():
         scc_me = np.round(scc_me, 3)
         max_ent_sccs.append(scc_me)
 
+        # HiC-Spector
+        corr_spector = hic_spector(y_exp, y_gnn, 10)
+        corr_spector = np.round(corr_spector, 3)
+        spectors.append(corr_spector)
+
+        corr_spector = hic_spector(y_exp, y_max_ent, 10)
+        corr_spector = np.round(corr_spector, 3)
+        max_ent_spectors.append(corr_spector)
+
+        # Corr PC1(\tilde{H})
+        pcs_gt = epilib.get_pcs(epilib.get_oe(y_exp), 12).T
+
+        pcs_sim = epilib.get_pcs(epilib.get_oe(y_gnn), 12).T
+        pearson_pc_1, _ = pearsonr(pcs_sim[0], pcs_gt[0])
+        pearson_pc_1 *= np.sign(pearson_pc_1) # ensure positive pearson
+        assert pearson_pc_1 > 0
+        pearson_pc_1 = np.round(pearson_pc_1, 3)
+        corr_pc1s.append(pearson_pc_1)
+
+        pcs_sim = epilib.get_pcs(epilib.get_oe(y_max_ent), 12).T
+        pearson_pc_1, _ = pearsonr(pcs_sim[0], pcs_gt[0])
+        pearson_pc_1 *= np.sign(pearson_pc_1) # ensure positive pearson
+        assert pearson_pc_1 > 0
+        pearson_pc_1 = np.round(pearson_pc_1, 3)
+        max_ent_corr_pc1s.append(pearson_pc_1)
+
+        # RMSE(\tilde{H})
+        y_gt_diag = epilib.get_oe(y_gt)
+
+        rmse_y_tilde = mean_squared_error(y_gt_diag, epilib.get_oe(y_gnn), squared=False)
+        rmse_y_tilde = np.round(rmse_y_tilde, 3)
+        rmes.append(rmse_y_tilde)
+
+        rmse_y_tilde = mean_squared_error(y_gt_diag, epilib.get_oe(y_max_ent), squared=False)
+        rmse_y_tilde = np.round(rmse_y_tilde, 3)
+        max_ent_rmes.append(rmse_y_tilde)
+
         # make composite contact map
         composite = make_composite(y_exp, y_gnn)
         composites.append(composite)
 
         composite = make_composite(y_exp, y_max_ent)
         max_ent_composites.append(composite)
-
-
-
 
     ### plot hic ###
     print('---'*9)
@@ -1241,13 +1281,16 @@ def generalization_figure():
 
     arr = np.array(composites)
     vmax = np.mean(arr)
-    data = zip(composites, cell_lines, sccs, genome_ticks_list, genome_labels_list, chroms)
-    for i, (composite, cell_line, scc, genome_ticks, genome_labels, chrom) in enumerate(data):
+    data = zip(composites, cell_lines, sccs, spectors, corr_pc1s, rmses, genome_ticks_list, genome_labels_list, chroms)
+    for i, (composite, cell_line, scc, spector, pearson_pc_1, rmse_y_tilde, genome_ticks, genome_labels, chrom) in enumerate(data):
         print(i)
         ax = axes[0][i]
         s = sns.heatmap(composite, linewidth = 0, vmin = 0, vmax = vmax, cmap = RED_CMAP,
                         ax = ax, cbar = False)
-        s.set_title(f'{cell_line} Chr{chrom}\nSCC={scc}', fontsize = letter_fontsize)
+        title = f'SCC={scc}\nHiC-Spector={spector}'+r'Corr PC1($\tilde{H})'+f'={pearson_pc_1}\n'+r'RMSE($\tilde{H}$)'+f'={rmse_y_tilde}'
+        s.set_title(title, fontsize = 16, loc='left')
+
+        # s.set_title(f'{cell_line} Chr{chrom}\nSCC={scc}', fontsize = letter_fontsize)
         ax.axline((0,0), slope=1, color = 'k', lw=1)
         s.text(0.99*m, -0.08*m, 'GNN', fontsize=label_fontsize, ha='right', va='top', weight='bold')
         s.text(0.01*m, 1.08*m, 'Experiment', fontsize=label_fontsize, weight='bold')
@@ -1263,13 +1306,15 @@ def generalization_figure():
 
     arr = np.array(max_ent_composites)
     vmax = np.mean(arr)
-    data = zip(max_ent_composites, max_ent_sccs, genome_ticks_list, genome_labels_list)
-    for i, (composite, scc, genome_ticks, genome_labels) in enumerate(data):
+    data = zip(max_ent_composites, max_ent_sccs, max_ent_spectors, max_ent_corr_pc1s, max_ent_rmses, genome_ticks_list, genome_labels_list)
+    for i, (composite, scc, spector, pearson_pc_1, rmse_y_tilde, genome_ticks, genome_labels) in enumerate(data):
         print(i)
         ax = axes[1][i]
         s = sns.heatmap(composite, linewidth = 0, vmin = 0, vmax = vmax, cmap = RED_CMAP,
                         ax = ax, cbar = False)
-        s.set_title(f'SCC={scc}', fontsize = letter_fontsize)
+        title = f'SCC={scc}\nHiC-Spector={spector}'+r'Corr PC1($\tilde{H})'+f'={pearson_pc_1}\n'+r'RMSE($\tilde{H}$)'+f'={rmse_y_tilde}'
+        s.set_title(title, fontsize = 16, loc='left')
+        # s.set_title(f'SCC={scc}', fontsize = letter_fontsize)
         ax.axline((0,0), slope=1, color = 'k', lw=1)
         s.text(0.99*m, -0.08*m, 'Max Ent', fontsize=label_fontsize, ha='right', va='top', weight='bold')
         s.text(0.01*m, 1.08*m, 'Experiment', fontsize=label_fontsize, weight='bold')
