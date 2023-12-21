@@ -10,7 +10,7 @@ import string
 import sys
 from collections import defaultdict
 from shutil import rmtree
-
+from scipy.stats import pearsonr
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -1255,15 +1255,15 @@ def generalization_figure():
         max_ent_corr_pc1s.append(pearson_pc_1)
 
         # RMSE(\tilde{H})
-        y_gt_diag = epilib.get_oe(y_gt)
+        y_exp_diag = epilib.get_oe(y_exp)
 
-        rmse_y_tilde = mean_squared_error(y_gt_diag, epilib.get_oe(y_gnn), squared=False)
+        rmse_y_tilde = mean_squared_error(y_exp_diag, epilib.get_oe(y_gnn), squared=False)
         rmse_y_tilde = np.round(rmse_y_tilde, 3)
-        rmes.append(rmse_y_tilde)
+        rmses.append(rmse_y_tilde)
 
-        rmse_y_tilde = mean_squared_error(y_gt_diag, epilib.get_oe(y_max_ent), squared=False)
+        rmse_y_tilde = mean_squared_error(y_exp_diag, epilib.get_oe(y_max_ent), squared=False)
         rmse_y_tilde = np.round(rmse_y_tilde, 3)
-        max_ent_rmes.append(rmse_y_tilde)
+        max_ent_rmses.append(rmse_y_tilde)
 
         # make composite contact map
         composite = make_composite(y_exp, y_gnn)
@@ -1276,8 +1276,8 @@ def generalization_figure():
     print('---'*9)
     print('Starting Hic Figure')
     fig, axes = plt.subplots(2, len(cell_lines))
-    fig.set_figheight(12)
-    fig.set_figwidth(18)
+    fig.set_figheight(14)
+    fig.set_figwidth(16.5)
 
     arr = np.array(composites)
     vmax = np.mean(arr)
@@ -1287,7 +1287,7 @@ def generalization_figure():
         ax = axes[0][i]
         s = sns.heatmap(composite, linewidth = 0, vmin = 0, vmax = vmax, cmap = RED_CMAP,
                         ax = ax, cbar = False)
-        title = f'SCC={scc}\nHiC-Spector={spector}'+r'Corr PC1($\tilde{H})'+f'={pearson_pc_1}\n'+r'RMSE($\tilde{H}$)'+f'={rmse_y_tilde}'
+        title = f'SCC={scc}\nHiC-Spector={spector}\n'+r'Corr PC1($\tilde{H}$)'+f'={pearson_pc_1}\n'+r'RMSE($\tilde{H}$)'+f'={rmse_y_tilde}'
         s.set_title(title, fontsize = 16, loc='left')
 
         # s.set_title(f'{cell_line} Chr{chrom}\nSCC={scc}', fontsize = letter_fontsize)
@@ -1312,7 +1312,7 @@ def generalization_figure():
         ax = axes[1][i]
         s = sns.heatmap(composite, linewidth = 0, vmin = 0, vmax = vmax, cmap = RED_CMAP,
                         ax = ax, cbar = False)
-        title = f'SCC={scc}\nHiC-Spector={spector}'+r'Corr PC1($\tilde{H})'+f'={pearson_pc_1}\n'+r'RMSE($\tilde{H}$)'+f'={rmse_y_tilde}'
+        title = f'SCC={scc}\nHiC-Spector={spector}\n'+r'Corr PC1($\tilde{H}$)'+f'={pearson_pc_1}\n'+r'RMSE($\tilde{H}$)'+f'={rmse_y_tilde}'
         s.set_title(title, fontsize = 16, loc='left')
         # s.set_title(f'SCC={scc}', fontsize = letter_fontsize)
         ax.axline((0,0), slope=1, color = 'k', lw=1)
@@ -1333,6 +1333,7 @@ def generalization_figure():
                 size=letter_fontsize, weight='bold')
 
     plt.tight_layout()
+    plt.subplots_adjust(hspace=0.4)
     plt.savefig(osp.join(odir, 'extrapolation_hic.png'))
     plt.close()
 
@@ -1396,7 +1397,7 @@ def generalization_figure():
     fig, axes = plt.subplots(3, len(cell_lines),
                             gridspec_kw={'height_ratios':[1, 0.6, 0.5]})
     fig.set_figheight(14.5)
-    fig.set_figwidth(18)
+    fig.set_figwidth(16)
 
     arr = np.array(composites)
     vmax = np.mean(arr)
