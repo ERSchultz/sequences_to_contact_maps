@@ -38,17 +38,17 @@ outAct='leaky'
 
 yNorm='mean_fill'
 k=10
-useSignPlus='false'
+useSignPlus='true'
 batchSize=1
 nEpochs=60
 milestones='40'
-maxSample=5000
-loss='mse_log'
+loss='mse_log_and_mse_kth_diagonal'
+lossLambda2=1e-2
 
 # 631 ablation
-# no signplus
+# mse_log_and_mse_kth_diagonal
 
-id=636
+id=645
 for lr in 1e-4
 do
   train

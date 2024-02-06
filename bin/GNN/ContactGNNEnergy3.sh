@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE3
 #SBATCH --output=logFiles/ContactGNNEnergy3.out
-#SBATCH --time=24:00:00
+#SBATCH --time=1-24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -21,7 +21,7 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy3' # change to run multiple bash files at once
 dirname="/project/depablo/erschultz/dataset_12_12_23_imr90"
 m=512
-preTransforms='ContactDistance-MeanContactDistance-Constant'
+preTransforms='ContactDistance-MeanContactDistance-AdjPCs_10'
 hiddenSizesList='16-16-16-16'
 updateHiddenSizesList='1000-1000-1000-1000-128'
 
@@ -38,18 +38,18 @@ outAct='leaky'
 
 yNorm='mean_fill'
 k=10
-useSignPlus='false'
+useSignPlus='true'
 batchSize=1
 nEpochs=60
 milestones='40'
-maxSample=5000
-loss='mse_log'
+loss='mse_and_mse_log'
+lossLambda1=1e-2
 
 
 # 631 ablation
-# no signplus, no pcs (constant instead)
+# mse_and_mse_log
 
-id=634
+id=643
 for lr in 1e-4
 do
   train

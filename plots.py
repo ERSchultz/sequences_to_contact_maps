@@ -10,35 +10,37 @@ import string
 import sys
 from collections import defaultdict
 from shutil import rmtree
-from scipy.stats import pearsonr
+
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy
 import seaborn as sns
 import torch
-from pylib.utils import epilib
-from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
-from pylib.utils.similarity_measures import SCC, hic_spector
-from pylib.utils.energy_utils import (calculate_all_energy, calculate_D,
-                                      calculate_diag_chi_step, calculate_L,
-                                      calculate_S)
-from pylib.utils.plotting_utils import *
-from pylib.utils.utils import load_json, make_composite, pearson_round
-from pylib.utils.xyz import xyz_load, xyz_write
 from result_summary_plots import predict_chi_in_psi_basis
 from scipy.ndimage import uniform_filter
-from scripts.argparse_utils import (finalize_opt, get_base_parser,
-                                    get_opt_header, opt2list)
-from scripts.load_utils import (get_final_max_ent_folder, load_contact_map,
-                                load_import_log, load_L, load_max_ent_chi)
-from scripts.plotting_utils import (plot_centroid_distance,
-                                    plot_combined_models, plot_diag_chi,
-                                    plot_sc_contact_maps, plot_xyz_gif,
-                                    plotting_script)
+from scipy.stats import pearsonr
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
+
+from pylib.utils import epilib
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from pylib.utils.energy_utils import (calculate_all_energy, calculate_D,
+                                      calculate_diag_chi_step, calculate_L,
+                                      calculate_S)
+from pylib.utils.hic_utils import load_contact_map
+from pylib.utils.plotting_utils import *
+from pylib.utils.similarity_measures import SCC, hic_spector
+from pylib.utils.utils import load_json, make_composite, pearson_round
+from pylib.utils.xyz import xyz_load, xyz_write
+from scripts.argparse_utils import (finalize_opt, get_base_parser,
+                                    get_opt_header, opt2list)
+from scripts.load_utils import (get_final_max_ent_folder, load_import_log,
+                                load_L, load_max_ent_chi)
+from scripts.plotting_utils import (plot_centroid_distance,
+                                    plot_combined_models, plot_diag_chi,
+                                    plot_xyz_gif, plotting_script)
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -1582,9 +1584,9 @@ def generalization_figure():
 
 def interpretation_figure():
     # dataset = 'dataset_04_05_23'; sample = 1001
-    dataset = 'dataset_02_04_23'; sample = 201
+    dataset = 'dataset_12_06_23'; sample = 1
     sample_dir = f'/home/erschultz/{dataset}/samples/sample{sample}'
-    GNN_ID = 531
+    GNN_ID = 631
 
     y = np.load(osp.join(sample_dir, 'y.npy')).astype(np.float64)
     y /= np.mean(np.diagonal(y))
@@ -1606,8 +1608,8 @@ def interpretation_figure():
     genome_ticks = [0, len(y)//3, 2*len(y)//3, len(y)-1]
     genome_labels = [f'{all_labels[i]} Mb' for i in genome_ticks]
 
-    grid_dir = osp.join(sample_dir, 'optimize_grid_b_180_phi_0.008_spheroid_1.5')
-    k=5
+    grid_dir = osp.join(sample_dir, 'optimize_grid_b_200_v_8_spheroid_1.5')
+    k=10
     max_ent_dir = f'{grid_dir}-max_ent{k}'
     gnn_dir = f'{grid_dir}-GNN{GNN_ID}'
 
@@ -1886,14 +1888,14 @@ if __name__ == '__main__':
     # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    # plot_combined_models('ContactGNNEnergy', [614, 627])
+    plot_combined_models('ContactGNNEnergy', [583, 584])
     # plot_GNN_vs_PCA('dataset_04_05_23', 10, 407)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")
     # main()
     # plot_all_contact_cd maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
-    generalization_figure()
+    # generalization_figure()
     # interpretation_figure()
     # interpretation_figure_test()
     # plot_first_PC('dataset_02_04_23', 10, 419)

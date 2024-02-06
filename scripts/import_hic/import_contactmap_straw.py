@@ -364,9 +364,8 @@ if __name__ == '__main__':
     # entire_chromosomes("https://hicfiles.s3.amazonaws.com/hiseq/gm12878/in-situ/combined.hic",
     #                     'dataset_02_05_23', 50000)
     # Su2020imr90()
-    # multiHiCcompare_files(GM12878_VARIANTS, 'dataset_gm12878_variants')
-    # multiHiCcompare_files(GM12878_REPLICATES, 'dataset_gm12878')
-    # multiHiCcompare_files(HMEC_REPLICATES, 'dataset_hmec')
+    multiHiCcompare_files(GM12878_REPLICATES, 'dataset_gm12878', resolution=5000, chroms=[1,2])
     # multiHiCcompare_files(ALL_FILES_in_situ, 'dataset_11_20_23')
     # split2('dataset_11_20_23', 'dataset_12_01_23', 512, file='y_multiHiCcompare.txt')
-    split2('dataset_11_20_23', 'dataset_12_06_23', 512, file='y.npy', scale=1e-1)
+    # split2('dataset_11_20_23', 'dataset_12_06_23', 512, file='y.npy', scale=1e-1)
+    split2('dataset_gm12878_5k', 'dataset_1_22_24', 1024, file='y.npy', scale=1e-1)

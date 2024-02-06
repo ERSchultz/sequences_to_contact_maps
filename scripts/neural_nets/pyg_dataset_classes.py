@@ -15,12 +15,13 @@ import torch
 import torch_geometric.data
 import torch_geometric.transforms
 import torch_geometric.utils
-from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
-from pylib.utils.energy_utils import calculate_D, calculate_S
 from scipy.ndimage import uniform_filter
 from skimage.measure import block_reduce
 from sklearn.cluster import KMeans
 from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
+
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from pylib.utils.energy_utils import calculate_D, calculate_S
 
 from ..argparse_utils import finalize_opt, get_base_parser
 from ..knightRuiz import knightRuiz
@@ -324,11 +325,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
         dir = '/' + osp.join(*split[:-3])
         dataset = split[-3]
         sample = split[-1][6:]
-        # TODO remove split("_s_")
-        if '_s_' in dataset:
-            dataset = dataset.split('_s_')[0]
-        elif '_cutoff_' in dataset:
-            dataset = dataset.split('_cutoff_')[0]
         setup_file = osp.join(dir, dataset, f'setup/sample_{sample}.txt')
         bonded_file = osp.join(raw_folder, f'{self.bonded_root}/y.npy')
         y_bonded = None
@@ -347,6 +343,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y_bonded = np.load(y_bonded_file).astype(np.float64)
         elif osp.exists(bonded_file):
             y_bonded = np.load(bonded_file).astype(np.float64)
+        assert y_bonded is not None, f'{setup_file}, {bonded_file}'
 
         if self.mean_filt is not None:
             y = uniform_filter(y, self.mean_filt)

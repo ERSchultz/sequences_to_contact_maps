@@ -14,27 +14,28 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from core_test_train import core_test_train
+from result_summary_plots import plot_top_PCs
+from scipy import linalg
+from scipy.optimize import minimize
+from scipy.stats import gaussian_kde
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
 from pylib.utils import epilib
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import *
 from pylib.utils.plotting_utils import BLUE_RED_CMAP, RED_CMAP, plot_matrix
 from pylib.utils.similarity_measures import SCC
-from pylib.utils.utils import triu_to_full
-from result_summary_plots import plot_top_PCs
-from scipy import linalg
-from scipy.optimize import minimize
-from scipy.stats import gaussian_kde
+from pylib.utils.utils import print_time, triu_to_full
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
 from scripts.load_utils import (get_converged_max_ent_folder, load_import_log,
-                                load_L, load_sc_contacts, save_sc_contacts)
+                                load_L)
 from scripts.neural_nets.dataset_classes import make_dataset
 from scripts.neural_nets.networks import get_model
 from scripts.neural_nets.utils import get_dataset
-from scripts.utils import calc_dist_strat_corr, crop, print_time
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
+from scripts.utils import calc_dist_strat_corr, crop
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUV'
 
@@ -142,7 +143,7 @@ def debugModel(model_type):
 
     # dataset
     dir = "/home/erschultz"
-    datasets = ['dataset_11_21_23_imr90']
+    datasets = ['dataset_GNN_test']
     opt.data_folder = [osp.join(dir, d) for d in datasets]
     opt.scratch = '/home/erschultz/scratch'
 
@@ -161,10 +162,10 @@ def debugModel(model_type):
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
-        opt.loss = 'mse_log_and_mse_top_k_diagonals'
+        opt.loss = 'mse_and_mse_log'
         opt.loss_k = 3
-        opt.lambda1=0.001
-        opt.lambda2=0.1
+        opt.lambda1=5e-2
+        opt.lambda2=1
         opt.preprocessing_norm = 'mean_fill'
         opt.message_passing = 'GAT'
         opt.GNN_mode = True
@@ -494,71 +495,6 @@ def binom():
     #                 bounds = [(0,1)]*len(y))
     # print(model)
 
-def sc_structure_vs_sc_sample():
-    # is sampling from bulk contact map the same as the individual structures
-    # from the TICG model
-    n_samples = 10
-    for sample in [5, 15, 25, 34, 35]:
-        dir = f'/home/erschultz/dataset_test_diag/samples/sample{sample}'
-        odir = osp.join(dir, 'sc_contacts')
-        y = np.load(osp.join(dir, 'y.npy')).astype(np.float32)
-        y_proj_arr = []
-        pca = PCA(n_components = 10)
-        y_proj = pca.fit_transform(y).flatten().reshape(1, -1)
-
-        save_sc_contacts(None, odir, triu = False, sparsify = False, overwrite = True,
-                        fmt = 'txt', jobs = 10)
-
-        avg_contacts = 0
-        for i in range(n_samples):
-            y_i = np.loadtxt(osp.join(odir, f'y_sc_{i}.txt'))
-            proj = pca.transform(y_i)
-            y_proj_arr.append(proj.flatten())
-
-            contacts = int(np.sum(y_i) / 2)
-            avg_contacts += contacts
-            sparsity = np.round(np.count_nonzero(y_i) / len(y_i)**2 * 100, 2)
-            plot_matrix(y_i, osp.join(odir, f'y_sc_{i}.png'), title = f'# contacts: {contacts}, sparsity: {sparsity}%', vmin = 0, vmax = 1)
-
-        avg_contacts /= n_samples
-        avg_contacts = int(avg_contacts)
-        print(f'avg_contacts: {avg_contacts}')
-
-        y = np.triu(y)
-        np.fill_diagonal(y, 0)
-        m = len(y)
-        y = y[np.triu_indices(m)] # flatten
-        y /= np.sum(y)
-        rng = np.random.default_rng()
-        for i in range(n_samples):
-            y_i = np.zeros_like(y)
-            for j in rng.choice(np.arange(len(y)), size = avg_contacts, p = y):
-                y_i[j] += 1
-
-            y_i = triu_to_full(y_i)
-            proj = pca.transform(y_i)
-            y_proj_arr.append(proj.flatten())
-
-            contacts = int(np.sum(y_i) / 2)
-            sparsity = np.round(np.count_nonzero(y_i) / len(y_i)**2 * 100, 2)
-            plot_matrix(y_i, osp.join(odir, f'y_sample_{i}.png'), title = f'# contacts: {contacts}, sparsity: {sparsity}%', vmin = 0, vmax = 1)
-
-        y_proj_arr = np.array(y_proj_arr)
-        pca = PCA(n_components = 2)
-        proj = pca.fit_transform(y_proj_arr)
-        for i, vals in enumerate(proj):
-            if i >= n_samples:
-                shape = 'v'
-                label = f'{i - n_samples}'
-            else:
-                shape = 'o'
-                label = f'sc_{i}'
-            plt.scatter(vals[0], vals[1], label = label, marker = shape)
-            i += 1
-        plt.legend()
-        plt.savefig(osp.join(dir, 'sc vs sample.png'))
-        plt.close()
-
 def testGNNrank(dataset, GNN_ID):
     '''
     check rank of GNN predicted E.
@@ -731,7 +667,14 @@ def test_center_norm_log():
     ref2 += ref_mean
     print('final', ref2)
 
+def temp():
+    a = np.array([0.45440109, 0.27298974, -0.1844925])
+    a2 = a**2
+    print(a2)
+    print(np.sum(a2))
+
 if __name__ == '__main__':
+    # temp()
     # find_best_p_s()
     # binom()
     # edit_argparse()

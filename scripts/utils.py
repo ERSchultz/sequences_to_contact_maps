@@ -10,7 +10,6 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.sparse as sp
 import torch
 from numba import jit, njit
 from pylib.utils.utils import nan_pearsonr
@@ -342,32 +341,6 @@ def round_up_by_10(val):
     while val > mult:
         mult *= 10
     return mult
-
-def print_time(t0, tf, name = '', file = sys.stdout):
-    print(f'{name} time: {np.round(tf - t0, 3)} s', file = file)
-
-def print_size(arr, name = '', file = sys.stdout):
-    if arr is None:
-        return
-    if isinstance(arr, np.ndarray):
-        size_b = arr.nbytes
-    elif isinstance(arr, sp._arrays.csr_array):
-        size_b = arr.data.nbytes
-    elif isinstance(arr, sp._csr.csr_matrix):
-        size_b = arr.data.nbytes
-    else:
-        print(f'Unrecognized type {type(arr)}', file = file)
-        return
-    size_kb = size_b / 1000
-    size_mb = size_kb / 1000
-    size_gb = size_mb / 1000
-
-    size_names = ['Gigabytes', 'Megabytes', 'kilobytes', 'bytes']
-    sizes = [size_gb, size_mb, size_kb, size_b]
-    for size, size_name in zip(sizes, size_names):
-        if size > 1:
-            print(f'{name} size: {np.round(size, 1)} {size_name}', file = file)
-            return
 
 def diagonalpool_HiC(HiC, factor):
     HiC_new = np.zeros([int(len(HiC)/factor), int(len(HiC)/factor)])

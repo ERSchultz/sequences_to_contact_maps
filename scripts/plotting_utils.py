@@ -25,13 +25,12 @@ from pylib.utils.utils import triu_to_full
 from scipy.stats import pearsonr
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error, silhouette_score
-from sympy import solve, symbols
 
 from .argparse_utils import (ArgparserConverter, finalize_opt, get_base_parser,
                              get_opt_header, opt2list)
 from .clean_directories import clean_directories
 from .InteractionConverter import InteractionConverter
-from .load_utils import load_psi, load_sc_contacts
+from .load_utils import load_psi
 from .neural_nets.utils import get_data_loaders, get_dataset, load_saved_model
 from .utils import crop, round_up_by_10
 
@@ -806,101 +805,6 @@ def plot_xyz_gif(xyz, x, dir, ofile = 'xyz.gif', order = None):
     # remove files
     # for filename in set(filenames):
         # os.remove(filename)
-
-def plot_sc_contact_maps(dataset, samples, ofolder = 'sc_contact', count = 20,
-                        jobs = 1, overall = True, N_max = None, crop_size = None,
-                        correct_diag = False, sparsify = False):
-    if isinstance(samples, int):
-        samples = [samples]
-
-    for sample in samples:
-        print(f'sample{sample}')
-        dir = osp.join(dataset, 'samples', f'sample{sample}')
-        odir = osp.join(dir, ofolder)
-
-        sc_contacts = load_sc_contacts(dir, zero_diag = True, jobs = jobs,
-                                        triu = True, N_max = N_max,
-                                        correct_diag = correct_diag,
-                                        sparsify = sparsify)
-        plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall,
-                                        crop_size)
-
-def plot_sc_contact_maps_inner(sc_contacts, odir, count, jobs, overall = False,
-                                crop_size = None, vmax = 'mean', save_txt = False,
-                                title_index = False):
-    '''
-    Plot sc contact maps.
-
-    Inputs:
-        sc_contacts: array of sc contact maps (in full or flattened upper triangle)
-        odir: directory to write to
-        count: number of plots to make
-        jobs: number of jobs for plotting in parallel
-        overall: True to plot overall contact map
-        crop_size: size to crop contact map
-        vmax: vmax from plot_matrix
-        save_txt: True to save txt file
-        title_index: True to title with index
-    '''
-    if not osp.exists(odir):
-        os.mkdir(odir, mode = 0o775)
-
-    if sp.issparse(sc_contacts):
-        sc_contacts = sc_contacts.toarray()
-
-    if len(sc_contacts.shape) == 3:
-        triu = False
-        N, m, _ = sc_contacts.shape
-    else:
-        triu = True
-        N, l = sc_contacts.shape
-        # infer m given length of upper triangle
-        x, y = symbols('x y')
-        y=x*(x+1)/2-l
-        result=solve(y)
-        m = int(np.max(result))
-
-    if crop_size is not None:
-        overall_m = min([crop_size, m])
-    else:
-        overall_m = m
-    overall_map = np.zeros((overall_m,overall_m))
-    mapping = []
-    filenames = []
-    for i in range(N):
-        if overall or i % (N // count) == 0:
-            if triu:
-                # need to reconstruct from upper traingle
-                contact_map = triu_to_full(sc_contacts[i, :], m)
-            else:
-                contact_map = sc_contacts[i, :, :]
-
-            if crop_size is not None:
-                contact_map = crop(contact_map, crop_size)
-
-        if i % (N // count) == 0:
-            if save_txt:
-                np.savetxt(osp.join(odir, f'{i}.txt'), contact_map, fmt='%.2f')
-            filenames.append(f'{i}.png')
-            title = i if title_index else None
-            if jobs > 1:
-                mapping.append((contact_map, osp.join(odir, f'{i}.png'),
-                                title, 0, vmax))
-            else:
-                plot_matrix(contact_map, osp.join(odir, f'{i}.png'),
-                            title = title, vmax = vmax)
-
-        if overall:
-            overall_map += contact_map
-
-    if jobs > 1:
-        with multiprocessing.Pool(jobs) as p:
-            p.starmap(plot_matrix, mapping)
-
-    if overall:
-        plot_matrix(overall_map, osp.join(odir, 'overall.png'), vmax = 'abs_max')
-
-    return filenames
 
 def plot_centroid_distance(dir = '/home/eric/dataset_test/samples',
                             samples = range(30, 36), parallel = False,

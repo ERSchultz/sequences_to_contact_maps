@@ -12,7 +12,7 @@
 		 634 & without SignNet and without eigenvectors & 0.512 & 0.509 \\ 
 		 635 & without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$ & 0.526 & 0.622 \\ 
 		 637 & without $H_{ij}$ & 1.25 & 0.148 \\ 
-		 638 & $Corr(	ilde{H}_{ij})$ instead of $H_{ij}$ & 0.678 & 0.528 \\ 
+		 638 & $Corr(\tilde{H}_{ij})$ instead of $H_{ij}$ & 0.678 & 0.528 \\ 
 		 636 & without SignNet but with eigenvectors & 0.516 & 0.422 \\ 
 		 639 & pReLU activations & 0.574 & 0.419 \\ 
 		 640 & original message passing layer from \citep{Brody2022HowNetworks} & 1.558 & 0.069 \\ 

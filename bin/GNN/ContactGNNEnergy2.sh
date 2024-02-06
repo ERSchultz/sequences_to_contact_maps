@@ -29,7 +29,7 @@ outputPreprocesing='none'
 headArchitecture='bilinear'
 headArchitecture2="fc-fill_${m}"
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
-rescale=1
+rescale=2
 
 act='leaky'
 innerAct='leaky'
@@ -42,13 +42,14 @@ useSignPlus='true'
 batchSize=1
 nEpochs=60
 milestones='40'
-loss='mse_log'
+loss='mse_and_mse_log'
+lossLambda1=5e-2
 
 
 # 631 ablation
-# no rescale
+# mse_and_mse_log
 
-id=633
+id=642
 for lr in 1e-4
 do
   train
