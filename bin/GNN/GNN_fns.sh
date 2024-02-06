@@ -45,6 +45,7 @@ sparsifyThreshold='none'
 loss='mse'
 lossLambda1=1
 lossLambda2=1
+lossLambda3=1
 lossK=2
 act='prelu'
 innerAct='prelu'
@@ -60,8 +61,6 @@ useSignNet='false'
 useSignPlus='false'
 inputLtoD='false'
 inputLtoDMode='meandist'
-
-
 
 # hyperparameters
 nEpochs=100

@@ -31,24 +31,24 @@ headArchitecture2="fc-fill_${m}"
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 
-act='prelu'
-innerAct='prelu'
-headAct='prelu'
-outAct='prelu'
+act='leaky'
+innerAct='leaky'
+headAct='leaky'
+outAct='leaky'
 
 yNorm='mean_fill'
 k=10
-useSignPlus='false'
+useSignPlus='true'
 batchSize=1
-nEpochs=70
+nEpochs=60
 milestones='40'
-maxSample=5000
-loss='mse_log'
+loss='mse_log_and_mse_log_scc'
+lossLambda2=1e-1
 
 # 631 ablation
-# prelu
+# mse_log_and_mse_log_scc
 
-id=639
+id=648
 for lr in 1e-4
 do
   train

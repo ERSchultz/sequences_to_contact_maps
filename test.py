@@ -162,7 +162,7 @@ def debugModel(model_type):
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
-        opt.loss = 'mse_and_mse_log'
+        opt.loss = 'mse_log_and_mse_diag_and_mse_log_plaid'
         opt.loss_k = 3
         opt.lambda1=5e-2
         opt.lambda2=1
@@ -191,7 +191,7 @@ def debugModel(model_type):
                             # 'ContactDistance_diagnorm',
                             # 'ContactDistance_corr',
                             # 'ContactDistance_corr_rank5',
-                            # 'Constant',
+                            'Constant',
                             # 'GridSize',
                             # 'GeneticDistance_norm',
                             # 'MeanContactDistance',
@@ -267,44 +267,6 @@ def debugModel(model_type):
     opt.model_type = model_type
     model = get_model(opt)
     core_test_train(model, opt)
-
-
-    # fig, (ax0, ax1, ax2, ax3) = plt.subplots(1, 4)
-    # for val, label in zip([False, True], ['False', 'True']):
-    #     opt.kr = val
-    #
-    #     print(opt, end = '\n\n', file = opt.log_file)
-    #     dataset = get_dataset(opt)
-    #     for i, data in enumerate(dataset):
-    #         print(data.path)
-    #         # print(data.contact_map_diag, torch.min(data.contact_map_diag))
-    #         # plot_matrix(data.contact_map_diag, osp.join(data.path, 'diag.png'), title = None, cmap='bluered', vmin = 'center1')
-    #         print(f'x={data.x}, shape={data.x.shape}, '
-    #                 f'min={torch.min(data.x).item()}, '
-    #                 f'max={torch.max(data.x).item()}')
-    #         print(f'edge_attr={data.edge_attr}, '
-    #                 f'shape={data.edge_attr.shape}, '
-    #                 f'min={torch.min(data.edge_attr).item()}, '
-    #                 f'max={torch.max(data.edge_attr).item()}')
-    #         ax3.hist(data.edge_attr.reshape(-1), alpha = 0.5, label = f'{label}',
-    #                 bins=50)
-    #         ax0.hist(data.x[:,0], alpha = 0.5, label = f'{label}',
-    #                 bins=50)
-    #         ax1.hist(data.x[:,1], alpha = 0.5, label = f'{label}',
-    #                 bins=50)
-    #         ax2.hist(data.x[:,2], alpha = 0.5, label = f'{label}',
-    #                 bins=50)
-    # # plt.yscale('log')
-    # for ax in [ax0, ax1, ax2, ax3]:
-    #     ax.set_yscale('log')
-    #
-    # ax0.set_ylabel('Count')
-    # ax0.set_title('deg')
-    # ax1.set_title('pos')
-    # ax2.set_title('neg')
-    # ax3.set_title('attr')
-    # plt.legend()
-    # plt.show()
 
     if opt.move_data_to_scratch:
         rmtree(opt.data_folder)

@@ -42,15 +42,12 @@ useSignPlus='true'
 batchSize=1
 nEpochs=60
 milestones='40'
-maxSample=5000
-loss='mse_log'
-messagePassing='GAT'
-
+loss='mse_log_plaid_and_mse_log_diag'
 
 # 631 ablation
-# messagePassing='GAT'
+# mse_log_plaid_and_mse_log_diag
 
-id=640
+id=649
 for lr in 1e-4
 do
   train

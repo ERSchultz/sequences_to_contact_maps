@@ -16,6 +16,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch_geometric.transforms
+
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 
 from .neural_nets.losses import *
@@ -160,6 +161,8 @@ def get_base_parser():
     parser.add_argument('--lambda1', type=float, default=1,
                         help='weight for loss function')
     parser.add_argument('--lambda2', type=float, default=1,
+                        help='weight for loss function')
+    parser.add_argument('--lambda3', type=float, default=1,
                         help='weight for loss function')
     parser.add_argument('--w_reg', type=AC.str2None,
                         help='Type of regularization to use for W, options: {"l1", "l2"}')
@@ -347,50 +350,65 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
 
     # configure loss
     opt.loss = opt.loss.lower()
-    if opt.loss == 'mse':
-        opt.criterion = F.mse_loss
-        opt.channels = 1
-    elif opt.loss == 'huber':
-        opt.criterion = F.huber_loss
-        opt.channels = 1
-    elif opt.loss == 'cross_entropy':
-        assert opt.out_act is None, "Cannot use output activation with cross entropy"
-        assert not opt.GNN_mode, 'cross_entropy not tested for GNN'
-        msg = 'must use percentile preprocessing with cross entropy'
-        assert opt.y_preprocessing == 'prcnt', msg
-        assert opt.preprocessing_norm is None, 'Cannot normalize with cross entropy'
-        opt.channels = opt.classes
-        opt.y_reshape = False
-        opt.criterion = F.cross_entropy
-        opt.ydtype = torch.int64
-    elif opt.loss == 'BCE':
-        assert opt.out_act is None, "Cannot use output activation with BCE"
-        if opt.output_mode == 'contact':
-            msg = 'must use some sort of preprocessing_norm'
-            assert opt.preprocessing_norm is not None, msg
-        opt.criterion = F.binary_cross_entropy_with_logits
-    elif opt.loss == 'mse_center':
-        opt.criterion = mse_center
-    elif opt.loss == 'mse_and_mse_center':
-        opt.criterion = mse_and_mse_center
-    elif opt.loss == 'mse_log':
-        opt.criterion = mse_log
-    elif opt.loss == 'mse_log_scc':
-        opt.criterion = MSE_log_scc(opt.m)
-    elif opt.loss == 'mse_center_log':
-        opt.criterion = mse_center_log
-    elif opt.loss == 'mse_and_mse_log':
-        opt.criterion = MSE_and_MSE_log(opt.lambda1, opt.lambda2)
-    elif opt.loss == 'mse_log_and_mse_center_log':
-        opt.criterion = mse_log_and_mse_center_log
-    elif opt.loss == 'mse_log_and_mse_kth_diagonal':
-        opt.criterion = MSE_log_and_MSE_kth_diagonal(opt.loss_k, opt.lambda1,
-                                                    opt.lambda2)
-    elif opt.loss == 'mse_log_and_mse_top_k_diagonals':
-        opt.criterion = MSE_log_and_MSE_top_k_diagonals(opt.loss_k, opt.lambda1,
-                                                        opt.lambda2)
+    loss_list = opt.loss.split('_and_')
+    criterion_list = []
+    arg_list = []
+    for loss in loss_list:
+        arg = None
+        if loss == 'mse':
+            criterion = F.mse_loss
+            opt.channels = 1
+        elif loss == 'huber':
+            criterion = F.huber_loss
+            opt.channels = 1
+        elif loss == 'cross_entropy':
+            assert opt.out_act is None, "Cannot use output activation with cross entropy"
+            assert not opt.GNN_mode, 'cross_entropy not tested for GNN'
+            msg = 'must use percentile preprocessing with cross entropy'
+            assert opt.y_preprocessing == 'prcnt', msg
+            assert opt.preprocessing_norm is None, 'Cannot normalize with cross entropy'
+            opt.channels = opt.classes
+            opt.y_reshape = False
+            criterion = F.cross_entropy
+            opt.ydtype = torch.int64
+        elif loss == 'BCE':
+            assert opt.out_act is None, "Cannot use output activation with BCE"
+            if opt.output_mode == 'contact':
+                msg = 'must use some sort of preprocessing_norm'
+                assert opt.preprocessing_norm is not None, msg
+            criterion = F.binary_cross_entropy_with_logits
+        elif loss == 'mse_center':
+            criterion = mse_center
+        # elif opt.loss == 'mse_and_mse_center':
+        #     opt.criterion = mse_and_mse_center
+        elif loss == 'mse_log':
+            criterion = mse_log
+        elif loss == 'mse_log_scc':
+            criterion = MSE_log_scc(opt.m)
+        elif loss == 'mse_plaid':
+            criterion = MSE_plaid()
+        elif loss == 'mse_log_plaid':
+            criterion = MSE_plaid(log=True)
+        elif loss == 'mse_diag':
+            criterion = MSE_diag()
+        elif loss == 'mse_log_diag':
+            criterion = MSE_diag(log=True)
+        elif loss == 'mse_center_log':
+            criterion = mse_center_log
+        elif loss == 'mse_kth_diagonal':
+            criterion = mse_kth_diagonal
+            arg = opt.loss_k
+        else:
+            raise Exception(f'Invalid loss: {repr(opt.loss)}')
+        criterion_list.append(criterion)
+        arg_list.append(arg)
+    if len(criterion_list) == 1:
+        opt.criterion = criterion_list.pop()
     else:
-        raise Exception(f'Invalid loss: {repr(opt.loss)}')
+        assert len(criterion_list) < 4, "not supported"
+        opt.criterion = Combined_Loss(criterion_list,
+                                    [opt.lambda1, opt.lambda2, opt.lambda3],
+                                    arg_list)
 
     # check mode
     if opt.model_type.startswith('GNNAutoencoder') or opt.model_type.startswith('ContactGNN'):

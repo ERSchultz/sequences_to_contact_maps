@@ -80,9 +80,9 @@ def torch_triu_to_full(arr):
 
     return out
 
-def torch_mean_dist(arr):
+def torch_mean_dist(arr, normalize=False):
     arr_copy = torch.clone(arr)
-    assert arr_copy.shape[-1] == arr_copy.shape[-2]
+    assert arr_copy.shape[-1] == arr_copy.shape[-2], f'invalid shape {arr_copy.shape}'
     if len(arr_copy.shape) == 3:
         N, m, _ = arr_copy.shape
     elif len(arr_copy.shape) == 2:
@@ -97,11 +97,14 @@ def torch_mean_dist(arr):
 
     for i in range(N):
         # normalize
-        mean = torch.mean(torch.diagonal(arr_copy[i]))
-        if mean == 0:
-            arr_norm = arr
+        if normalize:
+            mean = torch.mean(torch.diagonal(arr_copy[i]))
+            if mean == 0:
+                arr_norm = arr
+            else:
+                arr_norm = arr_copy[i] / mean
         else:
-            arr_norm = arr_copy[i] / mean
+            arr_norm = arr
         for d in distances:
             diag = torch.diagonal(arr_norm, offset = d)
             out[i, d] = torch.mean(torch.diagonal(arr_norm, offset = d))
