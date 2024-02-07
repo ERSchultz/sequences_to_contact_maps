@@ -49,7 +49,7 @@ loss='mse_log_and_mse_log_plaid_and_mse_log_diag'
 # 631 ablation
 # mse_log_plaid_and_mse_log_diag
 
-id=649
+id=650
 for lr in 1e-4
 do
   train

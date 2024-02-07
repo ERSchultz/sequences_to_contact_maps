@@ -16,7 +16,6 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch_geometric.transforms
-
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 
 from .neural_nets.losses import *
@@ -429,7 +428,11 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
             criterion = mse_top_k_diagonals
             arg = opt.loss_k
         elif loss == 'mse_plaid_eig':
-            criterion = MSE_plaid_eig
+            criterion = MSE_plaid_eig()
+            opt.diag = True
+            opt.eig = True
+        elif loss == 'mse_plaid_eig_log':
+            criterion = MSE_plaid_eig(True)
             opt.diag = True
             opt.eig = True
         else:

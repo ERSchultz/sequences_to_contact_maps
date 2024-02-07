@@ -13,8 +13,12 @@ import seaborn as sns
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from core_test_train import core_test_train
-from result_summary_plots import plot_top_PCs
+from pylib.utils import epilib
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from pylib.utils.energy_utils import *
+from pylib.utils.plotting_utils import BLUE_RED_CMAP, RED_CMAP, plot_matrix
+from pylib.utils.similarity_measures import SCC
+from pylib.utils.utils import print_time, triu_to_full
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
@@ -22,17 +26,14 @@ from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 
-from pylib.utils import epilib
-from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
-from pylib.utils.energy_utils import *
-from pylib.utils.plotting_utils import BLUE_RED_CMAP, RED_CMAP, plot_matrix
-from pylib.utils.similarity_measures import SCC
-from pylib.utils.utils import print_time, triu_to_full
+from core_test_train import core_test_train
+from result_summary_plots import plot_top_PCs
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
 from scripts.load_utils import (get_converged_max_ent_folder, load_import_log,
                                 load_L)
 from scripts.neural_nets.dataset_classes import make_dataset
+from scripts.neural_nets.losses import *
 from scripts.neural_nets.networks import get_model
 from scripts.neural_nets.utils import get_dataset
 from scripts.utils import calc_dist_strat_corr, crop
@@ -162,7 +163,7 @@ def debugModel(model_type):
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
-        opt.loss = 'mse_log_and_mse_diag_and_mse_log_plaid'
+        opt.loss = 'mse_plaid_eig'
         opt.loss_k = 3
         opt.lambda1=5e-2
         opt.lambda2=1
@@ -551,7 +552,8 @@ def gnn_meanDist_s(GNN_ID, sample):
     ref_max = np.max(np.abs(ref_center))
     ref_center_norm = ref_center / ref_max
     ref_center_norm_log = np.sign(ref_center_norm) * np.log(np.abs(ref_center_norm)+1)
-    # assert np.allclose(ref_center_norm_log, e_gt, rtol=1e-03, atol=1e-03), f'diff {ref_center_norm_log - e_gt}'
+    # assert np.allclose(ref_center_norm_log, e_gt, rtol=1e-03, atol=1e-03),
+            # f'diff {ref_center_norm_log - e_gt}'
 
     e_orig_gt = e_gt
     e_orig_hat = e_hat
@@ -566,7 +568,8 @@ def gnn_meanDist_s(GNN_ID, sample):
     rmse = mean_squared_error(e_orig_gt, e_orig_hat, squared = False)
     print(rmse)
 
-    # assert np.allclose(ref, e_orig_gt, rtol=1e-01, atol=1e-01), f'diff {ref - e_orig_gt} rmse {mean_squared_error(ref, e_orig_gt, squared = False)}'
+    # assert np.allclose(ref, e_orig_gt, rtol=1e-01, atol=1e-01),
+        # f'diff {ref - e_orig_gt} rmse {mean_squared_error(ref, e_orig_gt, squared = False)}'
 
     fig, axes = plt.subplots(1, 4,
                                     gridspec_kw={'width_ratios':[1,1,1,0.08]})
@@ -583,10 +586,12 @@ def gnn_meanDist_s(GNN_ID, sample):
     for i, (matrix, label) in enumerate(zip(matrices, labels)):
         ax = axes[i]
         if i == len(matrices)-1:
-            s = sns.heatmap(matrix, linewidth = 0, vmin = vmin, vmax = vmax, cmap = BLUE_RED_CMAP,
+            s = sns.heatmap(matrix, linewidth = 0, vmin = vmin, vmax = vmax,
+                            cmap = BLUE_RED_CMAP,
                             ax = ax, cbar_ax = axes[-1])
         else:
-            s = sns.heatmap(matrix, linewidth = 0, vmin = vmin, vmax = vmax, cmap = BLUE_RED_CMAP,
+            s = sns.heatmap(matrix, linewidth = 0, vmin = vmin, vmax = vmax,
+                            cmap = BLUE_RED_CMAP,
                             ax = ax, cbar = False)
         s.set_title(label, fontsize = 16)
         s.set_yticks([])
@@ -635,8 +640,34 @@ def temp():
     print(a2)
     print(np.sum(a2))
 
+def test_loss():
+    N=2
+    m=5
+    k=2
+    torch.manual_seed(12)
+    vecs = torch.randn((N, k, m), dtype=torch.float32)
+    e = torch.randn((N, m, m), dtype=torch.float32)
+    e = e + torch.transpose(e, 1, 2)
+    ehat = torch.randn((N, m, m), dtype=torch.float32)
+    ehat = ehat + torch.transpose(ehat, 1, 2)
+
+    metric6 = MSE_plaid(len(e))
+    # mse6 = metric6(e, ehat)
+    # print(mse6)
+
+    metric7 = MSE_plaid_eig()
+    # mse7 = metric7(e, ehat, vecs)
+    # print('mse7', mse7)
+
+
+    metricC = Combined_Loss([metric6, metric7], [1, 0.1], [None, None])
+    mseC = metricC(e, ehat, [None, vecs])
+    print(mseC)
+
+
 if __name__ == '__main__':
     # temp()
+    # test_loss()
     # find_best_p_s()
     # binom()
     # edit_argparse()

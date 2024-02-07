@@ -497,15 +497,20 @@ def plotEnergyPredictions(val_dataloader, model, opt, count=5):
         yhat = model(data)
         path = data.path[0]
 
+        if 'seqs' in data._mapping:
+            seqs = torch.reshape(data.seqs, (-1, 10, opt.m)) # TODO hard-coded 10
+        else:
+            seqs = None
+
         if loss_dim > 1:
-            loss1, loss2 = opt.criterion(yhat, y, split_loss=True)
+            loss1, loss2 = opt.criterion(yhat, y, seqs, split_loss=True)
             loss1 = loss1.item()
             loss2 = loss2.item()
             loss = loss1 + loss2
             loss_arr[0, i] = loss1
             loss_arr[1, i] = loss2
         else:
-            loss = opt.criterion(yhat, y).item()
+            loss = opt.criterion(yhat, y, seqs).item()
             loss_arr[0, i] = loss
         y = y.cpu().numpy().reshape((opt.m, opt.m))
         yhat = yhat.cpu().detach().numpy().reshape((opt.m,opt.m))

@@ -15,14 +15,13 @@ import torch
 import torch_geometric.data
 import torch_geometric.transforms
 import torch_geometric.utils
+from pylib.utils import epilib
+from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
+from pylib.utils.energy_utils import calculate_D, calculate_S
 from scipy.ndimage import uniform_filter
 from skimage.measure import block_reduce
 from sklearn.cluster import KMeans
 from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
-
-from pylib.utils import epilib
-from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
-from pylib.utils.energy_utils import calculate_D, calculate_S
 
 from ..argparse_utils import finalize_opt, get_base_parser
 from ..knightRuiz import knightRuiz
@@ -206,6 +205,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.neg_edge_index = neg_edge_index
             graph.mlp_model_id = self.mlp_model_id
             graph.sweep = self.sweep
+            graph.seqs = self.seqs
 
             # copy these temporarily
             graph.weighted_degree = self.weighted_degree
@@ -215,8 +215,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.contact_map_bonded = self.contact_map_bonded
             graph.diag_chi_continuous = self.diag_chis_continuous
 
-            if self.eig:
-                graph.seqs = epilib.get_pcs(graph.contact_map_diag, 10, normalize=True)
 
             if self.pre_transform is not None:
                 graph = self.pre_transform(graph)
@@ -355,6 +353,14 @@ class ContactsGraph(torch_geometric.data.Dataset):
         if self.mean_filt is not None:
             y = uniform_filter(y, self.mean_filt)
 
+        # get eigvecs from y before rescale
+        if self.eig:
+            seqs = epilib.get_pcs(epilib.get_oe(y), 10, normalize=True).T
+            # TODO hard-coded 10
+            self.seqs = torch.tensor(seqs, dtype=torch.float32)
+        else:
+            self.seqs = None
+
         if self.rescale is not None:
             y = rescale_matrix(y, self.rescale)
             y_bonded = rescale_matrix(y_bonded, self.rescale)
@@ -380,10 +386,13 @@ class ContactsGraph(torch_geometric.data.Dataset):
             if y_bonded is not None:
                 y_bonded = np.log(y_bonded+1)
         elif preprocessing == 'log_inf':
-            y = np.log(y)
+            with np.errstate(divide = 'ignore'):
+                # surpress warning, infs handled manually
+                y = np.log(y)
             y[np.isinf(y)] = np.nan
             if y_bonded is not None:
-                y_bonded = np.log(y_bonded)
+                with np.errstate(divide = 'ignore'):
+                    y_bonded = np.log(y_bonded)
                 y_bonded[np.isinf(y_bonded)] = np.nan
         elif preprocessing is not None:
             raise Exception('Deprecated')

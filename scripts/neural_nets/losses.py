@@ -20,7 +20,7 @@ def mse_and_mse_center(input, target, lambda1=1, lambda2=1, split_loss=False):
         return mse1, mse2
     return mse1 + mse2
 
-def mse_log(input, target):
+def mse_log(input, target, *args):
     input_log = torch.sign(input) * torch.log(torch.abs(input) + 1)
     target_log = torch.sign(target) * torch.log(torch.abs(target) + 1)
     return F.mse_loss(input_log, target_log)
@@ -100,78 +100,24 @@ class MSE_log_scc():
 
 class MSE_plaid_eig():
     def __init__(self, log=False):
-        assert not log
         if log:
             self.loss_fn = mse_log
         else:
             self.loss_fn = F.mse_loss
 
     def __call__(self, input, target, eigenvectors):
-        # eigenvectors should be k x m
-        # if self.log:
-        #     input_log = torch.sign(input) * torch.log(torch.abs(input) + 1)
-        #     target_log = torch.sign(target) * torch.log(torch.abs(target) + 1)
+        # assume eigenvectors are N x k x m
+        N, k, m = eigenvectors.shape
+        assert k < m
 
-        # todo replace with einsum
-        tot_loss = 0
-        for vec in eigenvectors:
-            print(vec.shape)
-            tot_loss += vec @ input @ vec.T
+        left = torch.einsum('Nkm,Nmp->Nkp', eigenvectors, input)
+        input_result = torch.einsum('Nkp,Njp->Nkj', left, eigenvectors)
 
+        left = torch.einsum('Nkm,Nmp->Nkp', eigenvectors, target)
+        target_result = torch.einsum('Nkp,Njp->Nkj', left, eigenvectors)
+        target_result /= m
 
-        return tot_loss
-
-class MSE_and_MSE_log():
-    def __init__(self, lambda1, lambda2):
-        self.lambda1 = lambda1
-        self.lambda2 = lambda2
-
-    def __call__(self, input, target, split_loss=False):
-        mse1 = self.lambda1 * F.mse_loss(input, target)
-        mse2 = self.lambda2 * mse_log(input, target)
-        if split_loss:
-            return mse1, mse2
-        return mse1 + mse2
-
-class MSE_log_and_MSE_kth_diagonal():
-    def __init__(self, lambda1, lambda2, k):
-        self.k = k
-        self.lambda1 = lambda1
-        self.lambda2 = lambda2
-
-    def __call__(self, input, target, split_loss=False):
-        mse1 = self.lambda1 * mse_log(input, target)
-        mse2 = self.lambda2 * mse_kth_diagonal(input, target, self.k)
-        if split_loss:
-            return mse1, mse2
-        return mse1 + mse2
-
-class MSE_log_and_MSE_top_k_diagonals():
-    def __init__(self, lambda1, lambda2, k):
-        self.k = k
-        self.lambda1 = lambda1
-        self.lambda2 = lambda2
-
-    def __call__(self, input, target, split_loss=False):
-        mse1 = self.lambda1 * mse_log(input, target)
-        mse2 = self.lambda2 * mse_top_k_diagonals(input, target, self.k)
-        if split_loss:
-            return mse1, mse2
-        return mse1 + mse2
-
-class MSE_log_and_MSE_log_scc():
-    def __init__(self, lambda1, lambda2, m):
-        self.m = m
-        self.lambda1 = lambda1
-        self.lambda2 = lambda2
-        self.mse_log_scc = MSE_log_scc(m)
-
-    def __call__(self, input, target, split_loss=False):
-        mse1 = self.lambda1 * mse_log(input, target)
-        mse2 = self.lambda2 * self.mse_log_scc(input, target)
-        if split_loss:
-            return mse1, mse2
-        return mse1 + mse2
+        return self.loss_fn(input_result, target_result)
 
 class Combined_Loss():
     def __init__(self, criterions, lambdas, args):
@@ -179,16 +125,26 @@ class Combined_Loss():
         self.lambdas = lambdas
         self.args = args
 
-    def __call__(self, input, target, split_loss=False):
+    def __call__(self, input, target, arg2=None, split_loss=False):
         loss_list = []
         tot_loss = 0
-        for criterion, loss_lambda, arg in zip(self.criterions, self.lambdas, self.args):
-            if arg is None:
+
+        zipper = zip(self.criterions, self.lambdas, self.args)
+        for criterion, loss_lambda, arg1 in zipper:
+            if arg1 is None and arg2 is None:
                 loss = loss_lambda * criterion(input, target)
-            elif isinstance(arg, list):
-                loss = loss_lambda * criterion(input, target, *arg)
             else:
-                loss = loss_lambda * criterion(input, target, arg)
+                assert arg1 is None or arg2 is None, f"I don't handle this case yet {arg1},{arg2}"
+                if arg1 is None:
+                    arg = arg2
+                else:
+                    arg = arg1
+
+                if isinstance(arg, list):
+                    loss = loss_lambda * criterion(input, target, *arg)
+                else:
+                    loss = loss_lambda * criterion(input, target, arg)
+
             loss_list.append(loss)
             tot_loss += loss
 
@@ -196,57 +152,6 @@ class Combined_Loss():
             return loss_list
         else:
             return tot_loss
-
-def test():
-    GNN_ID = 496
-    dir = '/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/'
-    gnn_dir = osp.join(dir, f'{GNN_ID}')
-    assert osp.exists(gnn_dir)
-    dataset = 'dataset_09_28_23'
-    sample = 2452
-    s_dir = osp.join(gnn_dir, f'{dataset}_sample{sample}/sample{sample}')
-    # e = np.loadtxt(osp.join(s_dir, 'energy.txt'))
-    # e = scipy.linalg.toeplitz(np.arange(0, 512))
-    # ehat = np.loadtxt(osp.join(s_dir, 'energy_hat.txt'))
-    m=10
-    e = np.random.normal(size=(m,m))
-    ehat = np.random.normal(size=(m,m))
-    # e = e[:10, :10]
-    # ehat = ehat[:10,:10]
-    # print(e)
-    # print(e.shape)
-    e = torch.tensor(e)
-    ehat = torch.tensor(ehat)
-    # mse1, mse2 = mse_and_mse_center(ehat, e, split_loss = True)
-    # print(mse1, mse2)
-    #
-    # mse3 = mse_log(e, ehat)
-    # print(mse3)
-
-    # mse4 = mse_kth_diagonal(e, ehat, 2)
-
-    metric = mse_top_k_diagonals
-    # mse5 = metric(e, ehat, 2)
-    # print(mse5)
-    #
-    # ind = torch.triu_indices(10, 10, -3)
-    # print(e)
-    # print(ind)
-    # print(e[ind[0], ind[1]])
-
-    metric6 = MSE_plaid(len(e))
-    # mse6 = metric2(e, ehat)
-    # print(mse6)
-
-    metric7 = MSE_plaid_eig()
-    k=2
-    vecs = torch.randn((m, k))
-    mse7 = metric7(e, ehat, vecs)
-    print(mse7)
-
-    metricC = Combined_Loss([metric, metric6], [1, 0.1], [2, None])
-    # mseC = metricC(e, ehat)
-    # print(mseC)
 
 if __name__ == '__main__':
     test()

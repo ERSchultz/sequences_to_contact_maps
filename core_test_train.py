@@ -10,8 +10,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-
 from pylib.utils.utils import print_time
+
 from scripts.argparse_utils import argparse_setup, save_args
 from scripts.clean_directories import clean_directories
 from scripts.neural_nets.networks import get_model
@@ -143,14 +143,16 @@ def core_test_train(model, opt):
         except ValueError:
             print(k, file = opt.param_file)
             print(p, file = opt.param_file)
-    print(f'\nTotal parameters: {locale.format_string("%d", tot_pars, grouping = True)}', file = opt.log_file)
+    print(f'\nTotal parameters: {locale.format_string("%d", tot_pars, grouping = True)}',
+            file = opt.log_file)
     tot_time = np.round(time.time() - t0, 1)
     tot_hours = tot_time // 3600
     tot_mins = tot_time // 60
     mins = tot_mins - tot_hours*60
     secs = tot_time - tot_mins*60
 
-    print(f'Total training + validation time: {tot_hours} hours, {mins} mins, and {secs} secs', file = opt.log_file)
+    print(f'Total training + validation time: {tot_hours} hours, {mins} mins, and {secs} secs',
+            file = opt.log_file)
     print(f'Final val loss: {val_loss_arr[-1]}\n', file = opt.log_file)
 
     if opt.GNN_mode:
@@ -199,62 +201,49 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                 print('Iteration: ', t)
             opt.optimizer.zero_grad()
 
-            if opt.GNN_mode:
-                data = data.to(opt.device)
-                if opt.autoencoder_mode:
-                    y = data.contact_map
-                    y = torch.reshape(y, (-1, opt.m, opt.m))
-                elif opt.output_mode.startswith('energy'):
-                    y = data.energy
-                    y = torch.reshape(y, (-1, opt.m, opt.m))
-                else:
-                    y = data.y
-                    y = torch.reshape(y, (-1, opt.m))
-                if opt.verbose:
-                    print(f'x={data.x}, shape={data.x.shape}, '
-                            f'min={torch.min(data.x).item()}, '
-                            f'max={torch.max(data.x).item()}')
-                    if data.edge_attr is not None:
-                        print(f'edge_attr={data.edge_attr}, '
-                                f'shape={data.edge_attr.shape}, '
-                                f'min={torch.min(data.edge_attr).item()}, '
-                                f'max={torch.max(data.edge_attr).item()}')
-                    if 'pos_edge_attr' in data._mapping:
-                        print(f'pos_edge_attr={data.pos_edge_attr}, '
-                                f'shape={data.pos_edge_attr.shape}, '
-                                f'min={torch.min(data.pos_edge_attr).item()}, '
-                                f'max={torch.max(data.pos_edge_attr).item()}')
-                        print(f'neg_edge_attr={data.neg_edge_attr}, '
-                                f'shape={data.neg_edge_attr.shape}, '
-                                f'min={torch.min(data.neg_edge_attr).item()}, '
-                                f'max={torch.max(data.neg_edge_attr).item()}')
-                    print(f'y={y}, shape={y.shape}, min={torch.min(y).item()}, '
-                            f'max={torch.max(y).item()}')
-                    t0 = time.time()
-                yhat = model(data)
-                if opt.verbose:
-                    tf = time.time()
-                    print_time(t0, tf, 'forward')
-                    print(f'yhat={yhat}, shape={yhat.shape}, '
-                            f'min={torch.min(yhat).item()}, '
-                            f'max={torch.max(yhat).item()}')
+            data = data.to(opt.device)
+            if opt.autoencoder_mode:
+                y = data.contact_map
+                y = torch.reshape(y, (-1, opt.m, opt.m))
+            elif opt.output_mode.startswith('energy'):
+                y = data.energy
+                y = torch.reshape(y, (-1, opt.m, opt.m))
             else:
-                if opt.autoencoder_mode and opt.output_mode == 'sequence':
-                    x = data[0]
-                    x = x.to(opt.device)
-                    y = x
-                else:
-                    x, y = data
-                    x = x.to(opt.device)
-                    y = y.to(opt.device)
-                yhat = model(x)
-                if opt.verbose:
-                    print(f'x={x}, shape={x.shape}')
-                    print(f'y={y}, shape={y.shape}, min={torch.min(y).item()}, '
-                            f'max={torch.max(y).item()}')
-                    print(f'yhat={yhat}, shape={yhat.shape}, '
-                            f'min={torch.min(yhat).item()}, max={torch.max(yhat).item()}')
-            loss = opt.criterion(yhat, y)
+                y = data.y
+                y = torch.reshape(y, (-1, opt.m))
+            if opt.verbose:
+                print(f'x={data.x}, shape={data.x.shape}, '
+                        f'min={torch.min(data.x).item()}, '
+                        f'max={torch.max(data.x).item()}')
+                if data.edge_attr is not None:
+                    print(f'edge_attr={data.edge_attr}, '
+                            f'shape={data.edge_attr.shape}, '
+                            f'min={torch.min(data.edge_attr).item()}, '
+                            f'max={torch.max(data.edge_attr).item()}')
+                if 'pos_edge_attr' in data._mapping:
+                    print(f'pos_edge_attr={data.pos_edge_attr}, '
+                            f'shape={data.pos_edge_attr.shape}, '
+                            f'min={torch.min(data.pos_edge_attr).item()}, '
+                            f'max={torch.max(data.pos_edge_attr).item()}')
+                    print(f'neg_edge_attr={data.neg_edge_attr}, '
+                            f'shape={data.neg_edge_attr.shape}, '
+                            f'min={torch.min(data.neg_edge_attr).item()}, '
+                            f'max={torch.max(data.neg_edge_attr).item()}')
+                print(f'y={y}, shape={y.shape}, min={torch.min(y).item()}, '
+                        f'max={torch.max(y).item()}')
+                t0 = time.time()
+            yhat = model(data)
+            if opt.verbose:
+                tf = time.time()
+                print_time(t0, tf, 'forward')
+                print(f'yhat={yhat}, shape={yhat.shape}, '
+                        f'min={torch.min(yhat).item()}, '
+                        f'max={torch.max(yhat).item()}')
+            if 'seqs' in data._mapping:
+                seqs = torch.reshape(data.seqs, (-1, 10, opt.m)) # TODO hard-coded 10
+                loss = opt.criterion(yhat, y, seqs)
+            else:
+                loss = opt.criterion(yhat, y)
             if opt.w_reg is not None:
                 if opt.w_reg == 'l1':
                     loss += opt.reg_lambda * torch.norm(model.sym(model.W), 1)
@@ -304,29 +293,22 @@ def test(loader, model, opt, toprint):
     loss_list = []
     with torch.no_grad():
         for t, data in enumerate(loader):
-            if opt.GNN_mode:
-                data = data.to(opt.device)
-                if opt.autoencoder_mode:
-                    y = data.contact_map
-                    y = torch.reshape(y, (-1, opt.m, opt.m))
-                elif opt.output_mode.startswith('energy'):
-                    y = data.energy
-                    y = torch.reshape(y, (-1, opt.m, opt.m))
-                else:
-                    y = data.y
-                    y = torch.reshape(y, (-1, opt.m))
-                yhat = model(data)
-            elif opt.autoencoder_mode and opt.output_mode == 'sequence':
-                x = data[0]
-                x = x.to(opt.device)
-                y = x
-                yhat = model(x)
+            data = data.to(opt.device)
+            if opt.autoencoder_mode:
+                y = data.contact_map
+                y = torch.reshape(y, (-1, opt.m, opt.m))
+            elif opt.output_mode.startswith('energy'):
+                y = data.energy
+                y = torch.reshape(y, (-1, opt.m, opt.m))
             else:
-                x, y = data
-                x = x.to(opt.device)
-                y = y.to(opt.device)
-                yhat = model(x)
-            loss = opt.criterion(yhat, y)
+                y = data.y
+                y = torch.reshape(y, (-1, opt.m))
+            yhat = model(data)
+            if 'seqs' in data._mapping:
+                seqs = torch.reshape(data.seqs, (-1, 10, opt.m)) # TODO hard-coded 10
+                loss = opt.criterion(yhat, y, seqs)
+            else:
+                loss = opt.criterion(yhat, y)
             loss_list.append(loss.item())
 
     avg_loss = np.mean(loss_list)
