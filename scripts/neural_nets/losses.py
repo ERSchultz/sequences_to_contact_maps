@@ -5,7 +5,7 @@ import scipy
 import torch
 import torch.nn.functional as F
 
-from .base_networks import torch_mean_dist
+from .base_networks import torch_mean_dist, torch_subtract_diag
 
 
 def mse_center(input, target):
@@ -56,20 +56,8 @@ class MSE_plaid():
             self.loss_fn = F.mse_loss
 
     def __call__(self, input, target):
-        meanDist_input = torch_mean_dist(input)
-        input_diag = torch.tensor(scipy.linalg.toeplitz(meanDist_input),
-                                    dtype=float)
-
-        input_plaid = input - input_diag
-        input_plaid -= torch.mean(input_plaid)
-
-        meanDist_target = torch_mean_dist(target)
-        target_diag = torch.tensor(scipy.linalg.toeplitz(meanDist_input),
-                                    dtype=float)
-        if input.is_cuda:
-            target_diag = target_diag.to(input.get_device())
-        target_plaid = input - target_diag
-        target_plaid -= torch.mean(target_plaid)
+        input_plaid = torch_subtract_diag(input)
+        target_plaid = torch_subtract_diag(target)
 
         return self.loss_fn(input_plaid, target_plaid)
 
@@ -82,10 +70,7 @@ class MSE_diag():
 
     def __call__(self, input, target):
         input_diag = torch_mean_dist(input)
-        input_diag -= torch.mean(input_diag)
-
         target_diag = torch_mean_dist(target)
-        target_diag -= torch.mean(target_diag)
 
         return self.loss_fn(input_diag, target_diag)
 
@@ -115,19 +100,26 @@ class MSE_log_scc():
 
 class MSE_plaid_eig():
     def __init__(self, log=False):
+        assert not log
         if log:
             self.loss_fn = mse_log
         else:
             self.loss_fn = F.mse_loss
 
-    def __call__(self, eigenvectors, input, target):
-        if self.log:
-            input_log = torch.sign(input) * torch.log(torch.abs(input) + 1)
-            target_log = torch.sign(target) * torch.log(torch.abs(target) + 1)
+    def __call__(self, input, target, eigenvectors):
+        # eigenvectors should be k x m
+        # if self.log:
+        #     input_log = torch.sign(input) * torch.log(torch.abs(input) + 1)
+        #     target_log = torch.sign(target) * torch.log(torch.abs(target) + 1)
+
+        # todo replace with einsum
+        tot_loss = 0
+        for vec in eigenvectors:
+            print(vec.shape)
+            tot_loss += vec @ input @ vec.T
 
 
-
-        return torch.mean(torch.square(error))
+        return tot_loss
 
 class MSE_and_MSE_log():
     def __init__(self, lambda1, lambda2):
@@ -213,12 +205,12 @@ def test():
     dataset = 'dataset_09_28_23'
     sample = 2452
     s_dir = osp.join(gnn_dir, f'{dataset}_sample{sample}/sample{sample}')
-    e = np.loadtxt(osp.join(s_dir, 'energy.txt'))
+    # e = np.loadtxt(osp.join(s_dir, 'energy.txt'))
     # e = scipy.linalg.toeplitz(np.arange(0, 512))
-    ehat = np.loadtxt(osp.join(s_dir, 'energy_hat.txt'))
-    # m=512
-    # e = np.random.normal(size=(m,m))
-    # ehat = np.random.normal(size=(m,m))
+    # ehat = np.loadtxt(osp.join(s_dir, 'energy_hat.txt'))
+    m=10
+    e = np.random.normal(size=(m,m))
+    ehat = np.random.normal(size=(m,m))
     # e = e[:10, :10]
     # ehat = ehat[:10,:10]
     # print(e)
@@ -242,13 +234,19 @@ def test():
     # print(ind)
     # print(e[ind[0], ind[1]])
 
-    metric2 = MSE_plaid(len(e))
-    mse6 = metric2(e, ehat)
-    print(mse6)
+    metric6 = MSE_plaid(len(e))
+    # mse6 = metric2(e, ehat)
+    # print(mse6)
 
-    metric3 = Combined_Loss([metric, metric2], [1, 0.1], [2, None])
-    # mse7 = metric3(e, ehat)
-    # print(mse7)
+    metric7 = MSE_plaid_eig()
+    k=2
+    vecs = torch.randn((m, k))
+    mse7 = metric7(e, ehat, vecs)
+    print(mse7)
+
+    metricC = Combined_Loss([metric, metric6], [1, 0.1], [2, None])
+    # mseC = metricC(e, ehat)
+    # print(mseC)
 
 if __name__ == '__main__':
     test()

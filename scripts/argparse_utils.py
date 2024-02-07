@@ -348,7 +348,34 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
     elif opt.message_passing.lower() == 'gat':
         assert not opt.use_edge_weights
 
+    # check mode
+    if opt.model_type.startswith('GNNAutoencoder') or opt.model_type.startswith('ContactGNN'):
+        assert opt.GNN_mode, 'mode should be GNN'
+
+    # configure GNN transforms
+    if opt.GNN_mode:
+        opt.node_feature_size = 0
+        if opt.use_node_features:
+            assert opt.k is not None
+            opt.node_feature_size += opt.k
+        else:
+            msg = f"need feature augmentation for id={opt.id}"
+            assert (len(opt.transforms) + len(opt.pre_transforms)) > 0, msg
+
+    if opt.rescale is not None:
+        assert opt.rescale != 0, f'{opt.id}'
+        opt.input_m = int(opt.m / opt.rescale)
+    else:
+        opt.input_m = opt.m
+    if opt.crop is not None:
+        opt.m = opt.crop[1] - opt.crop[0]
+        opt.input_m = opt.crop[1] - opt.crop[0]
+
+    # transforms
+    process_transforms(opt)
+
     # configure loss
+    opt.eig = False # True if eig is needed for loss
     opt.loss = opt.loss.lower()
     loss_list = opt.loss.split('_and_')
     criterion_list = []
@@ -398,8 +425,15 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
         elif loss == 'mse_kth_diagonal':
             criterion = mse_kth_diagonal
             arg = opt.loss_k
+        elif loss == 'mse_top_k_diagonals':
+            criterion = mse_top_k_diagonals
+            arg = opt.loss_k
+        elif loss == 'mse_plaid_eig':
+            criterion = MSE_plaid_eig
+            opt.diag = True
+            opt.eig = True
         else:
-            raise Exception(f'Invalid loss: {repr(opt.loss)}')
+            raise Exception(f'Invalid loss: {repr(loss)}')
         criterion_list.append(criterion)
         arg_list.append(arg)
     if len(criterion_list) == 1:
@@ -409,32 +443,6 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
         opt.criterion = Combined_Loss(criterion_list,
                                     [opt.lambda1, opt.lambda2, opt.lambda3],
                                     arg_list)
-
-    # check mode
-    if opt.model_type.startswith('GNNAutoencoder') or opt.model_type.startswith('ContactGNN'):
-        assert opt.GNN_mode, 'mode should be GNN'
-
-    # configure GNN transforms
-    if opt.GNN_mode:
-        opt.node_feature_size = 0
-        if opt.use_node_features:
-            assert opt.k is not None
-            opt.node_feature_size += opt.k
-        else:
-            msg = f"need feature augmentation for id={opt.id}"
-            assert (len(opt.transforms) + len(opt.pre_transforms)) > 0, msg
-
-    if opt.rescale is not None:
-        assert opt.rescale != 0, f'{opt.id}'
-        opt.input_m = int(opt.m / opt.rescale)
-    else:
-        opt.input_m = opt.m
-    if opt.crop is not None:
-        opt.m = opt.crop[1] - opt.crop[0]
-        opt.input_m = opt.crop[1] - opt.crop[0]
-
-    # transforms
-    process_transforms(opt)
 
     # move data to scratch
     if opt.move_data_to_scratch and not local:

@@ -11,8 +11,6 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-locale.setlocale(locale.LC_ALL, '')
-
 from pylib.utils.utils import print_time
 from scripts.argparse_utils import argparse_setup, save_args
 from scripts.clean_directories import clean_directories
@@ -20,6 +18,9 @@ from scripts.neural_nets.networks import get_model
 from scripts.neural_nets.utils import (get_data_loaders, get_dataset,
                                        optimizer_to)
 from scripts.plotting_utils import plotting_script
+
+locale.setlocale(locale.LC_ALL, '')
+
 
 
 def main():

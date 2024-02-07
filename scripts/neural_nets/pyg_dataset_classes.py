@@ -20,6 +20,7 @@ from skimage.measure import block_reduce
 from sklearn.cluster import KMeans
 from torch_scatter import scatter_max, scatter_mean, scatter_min, scatter_std
 
+from pylib.utils import epilib
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import calculate_D, calculate_S
 
@@ -51,7 +52,8 @@ def plaid_score(y, y_diag):
 class ContactsGraph(torch_geometric.data.Dataset):
     # How to backprop through model after converting to GNN:
     # https://github.com/rusty1s/pytorch_geometric/issues/1511
-    def __init__(self, dirname, scratch, root_name=None, m=1024, y_preprocessing='diag',
+    def __init__(self, dirname, scratch, root_name=None,
+                m=1024, y_preprocessing='diag',
                 y_log_transform=None, kr=False, rescale=None, mean_filt=None,
                 y_norm='mean', min_subtraction=True,
                 use_node_features=True, mlp_model_id=None,
@@ -61,7 +63,8 @@ class ContactsGraph(torch_geometric.data.Dataset):
                 crop=None, ofile=sys.stdout, verbose=True,
                 max_sample=float('inf'), samples=None, sub_dir='samples',
                 plaid_score_cutoff=None, sweep_choices=[2,3,4,5],
-                diag=False, corr=False, keep_zero_edges=False, output_preprocesing=None,
+                diag=False, corr=False, eig=False,
+                keep_zero_edges=False, output_preprocesing=None,
                 bonded_root = None):
         '''
         Inputs:
@@ -124,6 +127,7 @@ class ContactsGraph(torch_geometric.data.Dataset):
         self.verbose = verbose
         self.diag = diag
         self.corr = corr
+        self.eig = eig
         self.keep_zero_edges = keep_zero_edges
         self.output_preprocesing = output_preprocesing
         self.bonded_root = bonded_root
@@ -210,6 +214,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
             graph.contact_map_corr = self.contact_map_corr
             graph.contact_map_bonded = self.contact_map_bonded
             graph.diag_chi_continuous = self.diag_chis_continuous
+
+            if self.eig:
+                graph.seqs = epilib.get_pcs(graph.contact_map_diag, 10, normalize=True)
 
             if self.pre_transform is not None:
                 graph = self.pre_transform(graph)

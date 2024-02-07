@@ -67,7 +67,15 @@ def main():
             638: '$Corr(\\tilde{H}_{ij})$ instead of $H_{ij}$',
             636: 'without SignNet but with eigenvectors',
             639: 'pReLU activations',
-            640: 'original message passing layer from \citep{Brody2022HowNetworks}'}
+            640: 'original message passing layer from \citep{Brody2022HowNetworks}',
+            641: 'mse_and_mse_log',
+            642: 'mse_and_mse_log',
+            643: 'mse_and_mse_log',
+            644: 'mse_log_and_mse_kth_diagonal',
+            645: 'mse_log_and_mse_kth_diagonal',
+            646: 'mse_log_scc',
+            647: 'mse_log_and_mse_log_scc',
+            648: 'mse_log_and_mse_log_scc'}
     id_list = descr_dict.keys()
     print(id_list)
 
@@ -90,11 +98,12 @@ def main():
 
     dataset = 'dataset_12_06_23'
     train_samples, _ = get_samples(dataset, train=True, filter_cell_lines=['imr90'])
+    train_samples = train_samples[:10]
     scc_dict = defaultdict(lambda: None)
     args = getArgs(data_folder = f'/home/erschultz/{dataset}',
                     samples = train_samples)
     args.experimental = True
-    args.bad_methods = ['b_140', 'b_261', 'spheroid_2.0', 'max_ent', 'grid200', 'phi']
+    args.bad_methods = ['b_140', 'b_261', 'spheroid_2.0', 'max_ent', 'grid200', 'phi', '_xyz']
     args.convergence_definition = 'normal'
     args.gnn_id = id_list
     data, _ = load_data(args)

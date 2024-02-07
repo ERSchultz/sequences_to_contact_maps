@@ -6,16 +6,24 @@
 		\hline
 		 \thead{ID} & \thead{Method} & \thead{Simulated Validation Loss \\ (MSE)} & \thead{Experimental Validation Loss \\ (Experimental SCC)} \\ 
 		\hline\hline
-		 631 & Baseline & 0.408 & 0.672 \\ 
-		 632 & no log-transform in loss & 5.837 & 0.379 \\ 
-		 633 & no rescale & 0.329 & 0.638 \\ 
-		 634 & without SignNet and without eigenvectors & 0.512 & 0.509 \\ 
-		 635 & without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$ & 0.526 & 0.622 \\ 
-		 637 & without $H_{ij}$ & 1.25 & 0.148 \\ 
-		 638 & $Corr(\tilde{H}_{ij})$ instead of $H_{ij}$ & 0.678 & 0.528 \\ 
-		 636 & without SignNet but with eigenvectors & 0.516 & 0.422 \\ 
-		 639 & pReLU activations & 0.574 & 0.419 \\ 
-		 640 & original message passing layer from \citep{Brody2022HowNetworks} & 1.558 & 0.069 \\ 
+		 631 & Baseline & 0.408 & 0.682 \\ 
+		 632 & no log-transform in loss & 5.837 & 0.371 \\ 
+		 633 & no rescale & 0.329 & 0.635 \\ 
+		 634 & without SignNet and without eigenvectors & 0.512 & 0.596 \\ 
+		 635 & without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$ & 0.526 & 0.626 \\ 
+		 637 & without $H_{ij}$ & 1.25 & 0.191 \\ 
+		 638 & $Corr(\tilde{H}_{ij})$ instead of $H_{ij}$ & 0.678 & 0.538 \\ 
+		 636 & without SignNet but with eigenvectors & 0.516 & 0.454 \\ 
+		 639 & pReLU activations & 0.574 & 0.351 \\ 
+		 640 & original message passing layer from \citep{Brody2022HowNetworks} & 1.558 & 0.038 \\ 
+		 641 & mse_and_mse_log & 1.016 & 0.63 \\ 
+		 642 & mse_and_mse_log & 0.715 & 0.544 \\ 
+		 643 & mse_and_mse_log & 0.476 & 0.629 \\ 
+		 644 & mse_log_and_mse_kth_diagonal & 0.982 & 0.639 \\ 
+		 645 & mse_log_and_mse_kth_diagonal & 0.488 & 0.661 \\ 
+		 646 & mse_log_scc & 0.209 & 0.69 \\ 
+		 647 & mse_log_and_mse_log_scc & 0.613 & 0.618 \\ 
+		 648 & mse_log_and_mse_log_scc & 0.431 & 0.618 \\ 
 		\hline
 	\end{tabular}
 	\caption{Neural network ablation results.

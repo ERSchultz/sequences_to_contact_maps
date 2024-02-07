@@ -74,7 +74,8 @@ def get_dataset(opt, names=False, minmax=False, verbose=True,
         else:
             max_sample = float('inf')
 
-        dataset = ContactsGraph(opt.data_folder, opt.scratch, opt.root_name, opt.input_m, opt.y_preprocessing,
+        dataset = ContactsGraph(opt.data_folder, opt.scratch, opt.root_name,
+                                opt.input_m, opt.y_preprocessing,
                                 opt.log_preprocessing, opt.kr, opt.rescale, opt.mean_filt,
                                 opt.preprocessing_norm, opt.min_subtraction,
                                 opt.use_node_features, opt.mlp_model_id,
@@ -84,8 +85,9 @@ def get_dataset(opt, names=False, minmax=False, verbose=True,
                                 opt.output_mode, opt.crop, opt.log_file, verbose,
                                 max_sample, samples, sub_dir,
                                 opt.plaid_score_cutoff, opt.sweep_choices,
-                                opt.diag, opt.corr, opt.keep_zero_edges,
-                                opt.output_preprocesing, opt.bonded_path)
+                                opt.diag, opt.corr, opt.eig,
+                                opt.keep_zero_edges, opt.output_preprocesing,
+                                opt.bonded_path)
         opt.root = dataset.root
         print('\n'*3)
     elif opt.autoencoder_mode and opt.output_mode == 'sequence':

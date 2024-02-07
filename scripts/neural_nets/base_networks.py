@@ -6,6 +6,7 @@ import scipy
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from numpy.lib.stride_tricks import as_strided
 from sympy import solve, symbols
 
 
@@ -93,23 +94,45 @@ def torch_mean_dist(arr, normalize=False):
     distances = range(0, m, 1)
     out = torch.zeros((N, m), dtype=torch.float32)
     if arr.is_cuda:
-        out = out.to(arr.get_device())
+        out = out.to(arr_copy.get_device())
 
     for i in range(N):
         # normalize
         if normalize:
             mean = torch.mean(torch.diagonal(arr_copy[i]))
             if mean == 0:
-                arr_norm = arr
+                arr_norm = arr_copy
             else:
                 arr_norm = arr_copy[i] / mean
         else:
             arr_norm = arr
         for d in distances:
-            diag = torch.diagonal(arr_norm, offset = d)
             out[i, d] = torch.mean(torch.diagonal(arr_norm, offset = d))
 
     return out
+
+def torch_subtract_diag(arr):
+    '''Subtract mean from each diagonal of input array.'''
+    arr_copy = torch.clone(arr)
+    assert arr_copy.shape[-1] == arr_copy.shape[-2], f'invalid shape {arr_copy.shape}'
+    if len(arr_copy.shape) == 3:
+        N, m, _ = arr_copy.shape
+    elif len(arr_copy.shape) == 2:
+        m, _ = arr_copy.shape
+        N = 1
+        arr_copy = arr_copy.reshape(1, m, m)
+
+    out = torch.zeros((N, m, m), dtype=torch.float32)
+    if arr.is_cuda:
+        out = out.to(arr_copy.get_device())
+
+    for i in range(N):
+        for d in range(0, m-1):
+            diag = torch.diagonal(arr_copy[i], offset = d)
+            new = diag - torch.mean(diag)
+            out[i][range(0, m-d), range(d, m)] = new
+
+    return out + torch.transpose(out, 1, 2)
 
 def torch_eig(arr, k):
     m = arr.shape[-1]
@@ -121,6 +144,18 @@ def torch_eig(arr, k):
     out = eig_vals[:, :k] / m
 
     return out
+
+def torch_toeplitz(c):
+    idx = [i for i in range(c.size(0)-1, -1, -1)]
+    idx = torch.LongTensor(idx)
+    c_rev = c.index_select(0, idx)
+    # c_rev may not autodiff:
+    # https://discuss.pytorch.org/t/how-to-reverse-a-torch-tensor/382
+    vals = torch.cat((c_rev, c[1:]))
+    out_shp = len(c), len(c)
+    n = vals.stride(0)
+    # negative stride not supported - doesn't work
+    return torch.as_strided(vals[len(c)-1:], size=out_shp, stride=(-n, n)).copy()
 
 class UnetBlock(nn.Module):
     '''U Net Block adapted from https://github.com/phillipi/pix2pix.'''
@@ -762,8 +797,23 @@ def test_torch_eig():
     eig_vals = torch_eig(L, 10)
     print(eig_vals, eig_vals.shape)
 
-
-
+def test_torch_toeplitz():
+    # w = np.arange(1,10)
+    # print('w', w)
+    #
+    # res = toeplitz(w)
+    # print(res)
+    #
+    # w = torch.tensor(w)
+    # res = torch_toeplitz(w)
+    # print(res)
+    # S = torch.tensor(np.ones((2, 5, 5)), dtype=torch.float32)
+    S = torch.tensor(np.random.normal(size=(2, 5, 5)), dtype=torch.float32)
+    S[S>0.4] = 1
+    S[S<1] = 0
+    print(S)
+    new = torch_subtract_diag(S)
+    print(new)
 
 
 if __name__ == '__main__':
@@ -773,6 +823,7 @@ if __name__ == '__main__':
     # test_strided()
     # test_unpool()
     # test_triu_to_full()
-    test_mean_dist()
+    # test_mean_dist()
+    test_torch_toeplitz()
     # test_tile_cat()
     # test_torch_eig()
