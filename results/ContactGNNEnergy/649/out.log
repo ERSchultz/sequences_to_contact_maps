@@ -272,3 +272,100 @@ Mean test/val loss: 0.7970
 [25, 50, 75] percentiles test/val loss: [0.5169 0.7242 0.9683]
 
 Epoch 22, loss = 0.7107
+Mean test/val loss: 0.7517
+[25, 50, 75] percentiles test/val loss: [0.4915 0.6843 0.9183]
+
+Epoch 24, loss = 0.6914
+Mean test/val loss: 0.7308
+[25, 50, 75] percentiles test/val loss: [0.48   0.6663 0.8746]
+
+Epoch 26, loss = 0.6754
+Mean test/val loss: 0.7333
+[25, 50, 75] percentiles test/val loss: [0.4868 0.6701 0.8759]
+
+Epoch 28, loss = 0.6567
+Mean test/val loss: 0.6945
+[25, 50, 75] percentiles test/val loss: [0.4544 0.6195 0.8296]
+
+Epoch 30, loss = 0.6431
+Mean test/val loss: 0.6871
+[25, 50, 75] percentiles test/val loss: [0.4574 0.6258 0.8227]
+
+Epoch 32, loss = 0.6304
+Mean test/val loss: 0.6987
+[25, 50, 75] percentiles test/val loss: [0.4506 0.6096 0.8326]
+
+Epoch 34, loss = 0.6156
+Mean test/val loss: 0.6813
+[25, 50, 75] percentiles test/val loss: [0.4476 0.6208 0.818 ]
+
+Epoch 36, loss = 0.6086
+Mean test/val loss: 0.6649
+[25, 50, 75] percentiles test/val loss: [0.4301 0.6081 0.7899]
+
+Epoch 38, loss = 0.5954
+Mean test/val loss: 0.6702
+[25, 50, 75] percentiles test/val loss: [0.4383 0.5953 0.8087]
+
+Epoch 40, loss = 0.5835
+Mean test/val loss: 0.6552
+[25, 50, 75] percentiles test/val loss: [0.4348 0.6041 0.7824]
+
+New lr: 1e-05
+Epoch 42, loss = 0.5138
+Mean test/val loss: 0.6021
+[25, 50, 75] percentiles test/val loss: [0.393  0.5478 0.7211]
+
+Epoch 44, loss = 0.5031
+Mean test/val loss: 0.5984
+[25, 50, 75] percentiles test/val loss: [0.3891 0.5482 0.7216]
+
+Epoch 46, loss = 0.4954
+Mean test/val loss: 0.5954
+[25, 50, 75] percentiles test/val loss: [0.3849 0.5355 0.7128]
+
+Epoch 48, loss = 0.4889
+Mean test/val loss: 0.5928
+[25, 50, 75] percentiles test/val loss: [0.3858 0.5356 0.7013]
+
+Epoch 50, loss = 0.4828
+Mean test/val loss: 0.5915
+[25, 50, 75] percentiles test/val loss: [0.3846 0.5331 0.7101]
+
+Epoch 52, loss = 0.4772
+Mean test/val loss: 0.5894
+[25, 50, 75] percentiles test/val loss: [0.3813 0.5297 0.7015]
+
+Epoch 54, loss = 0.4721
+Mean test/val loss: 0.5871
+[25, 50, 75] percentiles test/val loss: [0.386  0.5239 0.7064]
+
+Epoch 56, loss = 0.4670
+Mean test/val loss: 0.5882
+[25, 50, 75] percentiles test/val loss: [0.3837 0.5227 0.7047]
+
+Epoch 58, loss = 0.4622
+Mean test/val loss: 0.5845
+[25, 50, 75] percentiles test/val loss: [0.3814 0.521  0.7012]
+
+Epoch 60, loss = 0.4575
+Mean test/val loss: 0.5864
+[25, 50, 75] percentiles test/val loss: [0.3823 0.5208 0.7026]
+
+
+Total parameters: 51478960
+Total training + validation time: 32.0 hours, 14.0 mins, and 29.69999999999709 secs
+Final val loss: 0.5864155016988516
+
+split sizes: train=4500, val=500, test=0, N=5000
+#### Plotting Script ####
+Prediction Results:
+dataset_12_12_23_imr90 sample981: 0.31383636593818665
+dataset_12_12_23_imr90 sample324: 0.7440831661224365
+dataset_12_12_23_imr90 sample3464: 0.6198558807373047
+dataset_12_12_23_imr90 sample2834: 0.39905357360839844
+dataset_12_12_23_imr90 sample1936: 0.13042227923870087
+mse_log_plaid_and_mse_log_diag loss: 0.441 +- 0.218
+
+Downsampling (200k) Results:
+Original sampling (400k) Results:

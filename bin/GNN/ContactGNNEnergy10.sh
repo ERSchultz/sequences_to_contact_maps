@@ -3,8 +3,7 @@
 #SBATCH --output=logFiles/ContactGNNEnergy10.out
 #SBATCH --time=24:00:00
 #SBATCH --account=pi-depablo
-#SBATCH --partition=depablo-gpu
-#SBATCH --gres=gpu:1
+
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=12
 #SBATCH --mem-per-cpu=2000
@@ -46,6 +45,7 @@ nEpochs=60
 milestones='40'
 loss='mse_log_and_mse_log_plaid_and_mse_log_diag'
 
+resumeTraining='true'
 # 631 ablation
 # mse_log_plaid_and_mse_log_diag
 
