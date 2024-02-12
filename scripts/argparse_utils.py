@@ -409,6 +409,10 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
         #     opt.criterion = mse_and_mse_center
         elif loss == 'mse_log':
             criterion = mse_log
+        elif loss == 'mse_exp':
+            criterion = mse_exp
+        elif loss == 'mse_exp_norm':
+            criterion = MSE_EXP_NORM()
         elif loss == 'mse_log_scc':
             criterion = MSE_log_scc(opt.m)
         elif loss == 'mse_plaid':
@@ -431,6 +435,10 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
             criterion = MSE_plaid_eig()
             opt.diag = True
             opt.eig = True
+        elif loss == 'scc':
+            criterion = SCC_loss(opt.m)
+        elif loss == 'scc_exp':
+            criterion = SCC_loss(opt.m, exp=True)
         elif loss == 'mse_plaid_eig_log':
             criterion = MSE_plaid_eig(True)
             opt.diag = True

@@ -7,6 +7,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from numpy.lib.stride_tricks import as_strided
+from pylib.utils.similarity_measures import SCC
+from scipy.stats import pearsonr
 from sympy import solve, symbols
 
 
@@ -146,6 +148,7 @@ def torch_eig(arr, k):
     return out
 
 def torch_toeplitz(c):
+    '''deprecated'''
     idx = [i for i in range(c.size(0)-1, -1, -1)]
     idx = torch.LongTensor(idx)
     c_rev = c.index_select(0, idx)
@@ -156,6 +159,87 @@ def torch_toeplitz(c):
     n = vals.stride(0)
     # negative stride not supported - doesn't work
     return torch.as_strided(vals[len(c)-1:], size=out_shp, stride=(-n, n)).copy()
+
+def torch_pearson(x, y):
+    vx = x - torch.mean(x)
+    vy = y - torch.mean(y)
+
+    pearson = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx ** 2)) * torch.sqrt(torch.sum(vy ** 2)))
+
+    return pearson
+
+class TORCH_SCC():
+    """
+    Calculate Stratified Correlation Coefficient (SCC)
+    as defined by https://pubmed.ncbi.nlm.nih.gov/28855260/.
+    """
+    def __init__(self, m, h=1, K=None):
+        self.m = m
+        self.h = h
+        self.K = K
+        self.var_stabilized = True
+
+        self.w_arr = torch.zeros((K), dtype=torch.float32)
+        for k in range(0, K):
+            N_k = m - k
+            if N_k > 1:
+                r_2k = np.var(np.arange(1, N_k+1)/N_k, ddof=1)
+                w_k = N_k * r_2k
+                self.w_arr[k] = w_k
+
+        self.w_sum = torch.sum(self.w_arr)
+
+        if self.h is not None:
+            self.width = 1 + 2 * self.h
+            self.filter_weight = torch.ones((1, 1, self.width, self.width))
+
+    def mean_filter(self, inp):
+        N = inp.shape[0]
+        inp = inp.reshape(N, 1, self.m, self.m)
+        if inp.is_cuda and not self.filter_weight.is_cuda:
+            self.filter_weight = self.filter_weight.to(inp.get_device())
+        out = F.conv2d(inp, self.filter_weight, padding = self.h) / self.width
+        return out.reshape(N, self.m, self.m)
+
+    def __call__(self, x, y, verbose=False, debug=False, distance=False):
+        '''
+        Compute (fasthicrep?) scc between contact map x and y.
+
+        Inputs:
+            x: contact map
+            y: contact map of same shape as x
+            verbose: True to print when nan found
+            debug: True to return p_arr and w_arr
+        '''
+        assert len(x.shape) == 3 and len(y.shape) == 3, 'must have batch dimension'
+        N = y.shape[0]
+
+        if self.h is not None:
+            x = self.mean_filter(x)
+            y = self.mean_filter(y)
+
+        scc_arr = torch.zeros(N)
+        for i in range(N):
+            p_arr = torch.zeros(self.K)
+            for k in range(0, self.K):
+                # get stratum (diagonal) of contact map
+                x_k = torch.diagonal(x[i], k)
+                y_k = torch.diagonal(y[i], k)
+
+                # TODO not using filtering - is this the same as fasthicrep??
+
+                p_arr[k] = torch_pearson(x_k, y_k)
+
+            scc_i = torch.sum(self.w_arr * p_arr) / self.w_sum
+            scc_arr[i] = scc_i
+
+        if distance:
+            scc_arr = 1 - scc_arr
+
+        if debug:
+            return scc_arr, p_arr, self.w_arr
+        else:
+            return scc_arr
 
 class UnetBlock(nn.Module):
     '''U Net Block adapted from https://github.com/phillipi/pix2pix.'''
@@ -635,7 +719,6 @@ class FillDiagonalsFromArray2(nn.Module):
         return output
 
 
-
 def test_average_to_2d_outer():
     avg = AverageTo2d(mode = 'outer', concat_d = False, n = 10)
     verbose = True
@@ -773,8 +856,6 @@ def test_mean_dist():
 
     print(f"Tot time: {t_tot}\nAvg time: {t_avg}")
 
-
-
 def test_tile_cat():
     inp = torch.tensor(np.array([[1,2,3,4,5,6], [1,5,6,8,9,3]]), dtype = torch.float32)
     print(inp)
@@ -815,6 +896,38 @@ def test_torch_toeplitz():
     new = torch_subtract_diag(S)
     print(new)
 
+def test_torch_pearson():
+    arr1 = np.array([1, 2, 3, 1, 6, 8])
+    arr2 = np.array([4, 5, 6, 7, 8, 9])
+    # arr1 = arr1.reshape(2, 3)
+    # arr2 = arr2.reshape(2, 3)
+    print(arr1)
+
+    p, _ = pearsonr(arr1, arr2)
+    print(p)
+
+    p = torch_pearson(torch.tensor(arr1, dtype=torch.float32),
+                    torch.tensor(arr2, dtype=torch.float32))
+    print(p)
+
+def test_torch_scc():
+    m=8
+    N=2
+    h=2
+    K=4
+    tscc = TORCH_SCC(m, h, K)
+    y1 = np.random.normal(size=(N, m, m))
+    y2 = np.random.normal(size=(N, m, m))
+
+    scc = SCC(h, K)
+    p = scc.scc(y1[0], y2[0])
+    print(p)
+
+    y1 = torch.tensor(y1, dtype=torch.float32)
+    y2 = torch.tensor(y2, dtype=torch.float32)
+    p = tscc(y1, y2, distance=True)
+    print(p, p.shape)
+
 
 if __name__ == '__main__':
     # test_average_to_2d_outer()
@@ -824,6 +937,8 @@ if __name__ == '__main__':
     # test_unpool()
     # test_triu_to_full()
     # test_mean_dist()
-    test_torch_toeplitz()
+    # test_torch_toeplitz()
+    # test_torch_pearson()
+    test_torch_scc()
     # test_tile_cat()
     # test_torch_eig()

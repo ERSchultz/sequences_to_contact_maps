@@ -163,7 +163,7 @@ def debugModel(model_type):
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
-        opt.loss = 'mse_plaid_eig'
+        opt.loss = 'mse_exp_norm'
         opt.loss_k = 3
         opt.lambda1=5e-2
         opt.lambda2=1
@@ -642,7 +642,7 @@ def temp():
 
 def test_loss():
     N=2
-    m=5
+    m=3
     k=2
     torch.manual_seed(12)
     vecs = torch.randn((N, k, m), dtype=torch.float32)
@@ -661,14 +661,57 @@ def test_loss():
 
 
     metricC = Combined_Loss([metric6, metric7], [1, 0.1], [None, None])
-    mseC = metricC(e, ehat, [None, vecs])
-    print(mseC)
+    # mseC = metricC(e, ehat, [None, vecs])
+    # print(mseC)
 
+    metric8 = MSE_EXP_NORM()
+    mse8 = metric8(e, ehat)
+    print('mse8', mse8)
+
+
+def S_to_Y():
+    dir = '/home/erschultz/dataset_12_06_23/samples/sample1'
+    grid_root = 'optimize_grid_b_200_v_8_spheroid_1.5'
+    y_bonded = np.load(osp.join(dir, grid_root, 'y.npy'))
+    y_bonded /= np.mean(y_bonded.diagonal())
+
+    scc = SCC(h=1, K=100)
+
+    me_dir = osp.join(dir, f'{grid_root}-max_ent10')
+    S_me = np.load(osp.join(me_dir, 'iteration30/S.npy'))
+
+    gnn_dir = osp.join(dir, f'{grid_root}-GNN629')
+    odir = osp.join(gnn_dir, 'test')
+    if not osp.exists(odir):
+        os.mkdir(odir)
+
+    y = np.load(osp.join(gnn_dir, 'y.npy'))
+    plot_matrix(y, osp.join(odir, 'y.png'), vmax = 'mean')
+
+    S = np.load(osp.join(gnn_dir, 'S.npy'))
+    print('S', scc.scc(S, S_me))
+    print('exp(S)', scc.scc(np.exp(-S), np.exp(-S_me)))
+    print('log(S)', scc.scc(np.sign(S) * np.log(np.abs(S) + 1),
+                            np.sign(S_me) * np.log(np.abs(S_me) + 1)))
+
+    y_S = np.exp(-S)
+    # y_S /= np.mean(y_S.diagonal())
+    print('y_S', scc.scc(y, y_S))
+    plot_matrix(y_S, osp.join(odir, 'y_S.png'), vmax = 'mean')
+    #
+    # y_add = y_bonded + y_S
+    # y_add /= np.mean(y_add.diagonal())
+    # print('add', scc.scc(y, y_add))
+    # plot_matrix(y_add, osp.join(odir, 'y_add.png'), vmax = 'mean')
+    #
+    # y_mul = y_bonded * y_S
+    # y_mul /= np.mean(y_mul.diagonal())
+    # print('mul', scc.scc(y, y_mul))
+    # plot_matrix(y_mul, osp.join(odir, 'y_mul.png'), vmax = 'mean')
 
 if __name__ == '__main__':
     # temp()
     # test_loss()
-    # find_best_p_s()
     # binom()
     # edit_argparse()
     debugModel('ContactGNNEnergy')
@@ -676,3 +719,4 @@ if __name__ == '__main__':
     # test_center_norm_log()
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()
+    # S_to_Y()

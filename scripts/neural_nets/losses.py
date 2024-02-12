@@ -5,7 +5,7 @@ import scipy
 import torch
 import torch.nn.functional as F
 
-from .base_networks import torch_mean_dist, torch_subtract_diag
+from .base_networks import TORCH_SCC, torch_mean_dist, torch_subtract_diag
 
 
 def mse_center(input, target):
@@ -24,6 +24,32 @@ def mse_log(input, target, *args):
     input_log = torch.sign(input) * torch.log(torch.abs(input) + 1)
     target_log = torch.sign(target) * torch.log(torch.abs(target) + 1)
     return F.mse_loss(input_log, target_log)
+
+def mse_exp(input, target, *args):
+    input_exp = torch.exp(input)
+    target_exp = torch.exp(target)
+    return F.mse_loss(input_exp, target_exp)
+
+class MSE_EXP_NORM():
+    def __init__(self):
+        pass
+
+    def normalize(self, arr):
+        N, m, _ = arr.shape
+        diagonals = torch.diagonal(arr, dim1=1, dim2=2)
+        means = torch.mean(diagonals, dim=1)
+        means = torch.broadcast_to(means, (m, m, N))
+        means = torch.permute(means, (2, 0, 1))
+        return arr / means
+
+    def __call__(self, input, target):
+        input_exp = torch.exp(input)
+        input_exp_norm = self.normalize(input_exp)
+
+        target_exp = torch.exp(target)
+        target_exp_norm = self.normalize(target_exp)
+
+        return F.mse_loss(input_exp_norm, target_exp_norm)
 
 def mse_center_log(input, target):
     input_center = input - torch.mean(input)
@@ -47,6 +73,20 @@ def mse_top_k_diagonals(input, target, k):
         loss += mse_kth_diagonal(input, target, i)
 
     return loss / k
+
+class SCC_loss():
+    def __init__(self, m, h=5, K=100, exp=False):
+        self.tscc = TORCH_SCC(m, h, K)
+        self.exp = exp
+
+    def __call__(self, input, target):
+        N = input.shape[0]
+        if self.exp:
+            scc = self.tscc(torch.exp(-input), torch.exp(-target), distance = True) / N
+        else:
+            scc = self.tscc(input, target, distance = True) / N
+
+        return scc
 
 class MSE_plaid():
     def __init__(self, log=False):
@@ -125,6 +165,10 @@ class Combined_Loss():
         self.lambdas = lambdas
         self.args = args
 
+    def __repr__(self):
+        return f'Combined_Loss of ({self.criterions}, {self.lambdas}, {self.args})'
+
+
     def __call__(self, input, target, arg2=None, split_loss=False):
         loss_list = []
         tot_loss = 0
@@ -145,8 +189,14 @@ class Combined_Loss():
                 else:
                     loss = loss_lambda * criterion(input, target, arg)
 
-            loss_list.append(loss)
-            tot_loss += loss
+            try:
+                if len(loss.shape) == 1:
+                    loss = loss.item()
+                loss_list.append(loss)
+                tot_loss += loss
+            except RuntimeError:
+                print(criterion, loss_lambda, arg1, arg2, loss)
+                raise
 
         if split_loss:
             return loss_list

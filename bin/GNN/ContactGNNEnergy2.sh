@@ -42,14 +42,13 @@ useSignPlus='true'
 batchSize=1
 nEpochs=60
 milestones='40'
-loss='mse_and_mse_log'
-lossLambda1=5e-2
+loss='scc_exp'
 
 
 # 631 ablation
-# mse_and_mse_log
+# scc_exp loss
 
-id=642
+id=657
 for lr in 1e-4
 do
   train
