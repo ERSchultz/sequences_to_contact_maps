@@ -31,18 +31,31 @@ class MSE_EXP_NORM():
 
     def normalize(arr):
         N, m, _ = arr.shape
-        diagonals = torch.diagonal(arr, dim1=1, dim2=2)
-        means = torch.mean(diagonals, dim=1)
+        main_diagonals = torch.diagonal(arr, dim1=1, dim2=2)
+        means = torch.mean(main_diagonals, dim=1)
         means = torch.broadcast_to(means, (m, m, N))
         means = torch.permute(means, (2, 0, 1))
         return arr / means
 
+    def normalize2(arr):
+        N, m, _ = arr.shape
+        means = torch.mean(arr, dim=(1,2))
+        print(means)
+        means = torch.broadcast_to(means, (m, m, N))
+        means = torch.permute(means, (2, 0, 1))
+        print(means)
+
+        arr = arr / means
+        arr[arr > 1] = 1
+
+        return arr
+
     def __call__(self, input, target):
         input_exp = torch.exp(-input)
-        input_exp_norm = MSE_EXP_NORM.normalize(input_exp)
+        input_exp_norm = MSE_EXP_NORM.normalize2(input_exp)
 
         target_exp = torch.exp(-target)
-        target_exp_norm = MSE_EXP_NORM.normalize(target_exp)
+        target_exp_norm = MSE_EXP_NORM.normalize2(target_exp)
 
         return F.mse_loss(input_exp_norm, target_exp_norm)
 
@@ -79,8 +92,8 @@ class SCC_loss():
         if self.exp:
             input_exp = torch.exp(-input)
             target_exp = torch.exp(-target)
-            input_exp = MSE_EXP_NORM.normalize(input_exp)
-            target_exp = MSE_EXP_NORM.normalize(target_exp)
+            input_exp = MSE_EXP_NORM.normalize2(input_exp)
+            target_exp = MSE_EXP_NORM.normalize2(target_exp)
             scc = self.tscc(input_exp, target_exp, distance = True)
         else:
             scc = self.tscc(input, target, distance = True)
