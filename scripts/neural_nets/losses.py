@@ -40,10 +40,8 @@ class MSE_EXP_NORM():
     def normalize2(arr):
         N, m, _ = arr.shape
         means = torch.mean(arr, dim=(1,2))
-        print(means)
         means = torch.broadcast_to(means, (m, m, N))
         means = torch.permute(means, (2, 0, 1))
-        print(means)
 
         arr = arr / means
         arr[arr > 1] = 1

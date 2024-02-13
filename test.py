@@ -163,7 +163,7 @@ def debugModel(model_type):
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
-        opt.loss = 'mse_exp_norm'
+        opt.loss = 'mse_log_and_scc'
         opt.loss_k = 3
         opt.lambda1=5e-2
         opt.lambda2=1
@@ -204,7 +204,7 @@ def debugModel(model_type):
         opt.head_architecture = 'bilinear'
         opt.input_L_to_D = False
         opt.input_L_to_D_mode = 'subtract'
-        opt.head_architecture_2 = f'fc-fill_{opt.m}'
+        opt.head_architecture_2 = f'dconv-fc-fill_{opt.m}'
         opt.head_hidden_sizes_list = [100]
         # opt.crop = [128, 256]
         opt.plaid_score_cutoff = None
@@ -723,9 +723,9 @@ if __name__ == '__main__':
     # test_loss()
     # binom()
     # edit_argparse()
-    # debugModel('ContactGNNEnergy')
+    debugModel('ContactGNNEnergy')
     # gnn_meanDist_s(434, '981')
     # test_center_norm_log()
     # testGNNrank('dataset_02_04_23', 378)
     # plot_SCC_weights()
-    S_to_Y()
+    # S_to_Y()

@@ -27,7 +27,7 @@ updateHiddenSizesList='1000-1000-1000-1000-128'
 
 outputPreprocesing='none'
 headArchitecture='bilinear'
-headArchitecture2="fc-fill_${m}"
+headArchitecture2="dconv-fc-fill_${m}"
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 
@@ -42,13 +42,13 @@ useSignPlus='true'
 batchSize=1
 nEpochs=60
 milestones='40'
-loss='mse_log_and_mse_log_scc'
-lossLambda2=1e-1
+loss='mse_log'
+
 
 # 631 ablation
-# mse_log_and_mse_log_scc
+# dconv
 
-id=648
+id=665
 for lr in 1e-4
 do
   train

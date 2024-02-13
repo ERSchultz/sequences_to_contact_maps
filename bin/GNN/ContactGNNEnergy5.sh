@@ -42,12 +42,13 @@ useSignPlus='true'
 batchSize=1
 nEpochs=60
 milestones='40'
-loss='mse_exp_norm'
+loss='mse_log'
+inputLtoD='true'
 
 # 631 ablation
-# mse_exp_norm loss
+# input_L_to_D
 
-id=660
+id=662
 for lr in 1e-4
 do
   train
