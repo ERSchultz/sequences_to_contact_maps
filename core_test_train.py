@@ -212,11 +212,11 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                 y = data.y
                 y = torch.reshape(y, (-1, opt.m))
             if opt.verbose:
-                print(f'x={data.x}, shape={data.x.shape}, '
+                print(f'x: shape={data.x.shape}, '
                         f'min={torch.min(data.x).item()}, '
                         f'max={torch.max(data.x).item()}')
                 if data.edge_attr is not None:
-                    print(f'edge_attr={data.edge_attr}, '
+                    print(f'edge_attr: '
                             f'shape={data.edge_attr.shape}, '
                             f'min={torch.min(data.edge_attr).item()}, '
                             f'max={torch.max(data.edge_attr).item()}')
@@ -229,7 +229,7 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                             f'shape={data.neg_edge_attr.shape}, '
                             f'min={torch.min(data.neg_edge_attr).item()}, '
                             f'max={torch.max(data.neg_edge_attr).item()}')
-                print(f'y={y}, shape={y.shape}, min={torch.min(y).item()}, '
+                print(f'y: shape={y.shape}, min={torch.min(y).item()}, '
                         f'max={torch.max(y).item()}')
                 t0 = time.time()
             yhat = model(data)

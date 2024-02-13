@@ -25,11 +25,6 @@ def mse_log(input, target, *args):
     target_log = torch.sign(target) * torch.log(torch.abs(target) + 1)
     return F.mse_loss(input_log, target_log)
 
-def mse_exp(input, target, *args):
-    input_exp = torch.exp(input)
-    target_exp = torch.exp(target)
-    return F.mse_loss(input_exp, target_exp)
-
 class MSE_EXP_NORM():
     def __init__(self):
         pass
@@ -43,10 +38,10 @@ class MSE_EXP_NORM():
         return arr / means
 
     def __call__(self, input, target):
-        input_exp = torch.exp(input)
+        input_exp = torch.exp(-input)
         input_exp_norm = self.normalize(input_exp)
 
-        target_exp = torch.exp(target)
+        target_exp = torch.exp(-target)
         target_exp_norm = self.normalize(target_exp)
 
         return F.mse_loss(input_exp_norm, target_exp_norm)
@@ -79,14 +74,17 @@ class SCC_loss():
         self.tscc = TORCH_SCC(m, h, K)
         self.exp = exp
 
-    def __call__(self, input, target):
+    def __call__(self, input, target, *args):
         N = input.shape[0]
         if self.exp:
-            scc = self.tscc(torch.exp(-input), torch.exp(-target), distance = True) / N
+            input_exp = torch.exp(-input)
+            scc = self.tscc(input_exp, torch.exp(-target), distance = True)
         else:
-            scc = self.tscc(input, target, distance = True) / N
+            scc = self.tscc(input, target, distance = True)
 
-        return scc
+        loss = torch.mean(scc) / N
+
+        return loss
 
 class MSE_plaid():
     def __init__(self, log=False):

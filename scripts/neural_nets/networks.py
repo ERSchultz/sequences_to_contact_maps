@@ -476,7 +476,7 @@ class ContactGNN(nn.Module):
             else:
                 raise Exception(f'{self.input_L_to_D_mode} not recognized')
         D_out = self.diagonal_component(latent, additional)
-        if 'subtract' in self.input_L_to_D_mode:
+        if self.input_L_to_D and 'subtract' in self.input_L_to_D_mode:
             D_out -= L_meanDist
 
         if L_out is None:

@@ -144,13 +144,13 @@ def debugModel(model_type):
 
     # dataset
     dir = "/home/erschultz"
-    datasets = ['dataset_GNN_test']
+    datasets = ['dataset_12_12_23_imr90']
     opt.data_folder = [osp.join(dir, d) for d in datasets]
     opt.scratch = '/home/erschultz/scratch'
 
     # architecture
     opt.m = 512
-    opt.split_percents=[1/3,1/3,1/3]
+    opt.split_percents=[0.7,0.15,0.15]
     opt.split_sizes=None
     # opt.split_sizes=[1, 0, 0]
     # opt.split_percents = None
@@ -163,7 +163,7 @@ def debugModel(model_type):
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
-        opt.loss = 'mse_exp_norm'
+        opt.loss = 'scc_exp'
         opt.loss_k = 3
         opt.lambda1=5e-2
         opt.lambda2=1
@@ -174,7 +174,7 @@ def debugModel(model_type):
         opt.output_preprocesing = 'none'
         opt.encoder_hidden_sizes_list=[30]
         opt.edge_encoder_hidden_sizes_list=[30]
-        opt.update_hidden_sizes_list=[1000,1000,16]
+        opt.update_hidden_sizes_list=[1000,1000,32]
         opt.hidden_sizes_list=[8,8,8]
         opt.gated = False
         opt.dropout = 0.0
@@ -184,7 +184,7 @@ def debugModel(model_type):
         opt.head_act = 'relu'
         opt.training_norm = None
         opt.use_node_features = False
-        opt.k = 8
+        opt.k = 10
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
@@ -201,12 +201,12 @@ def debugModel(model_type):
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
-        opt.head_architecture = 'dconv-bilinear-triu'
-        opt.input_L_to_D = True
+        opt.head_architecture = 'bilinear'
+        opt.input_L_to_D = False
         opt.input_L_to_D_mode = 'subtract'
-        opt.head_architecture_2 = f'dconv-fc-fill_{opt.m}'
-        opt.head_hidden_sizes_list = [1000, 1000,1000,1000,1000]
-        # opt.crop = 128
+        opt.head_architecture_2 = f'fc-fill_{opt.m}'
+        opt.head_hidden_sizes_list = [1000, 1000,1000]
+        # opt.crop = [128, 256]
         opt.plaid_score_cutoff = None
 
         opt.use_bias = True
@@ -250,14 +250,14 @@ def debugModel(model_type):
     opt.lr = 1e-3
     opt.weight_decay = 1e-5
     opt.w_reg = None; opt.reg_lambda = 10
-    opt.batch_size = 1
+    opt.batch_size = 4
     opt.gamma = 0.1
 
     # other
     opt.pretrain_id = None
     opt.plot = False
     opt.plot_predictions = False
-    opt.verbose = False
+    opt.verbose = True
     opt.print_params = True
     opt.gpus = 1
     # opt.delete_root = True
