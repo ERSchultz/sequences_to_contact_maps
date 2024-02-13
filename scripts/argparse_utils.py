@@ -409,8 +409,6 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
         #     opt.criterion = mse_and_mse_center
         elif loss == 'mse_log':
             criterion = mse_log
-        elif loss == 'mse_exp':
-            criterion = mse_exp
         elif loss == 'mse_exp_norm':
             criterion = MSE_EXP_NORM()
         elif loss == 'mse_log_scc':

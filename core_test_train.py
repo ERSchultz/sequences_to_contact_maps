@@ -20,7 +20,7 @@ from scripts.neural_nets.utils import (get_data_loaders, get_dataset,
 from scripts.plotting_utils import plotting_script
 
 locale.setlocale(locale.LC_ALL, '')
-
+torch.autograd.set_detect_anomaly(True)
 
 
 def main():
@@ -251,6 +251,12 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                     loss += opt.reg_lambda * torch.norm(model.sym(model.W), 2) ** 2
             avg_loss += loss.item()
             loss.backward()
+            if opt.verbose:
+                for k,p in model.named_parameters():
+                    print(f'{k}: shape={p.shape}, min={torch.min(p).item()}, '
+                            f'max={torch.max(p).item()}')
+                    print(f'\tgrad: shape={p.grad.shape}, min={torch.min(p.grad).item()}, '
+                            f'max={torch.max(p.grad).item()}')
             opt.optimizer.step()
         avg_loss /= (t+1)
         train_loss.append(avg_loss)

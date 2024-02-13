@@ -4,24 +4,21 @@
 	\centering
 	\begin{tabular}{|c|c|c|c|c|c|c|}
 		\hline
-		 \thead{ID} & \thead{Method} & \thead{MSE} & \thead{SCC} & \thead{HiC-Spector} & \thead{Corr PC 1} & \thead{RMSE($\tilde{H}$)} \\ 
+		 \thead{ID} & \thead{Method} & \thead{Loss} & \thead{SCC} & \thead{HiC-Spector} & \thead{Corr PC 1} & \thead{RMSE($\tilde{H}$)} \\ 
 		\hline\hline
-		 631 & MSE($S^\dag, \hat{S}^\dag$) (baseline) & 0.408 & 0.671 & 0.484 & 0.897 & 0.652 \\ 
-		 632 & MSE($S,\hat{S}$) & 5.837 & 0.384 & 0.447 & 0.809 & 0.988 \\ 
-		 641 & MSE($S^\dag, \hat{S}^\dag$) + 0.1MSE($S,\hat{S}$) & 1.016 & 0.63 & 0.501 & 0.793 & 0.665 \\ 
-		 642 & MSE($S^\dag, \hat{S}^\dag$) + 0.05MSE($S,\hat{S}$) & 0.715 & 0.54 & 0.455 & 0.849 & 0.692 \\ 
-		 643 & MSE($S^\dag, \hat{S}^\dag$) + 0.001MSE($S,\hat{S}$) & 0.476 & 0.653 & 0.502 & 0.928 & 0.652 \\ 
-		 646 & $\sum(S^\dag-\hat{S}^\dag)\odot W^\text{SCC})^2 / m^2$ & 0.209 & 0.692 & 0.517 & 0.876 & 0.651 \\ 
-		 647 & MSE($S^\dag, \hat{S}^\dag$) + $\sum(S^\dag-\hat{S}^\dag)\odot W^\text{SCC})^2 / m^2$ & 0.613 & 0.654 & 0.516 & 0.867 & 0.659 \\ 
-		 648 & MSE($S^\dag, \hat{S}^\dag$) + $0.1\sum(S^\dag-\hat{S}^\dag)\odot W^\text{SCC})^2 / m^2$ & 0.431 & 0.606 & 0.5 & 0.898 & 0.662 \\ 
-		 649 & MSE($L^\dag, \hat{L}^\dag$) + MSE($D^\dag, \hat{D}^\dag$) & 0.586 & 0.544 & 0.37 & 0.818 & 0.667 \\ 
+		 631 & MSE($S^\dag, \hat{S}^\dag$) (baseline) & 0.408 & 0.675 & 0.469 & 0.906 & 0.641 \\ 
+		 655 & SCC($S, \hat{S}$) & 0.094 & 0.338 & 0.412 & 0.287 & 5.042 \\ 
+		 656 & MSE($S^\dag, \hat{S}^\dag$) + SCC($S, \hat{S}$) & 0.5 & 0.594 & 0.45 & 0.802 & 0.653 \\ 
 		\hline
 	\end{tabular}
 	\caption{Neural network ablation results.
         See \nameref{ablation_study} for description of each method.
         All results in the body of the paper correspond to the baseline method.
-        Validation Loss (MSE) is the average mean squared error on the validation set of 500 simulated contact maps and their synthetic parameters.
-        Experimental SCC is the average stratum-adjusted correlation (SCC) between the experimental contact map and a contact map simulated using the GNN-predicted parameters, averaged over 10 experimental contact maps.
+        Validation Loss (MSE) is the average mean squared error on the validation
+        set of 500 simulated contact maps and their synthetic parameters.
+        Experimental SCC is the average stratum-adjusted correlation (SCC)
+        between the experimental contact map and a contact map simulated using
+        the GNN-predicted parameters, averaged over 10 experimental contact maps.
         }
 	\label{table:ablation}
 \end{table}

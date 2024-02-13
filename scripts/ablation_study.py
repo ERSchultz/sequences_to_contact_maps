@@ -71,21 +71,23 @@ def main():
             }
 
     descr_dict = {631: 'MSE($S^\dag, \hat{S}^\dag$) (baseline)',
-                632: 'MSE($S,\hat{S}$)',
-                641: 'MSE($S^\dag, \hat{S}^\dag$) + 0.1MSE($S,\hat{S}$)',
-                642: 'MSE($S^\dag, \hat{S}^\dag$) + 0.05MSE($S,\hat{S}$)',
-                643: 'MSE($S^\dag, \hat{S}^\dag$) + 0.001MSE($S,\hat{S}$)',
+                # 632: 'MSE($S,\hat{S}$)',
+                # 641: 'MSE($S^\dag, \hat{S}^\dag$) + 0.1MSE($S,\hat{S}$)',
+                # 642: 'MSE($S^\dag, \hat{S}^\dag$) + 0.05MSE($S,\hat{S}$)',
+                # 643: 'MSE($S^\dag, \hat{S}^\dag$) + 0.001MSE($S,\hat{S}$)',
                 # 644: 'mse_log_and_mse_kth_diagonal',
                 # 645: 'mse_log_and_mse_kth_diagonal',
-                646: '$\sum(S^\dag-\hat{S}^\dag)\odot W^\\text{SCC})^2 / m^2$',
-                647: 'MSE($S^\dag, \hat{S}^\dag$) + $\sum(S^\dag-\hat{S}^\dag)\odot W^\\text{SCC})^2 / m^2$',
-                648: 'MSE($S^\dag, \hat{S}^\dag$) + $0.1\sum(S^\dag-\hat{S}^\dag)\odot W^\\text{SCC})^2 / m^2$',
-                649: 'MSE($L^\dag, \hat{L}^\dag$) + MSE($D^\dag, \hat{D}^\dag$)',
-                650: 'MSE($S^\dag, \hat{S}^\dag$) + MSE($L^\dag, \hat{L}^\dag$) + MSE($D^\dag, \hat{D}^\dag$)',
+                # 646: '$\sum(S^\dag-\hat{S}^\dag)\odot W^\\text{SCC})^2 / m^2$',
+                # 647: 'MSE($S^\dag, \hat{S}^\dag$) + $\sum(S^\dag-\hat{S}^\dag)\odot W^\\text{SCC})^2 / m^2$',
+                # 648: 'MSE($S^\dag, \hat{S}^\dag$) + $0.1\sum(S^\dag-\hat{S}^\dag)\odot W^\\text{SCC})^2 / m^2$',
+                # 649: 'MSE($L^\dag, \hat{L}^\dag$) + MSE($D^\dag, \hat{D}^\dag$)',
+                # 650: 'MSE($S^\dag, \hat{S}^\dag$) + MSE($L^\dag, \hat{L}^\dag$) + MSE($D^\dag, \hat{D}^\dag$)',
                 # 651: 'MSE($S^\dag, \hat{S}^\dag$) + MSE($(VSV^T)^\dag, (V\hat{S}V^T$)^\dag)',
                 # 652: 'MSE($S^\dag, \hat{S}^\dag$) + 0.1MSE($(VSV^T)^\dag, (V\hat{S}V^T$)^\dag)',
                 # 653: 'MSE($S^\dag, \hat{S}^\dag$) + 0.1MSE($VSV^T, V\hat{S}V^T$)',
                 # 654: 'MSE($S^\dag, \hat{S}^\dag$) + 0.01MSE($VSV^T, V\hat{S}V^T$)',
+                655: 'SCC($S, \hat{S}$)',
+                656: 'MSE($S^\dag, \hat{S}^\dag$) + SCC($S, \hat{S}$)'
                 }
     id_list = descr_dict.keys()
     print(id_list)
@@ -109,7 +111,7 @@ def main():
 
     dataset = 'dataset_12_06_23'
     train_samples, _ = get_samples(dataset, train=True, filter_cell_lines=['imr90'])
-    train_samples = train_samples[:7]
+    train_samples = train_samples[:12]
     args = getArgs(data_folder = f'/home/erschultz/{dataset}',
                     samples = train_samples)
     args.experimental = True
@@ -149,7 +151,7 @@ def make_latex_table(id_list, descr_dict, loss_dict, dicts, labels):
         # o.write("\\multicolumn{" + num_cols_str + "}{|c|}{" + header + "} \\\ \n")
         o.write("\t\t\\hline\n")
 
-        row = "\t\t \\thead{ID} & \\thead{Method} & \\thead{MSE}"
+        row = "\t\t \\thead{ID} & \\thead{Method} & \\thead{Loss}"
         for label in labels:
             row += f" & \\thead\u007b{label}\u007d"
         row += " \\\ \n"

@@ -48,7 +48,7 @@ loss='scc_exp'
 # 631 ablation
 # scc_exp loss
 
-id=657
+id=659
 for lr in 1e-4
 do
   train

@@ -29,7 +29,7 @@ class MSE_EXP_NORM():
     def __init__(self):
         pass
 
-    def normalize(self, arr):
+    def normalize(arr):
         N, m, _ = arr.shape
         diagonals = torch.diagonal(arr, dim1=1, dim2=2)
         means = torch.mean(diagonals, dim=1)
@@ -39,10 +39,10 @@ class MSE_EXP_NORM():
 
     def __call__(self, input, target):
         input_exp = torch.exp(-input)
-        input_exp_norm = self.normalize(input_exp)
+        input_exp_norm = MSE_EXP_NORM.normalize(input_exp)
 
         target_exp = torch.exp(-target)
-        target_exp_norm = self.normalize(target_exp)
+        target_exp_norm = MSE_EXP_NORM.normalize(target_exp)
 
         return F.mse_loss(input_exp_norm, target_exp_norm)
 
@@ -78,12 +78,14 @@ class SCC_loss():
         N = input.shape[0]
         if self.exp:
             input_exp = torch.exp(-input)
-            scc = self.tscc(input_exp, torch.exp(-target), distance = True)
+            target_exp = torch.exp(-target)
+            input_exp = MSE_EXP_NORM.normalize(input_exp)
+            target_exp = MSE_EXP_NORM.normalize(target_exp)
+            scc = self.tscc(input_exp, target_exp, distance = True)
         else:
             scc = self.tscc(input, target, distance = True)
 
         loss = torch.mean(scc) / N
-
         return loss
 
 class MSE_plaid():

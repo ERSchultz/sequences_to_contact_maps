@@ -48,7 +48,7 @@ loss='mse_log_and_scc_exp'
 # 631 ablation
 # mse_log_and_scc_exp loss
 
-id=658
+id=660
 for lr in 1e-4
 do
   train
