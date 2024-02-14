@@ -44,13 +44,13 @@ useSignPlus='true'
 batchSize=1
 nEpochs=60
 milestones='40'
-loss='mse_log_and_mse_log_plaid_and_mse_log_diag'
+loss='mse_log'
+clip=1
 
-resumeTraining='true'
 # 631 ablation
-# mse_log_plaid_and_mse_log_diag
+# gradient clipping
 
-id=650
+id=667
 for lr in 1e-4
 do
   train

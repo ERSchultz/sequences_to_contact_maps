@@ -257,6 +257,8 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                             f'max={torch.max(p).item()}')
                     print(f'\tgrad: shape={p.grad.shape}, min={torch.min(p.grad).item()}, '
                             f'max={torch.max(p.grad).item()}')
+            if opt.clip is not None:
+                torch.nn.utils.clip_grad_norm_(model.parameters(), opt.clip)
             opt.optimizer.step()
         avg_loss /= (t+1)
         train_loss.append(avg_loss)

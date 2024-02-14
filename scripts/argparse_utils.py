@@ -163,6 +163,8 @@ def get_base_parser():
                         help='weight for loss function')
     parser.add_argument('--lambda3', type=float, default=1,
                         help='weight for loss function')
+    parser.add_argument('--clip', type=AC.str2float, 
+                        help='Gradient clipping max norm')
     parser.add_argument('--w_reg', type=AC.str2None,
                         help='Type of regularization to use for W, options: {"l1", "l2"}')
     parser.add_argument('--reg_lambda', type=float, default=1e-4,

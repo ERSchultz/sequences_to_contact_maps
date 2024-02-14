@@ -163,7 +163,7 @@ def debugModel(model_type):
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
-        opt.loss = 'mse_log_and_scc'
+        opt.loss = 'scc_exp'
         opt.loss_k = 3
         opt.lambda1=5e-2
         opt.lambda2=1

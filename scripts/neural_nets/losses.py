@@ -54,7 +54,7 @@ class MSE_EXP_NORM():
 
         target_exp = torch.exp(-target)
         target_exp_norm = MSE_EXP_NORM.normalize2(target_exp)
-
+        
         return F.mse_loss(input_exp_norm, target_exp_norm)
 
 def mse_center_log(input, target):
@@ -90,8 +90,8 @@ class SCC_loss():
         if self.exp:
             input_exp = torch.exp(-input)
             target_exp = torch.exp(-target)
-            input_exp = MSE_EXP_NORM.normalize2(input_exp)
-            target_exp = MSE_EXP_NORM.normalize2(target_exp)
+            # input_exp = MSE_EXP_NORM.normalize2(input_exp)
+            # target_exp = MSE_EXP_NORM.normalize2(target_exp)
             scc = self.tscc(input_exp, target_exp, distance = True)
         else:
             scc = self.tscc(input, target, distance = True)

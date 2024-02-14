@@ -86,8 +86,10 @@ def main():
                 # 652: 'MSE($S^\dag, \hat{S}^\dag$) + 0.1MSE($(VSV^T)^\dag, (V\hat{S}V^T$)^\dag)',
                 # 653: 'MSE($S^\dag, \hat{S}^\dag$) + 0.1MSE($VSV^T, V\hat{S}V^T$)',
                 # 654: 'MSE($S^\dag, \hat{S}^\dag$) + 0.01MSE($VSV^T, V\hat{S}V^T$)',
-                655: 'SCC($S, \hat{S}$)',
-                656: 'MSE($S^\dag, \hat{S}^\dag$) + SCC($S, \hat{S}$)'
+                # 655: 'SCC($S, \hat{S}$)',
+                # 656: 'MSE($S^\dag, \hat{S}^\dag$) + SCC($S, \hat{S}$)'
+                657: 'MSE($S^\dag, \hat{S}^\dag$) (batch size=2)',
+                658: 'MSE($S^\dag, \hat{S}^\dag$) (batch size = 4)',
                 }
     id_list = descr_dict.keys()
     print(id_list)
@@ -111,7 +113,7 @@ def main():
 
     dataset = 'dataset_12_06_23'
     train_samples, _ = get_samples(dataset, train=True, filter_cell_lines=['imr90'])
-    train_samples = train_samples[:12]
+    train_samples = train_samples[:14]
     args = getArgs(data_folder = f'/home/erschultz/{dataset}',
                     samples = train_samples)
     args.experimental = True

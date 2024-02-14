@@ -164,7 +164,13 @@ def torch_pearson(x, y):
     vx = x - torch.mean(x)
     vy = y - torch.mean(y)
 
-    pearson = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx ** 2)) * torch.sqrt(torch.sum(vy ** 2)))
+    num = torch.sum(vx * vy)
+
+    denom_left = torch.sqrt(torch.sum(vx ** 2))
+    denom_right = torch.sqrt(torch.sum(vy ** 2))
+    denom = denom_left * denom_right
+
+    pearson = num / denom
 
     return pearson
 
@@ -177,7 +183,6 @@ class TORCH_SCC():
         self.m = m
         self.h = h
         self.K = K
-        self.var_stabilized = True
 
         self.w_arr = torch.zeros((K), dtype=torch.float32)
         for k in range(0, K):
@@ -201,14 +206,13 @@ class TORCH_SCC():
         out = F.conv2d(inp, self.filter_weight, padding = self.h) / self.width
         return out.reshape(N, self.m, self.m)
 
-    def __call__(self, x, y, verbose=False, debug=False, distance=False):
+    def __call__(self, x, y, debug=False, distance=False):
         '''
         Compute (fasthicrep?) scc between contact map x and y.
 
         Inputs:
-            x: contact map
+            x: contact map (N x m x m)
             y: contact map of same shape as x
-            verbose: True to print when nan found
             debug: True to return p_arr and w_arr
         '''
         assert len(x.shape) == 3 and len(y.shape) == 3, 'must have batch dimension'
