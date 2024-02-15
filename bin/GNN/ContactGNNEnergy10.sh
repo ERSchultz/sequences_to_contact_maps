@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --job-name=CGNNE10
 #SBATCH --output=logFiles/ContactGNNEnergy10.out
-#SBATCH --time=24:00:00
+#SBATCH --time=1-24:00:00
 #SBATCH --account=pi-depablo
 #SBATCH --partition=depablo-gpu
 #SBATCH --gres=gpu:1
@@ -46,6 +46,7 @@ nEpochs=60
 milestones='40'
 loss='mse_log'
 clip=1
+resumeTraining='true'
 
 # 631 ablation
 # gradient clipping

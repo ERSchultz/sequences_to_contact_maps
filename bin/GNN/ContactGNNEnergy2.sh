@@ -42,7 +42,7 @@ useSignPlus='true'
 batchSize=2
 nEpochs=60
 milestones='40'
-loss='scc_exp_clip25_norm'
+loss='scc_exp_clip15_norm'
 
 
 # 631 ablation
