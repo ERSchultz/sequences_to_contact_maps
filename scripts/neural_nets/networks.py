@@ -60,7 +60,7 @@ def get_model(opt, verbose = True):
                     opt.head_architecture, opt.head_architecture_2, opt.head_hidden_sizes_list,
                     opt.head_act, opt.use_bias, opt.rescale, opt.gated, opt.dropout,
                     opt.input_L_to_D, opt.input_L_to_D_mode,
-                    opt.training_norm, opt.num_heads, opt.concat_heads,
+                    opt.training_norm, opt.num_heads, opt.concat_heads, opt.output_clip,
                     opt.log_file, opt.verbose or verbose,
                     opt.use_sign_net, opt.use_sign_plus, opt.k)
 
@@ -104,7 +104,7 @@ class ContactGNN(nn.Module):
                 head_architecture_L, head_architecture_D, head_hidden_sizes_list,
                 head_act, use_bias, rescale, gated, dropout,
                 input_L_to_D, input_L_to_D_mode,
-                training_norm, num_heads, concat_heads,
+                training_norm, num_heads, concat_heads, output_clip,
                 ofile = sys.stdout, verbose = True,
                 sign_net = False, sign_plus = False, k = None):
         '''
@@ -172,6 +172,7 @@ class ContactGNN(nn.Module):
         self.training_norm = training_norm
         self.num_heads = num_heads
         self.concat_heads = concat_heads
+        self.output_clip = output_clip
         self.verbose = verbose
 
         ### Encoder Architecture ###
@@ -490,6 +491,10 @@ class ContactGNN(nn.Module):
         except RuntimeError:
             print(L_out.shape, D_out.shape)
             raise
+
+        if self.output_clip is not None:
+            S_out[S_out > self.output_clip] = self.output_clip
+            S_out[S_out < -self.output_clip] = -self.output_clip
 
         del L_out; del D_out
         torch.cuda.empty_cache()

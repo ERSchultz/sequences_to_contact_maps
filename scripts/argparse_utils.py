@@ -163,7 +163,7 @@ def get_base_parser():
                         help='weight for loss function')
     parser.add_argument('--lambda3', type=float, default=1,
                         help='weight for loss function')
-    parser.add_argument('--clip', type=AC.str2float, 
+    parser.add_argument('--grad_clip', type=AC.str2float,
                         help='Gradient clipping max norm')
     parser.add_argument('--w_reg', type=AC.str2None,
                         help='Type of regularization to use for W, options: {"l1", "l2"}')
@@ -211,6 +211,8 @@ def get_base_parser():
                         help='True to use \hat{L} to help with estimation of D')
     parser.add_argument('--input_L_to_D_mode', type=str, default='mean_dist',
                         help='Mode for input_L_to_D')
+    parser.add_argument('--output_clip', type=AC.str2int,
+                        help='Clip output to range [-clip, clip]')
 
     # GNN model args
     parser.add_argument('--use_sign_net', type=AC.str2bool, default=False,
@@ -437,8 +439,17 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
             opt.eig = True
         elif loss == 'scc':
             criterion = SCC_loss(opt.m)
-        elif loss == 'scc_exp':
-            criterion = SCC_loss(opt.m, exp=True)
+        elif loss.startswith('scc_exp'):
+            loss_split = loss.split('_')
+            K=100; clip=None; norm=False
+            for loss_str in loss_split:
+                if loss_str[0] == 'K':
+                    K = int(loss_str[1:])
+                elif loss_str.startswith('clip'):
+                    clip = int(loss_str[4:])
+                elif loss_str == 'norm':
+                    norm = True
+            criterion = SCC_loss(opt.m, True, K=K, clip_val=clip, norm=norm)
         elif loss == 'mse_plaid_eig_log':
             criterion = MSE_plaid_eig(True)
             opt.diag = True

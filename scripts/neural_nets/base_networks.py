@@ -168,6 +168,12 @@ def torch_pearson(x, y):
 
     denom_left = torch.sqrt(torch.sum(vx ** 2))
     denom_right = torch.sqrt(torch.sum(vy ** 2))
+
+    # print('y', torch.min(y), torch.max(y))
+    # print('vy', torch.min(vy), torch.max(vy))
+    # print('vy**2', torch.min(vy ** 2), torch.max(vy ** 2))
+    # print('denom_right', denom_right)
+
     denom = denom_left * denom_right
 
     pearson = num / denom

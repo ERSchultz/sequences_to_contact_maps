@@ -48,13 +48,24 @@ class MSE_EXP_NORM():
 
         return arr
 
+    def clip(arr, val):
+        arr[arr > val] = val
+        arr[arr < -val] = -val
+
+        return arr
+
     def __call__(self, input, target):
         input_exp = torch.exp(-input)
         input_exp_norm = MSE_EXP_NORM.normalize2(input_exp)
 
+        # print('input', torch.min(input), torch.max(input))
+        # print('input_exp', torch.min(input_exp), torch.max(input_exp))
+        # print('input_exp_norm', torch.min(input_exp_norm), torch.max(input_exp_norm))
+        # print('---')
+
         target_exp = torch.exp(-target)
         target_exp_norm = MSE_EXP_NORM.normalize2(target_exp)
-        
+
         return F.mse_loss(input_exp_norm, target_exp_norm)
 
 def mse_center_log(input, target):
@@ -81,17 +92,34 @@ def mse_top_k_diagonals(input, target, k):
     return loss / k
 
 class SCC_loss():
-    def __init__(self, m, h=5, K=100, exp=False):
+    def __init__(self, m, exp=False, h=5, K=100, clip_val=None, norm=False):
         self.tscc = TORCH_SCC(m, h, K)
         self.exp = exp
+        self.clip_val = clip_val
+
+    def clip(self, arr):
+        arr[arr > self.clip_val] = self.clip_val
+        arr[arr < -self.clip_val] = -self.clip_val
+
+        return arr
 
     def __call__(self, input, target, *args):
         N = input.shape[0]
+
+        if self.clip_val is not None:
+            input = self.clip(input)
+            target = self.clip(target)
+
         if self.exp:
             input_exp = torch.exp(-input)
             target_exp = torch.exp(-target)
             # input_exp = MSE_EXP_NORM.normalize2(input_exp)
             # target_exp = MSE_EXP_NORM.normalize2(target_exp)
+
+            # print('---')
+            # print('target', torch.min(target), torch.max(target))
+            # print('target_exp', torch.min(target_exp), torch.max(target_exp))
+
             scc = self.tscc(input_exp, target_exp, distance = True)
         else:
             scc = self.tscc(input, target, distance = True)

@@ -163,7 +163,7 @@ def debugModel(model_type):
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
-        opt.loss = 'scc_exp'
+        opt.loss = 'mse_exp_norm'
         opt.loss_k = 3
         opt.lambda1=5e-2
         opt.lambda2=1
@@ -208,7 +208,7 @@ def debugModel(model_type):
         opt.head_hidden_sizes_list = [100]
         # opt.crop = [128, 256]
         opt.plaid_score_cutoff = None
-
+        opt.output_clip = 25
         opt.use_bias = True
         opt.num_heads = 1
         opt.concat_heads = True
@@ -293,7 +293,8 @@ def binom():
         plt.ylabel(ylabel)
         x2 = np.linspace(np.min(x), np.max(x), 100)
         plt.plot(x2, reg.predict(x2.reshape(-1, 1)))
-        plt.title(fr'$r^2$={score}, y = {np.round(reg.coef_[0,0], 3)}x + {np.round(reg.intercept_[0], 3)}' + title)
+        plt.title(fr'$r^2$={score}, y = {np.round(reg.coef_[0,0], 3)}x + '
+                    f'{np.round(reg.intercept_[0], 3)}' + title)
         plt.tight_layout()
         plt.savefig(ofile)
         plt.close()
@@ -704,9 +705,9 @@ def S_to_Y():
                             np.sign(S_me) * np.log(np.abs(S_me) + 1)))
 
     y_S = np.exp(-S)
-    y_S = normalize(y_S)
+    # y_S = normalize(y_S)
     print('y_S', scc.scc(y, y_S))
-    plot_matrix(y_S, osp.join(odir, 'y_S.png'), vmax = 'mean')
+    plot_matrix(y_S, osp.join(odir, 'y_S.png'), vmax = 'max')
     #
     # y_add = y_bonded + y_S
     # y_add /= np.mean(y_add.diagonal())
@@ -716,7 +717,7 @@ def S_to_Y():
     y_mul = y_bonded * y_S
     y_mul = normalize(y_mul)
     print('mul', scc.scc(y, y_mul))
-    plot_matrix(y_mul, osp.join(odir, 'y_mul.png'), vmax = 'mean')
+    plot_matrix(y_mul, osp.join(odir, 'y_mul.png'), vmax = 'max')
 
 if __name__ == '__main__':
     # temp()

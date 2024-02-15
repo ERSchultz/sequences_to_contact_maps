@@ -212,33 +212,33 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                 y = data.y
                 y = torch.reshape(y, (-1, opt.m))
             if opt.verbose:
-                print(f'x: shape={data.x.shape}, '
-                        f'min={torch.min(data.x).item()}, '
-                        f'max={torch.max(data.x).item()}')
-                if data.edge_attr is not None:
-                    print(f'edge_attr: '
-                            f'shape={data.edge_attr.shape}, '
-                            f'min={torch.min(data.edge_attr).item()}, '
-                            f'max={torch.max(data.edge_attr).item()}')
-                if 'pos_edge_attr' in data._mapping:
-                    print(f'pos_edge_attr={data.pos_edge_attr}, '
-                            f'shape={data.pos_edge_attr.shape}, '
-                            f'min={torch.min(data.pos_edge_attr).item()}, '
-                            f'max={torch.max(data.pos_edge_attr).item()}')
-                    print(f'neg_edge_attr={data.neg_edge_attr}, '
-                            f'shape={data.neg_edge_attr.shape}, '
-                            f'min={torch.min(data.neg_edge_attr).item()}, '
-                            f'max={torch.max(data.neg_edge_attr).item()}')
-                print(f'y: shape={y.shape}, min={torch.min(y).item()}, '
-                        f'max={torch.max(y).item()}')
+                # print(f'x: shape={data.x.shape}, '
+                #         f'min={torch.min(data.x).item()}, '
+                #         f'max={torch.max(data.x).item()}')
+                # if data.edge_attr is not None:
+                #     print(f'edge_attr: '
+                #             f'shape={data.edge_attr.shape}, '
+                #             f'min={torch.min(data.edge_attr).item()}, '
+                #             f'max={torch.max(data.edge_attr).item()}')
+                # if 'pos_edge_attr' in data._mapping:
+                #     print(f'pos_edge_attr={data.pos_edge_attr}, '
+                #             f'shape={data.pos_edge_attr.shape}, '
+                #             f'min={torch.min(data.pos_edge_attr).item()}, '
+                #             f'max={torch.max(data.pos_edge_attr).item()}')
+                #     print(f'neg_edge_attr={data.neg_edge_attr}, '
+                #             f'shape={data.neg_edge_attr.shape}, '
+                #             f'min={torch.min(data.neg_edge_attr).item()}, '
+                #             f'max={torch.max(data.neg_edge_attr).item()}')
+                # print(f'y: shape={y.shape}, min={torch.min(y).item()}, '
+                #         f'max={torch.max(y).item()}')
                 t0 = time.time()
             yhat = model(data)
             if opt.verbose:
                 tf = time.time()
                 print_time(t0, tf, 'forward')
-                print(f'yhat={yhat}, shape={yhat.shape}, '
-                        f'min={torch.min(yhat).item()}, '
-                        f'max={torch.max(yhat).item()}')
+                # print(f'yhat={yhat}, shape={yhat.shape}, '
+                #         f'min={torch.min(yhat).item()}, '
+                #         f'max={torch.max(yhat).item()}')
             if 'seqs' in data._mapping:
                 seqs = torch.reshape(data.seqs, (-1, 10, opt.m)) # TODO hard-coded 10
                 loss = opt.criterion(yhat, y, seqs)
@@ -251,14 +251,14 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
                     loss += opt.reg_lambda * torch.norm(model.sym(model.W), 2) ** 2
             avg_loss += loss.item()
             loss.backward()
-            if opt.verbose:
-                for k,p in model.named_parameters():
-                    print(f'{k}: shape={p.shape}, min={torch.min(p).item()}, '
-                            f'max={torch.max(p).item()}')
-                    print(f'\tgrad: shape={p.grad.shape}, min={torch.min(p.grad).item()}, '
-                            f'max={torch.max(p.grad).item()}')
-            if opt.clip is not None:
-                torch.nn.utils.clip_grad_norm_(model.parameters(), opt.clip)
+            # if opt.verbose:
+            #     for k,p in model.named_parameters():
+            #         print(f'{k}: shape={p.shape}, min={torch.min(p).item()}, '
+            #                 f'max={torch.max(p).item()}')
+            #         print(f'\tgrad: shape={p.grad.shape}, min={torch.min(p.grad).item()}, '
+            #                 f'max={torch.max(p.grad).item()}')
+            if opt.grad_clip is not None:
+                torch.nn.utils.clip_grad_norm_(model.parameters(), opt.grad_clip)
             opt.optimizer.step()
         avg_loss /= (t+1)
         train_loss.append(avg_loss)

@@ -39,16 +39,16 @@ outAct='leaky'
 yNorm='mean_fill'
 k=10
 useSignPlus='true'
-batchSize=1
+batchSize=2
 nEpochs=60
 milestones='40'
-loss='scc_exp'
+loss='scc_exp_clip25_norm'
 
 
 # 631 ablation
-# scc_exp loss
+# scc_exp_clip25_norm
 
-id=659
+id=672
 for lr in 1e-4
 do
   train
