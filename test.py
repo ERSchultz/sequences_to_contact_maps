@@ -89,50 +89,8 @@ def edit_argparse():
                         split = False
                         while i < len(lines):
                             line = lines[i]
-                            # if line.startswith('--relabel'):
-                            #     assert lines.pop(i+1).strip() == 'false'
-                            #     lines.pop(i)
-                            # if line.startswith('--split_edges_for_feature_augmentation'):
-                            #     if lines.pop(i+1).strip() == 'true':
-                            #         split = True
-                            #     else:
-                            #         split = False
-                            #     lines.pop(i)
-                            #
-                            #     i -= 2
-                            #     assert lines[i].startswith('--pre_transforms')
-                            #     i += 1
-                            #     line = lines[i]
-                            #
-                            #     line_split = line.strip().split('-')
-                            #     for j, val in enumerate(line_split):
-                            #         if val.lower().startswith('degree'):
-                            #             if split and 'split' not in val:
-                            #                 line_split[j] = val + '_split'
-                            #     line = '-'.join(line_split)+'\n'
-                            #     lines[i] = line
-                            # if line.startswith('--pre_transforms'):
-                            #     i += 1
-                            #     line = lines[i]
-                            #     line_split = line.strip().split('-')
-                            #     degree_count = 0
-                            #     split = False
-                            #     for j, val in enumerate(line_split):
-                            #         if val.lower().startswith('degree'):
-                            #             print(val)
-                            #             degree_count += 1
-                            #             if 'split' in val:
-                            #                 print('h', val)
-                            #                 split = True
-                            #     if degree_count == 1 and split:
-                            #         print('j')
-                            #         line_split.insert(0, 'Degree')
-                            #     line = '-'.join(line_split)+'\n'
-                            #
-                            #     lines[i] = line
-                            if line.startswith('--use_scratch'):
-                                lines.pop(i+1)
-                                lines.pop(i)
+                            if line.startswith('--clip'):
+                                lines[i] = '--grad_clip\n'
                             i += 1
                         with open(arg_file, 'w') as f:
                             f.write("".join(lines))
@@ -723,8 +681,8 @@ if __name__ == '__main__':
     # temp()
     # test_loss()
     # binom()
-    # edit_argparse()
-    debugModel('ContactGNNEnergy')
+    edit_argparse()
+    # debugModel('ContactGNNEnergy')
     # gnn_meanDist_s(434, '981')
     # test_center_norm_log()
     # testGNNrank('dataset_02_04_23', 378)

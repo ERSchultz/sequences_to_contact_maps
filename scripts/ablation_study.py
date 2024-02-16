@@ -86,10 +86,12 @@ def main():
                 # 652: 'MSE($S^\dag, \hat{S}^\dag$) + 0.1MSE($(VSV^T)^\dag, (V\hat{S}V^T$)^\dag)',
                 # 653: 'MSE($S^\dag, \hat{S}^\dag$) + 0.1MSE($VSV^T, V\hat{S}V^T$)',
                 # 654: 'MSE($S^\dag, \hat{S}^\dag$) + 0.01MSE($VSV^T, V\hat{S}V^T$)',
-                655: 'SCC($S, \hat{S}$)',
-                656: 'MSE($S^\dag, \hat{S}^\dag$) + SCC($S, \hat{S}$)'
+                # 655: 'SCC($S, \hat{S}$)',
+                # 656: 'MSE($S^\dag, \hat{S}^\dag$) + SCC($S, \hat{S}$)'
                 # 657: 'MSE($S^\dag, \hat{S}^\dag$) (batch size=2)',
                 # 658: 'MSE($S^\dag, \hat{S}^\dag$) (batch size = 4)',
+                665: "dconv in head architecture",
+                667: "gradient clipping (1)",
                 }
     id_list = descr_dict.keys()
     print(id_list)

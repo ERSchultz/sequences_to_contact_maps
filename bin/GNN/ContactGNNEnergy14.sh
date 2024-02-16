@@ -39,16 +39,16 @@ outAct='leaky'
 yNorm='mean_fill'
 k=10
 useSignPlus='true'
-batchSize=1
+batchSize=4
 nEpochs=60
 milestones='40'
-loss='mse_log_and_mse_plaid_eig'
-lossLambda2=1e-2
+loss='mse_log'
+gradClip=1
 
 # 631 ablation
-# mse_log_and_mse_plaid_eig
+# gradient clipping with batch size 4
 
-id=654
+id=674
 for lr in 1e-4
 do
   train

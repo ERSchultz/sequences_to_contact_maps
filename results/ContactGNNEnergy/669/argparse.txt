@@ -108,7 +108,7 @@ true
 none
 --reg_lambda
 1e-1
---clip
+--grad_clip
 none
 --batch_size
 1

@@ -45,6 +45,7 @@ nEpochs=60
 milestones='40'
 loss='mse_log_and_scc'
 lossLambda2=1e-1
+resumeTraining='true'
 
 # 631 ablation
 # mse_log_and_scc loss

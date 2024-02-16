@@ -45,6 +45,8 @@ milestones='40'
 loss='mse_log'
 inputLtoD='true'
 inputLtoDMode='subtract'
+resumeTraining='true'
+
 
 # 631 ablation
 # input_L_to_D
