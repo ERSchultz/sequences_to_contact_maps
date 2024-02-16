@@ -45,7 +45,7 @@ batchSize=1
 nEpochs=60
 milestones='40'
 loss='mse_log'
-clip=1
+gradClip=1
 resumeTraining='true'
 
 # 631 ablation
