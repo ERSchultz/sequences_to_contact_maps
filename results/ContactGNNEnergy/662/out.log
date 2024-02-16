@@ -300,3 +300,11 @@ Mean test/val loss: 0.4774
 [25, 50, 75] percentiles test/val loss: [0.2712 0.4142 0.6021]
 
 Epoch 36, loss = 0.4123
+Mean test/val loss: 0.4617
+[25, 50, 75] percentiles test/val loss: [0.2618 0.3991 0.583 ]
+
+Epoch 38, loss = 0.4055
+Mean test/val loss: 0.4610
+[25, 50, 75] percentiles test/val loss: [0.2587 0.4017 0.59  ]
+
+Epoch 40, loss = 0.3992

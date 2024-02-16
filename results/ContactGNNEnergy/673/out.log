@@ -163,7 +163,7 @@ Head D:
     (model): Sequential(
       (0): LinearBlock(
         (model): Sequential(
-          (0): Linear(in_features=33290, out_features=1000, bias=True)
+          (0): Linear(in_features=32768, out_features=1000, bias=True)
           (1): LeakyReLU(negative_slope=0.2, inplace=True)
         )
       )
@@ -208,19 +208,19 @@ Head D:
   (1): FillDiagonalsFromArray()
 ) 
 
-Namespace(GNN_mode=True, transforms=[], pre_transforms=['ContactDistance', 'MeanContactDistance', 'AdjPCs_10'], sparsify_threshold=None, sparsify_threshold_upper=None, top_k=None, use_node_features=False, use_edge_weights=False, use_edge_attr=True, keep_zero_edges=False, data_folder=['/project/depablo/erschultz/dataset_12_12_23_imr90'], scratch='/scratch/midway3/erschultz', root_name='ContactGNNEnergy7', delete_root=False, toxx=False, toxx_mode='mean', y_preprocessing='log_inf', sweep_choices=None, y_zero_diag_count=0, log_preprocessing=None, output_preprocesing=None, kr=False, mean_filt=None, rescale=2, gated=False, preprocessing_norm='mean_fill', min_subtraction=True, x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, move_data_to_scratch=False, use_scratch_parallel=False, plaid_score_cutoff=None, split_percents=[0.9, 0.1, 0.0], split_sizes=None, random_split=True, shuffle=True, batch_size=1, num_workers=4, max_sample=None, start_epoch=1, n_epochs=60, save_mod=5, print_mod=2, lr=0.0001, min_lr=1e-06, weight_decay=0.0, gpus=1, scheduler='MultiStepLR', milestones=[40], gamma=0.1, patience=10, loss='mse_log', loss_k=2, lambda1=1.0, lambda2=1.0, lambda3=1, clip=None, w_reg=None, reg_lambda=0.1, autoencoder_mode=False, verbose=False, print_params=True, output_mode='energy_sym_diag', model_type='ContactGNNEnergy', id=664, pretrain_id=None, resume_training=False, k=10, m=512, seed=42, act='leaky', inner_act='leaky', out_act='leaky', training_norm=None, dropout=0.0, parameter_sharing=False, use_bias=True, input_L_to_D=True, input_L_to_D_mode='meandist_eigval', use_sign_net=False, use_sign_plus=True, message_passing='weighted_GAT', head_architecture='bilinear', head_architecture_2='fc-fill_512', head_hidden_sizes_list=[1000, 1000, 1000, 1000, 1000, 1000], encoder_hidden_sizes_list=None, inner_hidden_sizes_list=None, edge_encoder_hidden_sizes_list=None, update_hidden_sizes_list=[1000, 1000, 1000, 1000, 128], head_act='leaky', num_heads=8, concat_heads=True, max_diagonal=None, mlp_model_id=None, kernel_w_list=None, hidden_sizes_list=[16, 16, 16, 16], nf=None, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, down_sampling=None, plot=True, plot_predictions=True, bonded_path=None, ofile_folder='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/664', log_file_path='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/664/out.log', log_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/664/out.log' mode='a' encoding='UTF-8'>, param_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/664/params.log' mode='a' encoding='UTF-8'>, split_neg_pos_edges=False, node_feature_size=0, input_m=256, edge_transforms=['ContactDistance(norm=False)', 'MeanContactDistance(norm=False)'], node_transforms=['AdjPCs(k=10, normalize=False, sign_net=True)'], edge_dim=2, transforms_processed=None, diag=True, corr=False, pre_transforms_processed=Compose([
+Namespace(GNN_mode=True, transforms=[], pre_transforms=['ContactDistance', 'MeanContactDistance', 'AdjPCs_10'], sparsify_threshold=None, sparsify_threshold_upper=None, top_k=None, use_node_features=False, use_edge_weights=False, use_edge_attr=True, keep_zero_edges=False, data_folder=['/project/depablo/erschultz/dataset_02_14_24_imr90'], scratch='/scratch/midway3/erschultz', root_name='ContactGNNEnergy13', delete_root=False, toxx=False, toxx_mode='mean', y_preprocessing='log_inf', sweep_choices=None, y_zero_diag_count=0, log_preprocessing=None, output_preprocesing=None, kr=False, mean_filt=None, rescale=2, gated=False, preprocessing_norm='mean_fill', min_subtraction=True, x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, move_data_to_scratch=False, use_scratch_parallel=False, plaid_score_cutoff=None, split_percents=[0.9, 0.1, 0.0], split_sizes=None, random_split=True, shuffle=True, batch_size=1, num_workers=4, max_sample=None, start_epoch=1, n_epochs=60, save_mod=5, print_mod=2, lr=0.0001, min_lr=1e-06, weight_decay=0.0, gpus=1, scheduler='MultiStepLR', milestones=[40], gamma=0.1, patience=10, loss='mse_log', loss_k=2, lambda1=1.0, lambda2=1.0, lambda3=1, grad_clip=None, w_reg=None, reg_lambda=0.1, autoencoder_mode=False, verbose=False, print_params=True, output_mode='energy_sym_diag', model_type='ContactGNNEnergy', id=673, pretrain_id=None, resume_training=False, k=10, m=512, seed=42, act='leaky', inner_act='leaky', out_act='leaky', training_norm=None, dropout=0.0, parameter_sharing=False, use_bias=True, input_L_to_D=False, input_L_to_D_mode='meandist', output_clip=None, use_sign_net=False, use_sign_plus=True, message_passing='weighted_GAT', head_architecture='bilinear', head_architecture_2='fc-fill_512', head_hidden_sizes_list=[1000, 1000, 1000, 1000, 1000, 1000], encoder_hidden_sizes_list=None, inner_hidden_sizes_list=None, edge_encoder_hidden_sizes_list=None, update_hidden_sizes_list=[1000, 1000, 1000, 1000, 128], head_act='leaky', num_heads=8, concat_heads=True, max_diagonal=None, mlp_model_id=None, kernel_w_list=None, hidden_sizes_list=[16, 16, 16, 16], nf=None, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, down_sampling=None, plot=True, plot_predictions=True, bonded_path=None, ofile_folder='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/673', log_file_path='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/673/out.log', log_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/673/out.log' mode='a' encoding='UTF-8'>, param_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/673/params.log' mode='a' encoding='UTF-8'>, split_neg_pos_edges=False, node_feature_size=0, input_m=256, edge_transforms=['ContactDistance(norm=False)', 'MeanContactDistance(norm=False)'], node_transforms=['AdjPCs(k=10, normalize=False, sign_net=True)'], edge_dim=2, transforms_processed=None, diag=True, corr=False, pre_transforms_processed=Compose([
   ContactDistance(norm=False),
   MeanContactDistance(norm=False),
   AdjPCs(k=10, normalize=False, sign_net=True)
-]), eig=False, criterion=<function mse_log at 0x7f2fe3ae1e50>, cuda=True, use_parallel=False, device=device(type='cuda'))
+]), eig=False, criterion=<function mse_log at 0x7f7c6bdac160>, cuda=True, use_parallel=False, device=device(type='cuda'))
 
-Dataset construction time: 9.748 minutes
+Dataset construction time: 11.585 minutes
 Number of samples: 5000
-Average num edges per graph:  62346.308
-Mean degree: [254.87 255.   255.   ... 214.69 254.65 239.73] +- [ 0.48  0.    0.   ... 35.84  1.01 17.39]
+Average num edges per graph:  62102.2108
+Mean degree: [254.68 254.48 254.69 ... 221.59 251.38 228.71] +- [ 0.82  1.31  0.84 ... 27.88  5.25 28.1 ]
 
 split sizes: train=4500, val=500, test=0, N=5000
-First 100 val samples: [4058, 111, 1533, 1317, 502, 1006, 3650, 4711, 3809, 4092, 2259, 2085, 4524, 260, 1787, 2787, 4024, 2284, 2475, 3100, 4568, 3818, 2084, 3229, 4966, 2431, 2291, 808, 968, 2642, 2156, 3457, 1649, 2537, 1308, 3931, 4459, 3736, 3193, 3772, 1549, 3760, 4595, 2869, 1168, 1989, 2906, 3885, 4990, 4345, 3132, 622, 4171, 3110, 1362, 78, 3092, 4552, 3312, 642, 958, 4503, 1475, 4299, 953, 863, 1309, 195, 3296, 2678, 4217, 3942, 2789, 1600, 1847, 1681, 1956, 1822, 75, 714, 3455, 741, 1884, 916, 3164, 4356, 2913, 2904, 367, 1687, 3162, 2451, 2492, 4669, 3814, 668, 1659, 225, 887, 4977, 4117, 2825]
+First 100 val samples: [1640, 1672, 3464, 831, 1651, 2678, 861, 3660, 267, 810, 2325, 2890, 3805, 4444, 2956, 1308, 3942, 2151, 3235, 1362, 566, 1440, 3319, 161, 206, 459, 3674, 4352, 2576, 4555, 753, 2322, 275, 745, 2876, 2221, 1309, 2628, 2363, 1906, 2834, 3684, 166, 3987, 3663, 1549, 981, 3237, 803, 1932, 3661, 4977, 4056, 255, 2787, 3760, 4875, 4932, 1511, 3912, 2913, 2064, 3, 64, 2434, 930, 795, 1006, 727, 672, 2695, 338, 111, 787, 1626, 1407, 952, 833, 4570, 1725, 1798, 1787, 2072, 3457, 544, 3195, 3861, 3343, 1300, 3110, 3283, 4990, 4966, 4092, 1475, 1589, 367, 1972, 4641, 1487, 1184, 4058]
 Optimizer: Adam (
 Parameter Group 0
     amsgrad: False
@@ -229,62 +229,30 @@ Parameter Group 0
     lr: 0.0001
     weight_decay: 0.0
 )
-Scheduler: <torch.optim.lr_scheduler.MultiStepLR object at 0x7f2fe2bde850>
+Scheduler: <torch.optim.lr_scheduler.MultiStepLR object at 0x7f7c6ae49a30>
 #### TRAINING/VALIDATION ####
-Epoch 2, loss = 0.9019
-Mean test/val loss: 0.9127
-[25, 50, 75] percentiles test/val loss: [0.5682 0.8573 1.1541]
+Epoch 2, loss = 0.8923
+Mean test/val loss: 0.8650
+[25, 50, 75] percentiles test/val loss: [0.5673 0.8047 1.0803]
 
-Epoch 4, loss = 0.7759
-Mean test/val loss: 0.8103
-[25, 50, 75] percentiles test/val loss: [0.4988 0.7546 1.0231]
+Epoch 4, loss = 0.7756
+Mean test/val loss: 0.7486
+[25, 50, 75] percentiles test/val loss: [0.4394 0.6757 0.9715]
 
-Epoch 6, loss = 0.7115
-Mean test/val loss: 0.7461
-[25, 50, 75] percentiles test/val loss: [0.4456 0.6747 0.9231]
+Epoch 6, loss = 0.7083
+Mean test/val loss: 0.6797
+[25, 50, 75] percentiles test/val loss: [0.4006 0.6087 0.886 ]
 
-Epoch 8, loss = 0.6623
-Mean test/val loss: 0.7081
-[25, 50, 75] percentiles test/val loss: [0.4392 0.6524 0.8817]
+Epoch 8, loss = 0.6468
+Mean test/val loss: 0.6462
+[25, 50, 75] percentiles test/val loss: [0.3871 0.587  0.8426]
 
-Epoch 10, loss = 0.6185
-Mean test/val loss: 0.6370
-[25, 50, 75] percentiles test/val loss: [0.3711 0.5715 0.8274]
+Epoch 10, loss = 0.6062
+Mean test/val loss: 0.5832
+[25, 50, 75] percentiles test/val loss: [0.3369 0.5126 0.7637]
 
-Epoch 12, loss = 0.6055
-Mean test/val loss: 0.6140
-[25, 50, 75] percentiles test/val loss: [0.3578 0.5562 0.7791]
+Epoch 12, loss = 0.5769
+Mean test/val loss: 0.5601
+[25, 50, 75] percentiles test/val loss: [0.3291 0.4938 0.7395]
 
-Epoch 14, loss = 0.5738
-Mean test/val loss: 0.6195
-[25, 50, 75] percentiles test/val loss: [0.3496 0.558  0.7962]
-
-Epoch 16, loss = 0.5459
-Mean test/val loss: 0.5753
-[25, 50, 75] percentiles test/val loss: [0.3275 0.5169 0.7342]
-
-Epoch 18, loss = 0.5266
-Mean test/val loss: 0.5554
-[25, 50, 75] percentiles test/val loss: [0.3138 0.4953 0.7111]
-
-Epoch 20, loss = 0.5013
-Mean test/val loss: 0.5431
-[25, 50, 75] percentiles test/val loss: [0.2992 0.4773 0.6885]
-
-Epoch 22, loss = 0.4889
-Mean test/val loss: 0.5333
-[25, 50, 75] percentiles test/val loss: [0.3172 0.4687 0.6647]
-
-Epoch 24, loss = 0.4700
-Mean test/val loss: 0.5029
-[25, 50, 75] percentiles test/val loss: [0.2919 0.4374 0.6433]
-
-Epoch 26, loss = 0.4564
-Mean test/val loss: 0.5078
-[25, 50, 75] percentiles test/val loss: [0.292  0.4523 0.6293]
-
-Epoch 28, loss = 0.4425
-Mean test/val loss: 0.4902
-[25, 50, 75] percentiles test/val loss: [0.2786 0.435  0.6124]
-
-Epoch 30, loss = 0.4337
+Epoch 14, loss = 0.5571
