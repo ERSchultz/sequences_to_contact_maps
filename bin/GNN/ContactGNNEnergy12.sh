@@ -47,7 +47,7 @@ milestones='40'
 loss='mse_log'
 
 # 631 ablation
-# mse_log_and_scc loss
+# big dataset
 
 id=669
 for lr in 1e-4
