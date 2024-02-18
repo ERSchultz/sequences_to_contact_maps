@@ -43,6 +43,7 @@ batchSize=2
 nEpochs=60
 milestones='40'
 loss='scc_exp_clip15_norm'
+resumeTraining='true'
 
 
 # 631 ablation

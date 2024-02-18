@@ -90,8 +90,9 @@ def main():
                 # 656: 'MSE($S^\dag, \hat{S}^\dag$) + SCC($S, \hat{S}$)'
                 # 657: 'MSE($S^\dag, \hat{S}^\dag$) (batch size=2)',
                 # 658: 'MSE($S^\dag, \hat{S}^\dag$) (batch size = 4)',
-                665: "dconv in head architecture",
-                667: "gradient clipping (1)",
+                # 665: "dconv in head architecture",
+                666: "MSE($S^\dag, \hat{S}^\dag$) + scc loss no resize"
+                # 667: "gradient clipping (1)",
                 }
     id_list = descr_dict.keys()
     print(id_list)

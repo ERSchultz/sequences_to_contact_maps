@@ -45,6 +45,7 @@ batchSize=1
 nEpochs=60
 milestones='40'
 loss='mse_log'
+resumeTraining='true'
 
 # 631 ablation
 # big dataset

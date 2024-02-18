@@ -7,8 +7,7 @@
 		 \thead{ID} & \thead{Method} & \thead{Loss} & \thead{SCC} & \thead{HiC-Spector} & \thead{Corr PC 1} & \thead{RMSE($\tilde{H}$)} \\ 
 		\hline\hline
 		 631 & MSE($S^\dag, \hat{S}^\dag$) (baseline) & 0.408 & 0.675 & 0.469 & 0.906 & 0.641 \\ 
-		 665 & dconv in head architecture & 0.426 & 0.642 & 0.471 & 0.933 & 0.646 \\ 
-		 667 & gradient clipping (1) & 0.403 & 0.68 & 0.47 & 0.913 & 0.645 \\ 
+		 666 & MSE($S^\dag, \hat{S}^\dag$) + scc loss no resize & 0.41 & 0.545 & 0.418 & 0.855 & 0.823 \\ 
 		\hline
 	\end{tabular}
 	\caption{Neural network ablation results.
