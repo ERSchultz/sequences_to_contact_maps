@@ -6,7 +6,7 @@ def shrink():
     dir = '/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy'
     assert osp.exists(dir), f'{dir} does not exist'
     print(dir)
-    for i in [665, 667]:
+    for i in [666]:
         i_dir = osp.join(dir, str(i))
         print(i_dir)
         model_dir = osp.join(i_dir, 'model.pt')
