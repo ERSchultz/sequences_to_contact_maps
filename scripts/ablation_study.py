@@ -89,10 +89,17 @@ def main():
                 # 655: 'SCC($S, \hat{S}$)',
                 # 656: 'MSE($S^\dag, \hat{S}^\dag$) + SCC($S, \hat{S}$)'
                 # 657: 'MSE($S^\dag, \hat{S}^\dag$) (batch size=2)',
-                # 658: 'MSE($S^\dag, \hat{S}^\dag$) (batch size = 4)',
+                658: 'MSE($S^\dag, \hat{S}^\dag$) (batch size = 4)',
+                # 662: 'input L to D (meanDist)',
+                663: 'input L to D (subtract)',
+                # 664: 'input L to D (meandist_eigval)',
                 # 665: "dconv in head architecture",
-                666: "MSE($S^\dag, \hat{S}^\dag$) + scc loss no resize"
-                # 667: "gradient clipping (1)",
+                # 666: "MSE($S^\dag, \hat{S}^\dag$) + scc loss no resize"
+                667: "gradient clipping (1)",
+                # 668: 'MSE($S^\dag, \hat{S}^\dag$) + 0.1SCC($S, \hat{S}$)',
+                669: 'big dataset',
+                # 672: 'SCC($\exp{-S}, \exp{-\hat{S}}$) (clip15 + norm)'
+                673: "dataset_02_14_24",
                 }
     id_list = descr_dict.keys()
     print(id_list)
@@ -116,7 +123,7 @@ def main():
 
     dataset = 'dataset_12_06_23'
     train_samples, _ = get_samples(dataset, train=True, filter_cell_lines=['imr90'])
-    train_samples = train_samples[:12]
+    train_samples = train_samples[:20]
     args = getArgs(data_folder = f'/home/erschultz/{dataset}',
                     samples = train_samples)
     args.experimental = True
