@@ -110,6 +110,8 @@ none
 1e-1
 --grad_clip
 none
+--output_clip
+none
 --batch_size
 1
 --num_workers
@@ -142,7 +144,7 @@ true
 --id
 669
 --resume_training
-false
+true
 --pretrain_id
 none
 --mlp_model_id
