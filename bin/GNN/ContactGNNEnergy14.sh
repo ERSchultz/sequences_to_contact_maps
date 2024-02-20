@@ -44,6 +44,7 @@ nEpochs=60
 milestones='40'
 loss='mse_log'
 gradClip=1
+resumeTraining='true'
 
 # 631 ablation
 # gradient clipping with batch size 4

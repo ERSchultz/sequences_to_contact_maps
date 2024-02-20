@@ -571,3 +571,39 @@ Mean test/val loss: 0.1696
 [25, 50, 75] percentiles test/val loss: [0.1352 0.1652 0.1966]
 
 Epoch 52, loss = 0.0978
+Mean test/val loss: 0.1704
+[25, 50, 75] percentiles test/val loss: [0.1346 0.1681 0.2057]
+
+Epoch 54, loss = 0.0946
+Mean test/val loss: 0.1703
+[25, 50, 75] percentiles test/val loss: [0.1423 0.1672 0.2019]
+
+Epoch 56, loss = 0.0917
+Mean test/val loss: 0.1700
+[25, 50, 75] percentiles test/val loss: [0.1354 0.1663 0.2014]
+
+Epoch 58, loss = 0.0889
+Mean test/val loss: 0.1703
+[25, 50, 75] percentiles test/val loss: [0.1327 0.1693 0.2055]
+
+Epoch 60, loss = 0.0863
+Mean test/val loss: 0.1708
+[25, 50, 75] percentiles test/val loss: [0.1421 0.1658 0.1968]
+
+
+Total parameters: 51478960
+Total training + validation time: 31.0 hours, 26.0 mins, and 46.19999999999709 secs
+Final val loss: 0.17075304263830185
+
+split sizes: train=4500, val=500, test=0, N=5000
+#### Plotting Script ####
+Prediction Results:
+dataset_12_12_23_imr90 sample981: 0.2057616114616394
+dataset_12_12_23_imr90 sample324: 0.26604700088500977
+dataset_12_12_23_imr90 sample3464: 0.29405784606933594
+dataset_12_12_23_imr90 sample2834: 0.12439835071563721
+dataset_12_12_23_imr90 sample1936: 0.18672388792037964
+scc_exp_clip15_norm loss: 0.215 +- 0.06
+
+Downsampling (200k) Results:
+Original sampling (400k) Results:
