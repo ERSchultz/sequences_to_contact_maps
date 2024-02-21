@@ -1,7 +1,7 @@
 --data_folder
 /project/depablo/erschultz/dataset_02_14_24_imr90
 --root_name
-ContactGNNEnergy10
+ContactGNNEnergy11
 --delete_root
 false
 --model_type
@@ -109,11 +109,11 @@ none
 --reg_lambda
 1e-1
 --grad_clip
-1
+none
 --output_clip
 none
 --batch_size
-1
+2
 --num_workers
 4
 --scheduler
@@ -142,9 +142,9 @@ none
 --print_params
 true
 --id
-676
+677
 --resume_training
-false
+true
 --pretrain_id
 none
 --mlp_model_id
