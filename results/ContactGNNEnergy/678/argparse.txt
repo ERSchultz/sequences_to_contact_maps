@@ -144,7 +144,7 @@ true
 --id
 678
 --resume_training
-false
+true
 --pretrain_id
 none
 --mlp_model_id
