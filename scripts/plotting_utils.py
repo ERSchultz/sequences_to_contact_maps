@@ -36,7 +36,7 @@ from .utils import crop, round_up_by_10
 
 
 #### Functions for plotting loss ####
-def plot_combined_models(modelType, ids):
+def plot_combined_models(modelType, ids, use_id_for_label=False):
     path = osp.join('results', modelType)
 
     dirs = []
@@ -55,9 +55,9 @@ def plot_combined_models(modelType, ids):
         os.mkdir(imagePath, mode = 0o755)
 
     for log in [True, False]:
-        plotModelsFromDirs(dirs, imagePath, opts, log_y = log)
+        plotModelsFromDirs(dirs, imagePath, opts, log_y = log, use_id_for_label = use_id_for_label)
 
-def plotModelsFromDirs(dirs, imagePath, opts, log_y=False):
+def plotModelsFromDirs(dirs, imagePath, opts, log_y=False, use_id_for_label=False):
     # check that only one param is different
     opt_header = get_opt_header(opts[0].model_type, opts[0].GNN_mode)
     opt_lists = []
@@ -99,6 +99,10 @@ def plotModelsFromDirs(dirs, imagePath, opts, log_y=False):
         diff_name = 'id'
         diff = ids
         print(diff)
+
+    if use_id_for_label:
+        diff_name = 'id'
+        diff = ids
 
     fig, ax = plt.subplots()
     colors = ['b', 'r', 'g', 'c']

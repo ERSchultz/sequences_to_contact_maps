@@ -6,12 +6,8 @@
 		\hline
 		 \thead{ID} & \thead{Method} & \thead{Loss} & \thead{SCC} & \thead{HiC-Spector} & \thead{Corr PC 1} & \thead{RMSE($\tilde{H}$)} \\ 
 		\hline\hline
-		 631 & MSE($S^\dag, \hat{S}^\dag$) (baseline) & 0.408 & 0.654 & 0.519 & 0.85 & 0.675 \\ 
-		 658 & MSE($S^\dag, \hat{S}^\dag$) (batch size = 4) & 0.446 & 0.685 & 0.527 & 0.892 & 0.663 \\ 
-		 663 & input L to D (subtract) & 0.426 & 0.676 & 0.527 & 0.889 & 0.688 \\ 
-		 667 & gradient clipping (1) & 0.403 & 0.672 & 0.522 & 0.899 & 0.672 \\ 
-		 669 & big dataset & 0.284 & 0.678 & 0.533 & 0.918 & 0.678 \\ 
-		 673 & dataset_02_14_24 & 0.403 & 0.701 & 0.513 & 0.937 & 0.66 \\ 
+		 631 & MSE($S^\dag, \hat{S}^\dag$) (baseline) & 0.408 & 0.675 & 0.469 & 0.906 & 0.641 \\ 
+		 677 & new dataset, batch size 2 & 0.415 & 0.638 & 0.479 & 0.913 & 0.654 \\ 
 		\hline
 	\end{tabular}
 	\caption{Neural network ablation results.

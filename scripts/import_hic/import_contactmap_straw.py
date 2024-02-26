@@ -37,7 +37,7 @@ def import_contactmap_straw(odir, hic_filename, chrom, start,
         multiHiCcompare: True to write contact map in sparse format used by
                             multiHiCcompare R package
     '''
-    basepairs = f"{chrom}:{start}:{end}"
+    basepairs = f"chr{chrom}:{start}:{end}"
     print(basepairs, odir)
     result = hicstraw.straw("observed", norm, hic_filename, basepairs, basepairs, "BP", resolution)
     hic = hicstraw.HiCFile(hic_filename)
@@ -173,74 +173,19 @@ def entire_chromosomes(filename, dataset, resolution,
     with multiprocessing.Pool(15) as p:
         p.starmap(import_contactmap_straw, mapping)
 
-def multiHiCcompare_files(filenames, dataset, resolution=50000, ref_genome='hg19',
+    for chr in chroms:
+        y = np.load(osp.join(odir, f'chr{chr}', 'y.npy'))
+        plot_matrix(y, osp.join(odir, f'chr{chr}', 'y.png'), vmax='mean')
+
+
+def entire_chromosomes_list(filenames, dataset, resolution=50000, ref_genome='hg19',
                         chroms=range(1,23)):
     for i, filename in enumerate(filenames):
         odir = osp.join('/home/erschultz', dataset, f'chroms_rep{i}')
         entire_chromosomes(filename, dataset, resolution, 'NONE', ref_genome,
                             chroms, odir, True)
 
-def split_multiHiCCompare(in_dataset, out_dataset, m, chroms=range(1,23), start_index=1,
-                        resolution=50000, ref_genome='hg19', seed=None):
-    rng = np.random.default_rng(seed)
-    data_dir = osp.join('/home/erschultz', in_dataset)
-    samples_dir = osp.join('/home/erschultz', out_dataset, 'samples')
-    if not osp.exists(samples_dir):
-        os.mkdir(samples_dir, mode=0o755)
-
-    chrom_reps = [i for i in sorted(os.listdir(data_dir)) if 'rep' in i]
-
-    i = start_index
-    chromsizes = bioframe.fetch_chromsizes(ref_genome)
-    for chrom_rep in chrom_reps:
-        print(chrom_rep)
-        for chrom in chroms:
-            chrom_dir = osp.join(data_dir, f'{chrom_rep}/chr{chrom}')
-            y_file = osp.join(chrom_dir, 'y_multiHiCcompare.txt')
-            y = np.loadtxt(y_file)
-            size = len(y)
-
-            import_log = load_import_log(chrom_dir)
-
-            start = 0
-            end = start + m
-            while end < size:
-                start_mb = start * resolution / 1000000
-                end_mb = end * resolution / 1000000
-                print('\t', (start, end), start_mb, end_mb)
-                for region in HG19_BAD_REGIONS[chrom].split(','):
-                    region = region.split('-')
-                    region = [int(d) for d in region]
-                    if intersect((start_mb, end_mb), region):
-                        print(f'\tintersect with region {region}')
-                        start_mb = region[1] # skip to end of bad region
-                        start_mb += rng.choice(np.arange(6)) # add random shift
-                        break
-                else:
-                    print(f'\ti={i}: chr{chrom} {start_mb}-{end_mb}')
-                    odir = osp.join(samples_dir, f'sample{i}')
-                    if not osp.exists(odir):
-                        os.mkdir(odir, mode=0o755)
-
-                    with open(osp.join(odir, 'import.log'), 'w') as f:
-                        if isinstance(chrom, str):
-                            chrom = chrom.strip('chr')
-                        f.write(f'{import_log["url"]}\nchrom={chrom}\n')
-                        f.write(f'resolution={resolution}\nbeads={m}\nnorm={import_log["norm"]}\n')
-                        f.write(f'start={int(start_mb*1000000)}\nend={int(end_mb*1000000)}\n')
-                        f.write(f'genome={import_log["genome"]}')
-
-
-                    y_i = y[start:end,start:end]
-                    np.save(osp.join(odir, 'y.npy'), y_i)
-                    plot_matrix(y_i, osp.join(odir, 'y.png'), vmax='mean')
-                    i += 1
-                    start_mb = end_mb
-
-                start = int(start_mb * 1000000 / resolution)
-                end = start + m
-
-def split2(in_dataset, out_dataset, m, chroms=range(1,23), start_index=1,
+def split(in_dataset, out_dataset, m, chroms=range(1,23), start_index=1,
                         resolution=50000, ref_genome='hg19', seed=None,
                         file = 'y_multiHiCcompare.txt', scale=None):
     data_dir = osp.join('/home/erschultz', in_dataset)
@@ -303,20 +248,6 @@ def split2(in_dataset, out_dataset, m, chroms=range(1,23), start_index=1,
                 end = start + m
 
 
-def mixed_experimental_dataset(dataset, resolution, m, norm='NONE',
-                                i=1, ref_genome='hg19',
-                                chroms=range(1,23), files=ALL_FILES,
-                                seed=None):
-    dir = '/home/erschultz'
-    data_folder = osp.join(dir, dataset)
-    if not osp.exists(data_folder):
-        os.mkdir(data_folder, mode = 0o755)
-    odir = osp.join(data_folder, 'samples')
-    if not osp.exists(odir):
-        os.mkdir(odir, mode = 0o755)
-
-    import_wrapper(odir, files, resolution, norm, m, i , ref_genome, chroms, seed)
-
 def Su2020imr90():
     sample_folder = '/home/erschultz/Su2020/samples/sample4'
     filename='https://hicfiles.s3.amazonaws.com/hiseq/imr90/in-situ/combined.hic'
@@ -364,8 +295,12 @@ if __name__ == '__main__':
     # entire_chromosomes("https://hicfiles.s3.amazonaws.com/hiseq/gm12878/in-situ/combined.hic",
     #                     'dataset_02_05_23', 50000)
     # Su2020imr90()
-    multiHiCcompare_files(GM12878_REPLICATES, 'dataset_gm12878', resolution=5000, chroms=[1,2])
-    # multiHiCcompare_files(ALL_FILES_in_situ, 'dataset_11_20_23')
-    # split2('dataset_11_20_23', 'dataset_12_01_23', 512, file='y_multiHiCcompare.txt')
-    # split2('dataset_11_20_23', 'dataset_12_06_23', 512, file='y.npy', scale=1e-1)
-    split2('dataset_gm12878_5k', 'dataset_1_22_24', 1024, file='y.npy', scale=1e-1)
+    # entire_chromosomes_list(GM12878_REPLICATES, 'dataset_gm12878', resolution=5000, chroms=[1,2])
+    # entire_chromosomes('https://hicfiles.s3.amazonaws.com/hiseq/gm12878/in-situ/combined.hic',
+                        # 'dataset_gm12878_500k', resolution=500000, chroms=[1,2])
+    # entire_chromosomes_list(ALL_FILES_in_situ, 'dataset_11_20_23')
+    # split('dataset_11_20_23', 'dataset_12_01_23', 512, file='y_multiHiCcompare.txt')
+    # split('dataset_11_20_23', 'dataset_12_06_23', 512, file='y.npy', scale=1e-1)
+    # split('dataset_gm12878_5k', 'dataset_1_22_24', 1024, file='y.npy', scale=1e-1)
+    entire_chromosomes('https://hicfiles.s3.amazonaws.com/external/dixon/mm9-hindiii/split-read-run.hic',
+                        'dataset_mm9', resolution=100000, chroms=[1,2], ref_genome='mm9')

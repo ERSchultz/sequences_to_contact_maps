@@ -631,52 +631,6 @@ def test_loss():
     e = MSE_EXP_NORM.normalize2(e)
     print(e)
 
-def S_to_Y():
-    def normalize(arr):
-        # arr = arr / np.mean(arr.diagonal())
-        arr = arr / np.mean(arr)
-        arr[arr>1] = 1
-        return arr
-
-    dir = '/home/erschultz/dataset_12_06_23/samples/sample1'
-    grid_root = 'optimize_grid_b_200_v_8_spheroid_1.5'
-    y_bonded = np.load(osp.join(dir, grid_root, 'y.npy'))
-    y_bonded = normalize(y_bonded)
-
-    scc = SCC(h=1, K=100)
-
-    me_dir = osp.join(dir, f'{grid_root}-max_ent10')
-    S_me = np.load(osp.join(me_dir, 'iteration30/S.npy'))
-
-    gnn_dir = osp.join(dir, f'{grid_root}-GNN629')
-    odir = osp.join(gnn_dir, 'test')
-    if not osp.exists(odir):
-        os.mkdir(odir)
-
-    y = np.load(osp.join(gnn_dir, 'y.npy'))
-    plot_matrix(y, osp.join(odir, 'y.png'), vmax = 'mean')
-
-    S = np.load(osp.join(gnn_dir, 'S.npy'))
-    print('S', scc.scc(S, S_me))
-    print('exp(S)', scc.scc(np.exp(-S), np.exp(-S_me)))
-    print('log(S)', scc.scc(np.sign(S) * np.log(np.abs(S) + 1),
-                            np.sign(S_me) * np.log(np.abs(S_me) + 1)))
-
-    y_S = np.exp(-S)
-    # y_S = normalize(y_S)
-    print('y_S', scc.scc(y, y_S))
-    plot_matrix(y_S, osp.join(odir, 'y_S.png'), vmax = 'max')
-    #
-    # y_add = y_bonded + y_S
-    # y_add /= np.mean(y_add.diagonal())
-    # print('add', scc.scc(y, y_add))
-    # plot_matrix(y_add, osp.join(odir, 'y_add.png'), vmax = 'mean')
-    #
-    y_mul = y_bonded * y_S
-    y_mul = normalize(y_mul)
-    print('mul', scc.scc(y, y_mul))
-    plot_matrix(y_mul, osp.join(odir, 'y_mul.png'), vmax = 'max')
-
 if __name__ == '__main__':
     # temp()
     # test_loss()

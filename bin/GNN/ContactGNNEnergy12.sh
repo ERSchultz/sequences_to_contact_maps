@@ -42,15 +42,13 @@ yNorm='mean_fill'
 k=10
 useSignPlus='true'
 batchSize=1
-nEpochs=60
-milestones='40'
+nEpochs=40
 loss='mse_log'
-resumeTraining='true'
 
 # 673 ablation
 # more data
 
-id=678
+id=680
 for lr in 1e-4
 do
   train
