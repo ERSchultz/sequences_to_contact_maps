@@ -69,7 +69,6 @@ def main():
             # 639: 'pReLU activations',
             # 640: 'original message passing layer from \citep{Brody2022HowNetworks}',
             }
-
     descr_dict = {631: 'MSE($S^\dag, \hat{S}^\dag$) (baseline)',
                 # 632: 'MSE($S,\hat{S}$)',
                 # 641: 'MSE($S^\dag, \hat{S}^\dag$) + 0.1MSE($S,\hat{S}$)',
