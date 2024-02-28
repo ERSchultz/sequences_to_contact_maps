@@ -117,7 +117,7 @@ def debugModel(model_type):
     if model_type == 'ContactGNNEnergy':
         opt.y_preprocessing = 'log_inf'
         opt.sweep_choices = None
-        opt.rescale = 2
+        opt.rescale = 4
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
@@ -137,12 +137,10 @@ def debugModel(model_type):
         opt.gated = False
         opt.dropout = 0.0
         opt.act = 'leaky'
-        opt.inner_act = 'relu'
-        opt.out_act = 'prelu'
-        opt.head_act = 'relu'
+        opt.inner_act = 'relu'; opt.out_act = 'prelu'; opt.head_act = 'relu'
         opt.training_norm = None
         opt.use_node_features = False
-        opt.k = 10
+        opt.k = 5
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         # opt.transforms=AC.str2list('constant')
@@ -171,40 +169,11 @@ def debugModel(model_type):
         opt.num_heads = 1
         opt.concat_heads = True
         # opt.max_diagonal=500
-    elif model_type.lower() == 'signnet':
-        model_type = 'ContactGNNEnergy'
-        opt.use_sign_plus = True
-        opt.y_preprocessing = 'sweeprand_log_inf'
-        opt.rescale = None
-        opt.loss = 'mse'
-        opt.preprocessing_norm = 'mean'
-        opt.message_passing = 'weighted_GAT'
-        opt.GNN_mode = True
-        opt.output_mode = 'energy_sym_diag'
-        opt.output_preprocesing = 'log'
-        opt.encoder_hidden_sizes_list=None
-        opt.edge_encoder_hidden_sizes_list=[8]
-        opt.update_hidden_sizes_list=[100,100,32]
-        opt.hidden_sizes_list=[8]
-        opt.act = 'prelu'
-        opt.inner_act = 'relu'
-        opt.out_act = 'relu'
-        opt.head_act = 'relu'
-        opt.use_edge_attr = True
-        # opt.transforms=AC.str2list('constant')
-        opt.pre_transforms=AC.str2list('ContactDistance-GeneticDistance_norm-AdjPCs_8')
-        opt.k=8
-        opt.head_architecture = 'dconv-bilinear-triu'
-        opt.head_architecture_2 = f'dconv-fc-fill_{opt.m}'
-        opt.head_hidden_sizes_list = [1000,1000,1000]
-        opt.crop = None
-
-        opt.use_bias = True
-        opt.num_heads = 6
-        opt.concat_heads = True
 
     # hyperparameters
     opt.n_epochs = 3
+    opt.scheduler = 'multisteplr'
+    opt.milestones = [1]
     opt.lr = 1e-3
     opt.weight_decay = 1e-5
     opt.w_reg = None; opt.reg_lambda = 10
@@ -221,6 +190,10 @@ def debugModel(model_type):
     # opt.delete_root = True
     opt.num_workers = 2
     opt.use_scratch_parallel = False
+    opt.save_mod = 2
+    opt.seed = 12
+    opt.save_early_stop = True
+
 
     opt = finalize_opt(opt, parser, False, debug = True)
     opt.model_type = model_type
@@ -635,8 +608,8 @@ if __name__ == '__main__':
     # temp()
     # test_loss()
     # binom()
-    edit_argparse()
-    # debugModel('ContactGNNEnergy')
+    # edit_argparse()
+    debugModel('ContactGNNEnergy')
     # gnn_meanDist_s(434, '981')
     # test_center_norm_log()
     # testGNNrank('dataset_02_04_23', 378)

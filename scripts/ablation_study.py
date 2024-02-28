@@ -103,9 +103,10 @@ def main():
                 # 674: 'batch size = 4, gradient clipping (1)',
                 # 675: 'batch size = 6',
                 # 676: 'new dataset, grad clip (1)',
-                677: 'new dataset, batch size 2',
+                # 677: 'new dataset, batch size 2',
                 # 678: 'new dataset (10k)',
                 # 679: 'pretrain new large dataset',
+                680: 'new dataset (10k) early stopping (40 epochs)',
                 }
     id_list = descr_dict.keys()
     print(id_list)

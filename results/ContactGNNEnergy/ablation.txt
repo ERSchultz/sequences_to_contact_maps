@@ -7,7 +7,7 @@
 		 \thead{ID} & \thead{Method} & \thead{Loss} & \thead{SCC} & \thead{HiC-Spector} & \thead{Corr PC 1} & \thead{RMSE($\tilde{H}$)} \\ 
 		\hline\hline
 		 631 & MSE($S^\dag, \hat{S}^\dag$) (baseline) & 0.408 & 0.675 & 0.469 & 0.906 & 0.641 \\ 
-		 677 & new dataset, batch size 2 & 0.415 & 0.638 & 0.479 & 0.913 & 0.654 \\ 
+		 680 & new dataset (10k) early stopping (40 epochs) & 0.34 & 0.696 & 0.517 & 0.914 & 0.65 \\ 
 		\hline
 	\end{tabular}
 	\caption{Neural network ablation results.

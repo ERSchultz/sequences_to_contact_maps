@@ -42,13 +42,16 @@ yNorm='mean_fill'
 k=10
 useSignPlus='true'
 batchSize=1
-nEpochs=40
+nEpochs=60
+milestones='40'
 loss='mse_log'
+SEED=13
+saveEarlyStop='true'
 
-# 673 ablation
-# more data
+# 678 ablation
+# new random seed
 
-id=680
+id=681
 for lr in 1e-4
 do
   train

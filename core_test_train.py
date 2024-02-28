@@ -283,7 +283,8 @@ def train(train_loader, val_dataloader, model, opt, train_loss = [], val_loss = 
             if new_lr < lr:
                 lr = new_lr
                 print(f'New lr: {lr}', file = opt.log_file)
-                # save(True)
+                if opt.save_early_stop:
+                    save(True)
 
         if opt.min_lr is not None and lr < opt.min_lr:
             print('Converged', file = opt.log_file)

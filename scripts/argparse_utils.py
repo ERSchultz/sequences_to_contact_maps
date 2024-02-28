@@ -177,6 +177,8 @@ def get_base_parser():
                         help='True to print parameters after training')
     parser.add_argument('--output_mode', type=str, default='contact',
                         help='data structure of output {"contact", "sequence", "energy"}')
+    parser.add_argument('--save_early_stop', type=AC.str2bool, default=False,
+                        help='True to save model at first lr milestone')
 
     # model args
     parser.add_argument('--model_type', type=str, default='test',
