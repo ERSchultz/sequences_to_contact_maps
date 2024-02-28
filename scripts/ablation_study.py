@@ -97,14 +97,14 @@ def main():
                 # 666: "MSE($S^\dag, \hat{S}^\dag$) + scc loss no resize"
                 # 667: "gradient clipping (1)",
                 # 668: 'MSE($S^\dag, \hat{S}^\dag$) + 0.1SCC($S, \hat{S}$)',
-                # 669: 'big dataset',
+                669: 'big dataset',
                 # 672: 'SCC($\exp{-S}, \exp{-\hat{S}}$) (clip15 + norm)',
-                # 673: "new dataset",
+                673: "new dataset",
                 # 674: 'batch size = 4, gradient clipping (1)',
                 # 675: 'batch size = 6',
                 # 676: 'new dataset, grad clip (1)',
                 # 677: 'new dataset, batch size 2',
-                # 678: 'new dataset (10k)',
+                678: 'new dataset (10k)',
                 # 679: 'pretrain new large dataset',
                 680: 'new dataset (10k) early stopping (40 epochs)',
                 }
@@ -130,7 +130,7 @@ def main():
 
     dataset = 'dataset_12_06_23'
     train_samples, _ = get_samples(dataset, train=True, filter_cell_lines=['imr90'])
-    train_samples = train_samples[:12]
+    train_samples = train_samples
     args = getArgs(data_folder = f'/home/erschultz/{dataset}',
                     samples = train_samples)
     args.experimental = True
