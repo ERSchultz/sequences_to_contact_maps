@@ -19,7 +19,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy1' # change to run multiple bash files at once
-dirname="/project/depablo/erschultz/dataset_12_12_23_imr90"
+dirname="/project2/depablo/erschultz/dataset_12_06_23_max_ent_exp"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-AdjPCs_10'
 hiddenSizesList='16-16-16-16'
@@ -39,16 +39,15 @@ outAct='leaky'
 yNorm='mean_fill'
 k=10
 useSignPlus='true'
-batchSize=2
-nEpochs=60
-milestones='40'
-loss='scc_exp_clip25'
+batchSize=1
+nEpochs=20
+milestones='10'
+loss='mse_log'
+pretrainID=631
 
+# fine tuning on dataset_12_06_23_max_ent_exp: 631
 
-# 631 ablation
-# scc_exp_clip25
-
-id=671
+id=685
 for lr in 1e-4
 do
   train

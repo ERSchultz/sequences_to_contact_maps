@@ -102,13 +102,14 @@ def debugModel(model_type):
 
     # dataset
     dir = "/home/erschultz"
-    datasets = ['dataset_12_12_23_imr90']
+    datasets = ['dataset_12_06_23_max_ent']
+    opt.bonded_path = 'optimize_grid_b_200_v_8_spheroid_1.5'
     opt.data_folder = [osp.join(dir, d) for d in datasets]
     opt.scratch = '/home/erschultz/scratch'
 
     # architecture
     opt.m = 512
-    opt.split_percents=[0.7,0.15,0.15]
+    opt.split_percents=[0.5,0.2,0.3]
     opt.split_sizes=None
     # opt.split_sizes=[1, 0, 0]
     # opt.split_percents = None
@@ -121,7 +122,7 @@ def debugModel(model_type):
         opt.mean_filt = None
         opt.kr = False
         opt.keep_zero_edges = False
-        opt.loss = 'mse_exp_norm'
+        opt.loss = 'mse_log'
         opt.loss_k = 3
         opt.lambda1=5e-2
         opt.lambda2=1
@@ -143,7 +144,6 @@ def debugModel(model_type):
         opt.k = 5
         opt.use_edge_weights = False
         opt.use_edge_attr = True
-        # opt.transforms=AC.str2list('constant')
         opt.pre_transforms=['ContactDistance',
                             # 'ContactDistance_diagnorm',
                             # 'ContactDistance_corr',
@@ -153,7 +153,6 @@ def debugModel(model_type):
                             # 'GeneticDistance_norm',
                             # 'MeanContactDistance',
                             'MeanContactDistance_bonded']
-        opt.mlp_model_id=None
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None
@@ -164,14 +163,11 @@ def debugModel(model_type):
         opt.head_hidden_sizes_list = [100]
         # opt.crop = [128, 256]
         opt.plaid_score_cutoff = None
-        opt.output_clip = 25
         opt.use_bias = True
         opt.num_heads = 1
-        opt.concat_heads = True
-        # opt.max_diagonal=500
 
     # hyperparameters
-    opt.n_epochs = 3
+    opt.n_epochs = 1
     opt.scheduler = 'multisteplr'
     opt.milestones = [1]
     opt.lr = 1e-3

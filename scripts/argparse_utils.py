@@ -247,8 +247,8 @@ def get_base_parser():
                         help='Maximum diagonal to consider')
     parser.add_argument('--mlp_model_id', type=AC.str2int,
                         help='Model ID for MLP diagonal parameters')
-    # parser.add_argument('--bonded_path', type=AC.str2None,
-    #                     help='argument in GridSize transform')
+    parser.add_argument('--bonded_path', type=AC.str2None,
+                        help='argument in GridSize transform')
 
     # SimpleEpiNet args
     parser.add_argument('--kernel_w_list', type=AC.str2list,
@@ -331,8 +331,8 @@ def finalize_opt(opt, parser, windows = False, local = False, debug = False, bon
             # by inserting at position 1, the original arguments will override the txt file
             opt.id = id_copy
 
-    opt.bonded_path = bonded_path
-
+    if opt.bonded_path is None:
+        opt.bonded_path = bonded_path
 
 
     opt.ofile_folder = osp.join(model_type_folder, str(opt.id))
