@@ -45,6 +45,7 @@ nEpochs=20
 milestones='10'
 loss='mse_log'
 pretrainID=631
+bondedPath='optimize_grid_b_200_v_8_spheroid_1.5'
 
 # fine tuning on dataset_12_06_23_max_ent: 631
 
