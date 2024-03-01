@@ -1,0 +1,327 @@
+#### ARCHITECTURE ####
+Node Encoder:
+ None 
+
+Linear:
+ Linear(in_features=10, out_features=128, bias=True) 
+
+Edge Encoder:
+ None 
+
+Model:
+ Sequential(
+  (0): WeightedGATv2Conv(128, 16, heads=8)
+  (1): MLP(
+  (model): Sequential(
+    (0): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=128, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (1): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (2): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (3): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (4): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=128, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+  )
+)
+  (2): WeightedGATv2Conv(128, 16, heads=8)
+  (3): MLP(
+  (model): Sequential(
+    (0): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=128, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (1): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (2): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (3): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (4): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=128, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+  )
+)
+  (4): WeightedGATv2Conv(128, 16, heads=8)
+  (5): MLP(
+  (model): Sequential(
+    (0): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=128, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (1): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (2): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (3): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (4): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=128, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+  )
+)
+  (6): WeightedGATv2Conv(128, 16, heads=8)
+  (7): MLP(
+  (model): Sequential(
+    (0): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=128, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (1): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (2): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (3): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=1000, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (4): LinearBlock(
+      (model): Sequential(
+        (0): Linear(in_features=1000, out_features=128, bias=True)
+        (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+  )
+)
+) 
+
+Head L:
+ None 
+ Bilinear 
+
+Head D:
+ None 
+ Sequential(
+  (0): MLP(
+    (model): Sequential(
+      (0): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=32768, out_features=1000, bias=True)
+          (1): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (1): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1000, bias=True)
+          (1): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (2): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1000, bias=True)
+          (1): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (3): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1000, bias=True)
+          (1): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (4): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1000, bias=True)
+          (1): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (5): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=1000, bias=True)
+          (1): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (6): LinearBlock(
+        (model): Sequential(
+          (0): Linear(in_features=1000, out_features=512, bias=True)
+          (1): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+    )
+  )
+  (1): FillDiagonalsFromArray()
+) 
+
+Namespace(GNN_mode=True, transforms=[], pre_transforms=['ContactDistance', 'MeanContactDistance', 'AdjPCs_10'], sparsify_threshold=None, sparsify_threshold_upper=None, top_k=None, use_node_features=False, use_edge_weights=False, use_edge_attr=True, keep_zero_edges=False, data_folder=['/project2/depablo/erschultz/dataset_12_06_23_max_ent_exp'], scratch='/scratch/midway3/erschultz', root_name='ContactGNNEnergy1', delete_root=False, toxx=False, toxx_mode='mean', y_preprocessing='log_inf', sweep_choices=None, y_zero_diag_count=0, log_preprocessing=None, output_preprocesing=None, kr=False, mean_filt=None, rescale=2, gated=False, preprocessing_norm='mean_fill', min_subtraction=True, x_reshape=True, ydtype=torch.float32, y_reshape=True, crop=None, classes=10, move_data_to_scratch=False, use_scratch_parallel=False, plaid_score_cutoff=None, split_percents=[0.9, 0.1, 0.0], split_sizes=None, random_split=True, shuffle=True, batch_size=1, num_workers=4, max_sample=None, start_epoch=1, n_epochs=20, save_mod=5, print_mod=2, lr=0.0001, min_lr=1e-06, weight_decay=0.0, gpus=1, scheduler='MultiStepLR', milestones=[10], gamma=0.1, patience=10, loss='mse_log', loss_k=2, lambda1=1.0, lambda2=1.0, lambda3=1, grad_clip=None, w_reg=None, reg_lambda=0.1, autoencoder_mode=False, verbose=False, print_params=True, output_mode='energy_sym_diag', save_early_stop=False, model_type='ContactGNNEnergy', id=685, pretrain_id=631, resume_training=False, k=10, m=512, seed=42, act='leaky', inner_act='leaky', out_act='leaky', training_norm=None, dropout=0.0, parameter_sharing=False, use_bias=True, input_L_to_D=False, input_L_to_D_mode='meandist', output_clip=None, use_sign_net=False, use_sign_plus=True, message_passing='weighted_GAT', head_architecture='bilinear', head_architecture_2='fc-fill_512', head_hidden_sizes_list=[1000, 1000, 1000, 1000, 1000, 1000], encoder_hidden_sizes_list=None, inner_hidden_sizes_list=None, edge_encoder_hidden_sizes_list=None, update_hidden_sizes_list=[1000, 1000, 1000, 1000, 128], head_act='leaky', num_heads=8, concat_heads=True, max_diagonal=None, mlp_model_id=None, bonded_path='optimize_grid_b_200_v_8_spheroid_1.5', kernel_w_list=None, hidden_sizes_list=[16, 16, 16, 16], nf=None, dilation_list=None, dilation_list_trunk=None, bottleneck=None, dilation_list_head=None, down_sampling=None, plot=True, plot_predictions=True, ofile_folder='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/685', log_file_path='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/685/out.log', log_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/685/out.log' mode='a' encoding='UTF-8'>, param_file=<_io.TextIOWrapper name='/home/erschultz/sequences_to_contact_maps/results/ContactGNNEnergy/685/params.log' mode='a' encoding='UTF-8'>, split_neg_pos_edges=False, node_feature_size=0, input_m=256, edge_transforms=['ContactDistance(norm=False)', 'MeanContactDistance(norm=False)'], node_transforms=['AdjPCs(k=10, normalize=False, sign_net=True)'], edge_dim=2, transforms_processed=None, diag=True, corr=False, pre_transforms_processed=Compose([
+  ContactDistance(norm=False),
+  MeanContactDistance(norm=False),
+  AdjPCs(k=10, normalize=False, sign_net=True)
+]), eig=False, criterion=<function mse_log at 0x7f6df8a6e4c0>, cuda=True, use_parallel=False, device=device(type='cuda'))
+
+Dataset construction time: 0.856 minutes
+Number of samples: 196
+Average num edges per graph:  64225.755102040814
+Mean degree: [254.31 253.73 254.72 254.27 253.62 251.82 252.6  254.62 254.52 254.09
+ 250.7  253.17 253.05 252.16 254.96 249.36 254.16 249.72 253.5  252.77
+ 252.55 253.21 255.   255.   254.87 255.   254.98 255.   255.   255.
+ 254.6  255.   255.   255.   255.   254.84 255.   253.43 255.   255.
+ 255.   254.66 255.   255.   249.14 255.   255.   255.   255.   254.16
+ 255.   254.95 255.   255.   254.96 255.   254.47 255.   255.   254.84
+ 252.92 254.12 248.59 254.68 251.94 253.63 248.46 251.72 250.67 254.23
+ 254.19 254.85 245.24 254.5  253.77 254.48 254.83 250.25 253.25 249.97
+ 250.13 243.74 253.93 253.07 244.54 238.76 248.68 254.77 247.69 243.68
+ 239.15 252.33 254.59 242.4  249.32 234.68 251.   254.84 245.74 252.41
+ 231.38 249.95 247.83 251.71 247.1  236.48 252.17 244.59 252.8  247.9
+ 246.55 229.77 251.86 248.91 250.63 242.88 248.31 241.   245.02 252.9
+ 248.19 236.17 232.68 242.32 244.14 230.02 253.19 224.54 238.06 224.66
+ 229.44 233.72 254.97 254.41 254.75 249.92 254.79 254.19 240.64 254.87
+ 252.69 254.59 254.59 254.47 253.71 253.98 253.48 246.78 254.61 254.2
+ 254.7  251.98 254.38 235.21 252.03 254.98 254.62 254.78 251.98 246.52
+ 254.01 253.47 253.52 245.29 254.2  246.81 252.64 250.05 254.96 254.02
+ 254.54 253.09 254.9  251.45 254.79 254.88 254.38 249.84 253.72 250.
+ 254.09 252.28 253.66 254.5  254.47 250.93 253.95 254.65 254.69 252.1
+ 253.57 254.59 253.17 253.98 249.34 253.39] +- [ 1.24  1.94  0.71  1.71  2.39 13.73  5.14  0.81  1.03  1.97  9.81  2.87
+  6.67  3.08  0.21 10.13  1.52 15.01  2.03  3.59  5.37  8.76  0.    0.
+  1.09  0.    0.15  0.    0.    0.    1.01  0.    0.    0.    0.    0.53
+  0.    4.93  0.    0.    0.    0.93  0.    0.   16.59  0.    0.    0.
+  0.    5.91  0.    0.25  0.    0.    0.23  0.    2.88  0.    0.    0.92
+  2.61  1.37 16.36  0.71  3.82  1.63  7.4   3.75  5.51  3.29  1.74  0.56
+ 25.53  0.94  1.66  1.1   0.69  7.61  2.73 15.12  8.32 23.02  2.97  2.21
+ 14.02 21.14  5.72  0.73 11.7   8.82 15.47  3.59  0.94 18.2   7.25 17.43
+ 10.63  0.53  9.11  3.1  20.5   4.22  8.64 12.32  7.41 15.57  2.93 10.1
+  2.56  7.51  9.42 32.56  3.8   6.29  5.76 13.97  5.85 21.18 14.01  3.11
+  5.91 17.85 23.12 12.07 13.48 16.67  3.52 21.88 13.89 24.18 20.34 18.62
+  0.21  1.09  0.57 14.94  0.53  4.53 24.58  0.42  3.59  0.97  0.76  1.12
+  2.01  2.73  3.35 22.34  1.06  1.8   0.79  5.61  1.35 29.91  4.45  0.12
+  1.09  0.51  5.18 15.56  1.63  5.37  2.11 12.41  1.29 16.96  3.69  7.
+  0.25  1.86  1.02  3.52  0.84  6.41  0.63  0.55  1.42  7.35  2.05 11.76
+  1.78  4.8   6.07  1.25  0.98 14.44  1.3   1.26  0.62  4.04  1.83  0.99
+  2.84  1.65 16.19  2.06]
+
+split sizes: train=177, val=19, test=0, N=196
+First 100 val samples: [141, 230, 416, 274, 324, 216, 245, 147, 1, 101, 43, 158, 14, 29, 233, 25, 16, 159, 66]
+Pre-trained model is loaded.
+Optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 0.0001
+    weight_decay: 0.0
+)
+Scheduler: <torch.optim.lr_scheduler.MultiStepLR object at 0x7f6df7adecd0>
+#### TRAINING/VALIDATION ####
+Epoch 2, loss = 0.3338
+Mean test/val loss: 0.3163
+[25, 50, 75] percentiles test/val loss: [0.2683 0.3267 0.3496]
+
+Epoch 4, loss = 0.3099
+Mean test/val loss: 0.2937
+[25, 50, 75] percentiles test/val loss: [0.256  0.3036 0.3246]
+
+Epoch 6, loss = 0.2976
+Mean test/val loss: 0.3014
+[25, 50, 75] percentiles test/val loss: [0.2537 0.2834 0.3424]
+
+Epoch 8, loss = 0.2839
+Mean test/val loss: 0.2893
+[25, 50, 75] percentiles test/val loss: [0.2429 0.2957 0.3196]
+
+Epoch 10, loss = 0.2818
+Mean test/val loss: 0.2860
+[25, 50, 75] percentiles test/val loss: [0.2396 0.2949 0.3098]
+
+New lr: 1e-05
+Epoch 12, loss = 0.2543
+Mean test/val loss: 0.2772
+[25, 50, 75] percentiles test/val loss: [0.2309 0.2898 0.3087]
+
+Epoch 14, loss = 0.2487
+Mean test/val loss: 0.2776
+[25, 50, 75] percentiles test/val loss: [0.2319 0.2891 0.3073]
+
+Epoch 16, loss = 0.2451
+Mean test/val loss: 0.2779
+[25, 50, 75] percentiles test/val loss: [0.2349 0.2872 0.309 ]
+
+Epoch 18, loss = 0.2415
+Mean test/val loss: 0.2779
+[25, 50, 75] percentiles test/val loss: [0.2347 0.2883 0.3084]
+
+Epoch 20, loss = 0.2389
+Mean test/val loss: 0.2786
+[25, 50, 75] percentiles test/val loss: [0.239  0.2859 0.31  ]
+
+
+Total parameters: 51478960
+Total training + validation time: 0.0 hours, 20.0 mins, and 11.200000000000045 secs
+Final val loss: 0.27864934347177805
+
+split sizes: train=177, val=19, test=0, N=196
+#### Plotting Script ####
+Prediction Results:
+dataset_12_06_23_max_ent_exp sample324: 0.3291676640510559
+dataset_12_06_23_max_ent_exp sample274: 0.22174128890037537
+dataset_12_06_23_max_ent_exp sample141: 0.31077396869659424
+dataset_12_06_23_max_ent_exp sample14: 0.3062363862991333
+dataset_12_06_23_max_ent_exp sample29: 0.2859296202659607
+MSE_log: 0.291 +- 0.037
+
+Downsampling (200k) Results:
+Original sampling (400k) Results:

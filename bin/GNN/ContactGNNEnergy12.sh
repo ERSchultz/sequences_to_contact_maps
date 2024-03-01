@@ -47,6 +47,7 @@ milestones='40'
 loss='mse_log'
 SEED=13
 saveEarlyStop='true'
+resumeTraining='true'
 
 # 678 ablation
 # new random seed
