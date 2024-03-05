@@ -344,7 +344,6 @@ class ContactsGraph(torch_geometric.data.Dataset):
             if not found:
                 raise Exception(f'--diag_chi_experiment missing from {setup_file}')
             y_bonded_file = osp.join(dir, exp_subpath, 'y.npy')
-            print('h347', y_bonded_file)
             assert osp.exists(y_bonded_file), y_bonded_file
             y_bonded = np.load(y_bonded_file).astype(np.float64)
         elif osp.exists(bonded_file):
