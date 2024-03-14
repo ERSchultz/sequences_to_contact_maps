@@ -106,6 +106,15 @@ def main():
                 678: 'new dataset (10k)',
                 # 679: 'pretrain new large dataset',
                 680: 'new dataset (10k) early stopping (40 epochs)',
+                681: 'new dataset (10k) new random seed',
+                682: 'correct start 2 dataset',
+                683: 'correct start 1 dataset',
+                684: '631 fine tune',
+                685: '631 fine tune (exp)',
+                686: '673 fine tune',
+                687: '673 fine tune (exp)',
+                688: 'variant start 1 dataset',
+                689: 'variant start 2 dataset',
                 }
     id_list = descr_dict.keys()
     print(id_list)
