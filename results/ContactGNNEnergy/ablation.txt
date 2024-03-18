@@ -10,16 +10,11 @@
 		 669 & big dataset & 0.284 & 0.698 & 0.508 & 0.932 & 0.69 \\ 
 		 673 & new dataset & 0.403 & 0.707 & 0.486 & 0.932 & 0.684 \\ 
 		 678 & new dataset (10k) & 0.268 & 0.52 & 0.448 & 0.793 & 0.784 \\ 
-		 680 & new dataset (10k) early stopping (40 epochs) & 0.34 & 0.697 & 0.503 & 0.898 & 0.696 \\ 
-		 681 & new dataset (10k) new random seed & 0.261 & 0.497 & 0.441 & 0.8 & 0.778 \\ 
-		 682 & correct start 2 dataset & 0.391 & 0.655 & 0.489 & 0.893 & 0.707 \\ 
-		 683 & correct start 1 dataset & 0.4 & 0.658 & 0.479 & 0.799 & 0.703 \\ 
-		 684 & 631 fine tune & 0.206 & 0.663 & 0.492 & 0.872 & 0.689 \\ 
-		 685 & 631 fine tune (exp) & 0.279 & 0.766 & 0.502 & 0.877 & 0.664 \\ 
-		 686 & 673 fine tune & 0.208 & 0.712 & 0.48 & 0.877 & 0.689 \\ 
-		 687 & 673 fine tune (exp) & 0.28 & 0.765 & 0.494 & 0.88 & 0.662 \\ 
-		 688 & variant start 1 dataset & 0.51 & 0.605 & 0.469 & 0.848 & 0.72 \\ 
-		 689 & variant start 2 dataset & 0.493 & 0.702 & 0.494 & 0.907 & 0.685 \\ 
+		 690 & variant start 2 dataset (10k) & 0.406 & 0.725 & 0.533 & 0.913 & 0.677 \\ 
+		 691 & 631 fine tune (exp2) & 0.25 & nan & nan & nan & nan \\ 
+		 692 & 673 fine tune (exp2) & 0.246 & nan & nan & nan & nan \\ 
+		 693 & 631 fine tune (imr90_exp) & 0.301 & 0.759 & 0.497 & 0.883 & 0.666 \\ 
+		 694 & 673 fine tune (imr90_exp) & 0.307 & 0.76 & 0.494 & 0.902 & 0.666 \\ 
 		\hline
 	\end{tabular}
 	\caption{Neural network ablation results.
