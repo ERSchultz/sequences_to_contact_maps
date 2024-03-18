@@ -44,6 +44,7 @@ nEpochs=60
 milestones='40'
 loss='mse_log'
 saveEarlyStop='true'
+resumeTraining='true'
 
 # 631 ablation
 # another new dataset
