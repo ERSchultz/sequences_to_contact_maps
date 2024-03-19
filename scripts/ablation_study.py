@@ -115,11 +115,12 @@ def main():
                 # 687: '673 fine tune (exp)',
                 # 688: 'variant start 1 dataset',
                 # 689: 'variant start 2 dataset',
-                690: 'variant start 2 dataset (10k)',
-                691: '631 fine tune (exp2)',
-                692: '673 fine tune (exp2)',
-                693: '631 fine tune (imr90_exp)',
-                694: '673 fine tune (imr90_exp)',
+                # 690: 'variant start 2 dataset (10k)',
+                # 691: '631 fine tune (exp2)',
+                # 692: '673 fine tune (exp2)',
+                # 693: '631 fine tune (imr90_exp)',
+                # 694: '673 fine tune (imr90_exp)',
+                695: '690 fine tune (imr90_exp)',
                 }
     id_list = descr_dict.keys()
     print(id_list)

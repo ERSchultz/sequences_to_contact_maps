@@ -27,13 +27,9 @@ from pylib.utils.plotting_utils import *
 from pylib.utils.similarity_measures import SCC, hic_spector
 from pylib.utils.utils import load_json, make_composite, pearson_round
 from pylib.utils.xyz import xyz_load, xyz_write
+from result_summary_plots import predict_chi_in_psi_basis
 from scipy.ndimage import uniform_filter
 from scipy.stats import pearsonr
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-from sklearn.metrics import mean_squared_error
-
-from result_summary_plots import predict_chi_in_psi_basis
 from scripts.argparse_utils import (finalize_opt, get_base_parser,
                                     get_opt_header, opt2list)
 from scripts.load_utils import (get_final_max_ent_folder, load_import_log,
@@ -41,6 +37,9 @@ from scripts.load_utils import (get_final_max_ent_folder, load_import_log,
 from scripts.plotting_utils import (plot_centroid_distance,
                                     plot_combined_models, plot_diag_chi,
                                     plot_xyz_gif, plotting_script)
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.metrics import mean_squared_error
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -1155,7 +1154,7 @@ def generalization_figure():
     # datasets = ['dataset_04_05_23', 'dataset_04_05_23', 'dataset_04_05_23']
     # cell_lines = ['GM12878', 'HCT116', 'HL-60']
     # samples = [1213, 1248, 1286]
-    GNN_ID = 631
+    GNN_ID = 695
     grid_root = 'optimize_grid_b_200_v_8_spheroid_1.5'
 
 
@@ -1888,14 +1887,14 @@ if __name__ == '__main__':
     # update_result_tables('ContactGNNEnergy', 'GNN', 'energy')
 
     # plot_mean_vs_genomic_distance_comparison('/home/erschultz/dataset_test_diag1024_linear', [21, 23, 25 ,27], ref_file = file)
-    plot_combined_models('ContactGNNEnergy', [684, 685, 686], True)
+    # plot_combined_models('ContactGNNEnergy', [684, 685, 686], True)
     # plot_GNN_vs_PCA('dataset_04_05_23', 10, 407)
     # plot_first_PC('dataset_02_04_23/samples/sample202/PCA-normalize-E/k8/replicate1', 8, 392)
     # plot_Exp_vs_PCA("dataset_02_04_23")
     # main()
     # plot_all_contact_cd maps('dataset_05_28_23')
     # plot_p_s('dataset_05_28_23', ref=True)
-    # generalization_figure()
+    generalization_figure()
     # interpretation_figure()
     # interpretation_figure_test()
     # plot_first_PC('dataset_02_04_23', 10, 419)
