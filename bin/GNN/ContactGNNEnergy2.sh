@@ -19,7 +19,7 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy2' # change to run multiple bash files at once
-dirname="/project2/depablo/erschultz/dataset_12_06_23_max_ent_exp"
+dirname="/project2/depablo/erschultz/dataset_12_06_23_max_ent_all_exp"
 m=512
 preTransforms='ContactDistance-MeanContactDistance-AdjPCs_10'
 hiddenSizesList='16-16-16-16'
@@ -47,9 +47,9 @@ pretrainID=690
 bondedPath='optimize_grid_b_200_v_8_spheroid_1.5'
 
 
-# fine tuning on dataset_12_06_23_max_ent_exp: 690
+# fine tuning on dataset_12_06_23_max_ent_all_exp: 690
 
-id=696
+id=698
 for lr in 1e-4
 do
   train
