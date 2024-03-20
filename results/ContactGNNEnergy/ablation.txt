@@ -7,7 +7,9 @@
 		 \thead{ID} & \thead{Method} & \thead{Loss} & \thead{SCC} & \thead{HiC-Spector} & \thead{Corr PC 1} & \thead{RMSE($\tilde{H}$)} \\ 
 		\hline\hline
 		 631 & MSE($S^\dag, \hat{S}^\dag$) (baseline) & 0.408 & 0.672 & 0.493 & 0.84 & 0.689 \\ 
-		 695 & 695 fine tune (imr90_exp) & 0.303 & 0.763 & 0.505 & 0.893 & 0.667 \\ 
+		 696 & 690 fine tune (exp) & 0.28 & 0.763 & 0.493 & 0.876 & 0.671 \\ 
+		 697 & 690 fine tune (exp2) & 0.241 & 0.777 & 0.508 & 0.878 & 0.66 \\ 
+		 698 & 690 fine tune (all_exp) & 0.279 & 0.764 & 0.495 & 0.867 & 0.665 \\ 
 		\hline
 	\end{tabular}
 	\caption{Neural network ablation results.

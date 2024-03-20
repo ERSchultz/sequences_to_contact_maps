@@ -1154,7 +1154,7 @@ def generalization_figure():
     # datasets = ['dataset_04_05_23', 'dataset_04_05_23', 'dataset_04_05_23']
     # cell_lines = ['GM12878', 'HCT116', 'HL-60']
     # samples = [1213, 1248, 1286]
-    GNN_ID = 695
+    GNN_ID = 690
     grid_root = 'optimize_grid_b_200_v_8_spheroid_1.5'
 
 

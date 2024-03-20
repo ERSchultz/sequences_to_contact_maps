@@ -120,7 +120,10 @@ def main():
                 # 692: '673 fine tune (exp2)',
                 # 693: '631 fine tune (imr90_exp)',
                 # 694: '673 fine tune (imr90_exp)',
-                695: '690 fine tune (imr90_exp)',
+                # 695: '690 fine tune (imr90_exp)',
+                696: '690 fine tune (exp)',
+                697: '690 fine tune (exp2)',
+                698: '690 fine tune (all_exp)',
                 }
     id_list = descr_dict.keys()
     print(id_list)
