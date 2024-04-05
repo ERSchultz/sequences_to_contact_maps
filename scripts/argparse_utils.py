@@ -669,6 +669,7 @@ def process_transforms(opt):
             log = False
             log10 = False
             norm = False
+            post = False
             for mode_str in t_str[1:]:
                 if mode_str == 'log':
                     log = True
@@ -676,10 +677,15 @@ def process_transforms(opt):
                     log10 = True
                 if mode_str == 'norm':
                     norm = True
+                if mode_str.startswith('pos'):
+                    pos = True
+                    d = int(mode_str[3:])
+                    opt.edge_dim += d-1
 
             transform = GeneticDistance(split_edges = opt.split_neg_pos_edges,
                                         convert_to_attr = opt.use_edge_attr,
-                                        log = log, log10 = log10, norm = norm)
+                                        log = log, log10 = log10, norm = norm,
+                                        positional_encoding = pos, positional_encoding_d = d)
             opt.edge_transforms.append(transform)
         elif t_str[0] == 'geneticposition':
             center = False

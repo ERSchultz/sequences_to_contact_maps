@@ -101,7 +101,7 @@ def debugModel(model_type):
 
     # dataset
     dir = "/home/erschultz"
-    datasets = ['dataset_12_06_23_max_ent']
+    datasets = ['dataset_GNN_test']
     opt.bonded_path = 'optimize_grid_b_200_v_8_spheroid_1.5'
     opt.data_folder = [osp.join(dir, d) for d in datasets]
     opt.scratch = '/home/erschultz/scratch'
@@ -130,8 +130,8 @@ def debugModel(model_type):
         opt.GNN_mode = True
         opt.output_mode = 'energy_sym_diag'
         opt.output_preprocesing = 'none'
-        opt.encoder_hidden_sizes_list=None
-        opt.edge_encoder_hidden_sizes_list=None
+        opt.encoder_hidden_sizes_list=[128]
+        opt.edge_encoder_hidden_sizes_list=[128]
         opt.update_hidden_sizes_list=[100,16]
         opt.hidden_sizes_list=[8,8]
         opt.gated = False
@@ -149,7 +149,7 @@ def debugModel(model_type):
                             # 'ContactDistance_corr_rank5',
                             'Constant',
                             # 'GridSize',
-                            # 'GeneticDistance_norm',
+                            # 'GeneticDistance_pos78',
                             # 'MeanContactDistance',
                             'MeanContactDistance_bonded']
         opt.sparsify_threshold = None

@@ -19,15 +19,15 @@ source activate python3.9_pytorch1.9_cuda10.2
 source activate python3.9_pytorch1.9
 
 rootName='ContactGNNEnergy8' # change to run multiple bash files at once
-dirname="/project/depablo/erschultz/dataset_12_12_23_imr90"
+dirname="/project2/depablo/erschultz/dataset_02_30_24_imr90-/project2/depablo/erschultz/dataset_03_12_24_imr90"
 m=512
-preTransforms='ContactDistance-MeanContactDistance-AdjPCs_10'
+preTransforms='MeanContactDistance-AdjPCs_10-GeneticDistance_pos128'
 hiddenSizesList='16-16-16-16'
 updateHiddenSizesList='1000-1000-1000-1000-128'
 
 outputPreprocesing='none'
 headArchitecture='bilinear'
-headArchitecture2="dconv-fc-fill_${m}"
+headArchitecture2="fc-fill_${m}"
 headHiddenSizesList='1000-1000-1000-1000-1000-1000'
 rescale=2
 
@@ -46,10 +46,9 @@ loss='mse_log'
 resumeTraining='true'
 
 
-# 631 ablation
-# dconv
+# ablation positional encoding
 
-id=665
+id=707
 for lr in 1e-4
 do
   train

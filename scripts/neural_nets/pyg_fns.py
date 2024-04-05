@@ -357,7 +357,6 @@ class GridSize(BaseTransform):
     def __repr__(self):
         return (f'{self.__class__.__name__}')
 
-
 # edge transforms
 class GeneticDistance(BaseTransform):
     '''
@@ -369,7 +368,8 @@ class GeneticDistance(BaseTransform):
     '''
     def __init__(self, norm = False, max_val = None, cat = True,
                 split_edges = False, convert_to_attr = False,
-                log = False, log10 = False):
+                log = False, log10 = False, positional_encoding = False,
+                positional_encoding_d = 0):
         '''
         Inputs:
             norm: True to normalize distances by dividing by max_val
@@ -387,7 +387,14 @@ class GeneticDistance(BaseTransform):
         self.convert_to_attr = convert_to_attr # bool, converts to 2d array
         self.log = log # apply ln transform
         self.log10 = log10 # apply log10 transform
+        self.positional_encoding = positional_encoding
+        self.positional_encoding_d = positional_encoding_d
+        # True to use positional encoding from Attention is All You Need
         assert not self.log or not self.log10, "only one can be True"
+        if self.positional_encoding:
+            assert not self.split_edges and not self.norm and not self.log and not self.log10
+            assert self.convert_to_attr
+            assert self.positional_encoding_d > 0 and self.positional_encoding_d % 2 == 0
 
 
     def __call__(self, data):
@@ -440,15 +447,24 @@ class GeneticDistance(BaseTransform):
         else:
             (row, col), pseudo = data.edge_index, data.edge_attr
             dist = torch.norm(pos[col] - pos[row], p=2, dim=-1)
-            if self.convert_to_attr:
-                dist = dist.reshape(-1, 1)
 
-            if self.norm and dist.numel() > 0:
-                dist = dist / (data.num_nodes if self.max is None else self.max)
-            if self.log:
-                dist = torch.log(dist)
-            elif self.log10:
-                dist = torch.log10(dist)
+            if self.positional_encoding:
+                d = self.positional_encoding_d
+                new_dist = torch.zeros(len(dist), d)
+                for i in range(d//2):
+                    dist_rescale = dist/10000**(2*i/d)
+                    new_dist[:, 2*i] = torch.sin(dist_rescale)
+                    new_dist[:, 2*i+1] = torch.cos(dist_rescale)
+                dist = new_dist
+            else:
+                if self.convert_to_attr:
+                    dist = dist.reshape(-1, 1)
+                if self.norm and dist.numel() > 0:
+                    dist = dist / (data.num_nodes if self.max is None else self.max)
+                if self.log:
+                    dist = torch.log(dist)
+                elif self.log10:
+                    dist = torch.log10(dist)
 
             if pseudo is not None and self.cat:
                 pseudo = pseudo.view(-1, 1) if pseudo.dim() == 1 else pseudo
@@ -465,7 +481,11 @@ class GeneticDistance(BaseTransform):
             repr += f', max={self.max}'
 
         if self.log:
-            repr += f', log={self.log})'
+            repr += f', log={self.log}'
+
+
+        if self.positional_encoding:
+            repr += f', positional_encoding with d={self.positional_encoding_d})'
         else:
             repr += ')'
 
@@ -741,6 +761,8 @@ class DiagonalParameterDistance(BaseTransform):
     def __repr__(self) -> str:
         return (f'{self.__class__.__name__}'
                 f'(mlp_id={self.mlp_id})')
+
+
 
 # message passing
 class WeightedSignedConv(MessagePassing):
