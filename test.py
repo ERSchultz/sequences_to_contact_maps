@@ -13,21 +13,17 @@ import seaborn as sns
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from core_test_train import core_test_train
 from pylib.utils import epilib
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import *
 from pylib.utils.plotting_utils import BLUE_RED_CMAP, RED_CMAP, plot_matrix
 from pylib.utils.similarity_measures import SCC
 from pylib.utils.utils import print_time, triu_to_full
+from result_summary_plots import plot_top_PCs
 from scipy import linalg
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
-
-from core_test_train import core_test_train
-from result_summary_plots import plot_top_PCs
 from scripts.argparse_utils import (ArgparserConverter, finalize_opt,
                                     get_base_parser)
 from scripts.load_utils import (get_converged_max_ent_folder, load_import_log,
@@ -37,6 +33,9 @@ from scripts.neural_nets.losses import *
 from scripts.neural_nets.networks import get_model
 from scripts.neural_nets.utils import get_dataset
 from scripts.utils import calc_dist_strat_corr, crop
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUV'
 
@@ -586,7 +585,6 @@ def test_loss():
     metric7 = MSE_plaid_eig()
     # mse7 = metric7(e, ehat, vecs)
     # print('mse7', mse7)
-
 
     metricC = Combined_Loss([metric6, metric7], [1, 0.1], [None, None])
     # mseC = metricC(e, ehat, [None, vecs])

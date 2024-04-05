@@ -37,7 +37,7 @@ def import_contactmap_straw(odir, hic_filename, chrom, start,
         multiHiCcompare: True to write contact map in sparse format used by
                             multiHiCcompare R package
     '''
-    basepairs = f"chr{chrom}:{start}:{end}"
+    basepairs = f"{chrom}:{start}:{end}"
     print(basepairs, odir)
     result = hicstraw.straw("observed", norm, hic_filename, basepairs, basepairs, "BP", resolution)
     hic = hicstraw.HiCFile(hic_filename)
@@ -196,7 +196,7 @@ def split(in_dataset, out_dataset, m, chroms=range(1,23), start_index=1,
     if not osp.exists(samples_dir):
         os.mkdir(samples_dir, mode=0o755)
 
-    cell_lines = ['imr90', 'hap1', 'gm12878', 'hela', 'hmec', 'huvec', 'k562', 'kbm7', 'nhek']
+    cell_lines = ['5k']
 
     i = start_index
     chromsizes = bioframe.fetch_chromsizes(ref_genome)
@@ -296,11 +296,11 @@ if __name__ == '__main__':
     #                     'dataset_02_05_23', 50000)
     # Su2020imr90()
     # entire_chromosomes_list(GM12878_REPLICATES, 'dataset_gm12878', resolution=5000, chroms=[1,2])
-    # entire_chromosomes('https://hicfiles.s3.amazonaws.com/hiseq/gm12878/in-situ/combined.hic',
-                        # 'dataset_gm12878_500k', resolution=500000, chroms=[1,2])
+    entire_chromosomes('https://hicfiles.s3.amazonaws.com/hiseq/gm12878/in-situ/combined.hic',
+                        'dataset_gm12878_25k', resolution=25000, chroms=[1,2])
     # entire_chromosomes_list(ALL_FILES_in_situ, 'dataset_11_20_23')
     # split('dataset_11_20_23', 'dataset_12_01_23', 512, file='y_multiHiCcompare.txt')
     # split('dataset_11_20_23', 'dataset_12_06_23', 512, file='y.npy', scale=1e-1)
-    # split('dataset_gm12878_5k', 'dataset_1_22_24', 1024, file='y.npy', scale=1e-1)
-    entire_chromosomes('https://hicfiles.s3.amazonaws.com/external/dixon/mm9-hindiii/split-read-run.hic',
-                        'dataset_mm9', resolution=100000, chroms=[1,2], ref_genome='mm9')
+    # split('dataset_gm12878_5k', 'dataset_gm12878_5k', 1024, file='y.npy', scale=1e-1, resolution=5000)
+    # entire_chromosomes('https://hicfiles.s3.amazonaws.com/external/dixon/mm9-hindiii/split-read-run.hic',
+                        # 'dataset_mm9', resolution=100000, chroms=[1,2], ref_genome='mm9')

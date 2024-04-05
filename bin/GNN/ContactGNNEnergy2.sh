@@ -43,6 +43,8 @@ batchSize=1
 nEpochs=60
 milestones='40'
 loss='mse_log'
+resumeTraining='true'
+
 
 # ablation no rescale
 

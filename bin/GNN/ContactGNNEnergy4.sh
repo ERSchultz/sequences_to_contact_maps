@@ -38,7 +38,7 @@ outAct='leaky'
 
 yNorm='mean_fill'
 k=10
-useSignPlus='true'
+useSignPlus='false'
 batchSize=1
 nEpochs=60
 milestones='40'
