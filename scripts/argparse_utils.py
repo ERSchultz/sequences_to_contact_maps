@@ -670,6 +670,7 @@ def process_transforms(opt):
             log10 = False
             norm = False
             post = False
+            pos=None
             for mode_str in t_str[1:]:
                 if mode_str == 'log':
                     log = True
