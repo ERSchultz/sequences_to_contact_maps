@@ -740,7 +740,8 @@ def rescalingAnalysis(val_dataloader, model, opt, count=5):
     return analysisIterator(val_dataloader, model, opt_copy, count, 'rescaling')
 
 #### Functions for plotting xyz files ####
-def plot_xyz(xyz, L, x=None, ofile=None, show=True, title=None, legend=True):
+def plot_xyz(xyz, L, x=None, ofile=None, show=True, title=None, legend=True,
+            colors = None):
     '''
     Plots particles in xyz as 3D scatter plot.
     Only supports mutually exclusive bead types for coloring. # TODO
@@ -762,14 +763,17 @@ def plot_xyz(xyz, L, x=None, ofile=None, show=True, title=None, legend=True):
     if x is None:
         ax.scatter(xyz[:,0], xyz[:,1], xyz[:,2])
     elif len(x.shape) == 2:
+        m, k = x.shape
         # color unique types if x is not None
-        types = np.argmax(x, axis = 1)
-        n_types = np.max(types) + 1
-        for t in range(n_types):
-            condition = types == t
+        for t in range(k):
+            condition = x[:, t] == 1
             # print(condition)
-            ax.scatter(xyz[condition,0], xyz[condition,1], xyz[condition,2],
-                        label = t)
+            if colors is not None:
+                ax.scatter(xyz[condition,0], xyz[condition,1], xyz[condition,2],
+                            label = t, color = colors[t])
+            else:
+                ax.scatter(xyz[condition,0], xyz[condition,1], xyz[condition,2],
+                            label = t)
         if legend:
             plt.legend()
     elif len(x.shape) == 1:
@@ -793,7 +797,8 @@ def plot_xyz(xyz, L, x=None, ofile=None, show=True, title=None, legend=True):
         plt.show()
     plt.close()
 
-def plot_xyz_gif(xyz, x, dir, ofile = 'xyz.gif', order = None):
+def plot_xyz_gif(xyz, x, dir, ofile = 'xyz.gif', order = None, colors = None,
+                fps = 2):
     filenames = []
     if order is None:
         order = range(len(xyz))
@@ -801,7 +806,7 @@ def plot_xyz_gif(xyz, x, dir, ofile = 'xyz.gif', order = None):
         fname = osp.join(dir, f'{i}.png')
         filenames.append(fname)
         plot_xyz(xyz[i, :, :], None, x = x, ofile = fname, show = False,
-                    title = None, legend = False)
+                    title = None, legend = False, colors = colors)
 
     # build gif
     # filenames = [osp.join(dir, f'ovito0{i}.png') for i in range(100, 900)]
@@ -809,11 +814,11 @@ def plot_xyz_gif(xyz, x, dir, ofile = 'xyz.gif', order = None):
     for filename in filenames:
         frames.append(imageio.imread(filename))
 
-    imageio.mimsave(osp.join(dir, ofile), frames, format='GIF', fps=2)
+    imageio.mimsave(osp.join(dir, ofile), frames, format='GIF', fps=fps)
 
     # remove files
-    # for filename in set(filenames):
-        # os.remove(filename)
+    for filename in set(filenames):
+        os.remove(filename)
 
 def plot_centroid_distance(dir = '/home/eric/dataset_test/samples',
                             samples = range(30, 36), parallel = False,

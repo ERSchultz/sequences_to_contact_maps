@@ -23,7 +23,7 @@ source activate python3.9_pytorch1.9
 rootName='ContactGNNEnergy10' # change to run multiple bash files at once
 dirname="/project2/depablo/erschultz/dataset_02_30_24_imr90-/project2/depablo/erschultz/dataset_03_12_24_imr90"
 m=512
-preTransforms='MeanContactDistance-AdjPCs_10-GeneticDistance_norm'
+preTransforms='ContactDistance-MeanContactDistance-AdjPCs_10-GeneticDistance_norm'
 hiddenSizesList='16-16-16-16'
 updateHiddenSizesList='1000-1000-1000-1000-128'
 
@@ -46,7 +46,6 @@ nEpochs=60
 milestones='40'
 loss='mse_log'
 EdgeEncoderHiddenSizesList='128'
-resumeTraining='true'
 
 
 # ablation edge encoder
