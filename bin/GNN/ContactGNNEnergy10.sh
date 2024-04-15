@@ -46,7 +46,7 @@ nEpochs=60
 milestones='40'
 loss='mse_log'
 EdgeEncoderHiddenSizesList='128'
-
+resumeTraining='true'
 
 # ablation edge encoder
 
