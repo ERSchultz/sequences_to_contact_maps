@@ -178,8 +178,8 @@ def entire_chromosomes(filename, dataset, resolution,
         plot_matrix(y, osp.join(odir, f'chr{chr}', 'y.png'), vmax='mean')
 
 
-def entire_chromosomes_list(filenames, dataset, resolution=50000, ref_genome='hg19',
-                        chroms=range(1,23)):
+def entire_chromosomes_list(filenames, dataset, resolution=50000,
+                        ref_genome='hg19', chroms=range(1,23)):
     for i, filename in enumerate(filenames):
         odir = osp.join('/home/erschultz', dataset, f'chroms_rep{i}')
         entire_chromosomes(filename, dataset, resolution, 'NONE', ref_genome,
@@ -196,7 +196,7 @@ def split(in_dataset, out_dataset, m, chroms=range(1,23), start_index=1,
     if not osp.exists(samples_dir):
         os.mkdir(samples_dir, mode=0o755)
 
-    cell_lines = ['5k']
+    cell_lines = ['25k']
 
     i = start_index
     chromsizes = bioframe.fetch_chromsizes(ref_genome)
@@ -296,11 +296,11 @@ if __name__ == '__main__':
     #                     'dataset_02_05_23', 50000)
     # Su2020imr90()
     # entire_chromosomes_list(GM12878_REPLICATES, 'dataset_gm12878', resolution=5000, chroms=[1,2])
-    entire_chromosomes('https://hicfiles.s3.amazonaws.com/hiseq/gm12878/in-situ/combined.hic',
-                        'dataset_gm12878_25k', resolution=25000, chroms=[1,2])
+    # entire_chromosomes('https://hicfiles.s3.amazonaws.com/hiseq/gm12878/in-situ/combined.hic',
+                        # 'dataset_gm12878_25k', resolution=25000, chroms=[1,2])
     # entire_chromosomes_list(ALL_FILES_in_situ, 'dataset_11_20_23')
     # split('dataset_11_20_23', 'dataset_12_01_23', 512, file='y_multiHiCcompare.txt')
     # split('dataset_11_20_23', 'dataset_12_06_23', 512, file='y.npy', scale=1e-1)
-    # split('dataset_gm12878_5k', 'dataset_gm12878_5k', 1024, file='y.npy', scale=1e-1, resolution=5000)
+    split('dataset_gm12878_25k', 'dataset_gm12878_25k', 1024, file='y.npy', scale=1e-1, resolution=25000)
     # entire_chromosomes('https://hicfiles.s3.amazonaws.com/external/dixon/mm9-hindiii/split-read-run.hic',
                         # 'dataset_mm9', resolution=100000, chroms=[1,2], ref_genome='mm9')

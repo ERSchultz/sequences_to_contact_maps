@@ -140,18 +140,20 @@ def debugModel(model_type):
         opt.inner_act = 'relu'; opt.out_act = 'prelu'; opt.head_act = 'relu'
         opt.training_norm = None
         opt.use_node_features = False
-        opt.k = 5
+        opt.k = 10
         opt.use_edge_weights = False
         opt.use_edge_attr = True
         opt.pre_transforms=['ContactDistance',
                             # 'ContactDistance_diagnorm',
                             # 'ContactDistance_corr',
                             # 'ContactDistance_corr_rank5',
-                            'Constant',
+                            'MeanContactDistance',
                             # 'GridSize',
-                            # 'GeneticDistance_pos78',
+                            'AdjPCs_10',
+                            'GeneticDistance_norm',
                             # 'MeanContactDistance',
-                            'MeanContactDistance_bonded']
+                            # 'MeanContactDistance_bonded'
+                            ]
         opt.sparsify_threshold = None
         opt.sparsify_threshold_upper = None
         opt.log_preprocessing = None

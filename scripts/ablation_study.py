@@ -125,6 +125,19 @@ def main():
                 697: '690 fine tune (exp2)',
                 698: '690 fine tune (all_exp)',
                 }
+    descr_dict = {690: 'Baseline',
+            # 700: 'no log-transform in loss',
+            # 701: 'no rescale',
+            # 702: 'without SignNet (with eigenvectors)',
+            # 703: 'without SignNet (without eigenvectors)',
+            # 704: 'without $\mean(\diagonal(H, |i-j|))$ in $e_{ij}$',
+            # 712: 'GeneticDistance_pos512',
+            # 713: 'GeneticDistance_pos128',
+            # 708: 'GeneticDistance_norm',
+            # 708: 'GeneticDistance_norm with edge encoder',
+            710: '20k samples',
+            # 711: 'original message passing layer from \citep{Brody2022HowNetworks}',
+            }
     id_list = descr_dict.keys()
     print(id_list)
 
@@ -151,7 +164,9 @@ def main():
     args = getArgs(data_folder = f'/home/erschultz/{dataset}',
                     samples = train_samples)
     args.experimental = True
-    args.bad_methods = ['b_140', 'b_261', 'spheroid_2.0', 'max_ent', 'grid200', 'phi', '_xyz']
+    args.bad_methods = ['_xyz', "_long", "_grid200"]
+    for i in range(20):
+       args.bad_methods.append(f'max_ent{i}')
     args.convergence_definition = 'normal'
     args.gnn_id = id_list
     data, _ = load_data(args)

@@ -754,7 +754,7 @@ def plot_xyz(xyz, L, x=None, ofile=None, show=True, title=None, legend=True,
         show: True to show
         title: title of plot
     '''
-    fig = plt.figure()
+    fig = plt.figure(figsize=[12.8, 9.6])
     ax = plt.axes(projection = '3d')
 
     # connect particles if polymer
@@ -770,7 +770,7 @@ def plot_xyz(xyz, L, x=None, ofile=None, show=True, title=None, legend=True,
             # print(condition)
             if colors is not None:
                 ax.scatter(xyz[condition,0], xyz[condition,1], xyz[condition,2],
-                            label = t, color = colors[t])
+                            label = t, color = colors[t], s=[100]*len(xyz[condition,0]), marker = 'o')
             else:
                 ax.scatter(xyz[condition,0], xyz[condition,1], xyz[condition,2],
                             label = t)
