@@ -45,6 +45,7 @@ nEpochs=60
 milestones='40'
 loss='mse_log'
 pretrainID=710
+bondedPath='optimize_grid_b_200_v_8_spheroid_1.5'
 
 # ablation 20k samples fine tune
 
