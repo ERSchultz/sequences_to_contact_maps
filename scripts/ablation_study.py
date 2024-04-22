@@ -135,7 +135,9 @@ def main():
             # 713: 'GeneticDistance_pos128',
             # 708: 'GeneticDistance_norm',
             # 708: 'GeneticDistance_norm with edge encoder',
-            710: '20k samples',
+            # 710: '20k samples',
+            714: 'fine tune all',
+            715: 'fine tune 2'
             # 711: 'original message passing layer from \citep{Brody2022HowNetworks}',
             }
     id_list = descr_dict.keys()

@@ -7,7 +7,8 @@
 		 \thead{ID} & \thead{Method} & \thead{Loss} & \thead{SCC} & \thead{HiC-Spector} & \thead{Corr PC 1} & \thead{RMSE($\tilde{H}$)} \\ 
 		\hline\hline
 		 690 & Baseline & 0.406 & 0.725 & 0.533 & 0.913 & 0.677 \\ 
-		 710 & 20k samples & 0.373 & 0.679 & 0.515 & 0.903 & 0.698 \\ 
+		 714 & fine tune all & 0.282 & 0.776 & 0.497 & 0.8 & 0.703 \\ 
+		 715 & fine tune 2 & 0.245 & 0.814 & 0.509 & 0.885 & 0.669 \\ 
 		\hline
 	\end{tabular}
 	\caption{Neural network ablation results.

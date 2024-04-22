@@ -41,15 +41,15 @@ yNorm='mean_fill'
 k=10
 useSignPlus='true'
 batchSize=1
-nEpochs=60
-milestones='40'
+nEpochs=10
+milestones='none'
 loss='mse_log'
 pretrainID=710
 bondedPath='optimize_grid_b_200_v_8_spheroid_1.5'
 
 # ablation 20k samples fine tune
 
-id=714
+id=716
 for lr in 1e-4
 do
   train
