@@ -331,7 +331,9 @@ class ContactsGraph(torch_geometric.data.Dataset):
         dataset = split[-3]
         sample = split[-1][6:]
         setup_file = osp.join(dir, dataset, f'setup/sample_{sample}.txt')
-        bonded_file = osp.join(raw_folder, f'{self.bonded_root}/y.npy')
+        bonded_file1 = osp.join(raw_folder, self.bonded_root, 'y.npy')
+        bonded_file2 = osp.join(raw_folder, osp.split(self.bonded_root)[0],'y.npy')
+
         y_bonded = None
         if osp.exists(setup_file):
             found = False
@@ -346,9 +348,11 @@ class ContactsGraph(torch_geometric.data.Dataset):
             y_bonded_file = osp.join(dir, exp_subpath, 'y.npy')
             assert osp.exists(y_bonded_file), y_bonded_file
             y_bonded = np.load(y_bonded_file).astype(np.float64)
-        elif osp.exists(bonded_file):
-            y_bonded = np.load(bonded_file).astype(np.float64)
-        assert y_bonded is not None, f'{setup_file}, {bonded_file}'
+        elif osp.exists(bonded_file1):
+            y_bonded = np.load(bonded_file1).astype(np.float64)
+        elif osp.exists(bonded_file2):
+            y_bonded = np.load(bonded_file2).astype(np.float64)
+        assert y_bonded is not None, f'{setup_file}, {bonded_file1}'
 
         if self.mean_filt is not None:
             y = uniform_filter(y, self.mean_filt)

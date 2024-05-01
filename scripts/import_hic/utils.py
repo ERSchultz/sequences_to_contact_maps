@@ -36,6 +36,8 @@ ALL_FILES = [
             ]
             # "https://www.encodeproject.org/files/ENCFF675SJE/@@download/ENCFF675SJE.hic"  hg38 A549
 
+HCT116_RAD21KO = 'https://ftp.ncbi.nlm.nih.gov/geo/series/GSE104nnn/GSE104333/suppl/GSE104333_Rao-2017-treated_6hr_combined_30.hic'
+
 GM12878_VARIANTS = [
                 "https://hicfiles.s3.amazonaws.com/hiseq/gm12878/in-situ/combined.hic", # in-situ
                 "https://hicfiles.s3.amazonaws.com/hiseq/gm12878/agar/HIC030.hic", # agar

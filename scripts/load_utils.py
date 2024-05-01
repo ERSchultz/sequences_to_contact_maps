@@ -10,7 +10,7 @@ import scipy.sparse as sp
 from pylib.utils.DiagonalPreprocessing import DiagonalPreprocessing
 from pylib.utils.energy_utils import (calculate_D, calculate_diag_chi_step,
                                       calculate_L, calculate_S)
-from pylib.utils.utils import LETTERS, load_import_log, triu_to_full
+from pylib.utils.utils import LETTERS, triu_to_full
 from pylib.utils.xyz import xyz_load, xyz_to_contact_grid
 
 
